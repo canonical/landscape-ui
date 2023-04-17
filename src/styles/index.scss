@@ -1,0 +1,16 @@
+// Overridden Vanilla variables
+@import "vanilla-config";
+
+// Vanilla
+@import "vanilla-framework";
+@include vanilla;
+
+// Icons
+@include vf-p-icon-pods;
+
+// Custom styles
+.p-panel {
+  &__inner {
+    @extend %vf-grid-container-padding;
+  }
+}
