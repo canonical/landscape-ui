@@ -5,11 +5,7 @@ interface PageMainProps {
 }
 
 const PageMain: FC<PageMainProps> = ({ children }) => {
-  return (
-    <main className="l-main">
-      <div className="p-panel">{children}</div>
-    </main>
-  );
+  return <div className="p-panel">{children}</div>;
 };
 
 export default PageMain;

@@ -1,10 +1,14 @@
 import useFetch from "./useFetch";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Distribution } from "../schemas/Distribution";
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { Distribution } from "../types/Distribution";
 import useDebug from "./useDebug";
 import { AxiosError } from "axios";
 import { QueryFnType } from "../types/QueryFnType";
-import { MutationFnType } from "../types/MutationFnType";
 import { ApiError } from "../types/ApiError";
 
 interface GetDistributionsParams {
@@ -18,8 +22,9 @@ interface CreateDistributionParams {
 
 interface UseDistributionsResult {
   getDistributionsQuery: QueryFnType<Distribution[], GetDistributionsParams>;
-  createDistributionQuery: MutationFnType<
+  createDistributionQuery: UseMutationResult<
     Distribution,
+    AxiosError<ApiError>,
     CreateDistributionParams
   >;
 }
@@ -47,23 +52,21 @@ export default function useDistributions(): UseDistributionsResult {
       ...config,
     });
 
-  const createDistributionQuery: MutationFnType<
+  const createDistributionQuery = useMutation<
     Distribution,
+    AxiosError<ApiError>,
     CreateDistributionParams
-  > = (body, config = {}) =>
-    // @ts-ignore
-    useMutation<Distribution[], AxiosError<ApiError>>({
-      mutationKey: ["distributions", body.name],
-      mutationFn: () =>
-        authFetch!
-          .post("CreateDistribution", body)
-          .then(({ data }) => data)
-          .catch(debug),
-      onSuccess: () => {
-        queryClient.fetchQuery(["distributions"]).then(debug);
-      },
-      ...config,
-    });
+  >({
+    mutationKey: ["distributions", "new"],
+    mutationFn: (params) =>
+      authFetch!
+        .post("CreateDistribution", params)
+        .then(({ data }) => data)
+        .catch(debug),
+    onSuccess: () => {
+      queryClient.fetchQuery(["distributions"]).then(debug);
+    },
+  });
 
   return { getDistributionsQuery, createDistributionQuery };
 }

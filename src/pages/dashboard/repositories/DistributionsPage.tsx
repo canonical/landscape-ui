@@ -2,25 +2,52 @@ import { FC } from "react";
 import PageHeader from "../../../components/layout/PageHeader";
 import PageMain from "../../../components/layout/PageMain";
 import PageContent from "../../../components/layout/PageContent";
-import useDistributions from "../../../hooks/useDistributions";
 import DistributionCard from "./DistributionCard";
 import { Button } from "@canonical/react-components";
 import LoadingState from "../../../components/layout/LoadingState";
 import EmptyState from "../../../components/layout/EmptyState";
+import useSidePanel from "../../../hooks/useSidePanel";
+import NewMirrorForm from "./NewMirrorForm";
+import { useQuery } from "@tanstack/react-query";
+import useFetch from "../../../hooks/useFetch";
+import useDebug from "../../../hooks/useDebug";
+import { Distribution } from "../../../types/Distribution";
+import { AxiosError } from "axios";
+import { ApiError } from "../../../types/ApiError";
 
 const DistributionsPage: FC = () => {
-  const { getDistributionsQuery } = useDistributions();
+  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
 
-  const { data, isLoading } = getDistributionsQuery();
+  const authFetch = useFetch();
+  const debug = useDebug();
+
+  const { data, isLoading } = useQuery<Distribution[], AxiosError<ApiError>>({
+    queryKey: ["distributions"],
+    queryFn: () =>
+      authFetch!
+        .get("GetDistributions")
+        .then(({ data }) => data ?? [])
+        .catch(debug),
+  });
 
   const items = data ?? [];
+
+  const handleOpen = () => {
+    setSidePanelOpen(true);
+    setSidePanelContent("New mirror", <NewMirrorForm />);
+  };
 
   return (
     <PageMain>
       <PageHeader
         title="Repository Mirrors"
         actions={[
-          <Button key="new-mirror-button" appearance="positive">
+          <Button
+            key="new-mirror-button"
+            appearance="positive"
+            onClick={handleOpen}
+            type="button"
+          >
             New mirror
           </Button>,
         ]}
@@ -29,7 +56,7 @@ const DistributionsPage: FC = () => {
         {isLoading && <LoadingState />}
         {!isLoading && items.length === 0 && (
           <EmptyState
-            title="No mirrors found."
+            title="No mirrors found"
             icon="containers"
             body={
               <>
@@ -42,7 +69,12 @@ const DistributionsPage: FC = () => {
               </>
             }
             cta={[
-              <Button appearance="positive" key="table-create-new-mirror">
+              <Button
+                appearance="positive"
+                key="table-create-new-mirror"
+                onClick={handleOpen}
+                type="button"
+              >
                 New mirror
               </Button>,
             ]}

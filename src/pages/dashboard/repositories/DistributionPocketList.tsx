@@ -1,4 +1,4 @@
-import { Distribution } from "../../../schemas/Distribution";
+import { Distribution } from "../../../types/Distribution";
 import { FC } from "react";
 import { MainTable } from "@canonical/react-components";
 

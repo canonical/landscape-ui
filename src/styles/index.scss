@@ -11,6 +11,7 @@
 @include vf-p-icon-pods;
 @include vf-p-icon-spinner;
 @include vf-p-icon-containers;
+@include vf-p-icon-close;
 
 // Custom styles
 .p-panel {
@@ -23,4 +24,12 @@
     align-items: center;
     gap: 1rem;
   }
+}
+
+.l-aside {
+  background-color: $color-x-light;
+}
+
+.form-buttons {
+  margin-top: 1rem;
 }

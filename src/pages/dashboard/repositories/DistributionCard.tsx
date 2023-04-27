@@ -1,4 +1,4 @@
-import { Distribution } from "../../../schemas/Distribution";
+import { Distribution } from "../../../types/Distribution";
 import { FC } from "react";
 import DistributionPocketList from "./DistributionPocketList";
 import classes from "./DistributionCard.module.scss";

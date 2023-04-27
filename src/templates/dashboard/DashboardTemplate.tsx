@@ -1,5 +1,7 @@
 import { FC, ReactNode } from "react";
 import Sidebar from "./Sidebar";
+import NotifyProvider from "../../context/notify";
+import SidePanelProvider from "../../context/sidePanel";
 
 interface DashboardTemplateProps {
   children: ReactNode;
@@ -7,10 +9,14 @@ interface DashboardTemplateProps {
 
 const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
   return (
-    <div className="l-application" role="presentation">
-      <Sidebar />
-      {children}
-    </div>
+    <NotifyProvider>
+      <div className="l-application" role="presentation">
+        <Sidebar />
+        <SidePanelProvider>
+          <main className="l-main">{children}</main>
+        </SidePanelProvider>
+      </div>
+    </NotifyProvider>
   );
 };
 

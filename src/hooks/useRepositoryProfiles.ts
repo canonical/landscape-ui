@@ -1,10 +1,13 @@
 import useFetch from "./useFetch";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { RepositoryProfile } from "../schemas/RepositoryProfile";
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+} from "@tanstack/react-query";
+import { RepositoryProfile } from "../types/RepositoryProfile";
 import useDebug from "./useDebug";
 import { AxiosError } from "axios";
 import { QueryFnType } from "../types/QueryFnType";
-import { MutationFnType } from "../types/MutationFnType";
 import { ApiError } from "../types/ApiError";
 
 interface GetRepositoryProfilesParams {
@@ -22,8 +25,10 @@ interface UseRepositoryProfilesResult {
     RepositoryProfile[],
     GetRepositoryProfilesParams
   >;
-  createRepositoryProfileQuery: MutationFnType<
+
+  createRepositoryProfileQuery: UseMutationResult<
     RepositoryProfile,
+    AxiosError<ApiError>,
     CreateRepositoryProfileParams
   >;
 }
@@ -50,20 +55,18 @@ export default function useRepositoryProfiles(): UseRepositoryProfilesResult {
       ...config,
     });
 
-  const createRepositoryProfileQuery: MutationFnType<
+  const createRepositoryProfileQuery = useMutation<
     RepositoryProfile,
+    AxiosError<ApiError>,
     CreateRepositoryProfileParams
-  > = (body, config) =>
-    // @ts-ignore
-    useMutation<RepositoryProfile[], AxiosError<ApiError>>({
-      mutationKey: ["repositoryProfiles"],
-      mutationFn: () =>
-        authFetch!
-          .post("CreateRepositoryProfile", body)
-          .then(({ data }) => data)
-          .catch(debug),
-      ...config,
-    });
+  >({
+    mutationKey: ["repositoryProfiles"],
+    mutationFn: (params) =>
+      authFetch!
+        .post("CreateRepositoryProfile", params)
+        .then(({ data }) => data)
+        .catch(debug),
+  });
 
   return { getRepositoryProfilesQuery, createRepositoryProfileQuery };
 }

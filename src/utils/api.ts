@@ -55,13 +55,17 @@ export const generateRequestParams = (
 
   const paramsToPass: Omit<RequestSchema, "signature"> = {
     access_key_id: API_ACCESS_KEY,
-    action: config.url,
+    action: config.url ?? "",
     signature_method: API_SIGNATURE_METHOD,
     signature_version: API_SIGNATURE_VERSION,
     timestamp: new Date().toISOString(),
     version: API_VERSION,
-    ...config.params,
   };
+
+  for (let i = 0; i < Object.keys(requestParams ?? []).length; i++) {
+    const param = Object.keys(requestParams)[i];
+    paramsToPass[`${param}.${i + 1}`] = requestParams[param];
+  }
 
   for (const param of Object.keys(paramsToPass)) {
     urlParams.append(param, paramsToPass[param]);
