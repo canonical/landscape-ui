@@ -3,7 +3,7 @@ import PageHeader from "../../../../components/layout/PageHeader";
 import PageMain from "../../../../components/layout/PageMain";
 import PageContent from "../../../../components/layout/PageContent";
 
-const ProfilesPage: FC = () => {
+const DistributionProfilesPage: FC = () => {
   return (
     <PageMain>
       <PageHeader title="Repository Profiles" />
@@ -12,4 +12,4 @@ const ProfilesPage: FC = () => {
   );
 };
 
-export default ProfilesPage;
+export default DistributionProfilesPage;

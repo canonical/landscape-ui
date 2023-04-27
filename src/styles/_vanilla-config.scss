@@ -1,14 +1,1 @@
-@import "vanilla-framework/scss/settings_spacing";
-
-$font-sizes: (
-  h1: pow($ms-ratio, 4),
-  h1-mobile: pow($ms-ratio, 4),
-  h2: pow($ms-ratio, 3),
-  h2-mobile: pow($ms-ratio, 3),
-  h3: pow($ms-ratio, 2),
-  h3-mobile: pow($ms-ratio, 2),
-  h4: pow($ms-ratio, 1),
-  h4-mobile: pow($ms-ratio, 1),
-  small: pow($ms-ratio, -1),
-  x-small: pow($ms-ratio, -2),
-);
+$disabled-element-opacity: 0.5;

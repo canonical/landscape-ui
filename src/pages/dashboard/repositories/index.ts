@@ -1,1 +1,1 @@
-export { default } from "./RepositoriesPage";
+export { default } from "./DistributionsPage";

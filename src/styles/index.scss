@@ -6,11 +6,21 @@
 @include vanilla;
 
 // Icons
+// @import "vanilla-framework/scss/utilities_animations";
+@include vf-u-animations;
 @include vf-p-icon-pods;
+@include vf-p-icon-spinner;
+@include vf-p-icon-containers;
 
 // Custom styles
 .p-panel {
   &__inner {
     @extend %vf-grid-container-padding;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 }

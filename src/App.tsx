@@ -2,8 +2,8 @@ import { FC } from "react";
 import { Route, Routes } from "react-router-dom";
 import DashboardPage from "./pages/dashboard";
 import PageNotFound from "./pages/PageNotFound";
-import RepositoriesPage from "./pages/dashboard/repositories";
-import ProfilesPage from "./pages/dashboard/repositories/profiles";
+import DistributionsPage from "./pages/dashboard/repositories";
+import DistributionProfilesPage from "./pages/dashboard/repositories/profiles";
 import FetchProvider from "./context/fetch";
 
 const App: FC = () => {
@@ -11,8 +11,11 @@ const App: FC = () => {
     <FetchProvider>
       <Routes>
         <Route path="/" element={<DashboardPage />}>
-          <Route path="repositories" element={<RepositoriesPage />} />
-          <Route path="repositories/profiles" element={<ProfilesPage />} />
+          <Route path="repositories" element={<DistributionsPage />} />
+          <Route
+            path="repositories/profiles"
+            element={<DistributionProfilesPage />}
+          />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>

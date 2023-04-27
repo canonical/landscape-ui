@@ -2,7 +2,7 @@ import React, { FC, ReactNode } from "react";
 import axios, { AxiosError, AxiosInstance } from "axios";
 
 import { API_URL } from "../constants";
-import { generateRequestParams } from "../api/helpers";
+import { generateRequestParams } from "../utils/api";
 
 export const FetchContext = React.createContext<AxiosInstance | null>(null);
 
