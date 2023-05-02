@@ -60,7 +60,7 @@ export default function useDistributions(): UseDistributionsResult {
     mutationKey: ["distributions", "new"],
     mutationFn: (params) =>
       authFetch!
-        .post("CreateDistribution", params)
+        .get("CreateDistribution", { params })
         .then(({ data }) => data)
         .catch(debug),
     onSuccess: () => {

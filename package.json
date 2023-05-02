@@ -22,8 +22,7 @@
     "react-router-dom": "6.10.0",
     "vanilla-framework": "3.13.0",
     "yarn-add-no-save": "1.0.3",
-    "zod": "3.21.4",
-    "zod-formik-adapter": "^1.2.0"
+    "yup": "^1.1.1"
   },
   "devDependencies": {
     "@types/crypto-js": "4.1.1",

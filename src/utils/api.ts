@@ -18,20 +18,7 @@ interface CreateSignatureProps {
   urlParams: URLSearchParams;
 }
 
-const createSignature = ({
-  method,
-  requestParams,
-  urlParams,
-}: CreateSignatureProps) => {
-  if (requestParams) {
-    for (let i = 0; i < Object.keys(requestParams).length; i++) {
-      urlParams.append(
-        `${requestParams[Object.keys(requestParams)[i]]}.${i + 1}`,
-        requestParams[Object.keys(requestParams)[i]]
-      );
-    }
-  }
-
+const createSignature = ({ method, urlParams }: CreateSignatureProps) => {
   const apiUrl = new URL(API_URL);
 
   const stringToSign = `${method.toUpperCase()}\n${apiUrl.host.toLowerCase()}\n${
@@ -64,20 +51,21 @@ export const generateRequestParams = (
 
   for (let i = 0; i < Object.keys(requestParams ?? []).length; i++) {
     const param = Object.keys(requestParams)[i];
-    paramsToPass[`${param}.${i + 1}`] = requestParams[param];
+    const value = requestParams[param];
+
+    if ("string" === typeof value) {
+      paramsToPass[param] = requestParams[param];
+    } else if (value.length) {
+      value.forEach((value: string, index: number) => {
+        paramsToPass[`${param}.${index + 1}`] = value;
+      });
+    } else {
+      throw new Error(`Unsupported argument type. Provided: ${value}`);
+    }
   }
 
   for (const param of Object.keys(paramsToPass)) {
     urlParams.append(param, paramsToPass[param]);
-  }
-
-  if (requestParams) {
-    for (let i = 0; i < Object.keys(requestParams).length; i++) {
-      urlParams.append(
-        `${requestParams[Object.keys(requestParams)[i]]}.${i + 1}`,
-        requestParams[Object.keys(requestParams)[i]]
-      );
-    }
   }
 
   paramsToPass.signature = createSignature({
