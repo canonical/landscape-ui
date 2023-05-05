@@ -24,8 +24,8 @@ import {
 import classNames from "classnames";
 
 interface FormProps {
-  series: string;
-  useCustomMirrorUri: boolean;
+  name: string;
+  useDefaultMirrorUri: boolean;
   customMirrorUri: string;
   pockets: string[];
   components: string[];
@@ -42,16 +42,16 @@ const NewMirrorForm: FC = () => {
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      series: "",
-      useCustomMirrorUri: false,
+      name: "",
+      useDefaultMirrorUri: true,
       customMirrorUri: "",
       pockets: [],
       components: [],
       architectures: [],
     },
     validationSchema: Yup.object().shape({
-      series: Yup.string().required("This field is required"),
-      useCustomMirrorUri: Yup.boolean(),
+      name: Yup.string().required("This field is required"),
+      useDefaultMirrorUri: Yup.boolean(),
       customMirrorUri: Yup.string(),
       pockets: Yup.array()
         .of(Yup.string())
@@ -66,7 +66,7 @@ const NewMirrorForm: FC = () => {
     validate: (values) => {
       const errors: FormikErrors<FormProps> = {};
 
-      if (values.useCustomMirrorUri && !values.customMirrorUri.trim()) {
+      if (!values.useDefaultMirrorUri && !values.customMirrorUri.trim()) {
         errors.customMirrorUri = "This field is required";
       }
 
@@ -84,7 +84,7 @@ const NewMirrorForm: FC = () => {
   });
 
   useEffect(() => {
-    formik.setFieldValue("series", PRE_DEFIED_SERIES_OPTIONS[0].value);
+    formik.setFieldValue("name", PRE_DEFIED_SERIES_OPTIONS[0].value);
     formik.setFieldValue("pockets", PRE_SELECTED_POCKETS);
     formik.setFieldValue("components", PRE_SELECTED_COMPONENTS);
     formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES);
@@ -96,22 +96,24 @@ const NewMirrorForm: FC = () => {
         label="Source"
         options={PRE_DEFIED_SERIES_OPTIONS}
         error={
-          formik.touched.series && formik.errors.series
-            ? formik.errors.series
+          formik.touched.name && formik.errors.name
+            ? formik.errors.name
             : undefined
         }
-        {...formik.getFieldProps("series")}
+        {...formik.getFieldProps("name")}
       />
 
       <Switch
-        label="Custom mirror URI"
-        {...formik.getFieldProps("useCustomMirrorUri")}
+        label="Use http://archive.ubuntu.com/ubuntu"
+        {...formik.getFieldProps("useDefaultMirrorUri")}
+        checked={formik.values.useDefaultMirrorUri}
       />
 
-      {formik.values.useCustomMirrorUri && (
+      {!formik.values.useDefaultMirrorUri && (
         <Input
           type="text"
           label="Mirror URI"
+          placeholder="http://archive.ubuntu.com/ubuntu"
           error={
             formik.touched.customMirrorUri && formik.errors.customMirrorUri
               ? formik.errors.customMirrorUri
@@ -126,7 +128,7 @@ const NewMirrorForm: FC = () => {
           "is-error": formik.touched.pockets && formik.errors.pockets,
         })}
         style={{
-          marginTop: formik.values.useCustomMirrorUri ? "inherit" : "1.5rem",
+          marginTop: formik.values.useDefaultMirrorUri ? "1.5rem" : "inherit",
         }}
       >
         <legend>Pockets</legend>

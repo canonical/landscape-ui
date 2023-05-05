@@ -19,6 +19,10 @@ const MENU_ITEMS: MenuItem[] = [
         label: "Profiles",
         path: "/repositories/profiles",
       },
+      {
+        label: "GPG Keys",
+        path: "/repositories/gpg-keys",
+      },
     ],
   },
 ];

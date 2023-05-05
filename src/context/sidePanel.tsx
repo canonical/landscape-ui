@@ -1,5 +1,12 @@
-import React, { createContext, FC, ReactNode, useState } from "react";
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import classNames from "classnames";
+import { useLocation } from "react-router-dom";
 
 interface SidePanelContextProps {
   setSidePanelOpen: (newState: boolean) => void;
@@ -24,6 +31,11 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    return handleClose;
+  }, [pathname]);
 
   const handleClose = () => {
     setOpen(false);

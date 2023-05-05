@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { Distribution } from "../types/Distribution";
 import useDebug from "./useDebug";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { QueryFnType } from "../types/QueryFnType";
 import { ApiError } from "../types/ApiError";
 
@@ -23,7 +23,7 @@ interface CreateDistributionParams {
 interface UseDistributionsResult {
   getDistributionsQuery: QueryFnType<Distribution[], GetDistributionsParams>;
   createDistributionQuery: UseMutationResult<
-    Distribution,
+    AxiosResponse<Distribution>,
     AxiosError<ApiError>,
     CreateDistributionParams
   >;
@@ -39,30 +39,23 @@ export default function useDistributions(): UseDistributionsResult {
     GetDistributionsParams
   > = (queryParams = {}, config = {}) =>
     // @ts-ignore
-    useQuery<Distribution[], AxiosError<ApiError>>({
+    useQuery<AxiosResponse<Distribution[]>, AxiosError<ApiError>>({
       // @ts-ignore
       queryKey: ["distributions"],
       queryFn: () =>
-        authFetch!
-          .get("GetDistributions", {
-            params: queryParams,
-          })
-          .then(({ data }) => data ?? [])
-          .catch(debug),
+        authFetch!.get("GetDistributions", {
+          params: queryParams,
+        }),
       ...config,
     });
 
   const createDistributionQuery = useMutation<
-    Distribution,
+    AxiosResponse<Distribution>,
     AxiosError<ApiError>,
     CreateDistributionParams
   >({
     mutationKey: ["distributions", "new"],
-    mutationFn: (params) =>
-      authFetch!
-        .get("CreateDistribution", { params })
-        .then(({ data }) => data)
-        .catch(debug),
+    mutationFn: (params) => authFetch!.get("CreateDistribution", { params }),
     onSuccess: () => {
       queryClient.fetchQuery(["distributions"]).then(debug);
     },

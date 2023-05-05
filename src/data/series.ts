@@ -1,41 +1,52 @@
-import { getDefaultDistribution } from "./distributions";
 import { SelectOption } from "../types/SelectOption";
 
-interface CreatePocketParams {}
+// interface CreatePocketParams {}
+//
+// interface CreateComponentParams {}
+//
+// interface CreateArchitecturesParams {}
 
-interface CreateComponentParams {}
-
-interface CreateArchitecturesParams {}
-
-interface CreateSeriesParams {
-  name: string;
-  distribution: string;
-  pockets?: CreatePocketParams[];
-  components?: CreateComponentParams[];
-  architectures?: CreateArchitecturesParams[];
-  mirror_gpg_key?: string;
-  mirror_uri?: string;
-  mirror_series?: string[];
-  include_udeb?: boolean;
+interface SeriesData {
+  label: string;
+  slug: string;
 }
 
-const PRE_DEFINED_SERIES: CreateSeriesParams[] = [
+const PRE_DEFINED_SERIES: SeriesData[] = [
   {
-    name: "lucid",
-    distribution: getDefaultDistribution().name,
+    label: "Ubuntu 14.04.6 LTS (Trusty Tahr)",
+    slug: "trusty",
   },
   {
-    name: "natty",
-    distribution: getDefaultDistribution().name,
+    label: "Ubuntu 16.04.7 LTS (Xenial Xerus)",
+    slug: "xenial",
+  },
+  {
+    label: "Ubuntu 18.04.6 LTS (Bionic Beaver)",
+    slug: "bionic",
+  },
+  {
+    label: "Ubuntu 20.04.6 LTS (Focal Fossa)",
+    slug: "focal",
+  },
+  {
+    label: "Ubuntu 22.04.1 LTS (Jammy Jellyfish)",
+    slug: "jammy",
+  },
+  {
+    label: "Ubuntu 22.10 (Kinetic Kudu)",
+    slug: "kinetic",
+  },
+  {
+    label: "Ubuntu 23.04 (Lunar Lobster)",
+    slug: "lunar",
   },
 ];
 
-export const PRE_DEFIED_SERIES_OPTIONS: SelectOption[] = PRE_DEFINED_SERIES.map(
-  (item) => ({
-    value: item.name,
-    label: `${item.distribution} ${item.name}`,
-  })
-);
+export const PRE_DEFIED_SERIES_OPTIONS: SelectOption[] =
+  PRE_DEFINED_SERIES.reverse().map((item) => ({
+    value: item.slug,
+    label: item.label,
+  }));
 
 export const POCKET_OPTIONS: SelectOption[] = [
   {
@@ -98,16 +109,8 @@ export const ARCHITECTURE_OPTIONS: SelectOption[] = [
     value: "amd64",
   },
   {
-    label: "riscv",
-    value: "riscv",
-  },
-  {
     label: "i386",
     value: "i386",
-  },
-  {
-    label: "armhf",
-    value: "armhf",
   },
 ];
 

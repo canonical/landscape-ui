@@ -1,0 +1,86 @@
+import { FC, useEffect } from "react";
+import { Button, Form, Input, Textarea } from "@canonical/react-components";
+import { useFormik } from "formik";
+import useDebug from "../../../../hooks/useDebug";
+import useSidePanel from "../../../../hooks/useSidePanel";
+import * as Yup from "yup";
+import useGPGKeys from "../../../../hooks/useGPGKeys";
+import useNotify from "../../../../hooks/useNotify";
+import AppNotification from "../../../../components/layout/AppNotification";
+
+interface FormProps {
+  name: string;
+  material: string;
+}
+
+const NewGPGKeyForm: FC = () => {
+  const { closeSidePanel } = useSidePanel();
+  const debug = useDebug();
+  const { importGPGKeyQuery } = useGPGKeys();
+  const notify = useNotify();
+
+  const { mutateAsync, isLoading } = importGPGKeyQuery;
+
+  const formik = useFormik<FormProps>({
+    initialValues: {
+      name: "",
+      material: "",
+    },
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("This field is required"),
+      material: Yup.string()
+        .required("This field is required")
+        .transform((value) => encodeURIComponent(value)),
+    }),
+    onSubmit: async (values) => {
+      try {
+        await mutateAsync(values);
+
+        closeSidePanel();
+      } catch (error: any) {
+        debug(error);
+      }
+    },
+  });
+
+  useEffect(() => notify.clear, []);
+
+  return (
+    <Form onSubmit={formik.handleSubmit}>
+      <Input
+        type="text"
+        label="Name"
+        error={
+          formik.touched.name && formik.errors.name
+            ? formik.errors.name
+            : undefined
+        }
+        {...formik.getFieldProps("name")}
+      />
+
+      <Textarea
+        label="Material"
+        rows={10}
+        error={
+          formik.touched.material && formik.errors.material
+            ? formik.errors.material
+            : undefined
+        }
+        {...formik.getFieldProps("material")}
+      />
+
+      {notify && <AppNotification notify={notify} />}
+
+      <div className="form-buttons">
+        <Button type="submit" appearance="positive" disabled={isLoading}>
+          Import key
+        </Button>
+        <Button type="button" onClick={closeSidePanel}>
+          Cancel
+        </Button>
+      </div>
+    </Form>
+  );
+};
+
+export default NewGPGKeyForm;
