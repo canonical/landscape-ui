@@ -14,13 +14,13 @@ const DistributionCard: FC<DistributionCardProps> = ({ item }) => {
       <div className={classes.header}>
         <h2 className={classes.title}>{item.name}</h2>
         <div className={classes.cta}>
-          <Button appearance="base">Edit</Button>
-          <Button appearance="base">Remove</Button>
-          <Button appearance="base">Create snapshot</Button>
-          <Button appearance="base">New pocket</Button>
+          <Button small>Edit</Button>
+          <Button small>Remove</Button>
+          <Button small>Create snapshot</Button>
+          <Button small>New pocket</Button>
         </div>
       </div>
-      <div>
+      <div className={classes.content}>
         <DistributionPocketList item={item} />
       </div>
     </div>

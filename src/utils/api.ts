@@ -23,7 +23,7 @@ const createSignature = ({ method, urlParams }: CreateSignatureProps) => {
 
   const stringToSign = `${method.toUpperCase()}\n${apiUrl.host.toLowerCase()}\n${
     apiUrl.pathname
-  }/\n${urlParams.toString()}`;
+  }\n${urlParams.toString()}`;
 
   const asciiQuery = Buffer.from(stringToSign, "ascii").toString();
   const asciiSecret = Buffer.from(API_SECRET_KEY, "ascii").toString();

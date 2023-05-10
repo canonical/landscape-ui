@@ -8,29 +8,15 @@ import LoadingState from "../../../components/layout/LoadingState";
 import EmptyState from "../../../components/layout/EmptyState";
 import useSidePanel from "../../../hooks/useSidePanel";
 import NewMirrorForm from "./NewMirrorForm";
-import { useQuery } from "@tanstack/react-query";
-import useFetch from "../../../hooks/useFetch";
-import useDebug from "../../../hooks/useDebug";
-import { Distribution } from "../../../types/Distribution";
-import { AxiosError } from "axios";
-import { ApiError } from "../../../types/ApiError";
+import useDistributions from "../../../hooks/useDistributions";
 
 const DistributionsPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { getDistributionsQuery } = useDistributions();
 
-  const authFetch = useFetch();
-  const debug = useDebug();
+  const { data, isLoading } = getDistributionsQuery();
 
-  const { data, isLoading } = useQuery<Distribution[], AxiosError<ApiError>>({
-    queryKey: ["distributions"],
-    queryFn: () =>
-      authFetch!
-        .get("GetDistributions")
-        .then(({ data }) => data ?? [])
-        .catch(debug),
-  });
-
-  const items = data ?? [];
+  const items = data?.data ?? [];
 
   const handleOpen = () => {
     setSidePanelOpen(true);

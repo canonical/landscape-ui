@@ -74,7 +74,7 @@ const NewMirrorForm: FC = () => {
     },
     onSubmit: async (values) => {
       try {
-        await mutateAsync(values as any);
+        await mutateAsync(values);
 
         closeSidePanel();
       } catch (error: any) {
@@ -113,12 +113,12 @@ const NewMirrorForm: FC = () => {
         <Input
           type="text"
           label="Mirror URI"
-          placeholder="http://archive.ubuntu.com/ubuntu"
           error={
             formik.touched.customMirrorUri && formik.errors.customMirrorUri
               ? formik.errors.customMirrorUri
               : undefined
           }
+          help="http://archive.ubuntu.com/ubuntu or file://srv/www"
           {...formik.getFieldProps("customMirrorUri")}
         />
       )}

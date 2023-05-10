@@ -7,7 +7,7 @@ interface DistributionPocketListProps {
 }
 
 const DistributionPocketList: FC<DistributionPocketListProps> = ({ item }) => {
-  const headers = [{ content: "Source" }];
+  const headers = [{ content: "Pocket" }];
 
   const rows = item.series.map((item) => {
     return {
@@ -15,7 +15,7 @@ const DistributionPocketList: FC<DistributionPocketListProps> = ({ item }) => {
         {
           content: item.name,
           role: "rowheader",
-          "aria-label": "Source",
+          "aria-label": "Pocket",
         },
       ],
     };

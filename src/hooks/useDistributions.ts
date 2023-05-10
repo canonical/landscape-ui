@@ -21,7 +21,10 @@ interface CreateDistributionParams {
 }
 
 interface UseDistributionsResult {
-  getDistributionsQuery: QueryFnType<Distribution[], GetDistributionsParams>;
+  getDistributionsQuery: QueryFnType<
+    AxiosResponse<Distribution[]>,
+    GetDistributionsParams
+  >;
   createDistributionQuery: UseMutationResult<
     AxiosResponse<Distribution>,
     AxiosError<ApiError>,
@@ -35,7 +38,7 @@ export default function useDistributions(): UseDistributionsResult {
   const debug = useDebug();
 
   const getDistributionsQuery: QueryFnType<
-    Distribution[],
+    AxiosResponse<Distribution[]>,
     GetDistributionsParams
   > = (queryParams = {}, config = {}) =>
     // @ts-ignore
