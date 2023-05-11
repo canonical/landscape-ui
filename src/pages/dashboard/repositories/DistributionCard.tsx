@@ -3,12 +3,16 @@ import { FC } from "react";
 import DistributionPocketList from "./DistributionPocketList";
 import classes from "./DistributionCard.module.scss";
 import { Button } from "@canonical/react-components";
+import NewSeriesForm from "./NewSeriesForm";
+import useSidePanel from "../../../hooks/useSidePanel";
 
 interface DistributionCardProps {
   item: Distribution;
 }
 
 const DistributionCard: FC<DistributionCardProps> = ({ item }) => {
+  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+
   return (
     <div className={classes.card}>
       <div className={classes.header}>
@@ -17,7 +21,18 @@ const DistributionCard: FC<DistributionCardProps> = ({ item }) => {
           <Button small>Edit</Button>
           <Button small>Remove</Button>
           <Button small>Create snapshot</Button>
-          <Button small>New pocket</Button>
+          <Button
+            small
+            onClick={() => {
+              setSidePanelOpen(true);
+              setSidePanelContent(
+                "New mirror",
+                <NewSeriesForm distribution={item.name} />
+              );
+            }}
+          >
+            New pocket
+          </Button>
         </div>
       </div>
       <div className={classes.content}>

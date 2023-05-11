@@ -25,7 +25,7 @@ interface RemoveGPGKeyParams {
 }
 
 interface UseGPGKeysResult {
-  getGPGKeysQuery: QueryFnType<GPGKey[], GetGPGKeysParams>;
+  getGPGKeysQuery: QueryFnType<AxiosResponse<GPGKey[]>, GetGPGKeysParams>;
   importGPGKeyQuery: UseMutationResult<
     AxiosResponse<GPGKey>,
     AxiosError<ApiError>,
@@ -43,10 +43,10 @@ export default function useGPGKeys(): UseGPGKeysResult {
   const authFetch = useFetch();
   const debug = useDebug();
 
-  const getGPGKeysQuery: QueryFnType<GPGKey[], GetGPGKeysParams> = (
-    queryParams = {},
-    config = {}
-  ) =>
+  const getGPGKeysQuery: QueryFnType<
+    AxiosResponse<GPGKey[]>,
+    GetGPGKeysParams
+  > = (queryParams = {}, config = {}) =>
     // @ts-ignore
     useQuery<AxiosResponse<GPGKey[]>, AxiosError<ApiError>>({
       // @ts-ignore

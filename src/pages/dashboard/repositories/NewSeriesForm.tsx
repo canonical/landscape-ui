@@ -5,12 +5,10 @@ import {
   Form,
   Input,
   Select,
-  Switch,
 } from "@canonical/react-components";
-import { FormikErrors, useFormik } from "formik";
+import { useFormik } from "formik";
 import useDebug from "../../../hooks/useDebug";
 import useSidePanel from "../../../hooks/useSidePanel";
-import useDistributions from "../../../hooks/useDistributions";
 import * as Yup from "yup";
 import {
   ARCHITECTURE_OPTIONS,
@@ -22,37 +20,47 @@ import {
   PRE_SELECTED_POCKETS,
 } from "../../../data/series";
 import classNames from "classnames";
+import useSeries, { CreateSeriesParams } from "../../../hooks/useSeries";
+import { DEFAULT_MIRROR_URI } from "../../../constants";
+import useGPGKeys from "../../../hooks/useGPGKeys";
+import useDistributions from "../../../hooks/useDistributions";
 
-interface FormProps {
-  name: string;
-  useDefaultMirrorUri: boolean;
-  customMirrorUri: string;
-  pockets: string[];
-  components: string[];
-  architectures: string[];
+interface FormProps extends CreateSeriesParams {}
+
+interface NewSeriesFormProps {
+  distribution?: string;
 }
 
-const NewMirrorForm: FC = () => {
+const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
+  const { getGPGKeysQuery } = useGPGKeys();
+  const { createSeriesQuery } = useSeries();
   const { createDistributionQuery } = useDistributions();
-  // const authFetch = useFetch();
 
-  const { mutateAsync, isLoading } = createDistributionQuery;
+  const { data: gpgKeysData } = getGPGKeysQuery();
+  const { mutateAsync: createDistribution } = createDistributionQuery;
+  const { mutateAsync: createSeries, isLoading } = createSeriesQuery;
+
+  const gpgKeys = gpgKeysData?.data ?? [];
 
   const formik = useFormik<FormProps>({
     initialValues: {
       name: "",
-      useDefaultMirrorUri: true,
-      customMirrorUri: "",
+      distribution: distribution ?? "",
+      mirror_series: "",
+      mirror_uri: DEFAULT_MIRROR_URI,
+      gpg_key: "",
       pockets: [],
       components: [],
       architectures: [],
     },
     validationSchema: Yup.object().shape({
+      mirror_series: Yup.string().required("This field is required"),
+      distribution: Yup.string().required("This field is required"),
       name: Yup.string().required("This field is required"),
-      useDefaultMirrorUri: Yup.boolean(),
-      customMirrorUri: Yup.string(),
+      mirror_uri: Yup.string().required("This field is required"),
+      gpg_key: Yup.string().required("This field is required"),
       pockets: Yup.array()
         .of(Yup.string())
         .min(1, "Please choose at least one pocket"),
@@ -63,18 +71,13 @@ const NewMirrorForm: FC = () => {
         .of(Yup.string())
         .min(1, "Please choose at least one architecture"),
     }),
-    validate: (values) => {
-      const errors: FormikErrors<FormProps> = {};
-
-      if (!values.useDefaultMirrorUri && !values.customMirrorUri.trim()) {
-        errors.customMirrorUri = "This field is required";
-      }
-
-      return errors;
-    },
     onSubmit: async (values) => {
       try {
-        await mutateAsync(values);
+        if (!distribution) {
+          await createDistribution({ name: values.distribution });
+        }
+
+        await createSeries(values);
 
         closeSidePanel();
       } catch (error: any) {
@@ -84,17 +87,51 @@ const NewMirrorForm: FC = () => {
   });
 
   useEffect(() => {
-    formik.setFieldValue("name", PRE_DEFIED_SERIES_OPTIONS[0].value);
     formik.setFieldValue("pockets", PRE_SELECTED_POCKETS);
     formik.setFieldValue("components", PRE_SELECTED_COMPONENTS);
     formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES);
   }, []);
 
+  useEffect(() => {
+    if (!formik.values.mirror_series || formik.values.name) {
+      return undefined;
+    }
+
+    formik.setFieldValue("name", formik.values.mirror_series);
+  }, [formik.values.mirror_series]);
+
   return (
     <Form onSubmit={formik.handleSubmit}>
+      {!distribution && (
+        <Input
+          type="text"
+          label="Mirror name"
+          error={
+            formik.touched.distribution && formik.errors.distribution
+              ? formik.errors.distribution
+              : undefined
+          }
+          {...formik.getFieldProps("distribution")}
+        />
+      )}
+
       <Select
         label="Source"
-        options={PRE_DEFIED_SERIES_OPTIONS}
+        options={[
+          { label: "Select source", value: "" },
+          ...PRE_DEFIED_SERIES_OPTIONS,
+        ]}
+        error={
+          formik.touched.mirror_series && formik.errors.mirror_series
+            ? formik.errors.mirror_series
+            : undefined
+        }
+        {...formik.getFieldProps("mirror_series")}
+      />
+
+      <Input
+        type="text"
+        label="Mirror name"
         error={
           formik.touched.name && formik.errors.name
             ? formik.errors.name
@@ -103,32 +140,41 @@ const NewMirrorForm: FC = () => {
         {...formik.getFieldProps("name")}
       />
 
-      <Switch
-        label="Use http://archive.ubuntu.com/ubuntu"
-        {...formik.getFieldProps("useDefaultMirrorUri")}
-        checked={formik.values.useDefaultMirrorUri}
+      <Input
+        type="text"
+        label="Mirror URI"
+        error={
+          formik.touched.mirror_uri && formik.errors.mirror_uri
+            ? formik.errors.mirror_uri
+            : undefined
+        }
+        help="Absolute URL or file path"
+        {...formik.getFieldProps("mirror_uri")}
       />
 
-      {!formik.values.useDefaultMirrorUri && (
-        <Input
-          type="text"
-          label="Mirror URI"
-          error={
-            formik.touched.customMirrorUri && formik.errors.customMirrorUri
-              ? formik.errors.customMirrorUri
-              : undefined
-          }
-          help="http://archive.ubuntu.com/ubuntu or file://srv/www"
-          {...formik.getFieldProps("customMirrorUri")}
-        />
-      )}
+      <Select
+        label="GPG Key"
+        options={[
+          { label: "Select GPG key", value: "" },
+          ...gpgKeys.map((item) => ({
+            label: item.name,
+            value: item.name,
+          })),
+        ]}
+        error={
+          formik.touched.gpg_key && formik.errors.gpg_key
+            ? formik.errors.gpg_key
+            : undefined
+        }
+        {...formik.getFieldProps("gpg_key")}
+      />
 
       <fieldset
         className={classNames("checkbox-group", {
           "is-error": formik.touched.pockets && formik.errors.pockets,
         })}
         style={{
-          marginTop: formik.values.useDefaultMirrorUri ? "1.5rem" : "inherit",
+          marginTop: "1.5rem",
         }}
       >
         <legend>Pockets</legend>
@@ -242,4 +288,4 @@ const NewMirrorForm: FC = () => {
   );
 };
 
-export default NewMirrorForm;
+export default NewSeriesForm;

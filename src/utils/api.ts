@@ -60,7 +60,9 @@ export const generateRequestParams = (
         paramsToPass[`${param}.${index + 1}`] = data;
       });
     } else {
-      throw new Error(`Unsupported argument type. Provided: ${value}`);
+      throw new Error(
+        `Unsupported argument type. Provided: ${value} for ${param}`
+      );
     }
   }
 

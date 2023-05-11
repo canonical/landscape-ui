@@ -6,3 +6,4 @@ export const API_SIGNATURE_VERSION = "2";
 export const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
 export const API_SECRET_KEY = import.meta.env.VITE_API_SECRET_KEY;
 export const APP_TITLE = import.meta.env.VITE_APP_TITLE;
+export const DEFAULT_MIRROR_URI = "http://archive.ubuntu.com/ubuntu";

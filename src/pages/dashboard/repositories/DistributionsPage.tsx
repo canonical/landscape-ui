@@ -7,7 +7,7 @@ import { Button } from "@canonical/react-components";
 import LoadingState from "../../../components/layout/LoadingState";
 import EmptyState from "../../../components/layout/EmptyState";
 import useSidePanel from "../../../hooks/useSidePanel";
-import NewMirrorForm from "./NewMirrorForm";
+import NewSeriesForm from "./NewSeriesForm";
 import useDistributions from "../../../hooks/useDistributions";
 
 const DistributionsPage: FC = () => {
@@ -20,7 +20,7 @@ const DistributionsPage: FC = () => {
 
   const handleOpen = () => {
     setSidePanelOpen(true);
-    setSidePanelContent("New mirror", <NewMirrorForm />);
+    setSidePanelContent("New mirror", <NewSeriesForm />);
   };
 
   return (
