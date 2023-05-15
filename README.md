@@ -2,6 +2,8 @@
 
 A new dashboard with new features that are currently missing in the old one. In the feature all the features will be moved to the new dashboard, but for now there will be both of them.
 
+The demo site: http://207.154.219.68/
+
 ## Local development
 
 ### Before you start
