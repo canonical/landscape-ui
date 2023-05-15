@@ -2,18 +2,17 @@ import { FC } from "react";
 import PageHeader from "../../../components/layout/PageHeader";
 import PageMain from "../../../components/layout/PageMain";
 import PageContent from "../../../components/layout/PageContent";
-import DistributionCard from "./DistributionCard";
 import { Button } from "@canonical/react-components";
 import LoadingState from "../../../components/layout/LoadingState";
 import EmptyState from "../../../components/layout/EmptyState";
 import useSidePanel from "../../../hooks/useSidePanel";
 import NewSeriesForm from "./NewSeriesForm";
 import useDistributions from "../../../hooks/useDistributions";
+import DistributionCard from "./DistributionCard";
 
 const DistributionsPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { getDistributionsQuery } = useDistributions();
-
   const { data, isLoading } = getDistributionsQuery();
 
   const items = data?.data ?? [];
@@ -68,7 +67,9 @@ const DistributionsPage: FC = () => {
         )}
         {!isLoading &&
           items.length > 0 &&
-          items.map((item) => <DistributionCard key={item.name} item={item} />)}
+          items.map((item) => (
+            <DistributionCard key={item.name} distribution={item} />
+          ))}
       </PageContent>
     </PageMain>
   );

@@ -1,43 +1,67 @@
-import { Distribution } from "../../../types/Distribution";
 import { FC } from "react";
-import DistributionPocketList from "./DistributionPocketList";
-import classes from "./DistributionCard.module.scss";
+import SeriesCard from "./SeriesCard";
 import { Button } from "@canonical/react-components";
-import NewSeriesForm from "./NewSeriesForm";
 import useSidePanel from "../../../hooks/useSidePanel";
+import NewSeriesForm from "./NewSeriesForm";
+import useDistributions from "../../../hooks/useDistributions";
+import classes from "./DistributionCard.module.scss";
+import useDebug from "../../../hooks/useDebug";
+import { Distribution } from "../../../types/Distribution";
 
 interface DistributionCardProps {
-  item: Distribution;
+  distribution: Distribution;
 }
 
-const DistributionCard: FC<DistributionCardProps> = ({ item }) => {
+const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { removeDistributionQuery } = useDistributions();
+  const { mutateAsync: removeDistribution, isLoading: isRemoving } =
+    removeDistributionQuery;
+
+  const debug = useDebug();
+
+  const handleRemove = async () => {
+    try {
+      await removeDistribution({ name: distribution.name });
+    } catch (error: any) {
+      debug(error);
+    }
+  };
 
   return (
-    <div className={classes.card}>
-      <div className={classes.header}>
-        <h2 className={classes.title}>{item.name}</h2>
-        <div className={classes.cta}>
-          <Button small>Edit</Button>
-          <Button small>Remove</Button>
-          <Button small>Create snapshot</Button>
+    <div className={classes.item}>
+      <div className={classes.titleGroup}>
+        <h2 className={classes.title}>{distribution.name}</h2>
+        <div>
           <Button
             small
             onClick={() => {
               setSidePanelOpen(true);
               setSidePanelContent(
-                "New mirror",
-                <NewSeriesForm distribution={item.name} />
+                `Add series for ${distribution.name}`,
+                <NewSeriesForm distribution={distribution.name} />
               );
             }}
           >
-            New pocket
+            Add series
+          </Button>
+          <Button
+            onClick={handleRemove}
+            small
+            aria-label={`Remove ${distribution.name} distribution`}
+            disabled={isRemoving}
+          >
+            Remove
           </Button>
         </div>
       </div>
-      <div className={classes.content}>
-        <DistributionPocketList item={item} />
-      </div>
+      {distribution.series.map((series) => (
+        <SeriesCard
+          key={series.name}
+          distribution={distribution}
+          series={series}
+        />
+      ))}
     </div>
   );
 };

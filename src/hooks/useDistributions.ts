@@ -20,6 +20,10 @@ interface CreateDistributionParams {
   access_group?: string;
 }
 
+interface RemoveDistributionParams {
+  name: string;
+}
+
 interface UseDistributionsResult {
   getDistributionsQuery: QueryFnType<
     AxiosResponse<Distribution[]>,
@@ -29,6 +33,11 @@ interface UseDistributionsResult {
     AxiosResponse<Distribution>,
     AxiosError<ApiError>,
     CreateDistributionParams
+  >;
+  removeDistributionQuery: UseMutationResult<
+    AxiosResponse<void>,
+    AxiosError<ApiError>,
+    RemoveDistributionParams
   >;
 }
 
@@ -64,5 +73,21 @@ export default function useDistributions(): UseDistributionsResult {
     },
   });
 
-  return { getDistributionsQuery, createDistributionQuery };
+  const removeDistributionQuery = useMutation<
+    AxiosResponse<void>,
+    AxiosError<ApiError>,
+    RemoveDistributionParams
+  >({
+    mutationKey: ["distributions", "remove"],
+    mutationFn: (params) => authFetch!.get("RemoveDistribution", { params }),
+    onSuccess: () => {
+      queryClient.fetchQuery(["distributions"]).then(debug);
+    },
+  });
+
+  return {
+    getDistributionsQuery,
+    createDistributionQuery,
+    removeDistributionQuery,
+  };
 }

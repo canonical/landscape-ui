@@ -105,7 +105,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
       {!distribution && (
         <Input
           type="text"
-          label="Mirror name"
+          label="Distribution name"
           error={
             formik.touched.distribution && formik.errors.distribution
               ? formik.errors.distribution

@@ -1,19 +1,19 @@
-import { Distribution } from "../../../types/Distribution";
+import { Series } from "../../../types/Series";
 import { FC } from "react";
 import { MainTable } from "@canonical/react-components";
 
-interface DistributionPocketListProps {
-  item: Distribution;
+interface SeriesPocketListProps {
+  series: Series;
 }
 
-const DistributionPocketList: FC<DistributionPocketListProps> = ({ item }) => {
+const SeriesPocketList: FC<SeriesPocketListProps> = ({ series }) => {
   const headers = [{ content: "Pocket" }];
 
-  const rows = item.series.map((item) => {
+  const rows = series.pockets.map((pocket) => {
     return {
       columns: [
         {
-          content: item.name,
+          content: pocket.name,
           role: "rowheader",
           "aria-label": "Pocket",
         },
@@ -26,4 +26,4 @@ const DistributionPocketList: FC<DistributionPocketListProps> = ({ item }) => {
   );
 };
 
-export default DistributionPocketList;
+export default SeriesPocketList;

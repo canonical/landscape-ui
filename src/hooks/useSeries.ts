@@ -22,11 +22,21 @@ export interface CreateSeriesParams {
   include_udeb?: boolean;
 }
 
+export interface RemoveSeriesParams {
+  name: string;
+  distribution: string;
+}
+
 interface UseSeriesResult {
   createSeriesQuery: UseMutationResult<
     AxiosResponse<Series>,
     AxiosError<ApiError>,
     CreateSeriesParams
+  >;
+  removeSeriesQuery: UseMutationResult<
+    AxiosResponse<void>,
+    AxiosError<ApiError>,
+    RemoveSeriesParams
   >;
 }
 
@@ -47,5 +57,17 @@ export default function useSeries(): UseSeriesResult {
     },
   });
 
-  return { createSeriesQuery };
+  const removeSeriesQuery = useMutation<
+    AxiosResponse<void>,
+    AxiosError<ApiError>,
+    RemoveSeriesParams
+  >({
+    mutationKey: ["series", "remove"],
+    mutationFn: (params) => authFetch!.get("RemoveSeries", { params }),
+    onSuccess: () => {
+      queryClient.fetchQuery(["distributions"]).then(debug);
+    },
+  });
+
+  return { createSeriesQuery, removeSeriesQuery };
 }

@@ -1,0 +1,57 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.card {
+  border: 1px solid $color-mid-light;
+
+  &:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background-color: $colors--light-theme--background-alt;
+  border-bottom: 1px solid $color-mid-light;
+  padding: 0.5rem 1rem;
+}
+
+.title {
+  margin-bottom: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  padding-top: 0;
+  color: $color-x-dark;
+}
+
+.cta {
+  & > * {
+    margin-bottom: 0 !important;
+
+    &:not(:last-child) {
+      margin-right: 0.5rem !important;
+    }
+  }
+}
+
+.content {
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  table {
+    margin-bottom: 0;
+  }
+
+  thead tr {
+    border-bottom-color: $color-mid-light;
+  }
+
+  td,
+  th {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
