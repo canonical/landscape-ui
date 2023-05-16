@@ -1,17 +1,21 @@
 import { FC } from "react";
-import { MainTable } from "@canonical/react-components";
+import { Button, Icon, ICONS, MainTable } from "@canonical/react-components";
 import { GPGKey } from "../../../../types/GPGKey";
 import { boolToLabel } from "../../../../utils/output";
+import useConfirm from "../../../../hooks/useConfirm";
 
 interface GPGKeysListProps {
   items: GPGKey[];
 }
 
 const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
+  const { confirmModal, closeConfirmModal } = useConfirm();
+
   const headers = [
     { content: "Name" },
     { content: "Has secret" },
     { content: "Fingerprint" },
+    {},
   ];
 
   const rows = items.map((item) => {
@@ -29,6 +33,37 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
         {
           content: item.fingerprint,
           "aria-label": "Fingerprint",
+        },
+        {
+          "aria-label": "delete-item",
+          role: "button",
+          content: (
+            <Button
+              appearance="base"
+              hasIcon={true}
+              onClick={() => {
+                confirmModal({
+                  body: "This action is permanent and can not be undone.",
+                  buttons: [
+                    <Button
+                      key={`delete-key-${item.fingerprint}`}
+                      appearance="negative"
+                      hasIcon={true}
+                      onClick={() => {
+                        if (confirm("Delete!")) {
+                          closeConfirmModal();
+                        }
+                      }}
+                    >
+                      Delete
+                    </Button>,
+                  ],
+                });
+              }}
+            >
+              <Icon name={ICONS.delete} />
+            </Button>
+          ),
         },
       ],
     };
