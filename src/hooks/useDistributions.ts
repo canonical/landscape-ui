@@ -50,9 +50,7 @@ export default function useDistributions(): UseDistributionsResult {
     AxiosResponse<Distribution[]>,
     GetDistributionsParams
   > = (queryParams = {}, config = {}) =>
-    // @ts-ignore
     useQuery<AxiosResponse<Distribution[]>, AxiosError<ApiError>>({
-      // @ts-ignore
       queryKey: ["distributions"],
       queryFn: () =>
         authFetch!.get("GetDistributions", {
