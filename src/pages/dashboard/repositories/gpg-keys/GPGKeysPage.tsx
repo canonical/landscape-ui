@@ -7,30 +7,16 @@ import LoadingState from "../../../../components/layout/LoadingState";
 import EmptyState from "../../../../components/layout/EmptyState";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import NewGPGKeyForm from "./NewGPGKeyForm";
-import { useQuery } from "@tanstack/react-query";
-import useFetch from "../../../../hooks/useFetch";
-import useDebug from "../../../../hooks/useDebug";
-import { GPGKey } from "../../../../types/GPGKey";
-import { AxiosError } from "axios";
-import { ApiError } from "../../../../types/ApiError";
 import GPGKeysList from "./GPGKeysList";
+import useGPGKeys from "../../../../hooks/useGPGKeys";
 
 const GPGKeysPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { getGPGKeysQuery } = useGPGKeys();
 
-  const authFetch = useFetch();
-  const debug = useDebug();
+  const { data, isLoading } = getGPGKeysQuery();
 
-  const { data, isLoading } = useQuery<GPGKey[], AxiosError<ApiError>>({
-    queryKey: ["gpgKeys"],
-    queryFn: () =>
-      authFetch!
-        .get("GetGPGKeys")
-        .then(({ data }) => data ?? [])
-        .catch(debug),
-  });
-
-  const items = data ?? [];
+  const items = data?.data ?? [];
 
   const handleOpen = () => {
     setSidePanelOpen(true);
