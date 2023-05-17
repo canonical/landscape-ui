@@ -36,14 +36,14 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
         },
         {
           "aria-label": "delete-item",
-          role: "button",
+          className: "u-align--right",
           content: (
             <Button
-              appearance="base"
               hasIcon={true}
               onClick={() => {
                 confirmModal({
-                  body: "This action is permanent and can not be undone.",
+                  body: "Are you sure? This action is permanent and can not be undone.",
+                  title: "Deleting GPG key",
                   buttons: [
                     <Button
                       key={`delete-key-${item.fingerprint}`}

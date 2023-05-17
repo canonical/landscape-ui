@@ -2,10 +2,10 @@ import React, { FC, ReactNode } from "react";
 import { Modal } from "@canonical/react-components";
 
 interface DialogProps {
-  title?: string;
-  body?: string;
-  cancelButtonLabel?: string;
+  title: string;
+  body: string;
   buttons: React.ReactNode[];
+  cancelButtonLabel?: string;
 }
 
 export interface ConfirmContextProps {
@@ -44,13 +44,9 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
   }: DialogProps) => {
     setButtons(buttons);
 
-    if (title) {
-      setTitle(title);
-    }
+    setTitle(title);
 
-    if (body) {
-      setBody(body);
-    }
+    setBody(body);
 
     if (cancelButtonLabel) {
       setCancelButtonLabel(cancelButtonLabel);
@@ -80,7 +76,7 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
             </>
           }
         >
-          {body ? <p>{body}</p> : null}
+          <p>{body}</p>
         </Modal>
       ) : null}
     </ConfirmContext.Provider>
