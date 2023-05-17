@@ -1,8 +1,16 @@
 import { FC } from "react";
-import { Button, Icon, ICONS, MainTable } from "@canonical/react-components";
+import {
+  Button,
+  Icon,
+  ICONS,
+  MainTable,
+  Spinner,
+} from "@canonical/react-components";
 import { GPGKey } from "../../../../types/GPGKey";
 import { boolToLabel } from "../../../../utils/output";
 import useConfirm from "../../../../hooks/useConfirm";
+import useDebug from "../../../../hooks/useDebug";
+import useGPGKeys from "../../../../hooks/useGPGKeys";
 
 interface GPGKeysListProps {
   items: GPGKey[];
@@ -10,6 +18,11 @@ interface GPGKeysListProps {
 
 const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
   const { confirmModal, closeConfirmModal } = useConfirm();
+  const { removeGPGKeyQuery } = useGPGKeys();
+  const debug = useDebug();
+
+  const { mutateAsync: removeGPGKey, isLoading: isRemoving } =
+    removeGPGKeyQuery;
 
   const headers = [
     { content: "Name" },
@@ -35,11 +48,11 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
           "aria-label": "Fingerprint",
         },
         {
-          "aria-label": "delete-item",
           className: "u-align--right",
           content: (
             <Button
               hasIcon={true}
+              aria-label={`Remove ${item.name} GPG key`}
               onClick={() => {
                 confirmModal({
                   body: "Are you sure? This action is permanent and can not be undone.",
@@ -49,12 +62,16 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
                       key={`delete-key-${item.fingerprint}`}
                       appearance="negative"
                       hasIcon={true}
-                      onClick={() => {
-                        if (confirm("Delete!")) {
+                      onClick={async () => {
+                        try {
+                          await removeGPGKey({ name: item.name });
                           closeConfirmModal();
+                        } catch (error: unknown) {
+                          debug(error);
                         }
                       }}
                     >
+                      {isRemoving ? <Spinner /> : null}
                       Delete
                     </Button>,
                   ],
