@@ -67,7 +67,7 @@ export default function useDistributions(): UseDistributionsResult {
     mutationKey: ["distributions", "new"],
     mutationFn: (params) => authFetch!.get("CreateDistribution", { params }),
     onSuccess: () => {
-      queryClient.fetchQuery(["distributions"]).then(debug);
+      queryClient.invalidateQueries(["distributions"]).catch(debug);
     },
   });
 
@@ -79,7 +79,7 @@ export default function useDistributions(): UseDistributionsResult {
     mutationKey: ["distributions", "remove"],
     mutationFn: (params) => authFetch!.get("RemoveDistribution", { params }),
     onSuccess: () => {
-      queryClient.fetchQuery(["distributions"]).then(debug);
+      queryClient.invalidateQueries(["distributions"]).catch(debug);
     },
   });
 

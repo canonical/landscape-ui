@@ -53,7 +53,7 @@ export default function useSeries(): UseSeriesResult {
     mutationKey: ["series", "new"],
     mutationFn: (params) => authFetch!.get("CreateSeries", { params }),
     onSuccess: () => {
-      queryClient.fetchQuery(["distributions"]).then(debug);
+      queryClient.invalidateQueries(["distributions"]).catch(debug);
     },
   });
 
@@ -65,7 +65,7 @@ export default function useSeries(): UseSeriesResult {
     mutationKey: ["series", "remove"],
     mutationFn: (params) => authFetch!.get("RemoveSeries", { params }),
     onSuccess: () => {
-      queryClient.fetchQuery(["distributions"]).then(debug);
+      queryClient.invalidateQueries(["distributions"]).catch(debug);
     },
   });
 

@@ -47,9 +47,7 @@ export default function useGPGKeys(): UseGPGKeysResult {
     AxiosResponse<GPGKey[]>,
     GetGPGKeysParams
   > = (queryParams = {}, config = {}) =>
-    // @ts-ignore
     useQuery<AxiosResponse<GPGKey[]>, AxiosError<ApiError>>({
-      // @ts-ignore
       queryKey: ["gpgKeys"],
       queryFn: () =>
         authFetch!.get("GetGPGKeys", {
@@ -66,7 +64,7 @@ export default function useGPGKeys(): UseGPGKeysResult {
     mutationKey: ["gpgKeys", "new"],
     mutationFn: (params) => authFetch!.get("ImportGPGKey", { params }),
     onSuccess: () => {
-      queryClient.fetchQuery(["gpgKeys"]).then(debug);
+      queryClient.invalidateQueries(["gpgKeys"]).catch(debug);
     },
   });
 
@@ -78,7 +76,7 @@ export default function useGPGKeys(): UseGPGKeysResult {
     mutationKey: ["gpgKeys", "remove"],
     mutationFn: (params) => authFetch!.get("RemoveGPGKey", { params }),
     onSuccess: () => {
-      queryClient.fetchQuery(["gpgKeys"]).then(debug);
+      queryClient.invalidateQueries(["gpgKeys"]).catch(debug);
     },
   });
 
