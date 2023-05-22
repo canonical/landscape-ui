@@ -51,7 +51,9 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
           className: "u-align--right",
           content: (
             <Button
-              hasIcon={true}
+              hasIcon
+              appearance="base"
+              className="u-no-margin--bottom"
               aria-label={`Remove ${item.name} GPG key`}
               onClick={() => {
                 confirmModal({
