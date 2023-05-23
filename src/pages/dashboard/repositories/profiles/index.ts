@@ -1,1 +1,1 @@
-export { default } from "./DistributionProfilesPage";
+export { default } from "./ProfilesPage";

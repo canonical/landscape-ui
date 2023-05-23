@@ -54,10 +54,10 @@ export const generateRequestParams = (
     const value = requestParams[param];
 
     if ("string" === typeof value) {
-      paramsToPass[param] = value;
+      paramsToPass[param] = encodeURI(value);
     } else if (value.length) {
       value.forEach((data: string, index: number) => {
-        paramsToPass[`${param}.${index + 1}`] = data;
+        paramsToPass[`${param}.${index + 1}`] = encodeURI(data);
       });
     } else {
       throw new Error(
