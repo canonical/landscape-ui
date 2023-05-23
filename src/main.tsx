@@ -5,6 +5,7 @@ import "./styles/index.scss";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import ConfirmProvider from "./context/confirm";
+import AuthProvider from "./context/auth";
 
 const queryClient = new QueryClient();
 
@@ -13,7 +14,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <ConfirmProvider>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </ConfirmProvider>
       </QueryClientProvider>
     </BrowserRouter>
