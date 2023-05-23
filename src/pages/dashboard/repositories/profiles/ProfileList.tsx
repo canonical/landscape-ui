@@ -85,7 +85,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
                   handleEditProfile(repositoryProfile);
                 }}
               >
-                <i className="p-icon--edit"></i>
+                <i className="p-icon--edit" />
               </Button>
               <Button
                 hasIcon

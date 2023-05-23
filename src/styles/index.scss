@@ -8,13 +8,13 @@
 
 // Icons
 // @import "vanilla-framework/scss/utilities_animations";
-@include vf-p-icon-edit;
 @include vf-u-animations;
 @include vf-p-icon-pods;
 @include vf-p-icon-spinner;
 @include vf-p-icon-containers;
 @include vf-p-icon-close;
 @include vf-p-icon-connected;
+@include vf-p-icon-edit;
 
 // Custom styles
 .p-panel {
