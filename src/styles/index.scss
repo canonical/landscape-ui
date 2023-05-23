@@ -3,10 +3,12 @@
 
 // Vanilla
 @import "vanilla-framework";
+
 @include vanilla;
 
 // Icons
 // @import "vanilla-framework/scss/utilities_animations";
+@include vf-p-icon-edit;
 @include vf-u-animations;
 @include vf-p-icon-pods;
 @include vf-p-icon-spinner;
