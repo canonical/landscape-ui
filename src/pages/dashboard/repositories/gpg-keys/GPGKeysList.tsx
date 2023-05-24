@@ -73,7 +73,7 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
                         }
                       }}
                     >
-                      {isRemoving ? <Spinner /> : null}
+                      {isRemoving && <Spinner />}
                       Delete
                     </Button>,
                   ],

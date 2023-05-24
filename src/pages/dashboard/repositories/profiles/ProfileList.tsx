@@ -112,7 +112,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
                           }
                         }}
                       >
-                        {isRemoving ? <Spinner /> : null}
+                        {isRemoving && <Spinner />}
                         Delete
                       </Button>,
                     ],

@@ -63,7 +63,7 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
       }}
     >
       {children}
-      {open ? (
+      {open && (
         <Modal
           close={handleClose}
           title={title}
@@ -72,13 +72,13 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
               <button className="u-no-margin--bottom" onClick={handleClose}>
                 {cancelButtonLabel}
               </button>
-              {buttons.length ? <>{buttons.map((button) => button)}</> : null}
+              {buttons.length && <>{buttons.map((button) => button)}</>}
             </>
           }
         >
           <p>{body}</p>
         </Modal>
-      ) : null}
+      )}
     </ConfirmContext.Provider>
   );
 };
