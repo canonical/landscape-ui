@@ -8,7 +8,7 @@ import LoadingState from "../../../../components/layout/LoadingState";
 import EmptyState from "../../../../components/layout/EmptyState";
 import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
 import ProfileList from "./ProfileList";
-import ProfileForm from "./ProfileForm";
+import AddProfileForm from "./AddProfileForm";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
 
 const ProfilesPage: FC = () => {
@@ -34,7 +34,7 @@ const ProfilesPage: FC = () => {
     setSidePanelOpen(true);
     setSidePanelContent(
       "Add Profile",
-      <ProfileForm
+      <AddProfileForm
         isGettingAccessGroups={isGettingAccessGroups}
         accessGroupsOptions={accessGroupsOptions}
       />
@@ -88,7 +88,6 @@ const ProfilesPage: FC = () => {
           <ProfileList
             repositoryProfiles={repositoryProfiles}
             accessGroupsOptions={accessGroupsOptions}
-            isGettingAccessGroups={isGettingAccessGroups}
           />
         )}
       </PageContent>

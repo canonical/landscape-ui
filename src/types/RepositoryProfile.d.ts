@@ -1,11 +1,15 @@
+import { Pocket } from "./Pocket";
+import { AptSource } from "./AptSource";
+
 export interface RepositoryProfile {
   access_group: string;
-  apt_sources?: string[];
   all_computers: boolean;
+  apt_sources: AptSource[];
   description: string;
   id: number;
   name: string;
-  pockets: string[];
+  pending_count: number;
+  pockets: Pocket[];
   tags: string[];
   title: string;
 }

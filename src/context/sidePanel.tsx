@@ -68,7 +68,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
               className="p-button--base u-no-margin--bottom has-icon"
               aria-label="Close side panel"
             >
-              <i className="p-icon--close"></i>
+              <i className="p-icon--close" />
             </button>
           </div>
         </div>

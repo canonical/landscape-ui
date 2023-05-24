@@ -10,18 +10,17 @@ import {
 } from "@canonical/react-components";
 import useConfirm from "../../../../hooks/useConfirm";
 import useDebug from "../../../../hooks/useDebug";
-import ProfileForm from "./ProfileForm";
 import useSidePanel from "../../../../hooks/useSidePanel";
+import { SelectOption } from "../../../../types/SelectOption";
+import EditProfileForm from "./EditProfileForm";
 
 interface DistributionProfileListProps {
   repositoryProfiles: RepositoryProfile[];
-  accessGroupsOptions: { label: string; value: string }[];
-  isGettingAccessGroups: boolean;
+  accessGroupsOptions: SelectOption[];
 }
 
 const ProfileList: FC<DistributionProfileListProps> = ({
   repositoryProfiles,
-  isGettingAccessGroups,
   accessGroupsOptions,
 }) => {
   const debug = useDebug();
@@ -33,14 +32,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
 
   const handleEditProfile = (profile: RepositoryProfile) => {
     setSidePanelOpen(true);
-    setSidePanelContent(
-      "Edit Profile",
-      <ProfileForm
-        accessGroupsOptions={accessGroupsOptions}
-        isGettingAccessGroups={isGettingAccessGroups}
-        profile={profile}
-      />
-    );
+    setSidePanelContent("Edit Profile", <EditProfileForm profile={profile} />);
   };
 
   const headers = [
@@ -51,25 +43,21 @@ const ProfileList: FC<DistributionProfileListProps> = ({
   ];
 
   const rows = repositoryProfiles.map((repositoryProfile) => {
-    const accessGroupsOption = accessGroupsOptions.find(
-      ({ value }) => value === repositoryProfile.access_group
-    );
-
     return {
       columns: [
         {
-          content: repositoryProfile.name,
+          content: repositoryProfile.title,
           role: "rowheader",
-          "aria-label": "Name",
+          "aria-label": "Title",
         },
         {
           content: repositoryProfile.description,
           "aria-label": "Description",
         },
         {
-          content: accessGroupsOption
-            ? accessGroupsOption.value
-            : repositoryProfile.access_group,
+          content: accessGroupsOptions.filter(
+            ({ value }) => value === repositoryProfile.access_group
+          )[0].label,
           "aria-label": "Access Group",
         },
         {
@@ -130,7 +118,11 @@ const ProfileList: FC<DistributionProfileListProps> = ({
 
   return (
     <>
-      <MainTable headers={headers} rows={rows} emptyStateMsg="No pockets yet" />
+      <MainTable
+        headers={headers}
+        rows={rows}
+        emptyStateMsg="No profiles yet"
+      />
     </>
   );
 };
