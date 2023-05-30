@@ -8,6 +8,7 @@ import { Series } from "../../../types/Series";
 import useSeries from "../../../hooks/useSeries";
 import useDebug from "../../../hooks/useDebug";
 import { Distribution } from "../../../types/Distribution";
+import SnapshotForm from "./SnapshotForm";
 
 interface SeriesCardProps {
   distribution: Distribution;
@@ -38,7 +39,21 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
       <div className={classes.header}>
         <h3 className={classes.title}>{series.name}</h3>
         <div className={classes.cta}>
-          <Button dense>Create snapshot</Button>
+          <Button
+            dense
+            onClick={() => {
+              setSidePanelOpen(true);
+              setSidePanelContent(
+                "Create snapshot",
+                <SnapshotForm
+                  distribution={distribution.name}
+                  origin={series.name}
+                />
+              );
+            }}
+          >
+            Create snapshot
+          </Button>
           <Button
             dense
             onClick={() => {
