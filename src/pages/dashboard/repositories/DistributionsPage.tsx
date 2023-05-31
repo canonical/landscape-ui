@@ -9,6 +9,7 @@ import useSidePanel from "../../../hooks/useSidePanel";
 import NewSeriesForm from "./NewSeriesForm";
 import useDistributions from "../../../hooks/useDistributions";
 import DistributionCard from "./DistributionCard";
+import NewDistributionForm from "./NewDistributionForm";
 
 const DistributionsPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
@@ -27,6 +28,20 @@ const DistributionsPage: FC = () => {
       <PageHeader
         title="Repository Mirrors"
         actions={[
+          <Button
+            key="create-distribution-button"
+            onClick={() => {
+              setSidePanelOpen(true);
+              setSidePanelContent(
+                "Create distribution",
+                <NewDistributionForm />
+              );
+            }}
+            type="button"
+            className="u-no-margin--right"
+          >
+            Create distribution
+          </Button>,
           <Button
             key="new-mirror-button"
             appearance="positive"
