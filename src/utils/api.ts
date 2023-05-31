@@ -26,7 +26,9 @@ export const generateRequestParams = (
       value.forEach((data: string, index: number) => {
         paramsToPass[`${param}.${index + 1}`] = data;
       });
-    } else {
+    } else if ("boolean" === typeof value) {
+      paramsToPass[param] = `${value}`;
+    } else if ("" !== value && undefined !== value) {
       throw new Error(
         `Unsupported argument type. Provided: ${value} for ${param}`
       );
