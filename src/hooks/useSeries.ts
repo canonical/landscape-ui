@@ -10,16 +10,16 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ApiError } from "../types/ApiError";
 
 export interface CreateSeriesParams {
-  mirror_series: string;
   name: string;
   distribution: string;
-  pockets: string[];
-  components: string[];
-  architectures: string[];
-  mirror_uri: string;
-  gpg_key: string;
+  pockets?: string[];
+  components?: string[];
+  architectures?: string[];
+  gpg_key?: string;
   mirror_gpg_key?: string;
-  include_udeb?: boolean;
+  mirror_uri?: string;
+  mirror_series?: string;
+  include_udeb: boolean;
 }
 
 export interface DeriveSeriesParams {
