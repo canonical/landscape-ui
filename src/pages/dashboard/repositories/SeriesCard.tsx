@@ -1,7 +1,7 @@
 import { FC } from "react";
 import SeriesPocketList from "./SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
-import { Button } from "@canonical/react-components";
+import { Button, Spinner } from "@canonical/react-components";
 import NewSeriesForm from "./NewSeriesForm";
 import useSidePanel from "../../../hooks/useSidePanel";
 import { Series } from "../../../types/Series";
@@ -9,6 +9,7 @@ import useSeries from "../../../hooks/useSeries";
 import useDebug from "../../../hooks/useDebug";
 import { Distribution } from "../../../types/Distribution";
 import SnapshotForm from "./SnapshotForm";
+import useConfirm from "../../../hooks/useConfirm";
 
 interface SeriesCardProps {
   distribution: Distribution;
@@ -16,6 +17,7 @@ interface SeriesCardProps {
 }
 
 const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
+  const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { removeSeriesQuery } = useSeries();
   const debug = useDebug();
@@ -24,14 +26,32 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
     removeSeriesQuery;
 
   const handleRemove = async () => {
-    try {
-      await removeSeries({
-        name: series.name,
-        distribution: distribution.name,
-      });
-    } catch (error: any) {
-      debug(error);
-    }
+    confirmModal({
+      title: "Remove series",
+      body: "Are you sure? This action cannot be undone.",
+      buttons: [
+        <Button
+          key={`delete-${series.name}`}
+          appearance="negative"
+          hasIcon={true}
+          onClick={async () => {
+            try {
+              await removeSeries({
+                name: series.name,
+                distribution: distribution.name,
+              });
+
+              closeConfirmModal();
+            } catch (error: unknown) {
+              debug(error);
+            }
+          }}
+        >
+          {isRemoving && <Spinner />}
+          Remove
+        </Button>,
+      ],
+    });
   };
 
   return (
