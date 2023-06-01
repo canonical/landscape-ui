@@ -20,7 +20,7 @@ export const generateRequestParams = (
     const param = Object.keys(requestParams)[i];
     const value = requestParams[param];
 
-    if ("string" === typeof value) {
+    if ("string" === typeof value && "" !== value) {
       paramsToPass[param] = value;
     } else if (value.length) {
       value.forEach((data: string, index: number) => {
