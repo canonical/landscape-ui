@@ -14,11 +14,24 @@ import useSeries, { CreateSeriesParams } from "../../../hooks/useSeries";
 import useGPGKeys from "../../../hooks/useGPGKeys";
 import { SelectOption } from "../../../types/SelectOption";
 import { Distribution } from "../../../types/Distribution";
-import { PRE_DEFIED_SERIES_OPTIONS } from "../../../data/series";
+import {
+  ARCHITECTURE_OPTIONS,
+  COMPONENT_OPTIONS,
+  POCKET_OPTIONS,
+  PRE_DEFIED_SERIES_OPTIONS,
+  PRE_SELECTED_ARCHITECTURES,
+  PRE_SELECTED_COMPONENTS,
+  PRE_SELECTED_POCKETS,
+} from "../../../data/series";
+import classNames from "classnames";
+import { DEFAULT_MIRROR_URI } from "../../../constants";
 
 interface FormProps extends CreateSeriesParams {
   type: "ubuntu" | "third-party";
   hasPockets: boolean;
+  pockets: string[];
+  components: string[];
+  architectures: string[];
 }
 
 interface NewMirrorFormProps {
@@ -84,12 +97,12 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
       include_udeb: Yup.boolean().required(),
     }),
     initialValues: {
-      type: "third-party",
+      type: "ubuntu",
       hasPockets: false,
       name: "",
       mirror_series: "",
       distribution: "",
-      mirror_uri: "",
+      mirror_uri: DEFAULT_MIRROR_URI,
       gpg_key: "",
       include_udeb: false,
       pockets: [],
@@ -98,7 +111,13 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
     },
     onSubmit: async (values) => {
       try {
-        await createSeries(values);
+        await createSeries(
+          Object.fromEntries(
+            Object.entries(values).filter(
+              (entry) => !["type", "hasPockets"].includes(entry[0])
+            )
+          ) as CreateSeriesParams
+        );
       } catch (error) {
         debug(error);
       }
@@ -119,6 +138,28 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
     formik.setFieldValue("hasPockets", true);
   }, [formik.values.pockets?.length, formik.values.pockets?.[0]]);
 
+  useEffect(() => {
+    if ("ubuntu" === formik.values.type) {
+      formik.setFieldValue("pockets", PRE_SELECTED_POCKETS);
+      formik.setFieldValue("components", PRE_SELECTED_COMPONENTS);
+      formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES);
+
+      return;
+    }
+
+    formik.setFieldValue("pockets", []);
+    formik.setFieldValue("components", []);
+    formik.setFieldValue("architectures", []);
+  }, [formik.values.type]);
+
+  useEffect(() => {
+    if (!formik.values.mirror_series || formik.values.name) {
+      return undefined;
+    }
+
+    formik.setFieldValue("name", formik.values.mirror_series);
+  }, [formik.values.mirror_series]);
+
   return (
     <Form onSubmit={formik.handleSubmit}>
       <Select
@@ -135,9 +176,22 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
       <Select
         label="Distribution"
         required
-        options={[{ label: "", value: "" }, ...distributionOptions]}
+        options={[
+          { label: "Select distribution", value: "" },
+          ...distributionOptions,
+        ]}
         {...formik.getFieldProps("distribution")}
         error={formik.touched.distribution && formik.errors.distribution}
+      />
+
+      <Select
+        label="Mirror series"
+        options={[
+          { label: "Select series", value: "" },
+          ...PRE_DEFIED_SERIES_OPTIONS,
+        ]}
+        {...formik.getFieldProps("mirror_series")}
+        error={formik.touched.mirror_series && formik.errors.mirror_series}
       />
 
       <Input
@@ -146,13 +200,6 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
         label="Series name"
         {...formik.getFieldProps("name")}
         error={formik.touched.name && formik.errors.name}
-      />
-
-      <Select
-        label="Mirror series"
-        options={[{ label: "", value: "" }, ...PRE_DEFIED_SERIES_OPTIONS]}
-        {...formik.getFieldProps("mirror_series")}
-        error={formik.touched.mirror_series && formik.errors.mirror_series}
       />
 
       <Input
@@ -170,14 +217,17 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
       <Select
         label="GPG key"
         required={formik.values.hasPockets}
-        options={[{ label: "", value: "" }, ...gpgKeysOptions]}
+        options={[{ label: "Select GPG key", value: "" }, ...gpgKeysOptions]}
         {...formik.getFieldProps("gpg_key")}
         error={formik.touched.gpg_key && formik.errors.gpg_key}
       />
 
       <Select
         label="Mirror GPG key"
-        options={[{ label: "", value: "" }, ...gpgKeysOptions]}
+        options={[
+          { label: "Select mirror GPG key", value: "" },
+          ...gpgKeysOptions,
+        ]}
         {...formik.getFieldProps("mirror_gpg_key")}
         error={formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key}
       />
@@ -235,6 +285,119 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
             error={formik.touched.architectures && formik.errors.architectures}
             help="List the architectures separated by commas"
           />
+        </>
+      )}
+
+      {"ubuntu" === formik.values.type && (
+        <>
+          <fieldset
+            className={classNames("checkbox-group", {
+              "is-error": formik.touched.pockets && formik.errors.pockets,
+            })}
+            style={{
+              marginTop: "1.5rem",
+            }}
+          >
+            <legend>Pockets</legend>
+
+            {formik.touched.pockets && formik.errors.pockets && (
+              <p className="p-form-validation__message">
+                {formik.errors.pockets}
+              </p>
+            )}
+
+            <div className="checkbox-group__inner">
+              {POCKET_OPTIONS.map((option) => (
+                <CheckboxInput
+                  key={option.value}
+                  label={option.label}
+                  {...formik.getFieldProps("pockets")}
+                  checked={formik.values.pockets.includes(option.value)}
+                  onChange={() =>
+                    formik.setFieldValue(
+                      "pockets",
+                      formik.values.pockets.includes(option.value)
+                        ? formik.values.pockets.filter(
+                            (item) => item !== option.value
+                          )
+                        : [...formik.values.pockets, option.value]
+                    )
+                  }
+                />
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset
+            className={classNames("checkbox-group", {
+              "is-error": formik.touched.components && formik.errors.components,
+            })}
+          >
+            <legend>Components</legend>
+
+            {formik.touched.components && formik.errors.components && (
+              <p className="p-form-validation__message">
+                {formik.errors.components}
+              </p>
+            )}
+
+            <div className="checkbox-group__inner">
+              {COMPONENT_OPTIONS.map((option) => (
+                <CheckboxInput
+                  key={option.value}
+                  label={option.label}
+                  {...formik.getFieldProps("components")}
+                  checked={formik.values.components.includes(option.value)}
+                  onChange={() =>
+                    formik.setFieldValue(
+                      "components",
+                      formik.values.components.includes(option.value)
+                        ? formik.values.components.filter(
+                            (item) => item !== option.value
+                          )
+                        : [...formik.values.components, option.value]
+                    )
+                  }
+                />
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset
+            className={classNames("checkbox-group", {
+              "is-error":
+                formik.touched.architectures && formik.errors.architectures,
+            })}
+          >
+            <legend>Architectures</legend>
+
+            {formik.touched.architectures && formik.errors.architectures && (
+              <p className="p-form-validation__message">
+                {formik.errors.architectures}
+              </p>
+            )}
+
+            <div className="checkbox-group__inner">
+              {ARCHITECTURE_OPTIONS.map((option) => (
+                <CheckboxInput
+                  key={option.value}
+                  label={option.label}
+                  {...formik.getFieldProps("architectures")}
+                  checked={formik.values.architectures.includes(option.value)}
+                  onChange={() =>
+                    formik.setFieldValue(
+                      "architectures",
+                      formik.values.architectures.includes(option.value)
+                        ? formik.values.architectures.filter(
+                            (item) => item !== option.value
+                          )
+                        : [...formik.values.architectures, option.value]
+                    )
+                  }
+                />
+              ))}
+            </div>
+          </fieldset>
         </>
       )}
 

@@ -1,7 +1,12 @@
 import { FC, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Button, CheckboxInput, Input } from "@canonical/react-components";
+import {
+  Button,
+  CheckboxInput,
+  Form,
+  Input,
+} from "@canonical/react-components";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
 import { RepositoryProfile } from "../../../../types/RepositoryProfile";
@@ -119,61 +124,58 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
   }, []);
 
   return (
-    <>
-      <h3>ProfileForm</h3>
-      <form onSubmit={formik.handleSubmit}>
-        <Input
-          type="text"
-          label="Title"
-          error={formik.touched.title && formik.errors.title}
-          {...formik.getFieldProps("title")}
-        />
+    <Form onSubmit={formik.handleSubmit}>
+      <Input
+        type="text"
+        label="Title"
+        error={formik.touched.title && formik.errors.title}
+        {...formik.getFieldProps("title")}
+      />
 
-        <Input
-          type="text"
-          label="Description"
-          error={formik.touched.description && formik.errors.description}
-          {...formik.getFieldProps("description")}
-        />
+      <Input
+        type="text"
+        label="Description"
+        error={formik.touched.description && formik.errors.description}
+        {...formik.getFieldProps("description")}
+      />
 
-        <Input
-          type="text"
-          label="Tags"
-          error={
-            formik.touched.tags && formik.errors.tags
-              ? formik.errors.tags
-              : undefined
-          }
-          {...formik.getFieldProps("tags")}
-          value={formik.values.tags.join(",")}
-          onChange={(event) => {
-            formik.setFieldValue(
-              "tags",
-              event.target.value.replace(/ */g, "").split(",")
-            );
-          }}
-          disabled={formik.values.all_computers}
-        />
+      <CheckboxInput
+        label="All computers"
+        {...formik.getFieldProps("all_computers")}
+      />
 
-        <CheckboxInput
-          label="All computers"
-          {...formik.getFieldProps("all_computers")}
-        />
+      <Input
+        type="text"
+        label="Tags"
+        error={
+          formik.touched.tags && formik.errors.tags
+            ? formik.errors.tags
+            : undefined
+        }
+        {...formik.getFieldProps("tags")}
+        value={formik.values.tags.join(",")}
+        onChange={(event) => {
+          formik.setFieldValue(
+            "tags",
+            event.target.value.replace(/ */g, "").split(",")
+          );
+        }}
+        disabled={formik.values.all_computers}
+      />
 
-        <div className="form-buttons">
-          <Button
-            type="submit"
-            appearance="positive"
-            disabled={isEditing || isAssociating || isDisassociating}
-          >
-            {profile ? "Edit profile" : "Create profile"}
-          </Button>
-          <Button type="button" onClick={closeSidePanel}>
-            Cancel
-          </Button>
-        </div>
-      </form>
-    </>
+      <div className="form-buttons">
+        <Button
+          type="submit"
+          appearance="positive"
+          disabled={isEditing || isAssociating || isDisassociating}
+        >
+          {profile ? "Edit profile" : "Create profile"}
+        </Button>
+        <Button type="button" onClick={closeSidePanel}>
+          Cancel
+        </Button>
+      </div>
+    </Form>
   );
 };
 

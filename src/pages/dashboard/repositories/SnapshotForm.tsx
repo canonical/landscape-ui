@@ -53,8 +53,8 @@ const SnapshotForm: FC<SnapshotFormProps> = ({ distribution, origin }) => {
       <Input
         type="text"
         label="Snapshot name"
-        {...formik.getFieldProps("title")}
-        error={formik.touched.title && formik.errors.title}
+        {...formik.getFieldProps("name")}
+        error={formik.touched.name && formik.errors.name}
       />
 
       <div className="form-buttons">

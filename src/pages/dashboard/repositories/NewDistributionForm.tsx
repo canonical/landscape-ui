@@ -64,7 +64,10 @@ const NewDistributionForm: FC = () => {
 
       <Select
         label="Access group"
-        options={[{ label: "", value: "" }, ...accessGroupsOptions]}
+        options={[
+          { label: "Select access group", value: "" },
+          ...accessGroupsOptions,
+        ]}
         {...formik.getFieldProps("access_group")}
         error={formik.touched.access_group && formik.errors.access_group}
       />

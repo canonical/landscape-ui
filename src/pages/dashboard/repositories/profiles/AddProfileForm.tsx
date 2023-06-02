@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import {
   Button,
   CheckboxInput,
+  Form,
   Input,
   Select,
 } from "@canonical/react-components";
@@ -82,74 +83,71 @@ const AddProfileForm: FC<AddProfileFormProps> = ({
   });
 
   return (
-    <>
-      <h3>ProfileForm</h3>
-      <form onSubmit={formik.handleSubmit}>
-        <Input
-          type="text"
-          label="Title"
-          error={formik.touched.title && formik.errors.title}
-          {...formik.getFieldProps("title")}
+    <Form onSubmit={formik.handleSubmit}>
+      <Input
+        type="text"
+        label="Title"
+        error={formik.touched.title && formik.errors.title}
+        {...formik.getFieldProps("title")}
+      />
+
+      <Input
+        type="text"
+        label="Description"
+        error={formik.touched.description && formik.errors.description}
+        {...formik.getFieldProps("description")}
+      />
+
+      {!profile && (
+        <Select
+          label="Access group"
+          options={[
+            { label: "Select access group", value: "" },
+            ...accessGroupsOptions,
+          ]}
+          error={formik.touched.access_group && formik.errors.access_group}
+          disabled={isGettingAccessGroups}
+          {...formik.getFieldProps("access_group")}
         />
+      )}
 
-        <Input
-          type="text"
-          label="Description"
-          error={formik.touched.description && formik.errors.description}
-          {...formik.getFieldProps("description")}
-        />
+      <CheckboxInput
+        label="All computers"
+        {...formik.getFieldProps("all_computers")}
+      />
 
-        {!profile && (
-          <Select
-            label="Access group"
-            options={[
-              { label: "Select access group", value: "" },
-              ...accessGroupsOptions,
-            ]}
-            error={formik.touched.access_group && formik.errors.access_group}
-            disabled={isGettingAccessGroups}
-            {...formik.getFieldProps("access_group")}
-          />
-        )}
+      <Input
+        type="text"
+        label="Tags"
+        error={
+          formik.touched.tags && formik.errors.tags
+            ? formik.errors.tags
+            : undefined
+        }
+        {...formik.getFieldProps("tags")}
+        value={formik.values.tags.join(",")}
+        onChange={(event) => {
+          formik.setFieldValue(
+            "tags",
+            event.target.value.replace(/ */g, "").split(",")
+          );
+        }}
+        disabled={formik.values.all_computers}
+      />
 
-        <Input
-          type="text"
-          label="Tags"
-          error={
-            formik.touched.tags && formik.errors.tags
-              ? formik.errors.tags
-              : undefined
-          }
-          {...formik.getFieldProps("tags")}
-          value={formik.values.tags.join(",")}
-          onChange={(event) => {
-            formik.setFieldValue(
-              "tags",
-              event.target.value.replace(/ */g, "").split(",")
-            );
-          }}
-          disabled={formik.values.all_computers}
-        />
-
-        <CheckboxInput
-          label="All computers"
-          {...formik.getFieldProps("all_computers")}
-        />
-
-        <div className="form-buttons">
-          <Button
-            type="submit"
-            appearance="positive"
-            disabled={isCreating || isAssociating}
-          >
-            {profile ? "Edit profile" : "Create profile"}
-          </Button>
-          <Button type="button" onClick={closeSidePanel}>
-            Cancel
-          </Button>
-        </div>
-      </form>
-    </>
+      <div className="form-buttons">
+        <Button
+          type="submit"
+          appearance="positive"
+          disabled={isCreating || isAssociating}
+        >
+          {profile ? "Edit profile" : "Create profile"}
+        </Button>
+        <Button type="button" onClick={closeSidePanel}>
+          Cancel
+        </Button>
+      </div>
+    </Form>
   );
 };
 

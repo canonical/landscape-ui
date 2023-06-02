@@ -25,7 +25,11 @@ import { DEFAULT_MIRROR_URI } from "../../../constants";
 import useGPGKeys from "../../../hooks/useGPGKeys";
 import useDistributions from "../../../hooks/useDistributions";
 
-interface FormProps extends CreateSeriesParams {}
+interface FormProps extends CreateSeriesParams {
+  pockets: string[];
+  components: string[];
+  architectures: string[];
+}
 
 interface NewSeriesFormProps {
   distribution?: string;
@@ -54,6 +58,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
       pockets: [],
       components: [],
       architectures: [],
+      include_udeb: false,
     },
     validationSchema: Yup.object().shape({
       mirror_series: Yup.string().required("This field is required"),
