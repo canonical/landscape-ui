@@ -10,11 +10,17 @@ import useDistributions from "../../../hooks/useDistributions";
 import DistributionCard from "./DistributionCard";
 import NewDistributionForm from "./NewDistributionForm";
 import NewMirrorForm from "./NewMirrorForm";
+import useDebug from "../../../hooks/useDebug";
 
 const DistributionsPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { getDistributionsQuery } = useDistributions();
-  const { data, isLoading } = getDistributionsQuery();
+  const { data, isLoading, error } = getDistributionsQuery();
+  const debug = useDebug();
+
+  if (error) {
+    debug(error);
+  }
 
   const items = data?.data ?? [];
 

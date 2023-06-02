@@ -1,4 +1,5 @@
 import React, { FC, ReactNode, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AUTH_STORAGE_KEY = "_landscape_auth";
 
@@ -33,6 +34,7 @@ interface AuthProviderProps {
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const maybeSavedState = localStorage.getItem(AUTH_STORAGE_KEY);
@@ -68,6 +70,8 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const handleLogout = () => {
     setUser(null);
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    navigate("/login", { replace: true });
   };
 
   return (
