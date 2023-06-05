@@ -2,7 +2,6 @@ import { FC } from "react";
 import SeriesPocketList from "./SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
 import { Button, Spinner } from "@canonical/react-components";
-import NewSeriesForm from "./NewSeriesForm";
 import useSidePanel from "../../../hooks/useSidePanel";
 import { Series } from "../../../types/Series";
 import useSeries from "../../../hooks/useSeries";
@@ -10,6 +9,7 @@ import useDebug from "../../../hooks/useDebug";
 import { Distribution } from "../../../types/Distribution";
 import SnapshotForm from "./SnapshotForm";
 import useConfirm from "../../../hooks/useConfirm";
+import NewPocketForm from "./NewPocketForm";
 
 interface SeriesCardProps {
   distribution: Distribution;
@@ -80,7 +80,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
               setSidePanelOpen(true);
               setSidePanelContent(
                 `New pocket for ${series.name}`,
-                <NewSeriesForm distribution={series.name} />
+                <NewPocketForm distribution={distribution} series={series} />
               );
             }}
           >
