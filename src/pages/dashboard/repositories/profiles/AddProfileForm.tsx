@@ -27,8 +27,8 @@ const AddProfileForm: FC<AddProfileFormProps> = ({
 }) => {
   const validationSchema = Yup.object().shape({
     title: Yup.string().required("This field is required."),
-    description: Yup.string().required("This field is required."),
-    access_group: Yup.string().required("This field is required."),
+    description: Yup.string(),
+    access_group: Yup.string(),
     tags: Yup.array()
       .of(Yup.string().required())
       .required("This field is required. Tags have to be separated by coma."),
@@ -111,11 +111,6 @@ const AddProfileForm: FC<AddProfileFormProps> = ({
         />
       )}
 
-      <CheckboxInput
-        label="All computers"
-        {...formik.getFieldProps("all_computers")}
-      />
-
       <Input
         type="text"
         label="Tags"
@@ -133,6 +128,12 @@ const AddProfileForm: FC<AddProfileFormProps> = ({
           );
         }}
         disabled={formik.values.all_computers}
+      />
+
+      <CheckboxInput
+        label="All computers"
+        {...formik.getFieldProps("all_computers")}
+        checked={formik.values.all_computers}
       />
 
       <div className="form-buttons">

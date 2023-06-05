@@ -139,11 +139,6 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
         {...formik.getFieldProps("description")}
       />
 
-      <CheckboxInput
-        label="All computers"
-        {...formik.getFieldProps("all_computers")}
-      />
-
       <Input
         type="text"
         label="Tags"
@@ -161,6 +156,12 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           );
         }}
         disabled={formik.values.all_computers}
+      />
+
+      <CheckboxInput
+        label="All computers"
+        {...formik.getFieldProps("all_computers")}
+        checked={formik.values.all_computers}
       />
 
       <div className="form-buttons">
