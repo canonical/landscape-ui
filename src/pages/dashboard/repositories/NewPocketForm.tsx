@@ -50,15 +50,35 @@ const validationSchema = Yup.object().shape({
   distribution: Yup.string().required("This field is required"),
   series: Yup.string().required("This field is required"),
   components: Yup.array()
+    .defined()
     .of(Yup.string().defined())
     .min(1, "Please choose at least one component")
+    .test({
+      name: "flat-mirror-sub-directory",
+      message: "A single value must be passed",
+      test: (value, context) => {
+        const { mode, mirror_suite } = context.parent;
+
+        if ("mirror" === mode && /\/$/.test(mirror_suite)) {
+          return 1 === value.length;
+        }
+
+        return true;
+      },
+    })
     .required("This field is required"),
   architectures: Yup.array()
+    .defined()
     .of(Yup.string().defined())
     .min(1, "Please choose at least one architecture")
     .required("This field is required"),
   mode: Yup.string<FormProps["mode"]>().required("This field is required"),
-  gpg_key: Yup.string().required("This field is required"),
+  gpg_key: Yup.string().when(["upload_allow_unsigned", "mode"], {
+    is: (upload_allow_unsigned: boolean, mode: FormProps["mode"]) =>
+      "upload" === mode && upload_allow_unsigned,
+    then: (schema) => schema,
+    otherwise: (schema) => schema.required("This field is required"),
+  }),
   include_udeb: Yup.boolean().required("This field is required"),
   mirror_uri: Yup.string().when("mode", {
     is: "mirror",
@@ -70,7 +90,7 @@ const validationSchema = Yup.object().shape({
     is: "pull",
     then: (schema) => schema.required("This field is required"),
   }),
-  pull_series: Yup.string().defined(),
+  pull_series: Yup.string(),
   filter_type: Yup.string<"blacklist" | "whitelist">(),
   filters: Yup.array(),
   upload_allow_unsigned: Yup.boolean(),
@@ -198,7 +218,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
     });
 
   return (
-    <Form>
+    <Form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
         label="Name"

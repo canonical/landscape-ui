@@ -71,7 +71,7 @@ export default function usePockets(): UsePocketsResult {
     mutationKey: ["pockets", "new"],
     mutationFn: (params) => authFetch!.get("CreatePocket", { params }),
     onSuccess: () => {
-      queryClient.invalidateQueries(["pockets"]).catch(debug);
+      queryClient.invalidateQueries(["distribution"]).catch(debug);
     },
   });
 
@@ -83,7 +83,7 @@ export default function usePockets(): UsePocketsResult {
     mutationKey: ["pockets", "remove"],
     mutationFn: (params) => authFetch!.get("RemovePocket", { params }),
     onSuccess: () => {
-      queryClient.invalidateQueries(["pockets"]).catch(debug);
+      queryClient.invalidateQueries(["distribution"]).catch(debug);
     },
   });
 

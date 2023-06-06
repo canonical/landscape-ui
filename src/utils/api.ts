@@ -22,9 +22,9 @@ export const generateRequestParams = (
 
     if ("string" === typeof value && "" !== value) {
       paramsToPass[param] = value;
-    } else if (value.length) {
-      value.forEach((data: string, index: number) => {
-        if (data) {
+    } else if (Array.isArray(value)) {
+      value.forEach((data, index) => {
+        if ("string" === typeof data && "" !== data) {
           paramsToPass[`${param}.${index + 1}`] = data;
         }
       });
