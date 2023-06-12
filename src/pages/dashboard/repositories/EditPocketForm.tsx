@@ -6,9 +6,9 @@ import useSidePanel from "../../../hooks/useSidePanel";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import usePockets, {
-  CreateMirrorPocketParams,
-  CreatePullPocketParams,
-  CreateUploadPocketParams,
+  EditMirrorPocketParams,
+  EditPullPocketParams,
+  EditUploadPocketParams,
 } from "../../../hooks/usePockets";
 import {
   Button,
@@ -16,82 +16,18 @@ import {
   Form,
   Input,
   Select,
-  Textarea,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import {
-  ARCHITECTURE_OPTIONS,
-  COMPONENT_OPTIONS,
-  PRE_SELECTED_ARCHITECTURES,
-  PRE_SELECTED_COMPONENTS,
-} from "../../../data/series";
+import { ARCHITECTURE_OPTIONS, COMPONENT_OPTIONS } from "../../../data/series";
 import useGPGKeys from "../../../hooks/useGPGKeys";
-import {
-  filterTypeOptions,
-  PRE_DEFINED_POCKET_MODE_OPTIONS,
-} from "../../../data/pockets";
 import { DEFAULT_MIRROR_URI } from "../../../constants";
+import { Pocket } from "../../../types/Pocket";
 import { assertNever } from "../../../utils/debug";
-import SelectGrouped, {
-  groupedOption,
-} from "../../../components/form/SelectGrouped";
 
 interface FormProps
-  extends Omit<CreateMirrorPocketParams, "mode">,
-    Omit<CreatePullPocketParams, "mode" | "filter_type">,
-    Omit<CreateUploadPocketParams, "mode"> {
-  mode:
-    | CreateMirrorPocketParams["mode"]
-    | CreatePullPocketParams["mode"]
-    | CreateUploadPocketParams["mode"];
-  pull_series: string;
-  filter_type: CreatePullPocketParams["filter_type"] | "";
-}
-
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required("This field is required"),
-  distribution: Yup.string().required("This field is required"),
-  series: Yup.string().required("This field is required"),
-  components: Yup.array()
-    .defined()
-    .of(Yup.string().defined())
-    .min(1, "Please choose at least one component")
-    .test({
-      name: "flat-mirror-sub-directory",
-      message: "A single value must be passed",
-      test: (value, context) => {
-        const { mode, mirror_suite } = context.parent;
-
-        if ("mirror" === mode && /\/$/.test(mirror_suite)) {
-          return 1 === value.length;
-        }
-
-        return true;
-      },
-    })
-    .required("This field is required"),
-  architectures: Yup.array()
-    .defined()
-    .of(Yup.string().defined())
-    .min(1, "Please choose at least one architecture"),
-  mode: Yup.string<FormProps["mode"]>().required("This field is required"),
-  gpg_key: Yup.string().required("This field is required"),
-  include_udeb: Yup.boolean().required("This field is required"),
-  mirror_uri: Yup.string().when("mode", {
-    is: "mirror",
-    then: (schema) => schema.required("This field is required"),
-  }),
-  mirror_suite: Yup.string(),
-  mirror_gpg_key: Yup.string(),
-  pull_pocket: Yup.string().when("mode", {
-    is: "pull",
-    then: (schema) => schema.required("This field is required"),
-  }),
-  pull_series: Yup.string(),
-  filter_type: Yup.string<"blacklist" | "whitelist">(),
-  filters: Yup.array(),
-  upload_allow_unsigned: Yup.boolean(),
-});
+  extends EditMirrorPocketParams,
+    EditPullPocketParams,
+    EditUploadPocketParams {}
 
 const initialValues: FormProps = {
   series: "",
@@ -101,32 +37,24 @@ const initialValues: FormProps = {
   components: [],
   gpg_key: "",
   include_udeb: false,
-  filter_type: "",
-  mode: "mirror",
-  pull_pocket: "",
-  pull_series: "",
   mirror_uri: DEFAULT_MIRROR_URI,
   upload_allow_unsigned: false,
   mirror_suite: "",
   mirror_gpg_key: "",
-  filters: [],
 };
 
-const getCreatePocketParams = (
-  values: FormProps
-):
-  | CreateMirrorPocketParams
-  | CreatePullPocketParams
-  | CreateUploadPocketParams => {
-  switch (values.mode) {
+const getEditPocketParams = (
+  values: FormProps,
+  mode: Pocket["mode"]
+): EditMirrorPocketParams | EditPullPocketParams | EditUploadPocketParams => {
+  switch (mode) {
     case "mirror":
       return {
-        mode: values.mode,
         distribution: values.distribution,
         series: values.series,
         name: values.name,
-        architectures: values.architectures,
         components: values.components,
+        architectures: values.architectures,
         gpg_key: values.gpg_key,
         include_udeb: values.include_udeb,
         mirror_uri: values.mirror_uri,
@@ -135,59 +63,93 @@ const getCreatePocketParams = (
       };
     case "upload":
       return {
-        mode: values.mode,
         distribution: values.distribution,
         series: values.series,
         name: values.name,
-        architectures: values.architectures,
         components: values.components,
+        architectures: values.architectures,
         gpg_key: values.gpg_key,
         include_udeb: values.include_udeb,
         upload_allow_unsigned: values.upload_allow_unsigned,
       };
     case "pull":
       return {
-        mode: values.mode,
         distribution: values.distribution,
         series: values.series,
         name: values.name,
-        architectures: values.architectures,
         components: values.components,
+        architectures: values.architectures,
         gpg_key: values.gpg_key,
         include_udeb: values.include_udeb,
-        pull_series: values.pull_series,
-        pull_pocket: values.pull_pocket,
-        filter_type: "" !== values.filter_type ? values.filter_type : undefined,
-        filters: values.filters,
       };
     default:
-      return assertNever(values.mode, "pocket mode");
+      return assertNever(mode, "pocket mode");
   }
 };
 
-interface NewPocketFormProps {
+interface EditPocketFormProps {
+  pocket: Pocket;
   distribution: Distribution;
   series: Series;
 }
 
-const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
+const EditPocketForm: FC<EditPocketFormProps> = ({
+  distribution,
+  pocket,
+  series,
+}) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { createPocketQuery } = usePockets();
+  const { editPocketQuery } = usePockets();
   const { getGPGKeysQuery } = useGPGKeys();
 
-  const { mutateAsync: createPocket, isLoading: isCreating } =
-    createPocketQuery;
+  const { mutateAsync: editPocket, isLoading: isEditing } = editPocketQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
   const gpgKeys = gpgKeysData?.data ?? [];
+
+  const mode = pocket.mode;
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required("This field is required"),
+    distribution: Yup.string().required("This field is required"),
+    series: Yup.string().required("This field is required"),
+    components: Yup.array()
+      .defined()
+      .of(Yup.string().defined())
+      .min(1, "Please choose at least one component")
+      .test({
+        name: "flat-mirror-sub-directory",
+        message: "A single value must be passed",
+        params: { mode },
+        test: (value, context) => {
+          const { mirror_suite } = context.parent;
+
+          if ("mirror" === mode && /\/$/.test(mirror_suite)) {
+            return 1 === value.length;
+          }
+
+          return true;
+        },
+      }),
+    architectures: Yup.array()
+      .defined()
+      .of(Yup.string().defined())
+      .min(1, "Please choose at least one architecture"),
+    gpg_key: Yup.string(),
+    include_udeb: Yup.boolean(),
+    mirror_uri: Yup.string(),
+    mirror_suite: Yup.string(),
+    mirror_gpg_key: Yup.string(),
+    upload_allow_unsigned: Yup.boolean(),
+  });
 
   const formik = useFormik({
     validationSchema,
     initialValues,
     onSubmit: async (values) => {
       try {
-        await createPocket(getCreatePocketParams(values));
+        await editPocket(getEditPocketParams(values, mode));
 
         closeSidePanel();
       } catch (error: unknown) {
@@ -199,66 +161,29 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   useEffect(() => {
     formik.setFieldValue("distribution", distribution.name);
     formik.setFieldValue("series", series.name);
-    formik.setFieldValue("components", PRE_SELECTED_COMPONENTS);
-    formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES);
-  }, []);
+    formik.setFieldValue("name", pocket.name);
+    formik.setFieldValue("components", pocket.components);
+    formik.setFieldValue("architectures", pocket.architectures);
+    formik.setFieldValue("gpg_key", pocket.gpg_key.name);
+    formik.setFieldValue("include_udeb", pocket.include_udeb);
+    formik.setFieldValue("mode", pocket.mode);
 
-  const groupedPocketOptionsNew: groupedOption[] = distribution.series.map(
-    (item) => ({
-      options: item.pockets.map(({ name }) => ({
-        label: name,
-        value: name,
-      })),
-      optGroup: item.name,
-    })
-  );
+    if ("mirror" === pocket.mode) {
+      formik.setFieldValue("mirror_uri", pocket.mirror_uri);
+      formik.setFieldValue("mirror_suite", pocket.mirror_suite);
+      if (pocket.mirror_gpg_key) {
+        formik.setFieldValue("mirror_gpg_key", pocket.mirror_gpg_key);
+      }
+    } else if ("upload" === pocket.mode) {
+      formik.setFieldValue(
+        "upload_allow_unsigned",
+        pocket.upload_allow_unsigned
+      );
+    }
+  }, []);
 
   return (
     <Form onSubmit={formik.handleSubmit}>
-      <Select
-        label="Mode"
-        options={[...PRE_DEFINED_POCKET_MODE_OPTIONS]}
-        {...formik.getFieldProps("mode")}
-        error={formik.touched.mode && formik.errors.mode}
-      />
-
-      <div
-        className={classNames({
-          row: "pull" === formik.values.mode,
-          "u-no-padding--left": "pull" === formik.values.mode,
-          "u-no-padding--right": "pull" === formik.values.mode,
-        })}
-      >
-        <Input
-          type="text"
-          label="Name"
-          wrapperClassName={classNames({
-            "col-6": "pull" === formik.values.mode,
-          })}
-          style={{ display: "block !important" }}
-          {...formik.getFieldProps("name")}
-          error={formik.touched.name && formik.errors.name}
-        />
-
-        {"pull" == formik.values.mode && (
-          <SelectGrouped
-            label="Pull from"
-            name="pull_pocket"
-            wrapperClassName="col-6"
-            groupedOptions={groupedPocketOptionsNew}
-            option={formik.values.pull_pocket}
-            group={formik.values.pull_series}
-            emptyOption={{ enabled: true, label: "Select pull pocket" }}
-            onChange={async (newOption, newGroup) => {
-              await formik.setFieldValue("pull_pocket", newOption);
-              await formik.setFieldValue("pull_series", newGroup);
-            }}
-            onBlur={formik.handleBlur}
-            error={formik.touched.pull_pocket && formik.errors.pull_pocket}
-          />
-        )}
-      </div>
-
       <Select
         label="GPG Key"
         options={[
@@ -272,7 +197,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         error={formik.touched.gpg_key && formik.errors.gpg_key}
       />
 
-      {"mirror" === formik.values.mode && (
+      {"mirror" === pocket.mode && (
         <>
           <Input
             type="text"
@@ -299,35 +224,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         </>
       )}
 
-      {"pull" === formik.values.mode && (
-        <>
-          <Select
-            label="Filter type"
-            options={filterTypeOptions}
-            {...formik.getFieldProps("filter_type")}
-            error={formik.touched.filter_type && formik.errors.filter_type}
-          />
-
-          {"" !== formik.values.filter_type && (
-            <Textarea
-              label="Filter packages"
-              rows={3}
-              help="List packages to filter separated by commas or one item per line"
-              {...formik.getFieldProps("filters")}
-              onChange={(event) => {
-                formik.setFieldValue(
-                  "filters",
-                  event.target.value.split(/,\s*/)
-                );
-              }}
-              value={formik.values.filters.join(",")}
-              error={formik.touched.filters && formik.errors.filters}
-            />
-          )}
-        </>
-      )}
-
-      {"upload" === formik.values.mode && (
+      {"upload" === pocket.mode && (
         <CheckboxInput
           label="Allow uploaded packages to be unsigned"
           {...formik.getFieldProps("upload_allow_unsigned")}
@@ -413,8 +310,8 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       />
 
       <div className="form-buttons">
-        <Button type="submit" appearance="positive" disabled={isCreating}>
-          Create
+        <Button type="submit" appearance="positive" disabled={isEditing}>
+          Edit
         </Button>
         <Button type="button" onClick={closeSidePanel}>
           Cancel
@@ -424,4 +321,4 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   );
 };
 
-export default NewPocketForm;
+export default EditPocketForm;

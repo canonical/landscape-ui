@@ -68,7 +68,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
                 hasIcon
                 appearance="base"
                 className="u-no-margin--bottom"
-                aria-label={`Remove ${repositoryProfile.name} repository profile`}
+                aria-label={`Edit ${repositoryProfile.name} repository profile`}
                 onClick={() => {
                   handleEditProfile(repositoryProfile);
                 }}

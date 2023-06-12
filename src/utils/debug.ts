@@ -8,3 +8,9 @@ export const consoleErrorMessage = (error: any) => {
     );
   }
 };
+
+export const assertNever = (argValue: never, argLabel: string): never => {
+  throw new Error(
+    `Unsupported argument type. Provided: ${argValue} for ${argLabel}`
+  );
+};

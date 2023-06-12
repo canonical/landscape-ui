@@ -92,7 +92,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
         </div>
       </div>
       <div className={classes.content}>
-        <SeriesPocketList series={series} />
+        <SeriesPocketList distribution={distribution} series={series} />
       </div>
     </div>
   );
