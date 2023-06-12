@@ -7,7 +7,6 @@ import useDistributions from "../../../hooks/useDistributions";
 import classes from "./DistributionCard.module.scss";
 import useDebug from "../../../hooks/useDebug";
 import { Distribution } from "../../../types/Distribution";
-import EmptyDistribution from "./EmptyDistribution";
 import useConfirm from "../../../hooks/useConfirm";
 
 interface DistributionCardProps {
@@ -76,7 +75,9 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
           </Button>
         </div>
       </div>
-      {0 === distribution.series.length && <EmptyDistribution />}
+      {0 === distribution.series.length && (
+        <p>No series have been added yet.</p>
+      )}
       {distribution.series.length > 0 &&
         distribution.series.map((series) => (
           <SeriesCard

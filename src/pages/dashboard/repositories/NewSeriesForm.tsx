@@ -2,8 +2,10 @@ import { FC, useEffect } from "react";
 import {
   Button,
   CheckboxInput,
+  Col,
   Form,
   Input,
+  Row,
   Select,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -120,30 +122,36 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         />
       )}
 
-      <Select
-        label="Source"
-        options={[
-          { label: "Select source", value: "" },
-          ...PRE_DEFIED_SERIES_OPTIONS,
-        ]}
-        error={
-          formik.touched.mirror_series && formik.errors.mirror_series
-            ? formik.errors.mirror_series
-            : undefined
-        }
-        {...formik.getFieldProps("mirror_series")}
-      />
+      <Row className="u-no-padding">
+        <Col size={6}>
+          <Select
+            label="Source"
+            options={[
+              { label: "Select source", value: "" },
+              ...PRE_DEFIED_SERIES_OPTIONS,
+            ]}
+            error={
+              formik.touched.mirror_series && formik.errors.mirror_series
+                ? formik.errors.mirror_series
+                : undefined
+            }
+            {...formik.getFieldProps("mirror_series")}
+          />
+        </Col>
 
-      <Input
-        type="text"
-        label="Mirror name"
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
-        {...formik.getFieldProps("name")}
-      />
+        <Col size={6}>
+          <Input
+            type="text"
+            label="Mirror name"
+            error={
+              formik.touched.name && formik.errors.name
+                ? formik.errors.name
+                : undefined
+            }
+            {...formik.getFieldProps("name")}
+          />
+        </Col>
+      </Row>
 
       <Input
         type="text"
@@ -157,22 +165,43 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         {...formik.getFieldProps("mirror_uri")}
       />
 
-      <Select
-        label="GPG Key"
-        options={[
-          { label: "Select GPG key", value: "" },
-          ...gpgKeys.map((item) => ({
-            label: item.name,
-            value: item.name,
-          })),
-        ]}
-        error={
-          formik.touched.gpg_key && formik.errors.gpg_key
-            ? formik.errors.gpg_key
-            : undefined
-        }
-        {...formik.getFieldProps("gpg_key")}
-      />
+      <Row className="u-no-padding">
+        <Col size={6}>
+          <Select
+            label="Mirror GPG key"
+            options={[
+              { label: "Select mirror GPG key", value: "" },
+              ...gpgKeys.map((item) => ({
+                label: item.name,
+                value: item.name,
+              })),
+            ]}
+            {...formik.getFieldProps("mirror_gpg_key")}
+            error={
+              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
+            }
+          />
+        </Col>
+
+        <Col size={6}>
+          <Select
+            label="GPG Key"
+            options={[
+              { label: "Select GPG key", value: "" },
+              ...gpgKeys.map((item) => ({
+                label: item.name,
+                value: item.name,
+              })),
+            ]}
+            error={
+              formik.touched.gpg_key && formik.errors.gpg_key
+                ? formik.errors.gpg_key
+                : undefined
+            }
+            {...formik.getFieldProps("gpg_key")}
+          />
+        </Col>
+      </Row>
 
       <fieldset
         className={classNames("checkbox-group", {

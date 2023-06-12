@@ -4,8 +4,10 @@ import useSidePanel from "../../../hooks/useSidePanel";
 import {
   Button,
   CheckboxInput,
+  Col,
   Form,
   Input,
+  Row,
   Select,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -184,23 +186,28 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
         error={formik.touched.distribution && formik.errors.distribution}
       />
 
-      <Select
-        label="Mirror series"
-        options={[
-          { label: "Select series", value: "" },
-          ...PRE_DEFIED_SERIES_OPTIONS,
-        ]}
-        {...formik.getFieldProps("mirror_series")}
-        error={formik.touched.mirror_series && formik.errors.mirror_series}
-      />
-
-      <Input
-        type="text"
-        required
-        label="Series name"
-        {...formik.getFieldProps("name")}
-        error={formik.touched.name && formik.errors.name}
-      />
+      <Row className="u-no-padding">
+        <Col size={6}>
+          <Select
+            label="Mirror series"
+            options={[
+              { label: "Select series", value: "" },
+              ...PRE_DEFIED_SERIES_OPTIONS,
+            ]}
+            {...formik.getFieldProps("mirror_series")}
+            error={formik.touched.mirror_series && formik.errors.mirror_series}
+          />
+        </Col>
+        <Col size={6}>
+          <Input
+            type="text"
+            required
+            label="Series name"
+            {...formik.getFieldProps("name")}
+            error={formik.touched.name && formik.errors.name}
+          />
+        </Col>
+      </Row>
 
       <Input
         type="text"
@@ -214,23 +221,34 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
         error={formik.touched.mirror_uri && formik.errors.mirror_uri}
       />
 
-      <Select
-        label="GPG key"
-        required={formik.values.hasPockets}
-        options={[{ label: "Select GPG key", value: "" }, ...gpgKeysOptions]}
-        {...formik.getFieldProps("gpg_key")}
-        error={formik.touched.gpg_key && formik.errors.gpg_key}
-      />
+      <Row className="u-no-padding">
+        <Col size={6}>
+          <Select
+            label="Mirror GPG key"
+            options={[
+              { label: "Select mirror GPG key", value: "" },
+              ...gpgKeysOptions,
+            ]}
+            {...formik.getFieldProps("mirror_gpg_key")}
+            error={
+              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
+            }
+          />
+        </Col>
 
-      <Select
-        label="Mirror GPG key"
-        options={[
-          { label: "Select mirror GPG key", value: "" },
-          ...gpgKeysOptions,
-        ]}
-        {...formik.getFieldProps("mirror_gpg_key")}
-        error={formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key}
-      />
+        <Col size={6}>
+          <Select
+            label="GPG key"
+            required={formik.values.hasPockets}
+            options={[
+              { label: "Select GPG key", value: "" },
+              ...gpgKeysOptions,
+            ]}
+            {...formik.getFieldProps("gpg_key")}
+            error={formik.touched.gpg_key && formik.errors.gpg_key}
+          />
+        </Col>
+      </Row>
 
       {"third-party" === formik.values.type && (
         <>
