@@ -1,5 +1,5 @@
 import { Pocket } from "./Pocket";
-import { AptSource } from "./AptSource";
+import { AptSource } from "./APTSource";
 
 export interface RepositoryProfile {
   access_group: string;

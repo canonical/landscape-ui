@@ -12,7 +12,7 @@ export default function useDebug() {
     let message: string;
 
     if (error instanceof AxiosError<ApiError>) {
-      message = error.message;
+      message = error.response?.data.message ?? error.message;
 
       if (401 === error.response?.status) {
         logout();

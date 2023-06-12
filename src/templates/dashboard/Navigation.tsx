@@ -23,6 +23,10 @@ const MENU_ITEMS: MenuItem[] = [
         label: "GPG Keys",
         path: "/repositories/gpg-keys",
       },
+      {
+        label: "APT Sources",
+        path: "/repositories/apt-sources",
+      },
     ],
   },
 ];

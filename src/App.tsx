@@ -6,6 +6,7 @@ import PageNotFound from "./pages/PageNotFound";
 import DistributionsPage from "./pages/dashboard/repositories";
 import ProfilesPage from "./pages/dashboard/repositories/profiles";
 import GPGKeysPage from "./pages/dashboard/repositories/gpg-keys";
+import APTSourcesPage from "./pages/dashboard/repositories/apt-sources";
 import FetchProvider from "./context/fetch";
 import useAuth from "./hooks/useAuth";
 
@@ -72,6 +73,14 @@ const App: FC = () => {
             element={
               <AuthRoute>
                 <GPGKeysPage />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="repositories/apt-sources"
+            element={
+              <AuthRoute>
+                <APTSourcesPage />
               </AuthRoute>
             }
           />
