@@ -9,6 +9,7 @@ import useConfirm from "../../../hooks/useConfirm";
 import useSidePanel from "../../../hooks/useSidePanel";
 import EditPocketForm from "./EditPocketForm";
 import classNames from "classnames";
+import PackageList from "./PackageList";
 
 interface SeriesPocketListProps {
   distribution: Distribution;
@@ -83,7 +84,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
       setSidePanelOpen(true);
       setSidePanelContent(
         `${series.name} ${pocket.name}`,
-        <EditPocketForm
+        <PackageList
           pocket={pocket}
           distribution={distribution}
           series={series}

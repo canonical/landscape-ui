@@ -10,7 +10,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ApiError } from "../types/ApiError";
 import { Pocket } from "../types/Pocket";
 import { QueryFnType } from "../types/QueryFnType";
-import { Package, PackageDiff } from "../types/Package";
+import { PackageDiff, PackagesList } from "../types/Package";
 
 interface CreateCommonPocketParams {
   name: string;
@@ -131,7 +131,7 @@ interface UsePocketsResult {
     AxiosResponse<PackageDiff>,
     DiffPullPocketParams
   >;
-  listPocketQuery: QueryFnType<AxiosResponse<Package[]>, ListPocketParams>;
+  listPocketQuery: QueryFnType<AxiosResponse<PackagesList>, ListPocketParams>;
   removePackagesFromPocketQuery: UseMutationResult<
     AxiosResponse<void>,
     AxiosError<ApiError>,
@@ -231,10 +231,10 @@ export default function usePockets(): UsePocketsResult {
     });
 
   const listPocketQuery: QueryFnType<
-    AxiosResponse<Package[]>,
+    AxiosResponse<PackagesList>,
     ListPocketParams
   > = (queryParams, config = {}) =>
-    useQuery<AxiosResponse<Package[]>, AxiosError<ApiError>>({
+    useQuery<AxiosResponse<PackagesList>, AxiosError<ApiError>>({
       queryKey: ["packages"],
       queryFn: () =>
         authFetch!.get("ListPocket", {
