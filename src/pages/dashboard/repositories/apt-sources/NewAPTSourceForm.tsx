@@ -10,6 +10,7 @@ import AppNotification from "../../../../components/layout/AppNotification";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
 import { SelectOption } from "../../../../types/SelectOption";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
+import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 
 interface FormProps {
   name: string;
@@ -21,7 +22,7 @@ interface FormProps {
 const NewAPTSourceForm: FC = () => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
-  const { createAPTSourceQuery } = useAPTSources();
+  const { createAPTSourceQuery, getAPTSourcesQuery } = useAPTSources();
 
   const { getGPGKeysQuery } = useGPGKeys();
   const { data: gpgKeysData, isLoading: isGettingGPGKeys } = getGPGKeysQuery();
@@ -48,6 +49,13 @@ const NewAPTSourceForm: FC = () => {
 
   const { mutateAsync, isLoading } = createAPTSourceQuery;
 
+  const { data: getAPTSourcesResponse, error: getAPTSourcesError } =
+    getAPTSourcesQuery();
+
+  if (getAPTSourcesError) {
+    debug(getAPTSourcesError);
+  }
+
   const formik = useFormik<FormProps>({
     initialValues: {
       name: "",
@@ -56,7 +64,21 @@ const NewAPTSourceForm: FC = () => {
       access_group: "",
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().required("This field is required"),
+      name: Yup.string()
+        .required("This field is required")
+        .test({
+          test: testLowercaseAlphaNumeric.test,
+          message: testLowercaseAlphaNumeric.message,
+        })
+        .test({
+          params: { getAPTSourcesResponse },
+          test: (value) => {
+            return !(getAPTSourcesResponse?.data ?? [])
+              .map(({ name }) => name)
+              .includes(value);
+          },
+          message: "It must be unique within the account.",
+        }),
       apt_line: Yup.string().required("This field is required"),
       gpg_key: Yup.string(),
       access_group: Yup.string(),

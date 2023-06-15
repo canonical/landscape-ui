@@ -27,6 +27,7 @@ import {
 } from "../../../data/series";
 import classNames from "classnames";
 import { DEFAULT_MIRROR_URI } from "../../../constants";
+import { testLowercaseAlphaNumeric } from "../../../utils/tests";
 
 interface FormProps extends CreateSeriesParams {
   type: "ubuntu" | "third-party";
@@ -69,7 +70,33 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
         .defined()
         .required("This field is required."),
       hasPockets: Yup.boolean(),
-      name: Yup.string().required("This field is required."),
+      name: Yup.string()
+        .required("This field is required.")
+        .test({
+          test: testLowercaseAlphaNumeric.test,
+          message: testLowercaseAlphaNumeric.message,
+        })
+        .test({
+          test: (value, context) => {
+            return !!context.parent.distribution;
+          },
+          message: "First select the distribution.",
+        })
+        .test({
+          params: { distributions },
+          test: (value, context) => {
+            if (!context.parent.distribution) {
+              return true;
+            }
+
+            const seriesNames = distributions
+              .filter(({ name }) => name === context.parent.distribution)[0]
+              .series.map(({ name }) => name);
+
+            return !seriesNames.includes(value);
+          },
+          message: "It must be unique within series within the distribution.",
+        }),
       distribution: Yup.string().required(),
       pockets: Yup.array().of(Yup.string()),
       components: Yup.array()

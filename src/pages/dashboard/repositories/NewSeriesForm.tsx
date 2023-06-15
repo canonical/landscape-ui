@@ -25,7 +25,8 @@ import classNames from "classnames";
 import useSeries, { CreateSeriesParams } from "../../../hooks/useSeries";
 import { DEFAULT_MIRROR_URI } from "../../../constants";
 import useGPGKeys from "../../../hooks/useGPGKeys";
-import useDistributions from "../../../hooks/useDistributions";
+import { Distribution } from "../../../types/Distribution";
+import { testLowercaseAlphaNumeric } from "../../../utils/tests";
 
 interface FormProps extends CreateSeriesParams {
   pockets: string[];
@@ -34,7 +35,7 @@ interface FormProps extends CreateSeriesParams {
 }
 
 interface NewSeriesFormProps {
-  distribution?: string;
+  distribution: Distribution;
 }
 
 const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
@@ -42,10 +43,8 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
   const debug = useDebug();
   const { getGPGKeysQuery } = useGPGKeys();
   const { createSeriesQuery } = useSeries();
-  const { createDistributionQuery } = useDistributions();
 
   const { data: gpgKeysData } = getGPGKeysQuery();
-  const { mutateAsync: createDistribution } = createDistributionQuery;
   const { mutateAsync: createSeries, isLoading } = createSeriesQuery;
 
   const gpgKeys = gpgKeysData?.data ?? [];
@@ -53,7 +52,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
   const formik = useFormik<FormProps>({
     initialValues: {
       name: "",
-      distribution: distribution ?? "",
+      distribution: distribution.name,
       mirror_series: "",
       mirror_uri: DEFAULT_MIRROR_URI,
       gpg_key: "",
@@ -65,7 +64,19 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
     validationSchema: Yup.object().shape({
       mirror_series: Yup.string().required("This field is required"),
       distribution: Yup.string().required("This field is required"),
-      name: Yup.string().required("This field is required"),
+      name: Yup.string()
+        .required("This field is required")
+        .test({
+          test: testLowercaseAlphaNumeric.test,
+          message: testLowercaseAlphaNumeric.message,
+        })
+        .test({
+          params: { distribution },
+          test: (value) => {
+            return !distribution.series.map(({ name }) => name).includes(value);
+          },
+          message: "It must be unique within series within the distribution.",
+        }),
       mirror_uri: Yup.string().required("This field is required"),
       gpg_key: Yup.string().required("This field is required"),
       pockets: Yup.array()
@@ -80,10 +91,6 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
     }),
     onSubmit: async (values) => {
       try {
-        if (!distribution) {
-          await createDistribution({ name: values.distribution });
-        }
-
         await createSeries(values);
 
         closeSidePanel();

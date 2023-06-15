@@ -59,7 +59,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
               setSidePanelOpen(true);
               setSidePanelContent(
                 `Add series for ${distribution.name}`,
-                <NewSeriesForm distribution={distribution.name} />
+                <NewSeriesForm distribution={distribution} />
               );
             }}
           >

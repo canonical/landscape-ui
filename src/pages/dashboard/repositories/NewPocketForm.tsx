@@ -35,6 +35,7 @@ import { assertNever } from "../../../utils/debug";
 import SelectGrouped, {
   groupedOption,
 } from "../../../components/form/SelectGrouped";
+import { testLowercaseAlphaNumeric } from "../../../utils/tests";
 
 interface FormProps
   extends Omit<CreateMirrorPocketParams, "mode">,
@@ -47,51 +48,6 @@ interface FormProps
   pull_series: string;
   filter_type: CreatePullPocketParams["filter_type"] | "";
 }
-
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required("This field is required"),
-  distribution: Yup.string().required("This field is required"),
-  series: Yup.string().required("This field is required"),
-  components: Yup.array()
-    .defined()
-    .of(Yup.string().defined())
-    .min(1, "Please choose at least one component")
-    .test({
-      name: "flat-mirror-sub-directory",
-      message: "A single value must be passed",
-      test: (value, context) => {
-        const { mode, mirror_suite } = context.parent;
-
-        if ("mirror" === mode && /\/$/.test(mirror_suite)) {
-          return 1 === value.length;
-        }
-
-        return true;
-      },
-    })
-    .required("This field is required"),
-  architectures: Yup.array()
-    .defined()
-    .of(Yup.string().defined())
-    .min(1, "Please choose at least one architecture"),
-  mode: Yup.string<FormProps["mode"]>().required("This field is required"),
-  gpg_key: Yup.string().required("This field is required"),
-  include_udeb: Yup.boolean().required("This field is required"),
-  mirror_uri: Yup.string().when("mode", {
-    is: "mirror",
-    then: (schema) => schema.required("This field is required"),
-  }),
-  mirror_suite: Yup.string(),
-  mirror_gpg_key: Yup.string(),
-  pull_pocket: Yup.string().when("mode", {
-    is: "pull",
-    then: (schema) => schema.required("This field is required"),
-  }),
-  pull_series: Yup.string(),
-  filter_type: Yup.string<"blacklist" | "whitelist">(),
-  filters: Yup.array(),
-  upload_allow_unsigned: Yup.boolean(),
-});
 
 const initialValues: FormProps = {
   series: "",
@@ -181,6 +137,63 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   const { data: gpgKeysData } = getGPGKeysQuery();
 
   const gpgKeys = gpgKeysData?.data ?? [];
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.string()
+      .required("This field is required")
+      .test({
+        test: testLowercaseAlphaNumeric.test,
+        message: testLowercaseAlphaNumeric.message,
+      })
+      .test({
+        params: { series },
+        test: (value) => {
+          return !series.pockets.map(({ name }) => name).includes(value);
+        },
+        message: "It must be unique within series.",
+      }),
+    distribution: Yup.string().required("This field is required"),
+    series: Yup.string().required("This field is required"),
+    components: Yup.array()
+      .defined()
+      .of(Yup.string().defined())
+      .min(1, "Please choose at least one component")
+      .test({
+        name: "flat-mirror-sub-directory",
+        message: "A single value must be passed",
+        test: (value, context) => {
+          const { mode, mirror_suite } = context.parent;
+
+          if ("mirror" === mode && /\/$/.test(mirror_suite)) {
+            return 1 === value.length;
+          }
+
+          return true;
+        },
+      })
+      .required("This field is required"),
+    architectures: Yup.array()
+      .defined()
+      .of(Yup.string().defined())
+      .min(1, "Please choose at least one architecture"),
+    mode: Yup.string<FormProps["mode"]>().required("This field is required"),
+    gpg_key: Yup.string().required("This field is required"),
+    include_udeb: Yup.boolean().required("This field is required"),
+    mirror_uri: Yup.string().when("mode", {
+      is: "mirror",
+      then: (schema) => schema.required("This field is required"),
+    }),
+    mirror_suite: Yup.string(),
+    mirror_gpg_key: Yup.string(),
+    pull_pocket: Yup.string().when("mode", {
+      is: "pull",
+      then: (schema) => schema.required("This field is required"),
+    }),
+    pull_series: Yup.string(),
+    filter_type: Yup.string<"blacklist" | "whitelist">(),
+    filters: Yup.array(),
+    upload_allow_unsigned: Yup.boolean(),
+  });
 
   const formik = useFormik({
     validationSchema,

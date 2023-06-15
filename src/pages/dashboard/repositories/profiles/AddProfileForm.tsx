@@ -13,6 +13,7 @@ import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
 import { RepositoryProfile } from "../../../../types/RepositoryProfile";
 import useDebug from "../../../../hooks/useDebug";
 import { SelectOption } from "../../../../types/SelectOption";
+import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 
 interface AddProfileFormProps {
   accessGroupsOptions: SelectOption[];
@@ -26,7 +27,10 @@ const AddProfileForm: FC<AddProfileFormProps> = ({
   isGettingAccessGroups,
 }) => {
   const validationSchema = Yup.object().shape({
-    title: Yup.string().required("This field is required."),
+    title: Yup.string().required("This field is required.").test({
+      test: testLowercaseAlphaNumeric.test,
+      message: testLowercaseAlphaNumeric.message,
+    }),
     description: Yup.string(),
     access_group: Yup.string(),
     tags: Yup.array()

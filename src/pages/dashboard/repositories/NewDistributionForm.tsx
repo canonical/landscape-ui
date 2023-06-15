@@ -8,32 +8,53 @@ import useDistributions from "../../../hooks/useDistributions";
 import useSidePanel from "../../../hooks/useSidePanel";
 import useAccessGroup from "../../../hooks/useAccessGroup";
 import { SelectOption } from "../../../types/SelectOption";
+import { testLowercaseAlphaNumeric } from "../../../utils/tests";
 
 const NewDistributionForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
 
-  const { createDistributionQuery } = useDistributions();
+  const { createDistributionQuery, getDistributionsQuery } = useDistributions();
   const { getAccessGroupQuery } = useAccessGroup();
-  const { mutateAsync: createDistribution, isLoading: isCreating } =
+  const { mutateAsync: createDistribution, isLoading: isCreatingDistribution } =
     createDistributionQuery;
-  const { data: accessGroupsResponse } = getAccessGroupQuery();
+  const { data: getAccessGroupResponse, error: getAccessGroupError } =
+    getAccessGroupQuery();
+
+  if (getAccessGroupError) {
+    debug(getAccessGroupError);
+  }
 
   const accessGroupsOptions: SelectOption[] = (
-    accessGroupsResponse?.data ?? []
+    getAccessGroupResponse?.data ?? []
   ).map((accessGroup) => ({
     label: accessGroup.title,
     value: accessGroup.name,
   }));
+
+  const { data: getDistributionsResponse, error: getDistributionsError } =
+    getDistributionsQuery();
+
+  if (getDistributionsError) {
+    debug(getDistributionsError);
+  }
 
   const formik = useFormik({
     validationSchema: Yup.object().shape({
       name: string()
         .required("This field is required.")
         .test({
-          test: (value) => /^[-+a-z0-9]+$/.test(value),
-          message:
-            "It must be unique within the account, start with an alphanumeric character and only contain lowercase letters, numbers and - or + signs.",
+          test: testLowercaseAlphaNumeric.test,
+          message: testLowercaseAlphaNumeric.message,
+        })
+        .test({
+          params: { getDistributionsResponse },
+          test: (value) => {
+            return !(getDistributionsResponse?.data ?? [])
+              .map(({ name }) => name)
+              .includes(value);
+          },
+          message: "It must be unique within the account.",
         }),
       access_group: Yup.string(),
     }),
@@ -73,7 +94,11 @@ const NewDistributionForm: FC = () => {
       />
 
       <div className="form-buttons">
-        <Button type="submit" appearance="positive" disabled={isCreating}>
+        <Button
+          type="submit"
+          appearance="positive"
+          disabled={isCreatingDistribution}
+        >
           Create distribution
         </Button>
         <Button type="button" onClick={closeSidePanel}>
