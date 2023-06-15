@@ -1,0 +1,11 @@
+.withIcon {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+
+.content {
+  td {
+    overflow: initial;
+  }
+}
