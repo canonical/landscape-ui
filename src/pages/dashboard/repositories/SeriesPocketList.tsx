@@ -23,7 +23,11 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
-  const { removePocketQuery } = usePockets();
+  const {
+    removePocketQuery,
+    syncMirrorPocketQuery,
+    pullPackagesToPocketQuery,
+  } = usePockets();
   const {
     mutate: removePocket,
     isLoading: isRemovingPocket,
@@ -34,6 +38,120 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
     debug(removePocketError);
   }
 
+  const handleRemovePocket = (pocket: Pocket) => {
+    confirmModal({
+      body: `Do you really want to delete ${pocket.name} pocket from ${series.name} series of ${distribution.name} distribution?`,
+      title: "Deleting pocket",
+      buttons: [
+        <Button
+          key={`delete-${pocket.name}-pocket`}
+          appearance="negative"
+          disabled={isRemovingPocket}
+          onClick={() => {
+            removePocket({
+              distribution: distribution.name,
+              series: series.name,
+              name: pocket.name,
+            });
+
+            closeConfirmModal();
+          }}
+        >
+          Delete
+        </Button>,
+      ],
+    });
+  };
+
+  const {
+    mutate: syncMirrorPocket,
+    isLoading: isSynchronizingMirrorPocket,
+    error: synchronizingMirrorPocketError,
+  } = syncMirrorPocketQuery;
+  const {
+    mutate: pullPackagesToPocket,
+    isLoading: isPullingPackagesToPocket,
+    error: pullingPackagesToPocketError,
+  } = pullPackagesToPocketQuery;
+
+  if (synchronizingMirrorPocketError) {
+    debug(synchronizingMirrorPocketError);
+  }
+
+  if (pullingPackagesToPocketError) {
+    debug(pullingPackagesToPocketError);
+  }
+
+  const handleSyncPocket = (pocket: Pocket) => {
+    if ("mirror" === pocket.mode) {
+      confirmModal({
+        title: `Synchronizing ${pocket.name} pocket`,
+        body: "Do you want to synchronize packages?",
+        buttons: [
+          <Button
+            key={pocket.name}
+            appearance="positive"
+            onClick={() => {
+              syncMirrorPocket({
+                name: pocket.name,
+                series: series.name,
+                distribution: distribution.name,
+              });
+            }}
+            disabled={isSynchronizingMirrorPocket}
+          >
+            Synchronize
+          </Button>,
+        ],
+      });
+    } else if ("pull" === pocket.mode) {
+      confirmModal({
+        title: `Pulling packages to ${pocket.name} pocket`,
+        body: `Do you want to pull packages from ${pocket.pull_pocket}`,
+        buttons: [
+          <Button
+            key={pocket.name}
+            appearance="positive"
+            onClick={() => {
+              pullPackagesToPocket({
+                name: pocket.name,
+                series: series.name,
+                distribution: distribution.name,
+              });
+            }}
+            disabled={isPullingPackagesToPocket}
+          >
+            Pull
+          </Button>,
+        ],
+      });
+    }
+  };
+
+  const handleEditPocket = (pocket: Pocket) => {
+    setSidePanelOpen(true);
+    setSidePanelContent(
+      `Edit ${pocket.name} pocket`,
+      <EditPocketForm
+        pocket={pocket}
+        distribution={distribution}
+        series={series}
+      />
+    );
+  };
+
+  const handleListPocket = (pocket: Pocket) => {
+    setSidePanelOpen(true);
+    setSidePanelContent(
+      `${series.name} ${pocket.name}`,
+      <PackageList
+        pocket={pocket}
+        distribution={distribution}
+        series={series}
+      />
+    );
+  };
+
   const headers = [
     { content: "Pocket" },
     { content: "Mode" },
@@ -43,66 +161,37 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
   ];
 
   const rows = series.pockets.map((pocket) => {
-    const handleEditPocket = () => {
-      setSidePanelOpen(true);
-      setSidePanelContent(
-        `Edit ${pocket.name} pocket`,
-        <EditPocketForm
-          pocket={pocket}
-          distribution={distribution}
-          series={series}
-        />
-      );
-    };
-
-    const handleRemovePocket = () => {
-      confirmModal({
-        body: `Do you really want to delete ${pocket.name} pocket from ${series.name} series of ${distribution.name} distribution?`,
-        title: "Deleting pocket",
-        buttons: [
-          <Button
-            key={`delete-${pocket.name}-pocket`}
-            appearance="negative"
-            disabled={isRemovingPocket}
-            onClick={() => {
-              removePocket({
-                distribution: distribution.name,
-                series: series.name,
-                name: pocket.name,
-              });
-
-              closeConfirmModal();
-            }}
-          >
-            Delete
-          </Button>,
-        ],
-      });
-    };
-
-    const handleSyncPocket = (pocket: Pocket) => {
-      setSidePanelOpen(true);
-      setSidePanelContent(
-        `${series.name} ${pocket.name}`,
-        <PackageList
-          pocket={pocket}
-          distribution={distribution}
-          series={series}
-        />
-      );
-    };
-
     return {
       columns: [
         {
           content:
             "pull" !== pocket.mode ? (
-              pocket.name
+              <Button
+                appearance="link"
+                className="u-no-margin--bottom"
+                onClick={() => {
+                  handleListPocket(pocket);
+                }}
+              >
+                {pocket.name}
+              </Button>
             ) : (
               <>
-                <div>{pocket.name}</div>
+                <div>
+                  <Button
+                    appearance="link"
+                    className="u-no-margin--bottom"
+                    onClick={() => {
+                      handleListPocket(pocket);
+                    }}
+                  >
+                    {pocket.name}
+                  </Button>
+                </div>
                 <div
-                  className={classNames("p-text--small u-text--muted")}
+                  className={classNames(
+                    "p-text--small u-text--muted u-no-margin--bottom"
+                  )}
                 >{`pulling from ${pocket.pull_pocket}`}</div>
               </>
             ),
@@ -126,13 +215,26 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           "aria-label": "Actions",
           content: (
             <>
+              {"upload" !== pocket.mode && (
+                <Button
+                  hasIcon
+                  appearance="base"
+                  className="u-no-margin--bottom"
+                  aria-label={`Synchronize ${pocket.name} pocket`}
+                  onClick={() => {
+                    handleSyncPocket(pocket);
+                  }}
+                >
+                  <i className="p-icon--change-version" />
+                </Button>
+              )}
               <Button
                 hasIcon
                 appearance="base"
                 className="u-no-margin--bottom"
                 aria-label={`Edit ${pocket.name} pocket`}
                 onClick={() => {
-                  handleEditPocket();
+                  handleEditPocket(pocket);
                 }}
               >
                 <i className="p-icon--edit" />
@@ -142,20 +244,11 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 appearance="base"
                 className="u-no-margin--bottom"
                 aria-label={`Remove ${pocket.name} pocket`}
-                onClick={handleRemovePocket}
-              >
-                <i className="p-icon--delete" />
-              </Button>
-              <Button
-                hasIcon
-                appearance="base"
-                className="u-no-margin--bottom"
-                aria-label={`Synchronize ${pocket.name} pocket`}
                 onClick={() => {
-                  handleSyncPocket(pocket);
+                  handleRemovePocket(pocket);
                 }}
               >
-                <i className="p-icon--change-version" />
+                <i className="p-icon--delete" />
               </Button>
             </>
           ),

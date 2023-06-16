@@ -10,6 +10,7 @@ import {
   MainTable,
   Pagination,
   Row,
+  Spinner,
 } from "@canonical/react-components";
 import useDebug from "../../../hooks/useDebug";
 import classNames from "classnames";
@@ -58,22 +59,25 @@ const PackageList: FC<PackageListProps> = ({
     removePocketQuery,
   } = usePockets();
 
-  const { data: pocketPackagesData, error: pocketPackagesListError } =
-    listPocketQuery({
-      name: pocket.name,
-      series: series.name,
-      distribution: distribution.name,
-    });
+  const {
+    data: listPocketData,
+    error: listPocketError,
+    isLoading: listPocketLoading,
+  } = listPocketQuery({
+    name: pocket.name,
+    series: series.name,
+    distribution: distribution.name,
+  });
 
-  if (pocketPackagesListError) {
-    debug(pocketPackagesListError);
+  if (listPocketError) {
+    debug(listPocketError);
   }
 
   const pocketPackages: FormattedPackage[] = [];
 
-  if (pocketPackagesData) {
-    for (const dataKey in pocketPackagesData.data) {
-      for (const [packageName, packageVersion] of pocketPackagesData.data[
+  if (listPocketData) {
+    for (const dataKey in listPocketData.data) {
+      for (const [packageName, packageVersion] of listPocketData.data[
         dataKey
       ]) {
         pocketPackages.push({ packageName, packageVersion });
@@ -89,7 +93,7 @@ const PackageList: FC<PackageListProps> = ({
         distribution: distribution.name,
       },
       {
-        enabled: "pull" === pocket.mode,
+        enabled: "pull" === pocket.mode && !listPocketLoading,
       }
     );
 
@@ -452,7 +456,15 @@ const PackageList: FC<PackageListProps> = ({
       <MainTable
         headers={headers}
         rows={rows}
-        emptyStateMsg={"No packages found."}
+        emptyStateMsg={
+          listPocketLoading ? (
+            <div className={classes.loading}>
+              <Spinner />
+            </div>
+          ) : (
+            "No packages found."
+          )
+        }
         className={classes.content}
       />
       <Pagination

@@ -4,7 +4,14 @@
   column-gap: 0.5rem;
 }
 
+.loading {
+  margin-top: 1rem;
+  text-align: center;
+}
+
 .content {
+  margin-top: 2rem;
+
   td {
     overflow: initial;
   }

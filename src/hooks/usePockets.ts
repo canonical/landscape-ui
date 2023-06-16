@@ -222,7 +222,13 @@ export default function usePockets(): UsePocketsResult {
     DiffPullPocketParams
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<PackageDiff>, AxiosError<ApiError>>({
-      queryKey: ["packages", "difference"],
+      queryKey: [
+        "packages",
+        "difference",
+        queryParams?.distribution,
+        queryParams?.series,
+        queryParams?.name,
+      ],
       queryFn: () =>
         authFetch!.get("DiffPullPocket", {
           params: queryParams,
@@ -235,7 +241,13 @@ export default function usePockets(): UsePocketsResult {
     ListPocketParams
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<PackagesList>, AxiosError<ApiError>>({
-      queryKey: ["packages"],
+      queryKey: [
+        "packages",
+        "list",
+        queryParams?.distribution,
+        queryParams?.series,
+        queryParams?.name,
+      ],
       queryFn: () =>
         authFetch!.get("ListPocket", {
           params: queryParams,
