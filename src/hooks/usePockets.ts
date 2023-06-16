@@ -34,7 +34,6 @@ export interface CreatePullPocketParams extends CreateCommonPocketParams {
   pull_pocket: string;
   pull_series?: string;
   filter_type?: "whitelist" | "blacklist";
-  filters: string[];
 }
 
 export interface CreateUploadPocketParams extends CreateCommonPocketParams {
@@ -101,6 +100,20 @@ interface RemovePackagesFromPocketParams {
   packages: string[];
 }
 
+interface AddPackageFiltersToPocketParams {
+  name: string;
+  series: string;
+  distribution: string;
+  packages: string[];
+}
+
+interface RemovePackageFiltersToPocketParams {
+  name: string;
+  series: string;
+  distribution: string;
+  packages: string[];
+}
+
 interface UsePocketsResult {
   createPocketQuery: UseMutationResult<
     AxiosResponse<Pocket>,
@@ -136,6 +149,16 @@ interface UsePocketsResult {
     AxiosResponse<void>,
     AxiosError<ApiError>,
     RemovePackagesFromPocketParams
+  >;
+  addPackageFiltersToPocketQuery: UseMutationResult<
+    AxiosResponse<Pocket>,
+    AxiosError<ApiError>,
+    AddPackageFiltersToPocketParams
+  >;
+  removePackageFiltersToPocketQuery: UseMutationResult<
+    AxiosResponse<Pocket>,
+    AxiosError<ApiError>,
+    RemovePackageFiltersToPocketParams
   >;
 }
 
@@ -255,6 +278,32 @@ export default function usePockets(): UsePocketsResult {
       ...config,
     });
 
+  const addPackageFiltersToPocketQuery = useMutation<
+    AxiosResponse<Pocket>,
+    AxiosError<ApiError>,
+    AddPackageFiltersToPocketParams
+  >({
+    mutationKey: ["pockets", "pull"],
+    mutationFn: (params) =>
+      authFetch!.get("AddPackageFiltersToPocket", { params }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["packages"]).catch(debug);
+    },
+  });
+
+  const removePackageFiltersToPocketQuery = useMutation<
+    AxiosResponse<Pocket>,
+    AxiosError<ApiError>,
+    RemovePackageFiltersToPocketParams
+  >({
+    mutationKey: ["pockets", "pull"],
+    mutationFn: (params) =>
+      authFetch!.get("RemovePackageFiltersFromPocket", { params }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["packages"]).catch(debug);
+    },
+  });
+
   return {
     createPocketQuery,
     editPocketQuery,
@@ -264,5 +313,7 @@ export default function usePockets(): UsePocketsResult {
     removePocketQuery,
     listPocketQuery,
     removePackagesFromPocketQuery,
+    addPackageFiltersToPocketQuery,
+    removePackageFiltersToPocketQuery,
   };
 }

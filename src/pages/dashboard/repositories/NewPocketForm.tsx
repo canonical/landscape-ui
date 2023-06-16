@@ -47,6 +47,7 @@ interface FormProps
     | CreateUploadPocketParams["mode"];
   pull_series: string;
   filter_type: CreatePullPocketParams["filter_type"] | "";
+  filters: string[];
 }
 
 const initialValues: FormProps = {
@@ -114,7 +115,6 @@ const getCreatePocketParams = (
         pull_series: values.pull_series,
         pull_pocket: values.pull_pocket,
         filter_type: "" !== values.filter_type ? values.filter_type : undefined,
-        filters: values.filters,
       };
     default:
       return assertNever(values.mode, "pocket mode");
@@ -129,11 +129,15 @@ interface NewPocketFormProps {
 const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { createPocketQuery } = usePockets();
+  const { createPocketQuery, addPackageFiltersToPocketQuery } = usePockets();
   const { getGPGKeysQuery } = useGPGKeys();
 
-  const { mutateAsync: createPocket, isLoading: isCreating } =
+  const { mutateAsync: createPocket, isLoading: createPocketLoading } =
     createPocketQuery;
+  const {
+    mutateAsync: addPackageFiltersToPocket,
+    isLoading: addPackageFiltersToPocketLoading,
+  } = addPackageFiltersToPocketQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
   const gpgKeys = gpgKeysData?.data ?? [];
@@ -201,6 +205,19 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
     onSubmit: async (values) => {
       try {
         await createPocket(getCreatePocketParams(values));
+
+        if ("pull" === values.mode && values.filter_type) {
+          const filters = values.filters.filter((x) => x);
+
+          if (filters.length) {
+            await addPackageFiltersToPocket({
+              name: values.name,
+              distribution: values.distribution,
+              series: values.series,
+              packages: filters,
+            });
+          }
+        }
 
         closeSidePanel();
       } catch (error: unknown) {
@@ -426,7 +443,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       />
 
       <div className="form-buttons">
-        <Button type="submit" appearance="positive" disabled={isCreating}>
+        <Button
+          type="submit"
+          appearance="positive"
+          disabled={createPocketLoading || addPackageFiltersToPocketLoading}
+        >
           Create
         </Button>
         <Button type="button" onClick={closeSidePanel}>
