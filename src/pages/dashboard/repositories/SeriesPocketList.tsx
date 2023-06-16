@@ -64,23 +64,13 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
   };
 
   const {
-    mutate: syncMirrorPocket,
+    mutateAsync: syncMirrorPocket,
     isLoading: isSynchronizingMirrorPocket,
-    error: synchronizingMirrorPocketError,
   } = syncMirrorPocketQuery;
   const {
-    mutate: pullPackagesToPocket,
+    mutateAsync: pullPackagesToPocket,
     isLoading: isPullingPackagesToPocket,
-    error: pullingPackagesToPocketError,
   } = pullPackagesToPocketQuery;
-
-  if (synchronizingMirrorPocketError) {
-    debug(synchronizingMirrorPocketError);
-  }
-
-  if (pullingPackagesToPocketError) {
-    debug(pullingPackagesToPocketError);
-  }
 
   const handleSyncPocket = (pocket: Pocket) => {
     if ("mirror" === pocket.mode) {
@@ -91,16 +81,22 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           <Button
             key={pocket.name}
             appearance="positive"
-            onClick={() => {
-              syncMirrorPocket({
-                name: pocket.name,
-                series: series.name,
-                distribution: distribution.name,
-              });
+            onClick={async () => {
+              try {
+                await syncMirrorPocket({
+                  name: pocket.name,
+                  series: series.name,
+                  distribution: distribution.name,
+                });
+
+                closeConfirmModal();
+              } catch (error) {
+                debug(error);
+              }
             }}
             disabled={isSynchronizingMirrorPocket}
           >
-            Synchronize
+            Sync
           </Button>,
         ],
       });
@@ -112,12 +108,18 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           <Button
             key={pocket.name}
             appearance="positive"
-            onClick={() => {
-              pullPackagesToPocket({
-                name: pocket.name,
-                series: series.name,
-                distribution: distribution.name,
-              });
+            onClick={async () => {
+              try {
+                await pullPackagesToPocket({
+                  name: pocket.name,
+                  series: series.name,
+                  distribution: distribution.name,
+                });
+
+                closeConfirmModal();
+              } catch (error) {
+                debug(error);
+              }
             }}
             disabled={isPullingPackagesToPocket}
           >
