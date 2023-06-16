@@ -168,7 +168,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
             "pull" !== pocket.mode ? (
               <Button
                 appearance="link"
-                className="u-no-margin--bottom"
+                className="u-no-margin--bottom u-no-padding--top"
                 onClick={() => {
                   handleListPocket(pocket);
                 }}
@@ -180,7 +180,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 <div>
                   <Button
                     appearance="link"
-                    className="u-no-margin--bottom"
+                    className="u-no-margin--bottom u-no-padding--top"
                     onClick={() => {
                       handleListPocket(pocket);
                     }}
