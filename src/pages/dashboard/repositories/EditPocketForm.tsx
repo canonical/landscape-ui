@@ -31,6 +31,7 @@ interface FormProps
     EditPullPocketParams,
     EditUploadPocketParams {
   filters: string[];
+  upload_gpg_keys: string[];
 }
 
 const initialValues: FormProps = {
@@ -46,6 +47,7 @@ const initialValues: FormProps = {
   mirror_suite: "",
   mirror_gpg_key: "",
   filters: [],
+  upload_gpg_keys: [],
 };
 
 const getEditPocketParams = (
@@ -109,6 +111,8 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     editPocketQuery,
     addPackageFiltersToPocketQuery,
     removePackageFiltersFromPocketQuery,
+    addUploaderGPGKeysToPocketQuery,
+    removeUploaderGPGKeysFromPocketQuery,
   } = usePockets();
   const { getGPGKeysQuery } = useGPGKeys();
 
@@ -121,6 +125,14 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     mutateAsync: removePackageFiltersFromPocket,
     isLoading: isRemovingPackageFiltersFromPocket,
   } = removePackageFiltersFromPocketQuery;
+  const {
+    mutateAsync: addUploaderGPGKeysToPocket,
+    isLoading: isAddingUploaderGPGKeysToPocket,
+  } = addUploaderGPGKeysToPocketQuery;
+  const {
+    mutateAsync: removeUploaderGPGKeysFromPocket,
+    isLoading: isRemovingUploaderGPGKeysFromPocket,
+  } = removeUploaderGPGKeysFromPocketQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
   const gpgKeys = gpgKeysData?.data ?? [];
@@ -160,6 +172,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     mirror_gpg_key: Yup.string(),
     upload_allow_unsigned: Yup.boolean(),
     filters: Yup.array().of(Yup.string()),
+    upload_gpg_keys: Yup.array().of(Yup.string()),
   });
 
   const formik = useFormik<FormProps>({
@@ -171,32 +184,68 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
 
         promises.push(editPocket(getEditPocketParams(values, mode)));
 
-        if ("pull" === pocket.mode && pocket.filter_type) {
-          const deletedPackages = pocket.filters.filter(
-            (originalPackage) => !values.filters.includes(originalPackage)
-          );
-          const addedPackages = values.filters.filter(
-            (newPackage) => !pocket.filters.includes(newPackage)
+        if ("pull" === pocket.mode) {
+          if (pocket.filter_type) {
+            const deletedPackages = pocket.filters.filter(
+              (originalPackage) => !values.filters.includes(originalPackage)
+            );
+            const addedPackages = values.filters.filter(
+              (newPackage) => !pocket.filters.includes(newPackage)
+            );
+
+            if (deletedPackages.length) {
+              promises.push(
+                removePackageFiltersFromPocket({
+                  name: values.name,
+                  distribution: values.distribution,
+                  series: values.series,
+                  packages: deletedPackages,
+                })
+              );
+            }
+
+            if (addedPackages.length) {
+              promises.push(
+                addPackageFiltersToPocket({
+                  name: values.name,
+                  distribution: values.distribution,
+                  series: values.series,
+                  packages: addedPackages,
+                })
+              );
+            }
+          }
+        } else if ("upload" === pocket.mode) {
+          const pocketUploadGPGKeyNames = pocket.upload_gpg_keys.map(
+            ({ name }) => name
           );
 
-          if (deletedPackages.length) {
+          const addedUploaderGPGKeys = values.upload_gpg_keys.filter(
+            (gpgKey) => !pocketUploadGPGKeyNames.includes(gpgKey)
+          );
+
+          const removedUploaderGPGKeys = pocketUploadGPGKeyNames.filter(
+            (gpgKey) => !values.upload_gpg_keys.includes(gpgKey)
+          );
+
+          if (addedUploaderGPGKeys.length) {
             promises.push(
-              removePackageFiltersFromPocket({
+              addUploaderGPGKeysToPocket({
                 name: values.name,
-                distribution: values.distribution,
                 series: values.series,
-                packages: deletedPackages,
+                distribution: values.distribution,
+                gpg_keys: addedUploaderGPGKeys,
               })
             );
           }
 
-          if (addedPackages.length) {
+          if (removedUploaderGPGKeys.length) {
             promises.push(
-              addPackageFiltersToPocket({
+              removeUploaderGPGKeysFromPocket({
                 name: values.name,
-                distribution: values.distribution,
                 series: values.series,
-                packages: addedPackages,
+                distribution: values.distribution,
+                gpg_keys: removedUploaderGPGKeys,
               })
             );
           }
@@ -239,19 +288,6 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
 
   return (
     <Form onSubmit={formik.handleSubmit}>
-      <Select
-        label="GPG Key"
-        options={[
-          { label: "Select GPG key", value: "" },
-          ...gpgKeys.map((item) => ({
-            label: item.name,
-            value: item.name,
-          })),
-        ]}
-        {...formik.getFieldProps("gpg_key")}
-        error={formik.touched.gpg_key && formik.errors.gpg_key}
-      />
-
       <fieldset
         className={classNames("checkbox-group", {
           "is-error": formik.touched.components && formik.errors.components,
@@ -323,6 +359,25 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         </div>
       </fieldset>
 
+      <Select
+        label="GPG Key"
+        options={[
+          { label: "Select GPG key", value: "" },
+          ...gpgKeys.map((item) => ({
+            label: item.name,
+            value: item.name,
+          })),
+        ]}
+        {...formik.getFieldProps("gpg_key")}
+        error={formik.touched.gpg_key && formik.errors.gpg_key}
+      />
+
+      <CheckboxInput
+        label="Include .udeb packages (debian-installer)"
+        {...formik.getFieldProps("include_udeb")}
+        checked={formik.values.include_udeb}
+      />
+
       {"mirror" === pocket.mode && (
         <>
           <Input
@@ -351,11 +406,29 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
       )}
 
       {"upload" === pocket.mode && (
-        <CheckboxInput
-          label="Allow uploaded packages to be unsigned"
-          {...formik.getFieldProps("upload_allow_unsigned")}
-          checked={formik.values.upload_allow_unsigned}
-        />
+        <>
+          <CheckboxInput
+            label="Allow uploaded packages to be unsigned"
+            {...formik.getFieldProps("upload_allow_unsigned")}
+            checked={formik.values.upload_allow_unsigned}
+          />
+
+          <Textarea
+            label="Uploader GPG keys"
+            rows={3}
+            {...formik.getFieldProps("upload_gpg_keys")}
+            onChange={(event) => {
+              formik.setFieldValue(
+                "upload_gpg_keys",
+                event.target.value.replace(/\s/g, "").split(",")
+              );
+            }}
+            value={formik.values.upload_gpg_keys.join(",")}
+            error={
+              formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
+            }
+          />
+        </>
       )}
 
       {"pull" === pocket.mode && pocket.filter_type && (
@@ -365,18 +438,15 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
           help="List packages to filter separated by commas"
           {...formik.getFieldProps("filters")}
           onChange={(event) => {
-            formik.setFieldValue("filters", event.target.value.split(/,\s*/));
+            formik.setFieldValue(
+              "filters",
+              event.target.value.replace(/\s/g, "").split(",")
+            );
           }}
           value={formik.values.filters.join(",")}
           error={formik.touched.filters && formik.errors.filters}
         />
       )}
-
-      <CheckboxInput
-        label="Include .udeb packages (debian-installer)"
-        {...formik.getFieldProps("include_udeb")}
-        checked={formik.values.include_udeb}
-      />
 
       <div className="form-buttons">
         <Button
@@ -385,7 +455,9 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
           disabled={
             isEditing ||
             isAddingPackageFiltersToPocket ||
-            isRemovingPackageFiltersFromPocket
+            isRemovingPackageFiltersFromPocket ||
+            isAddingUploaderGPGKeysToPocket ||
+            isRemovingUploaderGPGKeysFromPocket
           }
         >
           Edit

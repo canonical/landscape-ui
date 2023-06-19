@@ -48,6 +48,7 @@ interface FormProps
   pull_series: string;
   filter_type: CreatePullPocketParams["filter_type"] | "";
   filters: string[];
+  upload_gpg_keys: string[];
 }
 
 const initialValues: FormProps = {
@@ -67,6 +68,7 @@ const initialValues: FormProps = {
   mirror_suite: "",
   mirror_gpg_key: "",
   filters: [],
+  upload_gpg_keys: [],
 };
 
 const getCreatePocketParams = (
@@ -129,7 +131,11 @@ interface NewPocketFormProps {
 const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { createPocketQuery, addPackageFiltersToPocketQuery } = usePockets();
+  const {
+    createPocketQuery,
+    addPackageFiltersToPocketQuery,
+    addUploaderGPGKeysToPocketQuery,
+  } = usePockets();
   const { getGPGKeysQuery } = useGPGKeys();
 
   const { mutateAsync: createPocket, isLoading: createPocketLoading } =
@@ -138,6 +144,10 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
     mutateAsync: addPackageFiltersToPocket,
     isLoading: addPackageFiltersToPocketLoading,
   } = addPackageFiltersToPocketQuery;
+  const {
+    mutateAsync: addUploaderGPGKeysToPocket,
+    isLoading: addUploaderGPGKeysToPocketLoading,
+  } = addUploaderGPGKeysToPocketQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
   const gpgKeys = gpgKeysData?.data ?? [];
@@ -199,22 +209,35 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
     upload_allow_unsigned: Yup.boolean(),
   });
 
-  const formik = useFormik({
+  const formik = useFormik<FormProps>({
     validationSchema,
     initialValues,
     onSubmit: async (values) => {
       try {
         await createPocket(getCreatePocketParams(values));
 
-        if ("pull" === values.mode && values.filter_type) {
-          const filters = values.filters.filter((x) => x);
+        if ("pull" === values.mode) {
+          if (values.filter_type) {
+            const filters = values.filters.filter((x) => x);
 
-          if (filters.length) {
-            await addPackageFiltersToPocket({
+            if (filters.length) {
+              await addPackageFiltersToPocket({
+                name: values.name,
+                distribution: values.distribution,
+                series: values.series,
+                packages: filters,
+              });
+            }
+          }
+        } else if ("upload" === values.mode) {
+          const uploaderGPGKeys = values.upload_gpg_keys.filter((x) => x);
+
+          if (uploaderGPGKeys.length) {
+            await addUploaderGPGKeysToPocket({
               name: values.name,
-              distribution: values.distribution,
               series: values.series,
-              packages: filters,
+              distribution: values.distribution,
+              gpg_keys: uploaderGPGKeys,
             });
           }
         }
@@ -290,19 +313,6 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         )}
       </div>
 
-      <Select
-        label="* GPG Key"
-        options={[
-          { label: "Select GPG key", value: "" },
-          ...gpgKeys.map((item) => ({
-            label: item.name,
-            value: item.name,
-          })),
-        ]}
-        {...formik.getFieldProps("gpg_key")}
-        error={formik.touched.gpg_key && formik.errors.gpg_key}
-      />
-
       <fieldset
         className={classNames("checkbox-group", {
           "is-error": formik.touched.components && formik.errors.components,
@@ -374,6 +384,25 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         </div>
       </fieldset>
 
+      <Select
+        label="* GPG Key"
+        options={[
+          { label: "Select GPG key", value: "" },
+          ...gpgKeys.map((item) => ({
+            label: item.name,
+            value: item.name,
+          })),
+        ]}
+        {...formik.getFieldProps("gpg_key")}
+        error={formik.touched.gpg_key && formik.errors.gpg_key}
+      />
+
+      <CheckboxInput
+        label="Include .udeb packages (debian-installer)"
+        {...formik.getFieldProps("include_udeb")}
+        checked={formik.values.include_udeb}
+      />
+
       {"mirror" === formik.values.mode && (
         <>
           <Input
@@ -419,7 +448,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               onChange={(event) => {
                 formik.setFieldValue(
                   "filters",
-                  event.target.value.split(/,\s*/)
+                  event.target.value.replace(/\s/g, "").split(",")
                 );
               }}
               value={formik.values.filters.join(",")}
@@ -430,24 +459,40 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       )}
 
       {"upload" === formik.values.mode && (
-        <CheckboxInput
-          label="Allow uploaded packages to be unsigned"
-          {...formik.getFieldProps("upload_allow_unsigned")}
-          checked={formik.values.upload_allow_unsigned}
-        />
-      )}
+        <>
+          <CheckboxInput
+            label="Allow uploaded packages to be unsigned"
+            {...formik.getFieldProps("upload_allow_unsigned")}
+            checked={formik.values.upload_allow_unsigned}
+          />
 
-      <CheckboxInput
-        label="Include .udeb packages (debian-installer)"
-        {...formik.getFieldProps("include_udeb")}
-        checked={formik.values.include_udeb}
-      />
+          <Textarea
+            label="Uploader GPG keys"
+            rows={3}
+            {...formik.getFieldProps("upload_gpg_keys")}
+            onChange={(event) => {
+              formik.setFieldValue(
+                "upload_gpg_keys",
+                event.target.value.replace(/\s/g, "").split(",")
+              );
+            }}
+            value={formik.values.upload_gpg_keys.join(",")}
+            error={
+              formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
+            }
+          />
+        </>
+      )}
 
       <div className="form-buttons">
         <Button
           type="submit"
           appearance="positive"
-          disabled={createPocketLoading || addPackageFiltersToPocketLoading}
+          disabled={
+            createPocketLoading ||
+            addPackageFiltersToPocketLoading ||
+            addUploaderGPGKeysToPocketLoading
+          }
         >
           Create
         </Button>

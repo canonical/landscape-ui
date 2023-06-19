@@ -291,7 +291,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "pockets",
-                event.target.value.split(",").map((pocket) => pocket.trim())
+                event.target.value.replace(/\s/g, "").split(",")
               );
             }}
             error={formik.touched.pockets && formik.errors.pockets}
@@ -307,7 +307,10 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
               formik.values.components && formik.values.components.join(",")
             }
             onChange={(event) => {
-              formik.setFieldValue("components", event.target.value.split(","));
+              formik.setFieldValue(
+                "components",
+                event.target.value.replace(/\s/g, "").split(",")
+              );
             }}
             error={formik.touched.components && formik.errors.components}
             help="List the component names separated by commas"
@@ -325,7 +328,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "architectures",
-                event.target.value.split(",")
+                event.target.value.replace(/\s/g, "").split(",")
               );
             }}
             error={formik.touched.architectures && formik.errors.architectures}

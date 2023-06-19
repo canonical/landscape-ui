@@ -114,6 +114,20 @@ interface RemovePackageFiltersFromPocketParams {
   packages: string[];
 }
 
+interface AddUploaderGPGKeysToPocketParams {
+  name: string;
+  series: string;
+  distribution: string;
+  gpg_keys: string[];
+}
+
+interface RemoveUploaderGPGKeysFromPocketParams {
+  name: string;
+  series: string;
+  distribution: string;
+  gpg_keys: string[];
+}
+
 interface UsePocketsResult {
   createPocketQuery: UseMutationResult<
     AxiosResponse<Pocket>,
@@ -159,6 +173,16 @@ interface UsePocketsResult {
     AxiosResponse<Pocket>,
     AxiosError<ApiError>,
     RemovePackageFiltersFromPocketParams
+  >;
+  addUploaderGPGKeysToPocketQuery: UseMutationResult<
+    AxiosResponse<Pocket>,
+    AxiosError<ApiError>,
+    AddUploaderGPGKeysToPocketParams
+  >;
+  removeUploaderGPGKeysFromPocketQuery: UseMutationResult<
+    AxiosResponse<Pocket>,
+    AxiosError<ApiError>,
+    RemoveUploaderGPGKeysFromPocketParams
   >;
 }
 
@@ -304,6 +328,32 @@ export default function usePockets(): UsePocketsResult {
     },
   });
 
+  const addUploaderGPGKeysToPocketQuery = useMutation<
+    AxiosResponse<Pocket>,
+    AxiosError<ApiError>,
+    AddUploaderGPGKeysToPocketParams
+  >({
+    mutationKey: ["pockets", "upload"],
+    mutationFn: (params) =>
+      authFetch!.get("AddUploaderGPGKeysToPocket", { params }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["packages"]).catch(debug);
+    },
+  });
+
+  const removeUploaderGPGKeysFromPocketQuery = useMutation<
+    AxiosResponse<Pocket>,
+    AxiosError<ApiError>,
+    RemoveUploaderGPGKeysFromPocketParams
+  >({
+    mutationKey: ["pockets", "upload"],
+    mutationFn: (params) =>
+      authFetch!.get("RemoveUploaderGPGKeysFromPocket", { params }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["packages"]).catch(debug);
+    },
+  });
+
   return {
     createPocketQuery,
     editPocketQuery,
@@ -315,5 +365,7 @@ export default function usePockets(): UsePocketsResult {
     removePackagesFromPocketQuery,
     addPackageFiltersToPocketQuery,
     removePackageFiltersFromPocketQuery,
+    addUploaderGPGKeysToPocketQuery,
+    removeUploaderGPGKeysFromPocketQuery,
   };
 }
