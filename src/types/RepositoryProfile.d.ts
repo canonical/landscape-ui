@@ -1,10 +1,9 @@
 import { Pocket } from "./Pocket";
-import { AptSource } from "./APTSource";
 
 export interface RepositoryProfile {
   access_group: string;
   all_computers: boolean;
-  apt_sources: AptSource[];
+  apt_sources: string[];
   description: string;
   id: number;
   name: string;

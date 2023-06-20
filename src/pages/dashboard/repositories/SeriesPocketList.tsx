@@ -12,12 +12,12 @@ import classNames from "classnames";
 import PackageList from "./PackageList";
 
 interface SeriesPocketListProps {
-  distribution: Distribution;
+  distributionName: Distribution["name"];
   series: Series;
 }
 
 const SeriesPocketList: FC<SeriesPocketListProps> = ({
-  distribution,
+  distributionName,
   series,
 }) => {
   const debug = useDebug();
@@ -40,7 +40,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
 
   const handleRemovePocket = (pocket: Pocket) => {
     confirmModal({
-      body: `Do you really want to delete ${pocket.name} pocket from ${series.name} series of ${distribution.name} distribution?`,
+      body: `Do you really want to delete ${pocket.name} pocket from ${series.name} series of ${distributionName} distribution?`,
       title: "Deleting pocket",
       buttons: [
         <Button
@@ -49,7 +49,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           disabled={isRemovingPocket}
           onClick={() => {
             removePocket({
-              distribution: distribution.name,
+              distribution: distributionName,
               series: series.name,
               name: pocket.name,
             });
@@ -86,7 +86,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 await syncMirrorPocket({
                   name: pocket.name,
                   series: series.name,
-                  distribution: distribution.name,
+                  distribution: distributionName,
                 });
 
                 closeConfirmModal();
@@ -113,7 +113,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 await pullPackagesToPocket({
                   name: pocket.name,
                   series: series.name,
-                  distribution: distribution.name,
+                  distribution: distributionName,
                 });
 
                 closeConfirmModal();
@@ -136,8 +136,8 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
       `Edit ${pocket.name} pocket`,
       <EditPocketForm
         pocket={pocket}
-        distribution={distribution}
-        series={series}
+        distributionName={distributionName}
+        seriesName={series.name}
       />
     );
   };
@@ -148,8 +148,8 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
       `${series.name} ${pocket.name}`,
       <PackageList
         pocket={pocket}
-        distribution={distribution}
-        series={series}
+        distributionName={distributionName}
+        seriesName={series.name}
       />
     );
   };

@@ -37,6 +37,30 @@ interface RemoveRepositoryProfileParams {
   name: string;
 }
 
+interface AddAPTSourcesToRepositoryProfileParams {
+  name: string;
+  apt_sources: string[];
+}
+
+interface RemoveAPTSourceFromRepositoryProfileParams {
+  name: string;
+  apt_source: string;
+}
+
+interface AddPocketsToRepositoryProfileParams {
+  name: string;
+  series: string;
+  distribution: string;
+  pockets: string[];
+}
+
+interface RemovePocketsFromRepositoryProfileParams {
+  name: string;
+  series: string;
+  distribution: string;
+  pockets: string[];
+}
+
 interface UseRepositoryProfilesResult {
   getRepositoryProfilesQuery: QueryFnType<
     AxiosResponse<RepositoryProfile[]>,
@@ -71,6 +95,30 @@ interface UseRepositoryProfilesResult {
     AxiosResponse<void>,
     AxiosError<ApiError>,
     RemoveRepositoryProfileParams
+  >;
+
+  addAPTSourcesToRepositoryProfileQuery: UseMutationResult<
+    AxiosResponse<RepositoryProfile>,
+    AxiosError<ApiError>,
+    AddAPTSourcesToRepositoryProfileParams
+  >;
+
+  removeAPTSourceFromRepositoryProfileQuery: UseMutationResult<
+    AxiosResponse<RepositoryProfile>,
+    AxiosError<ApiError>,
+    RemoveAPTSourceFromRepositoryProfileParams
+  >;
+
+  addPocketsToRepositoryProfileQuery: UseMutationResult<
+    AxiosResponse<RepositoryProfile>,
+    AxiosError<ApiError>,
+    AddPocketsToRepositoryProfileParams
+  >;
+
+  removePocketsFromRepositoryProfileQuery: UseMutationResult<
+    AxiosResponse<RepositoryProfile>,
+    AxiosError<ApiError>,
+    RemovePocketsFromRepositoryProfileParams
   >;
 }
 
@@ -156,6 +204,58 @@ export default function useRepositoryProfiles(): UseRepositoryProfilesResult {
     },
   });
 
+  const addAPTSourcesToRepositoryProfileQuery = useMutation<
+    AxiosResponse<RepositoryProfile>,
+    AxiosError<ApiError>,
+    AddAPTSourcesToRepositoryProfileParams
+  >({
+    mutationKey: ["repositoryProfiles"],
+    mutationFn: (params) =>
+      authFetch!.get("AddAPTSourcesToRepositoryProfile", { params }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["repositoryProfiles"]).catch(debug);
+    },
+  });
+
+  const removeAPTSourceFromRepositoryProfileQuery = useMutation<
+    AxiosResponse<RepositoryProfile>,
+    AxiosError<ApiError>,
+    RemoveAPTSourceFromRepositoryProfileParams
+  >({
+    mutationKey: ["repositoryProfiles"],
+    mutationFn: (params) =>
+      authFetch!.get("RemoveAPTSourceFromRepositoryProfile", { params }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["repositoryProfiles"]).catch(debug);
+    },
+  });
+
+  const addPocketsToRepositoryProfileQuery = useMutation<
+    AxiosResponse<RepositoryProfile>,
+    AxiosError<ApiError>,
+    AddPocketsToRepositoryProfileParams
+  >({
+    mutationKey: ["repositoryProfiles"],
+    mutationFn: (params) =>
+      authFetch!.get("AddPocketsToRepositoryProfile", { params }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["repositoryProfiles"]).catch(debug);
+    },
+  });
+
+  const removePocketsFromRepositoryProfileQuery = useMutation<
+    AxiosResponse<RepositoryProfile>,
+    AxiosError<ApiError>,
+    RemovePocketsFromRepositoryProfileParams
+  >({
+    mutationKey: ["repositoryProfiles"],
+    mutationFn: (params) =>
+      authFetch!.get("RemovePocketsFromRepositoryProfile", { params }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["repositoryProfiles"]).catch(debug);
+    },
+  });
+
   return {
     getRepositoryProfilesQuery,
     createRepositoryProfileQuery,
@@ -163,5 +263,9 @@ export default function useRepositoryProfiles(): UseRepositoryProfilesResult {
     associateRepositoryProfileQuery,
     editRepositoryProfileQuery,
     disassociateRepositoryProfileQuery,
+    addAPTSourcesToRepositoryProfileQuery,
+    removeAPTSourceFromRepositoryProfileQuery,
+    addPocketsToRepositoryProfileQuery,
+    removePocketsFromRepositoryProfileQuery,
   };
 }

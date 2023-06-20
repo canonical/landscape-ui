@@ -96,14 +96,14 @@ const getEditPocketParams = (
 
 interface EditPocketFormProps {
   pocket: Pocket;
-  distribution: Distribution;
-  series: Series;
+  distributionName: Distribution["name"];
+  seriesName: Series["name"];
 }
 
 const EditPocketForm: FC<EditPocketFormProps> = ({
-  distribution,
+  distributionName,
   pocket,
-  series,
+  seriesName,
 }) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
@@ -189,9 +189,9 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
             const deletedPackages = pocket.filters.filter(
               (originalPackage) => !values.filters.includes(originalPackage)
             );
-            const addedPackages = values.filters.filter(
-              (newPackage) => !pocket.filters.includes(newPackage)
-            );
+            const addedPackages = values.filters
+              .filter((x) => x)
+              .filter((newPackage) => !pocket.filters.includes(newPackage));
 
             if (deletedPackages.length) {
               promises.push(
@@ -261,8 +261,8 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
   });
 
   useEffect(() => {
-    formik.setFieldValue("distribution", distribution.name);
-    formik.setFieldValue("series", series.name);
+    formik.setFieldValue("distribution", distributionName);
+    formik.setFieldValue("series", seriesName);
     formik.setFieldValue("name", pocket.name);
     formik.setFieldValue("components", pocket.components);
     formik.setFieldValue("architectures", pocket.architectures);

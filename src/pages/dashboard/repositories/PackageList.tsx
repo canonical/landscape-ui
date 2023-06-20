@@ -30,14 +30,14 @@ const paginationLimit = 15;
 
 interface PackageListProps {
   pocket: Pocket;
-  distribution: Distribution;
-  series: Series;
+  distributionName: Distribution["name"];
+  seriesName: Series["name"];
 }
 
 const PackageList: FC<PackageListProps> = ({
-  distribution,
+  distributionName,
   pocket,
-  series,
+  seriesName,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPackages, setSelectedPackages] = useState<number[]>([]);
@@ -65,8 +65,8 @@ const PackageList: FC<PackageListProps> = ({
     isLoading: listPocketLoading,
   } = listPocketQuery({
     name: pocket.name,
-    series: series.name,
-    distribution: distribution.name,
+    series: seriesName,
+    distribution: distributionName,
   });
 
   if (listPocketError) {
@@ -89,8 +89,8 @@ const PackageList: FC<PackageListProps> = ({
     diffPullPocketQuery(
       {
         name: pocket.name,
-        series: series.name,
-        distribution: distribution.name,
+        series: seriesName,
+        distribution: distributionName,
       },
       {
         enabled: "pull" === pocket.mode && !listPocketLoading,
@@ -309,14 +309,14 @@ const PackageList: FC<PackageListProps> = ({
     if ("mirror" === pocket.mode) {
       syncMirrorPocket({
         name: pocket.name,
-        series: series.name,
-        distribution: distribution.name,
+        series: seriesName,
+        distribution: distributionName,
       });
     } else if ("pull" === pocket.mode) {
       pullPackagesToPocket({
         name: pocket.name,
-        series: series.name,
-        distribution: distribution.name,
+        series: seriesName,
+        distribution: distributionName,
       });
     }
   };
@@ -338,8 +338,8 @@ const PackageList: FC<PackageListProps> = ({
 
     removePackagesFromPocket({
       name: pocket.name,
-      series: series.name,
-      distribution: distribution.name,
+      series: seriesName,
+      distribution: distributionName,
       packages,
     });
   };
@@ -349,8 +349,8 @@ const PackageList: FC<PackageListProps> = ({
       `Edit ${pocket.name} pocket`,
       <EditPocketForm
         pocket={pocket}
-        distribution={distribution}
-        series={series}
+        distributionName={distributionName}
+        seriesName={seriesName}
       />
     );
   };
@@ -367,7 +367,7 @@ const PackageList: FC<PackageListProps> = ({
 
   const handleRemovePocket = () => {
     confirmModal({
-      body: `Do you really want to delete ${pocket.name} pocket from ${series.name} series of ${distribution.name} distribution?`,
+      body: `Do you really want to delete ${pocket.name} pocket from ${seriesName} series of ${distributionName} distribution?`,
       title: "Deleting pocket",
       buttons: [
         <Button
@@ -376,8 +376,8 @@ const PackageList: FC<PackageListProps> = ({
           disabled={isRemovingPocket}
           onClick={() => {
             removePocket({
-              distribution: distribution.name,
-              series: series.name,
+              distribution: distributionName,
+              series: seriesName,
               name: pocket.name,
             });
 
