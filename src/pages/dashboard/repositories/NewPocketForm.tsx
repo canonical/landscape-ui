@@ -466,9 +466,9 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             checked={formik.values.upload_allow_unsigned}
           />
 
-          <Textarea
+          <Input
+            type="text"
             label="Uploader GPG keys"
-            rows={3}
             {...formik.getFieldProps("upload_gpg_keys")}
             onChange={(event) => {
               formik.setFieldValue(
@@ -477,6 +477,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               );
             }}
             value={formik.values.upload_gpg_keys.join(",")}
+            help="List GPG keys separated by commas"
             error={
               formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
             }
