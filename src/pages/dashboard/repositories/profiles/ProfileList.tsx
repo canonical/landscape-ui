@@ -13,15 +13,14 @@ import useDebug from "../../../../hooks/useDebug";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import { SelectOption } from "../../../../types/SelectOption";
 import EditProfileForm from "./EditProfileForm";
+import useAccessGroup from "../../../../hooks/useAccessGroup";
 
 interface DistributionProfileListProps {
   repositoryProfiles: RepositoryProfile[];
-  accessGroupsOptions: SelectOption[];
 }
 
 const ProfileList: FC<DistributionProfileListProps> = ({
   repositoryProfiles,
-  accessGroupsOptions,
 }) => {
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
@@ -29,10 +28,27 @@ const ProfileList: FC<DistributionProfileListProps> = ({
   const { removeRepositoryProfileQuery } = useRepositoryProfiles();
   const { mutateAsync: removeRepositoryProfile, isLoading: isRemoving } =
     removeRepositoryProfileQuery;
+  const { getAccessGroupQuery } = useAccessGroup();
+  const { data: accessGroupsResponse } = getAccessGroupQuery();
+
+  const accessGroupsOptions: SelectOption[] = (
+    accessGroupsResponse?.data ?? []
+  ).map((accessGroup) => ({
+    label: accessGroup.title,
+    value: accessGroup.name,
+  }));
 
   const handleEditProfile = (profile: RepositoryProfile) => {
     setSidePanelOpen(true);
     setSidePanelContent("Edit Profile", <EditProfileForm profile={profile} />);
+  };
+
+  const getAccessGroupLabel = (accessGroup: string) => {
+    const accessGroupOption = accessGroupsOptions.find(
+      ({ value }) => accessGroup === value
+    );
+
+    return accessGroupOption ? accessGroupOption.label : accessGroup;
   };
 
   const headers = [
@@ -55,9 +71,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
           "aria-label": "Description",
         },
         {
-          content: accessGroupsOptions.filter(
-            ({ value }) => value === repositoryProfile.access_group
-          )[0].label,
+          content: getAccessGroupLabel(repositoryProfile.access_group),
           "aria-label": "Access Group",
         },
         {

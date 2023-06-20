@@ -77,8 +77,7 @@ const NewDistributionForm: FC = () => {
     <Form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        required
-        label="Distribution name"
+        label="* Distribution name"
         {...formik.getFieldProps("name")}
         error={formik.touched.name && formik.errors.name}
       />

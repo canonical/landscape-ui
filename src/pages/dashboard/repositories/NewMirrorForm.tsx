@@ -97,31 +97,31 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
           },
           message: "It must be unique within series within the distribution.",
         }),
-      distribution: Yup.string().required(),
+      distribution: Yup.string().required("This field is required."),
       pockets: Yup.array().of(Yup.string()),
       components: Yup.array()
         .of(Yup.string())
-        .when("hasPockets", (values, schema) => {
-          return values[0] ? schema.min(1) : schema.min(0);
-        }),
-      architectures: Yup.array().when("pockets", (values, schema) =>
-        undefined !== values[0] &&
-        values[0].length > 0 &&
-        undefined !== values[0][0]
-          ? schema.min(1, "This field requires at least 1 item.")
-          : schema.min(0)
-      ),
-      gpg_key: Yup.string().when("pockets", (values, schema) =>
-        undefined !== values[0] &&
-        values[0].length > 0 &&
-        undefined !== values[0][0]
-          ? schema.required("This field is required.")
-          : schema
+        .when("hasPockets", (values, schema) =>
+          values[0]
+            ? schema.min(1, "Please choose at least one component")
+            : schema
+        ),
+      architectures: Yup.array()
+        .of(Yup.string())
+        .when("hasPockets", (values, schema) =>
+          values[0]
+            ? schema.min(1, "Please choose at least one architecture")
+            : schema
+        ),
+      gpg_key: Yup.string().when("hasPockets", (values, schema) =>
+        values[0] ? schema.required("This field is required.") : schema
       ),
       mirror_gpg_key: Yup.string(),
-      mirror_uri: Yup.string().when("hasPockets", (values, schema) => {
-        return values[0] ? schema.nonNullable().required() : schema;
-      }),
+      mirror_uri: Yup.string().when("hasPockets", (values, schema) =>
+        values[0]
+          ? schema.nonNullable().required("This field is required.")
+          : schema
+      ),
       mirror_series: Yup.string(),
       include_udeb: Yup.boolean().required(),
     }),
@@ -131,7 +131,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
       name: "",
       mirror_series: "",
       distribution: "",
-      mirror_uri: DEFAULT_MIRROR_URI,
+      mirror_uri: "",
       gpg_key: "",
       include_udeb: false,
       pockets: [],
@@ -140,13 +140,18 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
     },
     onSubmit: async (values) => {
       try {
-        await createSeries(
-          Object.fromEntries(
-            Object.entries(values).filter(
-              (entry) => !["type", "hasPockets"].includes(entry[0])
-            )
-          ) as CreateSeriesParams
-        );
+        await createSeries({
+          name: values.name,
+          distribution: values.distribution,
+          pockets: values.pockets,
+          components: values.components,
+          architectures: values.architectures,
+          gpg_key: values.gpg_key,
+          mirror_gpg_key: values.mirror_gpg_key,
+          mirror_uri: values.mirror_uri,
+          mirror_series: values.mirror_series,
+          include_udeb: values.include_udeb,
+        });
       } catch (error) {
         debug(error);
       }
@@ -154,18 +159,18 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
   });
 
   useEffect(() => {
-    if (
-      !formik.values.pockets ||
-      0 === formik.values.pockets.length ||
-      !formik.values.pockets[0]
-    ) {
+    formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
+  }, []);
+
+  useEffect(() => {
+    if (0 === formik.values.pockets.length || !formik.values.pockets[0]) {
       formik.setFieldValue("hasPockets", false);
 
       return;
     }
 
     formik.setFieldValue("hasPockets", true);
-  }, [formik.values.pockets?.length, formik.values.pockets?.[0]]);
+  }, [formik.values.pockets.length, formik.values.pockets[0]]);
 
   useEffect(() => {
     if ("ubuntu" === formik.values.type) {
@@ -192,8 +197,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
   return (
     <Form onSubmit={formik.handleSubmit}>
       <Select
-        label="Type"
-        required
+        label="* Type"
         options={[
           { label: "Ubuntu", value: "ubuntu" },
           { label: "Third party", value: "third-party" },
@@ -203,8 +207,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
       />
 
       <Select
-        label="Distribution"
-        required
+        label="* Distribution"
         options={[
           { label: "Select distribution", value: "" },
           ...distributionOptions,
@@ -228,8 +231,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
         <Col size={6}>
           <Input
             type="text"
-            required
-            label="Series name"
+            label="* Series name"
             {...formik.getFieldProps("name")}
             error={formik.touched.name && formik.errors.name}
           />
@@ -238,8 +240,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
 
       <Input
         type="text"
-        required={formik.values.hasPockets}
-        label="Mirror URI"
+        label={`${formik.values.hasPockets ? "* " : ""}Mirror URI`}
         name="mirror_uri"
         value={formik.values.mirror_uri}
         onChange={(event) => {
@@ -265,10 +266,12 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
 
         <Col size={6}>
           <Select
-            label="GPG key"
-            required={formik.values.hasPockets}
+            label={`${formik.values.hasPockets ? "* " : ""}GPG key`}
             options={[
-              { label: "Select GPG key", value: "" },
+              {
+                label: "Select GPG key",
+                value: "",
+              },
               ...gpgKeysOptions,
             ]}
             {...formik.getFieldProps("gpg_key")}
@@ -297,8 +300,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
 
           <Input
             type="text"
-            label="Components"
-            required={formik.values.hasPockets}
+            label={`${formik.values.hasPockets ? "* " : ""}Components`}
             placeholder="E.g. main, universe, etc."
             {...formik.getFieldProps("components")}
             value={
@@ -313,8 +315,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
 
           <Input
             type="text"
-            label="Architectures"
-            required={formik.values.hasPockets}
+            label={`${formik.values.hasPockets ? "* " : ""}Architectures`}
             placeholder="E.g. amd64, riscv, etc."
             {...formik.getFieldProps("architectures")}
             value={
@@ -378,7 +379,9 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
               "is-error": formik.touched.components && formik.errors.components,
             })}
           >
-            <legend>Components</legend>
+            <legend>{`${
+              formik.values.hasPockets ? "* " : ""
+            }Components`}</legend>
 
             {formik.touched.components && formik.errors.components && (
               <p className="p-form-validation__message">
@@ -414,7 +417,9 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
                 formik.touched.architectures && formik.errors.architectures,
             })}
           >
-            <legend>Architectures</legend>
+            <legend>{`${
+              formik.values.hasPockets ? "* " : ""
+            }Architectures`}</legend>
 
             {formik.touched.architectures && formik.errors.architectures && (
               <p className="p-form-validation__message">

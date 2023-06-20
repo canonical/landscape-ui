@@ -107,7 +107,7 @@ interface AddPackageFiltersToPocketParams {
   packages: string[];
 }
 
-interface RemovePackageFiltersToPocketParams {
+interface RemovePackageFiltersFromPocketParams {
   name: string;
   series: string;
   distribution: string;
@@ -155,10 +155,10 @@ interface UsePocketsResult {
     AxiosError<ApiError>,
     AddPackageFiltersToPocketParams
   >;
-  removePackageFiltersToPocketQuery: UseMutationResult<
+  removePackageFiltersFromPocketQuery: UseMutationResult<
     AxiosResponse<Pocket>,
     AxiosError<ApiError>,
-    RemovePackageFiltersToPocketParams
+    RemovePackageFiltersFromPocketParams
   >;
 }
 
@@ -291,10 +291,10 @@ export default function usePockets(): UsePocketsResult {
     },
   });
 
-  const removePackageFiltersToPocketQuery = useMutation<
+  const removePackageFiltersFromPocketQuery = useMutation<
     AxiosResponse<Pocket>,
     AxiosError<ApiError>,
-    RemovePackageFiltersToPocketParams
+    RemovePackageFiltersFromPocketParams
   >({
     mutationKey: ["pockets", "pull"],
     mutationFn: (params) =>
@@ -314,6 +314,6 @@ export default function usePockets(): UsePocketsResult {
     listPocketQuery,
     removePackagesFromPocketQuery,
     addPackageFiltersToPocketQuery,
-    removePackageFiltersToPocketQuery,
+    removePackageFiltersFromPocketQuery,
   };
 }

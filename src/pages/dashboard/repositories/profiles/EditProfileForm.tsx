@@ -11,28 +11,44 @@ import useSidePanel from "../../../../hooks/useSidePanel";
 import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
 import { RepositoryProfile } from "../../../../types/RepositoryProfile";
 import useDebug from "../../../../hooks/useDebug";
+import { AxiosResponse } from "axios";
+import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
+
+interface FormProps {
+  name: string;
+  title: string;
+  description: string;
+  tags: string[];
+  all_computers: boolean;
+}
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required("This field is required."),
+  title: Yup.string().test({
+    test: (value) =>
+      undefined === value || testLowercaseAlphaNumeric.test(value),
+    message: testLowercaseAlphaNumeric.message,
+  }),
+  description: Yup.string().required("This field is required."),
+  tags: Yup.array()
+    .of(Yup.string().required())
+    .required("This field is required. Tags have to be separated by coma."),
+  all_computers: Yup.boolean(),
+});
+
+const initialValues: FormProps = {
+  name: "",
+  title: "",
+  description: "",
+  tags: [],
+  all_computers: false,
+};
 
 interface EditProfileFormProps {
   profile: RepositoryProfile;
 }
 
 const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
-  const validationSchema = Yup.object().shape({
-    title: Yup.string().required("This field is required."),
-    description: Yup.string().required("This field is required."),
-    tags: Yup.array()
-      .of(Yup.string().required())
-      .required("This field is required. Tags have to be separated by coma."),
-    all_computers: Yup.boolean(),
-  });
-
-  const initialValues: Yup.InferType<typeof validationSchema> = {
-    title: "",
-    description: "",
-    tags: [],
-    all_computers: false,
-  };
-
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const {
@@ -49,32 +65,38 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
     isLoading: isDisassociating,
   } = disassociateRepositoryProfileQuery;
 
-  const formik = useFormik({
+  const formik = useFormik<FormProps>({
     validationSchema,
     initialValues,
     onSubmit: async (values) => {
       try {
+        const promises: Promise<AxiosResponse<RepositoryProfile>>[] = [];
+
         if (
-          profile.title !== values.title ||
+          ("" !== values.title && profile.title !== values.title) ||
           profile.description !== values.description
         ) {
-          await editRepositoryProfile({
-            name: profile.name,
-            title: values.title,
-            description: values.description,
-          });
+          promises.push(
+            editRepositoryProfile({
+              name: values.name,
+              title: values.title,
+              description: values.description,
+            })
+          );
         }
 
         if (profile.all_computers !== values.all_computers) {
-          values.all_computers
-            ? await associateRepositoryProfile({
-                name: profile.name,
-                all_computers: true,
-              })
-            : await disassociateRepositoryProfile({
-                name: profile.name,
-                all_computers: true,
-              });
+          promises.push(
+            values.all_computers
+              ? associateRepositoryProfile({
+                  name: values.name,
+                  all_computers: true,
+                })
+              : disassociateRepositoryProfile({
+                  name: values.name,
+                  all_computers: true,
+                })
+          );
         }
 
         if (
@@ -97,16 +119,18 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
             }
           });
 
-          await Promise.all([
+          promises.push(
             associateRepositoryProfile({
-              name: profile.name,
+              name: values.name,
               tags: associateArray,
             }),
             disassociateRepositoryProfile({
-              name: profile.name,
+              name: values.name,
               tags: disassociateArray,
-            }),
-          ]);
+            })
+          );
+
+          await Promise.all(promises);
         }
 
         closeSidePanel();
@@ -121,6 +145,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
     formik.setFieldValue("description", profile.description);
     formik.setFieldValue("tags", profile.tags);
     formik.setFieldValue("title", profile.title);
+    formik.setFieldValue("name", profile.name);
   }, []);
 
   return (
@@ -137,6 +162,12 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
         label="Description"
         error={formik.touched.description && formik.errors.description}
         {...formik.getFieldProps("description")}
+      />
+
+      <CheckboxInput
+        label="All computers"
+        {...formik.getFieldProps("all_computers")}
+        checked={formik.values.all_computers}
       />
 
       <Input
@@ -158,19 +189,13 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
         disabled={formik.values.all_computers}
       />
 
-      <CheckboxInput
-        label="All computers"
-        {...formik.getFieldProps("all_computers")}
-        checked={formik.values.all_computers}
-      />
-
       <div className="form-buttons">
         <Button
           type="submit"
           appearance="positive"
           disabled={isEditing || isAssociating || isDisassociating}
         >
-          {profile ? "Edit profile" : "Create profile"}
+          Edit profile
         </Button>
         <Button type="button" onClick={closeSidePanel}>
           Cancel

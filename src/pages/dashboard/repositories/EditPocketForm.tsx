@@ -16,6 +16,7 @@ import {
   Form,
   Input,
   Select,
+  Textarea,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { ARCHITECTURE_OPTIONS, COMPONENT_OPTIONS } from "../../../data/series";
@@ -23,11 +24,14 @@ import useGPGKeys from "../../../hooks/useGPGKeys";
 import { DEFAULT_MIRROR_URI } from "../../../constants";
 import { Pocket } from "../../../types/Pocket";
 import { assertNever } from "../../../utils/debug";
+import { AxiosResponse } from "axios";
 
 interface FormProps
   extends EditMirrorPocketParams,
     EditPullPocketParams,
-    EditUploadPocketParams {}
+    EditUploadPocketParams {
+  filters: string[];
+}
 
 const initialValues: FormProps = {
   series: "",
@@ -41,6 +45,7 @@ const initialValues: FormProps = {
   upload_allow_unsigned: false,
   mirror_suite: "",
   mirror_gpg_key: "",
+  filters: [],
 };
 
 const getEditPocketParams = (
@@ -100,10 +105,22 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
 }) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { editPocketQuery } = usePockets();
+  const {
+    editPocketQuery,
+    addPackageFiltersToPocketQuery,
+    removePackageFiltersFromPocketQuery,
+  } = usePockets();
   const { getGPGKeysQuery } = useGPGKeys();
 
   const { mutateAsync: editPocket, isLoading: isEditing } = editPocketQuery;
+  const {
+    mutateAsync: addPackageFiltersToPocket,
+    isLoading: isAddingPackageFiltersToPocket,
+  } = addPackageFiltersToPocketQuery;
+  const {
+    mutateAsync: removePackageFiltersFromPocket,
+    isLoading: isRemovingPackageFiltersFromPocket,
+  } = removePackageFiltersFromPocketQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
   const gpgKeys = gpgKeysData?.data ?? [];
@@ -120,7 +137,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
       .min(1, "Please choose at least one component")
       .test({
         name: "flat-mirror-sub-directory",
-        message: "A single value must be passed",
+        message: "A single component must be passed",
         params: { mode },
         test: (value, context) => {
           const { mirror_suite } = context.parent;
@@ -142,14 +159,50 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     mirror_suite: Yup.string(),
     mirror_gpg_key: Yup.string(),
     upload_allow_unsigned: Yup.boolean(),
+    filters: Yup.array().of(Yup.string()),
   });
 
-  const formik = useFormik({
+  const formik = useFormik<FormProps>({
     validationSchema,
     initialValues,
     onSubmit: async (values) => {
       try {
-        await editPocket(getEditPocketParams(values, mode));
+        const promises: Promise<AxiosResponse<Pocket>>[] = [];
+
+        promises.push(editPocket(getEditPocketParams(values, mode)));
+
+        if ("pull" === pocket.mode && pocket.filter_type) {
+          const deletedPackages = pocket.filters.filter(
+            (originalPackage) => !values.filters.includes(originalPackage)
+          );
+          const addedPackages = values.filters.filter(
+            (newPackage) => !pocket.filters.includes(newPackage)
+          );
+
+          if (deletedPackages.length) {
+            promises.push(
+              removePackageFiltersFromPocket({
+                name: values.name,
+                distribution: values.distribution,
+                series: values.series,
+                packages: deletedPackages,
+              })
+            );
+          }
+
+          if (addedPackages.length) {
+            promises.push(
+              addPackageFiltersToPocket({
+                name: values.name,
+                distribution: values.distribution,
+                series: values.series,
+                packages: addedPackages,
+              })
+            );
+          }
+        }
+
+        await Promise.all(promises);
 
         closeSidePanel();
       } catch (error: unknown) {
@@ -179,6 +232,8 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         "upload_allow_unsigned",
         pocket.upload_allow_unsigned
       );
+    } else {
+      formik.setFieldValue("filters", pocket.filters);
     }
   }, []);
 
@@ -196,41 +251,6 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         {...formik.getFieldProps("gpg_key")}
         error={formik.touched.gpg_key && formik.errors.gpg_key}
       />
-
-      {"mirror" === pocket.mode && (
-        <>
-          <Input
-            type="text"
-            label="Mirror URI"
-            {...formik.getFieldProps("mirror_uri")}
-            error={formik.touched.mirror_uri && formik.errors.mirror_uri}
-          />
-
-          <Input
-            type="text"
-            label="Mirror suite"
-            {...formik.getFieldProps("mirror_suite")}
-            error={formik.touched.mirror_suite && formik.errors.mirror_suite}
-          />
-
-          <Input
-            type="text"
-            label="Mirror GPG key"
-            {...formik.getFieldProps("mirror_gpg_key")}
-            error={
-              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
-            }
-          />
-        </>
-      )}
-
-      {"upload" === pocket.mode && (
-        <CheckboxInput
-          label="Allow uploaded packages to be unsigned"
-          {...formik.getFieldProps("upload_allow_unsigned")}
-          checked={formik.values.upload_allow_unsigned}
-        />
-      )}
 
       <fieldset
         className={classNames("checkbox-group", {
@@ -303,6 +323,55 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         </div>
       </fieldset>
 
+      {"mirror" === pocket.mode && (
+        <>
+          <Input
+            type="text"
+            label="Mirror URI"
+            {...formik.getFieldProps("mirror_uri")}
+            error={formik.touched.mirror_uri && formik.errors.mirror_uri}
+          />
+
+          <Input
+            type="text"
+            label="Mirror suite"
+            {...formik.getFieldProps("mirror_suite")}
+            error={formik.touched.mirror_suite && formik.errors.mirror_suite}
+          />
+
+          <Input
+            type="text"
+            label="Mirror GPG key"
+            {...formik.getFieldProps("mirror_gpg_key")}
+            error={
+              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
+            }
+          />
+        </>
+      )}
+
+      {"upload" === pocket.mode && (
+        <CheckboxInput
+          label="Allow uploaded packages to be unsigned"
+          {...formik.getFieldProps("upload_allow_unsigned")}
+          checked={formik.values.upload_allow_unsigned}
+        />
+      )}
+
+      {"pull" === pocket.mode && pocket.filter_type && (
+        <Textarea
+          label="Filter packages"
+          rows={3}
+          help="List packages to filter separated by commas"
+          {...formik.getFieldProps("filters")}
+          onChange={(event) => {
+            formik.setFieldValue("filters", event.target.value.split(/,\s*/));
+          }}
+          value={formik.values.filters.join(",")}
+          error={formik.touched.filters && formik.errors.filters}
+        />
+      )}
+
       <CheckboxInput
         label="Include .udeb packages (debian-installer)"
         {...formik.getFieldProps("include_udeb")}
@@ -310,7 +379,15 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
       />
 
       <div className="form-buttons">
-        <Button type="submit" appearance="positive" disabled={isEditing}>
+        <Button
+          type="submit"
+          appearance="positive"
+          disabled={
+            isEditing ||
+            isAddingPackageFiltersToPocket ||
+            isRemovingPackageFiltersFromPocket
+          }
+        >
           Edit
         </Button>
         <Button type="button" onClick={closeSidePanel}>

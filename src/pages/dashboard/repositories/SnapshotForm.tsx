@@ -7,18 +7,16 @@ import useSidePanel from "../../../hooks/useSidePanel";
 import useSeries from "../../../hooks/useSeries";
 import useDebug from "../../../hooks/useDebug";
 import { Button, Input } from "@canonical/react-components";
+import { testLowercaseAlphaNumeric } from "../../../utils/tests";
 
-const validationSchema = Yup.object().shape({
-  origin: Yup.string().required("This field is required").default(""),
-  distribution: Yup.string().required("This field is required").default(""),
-  name: Yup.string().required("This field is required").default(""),
-});
-
-const initialValues: Yup.InferType<typeof validationSchema> =
-  validationSchema.getDefault();
+interface FormProps {
+  distribution: Distribution["name"];
+  origin: Series["name"];
+  name: string;
+}
 
 interface SnapshotFormProps {
-  distribution: Distribution["name"];
+  distribution: Distribution;
   origin: Series["name"];
 }
 
@@ -29,9 +27,31 @@ const SnapshotForm: FC<SnapshotFormProps> = ({ distribution, origin }) => {
   const { deriveSeriesQuery } = useSeries();
   const { mutateAsync: deriveSeries, isLoading } = deriveSeriesQuery;
 
-  const formik = useFormik({
+  const validationSchema = Yup.object().shape({
+    origin: Yup.string().required("This field is required"),
+    distribution: Yup.string().required("This field is required"),
+    name: Yup.string()
+      .required("This field is required")
+      .test({
+        test: testLowercaseAlphaNumeric.test,
+        message: testLowercaseAlphaNumeric.message,
+      })
+      .test({
+        params: { distribution },
+        test: (value) => {
+          return !distribution.series.map(({ name }) => name).includes(value);
+        },
+        message: "It must be unique within the distribution.",
+      }),
+  });
+
+  const formik = useFormik<FormProps>({
     validationSchema,
-    initialValues,
+    initialValues: {
+      distribution: "",
+      origin: "",
+      name: "",
+    },
     onSubmit: async (values) => {
       try {
         await deriveSeries(values);
@@ -44,7 +64,7 @@ const SnapshotForm: FC<SnapshotFormProps> = ({ distribution, origin }) => {
   });
 
   useEffect(() => {
-    formik.setFieldValue("distribution", distribution);
+    formik.setFieldValue("distribution", distribution.name);
     formik.setFieldValue("origin", origin);
   }, []);
 
@@ -52,7 +72,7 @@ const SnapshotForm: FC<SnapshotFormProps> = ({ distribution, origin }) => {
     <form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        label="Snapshot name"
+        label="* Snapshot name"
         {...formik.getFieldProps("name")}
         error={formik.touched.name && formik.errors.name}
       />

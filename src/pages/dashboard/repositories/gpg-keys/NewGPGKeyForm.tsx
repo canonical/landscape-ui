@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
 import useNotify from "../../../../hooks/useNotify";
 import AppNotification from "../../../../components/layout/AppNotification";
+import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 
 interface FormProps {
   name: string;
@@ -16,10 +17,12 @@ interface FormProps {
 const NewGPGKeyForm: FC = () => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
-  const { importGPGKeyQuery } = useGPGKeys();
+  const { importGPGKeyQuery, getGPGKeysQuery } = useGPGKeys();
   const notify = useNotify();
 
   const { mutateAsync, isLoading } = importGPGKeyQuery;
+
+  const { data: getGPGKeysResponse } = getGPGKeysQuery();
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -27,7 +30,21 @@ const NewGPGKeyForm: FC = () => {
       material: "",
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().required("This field is required"),
+      name: Yup.string()
+        .required("This field is required")
+        .test({
+          test: testLowercaseAlphaNumeric.test,
+          message: testLowercaseAlphaNumeric.message,
+        })
+        .test({
+          params: { getGPGKeysResponse },
+          test: (value) => {
+            return !(getGPGKeysResponse?.data ?? [])
+              .map(({ name }) => name)
+              .includes(value);
+          },
+          message: "It must be unique within the account.",
+        }),
       material: Yup.string()
         .required("This field is required")
         .transform((value) => encodeURIComponent(value)),
@@ -49,7 +66,7 @@ const NewGPGKeyForm: FC = () => {
     <Form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        label="Name"
+        label="* Name"
         error={
           formik.touched.name && formik.errors.name
             ? formik.errors.name
@@ -59,7 +76,7 @@ const NewGPGKeyForm: FC = () => {
       />
 
       <Textarea
-        label="Material"
+        label="* Material"
         rows={10}
         error={
           formik.touched.material && formik.errors.material

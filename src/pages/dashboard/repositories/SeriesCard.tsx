@@ -66,7 +66,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
               setSidePanelContent(
                 "Create snapshot",
                 <SnapshotForm
-                  distribution={distribution.name}
+                  distribution={distribution}
                   origin={series.name}
                 />
               );

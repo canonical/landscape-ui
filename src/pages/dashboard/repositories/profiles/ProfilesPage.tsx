@@ -9,7 +9,6 @@ import EmptyState from "../../../../components/layout/EmptyState";
 import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
 import ProfileList from "./ProfileList";
 import AddProfileForm from "./AddProfileForm";
-import useAccessGroup from "../../../../hooks/useAccessGroup";
 
 const ProfilesPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
@@ -17,28 +16,12 @@ const ProfilesPage: FC = () => {
 
   const { data: repositoryProfilesResponse, isLoading } =
     getRepositoryProfilesQuery();
-  const { getAccessGroupQuery } = useAccessGroup();
-  const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =
-    getAccessGroupQuery();
-
-  const accessGroupsOptions = (accessGroupsResponse?.data ?? []).map(
-    (accessGroup) => ({
-      label: accessGroup.title,
-      value: accessGroup.name,
-    })
-  );
 
   const repositoryProfiles = repositoryProfilesResponse?.data ?? [];
 
   const handleAddProfile = () => {
     setSidePanelOpen(true);
-    setSidePanelContent(
-      "Add Profile",
-      <AddProfileForm
-        isGettingAccessGroups={isGettingAccessGroups}
-        accessGroupsOptions={accessGroupsOptions}
-      />
-    );
+    setSidePanelContent("Add Profile", <AddProfileForm />);
   };
 
   return (
@@ -85,10 +68,7 @@ const ProfilesPage: FC = () => {
           />
         )}
         {!isLoading && repositoryProfiles.length > 0 && (
-          <ProfileList
-            repositoryProfiles={repositoryProfiles}
-            accessGroupsOptions={accessGroupsOptions}
-          />
+          <ProfileList repositoryProfiles={repositoryProfiles} />
         )}
       </PageContent>
     </PageMain>

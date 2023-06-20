@@ -100,8 +100,7 @@ const NewAPTSourceForm: FC = () => {
     <Form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        label="Name"
-        required
+        label="* Name"
         error={
           formik.touched.name && formik.errors.name
             ? formik.errors.name
@@ -112,8 +111,7 @@ const NewAPTSourceForm: FC = () => {
 
       <Input
         type="text"
-        label="APT Line"
-        required
+        label="* APT Line"
         error={
           formik.touched.apt_line && formik.errors.apt_line
             ? formik.errors.apt_line

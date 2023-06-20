@@ -10,43 +10,40 @@ import {
 } from "@canonical/react-components";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
-import { RepositoryProfile } from "../../../../types/RepositoryProfile";
 import useDebug from "../../../../hooks/useDebug";
-import { SelectOption } from "../../../../types/SelectOption";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
+import useAccessGroup from "../../../../hooks/useAccessGroup";
 
-interface AddProfileFormProps {
-  accessGroupsOptions: SelectOption[];
-  isGettingAccessGroups: boolean;
-  profile?: RepositoryProfile;
+interface FormProps {
+  title: string;
+  description: string;
+  access_group: string;
+  tags: string[];
+  all_computers: boolean;
 }
 
-const AddProfileForm: FC<AddProfileFormProps> = ({
-  profile,
-  accessGroupsOptions,
-  isGettingAccessGroups,
-}) => {
-  const validationSchema = Yup.object().shape({
-    title: Yup.string().required("This field is required.").test({
-      test: testLowercaseAlphaNumeric.test,
-      message: testLowercaseAlphaNumeric.message,
-    }),
-    description: Yup.string(),
-    access_group: Yup.string(),
-    tags: Yup.array()
-      .of(Yup.string().required())
-      .required("This field is required. Tags have to be separated by coma."),
-    all_computers: Yup.boolean(),
-  });
+const validationSchema = Yup.object().shape({
+  title: Yup.string().required("This field is required.").test({
+    test: testLowercaseAlphaNumeric.test,
+    message: testLowercaseAlphaNumeric.message,
+  }),
+  description: Yup.string(),
+  access_group: Yup.string(),
+  tags: Yup.array()
+    .of(Yup.string().required())
+    .required("This field is required. Tags have to be separated by coma."),
+  all_computers: Yup.boolean(),
+});
 
-  const initialValues: Yup.InferType<typeof validationSchema> = {
-    title: "",
-    description: "",
-    access_group: "",
-    tags: [],
-    all_computers: false,
-  };
+const initialValues: FormProps = {
+  title: "",
+  description: "",
+  access_group: "",
+  tags: [],
+  all_computers: false,
+};
 
+const AddProfileForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { createRepositoryProfileQuery, associateRepositoryProfileQuery } =
@@ -55,15 +52,25 @@ const AddProfileForm: FC<AddProfileFormProps> = ({
     createRepositoryProfileQuery;
   const { mutateAsync: associateRepositoryProfile, isLoading: isAssociating } =
     associateRepositoryProfileQuery;
+  const { getAccessGroupQuery } = useAccessGroup();
+  const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =
+    getAccessGroupQuery();
 
-  const formik = useFormik({
+  const accessGroupsOptions = (accessGroupsResponse?.data ?? []).map(
+    (accessGroup) => ({
+      label: accessGroup.title,
+      value: accessGroup.name,
+    })
+  );
+
+  const formik = useFormik<FormProps>({
     validationSchema,
     initialValues,
     onSubmit: async (values) => {
       try {
         const newProfile = (
           await createRepositoryProfile({
-            title: values.title ?? "",
+            title: values.title,
             description: values.description,
             access_group: values.access_group,
           })
@@ -90,7 +97,7 @@ const AddProfileForm: FC<AddProfileFormProps> = ({
     <Form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        label="Title"
+        label="* Title"
         error={formik.touched.title && formik.errors.title}
         {...formik.getFieldProps("title")}
       />
@@ -102,18 +109,22 @@ const AddProfileForm: FC<AddProfileFormProps> = ({
         {...formik.getFieldProps("description")}
       />
 
-      {!profile && (
-        <Select
-          label="Access group"
-          options={[
-            { label: "Select access group", value: "" },
-            ...accessGroupsOptions,
-          ]}
-          error={formik.touched.access_group && formik.errors.access_group}
-          disabled={isGettingAccessGroups}
-          {...formik.getFieldProps("access_group")}
-        />
-      )}
+      <Select
+        label="Access group"
+        options={[
+          { label: "Select access group", value: "" },
+          ...accessGroupsOptions,
+        ]}
+        error={formik.touched.access_group && formik.errors.access_group}
+        disabled={isGettingAccessGroups}
+        {...formik.getFieldProps("access_group")}
+      />
+
+      <CheckboxInput
+        label="All computers"
+        {...formik.getFieldProps("all_computers")}
+        checked={formik.values.all_computers}
+      />
 
       <Input
         type="text"
@@ -134,19 +145,13 @@ const AddProfileForm: FC<AddProfileFormProps> = ({
         disabled={formik.values.all_computers}
       />
 
-      <CheckboxInput
-        label="All computers"
-        {...formik.getFieldProps("all_computers")}
-        checked={formik.values.all_computers}
-      />
-
       <div className="form-buttons">
         <Button
           type="submit"
           appearance="positive"
           disabled={isCreating || isAssociating}
         >
-          {profile ? "Edit profile" : "Create profile"}
+          Create profile
         </Button>
         <Button type="button" onClick={closeSidePanel}>
           Cancel

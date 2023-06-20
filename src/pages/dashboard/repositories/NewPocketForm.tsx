@@ -62,7 +62,7 @@ const initialValues: FormProps = {
   mode: "mirror",
   pull_pocket: "",
   pull_series: "",
-  mirror_uri: DEFAULT_MIRROR_URI,
+  mirror_uri: "",
   upload_allow_unsigned: false,
   mirror_suite: "",
   mirror_gpg_key: "",
@@ -164,7 +164,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       .min(1, "Please choose at least one component")
       .test({
         name: "flat-mirror-sub-directory",
-        message: "A single value must be passed",
+        message: "A single component must be passed",
         test: (value, context) => {
           const { mode, mirror_suite } = context.parent;
 
@@ -231,6 +231,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
     formik.setFieldValue("series", series.name);
     formik.setFieldValue("components", PRE_SELECTED_COMPONENTS);
     formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES);
+    formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
   }, []);
 
   const groupedPocketOptionsNew: groupedOption[] = distribution.series.map(
@@ -246,7 +247,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   return (
     <Form onSubmit={formik.handleSubmit}>
       <Select
-        label="Mode"
+        label="* Mode"
         options={[...PRE_DEFINED_POCKET_MODE_OPTIONS]}
         {...formik.getFieldProps("mode")}
         error={formik.touched.mode && formik.errors.mode}
@@ -261,7 +262,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       >
         <Input
           type="text"
-          label="Name"
+          label="* Name"
           wrapperClassName={classNames({
             "col-6": "pull" === formik.values.mode,
           })}
@@ -272,7 +273,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
 
         {"pull" == formik.values.mode && (
           <SelectGrouped
-            label="Pull from"
+            label="* Pull from"
             name="pull_pocket"
             wrapperClassName="col-6"
             groupedOptions={groupedPocketOptionsNew}
@@ -290,7 +291,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       </div>
 
       <Select
-        label="GPG Key"
+        label="* GPG Key"
         options={[
           { label: "Select GPG key", value: "" },
           ...gpgKeys.map((item) => ({
@@ -302,75 +303,12 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         error={formik.touched.gpg_key && formik.errors.gpg_key}
       />
 
-      {"mirror" === formik.values.mode && (
-        <>
-          <Input
-            type="text"
-            label="Mirror URI"
-            {...formik.getFieldProps("mirror_uri")}
-            error={formik.touched.mirror_uri && formik.errors.mirror_uri}
-          />
-
-          <Input
-            type="text"
-            label="Mirror suite"
-            {...formik.getFieldProps("mirror_suite")}
-            error={formik.touched.mirror_suite && formik.errors.mirror_suite}
-          />
-
-          <Input
-            type="text"
-            label="Mirror GPG key"
-            {...formik.getFieldProps("mirror_gpg_key")}
-            error={
-              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
-            }
-          />
-        </>
-      )}
-
-      {"pull" === formik.values.mode && (
-        <>
-          <Select
-            label="Filter type"
-            options={filterTypeOptions}
-            {...formik.getFieldProps("filter_type")}
-            error={formik.touched.filter_type && formik.errors.filter_type}
-          />
-
-          {"" !== formik.values.filter_type && (
-            <Textarea
-              label="Filter packages"
-              rows={3}
-              help="List packages to filter separated by commas or one item per line"
-              {...formik.getFieldProps("filters")}
-              onChange={(event) => {
-                formik.setFieldValue(
-                  "filters",
-                  event.target.value.split(/,\s*/)
-                );
-              }}
-              value={formik.values.filters.join(",")}
-              error={formik.touched.filters && formik.errors.filters}
-            />
-          )}
-        </>
-      )}
-
-      {"upload" === formik.values.mode && (
-        <CheckboxInput
-          label="Allow uploaded packages to be unsigned"
-          {...formik.getFieldProps("upload_allow_unsigned")}
-          checked={formik.values.upload_allow_unsigned}
-        />
-      )}
-
       <fieldset
         className={classNames("checkbox-group", {
           "is-error": formik.touched.components && formik.errors.components,
         })}
       >
-        <legend>Components</legend>
+        <legend>* Components</legend>
 
         {formik.touched.components && formik.errors.components && (
           <p className="p-form-validation__message">
@@ -406,7 +344,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             formik.touched.architectures && formik.errors.architectures,
         })}
       >
-        <legend>Architectures</legend>
+        <legend>* Architectures</legend>
 
         {formik.touched.architectures && formik.errors.architectures && (
           <p className="p-form-validation__message">
@@ -435,6 +373,69 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           ))}
         </div>
       </fieldset>
+
+      {"mirror" === formik.values.mode && (
+        <>
+          <Input
+            type="text"
+            label="* Mirror URI"
+            {...formik.getFieldProps("mirror_uri")}
+            error={formik.touched.mirror_uri && formik.errors.mirror_uri}
+          />
+
+          <Input
+            type="text"
+            label="Mirror suite"
+            {...formik.getFieldProps("mirror_suite")}
+            error={formik.touched.mirror_suite && formik.errors.mirror_suite}
+          />
+
+          <Input
+            type="text"
+            label="Mirror GPG key"
+            {...formik.getFieldProps("mirror_gpg_key")}
+            error={
+              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
+            }
+          />
+        </>
+      )}
+
+      {"pull" === formik.values.mode && (
+        <>
+          <Select
+            label="Filter type"
+            options={filterTypeOptions}
+            {...formik.getFieldProps("filter_type")}
+            error={formik.touched.filter_type && formik.errors.filter_type}
+          />
+
+          {"" !== formik.values.filter_type && (
+            <Textarea
+              label="Filter packages"
+              rows={3}
+              help="List packages to filter separated by commas"
+              {...formik.getFieldProps("filters")}
+              onChange={(event) => {
+                formik.setFieldValue(
+                  "filters",
+                  event.target.value.split(/,\s*/)
+                );
+              }}
+              value={formik.values.filters.join(",")}
+              error={formik.touched.filters && formik.errors.filters}
+            />
+          )}
+        </>
+      )}
+
+      {"upload" === formik.values.mode && (
+        <CheckboxInput
+          label="Allow uploaded packages to be unsigned"
+          {...formik.getFieldProps("upload_allow_unsigned")}
+          checked={formik.values.upload_allow_unsigned}
+        />
+      )}
 
       <CheckboxInput
         label="Include .udeb packages (debian-installer)"
