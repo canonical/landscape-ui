@@ -413,9 +413,9 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
             checked={formik.values.upload_allow_unsigned}
           />
 
-          <Textarea
+          <Input
+            type="text"
             label="Uploader GPG keys"
-            rows={3}
             {...formik.getFieldProps("upload_gpg_keys")}
             onChange={(event) => {
               formik.setFieldValue(
@@ -423,6 +423,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                 event.target.value.replace(/\s/g, "").split(",")
               );
             }}
+            help="List GPG keys separated by commas"
             value={formik.values.upload_gpg_keys.join(",")}
             error={
               formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
