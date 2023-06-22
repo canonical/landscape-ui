@@ -28,6 +28,7 @@ interface SelectGroupedProps {
   wrapperClassName?: string;
   disabled?: boolean;
   hidden?: boolean;
+  required?: boolean;
 }
 
 const SelectGrouped: FC<SelectGroupedProps> = ({
@@ -46,11 +47,12 @@ const SelectGrouped: FC<SelectGroupedProps> = ({
   wrapperClassName,
   hidden,
   disabled,
+  required,
 }) => {
   const selectId =
     id ??
     name
-      .replace(/[_\s]*/, "-")
+      .replace(/[_\s]/g, "-")
       .replace(/([a-z])(?=[A-Z])/, "$1-")
       .replace(/([A-Z])(?=[a-z])/, "-$1")
       .toLowerCase();
@@ -63,7 +65,9 @@ const SelectGrouped: FC<SelectGroupedProps> = ({
     >
       {label && (
         <label
-          className={classNames("p-form__label", labelClassName)}
+          className={classNames("p-form__label", labelClassName, {
+            "is-required": required,
+          })}
           htmlFor={selectId}
         >
           {label}

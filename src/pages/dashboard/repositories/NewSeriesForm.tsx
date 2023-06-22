@@ -154,7 +154,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
   }, [formik.values.pockets.length, formik.values.pockets[0]]);
 
   return (
-    <Form onSubmit={formik.handleSubmit}>
+    <Form onSubmit={formik.handleSubmit} noValidate>
       <Row className="u-no-padding">
         <Col size={6}>
           <Select
@@ -175,7 +175,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         <Col size={6}>
           <Input
             type="text"
-            label="* Mirror name"
+            label="Mirror name"
             error={
               formik.touched.name && formik.errors.name
                 ? formik.errors.name
@@ -188,7 +188,8 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
 
       <Input
         type="text"
-        label={`${formik.values.hasPockets ? "* " : ""}Mirror URI`}
+        label="Mirror URI"
+        required={formik.values.hasPockets}
         error={
           formik.touched.mirror_uri && formik.errors.mirror_uri
             ? formik.errors.mirror_uri
@@ -218,7 +219,8 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
 
         <Col size={6}>
           <Select
-            label={`${formik.values.hasPockets ? "* " : ""}GPG key`}
+            label="GPG key"
+            required={formik.values.hasPockets}
             options={[
               { label: "Select GPG key", value: "" },
               ...gpgKeys.map((item) => ({
@@ -277,7 +279,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
           "is-error": formik.touched.components && formik.errors.components,
         })}
       >
-        <legend>{`${formik.values.hasPockets ? "* " : ""}Components`}</legend>
+        <legend>Components</legend>
 
         {formik.touched.components && formik.errors.components && (
           <p className="p-form-validation__message">
@@ -290,6 +292,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
             <CheckboxInput
               key={option.value}
               label={option.label}
+              required={formik.values.hasPockets}
               {...formik.getFieldProps("components")}
               checked={formik.values.components.includes(option.value)}
               onChange={() =>
@@ -313,9 +316,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
             formik.touched.architectures && formik.errors.architectures,
         })}
       >
-        <legend>{`${
-          formik.values.hasPockets ? "* " : ""
-        }Architectures`}</legend>
+        <legend>Architectures</legend>
 
         {formik.touched.architectures && formik.errors.architectures && (
           <p className="p-form-validation__message">
@@ -328,6 +329,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
             <CheckboxInput
               key={option.value}
               label={option.label}
+              required={formik.values.hasPockets}
               {...formik.getFieldProps("architectures")}
               checked={formik.values.architectures.includes(option.value)}
               onChange={() =>

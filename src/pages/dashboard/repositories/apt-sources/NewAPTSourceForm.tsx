@@ -97,10 +97,11 @@ const NewAPTSourceForm: FC = () => {
   useEffect(() => notify.clear, []);
 
   return (
-    <Form onSubmit={formik.handleSubmit}>
+    <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        label="* Name"
+        label="Name"
+        required
         error={
           formik.touched.name && formik.errors.name
             ? formik.errors.name
@@ -111,7 +112,8 @@ const NewAPTSourceForm: FC = () => {
 
       <Input
         type="text"
-        label="* APT Line"
+        label="APT Line"
+        required
         error={
           formik.touched.apt_line && formik.errors.apt_line
             ? formik.errors.apt_line

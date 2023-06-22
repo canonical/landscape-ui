@@ -63,10 +63,11 @@ const NewGPGKeyForm: FC = () => {
   useEffect(() => notify.clear, []);
 
   return (
-    <Form onSubmit={formik.handleSubmit}>
+    <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        label="* Name"
+        label="Name"
+        required
         error={
           formik.touched.name && formik.errors.name
             ? formik.errors.name
@@ -76,7 +77,8 @@ const NewGPGKeyForm: FC = () => {
       />
 
       <Textarea
-        label="* Material"
+        label="Material"
+        required
         rows={10}
         error={
           formik.touched.material && formik.errors.material

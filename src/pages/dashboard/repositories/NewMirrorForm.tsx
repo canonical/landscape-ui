@@ -195,9 +195,10 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
   }, [formik.values.mirror_series]);
 
   return (
-    <Form onSubmit={formik.handleSubmit}>
+    <Form onSubmit={formik.handleSubmit} noValidate>
       <Select
-        label="* Type"
+        label="Type"
+        required
         options={[
           { label: "Ubuntu", value: "ubuntu" },
           { label: "Third party", value: "third-party" },
@@ -207,7 +208,8 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
       />
 
       <Select
-        label="* Distribution"
+        label="Distribution"
+        required
         options={[
           { label: "Select distribution", value: "" },
           ...distributionOptions,
@@ -231,7 +233,8 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
         <Col size={6}>
           <Input
             type="text"
-            label="* Series name"
+            label="Series name"
+            required
             {...formik.getFieldProps("name")}
             error={formik.touched.name && formik.errors.name}
           />
@@ -240,7 +243,8 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
 
       <Input
         type="text"
-        label={`${formik.values.hasPockets ? "* " : ""}Mirror URI`}
+        label="Mirror URI"
+        required={formik.values.hasPockets}
         name="mirror_uri"
         value={formik.values.mirror_uri}
         onChange={(event) => {
@@ -266,7 +270,8 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
 
         <Col size={6}>
           <Select
-            label={`${formik.values.hasPockets ? "* " : ""}GPG key`}
+            label="GPG key"
+            required={formik.values.hasPockets}
             options={[
               {
                 label: "Select GPG key",
@@ -300,7 +305,8 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
 
           <Input
             type="text"
-            label={`${formik.values.hasPockets ? "* " : ""}Components`}
+            label="Components"
+            required={formik.values.hasPockets}
             placeholder="E.g. main, universe, etc."
             {...formik.getFieldProps("components")}
             value={
@@ -318,7 +324,8 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
 
           <Input
             type="text"
-            label={`${formik.values.hasPockets ? "* " : ""}Architectures`}
+            label="Architectures"
+            required={formik.values.hasPockets}
             placeholder="E.g. amd64, riscv, etc."
             {...formik.getFieldProps("architectures")}
             value={
@@ -382,9 +389,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
               "is-error": formik.touched.components && formik.errors.components,
             })}
           >
-            <legend>{`${
-              formik.values.hasPockets ? "* " : ""
-            }Components`}</legend>
+            <legend>Components</legend>
 
             {formik.touched.components && formik.errors.components && (
               <p className="p-form-validation__message">
@@ -397,6 +402,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
                 <CheckboxInput
                   key={option.value}
                   label={option.label}
+                  required={formik.values.hasPockets}
                   {...formik.getFieldProps("components")}
                   checked={formik.values.components.includes(option.value)}
                   onChange={() =>
@@ -420,9 +426,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
                 formik.touched.architectures && formik.errors.architectures,
             })}
           >
-            <legend>{`${
-              formik.values.hasPockets ? "* " : ""
-            }Architectures`}</legend>
+            <legend>Architectures</legend>
 
             {formik.touched.architectures && formik.errors.architectures && (
               <p className="p-form-validation__message">
@@ -433,6 +437,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
             <div className="checkbox-group__inner">
               {ARCHITECTURE_OPTIONS.map((option) => (
                 <CheckboxInput
+                  required={formik.values.hasPockets}
                   key={option.value}
                   label={option.label}
                   {...formik.getFieldProps("architectures")}

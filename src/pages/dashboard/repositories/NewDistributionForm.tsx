@@ -74,10 +74,11 @@ const NewDistributionForm: FC = () => {
   });
 
   return (
-    <Form onSubmit={formik.handleSubmit}>
+    <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        label="* Distribution name"
+        label="Distribution name"
+        required
         {...formik.getFieldProps("name")}
         error={formik.touched.name && formik.errors.name}
       />

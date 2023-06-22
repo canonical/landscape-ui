@@ -200,10 +200,11 @@ const AddProfileForm: FC = () => {
   );
 
   return (
-    <Form onSubmit={formik.handleSubmit}>
+    <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        label="* Title"
+        label="Title"
+        required
         error={formik.touched.title && formik.errors.title}
         {...formik.getFieldProps("title")}
       />

@@ -69,10 +69,11 @@ const SnapshotForm: FC<SnapshotFormProps> = ({ distribution, origin }) => {
   }, []);
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        label="* Snapshot name"
+        label="Snapshot name"
+        required
         {...formik.getFieldProps("name")}
         error={formik.touched.name && formik.errors.name}
       />

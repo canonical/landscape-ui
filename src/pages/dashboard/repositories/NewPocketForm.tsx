@@ -268,9 +268,10 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   );
 
   return (
-    <Form onSubmit={formik.handleSubmit}>
+    <Form onSubmit={formik.handleSubmit} noValidate>
       <Select
-        label="* Mode"
+        label="Mode"
+        required
         options={[...PRE_DEFINED_POCKET_MODE_OPTIONS]}
         {...formik.getFieldProps("mode")}
         error={formik.touched.mode && formik.errors.mode}
@@ -285,7 +286,8 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       >
         <Input
           type="text"
-          label="* Name"
+          label="Name"
+          required
           wrapperClassName={classNames({
             "col-6": "pull" === formik.values.mode,
           })}
@@ -296,7 +298,8 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
 
         {"pull" == formik.values.mode && (
           <SelectGrouped
-            label="* Pull from"
+            label="Pull from"
+            required
             name="pull_pocket"
             wrapperClassName="col-6"
             groupedOptions={groupedPocketOptionsNew}
@@ -385,7 +388,8 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       </fieldset>
 
       <Select
-        label="* GPG Key"
+        label="GPG Key"
+        required
         options={[
           { label: "Select GPG key", value: "" },
           ...gpgKeys.map((item) => ({
@@ -407,7 +411,8 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         <>
           <Input
             type="text"
-            label="* Mirror URI"
+            label="Mirror URI"
+            required
             {...formik.getFieldProps("mirror_uri")}
             error={formik.touched.mirror_uri && formik.errors.mirror_uri}
           />
