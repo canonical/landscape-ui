@@ -9,8 +9,8 @@ import {
   Select,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import useDebug from "../../../hooks/useDebug";
-import useSidePanel from "../../../hooks/useSidePanel";
+import useDebug from "../../../../hooks/useDebug";
+import useSidePanel from "../../../../hooks/useSidePanel";
 import * as Yup from "yup";
 import {
   ARCHITECTURE_OPTIONS,
@@ -20,13 +20,13 @@ import {
   PRE_SELECTED_ARCHITECTURES,
   PRE_SELECTED_COMPONENTS,
   PRE_SELECTED_POCKETS,
-} from "../../../data/series";
+} from "../../../../data/series";
 import classNames from "classnames";
-import useSeries, { CreateSeriesParams } from "../../../hooks/useSeries";
-import { DEFAULT_MIRROR_URI } from "../../../constants";
-import useGPGKeys from "../../../hooks/useGPGKeys";
-import { Distribution } from "../../../types/Distribution";
-import { testLowercaseAlphaNumeric } from "../../../utils/tests";
+import useSeries, { CreateSeriesParams } from "../../../../hooks/useSeries";
+import { DEFAULT_MIRROR_URI } from "../../../../constants";
+import useGPGKeys from "../../../../hooks/useGPGKeys";
+import { Distribution } from "../../../../types/Distribution";
+import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 
 interface FormProps extends CreateSeriesParams {
   pockets: string[];

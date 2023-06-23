@@ -3,12 +3,12 @@ import { Button, Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { string } from "yup";
-import useDebug from "../../../hooks/useDebug";
-import useDistributions from "../../../hooks/useDistributions";
-import useSidePanel from "../../../hooks/useSidePanel";
-import useAccessGroup from "../../../hooks/useAccessGroup";
-import { SelectOption } from "../../../types/SelectOption";
-import { testLowercaseAlphaNumeric } from "../../../utils/tests";
+import useDebug from "../../../../hooks/useDebug";
+import useDistributions from "../../../../hooks/useDistributions";
+import useSidePanel from "../../../../hooks/useSidePanel";
+import useAccessGroup from "../../../../hooks/useAccessGroup";
+import { SelectOption } from "../../../../types/SelectOption";
+import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 
 const NewDistributionForm: FC = () => {
   const debug = useDebug();

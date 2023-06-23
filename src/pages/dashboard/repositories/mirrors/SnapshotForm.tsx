@@ -1,13 +1,13 @@
 import { FC, useEffect } from "react";
-import { Distribution } from "../../../types/Distribution";
-import { Series } from "../../../types/Series";
+import { Distribution } from "../../../../types/Distribution";
+import { Series } from "../../../../types/Series";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import useSidePanel from "../../../hooks/useSidePanel";
-import useSeries from "../../../hooks/useSeries";
-import useDebug from "../../../hooks/useDebug";
+import useSidePanel from "../../../../hooks/useSidePanel";
+import useSeries from "../../../../hooks/useSeries";
+import useDebug from "../../../../hooks/useDebug";
 import { Button, Input } from "@canonical/react-components";
-import { testLowercaseAlphaNumeric } from "../../../utils/tests";
+import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 
 interface FormProps {
   distribution: Distribution["name"];

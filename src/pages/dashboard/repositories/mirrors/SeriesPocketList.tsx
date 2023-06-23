@@ -1,15 +1,16 @@
-import { Series } from "../../../types/Series";
+import { Series } from "../../../../types/Series";
 import { FC } from "react";
 import { Button, MainTable } from "@canonical/react-components";
-import { Pocket } from "../../../types/Pocket";
-import { Distribution } from "../../../types/Distribution";
-import usePockets from "../../../hooks/usePockets";
-import useDebug from "../../../hooks/useDebug";
-import useConfirm from "../../../hooks/useConfirm";
-import useSidePanel from "../../../hooks/useSidePanel";
+import { Pocket } from "../../../../types/Pocket";
+import { Distribution } from "../../../../types/Distribution";
+import usePockets from "../../../../hooks/usePockets";
+import useDebug from "../../../../hooks/useDebug";
+import useConfirm from "../../../../hooks/useConfirm";
+import useSidePanel from "../../../../hooks/useSidePanel";
 import EditPocketForm from "./EditPocketForm";
 import classNames from "classnames";
 import PackageList from "./PackageList";
+import classes from "./SeriesPocketList.module.scss";
 
 interface SeriesPocketListProps {
   distributionName: Distribution["name"];
@@ -221,13 +222,18 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 <Button
                   hasIcon
                   appearance="base"
-                  className="u-no-margin--bottom"
-                  aria-label={`Synchronize ${pocket.name} pocket`}
+                  className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
+                  aria-label={`${
+                    "mirror" === pocket.mode ? "Synchronize" : "Pull"
+                  } ${pocket.name} pocket`}
                   onClick={() => {
                     handleSyncPocket(pocket);
                   }}
                 >
                   <i className="p-icon--change-version" />
+                  <span className="p-tooltip__message">
+                    {"mirror" === pocket.mode ? "Sync" : "Pull"}
+                  </span>
                 </Button>
               )}
               <Button
@@ -260,7 +266,12 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
   });
 
   return (
-    <MainTable headers={headers} rows={rows} emptyStateMsg="No pockets yet" />
+    <MainTable
+      className={classes.content}
+      headers={headers}
+      rows={rows}
+      emptyStateMsg="No pockets yet"
+    />
   );
 };
 

@@ -1,13 +1,18 @@
 import { FC, useEffect } from "react";
 import DashboardTemplate from "../../templates/dashboard";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const DashboardPage: FC = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    navigate("/repositories", { replace: true });
-  }, []);
+    if ("/" !== pathname) {
+      return;
+    }
+
+    navigate("/repositories/mirrors", { replace: true });
+  }, [pathname]);
 
   return (
     <DashboardTemplate>

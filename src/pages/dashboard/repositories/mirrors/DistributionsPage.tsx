@@ -1,16 +1,16 @@
 import { FC } from "react";
-import PageHeader from "../../../components/layout/PageHeader";
-import PageMain from "../../../components/layout/PageMain";
-import PageContent from "../../../components/layout/PageContent";
+import PageHeader from "../../../../components/layout/PageHeader";
+import PageMain from "../../../../components/layout/PageMain";
+import PageContent from "../../../../components/layout/PageContent";
 import { Button } from "@canonical/react-components";
-import LoadingState from "../../../components/layout/LoadingState";
-import EmptyState from "../../../components/layout/EmptyState";
-import useSidePanel from "../../../hooks/useSidePanel";
-import useDistributions from "../../../hooks/useDistributions";
+import LoadingState from "../../../../components/layout/LoadingState";
+import EmptyState from "../../../../components/layout/EmptyState";
+import useSidePanel from "../../../../hooks/useSidePanel";
+import useDistributions from "../../../../hooks/useDistributions";
 import DistributionCard from "./DistributionCard";
 import NewDistributionForm from "./NewDistributionForm";
 import NewMirrorForm from "./NewMirrorForm";
-import useDebug from "../../../hooks/useDebug";
+import useDebug from "../../../../hooks/useDebug";
 
 const DistributionsPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
@@ -22,7 +22,7 @@ const DistributionsPage: FC = () => {
     debug(error);
   }
 
-  const items = data?.data ?? [];
+  const distributions = data?.data ?? [];
 
   return (
     <PageMain>
@@ -50,26 +50,27 @@ const DistributionsPage: FC = () => {
               setSidePanelOpen(true);
               setSidePanelContent(
                 "Create new mirror",
-                <NewMirrorForm distributions={items} />
+                <NewMirrorForm distributions={distributions} />
               );
             }}
             type="button"
             className="u-no-margin--right"
+            disabled={0 === distributions.length}
           >
-            New mirror
+            Create mirror
           </Button>,
         ]}
       />
       <PageContent>
         {isLoading && <LoadingState />}
-        {!isLoading && items.length === 0 && (
+        {!isLoading && distributions.length === 0 && (
           <EmptyState
-            title="No mirrors found"
+            title="No mirrors have been created yet"
             icon="containers"
             body={
               <>
                 <p className="u-no-margin--bottom">
-                  You haven’t created any repository mirrors yet.
+                  To create a new mirror you must first create a distribution
                 </p>
                 <a href="https://ubuntu.com/landscape/docs/repositories">
                   How to manage repositories in Landscape
@@ -78,26 +79,28 @@ const DistributionsPage: FC = () => {
             }
             cta={[
               <Button
-                appearance="positive"
-                key="table-create-new-mirror"
+                key="create-distribution"
                 onClick={() => {
                   setSidePanelOpen(true);
                   setSidePanelContent(
-                    "Create new mirror",
-                    <NewMirrorForm distributions={items} />
+                    "Create distribution",
+                    <NewDistributionForm />
                   );
                 }}
                 type="button"
               >
-                New mirror
+                Create distribution
               </Button>,
             ]}
           />
         )}
         {!isLoading &&
-          items.length > 0 &&
-          items.map((item) => (
-            <DistributionCard key={item.name} distribution={item} />
+          distributions.length > 0 &&
+          distributions.map((distribution) => (
+            <DistributionCard
+              key={distribution.name}
+              distribution={distribution}
+            />
           ))}
       </PageContent>
     </PageMain>

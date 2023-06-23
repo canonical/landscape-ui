@@ -1,15 +1,15 @@
 import { FC, useEffect } from "react";
-import { Series } from "../../../types/Series";
-import { Distribution } from "../../../types/Distribution";
-import useDebug from "../../../hooks/useDebug";
-import useSidePanel from "../../../hooks/useSidePanel";
+import { Series } from "../../../../types/Series";
+import { Distribution } from "../../../../types/Distribution";
+import useDebug from "../../../../hooks/useDebug";
+import useSidePanel from "../../../../hooks/useSidePanel";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import usePockets, {
   CreateMirrorPocketParams,
   CreatePullPocketParams,
   CreateUploadPocketParams,
-} from "../../../hooks/usePockets";
+} from "../../../../hooks/usePockets";
 import {
   Button,
   CheckboxInput,
@@ -24,18 +24,18 @@ import {
   COMPONENT_OPTIONS,
   PRE_SELECTED_ARCHITECTURES,
   PRE_SELECTED_COMPONENTS,
-} from "../../../data/series";
-import useGPGKeys from "../../../hooks/useGPGKeys";
+} from "../../../../data/series";
+import useGPGKeys from "../../../../hooks/useGPGKeys";
 import {
   filterTypeOptions,
   PRE_DEFINED_POCKET_MODE_OPTIONS,
-} from "../../../data/pockets";
-import { DEFAULT_MIRROR_URI } from "../../../constants";
-import { assertNever } from "../../../utils/debug";
+} from "../../../../data/pockets";
+import { DEFAULT_MIRROR_URI } from "../../../../constants";
+import { assertNever } from "../../../../utils/debug";
 import SelectGrouped, {
   groupedOption,
-} from "../../../components/form/SelectGrouped";
-import { testLowercaseAlphaNumeric } from "../../../utils/tests";
+} from "../../../../components/form/SelectGrouped";
+import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 
 interface FormProps
   extends Omit<CreateMirrorPocketParams, "mode">,

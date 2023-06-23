@@ -3,12 +3,13 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import LoginPage from "./pages/auth/login";
 import DashboardPage from "./pages/dashboard";
 import PageNotFound from "./pages/PageNotFound";
-import DistributionsPage from "./pages/dashboard/repositories";
+import DistributionsPage from "./pages/dashboard/repositories/mirrors";
 import ProfilesPage from "./pages/dashboard/repositories/profiles";
 import GPGKeysPage from "./pages/dashboard/repositories/gpg-keys";
 import APTSourcesPage from "./pages/dashboard/repositories/apt-sources";
 import FetchProvider from "./context/fetch";
 import useAuth from "./hooks/useAuth";
+import RepositoryPage from "./pages/dashboard/repositories";
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -54,6 +55,14 @@ const App: FC = () => {
         >
           <Route
             path="repositories"
+            element={
+              <AuthRoute>
+                <RepositoryPage />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="repositories/mirrors"
             element={
               <AuthRoute>
                 <DistributionsPage />

@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.content {
+  tbody tr:hover {
+    background-color: $color-light;
+  }
+
+  td {
+    overflow: initial;
+  }
+}

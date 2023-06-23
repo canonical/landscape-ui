@@ -1,15 +1,15 @@
 import { FC, useEffect } from "react";
-import { Series } from "../../../types/Series";
-import { Distribution } from "../../../types/Distribution";
-import useDebug from "../../../hooks/useDebug";
-import useSidePanel from "../../../hooks/useSidePanel";
+import { Series } from "../../../../types/Series";
+import { Distribution } from "../../../../types/Distribution";
+import useDebug from "../../../../hooks/useDebug";
+import useSidePanel from "../../../../hooks/useSidePanel";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import usePockets, {
   EditMirrorPocketParams,
   EditPullPocketParams,
   EditUploadPocketParams,
-} from "../../../hooks/usePockets";
+} from "../../../../hooks/usePockets";
 import {
   Button,
   CheckboxInput,
@@ -19,11 +19,14 @@ import {
   Textarea,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import { ARCHITECTURE_OPTIONS, COMPONENT_OPTIONS } from "../../../data/series";
-import useGPGKeys from "../../../hooks/useGPGKeys";
-import { DEFAULT_MIRROR_URI } from "../../../constants";
-import { Pocket } from "../../../types/Pocket";
-import { assertNever } from "../../../utils/debug";
+import {
+  ARCHITECTURE_OPTIONS,
+  COMPONENT_OPTIONS,
+} from "../../../../data/series";
+import useGPGKeys from "../../../../hooks/useGPGKeys";
+import { DEFAULT_MIRROR_URI } from "../../../../constants";
+import { Pocket } from "../../../../types/Pocket";
+import { assertNever } from "../../../../utils/debug";
 import { AxiosResponse } from "axios";
 
 interface FormProps

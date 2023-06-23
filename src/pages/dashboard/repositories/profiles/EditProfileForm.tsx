@@ -19,7 +19,7 @@ import classNames from "classnames";
 import useAPTSources from "../../../../hooks/useAPTSources";
 import useDistributions from "../../../../hooks/useDistributions";
 import classes from "./Profile.module.scss";
-import PackageList from "../PackageList";
+import PackageList from "../mirrors/PackageList";
 
 interface FormProps {
   name: string;

@@ -16,6 +16,10 @@ const MENU_ITEMS: MenuItem[] = [
     icon: "pods",
     items: [
       {
+        label: "Mirrors",
+        path: "/repositories/mirrors",
+      },
+      {
         label: "Profiles",
         path: "/repositories/profiles",
       },

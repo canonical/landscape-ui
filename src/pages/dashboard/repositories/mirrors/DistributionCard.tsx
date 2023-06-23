@@ -1,13 +1,14 @@
 import { FC } from "react";
 import SeriesCard from "./SeriesCard";
 import { Button, Spinner } from "@canonical/react-components";
-import useSidePanel from "../../../hooks/useSidePanel";
+import useSidePanel from "../../../../hooks/useSidePanel";
 import NewSeriesForm from "./NewSeriesForm";
-import useDistributions from "../../../hooks/useDistributions";
+import useDistributions from "../../../../hooks/useDistributions";
 import classes from "./DistributionCard.module.scss";
-import useDebug from "../../../hooks/useDebug";
-import { Distribution } from "../../../types/Distribution";
-import useConfirm from "../../../hooks/useConfirm";
+import useDebug from "../../../../hooks/useDebug";
+import { Distribution } from "../../../../types/Distribution";
+import useConfirm from "../../../../hooks/useConfirm";
+import EmptyDistribution from "./EmptyDistribution";
 
 interface DistributionCardProps {
   distribution: Distribution;
@@ -54,7 +55,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
         <h2 className={classes.title}>{distribution.name}</h2>
         <div>
           <Button
-            small
+            dense
             onClick={() => {
               setSidePanelOpen(true);
               setSidePanelContent(
@@ -67,16 +68,16 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
           </Button>
           <Button
             onClick={handleRemove}
-            small
+            dense
             aria-label={`Remove ${distribution.name} distribution`}
             disabled={isRemoving}
           >
-            Remove
+            Remove distribution
           </Button>
         </div>
       </div>
       {0 === distribution.series.length && (
-        <p>No series have been added yet.</p>
+        <EmptyDistribution distribution={distribution} />
       )}
       {distribution.series.length > 0 &&
         distribution.series.map((series) => (

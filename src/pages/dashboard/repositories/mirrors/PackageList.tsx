@@ -1,8 +1,8 @@
 import { FC, useLayoutEffect, useRef, useState } from "react";
-import { Pocket } from "../../../types/Pocket";
-import { Distribution } from "../../../types/Distribution";
-import { Series } from "../../../types/Series";
-import usePockets from "../../../hooks/usePockets";
+import { Pocket } from "../../../../types/Pocket";
+import { Distribution } from "../../../../types/Distribution";
+import { Series } from "../../../../types/Series";
+import usePockets from "../../../../hooks/usePockets";
 import {
   Button,
   Col,
@@ -12,10 +12,10 @@ import {
   Row,
   Spinner,
 } from "@canonical/react-components";
-import useDebug from "../../../hooks/useDebug";
+import useDebug from "../../../../hooks/useDebug";
 import classNames from "classnames";
-import useConfirm from "../../../hooks/useConfirm";
-import useSidePanel from "../../../hooks/useSidePanel";
+import useConfirm from "../../../../hooks/useConfirm";
+import useSidePanel from "../../../../hooks/useSidePanel";
 import EditPocketForm from "./EditPocketForm";
 import classes from "./PackageList.module.scss";
 

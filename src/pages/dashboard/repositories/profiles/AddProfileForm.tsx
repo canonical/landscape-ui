@@ -21,7 +21,7 @@ import classNames from "classnames";
 import { AxiosResponse } from "axios";
 import { RepositoryProfile } from "../../../../types/RepositoryProfile";
 import classes from "./Profile.module.scss";
-import PackageList from "../PackageList";
+import PackageList from "../mirrors/PackageList";
 
 interface FormProps {
   title: string;

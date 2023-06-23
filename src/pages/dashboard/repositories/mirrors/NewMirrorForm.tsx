@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
-import useDebug from "../../../hooks/useDebug";
-import useSidePanel from "../../../hooks/useSidePanel";
+import useDebug from "../../../../hooks/useDebug";
+import useSidePanel from "../../../../hooks/useSidePanel";
 import {
   Button,
   CheckboxInput,
@@ -12,10 +12,10 @@ import {
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import useSeries, { CreateSeriesParams } from "../../../hooks/useSeries";
-import useGPGKeys from "../../../hooks/useGPGKeys";
-import { SelectOption } from "../../../types/SelectOption";
-import { Distribution } from "../../../types/Distribution";
+import useSeries, { CreateSeriesParams } from "../../../../hooks/useSeries";
+import useGPGKeys from "../../../../hooks/useGPGKeys";
+import { SelectOption } from "../../../../types/SelectOption";
+import { Distribution } from "../../../../types/Distribution";
 import {
   ARCHITECTURE_OPTIONS,
   COMPONENT_OPTIONS,
@@ -24,10 +24,10 @@ import {
   PRE_SELECTED_ARCHITECTURES,
   PRE_SELECTED_COMPONENTS,
   PRE_SELECTED_POCKETS,
-} from "../../../data/series";
+} from "../../../../data/series";
 import classNames from "classnames";
-import { DEFAULT_MIRROR_URI } from "../../../constants";
-import { testLowercaseAlphaNumeric } from "../../../utils/tests";
+import { DEFAULT_MIRROR_URI } from "../../../../constants";
+import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 
 interface FormProps extends CreateSeriesParams {
   type: "ubuntu" | "third-party";
