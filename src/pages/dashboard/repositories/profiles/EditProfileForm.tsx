@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -8,6 +8,7 @@ import {
   Form,
   Input,
   Row,
+  Tabs,
 } from "@canonical/react-components";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
@@ -18,8 +19,14 @@ import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 import classNames from "classnames";
 import useAPTSources from "../../../../hooks/useAPTSources";
 import useDistributions from "../../../../hooks/useDistributions";
-import classes from "./Profile.module.scss";
-import PackageList from "../mirrors/PackageList";
+import classes from "./ProfileForm.module.scss";
+import {
+  getDistributionPocketOptions,
+  getFilteredAptSources,
+  getFilteredDistributionPocketOptions,
+  getFullProfilePocketNames,
+  isProfileChanged,
+} from "./_utils";
 
 interface FormProps {
   name: string;
@@ -39,9 +46,7 @@ const validationSchema = Yup.object().shape({
     message: testLowercaseAlphaNumeric.message,
   }),
   description: Yup.string().required("This field is required."),
-  tags: Yup.array()
-    .of(Yup.string().required())
-    .required("This field is required. Tags have to be separated by coma."),
+  tags: Yup.array().of(Yup.string()),
   all_computers: Yup.boolean(),
   apt_sources: Yup.array().of(Yup.string()),
   pockets: Yup.array().of(Yup.string()),
@@ -62,8 +67,15 @@ interface EditProfileFormProps {
 }
 
 const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
+  const [currentTab, setCurrentTab] = useState(0);
+  const [profileChanged, setProfileChanged] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [tagsChangesTrigger, setTagsChangesTrigger] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const debug = useDebug();
-  const { closeSidePanel, setSidePanelContent } = useSidePanel();
+  const { closeSidePanel } = useSidePanel();
 
   const { getDistributionsQuery } = useDistributions();
   const { getAPTSourcesQuery } = useAPTSources();
@@ -105,18 +117,12 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
 
   const distributions = getDistributionsResponse?.data ?? [];
 
-  const distributionPocketOptions = distributions.map(
-    ({ name: distributionName, series }) => ({
-      distributionName,
-      series: series.map(({ name: seriesName, pockets }) => ({
-        seriesName,
-        pockets: pockets.map(({ name: pocketName }) => ({
-          pocketName,
-          value: `${distributionName}/${seriesName}/${pocketName}`,
-        })),
-      })),
-    })
-  );
+  const distributionPocketOptions = getDistributionPocketOptions(distributions);
+
+  const filteredDistributionPocketOptions =
+    getFilteredDistributionPocketOptions(distributionPocketOptions, searchText);
+
+  const fullPocketNames = getFullProfilePocketNames(profile.pockets);
 
   const formik = useFormik<FormProps>({
     validationSchema,
@@ -152,75 +158,80 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           );
         }
 
+        const newTags = values.tags.filter((x) => x);
+
         if (
-          profile.tags.length &&
-          (profile.tags.length !== values.tags.length ||
-            !profile.tags.every((tag) => values.tags.includes(tag)))
+          newTags.length !== profile.tags.length ||
+          !profile.tags.every((tag) => newTags.includes(tag))
         ) {
-          const associateArray: string[] = [];
-          const disassociateArray: string[] = [];
-
-          profile.tags.forEach((tag) => {
-            if (!values.tags.includes(tag)) {
-              disassociateArray.push(tag);
-            }
-          });
-
-          values.tags.forEach((tag) => {
-            if (!profile.tags.includes(tag)) {
-              associateArray.push(tag);
-            }
-          });
-
-          promises.push(
-            associateRepositoryProfile({
-              name: values.name,
-              tags: associateArray,
-            }),
-            disassociateRepositoryProfile({
-              name: values.name,
-              tags: disassociateArray,
-            })
+          const tagsAdded = newTags.filter(
+            (tag) => !profile.tags.includes(tag)
           );
-        }
-
-        const aptSourcesAdded = values.apt_sources
-          .filter((x) => x)
-          .filter((apt_source) => !profile.apt_sources.includes(apt_source));
-        const aptSourcesRemoved = profile.apt_sources.filter(
-          (apt_source) => !values.apt_sources.includes(apt_source)
-        );
-
-        if (aptSourcesAdded.length) {
-          promises.push(
-            addAPTSourcesToRepositoryProfile({
-              name: values.name,
-              apt_sources: aptSourcesAdded,
-            })
+          const tagsRemoved = profile.tags.filter(
+            (tag) => !newTags.includes(tag)
           );
-        }
 
-        if (aptSourcesRemoved.length) {
-          for (const aptSourceRemoved of aptSourcesRemoved) {
+          if (tagsAdded.length) {
             promises.push(
-              removeAPTSourceFromRepositoryProfile({
+              associateRepositoryProfile({
                 name: values.name,
-                apt_source: aptSourceRemoved,
+                tags: tagsAdded,
+              })
+            );
+          }
+
+          if (tagsRemoved.length) {
+            promises.push(
+              disassociateRepositoryProfile({
+                name: values.name,
+                tags: tagsRemoved,
               })
             );
           }
         }
 
-        const profilePocketNames = profile.pockets.map(({ name }) => name);
+        if (
+          values.apt_sources.length !== profile.apt_sources.length ||
+          !profile.apt_sources.every((aptSource) =>
+            values.apt_sources.includes(aptSource)
+          )
+        ) {
+          const aptSourcesAdded = values.apt_sources.filter(
+            (apt_source) => !profile.apt_sources.includes(apt_source)
+          );
+          const aptSourcesRemoved = profile.apt_sources.filter(
+            (apt_source) => !values.apt_sources.includes(apt_source)
+          );
+
+          if (aptSourcesAdded.length) {
+            promises.push(
+              addAPTSourcesToRepositoryProfile({
+                name: values.name,
+                apt_sources: aptSourcesAdded,
+              })
+            );
+          }
+
+          if (aptSourcesRemoved.length) {
+            for (const aptSourceRemoved of aptSourcesRemoved) {
+              promises.push(
+                removeAPTSourceFromRepositoryProfile({
+                  name: values.name,
+                  apt_source: aptSourceRemoved,
+                })
+              );
+            }
+          }
+        }
 
         if (
           values.pockets.length !== profile.pockets.length ||
-          !values.pockets.every((pocket) => profilePocketNames.includes(pocket))
+          !values.pockets.every((pocket) => fullPocketNames.includes(pocket))
         ) {
           const profilePocketsAdded = values.pockets.filter(
-            (pocket) => !profilePocketNames.includes(pocket)
+            (pocket) => !fullPocketNames.includes(pocket)
           );
-          const profilePocketsRemoved = profilePocketNames.filter(
+          const profilePocketsRemoved = fullPocketNames.filter(
             (profilePocketName) => !values.pockets.includes(profilePocketName)
           );
 
@@ -230,7 +241,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               series,
             } of distributionPocketOptions) {
               for (const { seriesName, pockets } of series) {
-                const seriesPockets: string[] = [];
+                const seriesPocketNames: string[] = [];
 
                 for (const { pocketName } of pockets) {
                   if (
@@ -238,19 +249,19 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                       `${distributionName}/${seriesName}/${pocketName}`
                     )
                   ) {
-                    seriesPockets.push(pocketName);
+                    seriesPocketNames.push(pocketName);
                   }
+                }
 
-                  if (seriesPockets.length) {
-                    promises.push(
-                      addPocketsToRepositoryProfile({
-                        name: values.name,
-                        series: seriesName,
-                        distribution: distributionName,
-                        pockets: seriesPockets,
-                      })
-                    );
-                  }
+                if (seriesPocketNames.length) {
+                  promises.push(
+                    addPocketsToRepositoryProfile({
+                      name: values.name,
+                      distribution: distributionName,
+                      series: seriesName,
+                      pockets: seriesPocketNames,
+                    })
+                  );
                 }
               }
             }
@@ -262,7 +273,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               series,
             } of distributionPocketOptions) {
               for (const { seriesName, pockets } of series) {
-                const seriesPockets: string[] = [];
+                const seriesPocketNames: string[] = [];
 
                 for (const { pocketName } of pockets) {
                   if (
@@ -270,19 +281,19 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                       `${distributionName}/${seriesName}/${pocketName}`
                     )
                   ) {
-                    seriesPockets.push(pocketName);
+                    seriesPocketNames.push(pocketName);
                   }
+                }
 
-                  if (seriesPockets.length) {
-                    promises.push(
-                      removePocketsFromRepositoryProfile({
-                        name: values.name,
-                        series: seriesName,
-                        distribution: distributionName,
-                        pockets: seriesPockets,
-                      })
-                    );
-                  }
+                if (seriesPocketNames.length) {
+                  promises.push(
+                    removePocketsFromRepositoryProfile({
+                      name: values.name,
+                      distribution: distributionName,
+                      series: seriesName,
+                      pockets: seriesPocketNames,
+                    })
+                  );
                 }
               }
             }
@@ -305,204 +316,313 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
     formik.setFieldValue("title", profile.title);
     formik.setFieldValue("name", profile.name);
     formik.setFieldValue("apt_sources", profile.apt_sources);
-    formik.setFieldValue(
-      "pockets",
-      profile.pockets.map(({ name, apt_source_line }) => {
-        const aptParts = apt_source_line.split(" ");
-
-        const regExpMatchArr = aptParts[1].match(/\/([-+\w]+)$/);
-
-        const distributionName =
-          null !== regExpMatchArr ? regExpMatchArr[1] : "";
-
-        const seriesName = aptParts[2].replace(name, "").replace(/-$/, "");
-
-        return `${distributionName}/${seriesName}/${name}`;
-      })
-    );
+    formik.setFieldValue("pockets", fullPocketNames);
   }, []);
+
+  useEffect(() => {
+    setProfileChanged(
+      isProfileChanged(profile, formik.values, fullPocketNames)
+    );
+  }, [
+    formik.values.title,
+    formik.values.description,
+    formik.values.all_computers,
+    formik.values.pockets.length,
+    formik.values.apt_sources.length,
+    tagsChangesTrigger,
+  ]);
 
   const { data: getAPTSourcesResponse } = getAPTSourcesQuery();
 
   const aptSources = getAPTSourcesResponse?.data ?? [];
 
+  const filteredAptSources = getFilteredAptSources(aptSources, searchText);
+
+  const handleClickTab = (tabIndex: number) => {
+    setCurrentTab(tabIndex);
+    setSearchText("");
+  };
+
   return (
     <Form onSubmit={formik.handleSubmit}>
-      <Input
-        type="text"
-        label="Title"
-        error={formik.touched.title && formik.errors.title}
-        {...formik.getFieldProps("title")}
+      <Tabs
+        links={[
+          {
+            label: "Details",
+            active: 0 === currentTab,
+            onClick: () => {
+              handleClickTab(0);
+            },
+          },
+          {
+            label: "Pockets",
+            active: 1 === currentTab,
+            onClick: () => {
+              handleClickTab(1);
+            },
+          },
+          {
+            label: "Apt Sources",
+            active: 2 === currentTab,
+            onClick: () => {
+              handleClickTab(2);
+            },
+          },
+        ]}
       />
 
-      <Input
-        type="text"
-        label="Description"
-        error={formik.touched.description && formik.errors.description}
-        {...formik.getFieldProps("description")}
-      />
+      {0 === currentTab && (
+        <>
+          <Input
+            type="text"
+            label="Title"
+            error={formik.touched.title && formik.errors.title}
+            {...formik.getFieldProps("title")}
+          />
+          <Input
+            type="text"
+            label="Description"
+            error={formik.touched.description && formik.errors.description}
+            {...formik.getFieldProps("description")}
+          />
+          <CheckboxInput
+            label="All computers"
+            {...formik.getFieldProps("all_computers")}
+            checked={formik.values.all_computers}
+          />
+          <Input
+            type="text"
+            label="Tags"
+            error={
+              formik.touched.tags && formik.errors.tags
+                ? formik.errors.tags
+                : undefined
+            }
+            {...formik.getFieldProps("tags")}
+            value={formik.values.tags.join(",")}
+            onChange={(event) => {
+              formik.setFieldValue(
+                "tags",
+                event.target.value.replace(/\s/g, "").split(",")
+              );
 
-      <CheckboxInput
-        label="All computers"
-        {...formik.getFieldProps("all_computers")}
-        checked={formik.values.all_computers}
-      />
+              setTagsChangesTrigger((prevState) => !prevState);
+            }}
+            help="List the tag names separated by commas"
+            disabled={formik.values.all_computers}
+          />
+        </>
+      )}
 
-      <Input
-        type="text"
-        label="Tags"
-        error={
-          formik.touched.tags && formik.errors.tags
-            ? formik.errors.tags
-            : undefined
-        }
-        {...formik.getFieldProps("tags")}
-        value={formik.values.tags.join(",")}
-        onChange={(event) => {
-          formik.setFieldValue(
-            "tags",
-            event.target.value.replace(/\s/g, "").split(",")
-          );
-        }}
-        disabled={formik.values.all_computers}
-      />
+      {[1, 2].includes(currentTab) && (
+        <div className="p-search-box">
+          <label className="u-off-screen" htmlFor="search">
+            Search
+          </label>
+          <input
+            ref={inputRef}
+            type="search"
+            id="search"
+            className="p-search-box__input"
+            name="search"
+            placeholder="Search"
+            required
+          />
+          <button
+            type="reset"
+            className="p-search-box__reset"
+            onClick={() => {
+              if (!inputRef.current) {
+                return;
+              }
 
-      <fieldset
-        className={classNames("checkbox-group", {
-          "is-error": formik.touched.apt_sources && formik.errors.apt_sources,
-        })}
-      >
-        <legend>APT sources</legend>
+              setSearchText("");
+              inputRef.current.focus();
+            }}
+          >
+            <i className="p-icon--close">Close</i>
+          </button>
+          <button
+            type="button"
+            className="p-search-box__button"
+            onClick={() => {
+              if (!inputRef.current) {
+                return;
+              }
 
-        {formik.touched.apt_sources && formik.errors.apt_sources && (
-          <p className="p-form-validation__message">
-            {formik.errors.apt_sources}
-          </p>
-        )}
-
-        <div className="checkbox-group__inner">
-          {aptSources
-            .map(({ name }) => ({
-              value: name,
-              label: name,
-            }))
-            .map((option) => (
-              <CheckboxInput
-                key={option.value}
-                label={option.label}
-                {...formik.getFieldProps("apt_sources")}
-                checked={formik.values.apt_sources.includes(option.value)}
-                onChange={() =>
-                  formik.setFieldValue(
-                    "apt_sources",
-                    formik.values.apt_sources.includes(option.value)
-                      ? formik.values.apt_sources.filter(
-                          (item) => item !== option.value
-                        )
-                      : [...formik.values.apt_sources, option.value]
-                  )
-                }
-              />
-            ))}
+              setSearchText(inputRef.current.value);
+            }}
+          >
+            <i className="p-icon--search">Search</i>
+          </button>
         </div>
-      </fieldset>
+      )}
 
-      <fieldset
-        className={classNames("checkbox-group", classes.background, {
-          "is-error": formik.touched.pockets && formik.errors.pockets,
-        })}
-      >
-        <legend>Pockets</legend>
+      {1 === currentTab && (
+        <>
+          <fieldset
+            className={classNames("checkbox-group", classes.background, {
+              "is-error": formik.touched.pockets && formik.errors.pockets,
+            })}
+          >
+            <Row className="u-no-padding--left u-no-padding--right">
+              <Col size={3}>
+                <span
+                  className={classNames(
+                    "p-text--x-small-capitalised",
+                    classes.bold
+                  )}
+                >
+                  Distribution
+                </span>
+              </Col>
+              <Col size={4}>
+                <span
+                  className={classNames(
+                    "p-text--x-small-capitalised",
+                    classes.bold
+                  )}
+                >
+                  Series
+                </span>
+              </Col>
+              <Col size={5}>
+                <span
+                  className={classNames(
+                    "p-text--x-small-capitalised",
+                    classes.bold
+                  )}
+                >
+                  Pocket
+                </span>
+              </Col>
+            </Row>
 
-        {formik.touched.pockets && formik.errors.pockets && (
-          <p className="p-form-validation__message">{formik.errors.pockets}</p>
-        )}
+            {0 === filteredDistributionPocketOptions.length &&
+              distributionPocketOptions.length > 0 && <p>No pockets found.</p>}
 
-        <ul className="p-list--divided u-no-margin--bottom">
-          {distributionPocketOptions.map(({ distributionName, series }) => (
-            <li key={distributionName} className="p-list__item">
-              <p>{distributionName}</p>
-              <ul className="p-list--divided">
-                {series.map(({ seriesName, pockets }) => (
-                  <li key={seriesName} className="p-list__item">
-                    <Row className="u-no-padding--left u-no-padding--right">
-                      <Col
-                        size={4}
-                        className={classNames(classes.series, classes.label)}
-                      >
-                        <span>{seriesName}</span>
-                      </Col>
-                      <Col size={8}>
-                        <ul className="p-list--divided u-no-padding--top">
-                          {pockets.map(({ pocketName, value }) => (
-                            <li
-                              key={value}
-                              className={classNames(
-                                "p-list__item",
-                                classes.label
-                              )}
-                            >
-                              <CheckboxInput
-                                label={
-                                  <Button
-                                    appearance="link"
-                                    className="u-no-margin--bottom u-no-padding--top"
-                                    onClick={() => {
-                                      setSidePanelContent(
-                                        `${seriesName} ${pocketName}`,
-                                        <PackageList
-                                          pocket={
-                                            distributions
-                                              .filter(
-                                                ({ name }) =>
-                                                  name === distributionName
-                                              )[0]
-                                              .series.filter(
-                                                ({ name }) =>
-                                                  name === seriesName
-                                              )[0]
-                                              .pockets.filter(
-                                                ({ name }) =>
-                                                  name === pocketName
-                                              )[0]
-                                          }
-                                          distributionName={distributionName}
-                                          seriesName={seriesName}
-                                        />
-                                      );
-                                    }}
-                                  >
-                                    {pocketName}
-                                  </Button>
-                                }
-                                {...formik.getFieldProps("pockets")}
-                                checked={formik.values.pockets.includes(value)}
-                                onChange={() =>
-                                  formik.setFieldValue(
-                                    "pockets",
-                                    formik.values.pockets.includes(value)
-                                      ? formik.values.pockets.filter(
-                                          (item) => item !== value
-                                        )
-                                      : [...formik.values.pockets, value]
-                                  )
-                                }
-                              />
-                            </li>
-                          ))}
-                        </ul>
-                      </Col>
-                    </Row>
-                  </li>
-                ))}
+            {filteredDistributionPocketOptions.length > 0 && (
+              <ul className="p-list--divided u-no-margin--bottom">
+                {filteredDistributionPocketOptions.map(
+                  ({ distributionName, series }) => (
+                    <li key={distributionName} className="p-list__item">
+                      <Row className="u-no-padding--left u-no-padding--right">
+                        <Col size={3}>
+                          <p
+                            className={classNames(
+                              "u-no-margin--bottom",
+                              classes.label
+                            )}
+                          >
+                            {distributionName}
+                          </p>
+                        </Col>
+                        <Col size={9}>
+                          <ul className="p-list--divided u-no-padding--top u-no-margin--left">
+                            {series.map(({ seriesName, pockets }) => (
+                              <li key={seriesName} className="p-list__item">
+                                <Row className="u-no-padding--left u-no-padding--right">
+                                  <Col size={4}>
+                                    <p className="u-no-margin--bottom">
+                                      {seriesName}
+                                    </p>
+                                  </Col>
+                                  <Col size={5}>
+                                    <ul className="p-list--divided u-no-padding--top u-no-margin--left">
+                                      {pockets.map(({ pocketName, value }) => (
+                                        <li
+                                          key={value}
+                                          className={classNames(
+                                            "p-list__item",
+                                            classes.label
+                                          )}
+                                        >
+                                          <CheckboxInput
+                                            label={pocketName}
+                                            {...formik.getFieldProps("pockets")}
+                                            checked={formik.values.pockets.includes(
+                                              value
+                                            )}
+                                            onChange={() => {
+                                              formik.setFieldValue(
+                                                "pockets",
+                                                formik.values.pockets.includes(
+                                                  value
+                                                )
+                                                  ? formik.values.pockets.filter(
+                                                      (item) => item !== value
+                                                    )
+                                                  : [
+                                                      ...formik.values.pockets,
+                                                      value,
+                                                    ]
+                                              );
+                                            }}
+                                          />
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </Col>
+                                </Row>
+                              </li>
+                            ))}
+                          </ul>
+                        </Col>
+                      </Row>
+                    </li>
+                  )
+                )}
               </ul>
-            </li>
-          ))}
-        </ul>
-      </fieldset>
-      <p className="p-form-help-text">
-        {`${formik.values.pockets.length} selected`}
-      </p>
+            )}
+          </fieldset>
+          <p className="p-form-help-text">
+            {`${formik.values.pockets.length} selected`}
+          </p>
+        </>
+      )}
+
+      {2 === currentTab && (
+        <fieldset
+          className={classNames("checkbox-group", {
+            "is-error": formik.touched.apt_sources && formik.errors.apt_sources,
+          })}
+        >
+          {0 === filteredAptSources.length && aptSources.length > 0 && (
+            <p>No APT sources found.</p>
+          )}
+
+          {filteredAptSources.length > 0 && (
+            <ul className="p-list--divided u-no-margin--bottom">
+              {filteredAptSources.map(({ name, line }) => (
+                <li key={name} className="p-list__item">
+                  <Row className="u-no-padding--left u-no-padding--right">
+                    <Col size={4}>
+                      <CheckboxInput
+                        label={name}
+                        {...formik.getFieldProps("apt_sources")}
+                        checked={formik.values.apt_sources.includes(name)}
+                        onChange={() =>
+                          formik.setFieldValue(
+                            "apt_sources",
+                            formik.values.apt_sources.includes(name)
+                              ? formik.values.apt_sources.filter(
+                                  (item) => item !== name
+                                )
+                              : [...formik.values.apt_sources, name]
+                          )
+                        }
+                      />
+                    </Col>
+                    <Col size={8} className="u-truncate">
+                      <p className="u-no-margin--bottom">{line}</p>
+                    </Col>
+                  </Row>
+                </li>
+              ))}
+            </ul>
+          )}
+        </fieldset>
+      )}
 
       <div className="form-buttons">
         <Button
@@ -515,10 +635,11 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
             isAddingAPTSourcesToRepositoryProfile ||
             isRemovingAPTSourceFromRepositoryProfile ||
             isAddingPocketsToRepositoryProfile ||
-            isRemovingPocketsFromRepositoryProfile
+            isRemovingPocketsFromRepositoryProfile ||
+            !profileChanged
           }
         >
-          Edit profile
+          Save changes
         </Button>
         <Button type="button" onClick={closeSidePanel}>
           Cancel

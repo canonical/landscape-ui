@@ -40,7 +40,10 @@ const ProfileList: FC<DistributionProfileListProps> = ({
 
   const handleEditProfile = (profile: RepositoryProfile) => {
     setSidePanelOpen(true);
-    setSidePanelContent("Edit Profile", <EditProfileForm profile={profile} />);
+    setSidePanelContent(
+      `Edit ${profile.title}`,
+      <EditProfileForm profile={profile} />
+    );
   };
 
   const getAccessGroupLabel = (accessGroup: string) => {

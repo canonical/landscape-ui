@@ -21,7 +21,7 @@ const ProfilesPage: FC = () => {
 
   const handleAddProfile = () => {
     setSidePanelOpen(true);
-    setSidePanelContent("Add Profile", <AddProfileForm />);
+    setSidePanelContent("Create repository profile", <AddProfileForm />);
   };
 
   return (
@@ -35,7 +35,7 @@ const ProfilesPage: FC = () => {
             onClick={handleAddProfile}
             type="button"
           >
-            New Profile
+            Create Profile
           </Button>,
         ]}
       />
