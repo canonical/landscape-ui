@@ -239,24 +239,26 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
               <Button
                 hasIcon
                 appearance="base"
-                className="u-no-margin--bottom"
+                className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
                 aria-label={`Edit ${pocket.name} pocket`}
                 onClick={() => {
                   handleEditPocket(pocket);
                 }}
               >
                 <i className="p-icon--edit" />
+                <span className="p-tooltip__message">Edit</span>
               </Button>
               <Button
                 hasIcon
                 appearance="base"
-                className="u-no-margin--bottom"
+                className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
                 aria-label={`Remove ${pocket.name} pocket`}
                 onClick={() => {
                   handleRemovePocket(pocket);
                 }}
               >
                 <i className="p-icon--delete" />
+                <span className="p-tooltip__message">Delete</span>
               </Button>
             </>
           ),

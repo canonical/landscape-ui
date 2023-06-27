@@ -26,7 +26,7 @@ import {
   getFilteredDistributionPocketOptions,
   getFullProfilePocketNames,
   isProfileChanged,
-} from "./_utils";
+} from "./_helpers";
 
 interface FormProps {
   name: string;
