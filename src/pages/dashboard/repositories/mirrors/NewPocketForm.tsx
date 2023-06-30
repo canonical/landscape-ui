@@ -401,12 +401,6 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         error={formik.touched.gpg_key && formik.errors.gpg_key}
       />
 
-      <CheckboxInput
-        label="Include .udeb packages (debian-installer)"
-        {...formik.getFieldProps("include_udeb")}
-        checked={formik.values.include_udeb}
-      />
-
       {"mirror" === formik.values.mode && (
         <>
           <Input
@@ -489,6 +483,12 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           />
         </>
       )}
+
+      <CheckboxInput
+        label="Include .udeb packages (debian-installer)"
+        {...formik.getFieldProps("include_udeb")}
+        checked={formik.values.include_udeb}
+      />
 
       <div className="form-buttons">
         <Button

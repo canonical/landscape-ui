@@ -214,7 +214,6 @@ const AddProfileForm: FC = () => {
             onClick: () => {
               handleClickTab(0);
             },
-            className: classes.bold,
           },
           {
             label: "Pockets",
@@ -222,7 +221,6 @@ const AddProfileForm: FC = () => {
             onClick: () => {
               handleClickTab(1);
             },
-            className: classes.bold,
           },
           {
             label: "Apt Sources",
@@ -230,7 +228,6 @@ const AddProfileForm: FC = () => {
             onClick: () => {
               handleClickTab(2);
             },
-            className: classes.bold,
           },
         ]}
       />
@@ -348,34 +345,34 @@ const AddProfileForm: FC = () => {
               >
                 <Row className="u-no-padding--left u-no-padding--right">
                   <Col small={1} medium={2} size={3}>
-                    <span
+                    <h5
                       className={classNames(
-                        "p-text--x-small-capitalised",
-                        classes.bold
+                        "p-text--x-small",
+                        classes.uppercase
                       )}
                     >
                       Distribution
-                    </span>
+                    </h5>
                   </Col>
                   <Col small={1} medium={2} size={4}>
-                    <span
+                    <h5
                       className={classNames(
-                        "p-text--x-small-capitalised",
-                        classes.bold
+                        "p-text--x-small",
+                        classes.uppercase
                       )}
                     >
                       Series
-                    </span>
+                    </h5>
                   </Col>
                   <Col small={2} medium={2} size={5}>
-                    <span
+                    <h5
                       className={classNames(
-                        "p-text--x-small-capitalised",
-                        classes.bold
+                        "p-text--x-small",
+                        classes.uppercase
                       )}
                     >
                       Pocket
-                    </span>
+                    </h5>
                   </Col>
                 </Row>
 
@@ -477,24 +474,18 @@ const AddProfileForm: FC = () => {
             >
               <Row className="u-no-padding--left u-no-padding--right">
                 <Col small={1} medium={2} size={4}>
-                  <span
-                    className={classNames(
-                      "p-text--x-small-capitalised",
-                      classes.bold
-                    )}
+                  <h5
+                    className={classNames("p-text--x-small", classes.uppercase)}
                   >
                     Name
-                  </span>
+                  </h5>
                 </Col>
                 <Col small={3} medium={4} size={8}>
-                  <span
-                    className={classNames(
-                      "p-text--x-small-capitalised",
-                      classes.bold
-                    )}
+                  <h5
+                    className={classNames("p-text--x-small", classes.uppercase)}
                   >
                     Line
-                  </span>
+                  </h5>
                 </Col>
               </Row>
 

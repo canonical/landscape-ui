@@ -134,13 +134,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
   });
 
   return (
-    <>
-      <MainTable
-        headers={headers}
-        rows={rows}
-        emptyStateMsg="No profiles yet"
-      />
-    </>
+    <MainTable headers={headers} rows={rows} emptyStateMsg="No profiles yet" />
   );
 };
 

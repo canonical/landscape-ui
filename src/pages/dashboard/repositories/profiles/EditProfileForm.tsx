@@ -469,34 +469,34 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               >
                 <Row className="u-no-padding--left u-no-padding--right">
                   <Col small={1} medium={2} size={3}>
-                    <span
+                    <h5
                       className={classNames(
-                        "p-text--x-small-capitalised",
-                        classes.bold
+                        "p-text--x-small",
+                        classes.uppercase
                       )}
                     >
                       Distribution
-                    </span>
+                    </h5>
                   </Col>
                   <Col small={1} medium={2} size={4}>
-                    <span
+                    <h5
                       className={classNames(
-                        "p-text--x-small-capitalised",
-                        classes.bold
+                        "p-text--x-small",
+                        classes.uppercase
                       )}
                     >
                       Series
-                    </span>
+                    </h5>
                   </Col>
                   <Col small={2} medium={2} size={5}>
-                    <span
+                    <h5
                       className={classNames(
-                        "p-text--x-small-capitalised",
-                        classes.bold
+                        "p-text--x-small",
+                        classes.uppercase
                       )}
                     >
                       Pocket
-                    </span>
+                    </h5>
                   </Col>
                 </Row>
 
@@ -598,6 +598,23 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                   formik.touched.apt_sources && formik.errors.apt_sources,
               })}
             >
+              <Row className="u-no-padding--left u-no-padding--right">
+                <Col small={1} medium={2} size={4}>
+                  <h5
+                    className={classNames("p-text--x-small", classes.uppercase)}
+                  >
+                    Name
+                  </h5>
+                </Col>
+                <Col small={3} medium={4} size={8}>
+                  <h5
+                    className={classNames("p-text--x-small", classes.uppercase)}
+                  >
+                    Line
+                  </h5>
+                </Col>
+              </Row>
+
               {0 === filteredAptSources.length && aptSources.length > 0 && (
                 <p>No APT sources found.</p>
               )}

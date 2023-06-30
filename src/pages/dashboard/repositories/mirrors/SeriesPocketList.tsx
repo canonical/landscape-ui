@@ -220,6 +220,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
             <>
               {"upload" !== pocket.mode && (
                 <Button
+                  small
                   hasIcon
                   appearance="base"
                   className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
@@ -237,6 +238,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 </Button>
               )}
               <Button
+                small
                 hasIcon
                 appearance="base"
                 className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
@@ -249,6 +251,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 <span className="p-tooltip__message">Edit</span>
               </Button>
               <Button
+                small
                 hasIcon
                 appearance="base"
                 className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"

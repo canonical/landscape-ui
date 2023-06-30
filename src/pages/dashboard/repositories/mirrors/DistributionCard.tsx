@@ -52,10 +52,12 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
   return (
     <div className={classes.item}>
       <div className={classes.titleGroup}>
-        <h2 className={classes.title}>{distribution.name}</h2>
+        <h2 className="p-heading--4 u-no-margin--bottom">
+          {distribution.name}
+        </h2>
         <div>
           <Button
-            dense
+            small
             onClick={() => {
               setSidePanelOpen(true);
               setSidePanelContent(
@@ -68,7 +70,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
           </Button>
           <Button
             onClick={handleRemove}
-            dense
+            small
             aria-label={`Remove ${distribution.name} distribution`}
             disabled={isRemoving}
           >

@@ -375,12 +375,6 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         error={formik.touched.gpg_key && formik.errors.gpg_key}
       />
 
-      <CheckboxInput
-        label="Include .udeb packages (debian-installer)"
-        {...formik.getFieldProps("include_udeb")}
-        checked={formik.values.include_udeb}
-      />
-
       {"mirror" === pocket.mode && (
         <>
           <Input
@@ -452,6 +446,12 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         />
       )}
 
+      <CheckboxInput
+        label="Include .udeb packages (debian-installer)"
+        {...formik.getFieldProps("include_udeb")}
+        checked={formik.values.include_udeb}
+      />
+
       <div className="form-buttons">
         <Button
           type="submit"
@@ -464,7 +464,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
             isRemovingUploaderGPGKeysFromPocket
           }
         >
-          Edit
+          Save changes
         </Button>
         <Button type="button" onClick={closeSidePanel}>
           Cancel

@@ -60,7 +60,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
         <h3 className={classes.title}>{series.name}</h3>
         <div className={classes.cta}>
           <Button
-            dense
+            small
             onClick={() => {
               setSidePanelOpen(true);
               setSidePanelContent(
@@ -75,7 +75,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
             Create snapshot
           </Button>
           <Button
-            dense
+            small
             onClick={() => {
               setSidePanelOpen(true);
               setSidePanelContent(
@@ -86,7 +86,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
           >
             New pocket
           </Button>
-          <Button onClick={handleRemove} dense disabled={isRemoving}>
+          <Button onClick={handleRemove} small disabled={isRemoving}>
             Remove
           </Button>
         </div>

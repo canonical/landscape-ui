@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { Link, useLocation } from "react-router-dom";
-import classNames from "classnames";
 
 interface MenuItem {
   label: string;
@@ -13,7 +12,7 @@ const MENU_ITEMS: MenuItem[] = [
   {
     label: "Repositories",
     path: "/repositories",
-    icon: "pods",
+    icon: "fork",
     items: [
       {
         label: "Mirrors",
@@ -41,26 +40,17 @@ const Navigation: FC = () => {
   return (
     <div className="p-side-navigation--icons is-dark">
       <nav aria-label="Main">
-        <ul className="p-side-navigation__list">
+        <ul>
           {MENU_ITEMS.map((item) => (
-            <li
-              key={item.path}
-              className={classNames("p-side-navigation__item", {
-                "has-active-child": item.items && pathname.includes(item.path),
-              })}
-            >
-              <Link
-                className="p-side-navigation__link"
-                to={item.path}
-                aria-current={pathname === item.path ? "page" : undefined}
-              >
+            <li key={item.path}>
+              <h3 className="p-side-navigation__heading">
                 {item.icon && (
                   <i
                     className={`p-icon--${item.icon} is-light p-side-navigation__icon`}
                   />
                 )}
-                <span className="p-side-navigation__label">{item.label}</span>
-              </Link>
+                <span>{item.label}</span>
+              </h3>
               {item.items && item.items.length > 0 && (
                 <ul className="p-side-navigation__list">
                   {item.items.map((subItem) => (
