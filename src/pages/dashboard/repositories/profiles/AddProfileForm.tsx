@@ -305,6 +305,10 @@ const AddProfileForm: FC = () => {
                 name="search"
                 placeholder="Search"
                 required
+                value={searchText}
+                onChange={(event) => {
+                  setSearchText(event.target.value);
+                }}
               />
               <button
                 type="reset"
@@ -320,19 +324,14 @@ const AddProfileForm: FC = () => {
               >
                 <i className="p-icon--close">Close</i>
               </button>
-              <button
-                type="button"
-                className="p-search-box__button"
-                onClick={() => {
-                  if (!inputRef.current) {
-                    return;
-                  }
-
-                  setSearchText(inputRef.current.value);
-                }}
+              <span
+                className={classNames(
+                  "p-search-box__button p-button--base",
+                  classes.searchIcon
+                )}
               >
                 <i className="p-icon--search">Search</i>
-              </button>
+              </span>
             </div>
           )}
 

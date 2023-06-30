@@ -12,6 +12,10 @@
   padding-bottom: $sp-unit * 6;
 }
 
+.searchIcon {
+  cursor: default !important;
+}
+
 .buttons {
   position: fixed;
   bottom: 0;

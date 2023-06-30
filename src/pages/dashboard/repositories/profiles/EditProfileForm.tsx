@@ -427,6 +427,10 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                 id="search"
                 className="p-search-box__input"
                 name="search"
+                value={searchText}
+                onChange={(event) => {
+                  setSearchText(event.target.value);
+                }}
                 placeholder="Search"
                 required
               />
@@ -444,19 +448,14 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               >
                 <i className="p-icon--close">Close</i>
               </button>
-              <button
-                type="button"
-                className="p-search-box__button"
-                onClick={() => {
-                  if (!inputRef.current) {
-                    return;
-                  }
-
-                  setSearchText(inputRef.current.value);
-                }}
+              <span
+                className={classNames(
+                  "p-search-box__button p-button--base",
+                  classes.searchIcon
+                )}
               >
                 <i className="p-icon--search">Search</i>
-              </button>
+              </span>
             </div>
           )}
 
