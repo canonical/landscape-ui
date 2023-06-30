@@ -1,7 +1,24 @@
+@import "vanilla-framework/scss/patterns_lists";
+
 .label {
   padding-bottom: 0.3rem !important;
 }
 
 .bold {
   font-weight: 550 !important;
+}
+
+.formInner {
+  padding-bottom: $sp-unit * 6;
+}
+
+.buttons {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  @include vf-list-item-divided;
+  margin-left: -$sph--x-large;
+  padding-left: $sph--x-large;
+  padding-top: $spv--large;
+  background-color: $color-x-light;
 }
