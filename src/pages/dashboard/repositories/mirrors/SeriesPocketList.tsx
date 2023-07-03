@@ -214,56 +214,61 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           "aria-label": "Content",
         },
         {
-          className: "u-align--right",
           "aria-label": "Actions",
           content: (
-            <>
+            <div className={classes.dividedBlocks}>
               {"upload" !== pocket.mode && (
+                <div className={classes.dividedBlock}>
+                  <Button
+                    small
+                    hasIcon
+                    appearance="base"
+                    className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
+                    aria-label={`${
+                      "mirror" === pocket.mode ? "Synchronize" : "Pull"
+                    } ${pocket.name} pocket`}
+                    onClick={() => {
+                      handleSyncPocket(pocket);
+                    }}
+                  >
+                    <i className="p-icon--change-version u-no-margin--right" />
+                    <span className="p-tooltip__message">
+                      {"mirror" === pocket.mode ? "Sync" : "Pull"}
+                    </span>
+                  </Button>
+                </div>
+              )}
+              <div className={classes.dividedBlock}>
                 <Button
                   small
                   hasIcon
                   appearance="base"
                   className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
-                  aria-label={`${
-                    "mirror" === pocket.mode ? "Synchronize" : "Pull"
-                  } ${pocket.name} pocket`}
+                  aria-label={`Edit ${pocket.name} pocket`}
                   onClick={() => {
-                    handleSyncPocket(pocket);
+                    handleEditPocket(pocket);
                   }}
                 >
-                  <i className="p-icon--change-version" />
-                  <span className="p-tooltip__message">
-                    {"mirror" === pocket.mode ? "Sync" : "Pull"}
-                  </span>
+                  <i className="p-icon--edit u-no-margin--right" />
+                  <span className="p-tooltip__message">Edit</span>
                 </Button>
-              )}
-              <Button
-                small
-                hasIcon
-                appearance="base"
-                className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
-                aria-label={`Edit ${pocket.name} pocket`}
-                onClick={() => {
-                  handleEditPocket(pocket);
-                }}
-              >
-                <i className="p-icon--edit" />
-                <span className="p-tooltip__message">Edit</span>
-              </Button>
-              <Button
-                small
-                hasIcon
-                appearance="base"
-                className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
-                aria-label={`Remove ${pocket.name} pocket`}
-                onClick={() => {
-                  handleRemovePocket(pocket);
-                }}
-              >
-                <i className="p-icon--delete" />
-                <span className="p-tooltip__message">Delete</span>
-              </Button>
-            </>
+              </div>
+              <div className={classes.dividedBlock}>
+                <Button
+                  small
+                  hasIcon
+                  appearance="base"
+                  className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
+                  aria-label={`Remove ${pocket.name} pocket`}
+                  onClick={() => {
+                    handleRemovePocket(pocket);
+                  }}
+                >
+                  <i className="p-icon--delete u-no-margin--right" />
+                  <span className="p-tooltip__message">Delete</span>
+                </Button>
+              </div>
+            </div>
           ),
         },
       ],

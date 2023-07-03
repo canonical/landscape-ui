@@ -10,6 +10,7 @@ import { APTSource } from "../../../../types/APTSource";
 import useConfirm from "../../../../hooks/useConfirm";
 import useDebug from "../../../../hooks/useDebug";
 import useAPTSources from "../../../../hooks/useAPTSources";
+import classes from "./APTSourcesList.module.scss";
 
 interface APTSourcesListProps {
   items: APTSource[];
@@ -50,9 +51,10 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
           className: "u-align--right",
           content: (
             <Button
+              small
               hasIcon
               appearance="base"
-              className="u-no-margin--bottom"
+              className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
               aria-label={`Remove ${item.name} APT source`}
               onClick={() => {
                 confirmModal({
@@ -79,7 +81,8 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
                 });
               }}
             >
-              <Icon name={ICONS.delete} />
+              <span className="p-tooltip__message">Delete</span>
+              <Icon name={ICONS.delete} className="u-no-margin--left" />
             </Button>
           ),
         },
@@ -92,6 +95,7 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
       headers={headers}
       rows={rows}
       emptyStateMsg="No APT sources yet"
+      className={classes.content}
     />
   );
 };

@@ -11,6 +11,7 @@ import { boolToLabel } from "../../../../utils/output";
 import useConfirm from "../../../../hooks/useConfirm";
 import useDebug from "../../../../hooks/useDebug";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
+import classes from "./GPGKeysList.module.scss";
 
 interface GPGKeysListProps {
   items: GPGKey[];
@@ -51,9 +52,10 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
           className: "u-align--right",
           content: (
             <Button
+              small
               hasIcon
               appearance="base"
-              className="u-no-margin--bottom"
+              className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
               aria-label={`Remove ${item.name} GPG key`}
               onClick={() => {
                 confirmModal({
@@ -80,7 +82,8 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
                 });
               }}
             >
-              <Icon name={ICONS.delete} />
+              <span className="p-tooltip__message">Delete</span>
+              <Icon name={ICONS.delete} className="u-no-margin--left" />
             </Button>
           ),
         },
@@ -89,7 +92,12 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
   });
 
   return (
-    <MainTable headers={headers} rows={rows} emptyStateMsg="No pockets yet" />
+    <MainTable
+      headers={headers}
+      rows={rows}
+      emptyStateMsg="No pockets yet"
+      className={classes.content}
+    />
   );
 };
 

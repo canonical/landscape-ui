@@ -14,6 +14,7 @@ import useSidePanel from "../../../../hooks/useSidePanel";
 import { SelectOption } from "../../../../types/SelectOption";
 import EditProfileForm from "./EditProfileForm";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
+import classes from "./ProfileList.module.scss";
 
 interface DistributionProfileListProps {
   repositoryProfiles: RepositoryProfile[];
@@ -78,55 +79,62 @@ const ProfileList: FC<DistributionProfileListProps> = ({
           "aria-label": "Access Group",
         },
         {
-          className: "u-align--right",
           content: (
-            <>
-              <Button
-                hasIcon
-                appearance="base"
-                className="u-no-margin--bottom"
-                aria-label={`Edit ${repositoryProfile.name} repository profile`}
-                onClick={() => {
-                  handleEditProfile(repositoryProfile);
-                }}
-              >
-                <i className="p-icon--edit" />
-              </Button>
-              <Button
-                hasIcon
-                appearance="base"
-                className="u-no-margin--bottom"
-                aria-label={`Remove ${repositoryProfile.name} repository profile`}
-                onClick={() => {
-                  confirmModal({
-                    body: "Are you sure?",
-                    title: "Deleting Repository Profile",
-                    buttons: [
-                      <Button
-                        key={`delete-profile-${repositoryProfile.name}`}
-                        appearance="negative"
-                        hasIcon={true}
-                        onClick={async () => {
-                          try {
-                            await removeRepositoryProfile({
-                              name: repositoryProfile.name,
-                            });
-                            closeConfirmModal();
-                          } catch (error: unknown) {
-                            debug(error);
-                          }
-                        }}
-                      >
-                        {isRemoving && <Spinner />}
-                        Delete
-                      </Button>,
-                    ],
-                  });
-                }}
-              >
-                <Icon name={ICONS.delete} />
-              </Button>
-            </>
+            <div className={classes.dividedBlocks}>
+              <div className={classes.dividedBlock}>
+                <Button
+                  small
+                  hasIcon
+                  appearance="base"
+                  className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
+                  aria-label={`Edit ${repositoryProfile.name} repository profile`}
+                  onClick={() => {
+                    handleEditProfile(repositoryProfile);
+                  }}
+                >
+                  <span className="p-tooltip__message">Edit</span>
+                  <i className="p-icon--edit u-no-margin--left" />
+                </Button>
+              </div>
+              <div className={classes.dividedBlock}>
+                <Button
+                  small
+                  hasIcon
+                  appearance="base"
+                  className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
+                  aria-label={`Remove ${repositoryProfile.name} repository profile`}
+                  onClick={() => {
+                    confirmModal({
+                      body: "Are you sure?",
+                      title: "Deleting Repository Profile",
+                      buttons: [
+                        <Button
+                          key={`delete-profile-${repositoryProfile.name}`}
+                          appearance="negative"
+                          hasIcon={true}
+                          onClick={async () => {
+                            try {
+                              await removeRepositoryProfile({
+                                name: repositoryProfile.name,
+                              });
+                              closeConfirmModal();
+                            } catch (error: unknown) {
+                              debug(error);
+                            }
+                          }}
+                        >
+                          {isRemoving && <Spinner />}
+                          Delete
+                        </Button>,
+                      ],
+                    });
+                  }}
+                >
+                  <span className="p-tooltip__message">Delete</span>
+                  <Icon name={ICONS.delete} className="u-no-margin--left" />
+                </Button>
+              </div>
+            </div>
           ),
         },
       ],
@@ -134,7 +142,12 @@ const ProfileList: FC<DistributionProfileListProps> = ({
   });
 
   return (
-    <MainTable headers={headers} rows={rows} emptyStateMsg="No profiles yet" />
+    <MainTable
+      headers={headers}
+      rows={rows}
+      emptyStateMsg="No profiles yet"
+      className={classes.content}
+    />
   );
 };
 

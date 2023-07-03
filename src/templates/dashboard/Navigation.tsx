@@ -43,7 +43,7 @@ const Navigation: FC = () => {
         <ul>
           {MENU_ITEMS.map((item) => (
             <li key={item.path}>
-              <h3 className="p-side-navigation__heading">
+              <h3 className="p-side-navigation__heading p-muted-heading">
                 {item.icon && (
                   <i
                     className={`p-icon--${item.icon} is-light p-side-navigation__icon`}
