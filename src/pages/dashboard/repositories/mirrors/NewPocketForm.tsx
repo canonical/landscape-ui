@@ -392,10 +392,12 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         required
         options={[
           { label: "Select GPG key", value: "" },
-          ...gpgKeys.map((item) => ({
-            label: item.name,
-            value: item.name,
-          })),
+          ...gpgKeys
+            .filter(({ has_secret }) => has_secret)
+            .map((item) => ({
+              label: item.name,
+              value: item.name,
+            })),
         ]}
         {...formik.getFieldProps("gpg_key")}
         error={formik.touched.gpg_key && formik.errors.gpg_key}
@@ -465,18 +467,16 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             checked={formik.values.upload_allow_unsigned}
           />
 
-          <Input
-            type="text"
+          <Select
             label="Uploader GPG keys"
+            multiple
             {...formik.getFieldProps("upload_gpg_keys")}
-            onChange={(event) => {
-              formik.setFieldValue(
-                "upload_gpg_keys",
-                event.target.value.replace(/\s/g, "").split(",")
-              );
-            }}
-            value={formik.values.upload_gpg_keys.join(",")}
-            help="List GPG keys separated by commas"
+            options={gpgKeys
+              .filter(({ has_secret }) => !has_secret)
+              .map((item) => ({
+                label: item.name,
+                value: item.name,
+              }))}
             error={
               formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
             }

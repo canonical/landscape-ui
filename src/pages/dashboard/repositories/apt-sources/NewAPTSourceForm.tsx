@@ -40,12 +40,12 @@ const NewAPTSourceForm: FC = () => {
     })
   );
 
-  const gpgKeysOptions: SelectOption[] = (gpgKeysData?.data ?? []).map(
-    ({ name }) => ({
+  const gpgKeysOptions: SelectOption[] = (gpgKeysData?.data ?? [])
+    .filter(({ has_secret }) => has_secret)
+    .map(({ name }) => ({
       label: name,
       value: name,
-    })
-  );
+    }));
 
   const { mutateAsync, isLoading } = createAPTSourceQuery;
 

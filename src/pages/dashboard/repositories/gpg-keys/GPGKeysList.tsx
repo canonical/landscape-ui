@@ -7,7 +7,6 @@ import {
   Spinner,
 } from "@canonical/react-components";
 import { GPGKey } from "../../../../types/GPGKey";
-import { boolToLabel } from "../../../../utils/output";
 import useConfirm from "../../../../hooks/useConfirm";
 import useDebug from "../../../../hooks/useDebug";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
@@ -27,7 +26,7 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
 
   const headers = [
     { content: "Name" },
-    { content: "Has secret" },
+    { content: "Access type" },
     { content: "Fingerprint" },
     {},
   ];
@@ -41,8 +40,8 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
           "aria-label": "Name",
         },
         {
-          content: boolToLabel(item.has_secret),
-          "aria-label": "Has secret",
+          content: item.has_secret ? "Private" : "Public",
+          "aria-label": "Access type",
         },
         {
           content: item.fingerprint,

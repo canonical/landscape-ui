@@ -52,12 +52,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
     createSeriesQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
-  const gpgKeysOptions: SelectOption[] = (gpgKeysData?.data ?? []).map(
-    ({ name }) => ({
-      label: name,
-      value: name,
-    })
-  );
+  const gpgKeys = gpgKeysData?.data ?? [];
 
   const distributionOptions: SelectOption[] = distributions.map(({ name }) => ({
     label: name,
@@ -259,12 +254,18 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
             label="Mirror GPG key"
             options={[
               { label: "Select mirror GPG key", value: "" },
-              ...gpgKeysOptions,
+              ...gpgKeys
+                .filter(({ has_secret }) => !has_secret)
+                .map(({ name }) => ({
+                  label: name,
+                  value: name,
+                })),
             ]}
             {...formik.getFieldProps("mirror_gpg_key")}
             error={
               formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
             }
+            help="If none is given, the stock Ubuntu archive one will be used."
           />
         </Col>
 
@@ -277,7 +278,12 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
                 label: "Select GPG key",
                 value: "",
               },
-              ...gpgKeysOptions,
+              ...gpgKeys
+                .filter(({ has_secret }) => has_secret)
+                .map(({ name }) => ({
+                  label: name,
+                  value: name,
+                })),
             ]}
             {...formik.getFieldProps("gpg_key")}
             error={formik.touched.gpg_key && formik.errors.gpg_key}

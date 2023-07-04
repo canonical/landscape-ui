@@ -366,10 +366,12 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         label="GPG Key"
         options={[
           { label: "Select GPG key", value: "" },
-          ...gpgKeys.map((item) => ({
-            label: item.name,
-            value: item.name,
-          })),
+          ...gpgKeys
+            .filter(({ has_secret }) => has_secret)
+            .map((item) => ({
+              label: item.name,
+              value: item.name,
+            })),
         ]}
         {...formik.getFieldProps("gpg_key")}
         error={formik.touched.gpg_key && formik.errors.gpg_key}

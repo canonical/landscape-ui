@@ -8,6 +8,7 @@ import {
   CheckboxInput,
   Form,
   Input,
+  PasswordToggle,
 } from "@canonical/react-components";
 import AppNotification from "../../../components/layout/AppNotification";
 import axios, { AxiosResponse } from "axios";
@@ -94,8 +95,8 @@ const LoginForm: FC = () => {
         {...formik.getFieldProps("email")}
       />
 
-      <Input
-        type="password"
+      <PasswordToggle
+        id="password"
         label="Password"
         error={
           formik.touched.password && formik.errors.password
