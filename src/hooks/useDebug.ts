@@ -4,6 +4,17 @@ import { AxiosError } from "axios";
 import { ApiError } from "../types/ApiError";
 import useAuth from "./useAuth";
 
+const isApiError = (error: unknown): error is ApiError => {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "error" in error &&
+    typeof error.error === "string" &&
+    "message" in error &&
+    typeof error.message === "string"
+  );
+};
+
 export default function useDebug() {
   const notify = useNotify();
   const { logout } = useAuth();
@@ -11,10 +22,14 @@ export default function useDebug() {
   return (error: unknown) => {
     let message: string;
 
-    if (error instanceof AxiosError<ApiError>) {
-      message = error.response?.data.message ?? error.message;
+    if (
+      error instanceof AxiosError &&
+      error.response &&
+      isApiError(error.response.data)
+    ) {
+      message = error.response.data.message;
 
-      if (401 === error.response?.status) {
+      if (401 === error.response.status) {
         logout();
       }
 
