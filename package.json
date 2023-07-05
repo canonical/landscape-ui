@@ -22,6 +22,7 @@
     "yup": "1.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.35.1",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
     "@typescript-eslint/eslint-plugin": "5.61.0",
