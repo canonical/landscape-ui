@@ -383,6 +383,7 @@ const PackageList: FC<PackageListProps> = ({
 
             closeConfirmModal();
           }}
+          aria-label={`Delete ${pocket.name} pocket of ${distributionName}/${seriesName}`}
         >
           Delete
         </Button>,
@@ -408,14 +409,18 @@ const PackageList: FC<PackageListProps> = ({
                     ("mirror" === pocket.mode && isSynchronizingMirrorPocket) ||
                     ("pull" === pocket.mode && isPullingPackagesToPocket)
                   }
+                  aria-label={`${"mirror" === pocket.mode ? "Sync" : "Pull"} ${
+                    pocket.name
+                  } pocket of ${distributionName}/${seriesName}`}
                 >
-                  Sync
+                  {"mirror" === pocket.mode ? "Sync" : "Pull"}
                 </Button>
               )}
               <Button
                 dense
                 className="p-segmented-control__button"
                 onClick={handleEditPocket}
+                aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${seriesName}`}
               >
                 Edit
               </Button>
@@ -423,6 +428,7 @@ const PackageList: FC<PackageListProps> = ({
                 dense
                 className="p-segmented-control__button"
                 onClick={handleRemovePocket}
+                aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${seriesName}`}
               >
                 Remove
               </Button>
@@ -435,6 +441,7 @@ const PackageList: FC<PackageListProps> = ({
                     isRemovingPackagesFromPocket
                   }
                   onClick={handleRemovePackages}
+                  aria-label={`Remove selected packages from ${pocket.name} pocket of ${distributionName}/${seriesName}`}
                 >
                   Remove packages
                 </Button>

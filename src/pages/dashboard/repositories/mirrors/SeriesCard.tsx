@@ -46,6 +46,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
               debug(error);
             }
           }}
+          aria-label={`Remove ${series.name} from ${distribution.name}`}
         >
           {isRemoving && <Spinner />}
           Remove
@@ -71,6 +72,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
                 />
               );
             }}
+            aria-label={`Create snapshot for ${distribution.name}/${series.name}`}
           >
             Create snapshot
           </Button>
@@ -83,10 +85,16 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
                 <NewPocketForm distribution={distribution} series={series} />
               );
             }}
+            aria-label={`Create new pocket for ${distribution.name}/${series.name}`}
           >
             New pocket
           </Button>
-          <Button onClick={handleRemove} small disabled={isRemoving}>
+          <Button
+            onClick={handleRemove}
+            small
+            disabled={isRemoving}
+            aria-label={`Remove ${distribution.name}/${series.name}`}
+          >
             Remove
           </Button>
         </div>

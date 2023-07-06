@@ -122,6 +122,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
                               debug(error);
                             }
                           }}
+                          aria-label={`Delete ${repositoryProfile.name} repository profile`}
                         >
                           {isRemoving && <Spinner />}
                           Delete

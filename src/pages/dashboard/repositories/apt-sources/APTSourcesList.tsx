@@ -73,6 +73,7 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
                           debug(error);
                         }
                       }}
+                      aria-label={`Delete ${item.name} APT source`}
                     >
                       {isRemoving && <Spinner />}
                       Delete

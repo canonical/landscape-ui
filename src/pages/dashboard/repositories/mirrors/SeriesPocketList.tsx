@@ -57,6 +57,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
 
             closeConfirmModal();
           }}
+          aria-label={`Delete ${pocket.name} pocket of ${distributionName}/${series.name}`}
         >
           Delete
         </Button>,
@@ -96,6 +97,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
               }
             }}
             disabled={isSynchronizingMirrorPocket}
+            aria-label={`Synchronize ${pocket.name} pocket of ${distributionName}/${series.name}`}
           >
             Sync
           </Button>,
@@ -123,6 +125,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
               }
             }}
             disabled={isPullingPackagesToPocket}
+            aria-label={`Pull packages to ${pocket.name} pocket of ${distributionName}/${series.name}`}
           >
             Pull
           </Button>,
@@ -175,6 +178,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 onClick={() => {
                   handleListPocket(pocket);
                 }}
+                aria-label={`List ${pocket.name} pocket of ${distributionName}/${series.name}`}
               >
                 {pocket.name}
               </Button>
@@ -187,6 +191,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                     onClick={() => {
                       handleListPocket(pocket);
                     }}
+                    aria-label={`List ${pocket.name} pocket of ${distributionName}/${series.name}`}
                   >
                     {pocket.name}
                   </Button>
@@ -226,7 +231,9 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                     className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
                     aria-label={`${
                       "mirror" === pocket.mode ? "Synchronize" : "Pull"
-                    } ${pocket.name} pocket`}
+                    } ${pocket.name} pocket of ${distributionName}/${
+                      series.name
+                    }`}
                     onClick={() => {
                       handleSyncPocket(pocket);
                     }}
@@ -244,7 +251,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                   hasIcon
                   appearance="base"
                   className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
-                  aria-label={`Edit ${pocket.name} pocket`}
+                  aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${series.name}`}
                   onClick={() => {
                     handleEditPocket(pocket);
                   }}
@@ -259,7 +266,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                   hasIcon
                   appearance="base"
                   className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
-                  aria-label={`Remove ${pocket.name} pocket`}
+                  aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${series.name}`}
                   onClick={() => {
                     handleRemovePocket(pocket);
                   }}

@@ -36,6 +36,7 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
               <NewSeriesForm distribution={distribution} />
             );
           }}
+          aria-label={`Create mirror for ${distribution.name}`}
         >
           Create mirror
         </Button>

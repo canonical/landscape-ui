@@ -73,6 +73,7 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
                           debug(error);
                         }
                       }}
+                      aria-label={`Delete ${item.name} GPG key`}
                     >
                       {isRemoving && <Spinner />}
                       Delete

@@ -65,6 +65,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
                 <NewSeriesForm distribution={distribution} />
               );
             }}
+            aria-label={`Add series for ${distribution.name}`}
           >
             Add series
           </Button>
