@@ -277,7 +277,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
       formik.setFieldValue("mirror_uri", pocket.mirror_uri);
       formik.setFieldValue("mirror_suite", pocket.mirror_suite);
       if (pocket.mirror_gpg_key) {
-        formik.setFieldValue("mirror_gpg_key", pocket.mirror_gpg_key);
+        formik.setFieldValue("mirror_gpg_key", pocket.mirror_gpg_key.name);
       }
     } else if ("upload" === pocket.mode) {
       formik.setFieldValue(
@@ -393,13 +393,22 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
             error={formik.touched.mirror_suite && formik.errors.mirror_suite}
           />
 
-          <Input
-            type="text"
+          <Select
             label="Mirror GPG key"
+            options={[
+              { label: "Select GPG key", value: "" },
+              ...gpgKeys
+                .filter(({ has_secret }) => !has_secret)
+                .map((item) => ({
+                  label: item.name,
+                  value: item.name,
+                })),
+            ]}
             {...formik.getFieldProps("mirror_gpg_key")}
             error={
               formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
             }
+            help="If none is given, the stock Ubuntu archive one will be used."
           />
         </>
       )}

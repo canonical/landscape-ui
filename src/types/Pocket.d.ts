@@ -14,7 +14,7 @@ interface MirrorPocket {
   mode: "mirror";
   mirror_suite: string;
   mirror_uri: string;
-  mirror_gpg_key?: string;
+  mirror_gpg_key?: GPGKey;
 }
 
 interface PullPocket {
