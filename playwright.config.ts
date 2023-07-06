@@ -50,6 +50,36 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "createDistribution.spec.ts",
     },
+    {
+      name: "create-mirror-1",
+      dependencies: ["create-distribution"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "createMirror1.spec.ts",
+    },
+    {
+      name: "create-mirror-2",
+      dependencies: ["create-mirror-1"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "createMirror2.spec.ts",
+    },
+    {
+      name: "create-mirror-3",
+      dependencies: ["create-mirror-2"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "createMirror3.spec.ts",
+    },
+    {
+      name: "create-snapshot",
+      dependencies: ["create-mirror-3"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "createSnapshot.spec.ts",
+    },
+    {
+      name: "remove-mirror",
+      dependencies: ["create-snapshot"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "removeMirror.spec.ts",
+    },
 
     /* Configure projects for major browsers */
     // {
