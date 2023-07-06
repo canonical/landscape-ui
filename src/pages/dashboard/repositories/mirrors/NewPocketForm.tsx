@@ -36,6 +36,7 @@ import SelectGrouped, {
   groupedOption,
 } from "../../../../components/form/SelectGrouped";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
+import CheckboxGroup from "../../../../components/form/CheckboxGroup";
 
 interface FormProps
   extends Omit<CreateMirrorPocketParams, "mode">,
@@ -316,76 +317,27 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         )}
       </div>
 
-      <fieldset
-        className={classNames("checkbox-group", {
-          "is-error": formik.touched.components && formik.errors.components,
-        })}
-      >
-        <legend>* Components</legend>
+      <CheckboxGroup
+        label="Components"
+        required
+        options={COMPONENT_OPTIONS}
+        {...formik.getFieldProps("components")}
+        onChange={(newOptions) => {
+          formik.setFieldValue("components", newOptions);
+        }}
+        error={formik.touched.components && formik.errors.components}
+      />
 
-        {formik.touched.components && formik.errors.components && (
-          <p className="p-form-validation__message">
-            {formik.errors.components}
-          </p>
-        )}
-
-        <div className="checkbox-group__inner">
-          {COMPONENT_OPTIONS.map((option) => (
-            <CheckboxInput
-              key={option.value}
-              label={option.label}
-              {...formik.getFieldProps("components")}
-              checked={formik.values.components.includes(option.value)}
-              onChange={() =>
-                formik.setFieldValue(
-                  "components",
-                  formik.values.components.includes(option.value)
-                    ? formik.values.components.filter(
-                        (item) => item !== option.value
-                      )
-                    : [...formik.values.components, option.value]
-                )
-              }
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      <fieldset
-        className={classNames("checkbox-group", {
-          "is-error":
-            formik.touched.architectures && formik.errors.architectures,
-        })}
-      >
-        <legend>* Architectures</legend>
-
-        {formik.touched.architectures && formik.errors.architectures && (
-          <p className="p-form-validation__message">
-            {formik.errors.architectures}
-          </p>
-        )}
-
-        <div className="checkbox-group__inner">
-          {ARCHITECTURE_OPTIONS.map((option) => (
-            <CheckboxInput
-              key={option.value}
-              label={option.label}
-              {...formik.getFieldProps("architectures")}
-              checked={formik.values.architectures.includes(option.value)}
-              onChange={() =>
-                formik.setFieldValue(
-                  "architectures",
-                  formik.values.architectures.includes(option.value)
-                    ? formik.values.architectures.filter(
-                        (item) => item !== option.value
-                      )
-                    : [...formik.values.architectures, option.value]
-                )
-              }
-            />
-          ))}
-        </div>
-      </fieldset>
+      <CheckboxGroup
+        label="Architectures"
+        required
+        options={ARCHITECTURE_OPTIONS}
+        {...formik.getFieldProps("architectures")}
+        onChange={(newOptions) => {
+          formik.setFieldValue("architectures", newOptions);
+        }}
+        error={formik.touched.architectures && formik.errors.architectures}
+      />
 
       <Select
         label="GPG Key"

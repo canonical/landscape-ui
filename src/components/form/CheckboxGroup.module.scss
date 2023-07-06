@@ -1,0 +1,6 @@
+.required {
+  &::before {
+    content: '* ';
+    position: relative;
+  }
+}

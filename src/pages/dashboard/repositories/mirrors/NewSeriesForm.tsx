@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import {
   Button,
-  CheckboxInput,
   Col,
   Form,
   Input,
@@ -21,12 +20,12 @@ import {
   PRE_SELECTED_COMPONENTS,
   PRE_SELECTED_POCKETS,
 } from "../../../../data/series";
-import classNames from "classnames";
 import useSeries, { CreateSeriesParams } from "../../../../hooks/useSeries";
 import { DEFAULT_MIRROR_URI } from "../../../../constants";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
 import { Distribution } from "../../../../types/Distribution";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
+import CheckboxGroup from "../../../../components/form/CheckboxGroup";
 
 interface FormProps extends CreateSeriesParams {
   pockets: string[];
@@ -243,114 +242,38 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         </Col>
       </Row>
 
-      <fieldset
-        className={classNames("checkbox-group", {
-          "is-error": formik.touched.pockets && formik.errors.pockets,
-        })}
-        style={{
-          marginTop: "1.5rem",
+      <CheckboxGroup
+        label="Pockets"
+        style={{ marginTop: "1.5rem" }}
+        options={POCKET_OPTIONS}
+        {...formik.getFieldProps("pockets")}
+        onChange={(newOptions) => {
+          formik.setFieldValue("pockets", newOptions);
         }}
-      >
-        <legend>Pockets</legend>
+        error={formik.touched.pockets && formik.errors.pockets}
+      />
 
-        {formik.touched.pockets && formik.errors.pockets && (
-          <p className="p-form-validation__message">{formik.errors.pockets}</p>
-        )}
+      <CheckboxGroup
+        label="Components"
+        required={formik.values.hasPockets}
+        options={COMPONENT_OPTIONS}
+        {...formik.getFieldProps("components")}
+        onChange={(newOptions) => {
+          formik.setFieldValue("components", newOptions);
+        }}
+        error={formik.touched.components && formik.errors.components}
+      />
 
-        <div className="checkbox-group__inner">
-          {POCKET_OPTIONS.map((option) => (
-            <CheckboxInput
-              key={option.value}
-              label={option.label}
-              {...formik.getFieldProps("pockets")}
-              checked={formik.values.pockets.includes(option.value)}
-              onChange={() =>
-                formik.setFieldValue(
-                  "pockets",
-                  formik.values.pockets.includes(option.value)
-                    ? formik.values.pockets.filter(
-                        (item) => item !== option.value
-                      )
-                    : [...formik.values.pockets, option.value]
-                )
-              }
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      <fieldset
-        className={classNames("checkbox-group", {
-          "is-error": formik.touched.components && formik.errors.components,
-        })}
-      >
-        <legend>Components</legend>
-
-        {formik.touched.components && formik.errors.components && (
-          <p className="p-form-validation__message">
-            {formik.errors.components}
-          </p>
-        )}
-
-        <div className="checkbox-group__inner">
-          {COMPONENT_OPTIONS.map((option) => (
-            <CheckboxInput
-              key={option.value}
-              label={option.label}
-              required={formik.values.hasPockets}
-              {...formik.getFieldProps("components")}
-              checked={formik.values.components.includes(option.value)}
-              onChange={() =>
-                formik.setFieldValue(
-                  "components",
-                  formik.values.components.includes(option.value)
-                    ? formik.values.components.filter(
-                        (item) => item !== option.value
-                      )
-                    : [...formik.values.components, option.value]
-                )
-              }
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      <fieldset
-        className={classNames("checkbox-group", {
-          "is-error":
-            formik.touched.architectures && formik.errors.architectures,
-        })}
-      >
-        <legend>Architectures</legend>
-
-        {formik.touched.architectures && formik.errors.architectures && (
-          <p className="p-form-validation__message">
-            {formik.errors.architectures}
-          </p>
-        )}
-
-        <div className="checkbox-group__inner">
-          {ARCHITECTURE_OPTIONS.map((option) => (
-            <CheckboxInput
-              key={option.value}
-              label={option.label}
-              required={formik.values.hasPockets}
-              {...formik.getFieldProps("architectures")}
-              checked={formik.values.architectures.includes(option.value)}
-              onChange={() =>
-                formik.setFieldValue(
-                  "architectures",
-                  formik.values.architectures.includes(option.value)
-                    ? formik.values.architectures.filter(
-                        (item) => item !== option.value
-                      )
-                    : [...formik.values.architectures, option.value]
-                )
-              }
-            />
-          ))}
-        </div>
-      </fieldset>
+      <CheckboxGroup
+        label="Architectures"
+        required={formik.values.hasPockets}
+        options={ARCHITECTURE_OPTIONS}
+        {...formik.getFieldProps("architectures")}
+        onChange={(newOptions) => {
+          formik.setFieldValue("architectures", newOptions);
+        }}
+        error={formik.touched.architectures && formik.errors.architectures}
+      />
 
       <div className="form-buttons">
         <Button type="submit" appearance="positive" disabled={isLoading}>
