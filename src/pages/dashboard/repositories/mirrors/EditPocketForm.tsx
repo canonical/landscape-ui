@@ -218,7 +218,13 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
               );
             }
           }
-        } else if ("upload" === pocket.mode) {
+        } else if ("upload" === pocket.mode && !values.upload_allow_unsigned) {
+          if (pocket.upload_allow_unsigned) {
+            await Promise.all(promises);
+
+            promises.splice(0);
+          }
+
           const pocketUploadGPGKeyNames = pocket.upload_gpg_keys.map(
             ({ name }) => name
           );
@@ -283,6 +289,10 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
       formik.setFieldValue(
         "upload_allow_unsigned",
         pocket.upload_allow_unsigned
+      );
+      formik.setFieldValue(
+        "upload_gpg_keys",
+        pocket.upload_gpg_keys.map(({ name }) => name)
       );
     } else {
       formik.setFieldValue("filters", pocket.filters);
@@ -369,18 +379,17 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
             checked={formik.values.upload_allow_unsigned}
           />
 
-          <Input
-            type="text"
+          <Select
             label="Uploader GPG keys"
+            multiple
+            disabled={formik.values.upload_allow_unsigned}
             {...formik.getFieldProps("upload_gpg_keys")}
-            onChange={(event) => {
-              formik.setFieldValue(
-                "upload_gpg_keys",
-                event.target.value.replace(/\s/g, "").split(",")
-              );
-            }}
-            help="List GPG keys separated by commas"
-            value={formik.values.upload_gpg_keys.join(",")}
+            options={gpgKeys
+              .filter(({ has_secret }) => !has_secret)
+              .map((item) => ({
+                label: item.name,
+                value: item.name,
+              }))}
             error={
               formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
             }

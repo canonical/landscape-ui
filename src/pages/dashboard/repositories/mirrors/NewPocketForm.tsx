@@ -230,17 +230,17 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               });
             }
           }
-        } else if ("upload" === values.mode) {
-          const uploaderGPGKeys = values.upload_gpg_keys.filter((x) => x);
-
-          if (uploaderGPGKeys.length) {
-            await addUploaderGPGKeysToPocket({
-              name: values.name,
-              series: values.series,
-              distribution: values.distribution,
-              gpg_keys: uploaderGPGKeys,
-            });
-          }
+        } else if (
+          "upload" === values.mode &&
+          !values.upload_allow_unsigned &&
+          values.upload_gpg_keys.length
+        ) {
+          await addUploaderGPGKeysToPocket({
+            name: values.name,
+            series: values.series,
+            distribution: values.distribution,
+            gpg_keys: values.upload_gpg_keys,
+          });
         }
 
         closeSidePanel();
@@ -431,6 +431,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           <Select
             label="Uploader GPG keys"
             multiple
+            disabled={formik.values.upload_allow_unsigned}
             {...formik.getFieldProps("upload_gpg_keys")}
             options={gpgKeys
               .filter(({ has_secret }) => !has_secret)
