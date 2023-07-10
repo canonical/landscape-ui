@@ -37,6 +37,7 @@ import SelectGrouped, {
 } from "../../../../components/form/SelectGrouped";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 import CheckboxGroup from "../../../../components/form/CheckboxGroup";
+import FieldDescription from "../../../../components/form/FieldDescription";
 
 interface FormProps
   extends Omit<CreateMirrorPocketParams, "mode">,
@@ -367,7 +368,30 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
 
           <Input
             type="text"
-            label="Mirror suite"
+            label={
+              <FieldDescription
+                label="Mirror suite"
+                description={
+                  <>
+                    <span>
+                      {
+                        "The specific sub-directory under dists/ that should be mirrored. If the suite name ends with a ‘/’, the remote repository is flat (no dists/ structure, see "
+                      }
+                    </span>
+                    <a href="http://wiki.debian.org/RepositoryFormat#Flat_Repository_Format">
+                      wiki.debian.org/RepositoryFormat#Flat_Repository_Format
+                    </a>
+                    <span>
+                      ); in this case a single value must be passed for the
+                      ‘components’ parameter. Packages from the remote
+                      repository will be mirrored in the specified component.
+                      This parameter is optional and defaults to the same name
+                      as local series and pocket.
+                    </span>
+                  </>
+                }
+              />
+            }
             {...formik.getFieldProps("mirror_suite")}
             error={formik.touched.mirror_suite && formik.errors.mirror_suite}
           />
