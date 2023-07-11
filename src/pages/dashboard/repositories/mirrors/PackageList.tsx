@@ -48,7 +48,7 @@ const PackageList: FC<PackageListProps> = ({
 
   const debug = useDebug();
   const { closeConfirmModal, confirmModal } = useConfirm();
-  const { setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent, closeSidePanel } = useSidePanel();
 
   const {
     listPocketQuery,
@@ -382,6 +382,7 @@ const PackageList: FC<PackageListProps> = ({
             });
 
             closeConfirmModal();
+            closeSidePanel();
           }}
           aria-label={`Delete ${pocket.name} pocket of ${distributionName}/${seriesName}`}
         >
