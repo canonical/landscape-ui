@@ -283,9 +283,10 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     if ("mirror" === pocket.mode) {
       formik.setFieldValue("mirror_uri", pocket.mirror_uri);
       formik.setFieldValue("mirror_suite", pocket.mirror_suite);
-      if (pocket.mirror_gpg_key) {
-        formik.setFieldValue("mirror_gpg_key", pocket.mirror_gpg_key.name);
-      }
+      formik.setFieldValue(
+        "mirror_gpg_key",
+        pocket.mirror_gpg_key ? pocket.mirror_gpg_key.name : "-"
+      );
     } else if ("upload" === pocket.mode) {
       formik.setFieldValue(
         "upload_allow_unsigned",
@@ -378,7 +379,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
           <Select
             label="Mirror GPG key"
             options={[
-              { label: "Select GPG key", value: "" },
+              { label: "Select GPG key", value: "-" },
               ...gpgKeys
                 .filter(({ has_secret }) => !has_secret)
                 .map((item) => ({
