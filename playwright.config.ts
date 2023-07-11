@@ -80,6 +80,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "removeMirror.spec.ts",
     },
+    {
+      name: "create-pocket",
+      dependencies: ["remove-mirror"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "createPocket.spec.ts",
+    },
 
     /* Configure projects for major browsers */
     // {

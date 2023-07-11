@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test:codegen": "playwright codegen 127.0.0.1:5173",
+    "test:report": "playwright show-report"
   },
   "dependencies": {
     "@canonical/react-components": "0.42.0",

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("test", async ({ page }) => {
+test("should remove test distribution", async ({ page }) => {
   await page.goto("/");
   await page
     .getByRole("button", { name: "Remove test-distro distribution" })
