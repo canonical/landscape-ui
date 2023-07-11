@@ -86,6 +86,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "createPocket.spec.ts",
     },
+    {
+      name: "remove-pocket",
+      dependencies: ["create-pocket"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "removePocket.spec.ts",
+    },
 
     /* Configure projects for major browsers */
     // {
