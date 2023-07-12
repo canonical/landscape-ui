@@ -92,6 +92,18 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "removePocket.spec.ts",
     },
+    {
+      name: "edit-mirror-pocket",
+      dependencies: ["remove-pocket"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "editMirrorPocket.spec.ts",
+    },
+    {
+      name: "edit-pull-pocket",
+      dependencies: ["edit-mirror-pocket"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "editPullPocket.spec.ts",
+    },
 
     /* Configure projects for major browsers */
     // {
