@@ -104,6 +104,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "editPullPocket.spec.ts",
     },
+    {
+      name: "edit-upload-pocket",
+      dependencies: ["edit-pull-pocket"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "editUploadPocket.spec.ts",
+    },
 
     /* Configure projects for major browsers */
     // {

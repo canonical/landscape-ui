@@ -311,6 +311,7 @@ export default function usePockets(): UsePocketsResult {
     mutationFn: (params) =>
       authFetch!.get("AddPackageFiltersToPocket", { params }),
     onSuccess: () => {
+      queryClient.invalidateQueries(["distributions"]).catch(debug);
       queryClient.invalidateQueries(["packages"]).catch(debug);
     },
   });
@@ -324,6 +325,7 @@ export default function usePockets(): UsePocketsResult {
     mutationFn: (params) =>
       authFetch!.get("RemovePackageFiltersFromPocket", { params }),
     onSuccess: () => {
+      queryClient.invalidateQueries(["distributions"]).catch(debug);
       queryClient.invalidateQueries(["packages"]).catch(debug);
     },
   });
@@ -337,6 +339,7 @@ export default function usePockets(): UsePocketsResult {
     mutationFn: (params) =>
       authFetch!.get("AddUploaderGPGKeysToPocket", { params }),
     onSuccess: () => {
+      queryClient.invalidateQueries(["distributions"]).catch(debug);
       queryClient.invalidateQueries(["packages"]).catch(debug);
     },
   });
@@ -350,6 +353,7 @@ export default function usePockets(): UsePocketsResult {
     mutationFn: (params) =>
       authFetch!.get("RemoveUploaderGPGKeysFromPocket", { params }),
     onSuccess: () => {
+      queryClient.invalidateQueries(["distributions"]).catch(debug);
       queryClient.invalidateQueries(["packages"]).catch(debug);
     },
   });
