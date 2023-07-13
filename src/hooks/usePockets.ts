@@ -196,7 +196,7 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     CreateMirrorPocketParams | CreatePullPocketParams | CreateUploadPocketParams
   >({
-    mutationKey: ["pockets", "new"],
+    mutationKey: ["pockets", "create"],
     mutationFn: (params) => authFetch!.get("CreatePocket", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["distributions"]).catch(debug);
@@ -232,10 +232,17 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     SyncMirrorPocketParams
   >({
-    mutationKey: ["pockets", "mirror"],
+    mutationKey: ["packages", "sync"],
     mutationFn: (params) => authFetch!.get("SyncMirrorPocket", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["packages"]).catch(debug);
+    onSuccess: (data, variables) => {
+      queryClient
+        .invalidateQueries([
+          "packages",
+          variables.distribution,
+          variables.series,
+          variables.name,
+        ])
+        .catch(debug);
     },
   });
 
@@ -244,10 +251,17 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     PullPackagesToPocketParams
   >({
-    mutationKey: ["pockets", "pull"],
+    mutationKey: ["packages", "pull"],
     mutationFn: (params) => authFetch!.get("PullPackagesToPocket", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["packages"]).catch(debug);
+    onSuccess: (data, variables) => {
+      queryClient
+        .invalidateQueries([
+          "packages",
+          variables.distribution,
+          variables.series,
+          variables.name,
+        ])
+        .catch(debug);
     },
   });
 
@@ -256,11 +270,19 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     RemovePackagesFromPocketParams
   >({
-    mutationKey: ["pockets", "pull"],
+    mutationKey: ["packages", "remove"],
     mutationFn: (params) =>
       authFetch!.get("RemovePackagesFromPockets", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["packages"]).catch(debug);
+    onSuccess: (data, variables) => {
+      queryClient
+        .invalidateQueries([
+          "packages",
+          variables.distribution,
+          variables.series,
+          variables.name,
+          "list",
+        ])
+        .catch(debug);
     },
   });
 
@@ -271,10 +293,10 @@ export default function usePockets(): UsePocketsResult {
     useQuery<AxiosResponse<PackageDiff>, AxiosError<ApiError>>({
       queryKey: [
         "packages",
-        "difference",
         queryParams?.distribution,
         queryParams?.series,
         queryParams?.name,
+        "difference",
       ],
       queryFn: () =>
         authFetch!.get("DiffPullPocket", {
@@ -290,10 +312,10 @@ export default function usePockets(): UsePocketsResult {
     useQuery<AxiosResponse<PackagesList>, AxiosError<ApiError>>({
       queryKey: [
         "packages",
-        "list",
         queryParams?.distribution,
         queryParams?.series,
         queryParams?.name,
+        "list",
       ],
       queryFn: () =>
         authFetch!.get("ListPocket", {
@@ -307,12 +329,19 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     AddPackageFiltersToPocketParams
   >({
-    mutationKey: ["pockets", "pull"],
+    mutationKey: ["packageFilters", "add"],
     mutationFn: (params) =>
       authFetch!.get("AddPackageFiltersToPocket", { params }),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(["distributions"]).catch(debug);
-      queryClient.invalidateQueries(["packages"]).catch(debug);
+      queryClient
+        .invalidateQueries([
+          "packages",
+          variables.distribution,
+          variables.series,
+          variables.name,
+        ])
+        .catch(debug);
     },
   });
 
@@ -321,12 +350,19 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     RemovePackageFiltersFromPocketParams
   >({
-    mutationKey: ["pockets", "pull"],
+    mutationKey: ["packageFilters", "remove"],
     mutationFn: (params) =>
       authFetch!.get("RemovePackageFiltersFromPocket", { params }),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(["distributions"]).catch(debug);
-      queryClient.invalidateQueries(["packages"]).catch(debug);
+      queryClient
+        .invalidateQueries([
+          "packages",
+          variables.distribution,
+          variables.series,
+          variables.name,
+        ])
+        .catch(debug);
     },
   });
 
@@ -335,12 +371,19 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     AddUploaderGPGKeysToPocketParams
   >({
-    mutationKey: ["pockets", "upload"],
+    mutationKey: ["uploaderGPGKeys", "add"],
     mutationFn: (params) =>
       authFetch!.get("AddUploaderGPGKeysToPocket", { params }),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(["distributions"]).catch(debug);
-      queryClient.invalidateQueries(["packages"]).catch(debug);
+      queryClient
+        .invalidateQueries([
+          "packages",
+          variables.distribution,
+          variables.series,
+          variables.name,
+        ])
+        .catch(debug);
     },
   });
 
@@ -349,12 +392,19 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     RemoveUploaderGPGKeysFromPocketParams
   >({
-    mutationKey: ["pockets", "upload"],
+    mutationKey: ["uploaderGPGKeys", "remove"],
     mutationFn: (params) =>
       authFetch!.get("RemoveUploaderGPGKeysFromPocket", { params }),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries(["distributions"]).catch(debug);
-      queryClient.invalidateQueries(["packages"]).catch(debug);
+      queryClient
+        .invalidateQueries([
+          "packages",
+          variables.distribution,
+          variables.series,
+          variables.name,
+        ])
+        .catch(debug);
     },
   });
 
