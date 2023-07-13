@@ -110,6 +110,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "editUploadPocket.spec.ts",
     },
+    {
+      name: "sync-pocket",
+      dependencies: ["edit-upload-pocket"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "syncPocket.spec.ts",
+    },
 
     /* Configure projects for major browsers */
     // {
