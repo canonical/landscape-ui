@@ -42,6 +42,7 @@ const FieldDescription: FC<FieldDescriptionProps> = ({
           role="tooltip"
         >
           {description}
+          <div className={classes.angle} />
         </div>
       </div>
     </div>
