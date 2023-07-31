@@ -59,7 +59,7 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
               onClick={() => {
                 confirmModal({
                   body: "Are you sure? This action is permanent and can not be undone.",
-                  title: "Deleting GPG key",
+                  title: `Deleting ${item.name} GPG key`,
                   buttons: [
                     <Button
                       key={`delete-key-${item.fingerprint}`}

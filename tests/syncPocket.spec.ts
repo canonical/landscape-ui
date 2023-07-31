@@ -40,8 +40,9 @@ test("should sync mirror pocket", async ({ page }) => {
     })
     .click();
   await page
+    .getByRole("complementary")
     .getByRole("button", {
-      name: "Sync test-mirror-pocket pocket of test-distro/test-snapshot",
+      name: "Synchronize test-mirror-pocket pocket of test-distro/test-snapshot",
     })
     .click();
 });

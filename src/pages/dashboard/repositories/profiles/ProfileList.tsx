@@ -106,7 +106,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
                   onClick={() => {
                     confirmModal({
                       body: "Are you sure?",
-                      title: "Deleting Repository Profile",
+                      title: `Deleting ${repositoryProfile.name} repository profile`,
                       buttons: [
                         <Button
                           key={`delete-profile-${repositoryProfile.name}`}

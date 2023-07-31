@@ -1,8 +1,10 @@
 import { Distribution } from "../../../../types/Distribution";
-import { Pocket } from "../../../../types/Pocket";
 import { AccessGroup } from "../../../../types/accessGroup";
 import { APTSource } from "../../../../types/APTSource";
-import { RepositoryProfile } from "../../../../types/RepositoryProfile";
+import {
+  RepositoryProfile,
+  RepositoryProfilePocket,
+} from "../../../../types/RepositoryProfile";
 
 export const getDistributionPocketOptions = (distributions: Distribution[]) => {
   return distributions
@@ -83,17 +85,11 @@ export const getFilteredAptSources = (
     : aptSources;
 };
 
-export const getFullProfilePocketNames = (profilePockets: Pocket[]) => {
-  return profilePockets.map(({ name, apt_source_line }) => {
-    const aptParts = apt_source_line.split(" ");
-
-    const regExpMatchArr = aptParts[1].match(/\/([-+\w]+)$/);
-
-    const distributionName = null !== regExpMatchArr ? regExpMatchArr[1] : "";
-
-    const seriesName = aptParts[2].replace(name, "").replace(/-$/, "");
-
-    return `${distributionName}/${seriesName}/${name}`;
+export const getFullProfilePocketNames = (
+  profilePockets: RepositoryProfilePocket[]
+) => {
+  return profilePockets.map(({ distribution, name, series }) => {
+    return `${distribution.name}/${series.name}/${name}`;
   });
 };
 

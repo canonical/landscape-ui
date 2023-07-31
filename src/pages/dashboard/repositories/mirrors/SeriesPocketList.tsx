@@ -106,7 +106,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
     } else if ("pull" === pocket.mode) {
       confirmModal({
         title: `Pulling packages to ${pocket.name} pocket`,
-        body: `Do you want to pull packages from ${pocket.pull_pocket}`,
+        body: `Do you want to pull packages from ${pocket.pull_pocket}?`,
         buttons: [
           <Button
             key={pocket.name}
@@ -222,18 +222,18 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           "aria-label": "Actions",
           content: (
             <div className={classes.dividedBlocks}>
-              {"upload" !== pocket.mode && (
+              {("mirror" == pocket.mode || "pull" == pocket.mode) && (
                 <div className={classes.dividedBlock}>
                   <Button
                     small
                     hasIcon
                     appearance="base"
                     className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
-                    aria-label={`${
-                      "mirror" === pocket.mode ? "Synchronize" : "Pull"
-                    } ${pocket.name} pocket of ${distributionName}/${
-                      series.name
-                    }`}
+                    aria-label={
+                      "mirror" === pocket.mode
+                        ? `Synchronize ${pocket.name} pocket of ${distributionName}/${series.name}`
+                        : `Pull packages to ${pocket.name} pocket of ${distributionName}/${series.name}`
+                    }
                     onClick={() => {
                       handleSyncPocket(pocket);
                     }}

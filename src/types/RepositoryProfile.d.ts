@@ -1,4 +1,11 @@
 import { Pocket } from "./Pocket";
+import { Distribution } from "./Distribution";
+import { Series } from "./Series";
+
+type RepositoryProfilePocket = Pocket & {
+  distribution: Pick<Distribution, "access_group" | "creation_time" | "name">;
+  series: Pick<Series, "name" | "creation_time">;
+};
 
 export interface RepositoryProfile {
   access_group: string;
@@ -8,7 +15,7 @@ export interface RepositoryProfile {
   id: number;
   name: string;
   pending_count: number;
-  pockets: Pocket[];
+  pockets: RepositoryProfilePocket[];
   tags: string[];
   title: string;
 }

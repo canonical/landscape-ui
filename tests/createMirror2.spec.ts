@@ -5,12 +5,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("should add series to test distribution", async ({ page }) => {
-  await page
-    .getByRole("button", { name: "Add series for test-distro" })
-    .click();
+  await page.getByRole("button", { name: "Add series to test-distro" }).click();
 
   await expect(
-    page.getByRole("heading", { name: "Add series for test-distro" })
+    page.getByRole("heading", { name: "Add series to test-distro" })
   ).toBeVisible();
 
   await page.locator('select[name="mirror_series"]').selectOption("xenial");

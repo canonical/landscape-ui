@@ -33,6 +33,7 @@ const GPGKeysPage: FC = () => {
             appearance="positive"
             onClick={handleOpen}
             type="button"
+            aria-label="Import GPG key"
           >
             Import key
           </Button>,
@@ -60,6 +61,7 @@ const GPGKeysPage: FC = () => {
                 key="table-create-new-mirror"
                 onClick={handleOpen}
                 type="button"
+                aria-label="Import GPG key"
               >
                 Import key
               </Button>,

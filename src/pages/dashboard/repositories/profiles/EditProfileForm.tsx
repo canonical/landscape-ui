@@ -445,6 +445,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                   setSearchText("");
                   inputRef.current.focus();
                 }}
+                aria-label="Reset search"
               >
                 <i className="p-icon--close">Close</i>
               </button>

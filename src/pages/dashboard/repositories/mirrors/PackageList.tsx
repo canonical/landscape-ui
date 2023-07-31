@@ -401,7 +401,7 @@ const PackageList: FC<PackageListProps> = ({
         >
           <div className="p-segmented-control">
             <div className="p-segmented-control__list">
-              {"upload" !== pocket.mode && (
+              {("mirror" == pocket.mode || "pull" == pocket.mode) && (
                 <Button
                   dense
                   className="p-segmented-control__button"
@@ -410,9 +410,11 @@ const PackageList: FC<PackageListProps> = ({
                     ("mirror" === pocket.mode && isSynchronizingMirrorPocket) ||
                     ("pull" === pocket.mode && isPullingPackagesToPocket)
                   }
-                  aria-label={`${"mirror" === pocket.mode ? "Sync" : "Pull"} ${
-                    pocket.name
-                  } pocket of ${distributionName}/${seriesName}`}
+                  aria-label={
+                    "mirror" === pocket.mode
+                      ? `Synchronize ${pocket.name} pocket of ${distributionName}/${seriesName}`
+                      : `Pull packages to ${pocket.name} pocket of ${distributionName}/${seriesName}`
+                  }
                 >
                   {"mirror" === pocket.mode ? "Sync" : "Pull"}
                 </Button>

@@ -25,13 +25,14 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
 
   const handleRemove = async () => {
     confirmModal({
-      title: "Remove distribution",
+      title: `Removing ${distribution.name} distribution`,
       body: "Are you sure? This action cannot be undone.",
       buttons: [
         <Button
           key={`delete-${distribution.name}`}
           appearance="negative"
           hasIcon={true}
+          aria-label={`Remove ${distribution.name} distribution`}
           onClick={async () => {
             try {
               await removeDistribution({ name: distribution.name });
@@ -61,11 +62,11 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
             onClick={() => {
               setSidePanelOpen(true);
               setSidePanelContent(
-                `Add series for ${distribution.name}`,
+                `Add series to ${distribution.name}`,
                 <NewSeriesForm distribution={distribution} />
               );
             }}
-            aria-label={`Add series for ${distribution.name}`}
+            aria-label={`Add series to ${distribution.name}`}
           >
             Add series
           </Button>

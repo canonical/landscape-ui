@@ -27,7 +27,7 @@ test("should create pockets with the different mode", async ({ page }) => {
     .locator('select[name="mirror_gpg_key"]')
     .selectOption("esm-apps-key");
   await page.getByText("Include .udeb packages (debian-installer)").click();
-  await page.getByRole("button", { name: "Create", exact: true }).click();
+  await page.getByRole("button", { name: "Create pocket" }).click();
 
   await expect(
     page.getByRole("button", {
@@ -57,7 +57,7 @@ test("should create pockets with the different mode", async ({ page }) => {
   await page.getByRole("textbox").fill("test-pull-pocket");
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page.locator('select[name="filter_type"]').selectOption("whitelist");
-  await page.getByRole("button", { name: "Create", exact: true }).click();
+  await page.getByRole("button", { name: "Create pocket" }).click();
 
   await expect(
     page.getByRole("button", {
@@ -85,7 +85,7 @@ test("should create pockets with the different mode", async ({ page }) => {
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page.getByText("Allow uploaded packages to be unsigned").click();
   await expect(page.getByRole("listbox")).toBeDisabled();
-  await page.getByRole("button", { name: "Create", exact: true }).click();
+  await page.getByRole("button", { name: "Create pocket" }).click();
 
   await expect(
     page.getByRole("button", {

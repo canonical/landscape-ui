@@ -91,7 +91,12 @@ const NewGPGKeyForm: FC = () => {
       {notify && <AppNotification notify={notify} />}
 
       <div className="form-buttons">
-        <Button type="submit" appearance="positive" disabled={isLoading}>
+        <Button
+          type="submit"
+          appearance="positive"
+          disabled={isLoading}
+          aria-label="Import GPG key"
+        >
           Import key
         </Button>
         <Button type="button" onClick={closeSidePanel}>

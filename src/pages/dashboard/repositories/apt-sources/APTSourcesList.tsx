@@ -59,7 +59,7 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
               onClick={() => {
                 confirmModal({
                   body: "Are you sure? This action is permanent and can not be undone.",
-                  title: "Deleting APT source",
+                  title: `Deleting ${item.name} APT source`,
                   buttons: [
                     <Button
                       key={`delete-key-${item.id}`}

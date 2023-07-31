@@ -485,6 +485,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             addPackageFiltersToPocketLoading ||
             addUploaderGPGKeysToPocketLoading
           }
+          aria-label="Create pocket"
         >
           Create
         </Button>

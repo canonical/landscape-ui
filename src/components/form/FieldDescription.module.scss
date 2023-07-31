@@ -1,4 +1,5 @@
 @import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
 
 .wrapper {
   display: inline-flex;
@@ -6,5 +7,21 @@
 }
 
 .tooltip {
+  min-width: 20rem;
   white-space: normal !important;
+  background-color: $color-x-light !important;
+  border: 1px solid $color-mid-dark !important;
+  color: $colors--light-theme--text-default !important;
+
+  &::after {
+    pointer-events: none;
+    width: 0;
+    height: 0 !important;
+    left: 1rem !important;
+    bottom: calc(1px - 1rem) !important;
+    border-top: 0.5rem solid $color-x-light;
+    border-left: 0.5rem solid transparent;
+    border-right: 0.5rem solid transparent;
+    border-bottom: 0.5rem solid transparent;
+  }
 }
