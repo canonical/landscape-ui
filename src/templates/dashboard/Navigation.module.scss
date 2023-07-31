@@ -1,0 +1,13 @@
+@import "vanilla-framework/scss/settings_breakpoints";
+
+.content {
+  @media screen and (min-width: $breakpoint-large) {
+    padding-left: 3.5rem !important;
+  }
+}
+
+.icon {
+  @media screen and (min-width: $breakpoint-large) {
+    left: 1.25rem !important;
+  }
+}
