@@ -43,6 +43,7 @@ interface FormProps
   extends Omit<CreateMirrorPocketParams, "mode">,
     Omit<CreatePullPocketParams, "mode" | "filter_type">,
     Omit<CreateUploadPocketParams, "mode"> {
+  type: "ubuntu" | "third-party";
   mode:
     | CreateMirrorPocketParams["mode"]
     | CreatePullPocketParams["mode"]
@@ -54,6 +55,7 @@ interface FormProps
 }
 
 const initialValues: FormProps = {
+  type: "ubuntu",
   series: "",
   distribution: "",
   name: "",
@@ -155,6 +157,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   const gpgKeys = gpgKeysData?.data ?? [];
 
   const validationSchema = Yup.object().shape({
+    type: Yup.string<FormProps["type"]>().required("This field is required."),
     name: Yup.string()
       .required("This field is required")
       .test({
@@ -254,10 +257,28 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   useEffect(() => {
     formik.setFieldValue("distribution", distribution.name);
     formik.setFieldValue("series", series.name);
-    formik.setFieldValue("components", PRE_SELECTED_COMPONENTS);
-    formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES);
-    formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
   }, []);
+
+  useEffect(() => {
+    if ("ubuntu" === formik.values.type) {
+      formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.ubuntu);
+      formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES.ubuntu);
+
+      if ("mirror" === formik.values.mode) {
+        formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
+      }
+    } else {
+      formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.thirdParty);
+      formik.setFieldValue(
+        "architectures",
+        PRE_SELECTED_ARCHITECTURES.thirdParty
+      );
+
+      if ("mirror" === formik.values.mode) {
+        formik.setFieldValue("mirror_uri", "");
+      }
+    }
+  }, [formik.values.type, formik.values.mode]);
 
   const groupedPocketOptionsNew: groupedOption[] = distribution.series.map(
     (item) => ({
@@ -272,12 +293,33 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Select
+        label="Type"
+        required
+        options={[
+          { label: "Ubuntu", value: "ubuntu" },
+          { label: "Third party", value: "third-party" },
+        ]}
+        {...formik.getFieldProps("type")}
+        error={formik.touched.type && formik.errors.type}
+      />
+
+      <Select
         label="Mode"
         required
         options={[...PRE_DEFINED_POCKET_MODE_OPTIONS]}
         {...formik.getFieldProps("mode")}
         error={formik.touched.mode && formik.errors.mode}
       />
+
+      {"mirror" === formik.values.mode && (
+        <Input
+          type="text"
+          label="Mirror URI"
+          required
+          {...formik.getFieldProps("mirror_uri")}
+          error={formik.touched.mirror_uri && formik.errors.mirror_uri}
+        />
+      )}
 
       <div
         className={classNames({
@@ -318,28 +360,6 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         )}
       </div>
 
-      <CheckboxGroup
-        label="Components"
-        required
-        options={COMPONENT_OPTIONS}
-        {...formik.getFieldProps("components")}
-        onChange={(newOptions) => {
-          formik.setFieldValue("components", newOptions);
-        }}
-        error={formik.touched.components && formik.errors.components}
-      />
-
-      <CheckboxGroup
-        label="Architectures"
-        required
-        options={ARCHITECTURE_OPTIONS}
-        {...formik.getFieldProps("architectures")}
-        onChange={(newOptions) => {
-          formik.setFieldValue("architectures", newOptions);
-        }}
-        error={formik.touched.architectures && formik.errors.architectures}
-      />
-
       <Select
         label="GPG Key"
         required
@@ -358,14 +378,6 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
 
       {"mirror" === formik.values.mode && (
         <>
-          <Input
-            type="text"
-            label="Mirror URI"
-            required
-            {...formik.getFieldProps("mirror_uri")}
-            error={formik.touched.mirror_uri && formik.errors.mirror_uri}
-          />
-
           <Input
             type="text"
             label={
@@ -466,6 +478,66 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             error={
               formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
             }
+          />
+        </>
+      )}
+
+      {"ubuntu" === formik.values.type && (
+        <>
+          <CheckboxGroup
+            label="Components"
+            required
+            options={COMPONENT_OPTIONS}
+            {...formik.getFieldProps("components")}
+            onChange={(newOptions) => {
+              formik.setFieldValue("components", newOptions);
+            }}
+            error={formik.touched.components && formik.errors.components}
+          />
+
+          <CheckboxGroup
+            label="Architectures"
+            required
+            options={ARCHITECTURE_OPTIONS}
+            {...formik.getFieldProps("architectures")}
+            onChange={(newOptions) => {
+              formik.setFieldValue("architectures", newOptions);
+            }}
+            error={formik.touched.architectures && formik.errors.architectures}
+          />
+        </>
+      )}
+
+      {"third-party" === formik.values.type && (
+        <>
+          <Input
+            type="text"
+            label="Components"
+            required
+            {...formik.getFieldProps("components")}
+            value={formik.values.components.join(",")}
+            onChange={(event) => {
+              formik.setFieldValue(
+                "components",
+                event.target.value.replace(/\s/g, "").split(",")
+              );
+            }}
+            error={formik.touched.components && formik.errors.components}
+          />
+
+          <Input
+            type="text"
+            label="Architectures"
+            required
+            {...formik.getFieldProps("architectures")}
+            value={formik.values.architectures.join(",")}
+            onChange={(event) => {
+              formik.setFieldValue(
+                "architectures",
+                event.target.value.replace(/\s/g, "").split(",")
+              );
+            }}
+            error={formik.touched.architectures && formik.errors.architectures}
           />
         </>
       )}

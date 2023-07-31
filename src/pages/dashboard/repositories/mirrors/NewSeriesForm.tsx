@@ -28,6 +28,7 @@ import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 import CheckboxGroup from "../../../../components/form/CheckboxGroup";
 
 interface FormProps extends CreateSeriesParams {
+  type: "ubuntu" | "third-party";
   pockets: string[];
   components: string[];
   architectures: string[];
@@ -51,6 +52,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
 
   const formik = useFormik<FormProps>({
     initialValues: {
+      type: "ubuntu",
       name: "",
       distribution: "",
       mirror_series: "",
@@ -64,6 +66,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
     },
     validationSchema: Yup.object().shape({
       distribution: Yup.string().required("This field is required"),
+      type: Yup.string<FormProps["type"]>().required("This field is required."),
       name: Yup.string()
         .required("This field is required")
         .test({
@@ -127,12 +130,25 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
   });
 
   useEffect(() => {
-    formik.setFieldValue("pockets", PRE_SELECTED_POCKETS);
-    formik.setFieldValue("components", PRE_SELECTED_COMPONENTS);
-    formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES);
-    formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
     formik.setFieldValue("distribution", distribution.name);
   }, []);
+
+  useEffect(() => {
+    if ("ubuntu" === formik.values.type) {
+      formik.setFieldValue("pockets", PRE_SELECTED_POCKETS.ubuntu);
+      formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.ubuntu);
+      formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES.ubuntu);
+      formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
+    } else {
+      formik.setFieldValue("pockets", PRE_SELECTED_POCKETS.thirdParty);
+      formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.thirdParty);
+      formik.setFieldValue(
+        "architectures",
+        PRE_SELECTED_ARCHITECTURES.thirdParty
+      );
+      formik.setFieldValue("mirror_uri", "");
+    }
+  }, [formik.values.type]);
 
   useEffect(() => {
     if (!formik.values.mirror_series || formik.values.name) {
@@ -154,6 +170,30 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
+      <Select
+        label="Type"
+        required
+        options={[
+          { label: "Ubuntu", value: "ubuntu" },
+          { label: "Third party", value: "third-party" },
+        ]}
+        {...formik.getFieldProps("type")}
+        error={formik.touched.type && formik.errors.type}
+      />
+
+      <Input
+        type="text"
+        label="Mirror URI"
+        required={formik.values.hasPockets}
+        error={
+          formik.touched.mirror_uri && formik.errors.mirror_uri
+            ? formik.errors.mirror_uri
+            : undefined
+        }
+        help="Absolute URL or file path"
+        {...formik.getFieldProps("mirror_uri")}
+      />
+
       <Row className="u-no-padding">
         <Col size={6}>
           <Select
@@ -184,19 +224,6 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
           />
         </Col>
       </Row>
-
-      <Input
-        type="text"
-        label="Mirror URI"
-        required={formik.values.hasPockets}
-        error={
-          formik.touched.mirror_uri && formik.errors.mirror_uri
-            ? formik.errors.mirror_uri
-            : undefined
-        }
-        help="Absolute URL or file path"
-        {...formik.getFieldProps("mirror_uri")}
-      />
 
       <Row className="u-no-padding">
         <Col size={6}>
@@ -242,38 +269,86 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         </Col>
       </Row>
 
-      <CheckboxGroup
-        label="Pockets"
-        style={{ marginTop: "1.5rem" }}
-        options={POCKET_OPTIONS}
-        {...formik.getFieldProps("pockets")}
-        onChange={(newOptions) => {
-          formik.setFieldValue("pockets", newOptions);
-        }}
-        error={formik.touched.pockets && formik.errors.pockets}
-      />
+      {"ubuntu" === formik.values.type && (
+        <>
+          <CheckboxGroup
+            label="Pockets"
+            style={{ marginTop: "1.5rem" }}
+            options={POCKET_OPTIONS}
+            {...formik.getFieldProps("pockets")}
+            onChange={(newOptions) => {
+              formik.setFieldValue("pockets", newOptions);
+            }}
+            error={formik.touched.pockets && formik.errors.pockets}
+          />
+          <CheckboxGroup
+            label="Components"
+            required={formik.values.hasPockets}
+            options={COMPONENT_OPTIONS}
+            {...formik.getFieldProps("components")}
+            onChange={(newOptions) => {
+              formik.setFieldValue("components", newOptions);
+            }}
+            error={formik.touched.components && formik.errors.components}
+          />
+          <CheckboxGroup
+            label="Architectures"
+            required={formik.values.hasPockets}
+            options={ARCHITECTURE_OPTIONS}
+            {...formik.getFieldProps("architectures")}
+            onChange={(newOptions) => {
+              formik.setFieldValue("architectures", newOptions);
+            }}
+            error={formik.touched.architectures && formik.errors.architectures}
+          />
+        </>
+      )}
 
-      <CheckboxGroup
-        label="Components"
-        required={formik.values.hasPockets}
-        options={COMPONENT_OPTIONS}
-        {...formik.getFieldProps("components")}
-        onChange={(newOptions) => {
-          formik.setFieldValue("components", newOptions);
-        }}
-        error={formik.touched.components && formik.errors.components}
-      />
-
-      <CheckboxGroup
-        label="Architectures"
-        required={formik.values.hasPockets}
-        options={ARCHITECTURE_OPTIONS}
-        {...formik.getFieldProps("architectures")}
-        onChange={(newOptions) => {
-          formik.setFieldValue("architectures", newOptions);
-        }}
-        error={formik.touched.architectures && formik.errors.architectures}
-      />
+      {"third-party" === formik.values.type && (
+        <>
+          <Input
+            type="text"
+            label="Pockets"
+            {...formik.getFieldProps("pockets")}
+            value={formik.values.pockets.join(",")}
+            onChange={(event) => {
+              formik.setFieldValue(
+                "pockets",
+                event.target.value.replace(/\s/g, "").split(",")
+              );
+            }}
+            error={formik.touched.pockets && formik.errors.pockets}
+          />
+          <Input
+            type="text"
+            label="Components"
+            required={formik.values.hasPockets}
+            {...formik.getFieldProps("components")}
+            value={formik.values.components.join(",")}
+            onChange={(event) => {
+              formik.setFieldValue(
+                "components",
+                event.target.value.replace(/\s/g, "").split(",")
+              );
+            }}
+            error={formik.touched.components && formik.errors.components}
+          />
+          <Input
+            type="text"
+            label="Architectures"
+            required={formik.values.hasPockets}
+            {...formik.getFieldProps("architectures")}
+            value={formik.values.architectures.join(",")}
+            onChange={(event) => {
+              formik.setFieldValue(
+                "architectures",
+                event.target.value.replace(/\s/g, "").split(",")
+              );
+            }}
+            error={formik.touched.architectures && formik.errors.architectures}
+          />
+        </>
+      )}
 
       <div className="form-buttons">
         <Button type="submit" appearance="positive" disabled={isLoading}>

@@ -154,10 +154,6 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
   });
 
   useEffect(() => {
-    formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
-  }, []);
-
-  useEffect(() => {
     if (0 === formik.values.pockets.length || !formik.values.pockets[0]) {
       formik.setFieldValue("hasPockets", false);
 
@@ -169,16 +165,20 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
 
   useEffect(() => {
     if ("ubuntu" === formik.values.type) {
-      formik.setFieldValue("pockets", PRE_SELECTED_POCKETS);
-      formik.setFieldValue("components", PRE_SELECTED_COMPONENTS);
-      formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES);
+      formik.setFieldValue("pockets", PRE_SELECTED_POCKETS.ubuntu);
+      formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.ubuntu);
+      formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES.ubuntu);
+      formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
 
       return;
     }
 
-    formik.setFieldValue("pockets", []);
-    formik.setFieldValue("components", []);
-    formik.setFieldValue("architectures", []);
+    formik.setFieldValue("pockets", PRE_SELECTED_POCKETS.thirdParty);
+    formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.thirdParty);
+    formik.setFieldValue(
+      "architectures",
+      PRE_SELECTED_ARCHITECTURES.thirdParty
+    );
   }, [formik.values.type]);
 
   useEffect(() => {
@@ -200,6 +200,18 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
         ]}
         {...formik.getFieldProps("type")}
         error={formik.touched.type && formik.errors.type}
+      />
+
+      <Input
+        type="text"
+        label="Mirror URI"
+        required={formik.values.hasPockets}
+        name="mirror_uri"
+        value={formik.values.mirror_uri}
+        onChange={(event) => {
+          formik.setFieldValue("mirror_uri", event.target.value);
+        }}
+        error={formik.touched.mirror_uri && formik.errors.mirror_uri}
       />
 
       <Select
@@ -235,18 +247,6 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
           />
         </Col>
       </Row>
-
-      <Input
-        type="text"
-        label="Mirror URI"
-        required={formik.values.hasPockets}
-        name="mirror_uri"
-        value={formik.values.mirror_uri}
-        onChange={(event) => {
-          formik.setFieldValue("mirror_uri", event.target.value);
-        }}
-        error={formik.touched.mirror_uri && formik.errors.mirror_uri}
-      />
 
       <Row className="u-no-padding">
         <Col size={6}>

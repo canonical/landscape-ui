@@ -71,11 +71,12 @@ export const POCKET_OPTIONS: SelectOption[] = [
   },
 ];
 
-export const PRE_SELECTED_POCKETS: string[] = [
-  "release",
-  "security",
-  "updates",
-];
+type PreSelected = Record<"ubuntu" | "thirdParty", string[]>;
+
+export const PRE_SELECTED_POCKETS: PreSelected = {
+  ubuntu: ["release", "security", "updates"],
+  thirdParty: ["release"],
+};
 
 export const COMPONENT_OPTIONS: SelectOption[] = [
   {
@@ -96,12 +97,10 @@ export const COMPONENT_OPTIONS: SelectOption[] = [
   },
 ];
 
-export const PRE_SELECTED_COMPONENTS: string[] = [
-  "main",
-  "universe",
-  "restricted",
-  "multiverse",
-];
+export const PRE_SELECTED_COMPONENTS: PreSelected = {
+  ubuntu: ["main", "universe", "restricted", "multiverse"],
+  thirdParty: ["main"],
+};
 
 export const ARCHITECTURE_OPTIONS: SelectOption[] = [
   {
@@ -114,4 +113,7 @@ export const ARCHITECTURE_OPTIONS: SelectOption[] = [
   },
 ];
 
-export const PRE_SELECTED_ARCHITECTURES: string[] = ["amd64"];
+export const PRE_SELECTED_ARCHITECTURES: PreSelected = {
+  ubuntu: ["amd64"],
+  thirdParty: ["amd64"],
+};
