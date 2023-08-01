@@ -147,6 +147,8 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
           mirror_series: values.mirror_series,
           include_udeb: values.include_udeb,
         });
+
+        closeSidePanel();
       } catch (error) {
         debug(error);
       }
