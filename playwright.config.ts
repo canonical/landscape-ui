@@ -134,6 +134,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "handleAptSource.spec.ts",
     },
+    {
+      name: "handle-gpg-key",
+      dependencies: ["edit-upload-pocket"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "handleGpgKey.spec.ts",
+    },
 
     /* Configure projects for major browsers */
     // {
