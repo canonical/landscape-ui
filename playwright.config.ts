@@ -116,6 +116,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "syncPocket.spec.ts",
     },
+    {
+      name: "pull-pocket",
+      dependencies: ["sync-pocket"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "pullToPocket.spec.ts",
+    },
 
     /* Configure projects for major browsers */
     // {

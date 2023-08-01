@@ -1,0 +1,63 @@
+import { expect, test } from "@playwright/test";
+
+test("should pull packages to test pocket", async ({ page }) => {
+  await page.route(/\?action=PullPackagesToPocket/, (route) => {
+    expect(route.request().url().includes("test-pull-pocket")).toBeTruthy();
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        status: "success",
+        message: "Pulling packages started",
+      }),
+    });
+  });
+
+  await page.goto("/");
+
+  await page
+    .getByRole("button", {
+      name: "Pull packages to test-pull-pocket pocket of test-distro/test-snapshot",
+    })
+    .click();
+  await expect(
+    page.getByRole("dialog", {
+      name: "Pulling packages to test-pull-pocket pocket",
+    })
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "Do you want to pull packages from test-snapshot/test-mirror-pocket?"
+    )
+  ).toBeVisible();
+
+  await page
+    .getByRole("dialog", {
+      name: "Pulling packages to test-pull-pocket pocket",
+    })
+    .getByRole("button", {
+      name: "Pull packages to test-pull-pocket pocket of test-distro/test-snapshot",
+    })
+    .click();
+
+  await expect(
+    page.getByRole("dialog", {
+      name: "Pulling packages to test-pull-pocket pocket",
+    })
+  ).not.toBeVisible();
+
+  await page
+    .getByRole("button", {
+      name: "List test-pull-pocket pocket of test-distro/test-snapshot",
+    })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "test-snapshot test-pull-pocket" })
+  ).toBeVisible();
+  await page
+    .getByRole("complementary")
+    .getByRole("button", {
+      name: "Pull packages to test-pull-pocket pocket of test-distro/test-snapshot",
+    })
+    .click();
+});

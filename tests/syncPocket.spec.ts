@@ -1,9 +1,16 @@
 import { expect, test } from "@playwright/test";
 
 test("should sync mirror pocket", async ({ page }) => {
-  await page.route("/?action=SyncMirrorPocket*", (route) => {
+  await page.route(/\?action=SyncMirrorPocket/, (route) => {
     expect(route.request().url().includes("test-mirror-pocket")).toBeTruthy();
-    route.continue();
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        status: "success",
+        message: "Synchronization started",
+      }),
+    });
   });
 
   await page.goto("/");
@@ -28,11 +35,6 @@ test("should sync mirror pocket", async ({ page }) => {
       name: "Synchronize test-mirror-pocket pocket of test-distro/test-snapshot",
     })
     .click();
-
-  await page.route("/?action=SyncMirrorPocket*", (route) => {
-    expect(route.request().url().includes("test-mirror-pocket")).toBeTruthy();
-    route.abort();
-  });
 
   await page
     .getByRole("button", {
