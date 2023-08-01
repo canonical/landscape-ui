@@ -117,10 +117,16 @@ export default defineConfig({
       testMatch: "syncPocket.spec.ts",
     },
     {
-      name: "pull-pocket",
-      dependencies: ["sync-pocket"],
+      name: "pull-to-pocket",
+      dependencies: ["edit-upload-pocket"],
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "pullToPocket.spec.ts",
+    },
+    {
+      name: "remove-packages-from-upload-pocket",
+      dependencies: ["edit-upload-pocket"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "removePackagesFromUploadPocket.spec.ts",
     },
 
     /* Configure projects for major browsers */

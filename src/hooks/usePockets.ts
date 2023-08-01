@@ -272,7 +272,7 @@ export default function usePockets(): UsePocketsResult {
   >({
     mutationKey: ["packages", "remove"],
     mutationFn: (params) =>
-      authFetch!.get("RemovePackagesFromPockets", { params }),
+      authFetch!.get("RemovePackagesFromPocket", { params }),
     onSuccess: (data, variables) => {
       queryClient
         .invalidateQueries([
