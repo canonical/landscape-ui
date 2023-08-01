@@ -128,6 +128,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "removePackagesFromUploadPocket.spec.ts",
     },
+    {
+      name: "handle-apt-source",
+      dependencies: ["edit-upload-pocket"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "handleAptSource.spec.ts",
+    },
 
     /* Configure projects for major browsers */
     // {
