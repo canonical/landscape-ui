@@ -4,12 +4,6 @@ import * as path from "path";
 export const STORAGE_STATE = path.join(__dirname, "playwright/.auth/user.json");
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
-
-/**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
@@ -39,14 +33,8 @@ export default defineConfig({
       testMatch: "login.spec.ts",
     },
     {
-      name: "remove-distribution",
-      dependencies: ["login"],
-      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
-      testMatch: "removeDistribution.spec.ts",
-    },
-    {
       name: "create-distribution",
-      dependencies: ["remove-distribution"],
+      dependencies: ["login"],
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "createDistribution.spec.ts",
     },
@@ -129,10 +117,10 @@ export default defineConfig({
       testMatch: "removePackagesFromUploadPocket.spec.ts",
     },
     {
-      name: "handle-apt-source",
+      name: "create-apt-source",
       dependencies: ["edit-upload-pocket"],
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
-      testMatch: "handleAptSource.spec.ts",
+      testMatch: "createAptSource.spec.ts",
     },
     {
       name: "handle-gpg-key",
@@ -140,48 +128,35 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "handleGpgKey.spec.ts",
     },
-
-    /* Configure projects for major browsers */
-    // {
-    //   name: "chromium",
-    //   use: { ...devices["Desktop Chrome"] },
-    // },
-    //
-    // {
-    //   name: "firefox",
-    //   use: { ...devices["Desktop Firefox"] },
-    // },
-    //
-    // {
-    //   name: "webkit",
-    //   use: { ...devices["Desktop Safari"] },
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    {
+      name: "create-repository-profile",
+      dependencies: ["create-apt-source"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "createRepositoryProfile.spec.ts",
+    },
+    {
+      name: "edit-repository-profile",
+      dependencies: ["create-repository-profile"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "editRepositoryProfile.spec.ts",
+    },
+    {
+      name: "delete-repository-profile",
+      dependencies: ["edit-repository-profile"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "deleteRepositoryProfile.spec.ts",
+    },
+    {
+      name: "delete-apt-source",
+      dependencies: ["delete-repository-profile"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "deleteAptSource.spec.ts",
+    },
+    {
+      name: "remove-distribution",
+      dependencies: ["delete-apt-source"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "removeDistribution.spec.ts",
+    },
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });

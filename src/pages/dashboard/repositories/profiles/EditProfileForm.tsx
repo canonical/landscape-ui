@@ -349,6 +349,8 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
         links={[
           {
             label: "Details",
+            role: "tab",
+            ["data-testid"]: "details-tab",
             active: 0 === currentTab,
             onClick: () => {
               handleClickTab(0);
@@ -356,6 +358,8 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           },
           {
             label: "Pockets",
+            role: "tab",
+            ["data-testid"]: "pockets-tab",
             active: 1 === currentTab,
             onClick: () => {
               handleClickTab(1);
@@ -363,6 +367,8 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           },
           {
             label: "Apt Sources",
+            role: "tab",
+            ["data-testid"]: "apt-sources-tab",
             active: 2 === currentTab,
             onClick: () => {
               handleClickTab(2);
@@ -419,7 +425,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           {[1, 2].includes(currentTab) && (
             <div className="p-search-box">
               <label className="u-off-screen" htmlFor="search">
-                Search
+                {`Search ${currentTab === 1 ? "pockets" : "APT sources"}`}
               </label>
               <input
                 ref={inputRef}
@@ -427,28 +433,29 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                 id="search"
                 className="p-search-box__input"
                 name="search"
+                placeholder="Search"
                 value={searchText}
                 onChange={(event) => {
                   setSearchText(event.target.value);
                 }}
-                placeholder="Search"
-                required
               />
-              <button
-                type="reset"
-                className="p-search-box__reset"
-                onClick={() => {
-                  if (!inputRef.current) {
-                    return;
-                  }
+              {searchText && (
+                <button
+                  type="reset"
+                  className="p-search-box__reset"
+                  onClick={() => {
+                    if (!inputRef.current) {
+                      return;
+                    }
 
-                  setSearchText("");
-                  inputRef.current.focus();
-                }}
-                aria-label="Reset search"
-              >
-                <i className="p-icon--close">Close</i>
-              </button>
+                    setSearchText("");
+                    inputRef.current.focus();
+                  }}
+                  aria-label="Reset search"
+                >
+                  <i className="p-icon--close">Close</i>
+                </button>
+              )}
               <span
                 className={classNames(
                   "p-search-box__button p-button--base",

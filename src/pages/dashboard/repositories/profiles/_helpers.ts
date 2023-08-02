@@ -14,13 +14,15 @@ export const getDistributionPocketOptions = (distributions: Distribution[]) => {
     )
     .map(({ name: distributionName, series }) => ({
       distributionName,
-      series: series.map(({ name: seriesName, pockets }) => ({
-        seriesName,
-        pockets: pockets.map(({ name: pocketName }) => ({
-          pocketName,
-          value: `${distributionName}/${seriesName}/${pocketName}`,
+      series: series
+        .filter(({ pockets }) => pockets.length)
+        .map(({ name: seriesName, pockets }) => ({
+          seriesName,
+          pockets: pockets.map(({ name: pocketName }) => ({
+            pocketName,
+            value: `${distributionName}/${seriesName}/${pocketName}`,
+          })),
         })),
-      })),
     }));
 };
 
