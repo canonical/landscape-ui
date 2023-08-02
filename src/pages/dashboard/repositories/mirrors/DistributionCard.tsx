@@ -36,10 +36,10 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
           onClick={async () => {
             try {
               await removeDistribution({ name: distribution.name });
-
-              closeConfirmModal();
             } catch (error: unknown) {
               debug(error);
+            } finally {
+              closeConfirmModal();
             }
           }}
         >

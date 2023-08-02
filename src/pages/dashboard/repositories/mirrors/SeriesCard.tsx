@@ -40,10 +40,10 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
                 name: series.name,
                 distribution: distribution.name,
               });
-
-              closeConfirmModal();
             } catch (error: unknown) {
               debug(error);
+            } finally {
+              closeConfirmModal();
             }
           }}
           aria-label={`Remove ${series.name} from ${distribution.name}`}

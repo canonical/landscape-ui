@@ -68,9 +68,10 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
                       onClick={async () => {
                         try {
                           await removeAPTSource({ name: item.name });
-                          closeConfirmModal();
                         } catch (error: unknown) {
                           debug(error);
+                        } finally {
+                          closeConfirmModal();
                         }
                       }}
                       aria-label={`Delete ${item.name} APT source`}

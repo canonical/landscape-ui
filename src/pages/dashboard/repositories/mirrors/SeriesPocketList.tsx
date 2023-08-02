@@ -29,15 +29,8 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
     syncMirrorPocketQuery,
     pullPackagesToPocketQuery,
   } = usePockets();
-  const {
-    mutate: removePocket,
-    isLoading: isRemovingPocket,
-    error: removePocketError,
-  } = removePocketQuery;
-
-  if (removePocketError) {
-    debug(removePocketError);
-  }
+  const { mutateAsync: removePocket, isLoading: isRemovingPocket } =
+    removePocketQuery;
 
   const handleRemovePocket = (pocket: Pocket) => {
     confirmModal({
@@ -48,14 +41,18 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           key={`delete-${pocket.name}-pocket`}
           appearance="negative"
           disabled={isRemovingPocket}
-          onClick={() => {
-            removePocket({
-              distribution: distributionName,
-              series: series.name,
-              name: pocket.name,
-            });
-
-            closeConfirmModal();
+          onClick={async () => {
+            try {
+              await removePocket({
+                distribution: distributionName,
+                series: series.name,
+                name: pocket.name,
+              });
+            } catch (error) {
+              debug(error);
+            } finally {
+              closeConfirmModal();
+            }
           }}
           aria-label={`Delete ${pocket.name} pocket of ${distributionName}/${series.name}`}
         >
@@ -90,10 +87,10 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                   series: series.name,
                   distribution: distributionName,
                 });
-
-                closeConfirmModal();
               } catch (error) {
                 debug(error);
+              } finally {
+                closeConfirmModal();
               }
             }}
             disabled={isSynchronizingMirrorPocket}
@@ -118,10 +115,10 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                   series: series.name,
                   distribution: distributionName,
                 });
-
-                closeConfirmModal();
               } catch (error) {
                 debug(error);
+              } finally {
+                closeConfirmModal();
               }
             }}
             disabled={isPullingPackagesToPocket}

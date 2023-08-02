@@ -68,9 +68,10 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
                       onClick={async () => {
                         try {
                           await removeGPGKey({ name: item.name });
-                          closeConfirmModal();
                         } catch (error: unknown) {
                           debug(error);
+                        } finally {
+                          closeConfirmModal();
                         }
                       }}
                       aria-label={`Delete ${item.name} GPG key`}

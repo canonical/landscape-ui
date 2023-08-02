@@ -7,17 +7,21 @@ import React, {
 } from "react";
 import classNames from "classnames";
 import { useLocation } from "react-router-dom";
+import AppNotification from "../components/layout/AppNotification";
+import useNotify from "../hooks/useNotify";
 
 interface SidePanelContextProps {
   setSidePanelOpen: (newState: boolean) => void;
   setSidePanelContent: (title: string, newState: ReactNode | null) => void;
   closeSidePanel: () => void;
+  isSidePanelOpen: boolean;
 }
 
 const initialState: SidePanelContextProps = {
   setSidePanelOpen: () => undefined,
   setSidePanelContent: () => undefined,
   closeSidePanel: () => undefined,
+  isSidePanelOpen: false,
 };
 
 export const SidePanelContext =
@@ -31,7 +35,9 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
+
   const { pathname } = useLocation();
+  const notify = useNotify();
 
   useEffect(() => {
     return handleClose;
@@ -41,6 +47,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     setOpen(false);
     setTitle("");
     setBody(null);
+    notify.clear();
   };
 
   return (
@@ -52,6 +59,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
           setBody(body);
         },
         closeSidePanel: handleClose,
+        isSidePanelOpen: open,
       }}
     >
       {children}
@@ -72,6 +80,11 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
             </button>
           </div>
         </div>
+        {notify && (
+          <div className="row">
+            <AppNotification notify={notify} />
+          </div>
+        )}
         <div className="p-panel__content">
           <div className="p-panel__inner">{body}</div>
         </div>

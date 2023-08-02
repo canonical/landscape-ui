@@ -117,9 +117,10 @@ const ProfileList: FC<DistributionProfileListProps> = ({
                               await removeRepositoryProfile({
                                 name: repositoryProfile.name,
                               });
-                              closeConfirmModal();
                             } catch (error: unknown) {
                               debug(error);
+                            } finally {
+                              closeConfirmModal();
                             }
                           }}
                           aria-label={`Delete ${repositoryProfile.name} repository profile`}

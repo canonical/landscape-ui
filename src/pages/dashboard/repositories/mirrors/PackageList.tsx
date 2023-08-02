@@ -355,15 +355,8 @@ const PackageList: FC<PackageListProps> = ({
     );
   };
 
-  const {
-    mutate: removePocket,
-    isLoading: isRemovingPocket,
-    error: removePocketError,
-  } = removePocketQuery;
-
-  if (removePocketError) {
-    debug(removePocketError);
-  }
+  const { mutateAsync: removePocket, isLoading: isRemovingPocket } =
+    removePocketQuery;
 
   const handleRemovePocket = () => {
     confirmModal({
@@ -374,15 +367,19 @@ const PackageList: FC<PackageListProps> = ({
           key={`delete-${pocket.name}-pocket`}
           appearance="negative"
           disabled={isRemovingPocket}
-          onClick={() => {
-            removePocket({
-              distribution: distributionName,
-              series: seriesName,
-              name: pocket.name,
-            });
-
-            closeConfirmModal();
-            closeSidePanel();
+          onClick={async () => {
+            try {
+              await removePocket({
+                distribution: distributionName,
+                series: seriesName,
+                name: pocket.name,
+              });
+            } catch (error) {
+              debug(error);
+            } finally {
+              closeConfirmModal();
+              closeSidePanel();
+            }
           }}
           aria-label={`Delete ${pocket.name} pocket of ${distributionName}/${seriesName}`}
         >
