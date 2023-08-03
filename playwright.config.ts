@@ -41,8 +41,14 @@ export default defineConfig({
       testMatch: "login.spec.ts",
     },
     {
-      name: "create-distribution",
+      name: "remove-distribution-if-present",
       dependencies: ["login"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "removeDistributionIfPresent.spec.ts",
+    },
+    {
+      name: "create-distribution",
+      dependencies: ["remove-distribution-if-present"],
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "createDistribution.spec.ts",
     },
