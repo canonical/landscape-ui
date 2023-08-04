@@ -3,13 +3,15 @@ import * as path from "path";
 
 export const STORAGE_STATE = path.join(__dirname, "playwright/.auth/user.json");
 
-const BASE_URL = "http://127.0.0.1:5173";
+const PORT = process.env.CI ? 4173 : 5173;
+
+const BASE_URL = `http://127.0.0.1:${PORT}`;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: "./tests",
+  testDir: path.join(__dirname, "tests"),
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -22,16 +24,15 @@ export default defineConfig({
   reporter: "html",
   /* Start a web server before running the tests. */
   webServer: {
-    command: "npm run dev",
+    command: process.env.CI ? "npm run preview" : "npm run dev",
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 5 * 1000,
+    timeout: 5 * 60 * 1000,
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: BASE_URL,
-
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
