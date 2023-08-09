@@ -1,0 +1,15 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.search {
+  width: 100%;
+  min-width: 20%;
+  margin-left: $sph--large;
+  margin-right: $sph--large;
+  margin-bottom: $input-margin-bottom;
+  padding-top: $spv--large;
+}
+
+.controls,
+.visualTitle {
+  flex-shrink: 0;
+}
