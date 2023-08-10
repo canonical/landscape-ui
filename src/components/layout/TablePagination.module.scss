@@ -1,0 +1,57 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.wrapper {
+  display: flex;
+  column-gap: $sph--x-large;
+  padding-left: $sph--x-small;
+  overflow-x: hidden;
+  overflow-y: clip;
+
+  &:not(:last-child) {
+    margin-right: $sph--large;
+  }
+}
+
+.paginationWrapper {
+  column-gap: $sph--large;
+  align-items: baseline;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.withError {
+  padding-bottom: $spv--x-large;
+}
+
+.input {
+  min-width: initial !important;
+}
+
+.smallInput {
+  width: $sp-xxx-large !important;
+}
+
+.mediumInput {
+  width: 7 * $sp-unit !important;
+}
+
+.largeInput {
+  width: $sp-xxxx-large !important;
+}
+
+.xLargeInput {
+  width: 9 * $sp-unit !important;
+}
+
+.error {
+  position: absolute;
+  white-space: nowrap;
+  bottom: 0;
+}
+
+.noWrap {
+  white-space: nowrap;
+}
