@@ -13,6 +13,11 @@ interface MenuItem {
 
 const MENU_ITEMS: MenuItem[] = [
   {
+    label: "Machines",
+    path: "/machines",
+    icon: "pods",
+  },
+  {
     label: "Repositories",
     path: `${ROOT_PATH}repositories`,
     icon: "fork",
