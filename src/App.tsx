@@ -21,6 +21,7 @@ const GPGKeysPage = lazy(
 const APTSourcesPage = lazy(
   () => import("./pages/dashboard/repositories/apt-sources"),
 );
+const MachinesPage = lazy(() => import("./pages/dashboard/machines"));
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -101,6 +102,14 @@ const App: FC = () => {
             element={
               <AuthRoute>
                 <APTSourcesPage />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="machines"
+            element={
+              <AuthRoute>
+                <MachinesPage />
               </AuthRoute>
             }
           />
