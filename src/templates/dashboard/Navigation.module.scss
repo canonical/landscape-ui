@@ -1,13 +1,29 @@
-@import "vanilla-framework/scss/settings_breakpoints";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/base_icon-definitions";
+@import "vanilla-framework/scss/settings_animations";
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/global_functions";
 
-.content {
-  @media screen and (min-width: $breakpoint-large) {
-    padding-left: 3.5rem !important;
+.accordionButton {
+  &::before {
+    content: none !important;
   }
-}
 
-.icon {
-  @media screen and (min-width: $breakpoint-large) {
-    left: 1.25rem !important;
+  &::after {
+    @include vf-icon-chevron($color-mid);
+    @include vf-transition($property: transform, $duration: fast);
+
+    content: "";
+    width: $sph--large;
+    height: $spv--large;
+    margin-left: auto;
+    align-self: center;
+    flex-shrink: 0;
+  }
+
+  &[aria-expanded="false"] {
+    &::after {
+      transform: rotate(-90deg);
+    }
   }
 }

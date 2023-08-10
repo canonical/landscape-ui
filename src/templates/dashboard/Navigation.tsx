@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import classes from "./Navigation.module.scss";
@@ -37,6 +37,8 @@ const MENU_ITEMS: MenuItem[] = [
 ];
 
 const Navigation: FC = () => {
+  const [expanded, setExpanded] = useState("");
+
   const { pathname } = useLocation();
 
   return (
@@ -44,32 +46,53 @@ const Navigation: FC = () => {
       <nav aria-label="Main">
         <ul className="u-no-margin--left u-no-padding--left">
           {MENU_ITEMS.map((item) => (
-            <li key={item.path}>
-              <h3
-                className={classNames(
-                  "p-side-navigation__heading p-muted-heading",
-                  classes.content
-                )}
-              >
-                {item.icon && (
-                  <i
-                    className={classNames(
-                      `p-icon--${item.icon} is-light p-side-navigation__icon`,
-                      classes.icon
-                    )}
-                  />
-                )}
-                <span>{item.label}</span>
-              </h3>
+            <li key={item.path} className="p-side-navigation__item">
+              {item.items && item.items.length > 0 ? (
+                <button
+                  className={classNames(
+                    "p-side-navigation__accordion-button",
+                    classes.accordionButton
+                  )}
+                  type="button"
+                  aria-expanded={expanded === item.path}
+                  onClick={() => {
+                    setExpanded((prevState) =>
+                      item.path === prevState ? "" : item.path
+                    );
+                  }}
+                >
+                  {item.icon && (
+                    <i
+                      className={classNames(
+                        `p-icon--${item.icon} is-light p-side-navigation__icon`
+                      )}
+                    />
+                  )}
+                  <span>{item.label}</span>
+                </button>
+              ) : (
+                <Link
+                  className={classNames("p-side-navigation__link")}
+                  to={item.path}
+                  aria-current={pathname === item.path ? "page" : undefined}
+                >
+                  {item.icon && (
+                    <i
+                      className={`p-icon--${item.icon} is-light p-side-navigation__icon`}
+                    />
+                  )}
+                  <span className="p-side-navigation__label">{item.label}</span>
+                </Link>
+              )}
               {item.items && item.items.length > 0 && (
-                <ul className="p-side-navigation__list">
+                <ul
+                  className="p-side-navigation__list"
+                  aria-expanded={expanded === item.path}
+                >
                   {item.items.map((subItem) => (
                     <li key={subItem.path} className="p-side-navigation__item">
                       <Link
-                        className={classNames(
-                          "p-side-navigation__link",
-                          classes.content
-                        )}
+                        className={classNames("p-side-navigation__link")}
                         to={subItem.path}
                         aria-current={
                           pathname === subItem.path ? "page" : undefined
