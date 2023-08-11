@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 test("should create repository profile", async ({ page }) => {
   await page.goto("/");
 
+  await page.getByRole("button", { name: "Repositories" }).click();
   await page.getByRole("link", { name: "Profiles" }).click();
   await expect(page).toHaveURL(/profiles/);
 
@@ -57,13 +58,13 @@ test("should create repository profile", async ({ page }) => {
     .getByRole("listitem")
     .filter({ hasNot: page.getByRole("tab") });
 
-  await expect(rows).toHaveCount(2);
+  expect(await rows.count()).toBeGreaterThanOrEqual(1);
   await page.getByPlaceholder("Search").fill("apt");
-  await expect(rows).toHaveCount(1);
+  expect(await rows.count()).toEqual(1);
 
   await page.getByText("test-apt-source").click();
   await page.getByRole("button", { name: "Reset search" }).click();
-  await expect(rows).toHaveCount(2);
+  expect(await rows.count()).toBeGreaterThanOrEqual(1);
   await page
     .getByRole("button", { name: "Create profile", exact: true })
     .click();

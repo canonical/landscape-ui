@@ -42,14 +42,14 @@ export default defineConfig({
       testMatch: "login.spec.ts",
     },
     {
-      name: "remove-distribution-if-present",
+      name: "remove-test-instances-if-present",
       dependencies: ["login"],
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
-      testMatch: "removeDistributionIfPresent.spec.ts",
+      testMatch: "removeTestInstancesIfPresent.spec.ts",
     },
     {
       name: "create-distribution",
-      dependencies: ["remove-distribution-if-present"],
+      dependencies: ["remove-test-instances-if-present"],
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "createDistribution.spec.ts",
     },

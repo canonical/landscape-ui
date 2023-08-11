@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 test("should delete APT source", async ({ page }) => {
   await page.goto("/");
 
+  await page.getByRole("button", { name: "Repositories" }).click();
   await page.getByRole("link", { name: "APT Sources" }).click();
 
   await page
