@@ -26,8 +26,12 @@ export const generateRequestParams = (
       value.forEach((data, index) => {
         if ("string" === typeof data && "" !== data) {
           paramsToPass[`${param}.${index + 1}`] = data;
+        } else if ("number" === typeof data) {
+          paramsToPass[`${param}.${index + 1}`] = `${data}`;
         }
       });
+    } else if ("number" === typeof value) {
+      paramsToPass[param] = `${value}`;
     } else if ("boolean" === typeof value) {
       paramsToPass[param] = `${value}`;
     } else if (
