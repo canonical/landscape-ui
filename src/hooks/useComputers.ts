@@ -5,70 +5,71 @@ import { AxiosError, AxiosResponse } from "axios";
 import { Computer } from "../types/Computer";
 import { ApiError } from "../types/ApiError";
 import useDebug from "./useDebug";
+import { Activity } from "../types/Activity";
 
-export interface GetComputersParams {
+interface GetComputersParams {
   query?: string;
-  limit?: string;
-  offset?: string;
+  limit?: number;
+  offset?: number;
   with_network?: boolean;
   with_hardware?: boolean;
   with_annotations?: boolean;
 }
 
-export interface AddAnnotationToComputersParams {
+interface AddAnnotationToComputersParams {
   query: string;
   key: string;
   value?: string;
 }
 
-export interface RemoveAnnotationFromComputersParams {
+interface RemoveAnnotationFromComputersParams {
   query: string;
   key: string;
 }
 
-export interface AddTagsToComputersParams {
+interface AddTagsToComputersParams {
   query: string;
   tags: string[];
 }
 
-export interface RemoveTagsFromComputersParams {
+interface RemoveTagsFromComputersParams {
   query: string;
   tags: string[];
 }
 
-export interface ChangeComputerAccessGroupParams {
+interface ChangeComputerAccessGroupParams {
   query: string;
   access_group: string;
 }
 
-export interface RemoveComputers {
-  computer_ids: string[];
+interface RemoveComputers {
+  computer_ids: number[];
 }
 
-export interface AcceptPendingComputersParams {
-  computer_ids: string[];
+interface AcceptPendingComputersParams {
+  computer_ids: number[];
   access_group?: string;
 }
 
-export interface RejectPendingComputersParams {
-  computer_ids: string[];
+interface RejectPendingComputersParams {
+  computer_ids: number[];
 }
 
-export interface CreateCloudOtpsParams {
+interface CreateCloudOtpsParams {
   count: number;
 }
 
-export interface RebootComputersParams {
-  computer_ids: string[];
+interface RebootComputersParams {
+  computer_ids: number[];
   deliver_after?: string; // YYYY-MM-DDTHH:MM:SSZ
 }
 
-export interface ShutdownComputersParams {
-  computer_ids: string[];
+interface ShutdownComputersParams {
+  computer_ids: number[];
   deliver_after?: string; // YYYY-MM-DDTHH:MM:SSZ
 }
 
-export interface RenameComputersParams {
+interface RenameComputersParams {
   computer_titles: string[]; // id:new_title
 }
 
@@ -90,7 +91,7 @@ export const useComputers = () => {
       ...config,
     });
 
-  const addAnnotationToComputers = useMutation<
+  const addAnnotationToComputersQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
     AddAnnotationToComputersParams
@@ -103,7 +104,7 @@ export const useComputers = () => {
     },
   });
 
-  const removeAnnotationFromComputers = useMutation<
+  const removeAnnotationFromComputersQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
     RemoveAnnotationFromComputersParams
@@ -116,7 +117,7 @@ export const useComputers = () => {
     },
   });
 
-  const addTagsToComputers = useMutation<
+  const addTagsToComputersQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
     AddTagsToComputersParams
@@ -128,7 +129,7 @@ export const useComputers = () => {
     },
   });
 
-  const removeTagsFromComputers = useMutation<
+  const removeTagsFromComputersQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
     RemoveTagsFromComputersParams
@@ -141,7 +142,7 @@ export const useComputers = () => {
     },
   });
 
-  const changeComputerAccessGroup = useMutation<
+  const changeComputerAccessGroupQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
     ChangeComputerAccessGroupParams
@@ -154,7 +155,7 @@ export const useComputers = () => {
     },
   });
 
-  const removeComputers = useMutation<
+  const removeComputersQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
     RemoveComputers
@@ -166,7 +167,7 @@ export const useComputers = () => {
     },
   });
 
-  const getPendingComputers: QueryFnType<
+  const getPendingComputersQuery: QueryFnType<
     AxiosResponse<Computer[]>,
     undefined
   > = (queryParams, config = {}) =>
@@ -176,7 +177,7 @@ export const useComputers = () => {
       ...config,
     });
 
-  const acceptPendingComputers = useMutation<
+  const acceptPendingComputersQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
     AcceptPendingComputersParams
@@ -189,7 +190,7 @@ export const useComputers = () => {
     },
   });
 
-  const rejectPendingComputers = useMutation<
+  const rejectPendingComputersQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
     RejectPendingComputersParams
@@ -202,7 +203,7 @@ export const useComputers = () => {
     },
   });
 
-  const createCloudOtps = useMutation<
+  const createCloudOtpsQuery = useMutation<
     AxiosResponse<string[]>,
     AxiosError<ApiError>,
     CreateCloudOtpsParams
@@ -214,8 +215,8 @@ export const useComputers = () => {
     },
   });
 
-  const rebootComputers = useMutation<
-    AxiosResponse<Computer[]>,
+  const rebootComputersQuery = useMutation<
+    AxiosResponse<Activity>,
     AxiosError<ApiError>,
     RebootComputersParams
   >({
@@ -226,8 +227,8 @@ export const useComputers = () => {
     },
   });
 
-  const shutdownComputers = useMutation<
-    AxiosResponse<Computer[]>,
+  const shutdownComputersQuery = useMutation<
+    AxiosResponse<Activity>,
     AxiosError<ApiError>,
     ShutdownComputersParams
   >({
@@ -238,7 +239,7 @@ export const useComputers = () => {
     },
   });
 
-  const renameComputers = useMutation<
+  const renameComputersQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
     RenameComputersParams
@@ -252,18 +253,18 @@ export const useComputers = () => {
 
   return {
     getComputersQuery,
-    addAnnotationToComputers,
-    removeAnnotationFromComputers,
-    addTagsToComputers,
-    removeTagsFromComputers,
-    changeComputerAccessGroup,
-    removeComputers,
-    getPendingComputers,
-    acceptPendingComputers,
-    rejectPendingComputers,
-    createCloudOtps,
-    rebootComputers,
-    shutdownComputers,
-    renameComputers,
+    addAnnotationToComputersQuery,
+    removeAnnotationFromComputersQuery,
+    addTagsToComputersQuery,
+    removeTagsFromComputersQuery,
+    changeComputerAccessGroupQuery,
+    removeComputersQuery,
+    getPendingComputersQuery,
+    acceptPendingComputersQuery,
+    rejectPendingComputersQuery,
+    createCloudOtpsQuery,
+    rebootComputersQuery,
+    shutdownComputersQuery,
+    renameComputersQuery,
   };
 };
