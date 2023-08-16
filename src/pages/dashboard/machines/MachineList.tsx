@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Computer } from "../../../types/Computer";
 import { CheckboxInput, MainTable } from "@canonical/react-components";
 import {
@@ -10,14 +10,18 @@ import { getFormattedDateTime } from "../../../utils/output";
 
 interface MachineListProps {
   machines: Computer[];
+  selectedIds: number[];
+  setSelectedIds: (ids: number[] | ((prev: number[]) => number[])) => void;
 }
 
-const MachineList: FC<MachineListProps> = ({ machines }) => {
-  const [selected, setSelected] = useState<number[]>([]);
-
+const MachineList: FC<MachineListProps> = ({
+  machines,
+  selectedIds,
+  setSelectedIds,
+}) => {
   const toggleAll = () => {
-    setSelected((prevState) =>
-      prevState.length !== 0 ? [] : machines.map((_, i) => i)
+    setSelectedIds((prevState) =>
+      prevState.length !== 0 ? [] : machines.map(({ id }) => id)
     );
   };
 
@@ -30,10 +34,10 @@ const MachineList: FC<MachineListProps> = ({ machines }) => {
             inline
             onChange={toggleAll}
             checked={
-              selected.length === machines.length && machines.length !== 0
+              selectedIds.length === machines.length && machines.length !== 0
             }
             indeterminate={
-              selected.length !== 0 && selected.length < machines.length
+              selectedIds.length !== 0 && selectedIds.length < machines.length
             }
           />
           <span>Name</span>
@@ -47,17 +51,17 @@ const MachineList: FC<MachineListProps> = ({ machines }) => {
     { content: "Tags" },
   ];
 
-  const handleChange = (rowIndex: number) => {
-    setSelected((prevState) => {
-      if (prevState.includes(rowIndex)) {
-        return prevState.filter((row) => row !== rowIndex);
+  const handleChange = (machineId: number) => {
+    setSelectedIds((prevState) => {
+      if (prevState.includes(machineId)) {
+        return prevState.filter((id) => id !== machineId);
       }
 
-      return [...prevState, rowIndex];
+      return [...prevState, machineId];
     });
   };
 
-  const rows: MainTableRow[] = machines.map((machine, index) => ({
+  const rows: MainTableRow[] = machines.map((machine) => ({
     columns: [
       {
         content: (
@@ -65,13 +69,15 @@ const MachineList: FC<MachineListProps> = ({ machines }) => {
             <CheckboxInput
               label={<span className="u-off-screen">{machine.title}</span>}
               inline
-              checked={selected.includes(index)}
+              checked={selectedIds.includes(machine.id)}
               onChange={() => {
-                handleChange(index);
+                handleChange(machine.id);
               }}
             />
             <Link
-              to={`/machines/${machine.title.toLowerCase().replace(/ /g, "-")}`}
+              to={`/machines/${machine.hostname
+                .toLowerCase()
+                .replace(/ /g, "-")}`}
             >
               {machine.title}
             </Link>
