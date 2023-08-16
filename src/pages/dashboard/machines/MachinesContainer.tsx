@@ -11,11 +11,15 @@ const TOTAL_MACHINES = 9;
 interface MachinesContainerProps {
   searchAndFilterChips: SearchAndFilterChip[];
   setVisualTitle: (title: string) => void;
+  selectedIds: number[];
+  setSelectedIds: (ids: number[] | ((prev: number[]) => number[])) => void;
 }
 
 const MachinesContainer: FC<MachinesContainerProps> = ({
   searchAndFilterChips,
   setVisualTitle,
+  selectedIds,
+  setSelectedIds,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageLimit, setPageLimit] = useState(50);
@@ -45,8 +49,8 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
       )
         ? true
         : undefined,
-      limit: `${pageLimit}`,
-      offset: `${(currentPage - 1) * pageLimit}`,
+      limit: pageLimit,
+      offset: (currentPage - 1) * pageLimit,
     });
 
   const computers = getComputersQueryResult?.data ?? [];
@@ -72,7 +76,11 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
       {getComputersQueryLoading ? (
         <LoadingState />
       ) : (
-        <MachineList machines={computers} />
+        <MachineList
+          machines={computers}
+          selectedIds={selectedIds}
+          setSelectedIds={setSelectedIds}
+        />
       )}
     </>
   );
