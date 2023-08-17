@@ -15,6 +15,7 @@ interface TablePaginationProps {
   paginate: (page: number) => void;
   itemsPerPage: number;
   setItemsPerPage: (itemsNumber: number) => void;
+  className?: string;
 }
 
 const TablePagination: FC<TablePaginationProps> = ({
@@ -23,12 +24,13 @@ const TablePagination: FC<TablePaginationProps> = ({
   paginate,
   itemsPerPage,
   setItemsPerPage,
+  className,
 }) => {
   const [pageNumber, setPageNumber] = useState<number | "">(currentPage);
   const [error, setError] = useState("");
 
   return (
-    <div className={classes.wrapper}>
+    <div className={classNames(classes.wrapper, className)}>
       <nav aria-label={Label.Pagination} className="p-pagination">
         <span
           className={classNames(
