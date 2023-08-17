@@ -21,6 +21,9 @@ const APTSourcesPage = lazy(
   () => import("./pages/dashboard/repositories/apt-sources"),
 );
 const MachinesPage = lazy(() => import("./pages/dashboard/machines"));
+const SingleMachine = lazy(
+  () => import("./pages/dashboard/machines/SingleMachine")
+);
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -109,6 +112,14 @@ const App: FC = () => {
             element={
               <AuthRoute>
                 <MachinesPage />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="machines/:hostname"
+            element={
+              <AuthRoute>
+                <SingleMachine />
               </AuthRoute>
             }
           />
