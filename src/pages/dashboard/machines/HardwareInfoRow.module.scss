@@ -1,0 +1,26 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_breakpoints";
+
+.wrapper {
+  display: flex;
+
+  @media (max-width: $breakpoint-small - 1px) {
+    flex-direction: column;
+  }
+}
+
+.blockTitle {
+  display: block;
+  padding-top: $spv--large;
+  padding-right: $sph--large;
+  min-width: 24 * $sp-unit;
+}
+
+.infoRows {
+  flex-grow: 1;
+}
+
+.infoRow {
+  padding-top: $spv--large;
+  padding-bottom: $spv--large;
+}
