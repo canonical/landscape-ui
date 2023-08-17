@@ -8,6 +8,7 @@ import useDebug from "../../../hooks/useDebug";
 import LoadingState from "../../../components/layout/LoadingState";
 import SingleMachinePageHeader from "./SingleMachinePageHeader";
 
+const ProcessesPanel = lazy(() => import("./ProcessesPanel"));
 const HardwarePanel = lazy(() => import("./HardwarePanel"));
 
 const tabLabels = [
@@ -70,7 +71,7 @@ const SingleMachine: FC = () => {
               {0 === currentTab && <p>Info</p>}
               {1 === currentTab && <p>Packages</p>}
               {2 === currentTab && <p>Activities</p>}
-              {3 === currentTab && <p>Processes</p>}
+              {3 === currentTab && <ProcessesPanel machineId={machine.id} />}
               {4 === currentTab && <p>Ubuntu Pro</p>}
               {5 === currentTab && <p>Users</p>}
               {6 === currentTab && <p>Reports</p>}
