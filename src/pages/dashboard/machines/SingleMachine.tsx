@@ -1,4 +1,4 @@
-import { FC, Suspense, useState } from "react";
+import { FC, lazy, Suspense, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useComputers } from "../../../hooks/useComputers";
 import PageMain from "../../../components/layout/PageMain";
@@ -7,6 +7,8 @@ import { Tabs } from "@canonical/react-components";
 import useDebug from "../../../hooks/useDebug";
 import LoadingState from "../../../components/layout/LoadingState";
 import SingleMachinePageHeader from "./SingleMachinePageHeader";
+
+const HardwarePanel = lazy(() => import("./HardwarePanel"));
 
 const tabLabels = [
   "Info",
@@ -72,7 +74,7 @@ const SingleMachine: FC = () => {
               {4 === currentTab && <p>Ubuntu Pro</p>}
               {5 === currentTab && <p>Users</p>}
               {6 === currentTab && <p>Reports</p>}
-              {7 === currentTab && <p>Hardware</p>}
+              {7 === currentTab && <HardwarePanel />}
             </div>
           </Suspense>
         </PageContent>
