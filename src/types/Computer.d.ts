@@ -18,7 +18,11 @@ interface NetworkDevice {
 
 interface VmInfo {}
 
-type Hardware = [attribute: string, title: string, value: number | null];
+type HardwareDescription = [
+  attribute: string,
+  title: string,
+  value: number | null
+];
 
 export interface Computer {
   access_group: AccessGroup;
@@ -28,7 +32,7 @@ export interface Computer {
   comment: string;
   container_info: string | null;
   distribution: string;
-  hardware?: Hardware[];
+  hardware?: HardwareDescription[];
   hostname: string;
   id: number;
   last_exchange_time: string | null;
