@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.header {
+  display: flex;
+  column-gap: $sph--large;
+  margin-top: $spv--x-large;
+}
+
+.search {
+  min-width: 40 * $sp-unit;
+  margin-left: auto;
+}
+
+.pagination {
+  justify-content: flex-end;
+}
