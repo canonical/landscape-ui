@@ -59,6 +59,11 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
     setVisualTitle(`${TOTAL_MACHINES} machines`);
   }, []);
 
+  const handlePaginate = (page: number) => {
+    setCurrentPage(page);
+    setSelectedIds([]);
+  };
+
   return (
     <>
       <div className={classes.widgets}>
@@ -68,7 +73,7 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
         <TablePagination
           currentPage={currentPage}
           totalPages={Math.ceil(TOTAL_MACHINES / pageLimit)}
-          paginate={setCurrentPage}
+          paginate={handlePaginate}
           itemsPerPage={pageLimit}
           setItemsPerPage={setPageLimit}
         />
