@@ -1,6 +1,7 @@
-import { FC, useEffect } from "react";
+import { FC, Suspense, useEffect } from "react";
 import DashboardTemplate from "../../templates/dashboard";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import LoadingState from "../../components/layout/LoadingState";
 
 const DashboardPage: FC = () => {
   const navigate = useNavigate();
@@ -16,7 +17,9 @@ const DashboardPage: FC = () => {
 
   return (
     <DashboardTemplate>
-      <Outlet />
+      <Suspense fallback={<LoadingState />}>
+        <Outlet />
+      </Suspense>
     </DashboardTemplate>
   );
 };

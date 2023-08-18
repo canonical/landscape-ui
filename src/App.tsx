@@ -1,15 +1,25 @@
-import { FC, ReactNode, useEffect } from "react";
+import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import LoginPage from "./pages/auth/login";
-import DashboardPage from "./pages/dashboard";
-import PageNotFound from "./pages/PageNotFound";
-import DistributionsPage from "./pages/dashboard/repositories/mirrors";
-import ProfilesPage from "./pages/dashboard/repositories/profiles";
-import GPGKeysPage from "./pages/dashboard/repositories/gpg-keys";
-import APTSourcesPage from "./pages/dashboard/repositories/apt-sources";
 import FetchProvider from "./context/fetch";
 import useAuth from "./hooks/useAuth";
+import DashboardPage from "./pages/dashboard";
 import RepositoryPage from "./pages/dashboard/repositories";
+import LoadingState from "./components/layout/LoadingState";
+
+const PageNotFound = lazy(() => import("./pages/PageNotFound"));
+const LoginPage = lazy(() => import("./pages/auth/login"));
+const DistributionsPage = lazy(
+  () => import("./pages/dashboard/repositories/mirrors")
+);
+const ProfilesPage = lazy(
+  () => import("./pages/dashboard/repositories/profiles")
+);
+const GPGKeysPage = lazy(
+  () => import("./pages/dashboard/repositories/gpg-keys")
+);
+const APTSourcesPage = lazy(
+  () => import("./pages/dashboard/repositories/apt-sources")
+);
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -98,11 +108,20 @@ const App: FC = () => {
           path="login"
           element={
             <GuestRoute>
-              <LoginPage />
+              <Suspense fallback={<LoadingState />}>
+                <LoginPage />
+              </Suspense>
             </GuestRoute>
           }
         />
-        <Route path="*" element={<PageNotFound />} />
+        <Route
+          path="*"
+          element={
+            <Suspense fallback={<LoadingState />}>
+              <PageNotFound />
+            </Suspense>
+          }
+        />
       </Routes>
     </FetchProvider>
   );
