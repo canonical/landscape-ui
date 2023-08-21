@@ -13,11 +13,12 @@ export default function useAccessGroup(): useAccessGroupResult {
   const authFetch = useFetch();
 
   const getAccessGroupQuery: QueryFnType<AxiosResponse<AccessGroup[]>, {}> = (
+    queryParams = {},
     config = {}
   ) =>
     useQuery<AxiosResponse<AccessGroup[]>, AxiosError<ApiError>>({
       queryKey: ["accessGroups"],
-      queryFn: () => authFetch!.get("GetAccessGroups"),
+      queryFn: () => authFetch!.get("GetAccessGroups", { params: queryParams }),
       ...config,
     });
 
