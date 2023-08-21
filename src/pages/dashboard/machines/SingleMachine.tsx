@@ -1,6 +1,6 @@
 import { FC, lazy, Suspense, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useComputers } from "../../../hooks/useComputers";
+import useComputers from "../../../hooks/useComputers";
 import PageMain from "../../../components/layout/PageMain";
 import PageContent from "../../../components/layout/PageContent";
 import { Tabs } from "@canonical/react-components";

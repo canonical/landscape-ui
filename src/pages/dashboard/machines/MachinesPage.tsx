@@ -7,9 +7,9 @@ import { SearchAndFilterChip } from "@canonical/react-components/dist/components
 import { searchAndFilterData } from "../../../data/machines";
 import { Button, Icon } from "@canonical/react-components";
 import useDebug from "../../../hooks/useDebug";
-import { useComputers } from "../../../hooks/useComputers";
+import useComputers from "../../../hooks/useComputers";
 import useConfirm from "../../../hooks/useConfirm";
-import { useScripts } from "../../../hooks/useScripts";
+import useScripts from "../../../hooks/useScripts";
 import useAuth from "../../../hooks/useAuth";
 
 const MachinesPage: FC = () => {
