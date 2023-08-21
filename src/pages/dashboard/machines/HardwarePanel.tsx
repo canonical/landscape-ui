@@ -1,6 +1,6 @@
 import { FC } from "react";
 import HardwareInfoRow from "./HardwareInfoRow";
-import { useComputers } from "../../../hooks/useComputers";
+import useComputers from "../../../hooks/useComputers";
 import { useParams } from "react-router-dom";
 import useDebug from "../../../hooks/useDebug";
 

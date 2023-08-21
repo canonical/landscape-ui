@@ -73,7 +73,7 @@ interface RenameComputersParams {
   computer_titles: string[]; // id:new_title
 }
 
-export const useComputers = () => {
+export default function useComputers() {
   const queryClient = useQueryClient();
   const authFetch = useFetch();
   const debug = useDebug();
@@ -267,4 +267,4 @@ export const useComputers = () => {
     shutdownComputersQuery,
     renameComputersQuery,
   };
-};
+}

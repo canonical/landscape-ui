@@ -22,7 +22,7 @@ interface ExecuteScriptParams {
   deliver_after?: string; // YYYY-MM-DDTHH:MM:SSZ
 }
 
-export const useScripts = () => {
+export default function useScripts() {
   const authFetch = useFetch();
 
   const getScriptsQuery: QueryFnType<
@@ -55,4 +55,4 @@ export const useScripts = () => {
   });
 
   return { getScriptsQuery, getScriptCodeQuery, executeScriptQuery };
-};
+}
