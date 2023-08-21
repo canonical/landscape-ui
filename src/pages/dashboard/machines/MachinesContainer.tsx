@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { SearchAndFilterChip } from "@canonical/react-components/dist/components/SearchAndFilter/types";
-import { useComputers } from "../../../hooks/useComputers";
+import useComputers from "../../../hooks/useComputers";
 import MachineList from "./MachineList";
 import LoadingState from "../../../components/layout/LoadingState";
 import TablePagination from "../../../components/layout/TablePagination";
