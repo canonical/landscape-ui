@@ -5,24 +5,30 @@ import MachineList from "./MachineList";
 import LoadingState from "../../../components/layout/LoadingState";
 import TablePagination from "../../../components/layout/TablePagination";
 import classes from "./MachinesContainer.module.scss";
+import classNames from "classnames";
+import { searchAndFilterData } from "../../../data/machines";
+import SearchAndFilterWithDescription from "../../../components/form/SearchAndFilterWithDescription";
+import SearchHelpPopup from "./SearchHelpPopup";
 
 const TOTAL_MACHINES = 9;
 
 interface MachinesContainerProps {
-  searchAndFilterChips: SearchAndFilterChip[];
   setVisualTitle: (title: string) => void;
   selectedIds: number[];
-  setSelectedIds: (ids: number[] | ((prev: number[]) => number[])) => void;
+  setSelectedIds: (ids: number[]) => void;
 }
 
 const MachinesContainer: FC<MachinesContainerProps> = ({
-  searchAndFilterChips,
   setVisualTitle,
   selectedIds,
   setSelectedIds,
 }) => {
+  const [searchAndFilterChips, setSearchAndFilterChips] = useState<
+    SearchAndFilterChip[]
+  >([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageLimit, setPageLimit] = useState(50);
+  const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const query = searchAndFilterChips
     .filter(({ quoteValue }) => quoteValue)
@@ -66,7 +72,33 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
 
   return (
     <>
-      <div className={classes.widgets}>
+      <div className={classes.top}>
+        <div className={classes.search}>
+          <SearchAndFilterWithDescription
+            filterPanelData={searchAndFilterData}
+            returnSearchData={setSearchAndFilterChips}
+            onClick={() => {
+              setShowSearchHelp(true);
+            }}
+          />
+        </div>
+      </div>
+      <SearchHelpPopup
+        open={showSearchHelp}
+        onClose={() => {
+          setShowSearchHelp(false);
+        }}
+      />
+      {getComputersQueryLoading ? (
+        <LoadingState />
+      ) : (
+        <MachineList
+          machines={computers}
+          selectedIds={selectedIds}
+          setSelectedIds={setSelectedIds}
+        />
+      )}
+      <div className={classNames("", classes.widgets)}>
         <h3 className="p-heading--5 u-no-margin--bottom">
           {`Showing ${computers.length} of ${TOTAL_MACHINES} machines`}
         </h3>
@@ -78,15 +110,6 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
           setItemsPerPage={setPageLimit}
         />
       </div>
-      {getComputersQueryLoading ? (
-        <LoadingState />
-      ) : (
-        <MachineList
-          machines={computers}
-          selectedIds={selectedIds}
-          setSelectedIds={setSelectedIds}
-        />
-      )}
     </>
   );
 };

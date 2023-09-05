@@ -3,20 +3,16 @@ import PageMain from "../../../components/layout/PageMain";
 import PageHeader from "../../../components/layout/PageHeader";
 import PageContent from "../../../components/layout/PageContent";
 import MachinesContainer from "./MachinesContainer";
-import { SearchAndFilterChip } from "@canonical/react-components/dist/components/SearchAndFilter/types";
-import { searchAndFilterData } from "../../../data/machines";
 import { Button, Icon } from "@canonical/react-components";
 import useDebug from "../../../hooks/useDebug";
 import useComputers from "../../../hooks/useComputers";
 import useConfirm from "../../../hooks/useConfirm";
 import useScripts from "../../../hooks/useScripts";
 import useAuth from "../../../hooks/useAuth";
+import classes from "./MachinesPage.module.scss";
 
 const MachinesPage: FC = () => {
   const [visualTitle, setVisualTitle] = useState("");
-  const [searchAndFilterChips, setSearchAndFilterChips] = useState<
-    SearchAndFilterChip[]
-  >([]);
   const [selected, setSelected] = useState<number[]>([]);
 
   const debug = useDebug();
@@ -157,12 +153,9 @@ const MachinesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Machines"
+        className={classes.header}
         hideTitle
         visualTitle={visualTitle}
-        search={{
-          filterPanelData: searchAndFilterData,
-          returnSearchData: setSearchAndFilterChips,
-        }}
         actions={[
           <div key="buttons" className="p-segmented-control">
             <div className="p-segmented-control__list">
@@ -208,7 +201,6 @@ const MachinesPage: FC = () => {
       />
       <PageContent>
         <MachinesContainer
-          searchAndFilterChips={searchAndFilterChips}
           setVisualTitle={setVisualTitle}
           selectedIds={selected}
           setSelectedIds={setSelected}
