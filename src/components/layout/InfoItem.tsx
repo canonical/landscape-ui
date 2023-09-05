@@ -2,7 +2,7 @@ import { FC } from "react";
 import classes from "./InfoItem.module.scss";
 import classNames from "classnames";
 
-interface InfoItemProps {
+export interface InfoItemProps {
   label: string;
   value: string;
   className?: string;
