@@ -24,8 +24,8 @@ type HardwareDescription = [
   value: number | null
 ];
 
-export interface Computer {
-  access_group: AccessGroup;
+export interface Computer extends Record<string, unknown> {
+  access_group: AccessGroup["name"];
   annotations?: Record<string, string>;
   clone_id: number | null;
   cloud_instance_metadata: CloudInstanceMetadata;

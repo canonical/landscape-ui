@@ -37,7 +37,7 @@ interface RemoveTagsFromComputersParams {
   tags: string[];
 }
 
-interface ChangeComputerAccessGroupParams {
+interface ChangeComputersAccessGroupParams {
   query: string;
   access_group: string;
 }
@@ -142,14 +142,14 @@ export default function useComputers() {
     },
   });
 
-  const changeComputerAccessGroupQuery = useMutation<
+  const changeComputersAccessGroupQuery = useMutation<
     AxiosResponse<Computer[]>,
     AxiosError<ApiError>,
-    ChangeComputerAccessGroupParams
+    ChangeComputersAccessGroupParams
   >({
     mutationKey: ["computers", "access_group", "change"],
     mutationFn: (params) =>
-      authFetch!.get("ChangeComputerAccessGroup", { params }),
+      authFetch!.get("ChangeComputersAccessGroup", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -257,7 +257,7 @@ export default function useComputers() {
     removeAnnotationFromComputersQuery,
     addTagsToComputersQuery,
     removeTagsFromComputersQuery,
-    changeComputerAccessGroupQuery,
+    changeComputersAccessGroupQuery,
     removeComputersQuery,
     getPendingComputersQuery,
     acceptPendingComputersQuery,
