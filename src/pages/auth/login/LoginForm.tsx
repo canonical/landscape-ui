@@ -111,7 +111,7 @@ const LoginForm: FC = () => {
         {...formik.getFieldProps("remember")}
       />
 
-      {notify && <AppNotification notify={notify} />}
+      <AppNotification notify={notify} />
 
       <div className="form-buttons">
         <Button type="submit" appearance="positive" disabled={isLoading}>

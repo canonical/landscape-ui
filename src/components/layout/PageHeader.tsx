@@ -1,7 +1,4 @@
 import { FC, ReactNode } from "react";
-import useNotify from "../../hooks/useNotify";
-import AppNotification from "./AppNotification";
-import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./PageHeader.module.scss";
 import classNames from "classnames";
 import { SearchAndFilter } from "@canonical/react-components";
@@ -26,15 +23,13 @@ type PageHeaderProps = TitleVisibilityProps & {
     filterPanelData: SearchAndFilterData[];
     returnSearchData: (searchData: SearchAndFilterChip[]) => void;
   };
+  className?: string;
 };
 
 const PageHeader: FC<PageHeaderProps> = (props) => {
-  const notify = useNotify();
-  const { isSidePanelOpen } = useSidePanel();
-
   return (
     <>
-      <div className="p-panel__header">
+      <div className={classNames("p-panel__header", props.className)}>
         {props.hideTitle ? (
           <>
             <h1 className="u-off-screen">{props.title}</h1>
@@ -59,11 +54,6 @@ const PageHeader: FC<PageHeaderProps> = (props) => {
           </div>
         )}
       </div>
-      {notify && !isSidePanelOpen && (
-        <div className="row">
-          <AppNotification notify={notify} />
-        </div>
-      )}
     </>
   );
 };

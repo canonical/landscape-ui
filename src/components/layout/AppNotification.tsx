@@ -14,15 +14,7 @@ const AppNotification: FC<AppNotificationProps> = ({ notify }) => {
   const { type, message, actions } = notify.notification;
 
   return (
-    <Notification
-      severity={type}
-      onDismiss={notify.clear}
-      style={{
-        marginTop: "2rem",
-        marginBottom: "2rem",
-      }}
-      actions={actions}
-    >
+    <Notification severity={type} onDismiss={notify.clear} actions={actions}>
       {message}
     </Notification>
   );

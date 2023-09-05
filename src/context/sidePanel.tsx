@@ -40,6 +40,14 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const notify = useNotify();
 
   useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    notify.clear();
+  }, [open]);
+
+  useEffect(() => {
     return handleClose;
   }, [pathname]);
 
@@ -80,13 +88,11 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
             </button>
           </div>
         </div>
-        {notify && (
-          <div className="row">
-            <AppNotification notify={notify} />
-          </div>
-        )}
         <div className="p-panel__content">
-          <div className="p-panel__inner">{body}</div>
+          <div className="p-panel__inner">
+            <AppNotification notify={notify} />
+            {body}
+          </div>
         </div>
       </aside>
     </SidePanelContext.Provider>

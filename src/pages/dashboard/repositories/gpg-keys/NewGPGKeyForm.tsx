@@ -6,7 +6,6 @@ import useSidePanel from "../../../../hooks/useSidePanel";
 import * as Yup from "yup";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
 import useNotify from "../../../../hooks/useNotify";
-import AppNotification from "../../../../components/layout/AppNotification";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 
 interface FormProps {
@@ -87,8 +86,6 @@ const NewGPGKeyForm: FC = () => {
         }
         {...formik.getFieldProps("material")}
       />
-
-      {notify && <AppNotification notify={notify} />}
 
       <div className="form-buttons">
         <Button

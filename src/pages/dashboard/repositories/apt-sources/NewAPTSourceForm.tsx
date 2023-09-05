@@ -6,7 +6,6 @@ import useSidePanel from "../../../../hooks/useSidePanel";
 import * as Yup from "yup";
 import useAPTSources from "../../../../hooks/useAPTSources";
 import useNotify from "../../../../hooks/useNotify";
-import AppNotification from "../../../../components/layout/AppNotification";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
 import { SelectOption } from "../../../../types/SelectOption";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
@@ -140,8 +139,6 @@ const NewAPTSourceForm: FC = () => {
         {...formik.getFieldProps("access_group")}
         error={formik.touched.access_group && formik.errors.access_group}
       />
-
-      {notify && <AppNotification notify={notify} />}
 
       <div className="form-buttons">
         <Button type="submit" appearance="positive" disabled={isLoading}>
