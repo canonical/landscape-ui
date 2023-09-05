@@ -1,10 +1,10 @@
-import React, { FC, ReactNode } from "react";
+import { createContext, FC, isValidElement, ReactNode, useState } from "react";
 import { Modal } from "@canonical/react-components";
 
 interface DialogProps {
   title: string;
-  body: string;
-  buttons: React.ReactNode[];
+  body: ReactNode;
+  buttons: ReactNode[];
   cancelButtonLabel?: string;
 }
 
@@ -18,19 +18,18 @@ const initialState: ConfirmContextProps = {
   closeConfirmModal: () => undefined,
 };
 
-export const ConfirmContext =
-  React.createContext<ConfirmContextProps>(initialState);
+export const ConfirmContext = createContext<ConfirmContextProps>(initialState);
 
 type ConfirmProviderProps = {
   children: ReactNode;
 };
 
 const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
-  const [open, setOpen] = React.useState(false);
-  const [title, setTitle] = React.useState("Are you sure?");
-  const [body, setBody] = React.useState("");
-  const [cancelButtonLabel, setCancelButtonLabel] = React.useState("Cancel");
-  const [buttons, setButtons] = React.useState<React.ReactNode[]>([]);
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("Are you sure?");
+  const [body, setBody] = useState<ReactNode>(null);
+  const [cancelButtonLabel, setCancelButtonLabel] = useState("Cancel");
+  const [buttons, setButtons] = useState<ReactNode[]>([]);
 
   const handleClose = () => {
     setOpen(false);
@@ -76,7 +75,11 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
             </>
           }
         >
-          <p>{body}</p>
+          {"string" === typeof body ? (
+            <p>{body}</p>
+          ) : isValidElement(body) ? (
+            body
+          ) : null}
         </Modal>
       )}
     </ConfirmContext.Provider>
