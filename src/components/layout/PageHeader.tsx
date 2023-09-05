@@ -1,11 +1,6 @@
 import { FC, ReactNode } from "react";
 import classes from "./PageHeader.module.scss";
 import classNames from "classnames";
-import { SearchAndFilter } from "@canonical/react-components";
-import {
-  SearchAndFilterChip,
-  SearchAndFilterData,
-} from "@canonical/react-components/dist/components/SearchAndFilter/types";
 
 type TitleVisibilityProps =
   | {
@@ -19,10 +14,6 @@ type TitleVisibilityProps =
 type PageHeaderProps = TitleVisibilityProps & {
   title: string;
   actions?: ReactNode[];
-  search?: {
-    filterPanelData: SearchAndFilterData[];
-    returnSearchData: (searchData: SearchAndFilterChip[]) => void;
-  };
   className?: string;
 };
 
@@ -39,14 +30,6 @@ const PageHeader: FC<PageHeaderProps> = (props) => {
           </>
         ) : (
           <h1 className="p-panel__title">{props.title}</h1>
-        )}
-        {props.search && (
-          <div className={classes.search}>
-            <SearchAndFilter
-              filterPanelData={props.search.filterPanelData}
-              returnSearchData={props.search.returnSearchData}
-            />
-          </div>
         )}
         {props.actions && props.actions.length > 0 && (
           <div className={classNames("p-panel__controls", classes.controls)}>
