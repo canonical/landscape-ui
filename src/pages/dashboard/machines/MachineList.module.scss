@@ -1,0 +1,17 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/base_icon-definitions";
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/global_functions";
+
+.icon {
+  margin-left: -2.5 * $sp-unit;
+  margin-right: $sp-x-small;
+}
+
+.restartError {
+  @include vf-icon-restart($color-negative);
+}
+
+.restartWarning {
+  @include vf-icon-restart($color-caution);
+}
