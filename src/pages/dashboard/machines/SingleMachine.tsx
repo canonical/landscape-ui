@@ -6,7 +6,9 @@ import PageContent from "../../../components/layout/PageContent";
 import { Tabs } from "@canonical/react-components";
 import useDebug from "../../../hooks/useDebug";
 import LoadingState from "../../../components/layout/LoadingState";
-import SingleMachinePageHeader from "./SingleMachinePageHeader";
+import InfoPanel from "./InfoPanel";
+import Breadcrumbs from "../../../components/layout/Breadcrumbs";
+import classes from "./SingleMachine.module.scss";
 
 const ProcessesPanel = lazy(() => import("./ProcessesPanel"));
 const HardwarePanel = lazy(() => import("./HardwarePanel"));
@@ -38,6 +40,7 @@ const SingleMachine: FC = () => {
   const { data: getComputersQueryResult, error: getComputersQueryError } =
     getComputersQuery({
       query: `hostname:${hostname}`,
+      with_annotations: true,
     });
 
   if (getComputersQueryError) {
@@ -49,8 +52,8 @@ const SingleMachine: FC = () => {
   return (
     machine && (
       <PageMain>
-        <SingleMachinePageHeader />
         <PageContent>
+          <Breadcrumbs className={classes.breadcrumbs} />
           <Tabs
             listClassName="u-no-margin--bottom"
             links={tabLabels.map((label, index) => ({
@@ -68,7 +71,7 @@ const SingleMachine: FC = () => {
               role="tabpanel"
               aria-labelledby={getTabLabelId(tabLabels[currentTab])}
             >
-              {0 === currentTab && <p>Info</p>}
+              {0 === currentTab && <InfoPanel machine={machine} />}
               {1 === currentTab && <p>Packages</p>}
               {2 === currentTab && <p>Activities</p>}
               {3 === currentTab && <ProcessesPanel machineId={machine.id} />}
