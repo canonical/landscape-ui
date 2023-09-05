@@ -2,9 +2,10 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .wrapper {
+  flex-shrink: 0;
   display: flex;
   column-gap: $sph--x-large;
-  padding-left: $sph--x-small;
+  padding-right: $sph--x-small;
   overflow-x: hidden;
   overflow-y: clip;
 

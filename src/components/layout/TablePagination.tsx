@@ -31,6 +31,20 @@ const TablePagination: FC<TablePaginationProps> = ({
 
   return (
     <div className={classNames(classes.wrapper, className)}>
+      <Select
+        label="Machines per page"
+        labelClassName="u-off-screen"
+        className="u-no-margin--bottom"
+        options={[
+          { label: "20 / page", value: 20 },
+          { label: "50 / page", value: 50 },
+          { label: "100 / page", value: 100 },
+        ]}
+        value={itemsPerPage}
+        onChange={(event) => {
+          setItemsPerPage(parseInt(event.target.value));
+        }}
+      />
       <nav aria-label={Label.Pagination} className="p-pagination">
         <span
           className={classNames(
@@ -129,20 +143,6 @@ const TablePagination: FC<TablePaginationProps> = ({
           </Button>
         </span>
       </nav>
-      <Select
-        label="Machines per page"
-        labelClassName="u-off-screen"
-        className="u-no-margin--bottom"
-        options={[
-          { label: "20 / page", value: 20 },
-          { label: "50 / page", value: 50 },
-          { label: "100 / page", value: 100 },
-        ]}
-        value={itemsPerPage}
-        onChange={(event) => {
-          setItemsPerPage(parseInt(event.target.value));
-        }}
-      />
     </div>
   );
 };
