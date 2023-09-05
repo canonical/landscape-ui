@@ -1,17 +1,20 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { Computer } from "../../../types/Computer";
-import { CheckboxInput, MainTable } from "@canonical/react-components";
+import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import {
-  MainTableHeader,
-  MainTableRow,
-} from "@canonical/react-components/dist/components/MainTable/MainTable";
+  CellProps,
+  Column,
+  Row,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { Link } from "react-router-dom";
 import { getFormattedDateTime } from "../../../utils/output";
+import classes from "./MachineList.module.scss";
+import { isComputer } from "./_helpers";
 
 interface MachineListProps {
   machines: Computer[];
   selectedIds: number[];
-  setSelectedIds: (ids: number[] | ((prev: number[]) => number[])) => void;
+  setSelectedIds: (ids: number[]) => void;
 }
 
 const MachineList: FC<MachineListProps> = ({
@@ -20,101 +23,115 @@ const MachineList: FC<MachineListProps> = ({
   setSelectedIds,
 }) => {
   const toggleAll = () => {
-    setSelectedIds((prevState) =>
-      prevState.length !== 0 ? [] : machines.map(({ id }) => id)
+    setSelectedIds(
+      selectedIds.length !== 0 ? [] : machines.map(({ id }) => id)
     );
   };
 
-  const headers: MainTableHeader[] = [
-    {
-      content: (
-        <>
-          <CheckboxInput
-            label={<span className="u-off-screen">Toggle all</span>}
-            inline
-            onChange={toggleAll}
-            checked={
-              selectedIds.length === machines.length && machines.length !== 0
-            }
-            indeterminate={
-              selectedIds.length !== 0 && selectedIds.length < machines.length
-            }
-          />
-          <span>Name</span>
-        </>
-      ),
-    },
-    { content: "Host name" },
-    { content: "Last ping time" },
-    { content: "Upgrades" },
-    { content: "Ubuntu pro" },
-    { content: "Tags" },
-  ];
+  const handleChange = (row: Row<Record<string, unknown>>) => {
+    if (!isComputer(row.original)) {
+      return;
+    }
 
-  const handleChange = (machineId: number) => {
-    setSelectedIds((prevState) => {
-      if (prevState.includes(machineId)) {
-        return prevState.filter((id) => id !== machineId);
-      }
-
-      return [...prevState, machineId];
-    });
+    selectedIds.includes(row.original.id)
+      ? setSelectedIds(selectedIds.filter((id) => id !== row.original.id))
+      : setSelectedIds([...selectedIds, row.original.id]);
   };
 
-  const rows: MainTableRow[] = machines.map((machine) => ({
-    columns: [
+  const machinesData: Record<string, unknown>[] = useMemo(
+    () => machines,
+    [machines]
+  );
+
+  const cols = useMemo<
+    (Column<Record<string, unknown>> & { className?: string })[]
+  >(
+    () => [
       {
-        content: (
+        Header: (
           <>
             <CheckboxInput
-              label={<span className="u-off-screen">{machine.title}</span>}
+              label={<span className="u-off-screen">Toggle all</span>}
               inline
-              checked={selectedIds.includes(machine.id)}
-              onChange={() => {
-                handleChange(machine.id);
-              }}
+              onChange={toggleAll}
+              checked={
+                selectedIds.length === machines.length && machines.length !== 0
+              }
+              indeterminate={
+                selectedIds.length !== 0 && selectedIds.length < machines.length
+              }
             />
-            <Link
-              to={`/machines/${machine.hostname
-                .toLowerCase()
-                .replace(/ /g, "-")}`}
-            >
-              {machine.title}
-            </Link>
+            <span>Name</span>
           </>
         ),
-        role: "rowheader",
-        "aria-label": "Name",
+        accessor: "title",
+        Cell: ({ value, row }: CellProps<Record<string, unknown>, unknown>) =>
+          "string" === typeof value && isComputer(row.original) ? (
+            <>
+              <CheckboxInput
+                label={<span className="u-off-screen">{value}</span>}
+                inline
+                checked={selectedIds.includes(row.original.id)}
+                onChange={() => {
+                  handleChange(row);
+                }}
+              />
+              <Link
+                to={`/machines/${row.original.hostname
+                  .toLowerCase()
+                  .replace(/ /g, "-")}`}
+              >
+                {value}
+              </Link>
+            </>
+          ) : null,
+        className: classes.name,
       },
       {
-        content: machine.hostname,
-        "aria-label": "Host name",
+        Header: "Status",
+        accessor: "reboot_required_flag",
+        Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
+          "boolean" === typeof value && value ? (
+            <>Reboot required</>
+          ) : (
+            <>No action required</>
+          ),
+        getCellIcon: ({ value }: CellProps<Computer, boolean>) => {
+          if (value) {
+            return `restart ${classes.restartError}`;
+          }
+
+          return false;
+        },
       },
       {
-        content: getFormattedDateTime(machine.last_ping_time),
-        "aria-label": "Last ping time",
+        Header: "Upgrades",
       },
       {
-        content: "",
-        "aria-label": "Upgrades",
+        Header: "Ubuntu pro",
       },
       {
-        content: "",
-        "aria-label": "Ubuntu pro",
+        Header: "Host name",
+        accessor: "hostname",
+        Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
+          "string" === typeof value ? <>value</> : null,
       },
       {
-        content: machine.tags.join(", "),
-        "aria-label": "Tags",
+        Header: "Last ping time",
+        accessor: "last_ping_time",
+        Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
+          "string" === typeof value ? <>{getFormattedDateTime(value)}</> : null,
       },
     ],
-  }));
+    [selectedIds, machines]
+  );
 
   return (
     <>
-      <MainTable
-        headers={headers}
-        rows={rows}
-        emptyStateMsg="No machines found"
+      <ModularTable
+        emptyMsg="No machines found"
+        columns={cols}
+        data={machinesData}
       />
     </>
   );
