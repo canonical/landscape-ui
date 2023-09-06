@@ -1,39 +1,63 @@
 import { FC, ReactNode } from "react";
 import classes from "./PageHeader.module.scss";
 import classNames from "classnames";
+import { Link } from "react-router-dom";
+import { Breadcrumb } from "../../types/Breadcrumb";
 
-type TitleVisibilityProps =
-  | {
-      hideTitle?: false;
-    }
-  | {
-      hideTitle: true;
-      visualTitle: string;
-    };
-
-type PageHeaderProps = TitleVisibilityProps & {
+interface PageHeaderProps {
   title: string;
+  hideTitle?: boolean;
+  breadcrumbs?: Breadcrumb[];
   actions?: ReactNode[];
   className?: string;
-};
+  visualTitle?: string;
+}
 
-const PageHeader: FC<PageHeaderProps> = (props) => {
+const PageHeader: FC<PageHeaderProps> = ({
+  title,
+  visualTitle,
+  hideTitle,
+  className,
+  actions,
+  breadcrumbs,
+}) => {
   return (
     <>
-      <div className={classNames("p-panel__header", props.className)}>
-        {props.hideTitle ? (
+      <div className={classNames("p-panel__header", className)}>
+        {breadcrumbs && breadcrumbs.length > 0 && (
+          <nav className="p-breadcrumbs" aria-label="Breadcrumbs">
+            <ol className="p-breadcrumbs__items u-no-margin--bottom">
+              {breadcrumbs.map((breadcrumb, index) =>
+                !breadcrumb.current ? (
+                  <li className="p-breadcrumbs__item" key={index}>
+                    <Link to={breadcrumb.path ?? ""}>{breadcrumb.label}</Link>
+                  </li>
+                ) : (
+                  <li
+                    className="p-breadcrumbs__item"
+                    key={index}
+                    aria-current="page"
+                  >
+                    {breadcrumb.label}
+                  </li>
+                )
+              )}
+            </ol>
+          </nav>
+        )}
+        {hideTitle ? (
           <>
-            <h1 className="u-off-screen">{props.title}</h1>
-            <h2 className={classNames("p-panel__title", classes.visualTitle)}>
-              {props.visualTitle}
-            </h2>
+            <h1 className="u-off-screen">{title}</h1>
+            <div className={classNames("p-panel__title", classes.visualTitle)}>
+              {visualTitle}
+            </div>
           </>
         ) : (
-          <h1 className="p-panel__title">{props.title}</h1>
+          <h1 className="p-panel__title">{title}</h1>
         )}
-        {props.actions && props.actions.length > 0 && (
+        {actions && actions.length > 0 && (
           <div className={classNames("p-panel__controls", classes.controls)}>
-            {props.actions}
+            {actions}
           </div>
         )}
       </div>
