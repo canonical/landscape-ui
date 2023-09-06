@@ -25,25 +25,27 @@ const PageHeader: FC<PageHeaderProps> = ({
     <>
       <div className={classNames("p-panel__header", className)}>
         {breadcrumbs && breadcrumbs.length > 0 && (
-          <nav className="p-breadcrumbs" aria-label="Breadcrumbs">
-            <ol className="p-breadcrumbs__items u-no-margin--bottom">
-              {breadcrumbs.map((breadcrumb, index) =>
-                !breadcrumb.current ? (
-                  <li className="p-breadcrumbs__item" key={index}>
-                    <Link to={breadcrumb.path ?? ""}>{breadcrumb.label}</Link>
-                  </li>
-                ) : (
-                  <li
-                    className="p-breadcrumbs__item"
-                    key={index}
-                    aria-current="page"
-                  >
-                    {breadcrumb.label}
-                  </li>
-                )
-              )}
-            </ol>
-          </nav>
+          <div className={classes.breadcrumbs}>
+            <nav className="p-breadcrumbs" aria-label="Breadcrumbs">
+              <ol className="p-breadcrumbs__items u-no-margin--bottom">
+                {breadcrumbs.map((breadcrumb, index) =>
+                  !breadcrumb.current ? (
+                    <li className="p-breadcrumbs__item" key={index}>
+                      <Link to={breadcrumb.path ?? ""}>{breadcrumb.label}</Link>
+                    </li>
+                  ) : (
+                    <li
+                      className="p-breadcrumbs__item"
+                      key={index}
+                      aria-current="page"
+                    >
+                      {breadcrumb.label}
+                    </li>
+                  )
+                )}
+              </ol>
+            </nav>
+          </div>
         )}
         {hideTitle ? (
           <>

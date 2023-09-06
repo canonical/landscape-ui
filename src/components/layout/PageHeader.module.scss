@@ -1,15 +1,7 @@
 @import "vanilla-framework/scss/settings_spacing";
 
-.search {
-  width: 100%;
-  min-width: 20%;
-  margin-left: $sph--large;
-  margin-bottom: $input-margin-bottom;
-  padding-top: $spv--large;
-
-  &:not(:last-child) {
-    margin-right: $sph--large;
-  }
+.breadcrumbs {
+  margin-top: $spv--large;
 }
 
 .controls,
