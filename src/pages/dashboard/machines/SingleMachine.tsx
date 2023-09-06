@@ -7,8 +7,6 @@ import { Tabs } from "@canonical/react-components";
 import useDebug from "../../../hooks/useDebug";
 import LoadingState from "../../../components/layout/LoadingState";
 import InfoPanel from "./InfoPanel";
-import Breadcrumbs from "../../../components/layout/Breadcrumbs";
-import classes from "./SingleMachine.module.scss";
 
 const ProcessesPanel = lazy(() => import("./ProcessesPanel"));
 const HardwarePanel = lazy(() => import("./HardwarePanel"));
@@ -53,7 +51,6 @@ const SingleMachine: FC = () => {
     machine && (
       <PageMain>
         <PageContent>
-          <Breadcrumbs className={classes.breadcrumbs} />
           <Tabs
             listClassName="u-no-margin--bottom"
             links={tabLabels.map((label, index) => ({
