@@ -7,6 +7,8 @@ import { Tabs } from "@canonical/react-components";
 import useDebug from "../../../hooks/useDebug";
 import LoadingState from "../../../components/layout/LoadingState";
 import InfoPanel from "./InfoPanel";
+import PageHeader from "../../../components/layout/PageHeader";
+import { Breadcrumb } from "../../../types/Breadcrumb";
 
 const ProcessesPanel = lazy(() => import("./ProcessesPanel"));
 const HardwarePanel = lazy(() => import("./HardwarePanel"));
@@ -47,9 +49,15 @@ const SingleMachine: FC = () => {
 
   const machine = getComputersQueryResult?.data[0] ?? null;
 
+  const breadcrumbs: Breadcrumb[] = [
+    { label: "Machines", path: "/machines" },
+    { label: machine?.title ?? "", current: true },
+  ];
+
   return (
     machine && (
       <PageMain>
+        <PageHeader title={machine.title} hideTitle breadcrumbs={breadcrumbs} />
         <PageContent>
           <Tabs
             listClassName="u-no-margin--bottom"
