@@ -22,7 +22,7 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
     <div
       className={classNames(
         "p-strip is-bordered u-no-padding--bottom u-no-padding--top u-no-max-width",
-        classes.wrapper
+        classes.wrapper,
       )}
     >
       <h4 className={classes.blockTitle}>{infoRowLabel}</h4>
@@ -32,7 +32,7 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
             key={index}
             className={classNames(
               "p-strip is-bordered u-no-max-width",
-              classes.infoRow
+              classes.infoRow,
             )}
           >
             <Row className="u-no-padding--left u-no-padding--right u-no-max-width">

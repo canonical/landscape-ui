@@ -21,7 +21,7 @@ interface VmInfo {}
 type HardwareDescription = [
   attribute: string,
   title: string,
-  value: number | null
+  value: number | null,
 ];
 
 export interface Computer extends Record<string, unknown> {
