@@ -5,7 +5,6 @@ import MachineList from "./MachineList";
 import LoadingState from "../../../components/layout/LoadingState";
 import TablePagination from "../../../components/layout/TablePagination";
 import classes from "./MachinesContainer.module.scss";
-import classNames from "classnames";
 import { searchAndFilterData } from "../../../data/machines";
 import SearchAndFilterWithDescription from "../../../components/form/SearchAndFilterWithDescription";
 import SearchHelpPopup from "./SearchHelpPopup";
@@ -98,18 +97,17 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
           setSelectedIds={setSelectedIds}
         />
       )}
-      <div className={classNames("", classes.widgets)}>
-        <h3 className="p-heading--5 u-no-margin--bottom">
-          {`Showing ${computers.length} of ${TOTAL_MACHINES} machines`}
-        </h3>
-        <TablePagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(TOTAL_MACHINES / pageLimit)}
-          paginate={handlePaginate}
-          itemsPerPage={pageLimit}
-          setItemsPerPage={setPageLimit}
-        />
-      </div>
+      <TablePagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(TOTAL_MACHINES / pageLimit)}
+        paginate={handlePaginate}
+        itemsPerPage={pageLimit}
+        setItemsPerPage={setPageLimit}
+        description={
+          TOTAL_MACHINES > 0 &&
+          `Showing ${computers.length} of ${TOTAL_MACHINES} machines`
+        }
+      />
     </>
   );
 };
