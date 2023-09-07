@@ -1,9 +1,9 @@
-import { createContext, FC, isValidElement, ReactNode, useState } from "react";
+import { createContext, FC, ReactNode, useState } from "react";
 import { Modal } from "@canonical/react-components";
 
 interface DialogProps {
   title: string;
-  body: ReactNode;
+  body: string;
   buttons: ReactNode[];
   cancelButtonLabel?: string;
 }
@@ -27,8 +27,8 @@ type ConfirmProviderProps = {
 const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("Are you sure?");
-  const [body, setBody] = useState<ReactNode>(null);
-  const [cancelButtonLabel, setCancelButtonLabel] = useState("Cancel");
+  const [body, setBody] = useState("");
+  const [cancelButtonLabel, setCancelButtonLabel] = useState("");
   const [buttons, setButtons] = useState<ReactNode[]>([]);
 
   const handleClose = () => {
@@ -39,17 +39,12 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
     title,
     body,
     buttons,
-    cancelButtonLabel,
+    cancelButtonLabel = "Cancel",
   }: DialogProps) => {
     setButtons(buttons);
-
     setTitle(title);
-
     setBody(body);
-
-    if (cancelButtonLabel) {
-      setCancelButtonLabel(cancelButtonLabel);
-    }
+    setCancelButtonLabel(cancelButtonLabel);
 
     setOpen(true);
   };
@@ -75,11 +70,7 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
             </>
           }
         >
-          {"string" === typeof body ? (
-            <p>{body}</p>
-          ) : isValidElement(body) ? (
-            body
-          ) : null}
+          <p>{body}</p>
         </Modal>
       )}
     </ConfirmContext.Provider>
