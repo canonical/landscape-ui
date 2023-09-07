@@ -33,7 +33,7 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
             setSidePanelOpen(true);
             setSidePanelContent(
               `Create mirror for ${distribution.name}`,
-              <NewSeriesForm distribution={distribution} />
+              <NewSeriesForm distribution={distribution} />,
             );
           }}
           aria-label={`Create mirror for ${distribution.name}`}

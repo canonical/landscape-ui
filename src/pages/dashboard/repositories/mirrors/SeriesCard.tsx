@@ -69,7 +69,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
                 <SnapshotForm
                   distribution={distribution}
                   origin={series.name}
-                />
+                />,
               );
             }}
             aria-label={`Create snapshot for ${distribution.name}/${series.name}`}
@@ -82,7 +82,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
               setSidePanelOpen(true);
               setSidePanelContent(
                 `New pocket for ${series.name}`,
-                <NewPocketForm distribution={distribution} series={series} />
+                <NewPocketForm distribution={distribution} series={series} />,
               );
             }}
             aria-label={`Create new pocket for ${distribution.name}/${series.name}`}

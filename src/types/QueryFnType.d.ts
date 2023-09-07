@@ -7,5 +7,5 @@ export type QueryFnType<Result, Params> = (
   config?: Omit<
     UseQueryOptions<Result, AxiosError<ApiError>>,
     "queryKey" | "queryFn"
-  >
+  >,
 ) => UseQueryResult<Result, AxiosError<ApiError>>;

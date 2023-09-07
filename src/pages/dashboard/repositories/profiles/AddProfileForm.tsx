@@ -123,14 +123,14 @@ const AddProfileForm: FC = () => {
             associateRepositoryProfile({
               name: newProfile.name,
               all_computers: true,
-            })
+            }),
           );
         } else if (values.tags.length) {
           promises.push(
             associateRepositoryProfile({
               name: newProfile.name,
               tags: values.tags,
-            })
+            }),
           );
         }
 
@@ -141,7 +141,7 @@ const AddProfileForm: FC = () => {
             addAPTSourcesToRepositoryProfile({
               name: newProfile.name,
               apt_sources: aptSources,
-            })
+            }),
           );
         }
 
@@ -156,7 +156,7 @@ const AddProfileForm: FC = () => {
               for (const { pocketName } of pockets) {
                 if (
                   values.pockets.includes(
-                    `${distributionName}/${seriesName}/${pocketName}`
+                    `${distributionName}/${seriesName}/${pocketName}`,
                   )
                 ) {
                   seriesPocketNames.push(pocketName);
@@ -170,7 +170,7 @@ const AddProfileForm: FC = () => {
                     distribution: distributionName,
                     series: seriesName,
                     pockets: seriesPocketNames,
-                  })
+                  }),
                 );
               }
             }
@@ -196,7 +196,7 @@ const AddProfileForm: FC = () => {
     getAccessGroupQuery();
 
   const accessGroupsOptions = getAccessGroupsOptions(
-    accessGroupsResponse?.data ?? []
+    accessGroupsResponse?.data ?? [],
   );
 
   const handleClickTab = (tabIndex: number) => {
@@ -289,7 +289,7 @@ const AddProfileForm: FC = () => {
                 onChange={(event) => {
                   formik.setFieldValue(
                     "tags",
-                    event.target.value.replace(/\s/g, "").split(",")
+                    event.target.value.replace(/\s/g, "").split(","),
                   );
                 }}
                 help="List the tag names separated by commas"
@@ -335,7 +335,7 @@ const AddProfileForm: FC = () => {
               <span
                 className={classNames(
                   "p-search-box__button p-button--base",
-                  classes.searchIcon
+                  classes.searchIcon,
                 )}
               >
                 <i className="p-icon--search">Search</i>
@@ -355,7 +355,7 @@ const AddProfileForm: FC = () => {
                     <h5
                       className={classNames(
                         "p-text--x-small",
-                        classes.uppercase
+                        classes.uppercase,
                       )}
                     >
                       Distribution
@@ -365,7 +365,7 @@ const AddProfileForm: FC = () => {
                     <h5
                       className={classNames(
                         "p-text--x-small",
-                        classes.uppercase
+                        classes.uppercase,
                       )}
                     >
                       Series
@@ -375,7 +375,7 @@ const AddProfileForm: FC = () => {
                     <h5
                       className={classNames(
                         "p-text--x-small",
-                        classes.uppercase
+                        classes.uppercase,
                       )}
                     >
                       Pocket
@@ -398,7 +398,7 @@ const AddProfileForm: FC = () => {
                               <p
                                 className={classNames(
                                   "u-no-margin--bottom",
-                                  classes.label
+                                  classes.label,
                                 )}
                               >
                                 {distributionName}
@@ -426,31 +426,31 @@ const AddProfileForm: FC = () => {
                                                   label={pocketName}
                                                   labelClassName={classes.label}
                                                   {...formik.getFieldProps(
-                                                    "pockets"
+                                                    "pockets",
                                                   )}
                                                   checked={formik.values.pockets.includes(
-                                                    value
+                                                    value,
                                                   )}
                                                   onChange={() =>
                                                     formik.setFieldValue(
                                                       "pockets",
                                                       formik.values.pockets.includes(
-                                                        value
+                                                        value,
                                                       )
                                                         ? formik.values.pockets.filter(
                                                             (item) =>
-                                                              item !== value
+                                                              item !== value,
                                                           )
                                                         : [
                                                             ...formik.values
                                                               .pockets,
                                                             value,
-                                                          ]
+                                                          ],
                                                     )
                                                   }
                                                 />
                                               </li>
-                                            )
+                                            ),
                                           )}
                                         </ul>
                                       </Col>
@@ -461,7 +461,7 @@ const AddProfileForm: FC = () => {
                             </Col>
                           </Row>
                         </li>
-                      )
+                      ),
                     )}
                   </ul>
                 )}
@@ -515,9 +515,9 @@ const AddProfileForm: FC = () => {
                                 "apt_sources",
                                 formik.values.apt_sources.includes(name)
                                   ? formik.values.apt_sources.filter(
-                                      (item) => item !== name
+                                      (item) => item !== name,
                                     )
-                                  : [...formik.values.apt_sources, name]
+                                  : [...formik.values.apt_sources, name],
                               )
                             }
                           />

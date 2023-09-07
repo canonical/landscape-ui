@@ -3,7 +3,7 @@ import { RequestSchema } from "../types/RequestSchema";
 import { InternalAxiosRequestConfig } from "axios";
 
 export const generateRequestParams = (
-  config: InternalAxiosRequestConfig
+  config: InternalAxiosRequestConfig,
 ): InternalAxiosRequestConfig => {
   const requestParams = ["get", "delete"].includes(config.method ?? "get")
     ? config.params
@@ -36,7 +36,7 @@ export const generateRequestParams = (
       !(Array.isArray(value) && 0 === value.length)
     ) {
       throw new Error(
-        `Unsupported argument type. Provided: ${value} for ${param}`
+        `Unsupported argument type. Provided: ${value} for ${param}`,
       );
     }
   }

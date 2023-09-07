@@ -94,7 +94,7 @@ const PackageList: FC<PackageListProps> = ({
       },
       {
         enabled: "pull" === pocket.mode && !listPocketLoading,
-      }
+      },
     );
 
   if (diffPullPocketError) {
@@ -154,7 +154,7 @@ const PackageList: FC<PackageListProps> = ({
 
     pocketPackages.forEach((pocketPackage, index) => {
       const alteredPackage = diffPullPocket.find(
-        ({ packageName }) => pocketPackage.packageName === packageName
+        ({ packageName }) => pocketPackage.packageName === packageName,
       );
 
       if (alteredPackage) {
@@ -182,7 +182,7 @@ const PackageList: FC<PackageListProps> = ({
   const packagesToShow = sortedPackages.filter(
     (_, index) =>
       index >= (currentPage - 1) * paginationLimit &&
-      index < currentPage * paginationLimit
+      index < currentPage * paginationLimit,
   );
 
   const rows = packagesToShow.map(
@@ -200,8 +200,8 @@ const PackageList: FC<PackageListProps> = ({
                     ? (prevState) => [...prevState, index]
                     : (prevState) =>
                         prevState.filter(
-                          (selectedPackage) => selectedPackage !== index
-                        )
+                          (selectedPackage) => selectedPackage !== index,
+                        ),
                 );
               }}
             />
@@ -236,7 +236,7 @@ const PackageList: FC<PackageListProps> = ({
           },
         ],
       };
-    }
+    },
   );
 
   const checkBoxRef = useRef<HTMLInputElement>(null);
@@ -257,7 +257,7 @@ const PackageList: FC<PackageListProps> = ({
 
   const toggleAll = () => {
     setSelectedPackages(
-      checked || indeterminate ? [] : rows.map((_, index) => index)
+      checked || indeterminate ? [] : rows.map((_, index) => index),
     );
     setChecked(!checked && !indeterminate);
     setIndeterminate(false);
@@ -351,7 +351,7 @@ const PackageList: FC<PackageListProps> = ({
         pocket={pocket}
         distributionName={distributionName}
         seriesName={seriesName}
-      />
+      />,
     );
   };
 

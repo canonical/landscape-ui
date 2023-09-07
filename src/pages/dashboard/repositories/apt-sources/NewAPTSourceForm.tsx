@@ -36,7 +36,7 @@ const NewAPTSourceForm: FC = () => {
     (accessGroup) => ({
       label: accessGroup.title,
       value: accessGroup.name,
-    })
+    }),
   );
 
   const gpgKeysOptions: SelectOption[] = (gpgKeysData?.data ?? [])

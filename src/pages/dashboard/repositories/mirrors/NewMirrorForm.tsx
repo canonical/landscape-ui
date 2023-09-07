@@ -99,23 +99,23 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
         .when("hasPockets", (values, schema) =>
           values[0]
             ? schema.min(1, "Please choose at least one component")
-            : schema
+            : schema,
         ),
       architectures: Yup.array()
         .of(Yup.string())
         .when("hasPockets", (values, schema) =>
           values[0]
             ? schema.min(1, "Please choose at least one architecture")
-            : schema
+            : schema,
         ),
       gpg_key: Yup.string().when("hasPockets", (values, schema) =>
-        values[0] ? schema.required("This field is required.") : schema
+        values[0] ? schema.required("This field is required.") : schema,
       ),
       mirror_gpg_key: Yup.string(),
       mirror_uri: Yup.string().when("hasPockets", (values, schema) =>
         values[0]
           ? schema.nonNullable().required("This field is required.")
-          : schema
+          : schema,
       ),
       mirror_series: Yup.string(),
       include_udeb: Yup.boolean().required(),
@@ -179,7 +179,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
     formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.thirdParty);
     formik.setFieldValue(
       "architectures",
-      PRE_SELECTED_ARCHITECTURES.thirdParty
+      PRE_SELECTED_ARCHITECTURES.thirdParty,
     );
   }, [formik.values.type]);
 
@@ -304,7 +304,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "pockets",
-                event.target.value.replace(/\s/g, "").split(",")
+                event.target.value.replace(/\s/g, "").split(","),
               );
             }}
             error={formik.touched.pockets && formik.errors.pockets}
@@ -323,7 +323,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "components",
-                event.target.value.replace(/\s/g, "").split(",")
+                event.target.value.replace(/\s/g, "").split(","),
               );
             }}
             error={formik.touched.components && formik.errors.components}
@@ -343,7 +343,7 @@ const NewMirrorForm: FC<NewMirrorFormProps> = ({ distributions }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "architectures",
-                event.target.value.replace(/\s/g, "").split(",")
+                event.target.value.replace(/\s/g, "").split(","),
               );
             }}
             error={formik.touched.architectures && formik.errors.architectures}

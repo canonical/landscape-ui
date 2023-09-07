@@ -10,7 +10,7 @@ export const getDistributionPocketOptions = (distributions: Distribution[]) => {
   return distributions
     .filter(
       ({ series }) =>
-        series.length && series.some(({ pockets }) => pockets.length)
+        series.length && series.some(({ pockets }) => pockets.length),
     )
     .map(({ name: distributionName, series }) => ({
       distributionName,
@@ -28,7 +28,7 @@ export const getDistributionPocketOptions = (distributions: Distribution[]) => {
 
 export const getFilteredDistributionPocketOptions = (
   options: ReturnType<typeof getDistributionPocketOptions>,
-  searchText: string
+  searchText: string,
 ) => {
   const filteredDistributionPocketOptions: typeof options = [];
 
@@ -78,17 +78,17 @@ export const getAccessGroupsOptions = (accessGroups: AccessGroup[]) => {
 
 export const getFilteredAptSources = (
   aptSources: APTSource[],
-  searchText: string
+  searchText: string,
 ) => {
   return searchText
     ? aptSources.filter(
-        ({ name, line }) => name.match(searchText) || line.match(searchText)
+        ({ name, line }) => name.match(searchText) || line.match(searchText),
       )
     : aptSources;
 };
 
 export const getFullProfilePocketNames = (
-  profilePockets: RepositoryProfilePocket[]
+  profilePockets: RepositoryProfilePocket[],
 ) => {
   return profilePockets.map(({ distribution, name, series }) => {
     return `${distribution.name}/${series.name}/${name}`;
@@ -108,7 +108,7 @@ interface IsProfileChangedProps {
 export const isProfileChanged = (
   profile: RepositoryProfile,
   formikValues: IsProfileChangedProps,
-  fullPocketNames: string[]
+  fullPocketNames: string[],
 ) => {
   const changes: {
     [key in keyof Omit<IsProfileChangedProps, "name">]: boolean;
@@ -136,7 +136,7 @@ export const isProfileChanged = (
       changes.pockets =
         formikValues.pockets.length !== fullPocketNames.length ||
         !formikValues.pockets.every((pocketName) =>
-          fullPocketNames.includes(pocketName)
+          fullPocketNames.includes(pocketName),
         );
     } else {
       changes[key] =

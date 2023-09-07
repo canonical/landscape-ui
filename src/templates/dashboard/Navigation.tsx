@@ -51,20 +51,20 @@ const Navigation: FC = () => {
                 <button
                   className={classNames(
                     "p-side-navigation__accordion-button",
-                    classes.accordionButton
+                    classes.accordionButton,
                   )}
                   type="button"
                   aria-expanded={expanded === item.path}
                   onClick={() => {
                     setExpanded((prevState) =>
-                      item.path === prevState ? "" : item.path
+                      item.path === prevState ? "" : item.path,
                     );
                   }}
                 >
                   {item.icon && (
                     <i
                       className={classNames(
-                        `p-icon--${item.icon} is-light p-side-navigation__icon`
+                        `p-icon--${item.icon} is-light p-side-navigation__icon`,
                       )}
                     />
                   )}

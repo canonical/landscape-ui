@@ -27,7 +27,7 @@ const FetchProvider: FC<FetchProviderProps> = ({ children }) => {
       },
       (error: AxiosError) => {
         Promise.reject(error);
-      }
+      },
     );
   }
 

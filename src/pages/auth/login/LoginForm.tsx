@@ -70,7 +70,7 @@ const LoginForm: FC = () => {
             email: "john@example.com",
             token: data.token,
           },
-          values.remember
+          values.remember,
         );
       } catch (error: any) {
         debug(error);

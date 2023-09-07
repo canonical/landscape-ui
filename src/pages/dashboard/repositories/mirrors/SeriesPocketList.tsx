@@ -139,7 +139,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
         pocket={pocket}
         distributionName={distributionName}
         seriesName={series.name}
-      />
+      />,
     );
   };
 
@@ -151,7 +151,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
         pocket={pocket}
         distributionName={distributionName}
         seriesName={series.name}
-      />
+      />,
     );
   };
 
@@ -195,7 +195,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 </div>
                 <div
                   className={classNames(
-                    "p-text--small u-text--muted u-no-margin--bottom"
+                    "p-text--small u-text--muted u-no-margin--bottom",
                   )}
                 >{`pulling from ${pocket.pull_pocket}`}</div>
               </>

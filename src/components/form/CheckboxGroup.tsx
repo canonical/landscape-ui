@@ -36,7 +36,7 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
         {
           "is-error": error,
         },
-        className
+        className,
       )}
       style={style}
     >

@@ -14,7 +14,7 @@ export default function useAccessGroup(): useAccessGroupResult {
 
   const getAccessGroupQuery: QueryFnType<AxiosResponse<AccessGroup[]>, {}> = (
     queryParams = {},
-    config = {}
+    config = {},
   ) =>
     useQuery<AxiosResponse<AccessGroup[]>, AxiosError<ApiError>>({
       queryKey: ["accessGroups"],

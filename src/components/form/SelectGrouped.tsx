@@ -83,7 +83,7 @@ const SelectGrouped: FC<SelectGroupedProps> = ({
             onChange={(event) => {
               onChange(
                 event.target[event.target.selectedIndex].dataset.value ?? "",
-                event.target[event.target.selectedIndex].dataset.group ?? ""
+                event.target[event.target.selectedIndex].dataset.group ?? "",
               );
             }}
             onBlur={onBlur}

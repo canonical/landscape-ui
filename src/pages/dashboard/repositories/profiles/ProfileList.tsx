@@ -43,13 +43,13 @@ const ProfileList: FC<DistributionProfileListProps> = ({
     setSidePanelOpen(true);
     setSidePanelContent(
       `Edit ${profile.title}`,
-      <EditProfileForm profile={profile} />
+      <EditProfileForm profile={profile} />,
     );
   };
 
   const getAccessGroupLabel = (accessGroup: string) => {
     const accessGroupOption = accessGroupsOptions.find(
-      ({ value }) => accessGroup === value
+      ({ value }) => accessGroup === value,
     );
 
     return accessGroupOption ? accessGroupOption.label : accessGroup;

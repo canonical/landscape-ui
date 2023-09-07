@@ -76,7 +76,7 @@ const initialValues: FormProps = {
 };
 
 const getCreatePocketParams = (
-  values: FormProps
+  values: FormProps,
 ):
   | CreateMirrorPocketParams
   | CreatePullPocketParams
@@ -271,7 +271,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.thirdParty);
       formik.setFieldValue(
         "architectures",
-        PRE_SELECTED_ARCHITECTURES.thirdParty
+        PRE_SELECTED_ARCHITECTURES.thirdParty,
       );
 
       if ("mirror" === formik.values.mode) {
@@ -287,7 +287,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         value: name,
       })),
       optGroup: item.name,
-    })
+    }),
   );
 
   return (
@@ -446,7 +446,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               onChange={(event) => {
                 formik.setFieldValue(
                   "filters",
-                  event.target.value.replace(/\s/g, "").split(",")
+                  event.target.value.replace(/\s/g, "").split(","),
                 );
               }}
               value={formik.values.filters.join(",")}
@@ -519,7 +519,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "components",
-                event.target.value.replace(/\s/g, "").split(",")
+                event.target.value.replace(/\s/g, "").split(","),
               );
             }}
             error={formik.touched.components && formik.errors.components}
@@ -534,7 +534,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "architectures",
-                event.target.value.replace(/\s/g, "").split(",")
+                event.target.value.replace(/\s/g, "").split(","),
               );
             }}
             error={formik.touched.architectures && formik.errors.architectures}

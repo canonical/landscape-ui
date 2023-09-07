@@ -86,10 +86,10 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
       mirror_uri: Yup.string().when("hasPockets", (values, schema) =>
         values[0]
           ? schema.nonNullable().required("This field is required.")
-          : schema
+          : schema,
       ),
       gpg_key: Yup.string().when("hasPockets", (values, schema) =>
-        values[0] ? schema.required("This field is required.") : schema
+        values[0] ? schema.required("This field is required.") : schema,
       ),
       pockets: Yup.array().of(Yup.string()),
       components: Yup.array()
@@ -97,14 +97,14 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         .when("hasPockets", (values, schema) =>
           values[0]
             ? schema.min(1, "Please choose at least one component")
-            : schema
+            : schema,
         ),
       architectures: Yup.array()
         .of(Yup.string())
         .when("hasPockets", (values, schema) =>
           values[0]
             ? schema.min(1, "Please choose at least one architecture")
-            : schema
+            : schema,
         ),
     }),
     onSubmit: async (values) => {
@@ -144,7 +144,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
       formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.thirdParty);
       formik.setFieldValue(
         "architectures",
-        PRE_SELECTED_ARCHITECTURES.thirdParty
+        PRE_SELECTED_ARCHITECTURES.thirdParty,
       );
       formik.setFieldValue("mirror_uri", "");
     }
@@ -314,7 +314,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "pockets",
-                event.target.value.replace(/\s/g, "").split(",")
+                event.target.value.replace(/\s/g, "").split(","),
               );
             }}
             error={formik.touched.pockets && formik.errors.pockets}
@@ -328,7 +328,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "components",
-                event.target.value.replace(/\s/g, "").split(",")
+                event.target.value.replace(/\s/g, "").split(","),
               );
             }}
             error={formik.touched.components && formik.errors.components}
@@ -342,7 +342,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "architectures",
-                event.target.value.replace(/\s/g, "").split(",")
+                event.target.value.replace(/\s/g, "").split(","),
               );
             }}
             error={formik.touched.architectures && formik.errors.architectures}

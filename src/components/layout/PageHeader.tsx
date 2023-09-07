@@ -41,7 +41,7 @@ const PageHeader: FC<PageHeaderProps> = ({
                     >
                       {breadcrumb.label}
                     </li>
-                  )
+                  ),
                 )}
               </ol>
             </nav>

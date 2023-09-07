@@ -35,7 +35,7 @@ const DistributionsPage: FC = () => {
               setSidePanelOpen(true);
               setSidePanelContent(
                 "Create distribution",
-                <NewDistributionForm />
+                <NewDistributionForm />,
               );
             }}
             type="button"
@@ -50,7 +50,7 @@ const DistributionsPage: FC = () => {
               setSidePanelOpen(true);
               setSidePanelContent(
                 "Create new mirror",
-                <NewMirrorForm distributions={distributions} />
+                <NewMirrorForm distributions={distributions} />,
               );
             }}
             type="button"
@@ -84,7 +84,7 @@ const DistributionsPage: FC = () => {
                   setSidePanelOpen(true);
                   setSidePanelContent(
                     "Create distribution",
-                    <NewDistributionForm />
+                    <NewDistributionForm />,
                   );
                 }}
                 type="button"

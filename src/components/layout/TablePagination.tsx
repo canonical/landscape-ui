@@ -49,7 +49,7 @@ const TablePagination: FC<TablePaginationProps> = ({
         <span
           className={classNames(
             "p-pagination__items",
-            classes.paginationWrapper
+            classes.paginationWrapper,
           )}
         >
           <Button
@@ -86,7 +86,7 @@ const TablePagination: FC<TablePaginationProps> = ({
                     [classes.mediumInput]: pageNumber && pageNumber > 9,
                     [classes.largeInput]: pageNumber && pageNumber > 99,
                     [classes.xLargeInput]: pageNumber && pageNumber > 999,
-                  }
+                  },
                 )}
                 onBlur={() => {
                   setPageNumber(currentPage);
@@ -100,7 +100,7 @@ const TablePagination: FC<TablePaginationProps> = ({
                       e.target.valueAsNumber < 1
                     ) {
                       setError(
-                        `"${e.target.valueAsNumber}" is not a valid page number.`
+                        `"${e.target.valueAsNumber}" is not a valid page number.`,
                       );
                     } else {
                       setError("");
@@ -119,7 +119,7 @@ const TablePagination: FC<TablePaginationProps> = ({
                 <p
                   className={classNames(
                     "p-form-validation__message u-no-margin--bottom",
-                    classes.error
+                    classes.error,
                   )}
                 >
                   {error}

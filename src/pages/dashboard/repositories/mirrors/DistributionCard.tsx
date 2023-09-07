@@ -63,7 +63,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
               setSidePanelOpen(true);
               setSidePanelContent(
                 `Add series to ${distribution.name}`,
-                <NewSeriesForm distribution={distribution} />
+                <NewSeriesForm distribution={distribution} />,
               );
             }}
             aria-label={`Add series to ${distribution.name}`}

@@ -9,16 +9,16 @@ import LoadingState from "./components/layout/LoadingState";
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 const LoginPage = lazy(() => import("./pages/auth/login"));
 const DistributionsPage = lazy(
-  () => import("./pages/dashboard/repositories/mirrors")
+  () => import("./pages/dashboard/repositories/mirrors"),
 );
 const ProfilesPage = lazy(
-  () => import("./pages/dashboard/repositories/profiles")
+  () => import("./pages/dashboard/repositories/profiles"),
 );
 const GPGKeysPage = lazy(
-  () => import("./pages/dashboard/repositories/gpg-keys")
+  () => import("./pages/dashboard/repositories/gpg-keys"),
 );
 const APTSourcesPage = lazy(
-  () => import("./pages/dashboard/repositories/apt-sources")
+  () => import("./pages/dashboard/repositories/apt-sources"),
 );
 
 interface AuthRouteProps {

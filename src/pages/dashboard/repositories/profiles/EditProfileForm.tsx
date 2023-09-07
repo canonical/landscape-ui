@@ -140,7 +140,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               name: values.name,
               title: values.title,
               description: values.description,
-            })
+            }),
           );
         }
 
@@ -154,7 +154,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               : disassociateRepositoryProfile({
                   name: values.name,
                   all_computers: true,
-                })
+                }),
           );
         }
 
@@ -165,10 +165,10 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           !profile.tags.every((tag) => newTags.includes(tag))
         ) {
           const tagsAdded = newTags.filter(
-            (tag) => !profile.tags.includes(tag)
+            (tag) => !profile.tags.includes(tag),
           );
           const tagsRemoved = profile.tags.filter(
-            (tag) => !newTags.includes(tag)
+            (tag) => !newTags.includes(tag),
           );
 
           if (tagsAdded.length) {
@@ -176,7 +176,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               associateRepositoryProfile({
                 name: values.name,
                 tags: tagsAdded,
-              })
+              }),
             );
           }
 
@@ -185,7 +185,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               disassociateRepositoryProfile({
                 name: values.name,
                 tags: tagsRemoved,
-              })
+              }),
             );
           }
         }
@@ -193,14 +193,14 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
         if (
           values.apt_sources.length !== profile.apt_sources.length ||
           !profile.apt_sources.every((aptSource) =>
-            values.apt_sources.includes(aptSource)
+            values.apt_sources.includes(aptSource),
           )
         ) {
           const aptSourcesAdded = values.apt_sources.filter(
-            (apt_source) => !profile.apt_sources.includes(apt_source)
+            (apt_source) => !profile.apt_sources.includes(apt_source),
           );
           const aptSourcesRemoved = profile.apt_sources.filter(
-            (apt_source) => !values.apt_sources.includes(apt_source)
+            (apt_source) => !values.apt_sources.includes(apt_source),
           );
 
           if (aptSourcesAdded.length) {
@@ -208,7 +208,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               addAPTSourcesToRepositoryProfile({
                 name: values.name,
                 apt_sources: aptSourcesAdded,
-              })
+              }),
             );
           }
 
@@ -218,7 +218,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                 removeAPTSourceFromRepositoryProfile({
                   name: values.name,
                   apt_source: aptSourceRemoved,
-                })
+                }),
               );
             }
           }
@@ -229,10 +229,10 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           !values.pockets.every((pocket) => fullPocketNames.includes(pocket))
         ) {
           const profilePocketsAdded = values.pockets.filter(
-            (pocket) => !fullPocketNames.includes(pocket)
+            (pocket) => !fullPocketNames.includes(pocket),
           );
           const profilePocketsRemoved = fullPocketNames.filter(
-            (profilePocketName) => !values.pockets.includes(profilePocketName)
+            (profilePocketName) => !values.pockets.includes(profilePocketName),
           );
 
           if (profilePocketsAdded.length) {
@@ -246,7 +246,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                 for (const { pocketName } of pockets) {
                   if (
                     profilePocketsAdded.includes(
-                      `${distributionName}/${seriesName}/${pocketName}`
+                      `${distributionName}/${seriesName}/${pocketName}`,
                     )
                   ) {
                     seriesPocketNames.push(pocketName);
@@ -260,7 +260,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                       distribution: distributionName,
                       series: seriesName,
                       pockets: seriesPocketNames,
-                    })
+                    }),
                   );
                 }
               }
@@ -278,7 +278,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                 for (const { pocketName } of pockets) {
                   if (
                     profilePocketsRemoved.includes(
-                      `${distributionName}/${seriesName}/${pocketName}`
+                      `${distributionName}/${seriesName}/${pocketName}`,
                     )
                   ) {
                     seriesPocketNames.push(pocketName);
@@ -292,7 +292,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                       distribution: distributionName,
                       series: seriesName,
                       pockets: seriesPocketNames,
-                    })
+                    }),
                   );
                 }
               }
@@ -321,7 +321,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
 
   useEffect(() => {
     setProfileChanged(
-      isProfileChanged(profile, formik.values, fullPocketNames)
+      isProfileChanged(profile, formik.values, fullPocketNames),
     );
   }, [
     formik.values.title,
@@ -411,7 +411,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                 onChange={(event) => {
                   formik.setFieldValue(
                     "tags",
-                    event.target.value.replace(/\s/g, "").split(",")
+                    event.target.value.replace(/\s/g, "").split(","),
                   );
 
                   setTagsChangesTrigger((prevState) => !prevState);
@@ -459,7 +459,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               <span
                 className={classNames(
                   "p-search-box__button p-button--base",
-                  classes.searchIcon
+                  classes.searchIcon,
                 )}
               >
                 <i className="p-icon--search">Search</i>
@@ -479,7 +479,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                     <h5
                       className={classNames(
                         "p-text--x-small",
-                        classes.uppercase
+                        classes.uppercase,
                       )}
                     >
                       Distribution
@@ -489,7 +489,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                     <h5
                       className={classNames(
                         "p-text--x-small",
-                        classes.uppercase
+                        classes.uppercase,
                       )}
                     >
                       Series
@@ -499,7 +499,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                     <h5
                       className={classNames(
                         "p-text--x-small",
-                        classes.uppercase
+                        classes.uppercase,
                       )}
                     >
                       Pocket
@@ -522,7 +522,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                               <p
                                 className={classNames(
                                   "u-no-margin--bottom",
-                                  classes.label
+                                  classes.label,
                                 )}
                               >
                                 {distributionName}
@@ -546,37 +546,37 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                                                 key={value}
                                                 className={classNames(
                                                   "p-list__item",
-                                                  classes.label
+                                                  classes.label,
                                                 )}
                                               >
                                                 <CheckboxInput
                                                   label={pocketName}
                                                   {...formik.getFieldProps(
-                                                    "pockets"
+                                                    "pockets",
                                                   )}
                                                   checked={formik.values.pockets.includes(
-                                                    value
+                                                    value,
                                                   )}
                                                   onChange={() => {
                                                     formik.setFieldValue(
                                                       "pockets",
                                                       formik.values.pockets.includes(
-                                                        value
+                                                        value,
                                                       )
                                                         ? formik.values.pockets.filter(
                                                             (item) =>
-                                                              item !== value
+                                                              item !== value,
                                                           )
                                                         : [
                                                             ...formik.values
                                                               .pockets,
                                                             value,
-                                                          ]
+                                                          ],
                                                     );
                                                   }}
                                                 />
                                               </li>
-                                            )
+                                            ),
                                           )}
                                         </ul>
                                       </Col>
@@ -587,7 +587,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                             </Col>
                           </Row>
                         </li>
-                      )
+                      ),
                     )}
                   </ul>
                 )}
@@ -641,9 +641,9 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                                 "apt_sources",
                                 formik.values.apt_sources.includes(name)
                                   ? formik.values.apt_sources.filter(
-                                      (item) => item !== name
+                                      (item) => item !== name,
                                     )
-                                  : [...formik.values.apt_sources, name]
+                                  : [...formik.values.apt_sources, name],
                               )
                             }
                           />

@@ -56,7 +56,7 @@ const initialValues: FormProps = {
 
 const getEditPocketParams = (
   values: FormProps,
-  mode: Pocket["mode"]
+  mode: Pocket["mode"],
 ): EditMirrorPocketParams | EditPullPocketParams | EditUploadPocketParams => {
   switch (mode) {
     case "mirror":
@@ -191,7 +191,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         if ("pull" === pocket.mode) {
           if (pocket.filter_type) {
             const deletedPackages = pocket.filters.filter(
-              (originalPackage) => !values.filters.includes(originalPackage)
+              (originalPackage) => !values.filters.includes(originalPackage),
             );
             const addedPackages = values.filters
               .filter((x) => x)
@@ -204,7 +204,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                   distribution: values.distribution,
                   series: values.series,
                   packages: deletedPackages,
-                })
+                }),
               );
             }
 
@@ -215,7 +215,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                   distribution: values.distribution,
                   series: values.series,
                   packages: addedPackages,
-                })
+                }),
               );
             }
           }
@@ -227,15 +227,15 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
           }
 
           const pocketUploadGPGKeyNames = pocket.upload_gpg_keys.map(
-            ({ name }) => name
+            ({ name }) => name,
           );
 
           const addedUploaderGPGKeys = values.upload_gpg_keys.filter(
-            (gpgKey) => !pocketUploadGPGKeyNames.includes(gpgKey)
+            (gpgKey) => !pocketUploadGPGKeyNames.includes(gpgKey),
           );
 
           const removedUploaderGPGKeys = pocketUploadGPGKeyNames.filter(
-            (gpgKey) => !values.upload_gpg_keys.includes(gpgKey)
+            (gpgKey) => !values.upload_gpg_keys.includes(gpgKey),
           );
 
           if (addedUploaderGPGKeys.length) {
@@ -245,7 +245,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                 series: values.series,
                 distribution: values.distribution,
                 gpg_keys: addedUploaderGPGKeys,
-              })
+              }),
             );
           }
 
@@ -256,7 +256,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                 series: values.series,
                 distribution: values.distribution,
                 gpg_keys: removedUploaderGPGKeys,
-              })
+              }),
             );
           }
         }
@@ -285,16 +285,16 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
       formik.setFieldValue("mirror_suite", pocket.mirror_suite);
       formik.setFieldValue(
         "mirror_gpg_key",
-        pocket.mirror_gpg_key ? pocket.mirror_gpg_key.name : "-"
+        pocket.mirror_gpg_key ? pocket.mirror_gpg_key.name : "-",
       );
     } else if ("upload" === pocket.mode) {
       formik.setFieldValue(
         "upload_allow_unsigned",
-        pocket.upload_allow_unsigned
+        pocket.upload_allow_unsigned,
       );
       formik.setFieldValue(
         "upload_gpg_keys",
-        pocket.upload_gpg_keys.map(({ name }) => name)
+        pocket.upload_gpg_keys.map(({ name }) => name),
       );
     } else {
       formik.setFieldValue("filters", pocket.filters);
@@ -431,7 +431,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
           onChange={(event) => {
             formik.setFieldValue(
               "filters",
-              event.target.value.replace(/\s/g, "").split(",")
+              event.target.value.replace(/\s/g, "").split(","),
             );
           }}
           value={formik.values.filters.join(",")}
