@@ -41,17 +41,17 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
     getComputersQuery({
       query,
       with_network: searchAndFilterChips.find(
-        ({ value }) => "with_network" === value
+        ({ value }) => "with_network" === value,
       )
         ? true
         : undefined,
       with_annotations: searchAndFilterChips.find(
-        ({ value }) => "with_annotations" === value
+        ({ value }) => "with_annotations" === value,
       )
         ? true
         : undefined,
       with_hardware: searchAndFilterChips.find(
-        ({ value }) => "with_hardware" === value
+        ({ value }) => "with_hardware" === value,
       )
         ? true
         : undefined,

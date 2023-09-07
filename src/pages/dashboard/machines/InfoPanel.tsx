@@ -34,7 +34,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
   const [currentAccessGroup, setCurrentAccessGroup] = useState("");
   const [currentComment, setCurrentComment] = useState("");
   const [activityProps, setActivityProps] = useState<ActivityProps | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -155,7 +155,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
       "Edit Computer",
       <Suspense fallback={<LoadingState />}>
         <EditComputer computer={machine} license="" />
-      </Suspense>
+      </Suspense>,
     );
   };
 
@@ -336,7 +336,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
                   label="Access group"
                   labelClassName={classNames(
                     "p-text--small p-text--small-caps u-text--muted",
-                    classes.inputLabel
+                    classes.inputLabel,
                   )}
                   options={accessGroupOptions}
                   value={currentAccessGroup}
@@ -366,7 +366,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
                   wrapperClassName={classes.input}
                   labelClassName={classNames(
                     "p-text--small p-text--small-caps u-text--muted",
-                    classes.inputLabel
+                    classes.inputLabel,
                   )}
                   options={[
                     {
@@ -391,7 +391,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
                   onChange={(e) => setNewTagsString(e.target.value)}
                   labelClassName={classNames(
                     "p-text--small p-text--small-caps u-text--muted",
-                    classes.inputLabel
+                    classes.inputLabel,
                   )}
                 />
               </Col>
@@ -432,7 +432,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
                   rows={4}
                   labelClassName={classNames(
                     "p-text--small p-text--small-caps u-text--muted",
-                    classes.inputLabel
+                    classes.inputLabel,
                   )}
                   value={currentComment}
                   onChange={(e) => setCurrentComment(e.target.value)}
