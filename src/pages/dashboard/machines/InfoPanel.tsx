@@ -269,14 +269,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          paddingTop: "1.5rem",
-        }}
-      >
-        <h3>{machine.title}</h3>
+      <div className={classes.titleRow}>
+        <p className="p-heading--4">{machine.title}</p>
         <div key="buttons" className="p-segmented-control">
           <div className="p-segmented-control__list">
             <button
