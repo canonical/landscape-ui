@@ -9,6 +9,7 @@ import LoadingState from "../../../components/layout/LoadingState";
 import InfoPanel from "./InfoPanel";
 import PageHeader from "../../../components/layout/PageHeader";
 import { Breadcrumb } from "../../../types/Breadcrumb";
+import classes from "./SingleMachine.module.scss";
 
 const ProcessesPanel = lazy(() => import("./ProcessesPanel"));
 const HardwarePanel = lazy(() => import("./HardwarePanel"));
@@ -70,12 +71,13 @@ const SingleMachine: FC = () => {
               "data-testid": getTabLabelId(label),
             }))}
           />
-          <Suspense fallback={<LoadingState />}>
-            <div
-              tabIndex={0}
-              role="tabpanel"
-              aria-labelledby={getTabLabelId(tabLabels[currentTab])}
-            >
+          <div
+            tabIndex={0}
+            role="tabpanel"
+            aria-labelledby={getTabLabelId(tabLabels[currentTab])}
+            className={classes.tabPanel}
+          >
+            <Suspense fallback={<LoadingState />}>
               {0 === currentTab && <InfoPanel machine={machine} />}
               {1 === currentTab && <p>Packages</p>}
               {2 === currentTab && <p>Activities</p>}
@@ -84,8 +86,8 @@ const SingleMachine: FC = () => {
               {5 === currentTab && <p>Users</p>}
               {6 === currentTab && <p>Reports</p>}
               {7 === currentTab && <HardwarePanel />}
-            </div>
-          </Suspense>
+            </Suspense>
+          </div>
         </PageContent>
       </PageMain>
     )
