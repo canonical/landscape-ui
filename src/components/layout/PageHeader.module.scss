@@ -4,6 +4,11 @@
   margin-top: $spv--large;
 }
 
+.breadcrumbsItem {
+  font-variant-caps: initial;
+  letter-spacing: initial;
+}
+
 .controls,
 .visualTitle {
   flex-shrink: 0;
