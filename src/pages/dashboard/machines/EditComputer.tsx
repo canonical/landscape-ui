@@ -4,7 +4,6 @@ import * as Yup from "yup";
 import { Button, Input, Select, Textarea } from "@canonical/react-components";
 import { Computer } from "../../../types/Computer";
 import useSidePanel from "../../../hooks/useSidePanel";
-import classes from "./EditComputer.module.scss";
 import useComputers from "../../../hooks/useComputers";
 import useDebug from "../../../hooks/useDebug";
 
@@ -97,16 +96,14 @@ const EditComputer: FC<EditComputerProps> = ({ computer, license }) => {
         {...formik.getFieldProps("license")}
         error={formik.touched.license && formik.errors.license}
         options={[
-          { label: "Ubuntu", value: "ubuntu" },
-          { label: "CentOS", value: "centos" },
-          { label: "Windows", value: "windows" },
+          {
+            label: "Landscape, 234 days left, 9 seats free",
+            value: "",
+          },
         ]}
       />
 
-      <div className={classes.buttons}>
-        <Button type="button" onClick={handleClose}>
-          Cancel
-        </Button>
+      <div className="form-buttons">
         <Button
           type="submit"
           appearance="positive"
@@ -114,6 +111,9 @@ const EditComputer: FC<EditComputerProps> = ({ computer, license }) => {
           disabled={renameComputersLoading}
         >
           Save
+        </Button>
+        <Button type="button" onClick={handleClose}>
+          Cancel
         </Button>
       </div>
     </form>
