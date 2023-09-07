@@ -1,8 +1,15 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  padding-top: $spv--large;
+}
+
 .infoRow {
-  box-shadow: inset 0 1px 0 0 $color-mid-x-light,
+  box-shadow:
+    inset 0 1px 0 0 $color-mid-x-light,
     inset 0 -1px 0 0 $color-mid-x-light;
   padding-top: $spv--large;
   padding-bottom: $spv--large;
