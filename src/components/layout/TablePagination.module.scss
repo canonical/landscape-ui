@@ -2,16 +2,29 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .wrapper {
+  margin-top: auto;
+  position: sticky;
+  margin-bottom: -1.5rem;
+  padding-bottom: 1rem;
+  bottom: 0;
+  background-color: $color-x-light;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  column-gap: $sph--x-small;
+  border-top: 1px solid $colors--light-theme--border-default;
+  padding-top: $spv--small;
+}
+
+.description {
+  margin-right: auto;
+}
+
+.paginationContainer {
   flex-shrink: 0;
   display: flex;
   column-gap: $sph--x-large;
   padding-right: $sph--x-small;
-  overflow-x: hidden;
-  overflow-y: clip;
-
-  &:not(:last-child) {
-    margin-right: $sph--large;
-  }
 }
 
 .paginationWrapper {
