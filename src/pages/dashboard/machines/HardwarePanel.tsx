@@ -25,7 +25,7 @@ const HardwarePanel: FC = () => {
 
   const getHardwareInfo = (attribute: string) => {
     const hardwareDescription = hardware.find(
-      ([hardwareAttribute]) => hardwareAttribute === attribute
+      ([hardwareAttribute]) => hardwareAttribute === attribute,
     );
 
     return hardwareDescription ? hardwareDescription[1] : "Not available";

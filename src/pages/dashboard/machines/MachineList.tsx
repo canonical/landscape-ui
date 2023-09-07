@@ -24,7 +24,7 @@ const MachineList: FC<MachineListProps> = ({
 }) => {
   const toggleAll = () => {
     setSelectedIds(
-      selectedIds.length !== 0 ? [] : machines.map(({ id }) => id)
+      selectedIds.length !== 0 ? [] : machines.map(({ id }) => id),
     );
   };
 
@@ -40,7 +40,7 @@ const MachineList: FC<MachineListProps> = ({
 
   const machinesData: Record<string, unknown>[] = useMemo(
     () => machines,
-    [machines]
+    [machines],
   );
 
   const cols = useMemo<
@@ -123,7 +123,7 @@ const MachineList: FC<MachineListProps> = ({
           "string" === typeof value ? <>{getFormattedDateTime(value)}</> : null,
       },
     ],
-    [selectedIds, machines]
+    [selectedIds, machines],
   );
 
   return (
