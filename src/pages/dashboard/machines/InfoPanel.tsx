@@ -16,12 +16,12 @@ import {
 import useSidePanel from "../../../hooks/useSidePanel";
 import LoadingState from "../../../components/layout/LoadingState";
 import EditComputer from "./EditComputer";
-import ActionDelay from "./ActionDelay";
 import classes from "./InfoPanel.module.scss";
 import InfoItem, { InfoItemProps } from "../../../components/layout/InfoItem";
 import classNames from "classnames";
 import useAccessGroup from "../../../hooks/useAccessGroup";
 import { SelectOption } from "../../../types/SelectOption";
+import ActivityConfirmation, { ActivityProps } from "./ActivityConfirmation";
 
 interface InfoPanelProps {
   machine: Computer;
@@ -33,6 +33,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
   const [newTagsString, setNewTagsString] = useState("");
   const [currentAccessGroup, setCurrentAccessGroup] = useState("");
   const [currentComment, setCurrentComment] = useState("");
+  const [activityProps, setActivityProps] = useState<ActivityProps | null>(
+    null
+  );
 
   useEffect(() => {
     if (!machine) {
@@ -77,83 +80,46 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
   };
 
   const handleShutdownComputer = async () => {
-    confirmModal({
+    setActivityProps({
       title: `Shut down ${machine.title}`,
-      body: (
-        <ActionDelay
-          setDeliverImmediately={(value) => {
-            setDeliverImmediately(value);
-            if (value) {
-              setScheduleTime("");
-            }
-          }}
-          setScheduleTime={(value) => {
-            setScheduleTime(value);
-          }}
-          description="Are you sure you want to shutdown this machine?"
-        />
-      ),
-      buttons: [
-        <Button
-          key="shutdown"
-          appearance="negative"
-          onClick={async () => {
-            try {
-              await shutdownComputers({
-                computer_ids: [machine.id],
-                deliver_after: getDeliverDelay(),
-              });
-            } catch (error) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
-        >
-          Shutdown
-        </Button>,
-      ],
+      description: "Are you sure you want to shut down this machine?",
+      acceptButton: {
+        label: "Shutdown",
+        onClick: async () => {
+          try {
+            await shutdownComputers({
+              computer_ids: [machine.id],
+              deliver_after: getDeliverDelay(),
+            });
+          } catch (error) {
+            debug(error);
+          } finally {
+            setActivityProps(null);
+          }
+        },
+      },
     });
   };
 
   const handleRebootComputer = async () => {
-    confirmModal({
+    setActivityProps({
       title: `Restart ${machine.title}`,
-      body: (
-        <ActionDelay
-          setDeliverImmediately={(value) => {
-            setDeliverImmediately(value);
-            if (value) {
-              setScheduleTime("");
-            }
-          }}
-          setScheduleTime={(value) => {
-            setScheduleTime(value);
-          }}
-          description="Are you sure you want to restart this machine?"
-        />
-      ),
-      buttons: [
-        <Button
-          key="reboot"
-          appearance="negative"
-          disabled={!deliverImmediately && new Date(scheduleTime) < new Date()}
-          onClick={async () => {
-            try {
-              await rebootComputers({
-                computer_ids: [machine.id],
-                deliver_after: getDeliverDelay(),
-              });
-            } catch (error) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
-        >
-          Reboot
-        </Button>,
-      ],
+      description: "Are you sure you want to restart this machine?",
+      acceptButton: {
+        label: "Restart",
+        onClick: async () => {
+          try {
+            await rebootComputers({
+              computer_ids: [machine.id],
+              deliver_after: getDeliverDelay(),
+            });
+          } catch (error) {
+            debug(error);
+          } finally {
+            setActivityProps(null);
+          }
+        },
+      },
     });
   };
 
@@ -295,6 +261,12 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
     }
   };
 
+  const handleCloseActivityConfirmation = () => {
+    setScheduleTime("");
+    setDeliverImmediately(true);
+    setActivityProps(null);
+  };
+
   return (
     <>
       <div
@@ -397,9 +369,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
                     classes.inputLabel
                   )}
                   options={[
-                    { label: "Group 1", value: "group1" },
-                    { label: "Group 2", value: "group2" },
-                    { label: "Group 3", value: "group3" },
+                    {
+                      label: "Landscape, 234 days left, 9 seats free",
+                      value: "landscape-annual-10",
+                    },
                   ]}
                 />
               </Col>
@@ -469,6 +442,18 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
           </Col>
         </Row>
       </div>
+      <ActivityConfirmation
+        onClose={handleCloseActivityConfirmation}
+        checkboxValue={deliverImmediately}
+        onCheckboxChange={() => {
+          setDeliverImmediately((prevState) => !prevState);
+        }}
+        inputValue={scheduleTime}
+        onInputChange={(value) => {
+          setScheduleTime(value);
+        }}
+        activityProps={activityProps}
+      />
     </>
   );
 };
