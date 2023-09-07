@@ -23,7 +23,7 @@ const APTSourcesPage = lazy(
 );
 const MachinesPage = lazy(() => import("./pages/dashboard/machines"));
 const SingleMachine = lazy(
-  () => import("./pages/dashboard/machines/SingleMachine")
+  () => import("./pages/dashboard/machines/SingleMachine"),
 );
 
 interface AuthRouteProps {
