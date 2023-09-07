@@ -119,7 +119,6 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
   return (
     <>
       <div className={classes.header}>
-        <p>{`Showing ${processes.length} out of ${totalProcesses} processes`}</p>
         <SearchBox className={classes.search} />
         <div className="p-segmented-control">
           <div className="p-segmented-control__list">
@@ -149,7 +148,10 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
         paginate={handlePaginate}
         itemsPerPage={processesPerPage}
         setItemsPerPage={setProcessesPerPage}
-        className={classes.pagination}
+        description={
+          totalProcesses > 0 &&
+          `Showing ${processes.length} out of ${totalProcesses} processes`
+        }
       />
     </>
   );
