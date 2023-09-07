@@ -23,7 +23,7 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
 
   const toggleAll = () => {
     setSelected((prevState) =>
-      0 === prevState.length ? processes.map(({ pid }) => pid) : []
+      0 === prevState.length ? processes.map(({ pid }) => pid) : [],
     );
   };
 
@@ -36,11 +36,11 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
   const processes = getProcesses(
     machineId,
     processesPerPage,
-    (currentPage - 1) * processesPerPage
+    (currentPage - 1) * processesPerPage,
   );
 
   const totalProcesses = mockProcesses.filter(
-    ({ computer_id }) => computer_id === machineId
+    ({ computer_id }) => computer_id === machineId,
   ).length;
 
   const headers: MainTableHeader[] = [
@@ -86,7 +86,7 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
                     setSelected((prevState) =>
                       prevState.includes(pid)
                         ? prevState.filter((pid) => pid !== pid)
-                        : [...prevState, pid]
+                        : [...prevState, pid],
                     );
                   }}
                 />
@@ -108,7 +108,7 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
           { content: gid, "aria-label": "Group" },
         ],
       };
-    }
+    },
   );
 
   const handlePaginate = (page: number) => {
