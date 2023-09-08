@@ -30,21 +30,12 @@ const PageHeader: FC<PageHeaderProps> = ({
               <ol className="p-breadcrumbs__items u-no-margin--bottom">
                 {breadcrumbs.map((breadcrumb, index) =>
                   !breadcrumb.current ? (
-                    <li
-                      className={classNames(
-                        "p-breadcrumbs__item",
-                        classes.breadcrumbsItem,
-                      )}
-                      key={index}
-                    >
+                    <li className="p-breadcrumbs__item" key={index}>
                       <Link to={breadcrumb.path ?? ""}>{breadcrumb.label}</Link>
                     </li>
                   ) : (
                     <li
-                      className={classNames(
-                        "p-breadcrumbs__item",
-                        classes.breadcrumbsItem,
-                      )}
+                      className="p-breadcrumbs__item"
                       key={index}
                       aria-current="page"
                     >
