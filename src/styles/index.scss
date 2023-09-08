@@ -55,3 +55,11 @@
     margin-top: 0;
   }
 }
+
+.p-modal {
+  &__footer {
+    & > button {
+      margin-bottom: 0 !important;
+    }
+  }
+}

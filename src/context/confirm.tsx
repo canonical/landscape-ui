@@ -1,5 +1,5 @@
 import { createContext, FC, ReactNode, useState } from "react";
-import { Modal } from "@canonical/react-components";
+import { Button, Modal } from "@canonical/react-components";
 
 interface DialogProps {
   title: string;
@@ -63,9 +63,7 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
           title={title}
           buttonRow={
             <>
-              <button className="u-no-margin--bottom" onClick={handleClose}>
-                {cancelButtonLabel}
-              </button>
+              <Button onClick={handleClose}>{cancelButtonLabel}</Button>
               {buttons.length && <>{buttons.map((button) => button)}</>}
             </>
           }

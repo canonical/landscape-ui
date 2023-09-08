@@ -4,8 +4,8 @@
 .wrapper {
   margin-top: auto;
   position: sticky;
-  margin-bottom: -1.5rem;
-  padding-bottom: 1rem;
+  margin-bottom: -3 * $sp-unit;
+  padding-bottom: $spv--large;
   bottom: 0;
   background-color: $color-x-light;
   display: flex;
@@ -13,7 +13,7 @@
   align-items: center;
   column-gap: $sph--x-small;
   border-top: 1px solid $colors--light-theme--border-default;
-  padding-top: $spv--small;
+  padding-top: $spv--large;
 }
 
 .description {
