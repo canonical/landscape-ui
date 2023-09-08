@@ -312,7 +312,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
         </div>
       </div>
       <div className={classes.infoRow}>
-        <Row className="u-no-padding--left u-no-padding--right">
+        <Row className="u-no-padding--left u-no-padding--right u-no-max-width">
           {infoItems.map(({ label, value }) => (
             <Col size={3} key={label}>
               <InfoItem label={label} value={value} />
@@ -322,7 +322,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
       </div>
 
       <div className={classes.inputs}>
-        <Row className="u-no-padding--left u-no-padding--right">
+        <Row className="u-no-padding--left u-no-padding--right u-no-max-width">
           <Col size={6}>
             <Row>
               <Col size={4}>
