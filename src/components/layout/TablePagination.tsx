@@ -36,7 +36,7 @@ const TablePagination: FC<TablePaginationProps> = ({
       {description && (
         <p
           className={classNames(
-            "p-heading--5 u-no-margin--bottom",
+            "p-heading--5 u-no-margin--bottom u-no-padding--top",
             classes.description,
           )}
         >
