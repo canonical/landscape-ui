@@ -16,8 +16,6 @@ const HardwarePanel = lazy(() => import("./HardwarePanel"));
 
 const tabLabels = [
   "Info",
-  "Packages",
-  "Activities",
   "Processes",
   "Ubuntu Pro",
   "Users",
@@ -79,13 +77,11 @@ const SingleMachine: FC = () => {
           >
             <Suspense fallback={<LoadingState />}>
               {0 === currentTab && <InfoPanel machine={machine} />}
-              {1 === currentTab && <p>Packages</p>}
-              {2 === currentTab && <p>Activities</p>}
-              {3 === currentTab && <ProcessesPanel machineId={machine.id} />}
-              {4 === currentTab && <p>Ubuntu Pro</p>}
-              {5 === currentTab && <p>Users</p>}
-              {6 === currentTab && <p>Reports</p>}
-              {7 === currentTab && <HardwarePanel />}
+              {1 === currentTab && <ProcessesPanel machineId={machine.id} />}
+              {2 === currentTab && <p>Ubuntu Pro</p>}
+              {3 === currentTab && <p>Users</p>}
+              {4 === currentTab && <p>Reports</p>}
+              {5 === currentTab && <HardwarePanel />}
             </Suspense>
           </div>
         </PageContent>
