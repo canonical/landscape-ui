@@ -1,0 +1,59 @@
+@import "vanilla-framework/scss/base_typography";
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/base_forms-range";
+@import "vanilla-framework/scss/base_forms";
+
+.wrapper {
+  display: flex;
+  width: 100%;
+  position: relative;
+  align-items: flex-start;
+  background-color: $colors--light-theme--background-inputs;
+}
+
+.search {
+  flex-grow: 1;
+}
+
+.buttonContainer {
+  position: relative;
+  padding-bottom: calc($spv--medium + $input-vertical-padding);
+  padding-top: calc($spv--medium + $input-vertical-padding);
+  border-bottom: $input-border-thickness solid
+    $colors--light-theme--border-high-contrast;
+  width: calc($sp-x-large + 0.5 * $bar-thickness);
+  line-height: $spv--x-large;
+
+  .search:hover + & {
+    background-color: $colors--light-theme--background-hover;
+  }
+}
+
+.button {
+  display: block;
+  height: calc(
+    (2 * $spv-nudge + map-get($line-heights, default-text)) -
+      (2 * $bar-thickness)
+  ); // side padding + icon width - focus outline width * 2
+
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-left-color: $color-mid-light;
+  position: absolute;
+  background-color: $color-transparent;
+  margin: $bar-thickness 0;
+  right: 0;
+  top: 0;
+
+  &:hover {
+    background-color: inherit;
+    border-left-color: $color-mid-light;
+  }
+}
+
+.icon {
+  margin-left: -1 * $sp-unit;
+  margin-right: -1 * $sp-unit;
+  vertical-align: 0;
+}
