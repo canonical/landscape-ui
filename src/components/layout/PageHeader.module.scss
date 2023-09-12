@@ -1,4 +1,5 @@
 @import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
 
 .breadcrumbs {
   margin-top: $spv--large;
@@ -7,4 +8,11 @@
 .controls,
 .visualTitle {
   flex-shrink: 0;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  background-color: $color-x-light;
+  z-index: 10;
 }

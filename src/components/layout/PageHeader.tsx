@@ -11,6 +11,7 @@ interface PageHeaderProps {
   actions?: ReactNode[];
   className?: string;
   visualTitle?: string;
+  sticky?: boolean;
 }
 
 const PageHeader: FC<PageHeaderProps> = ({
@@ -20,10 +21,17 @@ const PageHeader: FC<PageHeaderProps> = ({
   className,
   actions,
   breadcrumbs,
+  sticky = false,
 }) => {
   return (
     <>
-      <div className={classNames("p-panel__header", className)}>
+      <div
+        className={classNames(
+          "p-panel__header",
+          { [classes.sticky]: sticky },
+          className,
+        )}
+      >
         {breadcrumbs && breadcrumbs.length > 0 && (
           <div className={classes.breadcrumbs}>
             <nav className="p-breadcrumbs" aria-label="Breadcrumbs">
