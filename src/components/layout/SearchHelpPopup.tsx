@@ -5,14 +5,14 @@ import {
   Column,
 } from "@canonical/react-components/node_modules/@types/react-table";
 import classes from "./SearchHelpPopup.module.scss";
-import { SEARCH_HELP_TERMS } from "./_data";
 
 interface SearchHelpPopupProps {
   open: boolean;
   onClose: () => void;
+  data: Record<string, unknown>[];
 }
 
-const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose }) => {
+const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose, data }) => {
   const columns: (Column<Record<string, unknown>> & { className?: string })[] =
     [
       {
@@ -45,7 +45,7 @@ const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose }) => {
         <ModularTable
           className="u-no-margin--bottom"
           columns={useMemo(() => columns, [])}
-          data={useMemo(() => SEARCH_HELP_TERMS, [])}
+          data={useMemo(() => data, [])}
         />
       </Modal>
     )
