@@ -1,4 +1,5 @@
 import { Process } from "../../../types/Process";
+import { ReactElement } from "react";
 
 // Mock data to populate the table
 export const mockProcesses: Process[] = [
@@ -37,7 +38,10 @@ export const mockProcesses: Process[] = [
   },
 ];
 
-export const SEARCH_HELP_TERMS: Record<string, unknown>[] = [
+export const MACHINE_SEARCH_HELP_TERMS: {
+  term: string;
+  description: string | ReactElement;
+}[] = [
   {
     term: "<keyword>",
     description: (
