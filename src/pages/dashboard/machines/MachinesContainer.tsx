@@ -7,7 +7,8 @@ import TablePagination from "../../../components/layout/TablePagination";
 import classes from "./MachinesContainer.module.scss";
 import { searchAndFilterData } from "../../../data/machines";
 import SearchAndFilterWithDescription from "../../../components/form/SearchAndFilterWithDescription";
-import SearchHelpPopup from "./SearchHelpPopup";
+import SearchHelpPopup from "../../../components/layout/SearchHelpPopup";
+import { MACHINE_SEARCH_HELP_TERMS } from "./_data";
 
 const TOTAL_MACHINES = 9;
 
@@ -84,6 +85,7 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
       </div>
       <SearchHelpPopup
         open={showSearchHelp}
+        data={MACHINE_SEARCH_HELP_TERMS}
         onClose={() => {
           setShowSearchHelp(false);
         }}
