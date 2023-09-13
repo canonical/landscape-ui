@@ -17,6 +17,11 @@ const MENU_ITEMS: MenuItem[] = [
     icon: "pods",
   },
   {
+    label: "Activities",
+    path: "/activities",
+    icon: "pods",
+  },
+  {
     label: "Repositories",
     path: "/repositories",
     icon: "fork",
