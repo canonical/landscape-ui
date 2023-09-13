@@ -1,0 +1,36 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/base_icon-definitions";
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/global_functions";
+
+.searchRow {
+  display: flex;
+  column-gap: $sph--large;
+  justify-content: flex-end;
+  align-items: center;
+
+  position: sticky;
+  top: 4.5rem;
+  background-color: $color-x-light;
+  z-index: 1;
+  padding-bottom: $spv--large;
+}
+
+.search {
+  min-width: 50%;
+}
+
+.descriptionColumn {
+  max-width: 40%;
+  width: 100%;
+}
+
+.description {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.iconErrorGreyRed {
+  @include vf-icon-error-grey($color-negative);
+}
