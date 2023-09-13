@@ -53,7 +53,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
   return (
     <div className={classes.item}>
       <div className={classes.titleGroup}>
-        <h2 className="p-heading--4 u-no-margin--bottom">
+        <h2 className="p-heading--4 u-no-margin--bottom u-no-padding--top">
           {distribution.name}
         </h2>
         <div>

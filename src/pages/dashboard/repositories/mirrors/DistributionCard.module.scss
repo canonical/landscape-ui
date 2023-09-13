@@ -1,16 +1,17 @@
 @import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
 
 .item {
   &:not(:last-child) {
-    margin-bottom: 2rem;
+    margin-bottom: $sp-x-large;
   }
 }
 
 .titleGroup {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  column-gap: $sph--large;
+  margin-bottom: $spv--large;
 
   button {
     margin-bottom: 0 !important;
