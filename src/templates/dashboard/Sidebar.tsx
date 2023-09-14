@@ -3,6 +3,7 @@ import classNames from "classnames";
 import Navigation from "./Navigation";
 import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";
+import classes from "./Sidebar.module.scss";
 
 const Sidebar: FC = () => {
   const [menuClosed, setMenuClosed] = useState(true);
@@ -23,9 +24,11 @@ const Sidebar: FC = () => {
       >
         <div className="l-navigation__drawer">
           <div className="p-panel is-dark">
-            <DesktopHeader closeMenu={() => setMenuClosed(true)} />
-            <div className="p-panel__content">
-              <Navigation />
+            <div className={classes.container}>
+              <DesktopHeader closeMenu={() => setMenuClosed(true)} />
+              <div className={classes.navigation}>
+                <Navigation />
+              </div>
             </div>
           </div>
         </div>

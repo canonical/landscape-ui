@@ -1,0 +1,14 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-left: $sph--small;
+  padding-right: $sph--small;
+  padding-bottom: $sph--small;
+}
+
+.navigation {
+  padding-top: $spv--small;
+}

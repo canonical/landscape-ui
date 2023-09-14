@@ -4,7 +4,22 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/global_functions";
 
+.topLevelItem {
+  color: $color-x-light;
+  font-weight: 500;
+}
+
+.link {
+  padding-left: 4.5 * $sp-unit !important;
+
+  &::before {
+    width: 1px !important;
+  }
+}
+
 .accordionButton {
+  padding-left: 4.5 * $sp-unit !important;
+
   &::before {
     content: none !important;
   }
@@ -26,4 +41,8 @@
       transform: rotate(-90deg);
     }
   }
+}
+
+.icon {
+  left: $sph--small !important;
 }

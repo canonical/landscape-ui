@@ -44,7 +44,7 @@ const Navigation: FC = () => {
   return (
     <div className="p-side-navigation--icons is-dark">
       <nav aria-label="Main">
-        <ul className="u-no-margin--left u-no-padding--left">
+        <ul className="u-no-margin--bottom u-no-margin--left u-no-padding--left">
           {MENU_ITEMS.map((item) => (
             <li key={item.path} className="p-side-navigation__item">
               {item.items && item.items.length > 0 ? (
@@ -65,14 +65,25 @@ const Navigation: FC = () => {
                     <i
                       className={classNames(
                         `p-icon--${item.icon} is-light p-side-navigation__icon`,
+                        classes.icon,
                       )}
                     />
                   )}
-                  <span>{item.label}</span>
+                  <span
+                    className={classNames(
+                      "p-side-navigation__label",
+                      classes.topLevelItem,
+                    )}
+                  >
+                    {item.label}
+                  </span>
                 </button>
               ) : (
                 <Link
-                  className={classNames("p-side-navigation__link")}
+                  className={classNames(
+                    "p-side-navigation__link",
+                    classes.link,
+                  )}
                   to={item.path}
                   aria-current={pathname === item.path ? "page" : undefined}
                 >
@@ -81,7 +92,14 @@ const Navigation: FC = () => {
                       className={`p-icon--${item.icon} is-light p-side-navigation__icon`}
                     />
                   )}
-                  <span className="p-side-navigation__label">{item.label}</span>
+                  <span
+                    className={classNames(
+                      "p-side-navigation__label",
+                      classes.topLevelItem,
+                    )}
+                  >
+                    {item.label}
+                  </span>
                 </Link>
               )}
               {item.items && item.items.length > 0 && (
@@ -90,9 +108,12 @@ const Navigation: FC = () => {
                   aria-expanded={expanded === item.path}
                 >
                   {item.items.map((subItem) => (
-                    <li key={subItem.path} className="p-side-navigation__item">
+                    <li key={subItem.path}>
                       <Link
-                        className={classNames("p-side-navigation__link")}
+                        className={classNames(
+                          "p-side-navigation__link",
+                          classes.link,
+                        )}
                         to={subItem.path}
                         aria-current={
                           pathname === subItem.path ? "page" : undefined
