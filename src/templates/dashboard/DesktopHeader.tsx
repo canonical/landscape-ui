@@ -1,9 +1,11 @@
 import { FC } from "react";
 import { Button } from "@canonical/react-components";
 import { Link } from "react-router-dom";
-import LogoIcon from "../../assets/images/logo-icon.svg";
-import Logo from "../../assets/images/logo-white.svg";
+import TagIcon from "../../assets/images/logo-icon-landscape.svg";
+import Logo from "../../assets/images/logo-canonical.svg";
 import { APP_TITLE } from "../../constants";
+import classes from "./DesktopHeader.module.scss";
+import classNames from "classnames";
 
 interface DesktopHeaderProps {
   closeMenu: () => void;
@@ -11,30 +13,40 @@ interface DesktopHeaderProps {
 
 const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
   return (
-    <div className="p-panel__header is-sticky">
-      <Link className="p-panel__logo" to="/">
+    <div
+      className={classNames(
+        "p-panel__header is-sticky u-no-padding--left u-no-padding--right",
+        classes.container,
+      )}
+    >
+      <Link className={classes.link} to="/">
+        <div className={classes.tag}>
+          <img src={TagIcon} alt={APP_TITLE} width={16} height={16} />
+        </div>
         <img
-          className="p-panel__logo-icon"
-          src={LogoIcon}
-          alt={APP_TITLE}
-          width={24}
-          height={24}
-        />
-        <img
-          className="p-panel__logo-name is-fading-when-collapsed"
+          className={classNames("is-fading-when-collapsed", classes.logoImg)}
           src={Logo}
           alt={APP_TITLE}
-          height={16}
+          width={39}
+          height={7}
         />
+        <span
+          className={classNames(
+            "is-fading-when-collapsed p-heading--4",
+            classes.logoTitle,
+          )}
+        >
+          Landscape
+        </span>
       </Link>
-      <div className="p-panel__controls u-hide--large">
+      <div className="u-hide--large">
         <Button
           className="p-button--base is-dark u-no-margin u-hide--medium"
           hasIcon
           onClick={closeMenu}
           aria-label="Close navigation"
         >
-          <i className="is-light p-icon--close" />
+          <i className="is-light p-icon--close-sidebar" />
         </Button>
       </div>
     </div>
