@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  border-top: 1px solid $colors--dark-theme--border-default;
+  display: flex;
+  flex-direction: column;
+  padding-top: $spv--small;
+}
+
+.button {
+  justify-content: flex-start !important;
+  padding-bottom: 0.7 * $sp-unit !important;
+  padding-left: $sph--small !important;
+  padding-top: 0.7 * $sp-unit !important;
+}

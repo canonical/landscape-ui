@@ -4,6 +4,7 @@ import Navigation from "./Navigation";
 import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";
 import classes from "./Sidebar.module.scss";
+import UserInfo from "./UserInfo";
 
 const Sidebar: FC = () => {
   const [menuClosed, setMenuClosed] = useState(true);
@@ -28,6 +29,9 @@ const Sidebar: FC = () => {
               <DesktopHeader closeMenu={() => setMenuClosed(true)} />
               <div className={classes.navigation}>
                 <Navigation />
+              </div>
+              <div className={classes.footer}>
+                <UserInfo />
               </div>
             </div>
           </div>
