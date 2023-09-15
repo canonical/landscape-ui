@@ -9,6 +9,7 @@ import useDebug from "../../../../hooks/useDebug";
 import { Distribution } from "../../../../types/Distribution";
 import useConfirm from "../../../../hooks/useConfirm";
 import EmptyDistribution from "./EmptyDistribution";
+import classNames from "classnames";
 
 interface DistributionCardProps {
   distribution: Distribution;
@@ -53,7 +54,12 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
   return (
     <div className={classes.item}>
       <div className={classes.titleGroup}>
-        <h2 className="p-heading--4 u-no-margin--bottom u-no-padding--top">
+        <h2
+          className={classNames(
+            "p-heading--4 u-no-margin--bottom u-no-padding--top",
+            classes.title,
+          )}
+        >
           {distribution.name}
         </h2>
         <div>

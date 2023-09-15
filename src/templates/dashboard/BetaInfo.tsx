@@ -8,7 +8,7 @@ const BetaInfo: FC = () => {
       <p className="p-muted-heading u-no-padding--top u-no-margin--bottom">
         Beta version
       </p>
-      <Link to={"/"} className={classes.link}>
+      <Link to={"https://discourse.canonical.com/"} className={classes.link}>
         <span>Feedback</span>
         <i
           className={`p-icon--external-link is-light p-side-navigation__icon`}

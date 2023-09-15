@@ -6,6 +6,7 @@ import MobileHeader from "./MobileHeader";
 import classes from "./Sidebar.module.scss";
 import UserInfo from "./UserInfo";
 import BetaInfo from "./BetaInfo";
+import betaClasses from "./BetaInfo.module.scss";
 
 const Sidebar: FC = () => {
   const [menuClosed, setMenuClosed] = useState(true);
@@ -20,9 +21,11 @@ const Sidebar: FC = () => {
         </div>
       </div>
       <header
-        className={classNames("l-navigation", {
-          "is-collapsed": menuClosed,
-        })}
+        className={classNames(
+          "l-navigation",
+          { "is-collapsed": menuClosed },
+          betaClasses.navigation,
+        )}
       >
         <div className="l-navigation__drawer">
           <div className="p-panel is-dark">

@@ -13,16 +13,8 @@
   column-gap: $sph--large;
   margin-bottom: $spv--large;
 
+  .title,
   button {
     margin-bottom: 0 !important;
   }
-}
-
-.title {
-  font-size: 1.75rem;
-  font-weight: 400;
-  line-height: 1;
-  color: $color-x-dark;
-  margin-bottom: 0;
-  padding-top: 0;
 }

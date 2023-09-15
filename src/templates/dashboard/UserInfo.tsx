@@ -14,17 +14,9 @@ const UserInfo: FC = () => {
         classes.container,
       )}
     >
-      <Button
-        appearance="base"
-        className={classNames(
-          "p-side-navigation__link is-dark u-no-margin--bottom u-no-margin--right",
-          classes.button,
-        )}
-      >
-        <span className="p-side-navigation__label">
-          {user?.email ?? "user_email"}
-        </span>
-      </Button>
+      <span className={classNames("p-side-navigation__label", classes.label)}>
+        {user?.email ?? "user_email"}
+      </span>
       <Button
         appearance="base"
         className={classNames(
