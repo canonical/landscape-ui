@@ -1,0 +1,25 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  background-color: $colors--dark-theme--background-hover;
+  margin-bottom: $spv--large;
+  padding: $sp-medium;
+}
+
+.link {
+  &,
+  &:visited {
+    color: $colors--dark-theme--text-inactive;
+  }
+
+  &:visited,
+  &:focus,
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:hover {
+    color: $colors--dark-theme--text-default !important;
+  }
+}

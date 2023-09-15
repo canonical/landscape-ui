@@ -5,6 +5,7 @@ import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";
 import classes from "./Sidebar.module.scss";
 import UserInfo from "./UserInfo";
+import BetaInfo from "./BetaInfo";
 
 const Sidebar: FC = () => {
   const [menuClosed, setMenuClosed] = useState(true);
@@ -31,6 +32,7 @@ const Sidebar: FC = () => {
                 <Navigation />
               </div>
               <div className={classes.footer}>
+                <BetaInfo />
                 <UserInfo />
               </div>
             </div>
