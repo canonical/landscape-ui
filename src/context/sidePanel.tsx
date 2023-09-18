@@ -9,6 +9,7 @@ import classNames from "classnames";
 import { useLocation } from "react-router-dom";
 import AppNotification from "../components/layout/AppNotification";
 import useNotify from "../hooks/useNotify";
+import classes from "./SidePanelProvider.module.scss";
 
 interface SidePanelContextProps {
   setSidePanelOpen: (newState: boolean) => void;
@@ -72,9 +73,11 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     >
       {children}
       <aside
-        className={classNames("l-aside", {
-          "is-collapsed": !open,
-        })}
+        className={classNames(
+          "l-aside",
+          { "is-collapsed": !open },
+          classes.container,
+        )}
       >
         <div className="p-panel__header">
           <h4 className="p-panel__title">{title}</h4>
@@ -88,8 +91,8 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
             </button>
           </div>
         </div>
-        <div className="p-panel__content">
-          <div className="p-panel__inner">
+        <div className={classNames("p-panel__content", classes.outerDiv)}>
+          <div className={classNames("p-panel__inner", classes.innerDiv)}>
             <AppNotification notify={notify} />
             {body}
           </div>

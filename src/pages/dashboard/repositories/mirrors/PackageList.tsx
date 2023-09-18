@@ -8,7 +8,6 @@ import {
   Col,
   Input,
   MainTable,
-  Pagination,
   Row,
   Spinner,
 } from "@canonical/react-components";
@@ -18,6 +17,7 @@ import useConfirm from "../../../../hooks/useConfirm";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import EditPocketForm from "./EditPocketForm";
 import classes from "./PackageList.module.scss";
+import TablePagination from "../../../../components/layout/TablePagination";
 
 interface FormattedPackage {
   packageName: string;
@@ -25,8 +25,6 @@ interface FormattedPackage {
   difference?: "update" | "delete" | "add";
   newVersion?: string;
 }
-
-const paginationLimit = 15;
 
 interface PackageListProps {
   pocket: Pocket;
@@ -40,6 +38,7 @@ const PackageList: FC<PackageListProps> = ({
   seriesName,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const [selectedPackages, setSelectedPackages] = useState<number[]>([]);
   const [checked, setChecked] = useState(false);
   const [indeterminate, setIndeterminate] = useState(false);
@@ -181,8 +180,8 @@ const PackageList: FC<PackageListProps> = ({
 
   const packagesToShow = sortedPackages.filter(
     (_, index) =>
-      index >= (currentPage - 1) * paginationLimit &&
-      index < currentPage * paginationLimit,
+      index >= (currentPage - 1) * itemsPerPage &&
+      index < currentPage * itemsPerPage,
   );
 
   const rows = packagesToShow.map(
@@ -474,16 +473,19 @@ const PackageList: FC<PackageListProps> = ({
         }
         className={classes.content}
       />
-      <Pagination
+      <TablePagination
         currentPage={currentPage}
-        itemsPerPage={paginationLimit}
+        totalPages={Math.ceil(pocketPackages.length / itemsPerPage)}
         paginate={(page) => {
           setSelectedPackages([]);
           setChecked(false);
           setIndeterminate(false);
           setCurrentPage(page);
         }}
-        totalItems={pocketPackages.length}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={(itemsNumber) => {
+          setItemsPerPage(itemsNumber);
+        }}
       />
     </>
   );

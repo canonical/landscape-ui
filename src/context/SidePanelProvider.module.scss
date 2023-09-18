@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.outerDiv {
+  flex-grow: 1;
+  overflow: visible !important;
+  display: flex;
+}
+
+.innerDiv {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}

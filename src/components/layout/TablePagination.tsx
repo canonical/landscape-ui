@@ -144,12 +144,14 @@ const TablePagination: FC<TablePaginationProps> = ({
                 )}
               </div>
             </div>
-            <strong className={classes.noWrap}>of {totalPages}</strong>
+            <strong className={classes.noWrap}>
+              of {Math.max(totalPages, 1)}
+            </strong>
             <Button
               aria-label={Label.NextPage}
               appearance="link"
               className="p-pagination__link--next u-no-margin--bottom"
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || 0 === totalPages}
               onClick={() => {
                 setPageNumber((page) => Number(page) + 1);
                 paginate(currentPage + 1);
