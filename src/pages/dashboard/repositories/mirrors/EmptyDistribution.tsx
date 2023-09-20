@@ -1,9 +1,9 @@
 import { FC } from "react";
 import { Distribution } from "../../../../types/Distribution";
 import { Button } from "@canonical/react-components";
-import NewSeriesForm from "./NewSeriesForm";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import classes from "./EmptyDistribution.module.scss";
+import NewSeriesForm from "./NewSeriesForm";
 
 interface EmptyDistributionProps {
   distribution: Distribution;
@@ -33,7 +33,7 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
             setSidePanelOpen(true);
             setSidePanelContent(
               `Create mirror for ${distribution.name}`,
-              <NewSeriesForm distribution={distribution} />,
+              <NewSeriesForm distributionData={distribution} />,
             );
           }}
           aria-label={`Create mirror for ${distribution.name}`}

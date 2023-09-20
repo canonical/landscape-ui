@@ -1,6 +1,7 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Button,
+  CheckboxInput,
   Col,
   Form,
   Input,
@@ -15,7 +16,6 @@ import {
   ARCHITECTURE_OPTIONS,
   COMPONENT_OPTIONS,
   POCKET_OPTIONS,
-  PRE_DEFIED_SERIES_OPTIONS,
   PRE_SELECTED_ARCHITECTURES,
   PRE_SELECTED_COMPONENTS,
   PRE_SELECTED_POCKETS,
@@ -26,6 +26,7 @@ import useGPGKeys from "../../../../hooks/useGPGKeys";
 import { Distribution } from "../../../../types/Distribution";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 import CheckboxGroup from "../../../../components/form/CheckboxGroup";
+import { SelectOption } from "../../../../types/SelectOption";
 
 interface FormProps extends CreateSeriesParams {
   type: "ubuntu" | "third-party";
@@ -36,19 +37,31 @@ interface FormProps extends CreateSeriesParams {
 }
 
 interface NewSeriesFormProps {
-  distribution: Distribution;
+  distributionData: Distribution | Distribution[];
 }
 
-const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
-  const { closeSidePanel } = useSidePanel();
+const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
+  const [mirrorUri, setMirrorUri] = useState(DEFAULT_MIRROR_URI);
+  const [seriesOptions, setSeriesOptions] = useState<SelectOption[]>([]);
+
   const debug = useDebug();
+  const { closeSidePanel } = useSidePanel();
+
   const { getGPGKeysQuery } = useGPGKeys();
-  const { createSeriesQuery } = useSeries();
+  const { createSeriesQuery, getRepoInfo } = useSeries();
 
   const { data: gpgKeysData } = getGPGKeysQuery();
-  const { mutateAsync: createSeries, isLoading } = createSeriesQuery;
+  const { mutateAsync: createSeries, isLoading: isCreating } =
+    createSeriesQuery;
 
   const gpgKeys = gpgKeysData?.data ?? [];
+
+  const distributionOptions: SelectOption[] = Array.isArray(distributionData)
+    ? distributionData.map(({ name }) => ({
+        label: name,
+        value: name,
+      }))
+    : [];
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -65,18 +78,34 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
       hasPockets: false,
     },
     validationSchema: Yup.object().shape({
-      distribution: Yup.string().required("This field is required"),
+      distribution: Yup.string().required("This field is required."),
       type: Yup.string<FormProps["type"]>().required("This field is required."),
       name: Yup.string()
-        .required("This field is required")
+        .required("This field is required.")
         .test({
           test: testLowercaseAlphaNumeric.test,
           message: testLowercaseAlphaNumeric.message,
         })
         .test({
-          params: { distribution },
-          test: (value) => {
-            return !distribution.series.map(({ name }) => name).includes(value);
+          test: (_, context) => {
+            return !!context.parent.distribution;
+          },
+          message: "First select the distribution.",
+        })
+        .test({
+          params: { distributionData },
+          test: (value, context) => {
+            if (!context.parent.distribution) {
+              return true;
+            }
+
+            const seriesNames = Array.isArray(distributionData)
+              ? distributionData
+                  .filter(({ name }) => name === context.parent.distribution)[0]
+                  .series.map(({ name }) => name)
+              : distributionData.series.map(({ name }) => name);
+
+            return !seriesNames.includes(value);
           },
           message: "It must be unique within series within the distribution.",
         }),
@@ -96,16 +125,17 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         .of(Yup.string())
         .when("hasPockets", (values, schema) =>
           values[0]
-            ? schema.min(1, "Please choose at least one component")
+            ? schema.min(1, "Please choose at least one component.")
             : schema,
         ),
       architectures: Yup.array()
         .of(Yup.string())
         .when("hasPockets", (values, schema) =>
           values[0]
-            ? schema.min(1, "Please choose at least one architecture")
+            ? schema.min(1, "Please choose at least one architecture.")
             : schema,
         ),
+      include_udeb: Yup.boolean().required(),
     }),
     onSubmit: async (values) => {
       try {
@@ -123,15 +153,19 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         });
 
         closeSidePanel();
-      } catch (error: any) {
+      } catch (error) {
         debug(error);
       }
     },
   });
 
   useEffect(() => {
-    formik.setFieldValue("distribution", distribution.name);
-  }, []);
+    if (!distributionData || Array.isArray(distributionData)) {
+      return;
+    }
+
+    formik.setFieldValue("distribution", distributionData.name);
+  }, [distributionData]);
 
   useEffect(() => {
     if ("ubuntu" === formik.values.type) {
@@ -146,7 +180,6 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         "architectures",
         PRE_SELECTED_ARCHITECTURES.thirdParty,
       );
-      formik.setFieldValue("mirror_uri", "");
     }
   }, [formik.values.type]);
 
@@ -168,6 +201,41 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
     formik.setFieldValue("hasPockets", true);
   }, [formik.values.pockets.length, formik.values.pockets[0]]);
 
+  const {
+    data: getRepoInfoResult,
+    isLoading: getRepoInfoLoading,
+    error: getRepoInfoError,
+  } = getRepoInfo(
+    {
+      mirror_uri: mirrorUri,
+    },
+    {
+      enabled: !!mirrorUri,
+    },
+  );
+
+  if (getRepoInfoError) {
+    debug(getRepoInfoError);
+  }
+
+  const repoInfo = getRepoInfoResult?.data;
+
+  useEffect(() => {
+    if (getRepoInfoLoading || !repoInfo) {
+      setSeriesOptions([]);
+      return;
+    }
+
+    formik.setFieldValue("type", repoInfo.ubuntu ? "ubuntu" : "third-party");
+
+    setSeriesOptions(
+      repoInfo.repos.map(({ description, repo }) => ({
+        label: repoInfo.ubuntu ? description : repo,
+        value: repo,
+      })),
+    );
+  }, [getRepoInfoLoading, repoInfo]);
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Select
@@ -185,57 +253,58 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
         type="text"
         label="Mirror URI"
         required={formik.values.hasPockets}
-        error={
-          formik.touched.mirror_uri && formik.errors.mirror_uri
-            ? formik.errors.mirror_uri
-            : undefined
-        }
         help="Absolute URL or file path"
         {...formik.getFieldProps("mirror_uri")}
+        onBlur={(event) => {
+          setMirrorUri(event.target.value);
+        }}
+        error={formik.touched.mirror_uri && formik.errors.mirror_uri}
       />
 
+      {Array.isArray(distributionData) && (
+        <Select
+          label="Distribution"
+          required
+          options={[
+            { label: "Select distribution", value: "" },
+            ...distributionOptions,
+          ]}
+          {...formik.getFieldProps("distribution")}
+          error={formik.touched.distribution && formik.errors.distribution}
+        />
+      )}
+
       <Row className="u-no-padding">
-        <Col size={6}>
+        <Col size={6} medium={3} small={2}>
           <Select
-            label="Source"
-            options={[
-              { label: "Select source", value: "" },
-              ...PRE_DEFIED_SERIES_OPTIONS,
-            ]}
-            error={
-              formik.touched.mirror_series && formik.errors.mirror_series
-                ? formik.errors.mirror_series
-                : undefined
-            }
+            label="Mirror series"
+            options={[{ label: "Select series", value: "" }, ...seriesOptions]}
             {...formik.getFieldProps("mirror_series")}
+            error={formik.touched.mirror_series && formik.errors.mirror_series}
           />
         </Col>
-
-        <Col size={6}>
+        <Col size={6} medium={3} small={2}>
           <Input
             type="text"
-            label="Mirror name"
-            error={
-              formik.touched.name && formik.errors.name
-                ? formik.errors.name
-                : undefined
-            }
+            label="Series name"
+            required
             {...formik.getFieldProps("name")}
+            error={formik.touched.name && formik.errors.name}
           />
         </Col>
       </Row>
 
       <Row className="u-no-padding">
-        <Col size={6}>
+        <Col size={6} medium={3} small={2}>
           <Select
             label="Mirror GPG key"
             options={[
               { label: "Select mirror GPG key", value: "" },
               ...gpgKeys
                 .filter(({ has_secret }) => !has_secret)
-                .map((item) => ({
-                  label: item.name,
-                  value: item.name,
+                .map(({ name }) => ({
+                  label: name,
+                  value: name,
                 })),
             ]}
             {...formik.getFieldProps("mirror_gpg_key")}
@@ -246,7 +315,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
           />
         </Col>
 
-        <Col size={6}>
+        <Col size={6} medium={3} small={2}>
           <Select
             label="GPG key"
             required={formik.values.hasPockets}
@@ -254,17 +323,13 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
               { label: "Select GPG key", value: "" },
               ...gpgKeys
                 .filter(({ has_secret }) => has_secret)
-                .map((item) => ({
-                  label: item.name,
-                  value: item.name,
+                .map(({ name }) => ({
+                  label: name,
+                  value: name,
                 })),
             ]}
-            error={
-              formik.touched.gpg_key && formik.errors.gpg_key
-                ? formik.errors.gpg_key
-                : undefined
-            }
             {...formik.getFieldProps("gpg_key")}
+            error={formik.touched.gpg_key && formik.errors.gpg_key}
           />
         </Col>
       </Row>
@@ -309,6 +374,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
           <Input
             type="text"
             label="Pockets"
+            placeholder="E.g. releases, security, etc."
             {...formik.getFieldProps("pockets")}
             value={formik.values.pockets.join(",")}
             onChange={(event) => {
@@ -318,11 +384,13 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
               );
             }}
             error={formik.touched.pockets && formik.errors.pockets}
+            help="List the pocket names separated by commas"
           />
           <Input
             type="text"
             label="Components"
             required={formik.values.hasPockets}
+            placeholder="E.g. main, universe, etc."
             {...formik.getFieldProps("components")}
             value={formik.values.components.join(",")}
             onChange={(event) => {
@@ -332,11 +400,13 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
               );
             }}
             error={formik.touched.components && formik.errors.components}
+            help="List the component names separated by commas"
           />
           <Input
             type="text"
             label="Architectures"
             required={formik.values.hasPockets}
+            placeholder="E.g. amd64, riscv, etc."
             {...formik.getFieldProps("architectures")}
             value={formik.values.architectures.join(",")}
             onChange={(event) => {
@@ -346,12 +416,18 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distribution }) => {
               );
             }}
             error={formik.touched.architectures && formik.errors.architectures}
+            help="List the architectures separated by commas"
           />
         </>
       )}
 
+      <CheckboxInput
+        label="Include .udeb packages (debian-installer)"
+        {...formik.getFieldProps("include_udeb")}
+      />
+
       <div className="form-buttons">
-        <Button type="submit" appearance="positive" disabled={isLoading}>
+        <Button type="submit" appearance="positive" disabled={isCreating}>
           Create mirror
         </Button>
         <Button type="button" onClick={closeSidePanel}>

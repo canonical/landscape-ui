@@ -393,6 +393,8 @@ const PackageList: FC<PackageListProps> = ({
       <Row className="u-no-padding--left u-no-padding--right ">
         <Col
           size={"upload" === pocket.mode ? 8 : 6}
+          medium={"upload" === pocket.mode ? 4 : 3}
+          small={"upload" === pocket.mode ? 3 : 2}
           className={classNames("is-bordered")}
         >
           <div className="p-segmented-control">
@@ -449,7 +451,7 @@ const PackageList: FC<PackageListProps> = ({
           </div>
         </Col>
         {"upload" !== pocket.mode && (
-          <Col size={6}>
+          <Col size={6} medium={3} small={2}>
             <Input
               type="text"
               placeholder="Search"

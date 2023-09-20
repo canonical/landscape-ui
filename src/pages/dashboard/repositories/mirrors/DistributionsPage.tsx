@@ -9,7 +9,7 @@ import useSidePanel from "../../../../hooks/useSidePanel";
 import useDistributions from "../../../../hooks/useDistributions";
 import DistributionCard from "./DistributionCard";
 import NewDistributionForm from "./NewDistributionForm";
-import NewMirrorForm from "./NewMirrorForm";
+import NewSeriesForm from "./NewSeriesForm";
 import useDebug from "../../../../hooks/useDebug";
 
 const DistributionsPage: FC = () => {
@@ -50,7 +50,7 @@ const DistributionsPage: FC = () => {
               setSidePanelOpen(true);
               setSidePanelContent(
                 "Create new mirror",
-                <NewMirrorForm distributions={distributions} />,
+                <NewSeriesForm distributionData={distributions} />,
               );
             }}
             type="button"

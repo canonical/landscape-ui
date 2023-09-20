@@ -2,7 +2,6 @@ import { FC } from "react";
 import SeriesCard from "./SeriesCard";
 import { Button, Spinner } from "@canonical/react-components";
 import useSidePanel from "../../../../hooks/useSidePanel";
-import NewSeriesForm from "./NewSeriesForm";
 import useDistributions from "../../../../hooks/useDistributions";
 import classes from "./DistributionCard.module.scss";
 import useDebug from "../../../../hooks/useDebug";
@@ -10,6 +9,7 @@ import { Distribution } from "../../../../types/Distribution";
 import useConfirm from "../../../../hooks/useConfirm";
 import EmptyDistribution from "./EmptyDistribution";
 import classNames from "classnames";
+import NewSeriesForm from "./NewSeriesForm";
 
 interface DistributionCardProps {
   distribution: Distribution;
@@ -69,7 +69,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
               setSidePanelOpen(true);
               setSidePanelContent(
                 `Add series to ${distribution.name}`,
-                <NewSeriesForm distribution={distribution} />,
+                <NewSeriesForm distributionData={distribution} />,
               );
             }}
             aria-label={`Add series to ${distribution.name}`}

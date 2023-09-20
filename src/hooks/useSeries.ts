@@ -2,12 +2,14 @@ import useFetch from "./useFetch";
 import {
   useMutation,
   UseMutationResult,
+  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import { Series } from "../types/Series";
 import useDebug from "./useDebug";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiError } from "../types/ApiError";
+import { QueryFnType } from "../types/QueryFnType";
 
 export interface CreateSeriesParams {
   name: string;
@@ -33,6 +35,27 @@ export interface RemoveSeriesParams {
   distribution: string;
 }
 
+interface Repo {
+  architectures: string;
+  codename: string;
+  description: string;
+  label: string;
+  origin: string;
+  repo: string;
+  url: string;
+  version: string;
+}
+
+interface RepoInfo {
+  flat: boolean;
+  repos: Repo[];
+  ubuntu: boolean;
+}
+
+interface GetRepoInfoParams {
+  mirror_uri: string;
+}
+
 interface UseSeriesResult {
   createSeriesQuery: UseMutationResult<
     AxiosResponse<Series>,
@@ -49,6 +72,7 @@ interface UseSeriesResult {
     AxiosError<ApiError>,
     RemoveSeriesParams
   >;
+  getRepoInfo: QueryFnType<AxiosResponse<RepoInfo>, GetRepoInfoParams>;
 }
 
 export default function useSeries(): UseSeriesResult {
@@ -92,5 +116,23 @@ export default function useSeries(): UseSeriesResult {
     },
   });
 
-  return { createSeriesQuery, removeSeriesQuery, deriveSeriesQuery };
+  const getRepoInfo: QueryFnType<AxiosResponse<RepoInfo>, GetRepoInfoParams> = (
+    queryParams,
+    config = {},
+  ) =>
+    useQuery<AxiosResponse<RepoInfo>, AxiosError<ApiError>>({
+      queryKey: ["repoInfo", { queryParams }],
+      queryFn: () =>
+        authFetch!.get("GetRepoInfo", {
+          params: queryParams,
+        }),
+      ...config,
+    });
+
+  return {
+    createSeriesQuery,
+    removeSeriesQuery,
+    deriveSeriesQuery,
+    getRepoInfo,
+  };
 }
