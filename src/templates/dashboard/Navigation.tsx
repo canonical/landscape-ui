@@ -89,7 +89,10 @@ const Navigation: FC = () => {
                 >
                   {item.icon && (
                     <i
-                      className={`p-icon--${item.icon} is-light p-side-navigation__icon`}
+                      className={classNames(
+                        `p-icon--${item.icon} is-light p-side-navigation__icon`,
+                        classes.icon,
+                      )}
                     />
                   )}
                   <span
@@ -121,7 +124,10 @@ const Navigation: FC = () => {
                       >
                         {subItem.icon && (
                           <i
-                            className={`p-icon--${subItem.icon} is-light p-side-navigation__icon`}
+                            className={classNames(
+                              `p-icon--${subItem.icon} is-light p-side-navigation__icon`,
+                              classes.icon,
+                            )}
                           />
                         )}
                         <span className="p-side-navigation__label">
