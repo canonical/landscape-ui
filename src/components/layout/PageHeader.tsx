@@ -3,6 +3,7 @@ import classes from "./PageHeader.module.scss";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 import { Breadcrumb } from "../../types/Breadcrumb";
+import { useMediaQuery } from "usehooks-ts";
 
 interface PageHeaderProps {
   title: string;
@@ -23,6 +24,8 @@ const PageHeader: FC<PageHeaderProps> = ({
   breadcrumbs,
   sticky = false,
 }) => {
+  const isSmall = useMediaQuery("(min-width: 620px)");
+
   return (
     <>
       <div
@@ -58,12 +61,22 @@ const PageHeader: FC<PageHeaderProps> = ({
         {hideTitle ? (
           <>
             <h1 className="u-off-screen">{title}</h1>
-            <div className={classNames("p-panel__title", classes.visualTitle)}>
+            <div
+              className={classNames("p-panel__title", classes.visualTitle, {
+                "u-no-padding--bottom": !isSmall,
+              })}
+            >
               {visualTitle}
             </div>
           </>
         ) : (
-          <h1 className="p-panel__title">{title}</h1>
+          <h1
+            className={classNames("p-panel__title", {
+              "u-no-padding--bottom": !isSmall,
+            })}
+          >
+            {title}
+          </h1>
         )}
         {actions && actions.length > 0 && (
           <div className={classNames("p-panel__controls", classes.controls)}>

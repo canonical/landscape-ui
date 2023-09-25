@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import PageHeader from "../../../../components/layout/PageHeader";
 import PageMain from "../../../../components/layout/PageMain";
 import PageContent from "../../../../components/layout/PageContent";
@@ -11,8 +11,14 @@ import DistributionCard from "./DistributionCard";
 import NewDistributionForm from "./NewDistributionForm";
 import NewSeriesForm from "./NewSeriesForm";
 import useDebug from "../../../../hooks/useDebug";
+import { useMediaQuery } from "usehooks-ts";
+import classNames from "classnames";
 
 const DistributionsPage: FC = () => {
+  const [openDropdown, setOpenDropdown] = useState(false);
+
+  const isSmall = useMediaQuery("(min-width: 620px)");
+
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { getDistributionsQuery } = useDistributions();
   const { data, isLoading, error } = getDistributionsQuery();
@@ -24,42 +30,80 @@ const DistributionsPage: FC = () => {
 
   const distributions = data?.data ?? [];
 
+  const AddDistributionButton = ({ className }: { className?: string }) => (
+    <Button
+      onClick={() => {
+        setSidePanelOpen(true);
+        setSidePanelContent("Create distribution", <NewDistributionForm />);
+      }}
+      onMouseDown={(event) => {
+        event.preventDefault();
+      }}
+      type="button"
+      className={classNames("u-no-margin--right", className)}
+    >
+      Create distribution
+    </Button>
+  );
+
+  const CreateMirrorButton = ({ className }: { className?: string }) => (
+    <Button
+      appearance="positive"
+      onClick={() => {
+        setSidePanelOpen(true);
+        setSidePanelContent(
+          "Create new mirror",
+          <NewSeriesForm distributionData={distributions} />,
+        );
+      }}
+      onMouseDown={(event) => {
+        event.preventDefault();
+      }}
+      type="button"
+      className={classNames("u-no-margin--right", className)}
+      disabled={0 === distributions.length}
+    >
+      Create mirror
+    </Button>
+  );
+
   return (
     <PageMain>
       <PageHeader
         title="Repository Mirrors"
-        actions={[
-          <Button
-            key="create-distribution-button"
-            onClick={() => {
-              setSidePanelOpen(true);
-              setSidePanelContent(
-                "Create distribution",
-                <NewDistributionForm />,
-              );
-            }}
-            type="button"
-            className="u-no-margin--right"
-          >
-            Create distribution
-          </Button>,
-          <Button
-            key="new-mirror-button"
-            appearance="positive"
-            onClick={() => {
-              setSidePanelOpen(true);
-              setSidePanelContent(
-                "Create new mirror",
-                <NewSeriesForm distributionData={distributions} />,
-              );
-            }}
-            type="button"
-            className="u-no-margin--right"
-            disabled={0 === distributions.length}
-          >
-            Create mirror
-          </Button>,
-        ]}
+        actions={
+          isSmall
+            ? [
+                <AddDistributionButton key="create-distribution-button" />,
+                <CreateMirrorButton key="create-mirror-button" />,
+              ]
+            : [
+                <span className="p-contextual-menu" key="menu">
+                  <Button
+                    className="p-contextual-menu__toggle u-no-margin--bottom"
+                    aria-controls="menu"
+                    aria-expanded={openDropdown}
+                    aria-haspopup="true"
+                    onClick={() => {
+                      setOpenDropdown((prevState) => !prevState);
+                    }}
+                    onBlur={() => {
+                      setOpenDropdown(false);
+                    }}
+                  >
+                    Actions
+                  </Button>
+                  <span
+                    className="p-contextual-menu__dropdown"
+                    id="menu"
+                    aria-hidden={!openDropdown}
+                  >
+                    <AddDistributionButton className="p-contextual-menu__link" />
+                    <CreateMirrorButton className="p-contextual-menu__link" />
+                  </span>
+                </span>,
+              ]
+        }
       />
       <PageContent>
         {isLoading && <LoadingState />}

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import SeriesCard from "./SeriesCard";
 import { Button, Spinner } from "@canonical/react-components";
 import useSidePanel from "../../../../hooks/useSidePanel";
@@ -10,12 +10,17 @@ import useConfirm from "../../../../hooks/useConfirm";
 import EmptyDistribution from "./EmptyDistribution";
 import classNames from "classnames";
 import NewSeriesForm from "./NewSeriesForm";
+import { useMediaQuery } from "usehooks-ts";
 
 interface DistributionCardProps {
   distribution: Distribution;
 }
 
 const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
+  const [openDropdown, setOpenDropdown] = useState(false);
+
+  const isSmall = useMediaQuery("(min-width: 620px)");
+
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { removeDistributionQuery } = useDistributions();
@@ -51,6 +56,39 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
     });
   };
 
+  const AddSeriesButton = ({ className }: { className?: string }) => (
+    <Button
+      onClick={() => {
+        setSidePanelOpen(true);
+        setSidePanelContent(
+          `Add series to ${distribution.name}`,
+          <NewSeriesForm distributionData={distribution} />,
+        );
+      }}
+      onMouseDown={(event) => {
+        event.preventDefault();
+      }}
+      aria-label={`Add series to ${distribution.name}`}
+      className={className ?? "is-small"}
+    >
+      Add series
+    </Button>
+  );
+
+  const RemoveDistributionButton = ({ className }: { className?: string }) => (
+    <Button
+      onClick={handleRemove}
+      onMouseDown={(event) => {
+        event.preventDefault();
+      }}
+      aria-label={`Remove ${distribution.name} distribution`}
+      disabled={isRemoving}
+      className={className ?? "is-small"}
+    >
+      Remove distribution
+    </Button>
+  );
+
   return (
     <div className={classes.item}>
       <div className={classes.titleGroup}>
@@ -62,29 +100,37 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
         >
           {distribution.name}
         </h2>
-        <div>
-          <Button
-            small
-            onClick={() => {
-              setSidePanelOpen(true);
-              setSidePanelContent(
-                `Add series to ${distribution.name}`,
-                <NewSeriesForm distributionData={distribution} />,
-              );
-            }}
-            aria-label={`Add series to ${distribution.name}`}
-          >
-            Add series
-          </Button>
-          <Button
-            onClick={handleRemove}
-            small
-            aria-label={`Remove ${distribution.name} distribution`}
-            disabled={isRemoving}
-          >
-            Remove distribution
-          </Button>
-        </div>
+        {isSmall ? (
+          <div>
+            <AddSeriesButton />
+            <RemoveDistributionButton />
+          </div>
+        ) : (
+          <span className="p-contextual-menu--left">
+            <Button
+              className="p-contextual-menu__toggle"
+              aria-controls="menu"
+              aria-expanded={openDropdown}
+              aria-haspopup="true"
+              onClick={() => {
+                setOpenDropdown((prevState) => !prevState);
+              }}
+              onBlur={() => {
+                setOpenDropdown(false);
+              }}
+            >
+              Actions
+            </Button>
+            <span
+              className="p-contextual-menu__dropdown"
+              id="menu"
+              aria-hidden={!openDropdown}
+            >
+              <AddSeriesButton className="p-contextual-menu__link" />
+              <RemoveDistributionButton className="p-contextual-menu__link" />
+            </span>
+          </span>
+        )}
       </div>
       {0 === distribution.series.length && (
         <EmptyDistribution distribution={distribution} />
