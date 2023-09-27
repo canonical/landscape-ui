@@ -109,7 +109,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
           <span className="p-contextual-menu--left">
             <Button
               className="p-contextual-menu__toggle"
-              aria-controls="menu"
+              aria-controls="distribution-cta"
               aria-expanded={openDropdown}
               aria-haspopup="true"
               onClick={() => {
@@ -123,7 +123,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
             </Button>
             <span
               className="p-contextual-menu__dropdown"
-              id="menu"
+              id="distribution-cta"
               aria-hidden={!openDropdown}
             >
               <AddSeriesButton className="p-contextual-menu__link" />

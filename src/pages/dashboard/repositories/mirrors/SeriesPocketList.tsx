@@ -1,6 +1,6 @@
 import { Series } from "../../../../types/Series";
 import { FC } from "react";
-import { Button, MainTable } from "@canonical/react-components";
+import { Button, Col, MainTable, Row } from "@canonical/react-components";
 import { Pocket } from "../../../../types/Pocket";
 import { Distribution } from "../../../../types/Distribution";
 import usePockets from "../../../../hooks/usePockets";
@@ -11,6 +11,8 @@ import EditPocketForm from "./EditPocketForm";
 import classNames from "classnames";
 import PackageList from "./PackageList";
 import classes from "./SeriesPocketList.module.scss";
+import { useMediaQuery } from "usehooks-ts";
+import InfoItem from "../../../../components/layout/InfoItem";
 
 interface SeriesPocketListProps {
   distributionName: Distribution["name"];
@@ -21,6 +23,8 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
   distributionName,
   series,
 }) => {
+  const isSmall = useMediaQuery("(min-width: 620px)");
+
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
@@ -222,10 +226,12 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
               {("mirror" == pocket.mode || "pull" == pocket.mode) && (
                 <div className={classes.dividedBlock}>
                   <Button
-                    small
+                    small={isSmall}
                     hasIcon
-                    appearance="base"
-                    className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
+                    appearance={isSmall ? "base" : ""}
+                    className={classNames("u-no-margin--bottom", {
+                      "u-no-padding--right p-tooltip--btm-center": isSmall,
+                    })}
                     aria-label={
                       "mirror" === pocket.mode
                         ? `Synchronize ${pocket.name} pocket of ${distributionName}/${series.name}`
@@ -235,41 +241,61 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                       handleSyncPocket(pocket);
                     }}
                   >
-                    <i className="p-icon--change-version u-no-margin--right" />
-                    <span className="p-tooltip__message">
-                      {"mirror" === pocket.mode ? "Sync" : "Pull"}
-                    </span>
+                    <i
+                      className={classNames("p-icon--change-version", {
+                        "u-no-margin--right": isSmall,
+                      })}
+                    />
+                    {isSmall && (
+                      <span className="p-tooltip__message">
+                        {"mirror" === pocket.mode ? "Sync" : "Pull"}
+                      </span>
+                    )}
                   </Button>
                 </div>
               )}
               <div className={classes.dividedBlock}>
                 <Button
-                  small
+                  small={isSmall}
                   hasIcon
-                  appearance="base"
-                  className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
+                  appearance={isSmall ? "base" : ""}
+                  className={classNames("u-no-margin--bottom", {
+                    "u-no-padding--right p-tooltip--btm-center": isSmall,
+                  })}
                   aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${series.name}`}
                   onClick={() => {
                     handleEditPocket(pocket);
                   }}
                 >
-                  <i className="p-icon--edit u-no-margin--right" />
-                  <span className="p-tooltip__message">Edit</span>
+                  <i
+                    className={classNames("p-icon--edit", {
+                      "u-no-margin--right": isSmall,
+                    })}
+                  />
+                  {isSmall && <span className="p-tooltip__message">Edit</span>}
                 </Button>
               </div>
               <div className={classes.dividedBlock}>
                 <Button
-                  small
+                  small={isSmall}
                   hasIcon
-                  appearance="base"
-                  className="u-no-margin--bottom u-no-padding--right p-tooltip--btm-center"
+                  appearance={isSmall ? "base" : ""}
+                  className={classNames("u-no-margin--bottom", {
+                    "u-no-padding--right p-tooltip--btm-center": isSmall,
+                  })}
                   aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${series.name}`}
                   onClick={() => {
                     handleRemovePocket(pocket);
                   }}
                 >
-                  <i className="p-icon--delete u-no-margin--right" />
-                  <span className="p-tooltip__message">Delete</span>
+                  <i
+                    className={classNames("p-icon--delete", {
+                      "u-no-margin--right": isSmall,
+                    })}
+                  />
+                  {isSmall && (
+                    <span className="p-tooltip__message">Delete</span>
+                  )}
                 </Button>
               </div>
             </div>
@@ -279,13 +305,37 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
     };
   });
 
-  return (
+  return isSmall ? (
     <MainTable
       className={classes.content}
       headers={headers}
       rows={rows}
       emptyStateMsg="No pockets yet"
     />
+  ) : (
+    series.pockets.map((pocket, index) => (
+      <Row
+        key={index}
+        className={classNames(
+          "u-no-padding--left u-no-padding--right",
+          classes.pocketWrapper,
+        )}
+      >
+        <Col size={2} small={2}>
+          <InfoItem label="Pocket" value={rows[index].columns[0].content} />
+        </Col>
+        <Col size={2} small={2}>
+          <InfoItem label="Last synced" value="" />
+        </Col>
+        <Col size={2} small={2}>
+          <InfoItem label="Mode" value={pocket.mode} />
+        </Col>
+        <Col size={2} small={2}>
+          <InfoItem label="Content" value="" />
+        </Col>
+        {rows[index].columns[4].content}
+      </Row>
+    ))
   );
 };
 

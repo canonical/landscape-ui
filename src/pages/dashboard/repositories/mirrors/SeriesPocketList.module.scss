@@ -1,3 +1,4 @@
+@import "vanilla-framework/scss/settings_breakpoints";
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
@@ -7,9 +8,21 @@
   }
 }
 
+.pocketWrapper {
+  padding-bottom: $spv--large;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $colors--light-theme--border-default;
+    margin-bottom: $spv--small;
+  }
+}
+
 .dividedBlocks {
   display: flex;
-  justify-content: end;
+
+  @media (min-width: $breakpoint-small) {
+    justify-content: end;
+  }
 }
 
 .dividedBlock {

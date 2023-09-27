@@ -1,10 +1,10 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import classes from "./InfoItem.module.scss";
 import classNames from "classnames";
 
 export interface InfoItemProps {
   label: string;
-  value: string;
+  value: ReactNode;
   className?: string;
 }
 

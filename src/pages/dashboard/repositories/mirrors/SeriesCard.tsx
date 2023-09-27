@@ -126,7 +126,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
           <span className="p-contextual-menu">
             <Button
               className="p-contextual-menu__toggle u-no-margin--bottom"
-              aria-controls="menu"
+              aria-controls="series-cta"
               aria-expanded={openDropdown}
               aria-haspopup="true"
               onClick={() => {
@@ -140,7 +140,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
             </Button>
             <span
               className="p-contextual-menu__dropdown"
-              id="menu"
+              id="series-cta"
               aria-hidden={!openDropdown}
             >
               <CreateSnapshotButton className="p-contextual-menu__link" />
