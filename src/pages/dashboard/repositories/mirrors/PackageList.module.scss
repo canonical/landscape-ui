@@ -1,18 +1,14 @@
-.withIcon {
-  display: inline-flex;
-  align-items: center;
-  column-gap: 0.5rem;
+@import "vanilla-framework/scss/settings_spacing";
+
+.ctaRow {
+  row-gap: $spv--x-large;
 }
 
-.loading {
-  margin-top: 1rem;
-  text-align: center;
+.version {
+  max-width: 53.3%;
+  width: 100%;
 }
 
 .content {
-  margin-top: 2rem;
-
-  td {
-    overflow: initial;
-  }
+  margin-top: $spv--x-large;
 }

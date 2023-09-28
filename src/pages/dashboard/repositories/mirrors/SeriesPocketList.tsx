@@ -333,7 +333,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
         <Col size={2} small={2}>
           <InfoItem label="Content" value="" />
         </Col>
-        {rows[index].columns[4].content}
+        <div className={classes.ctaRow}>{rows[index].columns[4].content}</div>
       </Row>
     ))
   );

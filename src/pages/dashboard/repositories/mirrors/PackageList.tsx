@@ -1,15 +1,15 @@
-import { FC, useLayoutEffect, useRef, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { Pocket } from "../../../../types/Pocket";
 import { Distribution } from "../../../../types/Distribution";
 import { Series } from "../../../../types/Series";
 import usePockets from "../../../../hooks/usePockets";
 import {
   Button,
+  CheckboxInput,
   Col,
   Input,
-  MainTable,
+  ModularTable,
   Row,
-  Spinner,
 } from "@canonical/react-components";
 import useDebug from "../../../../hooks/useDebug";
 import classNames from "classnames";
@@ -18,8 +18,14 @@ import useSidePanel from "../../../../hooks/useSidePanel";
 import EditPocketForm from "./EditPocketForm";
 import classes from "./PackageList.module.scss";
 import TablePagination from "../../../../components/layout/TablePagination";
+import {
+  CellProps,
+  Column,
+  HeaderProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
+import { useMediaQuery } from "usehooks-ts";
 
-interface FormattedPackage {
+interface FormattedPackage extends Record<string, unknown> {
   packageName: string;
   packageVersion: string;
   difference?: "update" | "delete" | "add";
@@ -40,10 +46,10 @@ const PackageList: FC<PackageListProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [selectedPackages, setSelectedPackages] = useState<number[]>([]);
-  const [checked, setChecked] = useState(false);
-  const [indeterminate, setIndeterminate] = useState(false);
   const [hasUpdatedOrDeletedPackages, setHasUpdatedOrDeletedPackages] =
     useState(false);
+
+  const isSmall = useMediaQuery("(min-width: 620px)");
 
   const debug = useDebug();
   const { closeConfirmModal, confirmModal } = useConfirm();
@@ -176,114 +182,105 @@ const PackageList: FC<PackageListProps> = ({
     });
   };
 
-  const sortedPackages = getSortedPackages();
-
-  const packagesToShow = sortedPackages.filter(
-    (_, index) =>
-      index >= (currentPage - 1) * itemsPerPage &&
-      index < currentPage * itemsPerPage,
+  const packagesToShow = useMemo(
+    () =>
+      getSortedPackages().filter(
+        (_, index) =>
+          index >= (currentPage - 1) * itemsPerPage &&
+          index < currentPage * itemsPerPage,
+      ),
+    [
+      currentPage,
+      itemsPerPage,
+      hasUpdatedOrDeletedPackages,
+      pocketPackages.length,
+      diffPullPocket.length,
+    ],
   );
 
-  const rows = packagesToShow.map(
-    ({ packageName, packageVersion, difference, newVersion }, index) => {
-      const firstColumnContent =
-        "upload" === pocket.mode ? (
-          <label className="p-checkbox--inline">
-            <input
-              type="checkbox"
-              checked={selectedPackages.includes(index)}
-              className="p-checkbox__input"
-              onChange={(event) => {
-                setSelectedPackages(
-                  event.target.checked
-                    ? (prevState) => [...prevState, index]
-                    : (prevState) =>
-                        prevState.filter(
-                          (selectedPackage) => selectedPackage !== index,
-                        ),
+  const columns = useMemo<Column<FormattedPackage>[]>(
+    () => [
+      {
+        accessor: "packageName",
+        Header: ({ rows }: HeaderProps<FormattedPackage>) =>
+          "upload" === pocket.mode ? (
+            <>
+              <CheckboxInput
+                inline
+                label={<span className="u-off-screen">Toggle all</span>}
+                disabled={0 === rows.length}
+                indeterminate={
+                  selectedPackages.length > 0 &&
+                  selectedPackages.length < rows.length
+                }
+                checked={
+                  selectedPackages.length === rows.length &&
+                  selectedPackages.length > 0
+                }
+                onChange={() => {
+                  setSelectedPackages((prevState) =>
+                    prevState.length > 0 ? [] : rows.map((_, index) => index),
+                  );
+                }}
+              />
+              <span>Package</span>
+            </>
+          ) : (
+            "Package"
+          ),
+        Cell: ({ row, value }: CellProps<FormattedPackage, unknown>) => {
+          if ("string" !== typeof value) {
+            return null;
+          }
+
+          return "upload" === pocket.mode ? (
+            <CheckboxInput
+              inline
+              label={value}
+              checked={selectedPackages.includes(row.index)}
+              onChange={() => {
+                setSelectedPackages((prevState) =>
+                  prevState.includes(row.index)
+                    ? prevState.filter(
+                        (selectedPackage) => selectedPackage !== row.index,
+                      )
+                    : [...prevState, row.index],
                 );
               }}
             />
-            <span className="p-checkbox__label">{packageName}</span>
-          </label>
-        ) : (
-          packageName
-        );
+          ) : (
+            value
+          );
+        },
+      },
+      {
+        accessor: "packageVersion",
+        Header: "Version",
+        getCellIcon: ({ row }: CellProps<FormattedPackage, unknown>) =>
+          row.original.difference ? "warning" : false,
+        className: classes.version,
+        Cell: ({ row, value }: CellProps<FormattedPackage, unknown>) => {
+          if ("string" !== typeof value) {
+            return null;
+          }
 
-      const versionInfo =
-        "pull" === pocket.mode && difference ? (
-          <div className={classNames("p-tooltip--right", classes.withIcon)}>
-            <span>{packageVersion}</span>
-            <i className="p-icon--warning" />
-            <span className="p-tooltip__message" role="tooltip">
-              {"update" === difference
-                ? `Version differs\nfrom parent pocket.\nParent version: ${newVersion}`
-                : "Package deleted"}
-            </span>
-          </div>
-        ) : (
-          packageVersion
-        );
-
-      return {
-        columns: [
-          {
-            content: firstColumnContent,
-          },
-          {
-            content: versionInfo,
-          },
-        ],
-      };
-    },
+          return row.original.difference ? (
+            <>
+              <span>{value}</span>
+              <span className="p-tooltip__message" role="tooltip">
+                {"delete" === row.original.difference
+                  ? "Package deleted"
+                  : `Version differs\nfrom parent pocket.\nParent version:\n${row.original?.newVersion}`}
+              </span>
+            </>
+          ) : (
+            value
+          );
+        },
+      },
+    ],
+    [],
   );
-
-  const checkBoxRef = useRef<HTMLInputElement>(null);
-
-  useLayoutEffect(() => {
-    if (0 === rows.length) {
-      return;
-    }
-
-    const isIndeterminate =
-      selectedPackages.length > 0 && selectedPackages.length < rows.length;
-    setChecked(selectedPackages.length === rows.length);
-    setIndeterminate(isIndeterminate);
-    if (null !== checkBoxRef.current) {
-      checkBoxRef.current.indeterminate = isIndeterminate;
-    }
-  }, [selectedPackages, rows]);
-
-  const toggleAll = () => {
-    setSelectedPackages(
-      checked || indeterminate ? [] : rows.map((_, index) => index),
-    );
-    setChecked(!checked && !indeterminate);
-    setIndeterminate(false);
-  };
-
-  const headers = [
-    {
-      content:
-        "upload" === pocket.mode ? (
-          <label className="p-checkbox--inline">
-            <input
-              ref={checkBoxRef}
-              type="checkbox"
-              checked={checked}
-              onChange={toggleAll}
-              className="p-checkbox__input"
-            />
-            <span className="p-checkbox__label">Package</span>
-          </label>
-        ) : (
-          "Package"
-        ),
-    },
-    {
-      content: "Version",
-    },
-  ];
 
   const {
     mutate: syncMirrorPocket,
@@ -390,12 +387,15 @@ const PackageList: FC<PackageListProps> = ({
 
   return (
     <>
-      <Row className="u-no-padding--left u-no-padding--right ">
+      <Row
+        className={classNames(
+          "u-no-padding--left u-no-padding--right",
+          classes.ctaRow,
+        )}
+      >
         <Col
           size={"upload" === pocket.mode ? 8 : 6}
           medium={"upload" === pocket.mode ? 4 : 3}
-          small={"upload" === pocket.mode ? 3 : 2}
-          className={classNames("is-bordered")}
         >
           <div className="p-segmented-control">
             <div className="p-segmented-control__list">
@@ -450,38 +450,34 @@ const PackageList: FC<PackageListProps> = ({
             </div>
           </div>
         </Col>
-        {"upload" !== pocket.mode && (
-          <Col size={6} medium={3} small={2}>
+        {("pull" === pocket.mode || "mirror" === pocket.mode) && (
+          <Col size={6} medium={3}>
             <Input
               type="text"
               placeholder="Search"
               aria-label="Package search"
-              className="is-dense"
+              className={classNames({
+                "is-dense": isSmall,
+                "u-no-margin--bottom": !isSmall,
+              })}
             />
           </Col>
         )}
       </Row>
-      <MainTable
-        headers={headers}
-        rows={rows}
-        emptyStateMsg={
-          listPocketLoading ? (
-            <div className={classes.loading}>
-              <Spinner />
-            </div>
-          ) : (
-            "No packages found."
-          )
-        }
+      <ModularTable
+        columns={columns}
+        data={packagesToShow}
+        emptyMsg={listPocketLoading ? "Loading..." : "No packages found."}
         className={classes.content}
+        getRowProps={({ original }) => ({
+          className: original.difference ? "p-tooltip--top-center" : "",
+        })}
       />
       <TablePagination
         currentPage={currentPage}
         totalPages={Math.ceil(pocketPackages.length / itemsPerPage)}
         paginate={(page) => {
           setSelectedPackages([]);
-          setChecked(false);
-          setIndeterminate(false);
           setCurrentPage(page);
         }}
         itemsPerPage={itemsPerPage}
