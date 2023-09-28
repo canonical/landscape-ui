@@ -1,54 +1,36 @@
-@import "vanilla-framework/scss/global_functions";
-@import "vanilla-framework/scss/settings_animations";
+@import "vanilla-framework/scss/settings_breakpoints";
 @import "vanilla-framework/scss/settings_colors";
-@import "vanilla-framework/scss/settings_font";
 @import "vanilla-framework/scss/settings_spacing";
 
 .container {
   border-bottom: 1px solid $colors--dark-theme--border-default;
-  padding-bottom: $spv--small;
-  align-items: flex-end;
-  column-gap: normal;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .link {
-  @include vf-transition(#{background-color, color, opacity}, snap);
-
-  display: block;
-  overflow: hidden;
-  padding-left: 4.5 * $sp-unit;
-  padding-top: $spv--medium;
-  position: relative;
-  text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-
-  &:visited,
-  &:focus,
-  &:hover {
-    text-decoration: none;
-  }
+  padding-bottom: $spv--small;
 }
 
-.tag {
-  background-color: $color-brand;
-  display: flex;
-  align-items: flex-end;
-  height: 2.6875rem;
-  left: $sph--x-small;
-  padding-left: $sph--x-small;
-  padding-right: $sph--x-small;
-  padding-bottom: $sph--x-small;
+.logoImg,
+.logoIcon {
+  display: block;
+  margin-left: calc($sph--x-small + 1px);
+}
+
+.logoIcon {
   position: absolute;
   top: 0;
-  vertical-align: bottom;
-}
+  left: 0;
 
-.logoImg {
-  display: block;
-  position: absolute;
-  top: 0.8 * $sp-unit;
+  @media (min-width: $breakpoint-large) {
+    display: none;
+  }
+
+  .header:hover &,
+  .header:focus-within & {
+    display: none;
+  }
 }
 
 .logoTitle {

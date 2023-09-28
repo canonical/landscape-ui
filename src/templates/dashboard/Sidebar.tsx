@@ -7,6 +7,7 @@ import classes from "./Sidebar.module.scss";
 import UserInfo from "./UserInfo";
 import BetaInfo from "./BetaInfo";
 import betaClasses from "./BetaInfo.module.scss";
+import desktopHeaderClasses from "./DesktopHeader.module.scss";
 
 const Sidebar: FC = () => {
   const [menuClosed, setMenuClosed] = useState(true);
@@ -25,6 +26,7 @@ const Sidebar: FC = () => {
           "l-navigation",
           { "is-collapsed": menuClosed },
           betaClasses.navigation,
+          desktopHeaderClasses.header,
         )}
       >
         <div className="l-navigation__drawer">

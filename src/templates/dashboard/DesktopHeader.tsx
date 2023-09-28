@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { Button } from "@canonical/react-components";
 import { Link } from "react-router-dom";
-import TagIcon from "../../assets/images/logo-icon-landscape.svg";
-import Logo from "../../assets/images/logo-canonical.svg";
+import Logo from "../../assets/images/logo-white-full.svg";
+import LogoIcon from "../../assets/images/logo-white-icon.svg";
 import { APP_TITLE } from "../../constants";
 import classes from "./DesktopHeader.module.scss";
 import classNames from "classnames";
@@ -19,25 +19,19 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
         classes.container,
       )}
     >
-      <Link className={classes.link} to="/">
-        <div className={classes.tag}>
-          <img src={TagIcon} alt={APP_TITLE} width={16} height={16} />
-        </div>
+      <Link to="/" className={classes.link}>
         <img
           className={classNames("is-fading-when-collapsed", classes.logoImg)}
           src={Logo}
           alt={APP_TITLE}
-          width={39}
-          height={7}
+          width={9 * 16}
         />
-        <span
-          className={classNames(
-            "is-fading-when-collapsed p-heading--4",
-            classes.logoTitle,
-          )}
-        >
-          Landscape
-        </span>
+        <img
+          className={classNames("", classes.logoIcon)}
+          src={LogoIcon}
+          alt={APP_TITLE}
+          width={1.6 * 16}
+        />
       </Link>
       <div className="u-hide--large">
         <Button
