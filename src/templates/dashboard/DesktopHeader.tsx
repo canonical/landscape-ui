@@ -43,7 +43,10 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
         <Button
           className="p-button--base is-dark u-no-margin u-hide--medium"
           hasIcon
-          onClick={closeMenu}
+          onClick={(event) => {
+            closeMenu();
+            event.currentTarget.blur();
+          }}
           aria-label="Close navigation"
         >
           <i className="is-light p-icon--close-sidebar" />
