@@ -11,8 +11,6 @@ import {
   Column,
   Row,
 } from "@canonical/react-components/node_modules/@types/react-table";
-import { isActivity } from "./_helpers";
-import { Computer } from "../../../types/Computer";
 import { getFormattedDateTime } from "../../../utils/output";
 import TablePagination from "../../../components/layout/TablePagination";
 import classes from "./ActivitiesContainer.module.scss";
@@ -22,6 +20,7 @@ import LoadingState from "../../../components/layout/LoadingState";
 import ActivityDetails from "./ActivityDetails";
 import SearchHelpPopup from "../../../components/layout/SearchHelpPopup";
 import { ACTIVITY_SEARCH_HELP_TERMS } from "./_data";
+import { Activity } from "../../../types/Activity";
 
 interface ActivitiesContainerProps {
   selectedIds: number[];
@@ -64,106 +63,92 @@ const ActivitiesContainer: FC<ActivitiesContainerProps> = ({
     );
   };
 
-  const handleChange = (row: Row<Record<string, unknown>>) => {
-    if (!isActivity(row.original)) {
-      return;
-    }
-
+  const handleChange = (row: Row<Activity>) => {
     selectedIds.includes(row.original.id)
       ? setSelectedIds(selectedIds.filter((id) => id !== row.original.id))
       : setSelectedIds([...selectedIds, row.original.id]);
   };
 
-  const columns: (Column<Record<string, unknown>> & { className?: string })[] =
-    useMemo(
-      () => [
-        {
-          Header: (
-            <>
+  const columns = useMemo<Column<Activity>[]>(
+    () => [
+      {
+        Header: (
+          <>
+            <CheckboxInput
+              label={<span className="u-off-screen">Toggle all</span>}
+              inline
+              onChange={toggleAll}
+              checked={
+                activities.length > 0 &&
+                selectedIds.length === activities.length
+              }
+              indeterminate={
+                selectedIds.length > 0 && selectedIds.length < activities.length
+              }
+            />
+            <span>Description</span>
+          </>
+        ),
+        accessor: "summary",
+        className: classes.descriptionColumn,
+        Cell: ({ row }: CellProps<Activity>) => {
+          return (
+            <div className={classes.description}>
               <CheckboxInput
-                label={<span className="u-off-screen">Toggle all</span>}
+                label={
+                  <span className="u-off-screen">{row.original.summary}</span>
+                }
                 inline
-                onChange={toggleAll}
-                checked={
-                  activities.length > 0 &&
-                  selectedIds.length === activities.length
-                }
-                indeterminate={
-                  selectedIds.length > 0 &&
-                  selectedIds.length < activities.length
-                }
+                labelClassName="u-no-margin--bottom u-no-padding--top"
+                checked={selectedIds.includes(row.original.id)}
+                onChange={() => {
+                  handleChange(row);
+                }}
               />
-              <span>Description</span>
-            </>
-          ),
-          accessor: "summary",
-          className: classes.descriptionColumn,
-          Cell: ({
-            value,
-            row,
-          }: CellProps<Record<string, unknown>, unknown>) => {
-            if ("string" !== typeof value || !isActivity(row.original)) {
-              return null;
-            }
+              <Button
+                appearance="link"
+                className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+                onClick={() => {
+                  setSidePanelContent(
+                    row.original.summary,
+                    <Suspense fallback={<LoadingState />}>
+                      <ActivityDetails activity={row.original} />
+                    </Suspense>,
+                  );
+                  setSidePanelOpen(true);
+                }}
+              >
+                {row.original.summary}
+              </Button>
+            </div>
+          );
+        },
+      },
+      {
+        Header: "Status",
+        accessor: "activity_status",
+        getCellIcon: ({ value }: CellProps<Activity, string>) => {
+          if ("failed" === value) {
+            return `error-grey ${classes.iconErrorGreyRed}`;
+          }
 
-            const rowActivity = row.original;
-
-            return (
-              <div className={classes.description}>
-                <CheckboxInput
-                  label={<span className="u-off-screen">{value}</span>}
-                  inline
-                  labelClassName="u-no-margin--bottom u-no-padding--top"
-                  checked={selectedIds.includes(rowActivity.id)}
-                  onChange={() => {
-                    handleChange(row);
-                  }}
-                />
-                <Button
-                  appearance="link"
-                  className="u-no-margin--bottom u-no-padding--top"
-                  onClick={() => {
-                    setSidePanelContent(
-                      value,
-                      <Suspense fallback={<LoadingState />}>
-                        <ActivityDetails activity={rowActivity} />
-                      </Suspense>,
-                    );
-                    setSidePanelOpen(true);
-                  }}
-                >
-                  {value}
-                </Button>
-              </div>
-            );
-          },
+          return false;
         },
-        {
-          Header: "Status",
-          accessor: "activity_status",
-          getCellIcon: ({ value }: CellProps<Computer, string>) => {
-            if ("failed" === value) {
-              return `error-grey ${classes.iconErrorGreyRed}`;
-            }
-
-            return false;
-          },
-        },
-        {
-          Header: "Created at",
-          accessor: "creation_time",
-          Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
-            "string" === typeof value ? (
-              <>{getFormattedDateTime(value)}</>
-            ) : null,
-        },
-        {
-          Header: "Creator",
-          accessor: "creator.name",
-        },
-      ],
-      [selectedIds, activities],
-    );
+      },
+      {
+        Header: "Created at",
+        accessor: "creation_time",
+        Cell: ({ row }: CellProps<Activity>) => (
+          <>{getFormattedDateTime(row.original.creation_time)}</>
+        ),
+      },
+      {
+        Header: "Creator",
+        accessor: "creator.name",
+      },
+    ],
+    [selectedIds, activities],
+  );
 
   return (
     <>
