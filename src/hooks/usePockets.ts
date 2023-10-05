@@ -239,7 +239,7 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     SyncMirrorPocketParams
   >({
-    mutationKey: ["packages", "sync"],
+    mutationKey: ["pocketPackages", "sync"],
     mutationFn: (params) => authFetch!.get("SyncMirrorPocket", { params }),
     onSuccess: (data, variables) => {
       queryClient
@@ -253,7 +253,7 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     PullPackagesToPocketParams
   >({
-    mutationKey: ["packages", "pull"],
+    mutationKey: ["pocketPackages", "pull"],
     mutationFn: (params) => authFetch!.get("PullPackagesToPocket", { params }),
     onSuccess: (data, variables) => {
       queryClient
@@ -267,7 +267,7 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     RemovePackagesFromPocketParams
   >({
-    mutationKey: ["packages", "remove"],
+    mutationKey: ["pocketPackages", "remove"],
     mutationFn: (params) =>
       authFetch!.get("RemovePackagesFromPocket", { params }),
     onSuccess: (data, variables) => {
