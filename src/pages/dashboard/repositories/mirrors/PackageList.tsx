@@ -228,15 +228,11 @@ const PackageList: FC<PackageListProps> = ({
           ) : (
             "Package"
           ),
-        Cell: ({ row, value }: CellProps<FormattedPackage, unknown>) => {
-          if ("string" !== typeof value) {
-            return null;
-          }
-
-          return "upload" === pocket.mode ? (
+        Cell: ({ row }: CellProps<FormattedPackage>) =>
+          "upload" === pocket.mode ? (
             <CheckboxInput
               inline
-              label={value}
+              label={row.original.packageName}
               checked={selectedPackages.includes(row.index)}
               onChange={() => {
                 setSelectedPackages((prevState) =>
@@ -249,24 +245,19 @@ const PackageList: FC<PackageListProps> = ({
               }}
             />
           ) : (
-            value
-          );
-        },
+            row.original.packageName
+          ),
       },
       {
         accessor: "packageVersion",
         Header: "Version",
-        getCellIcon: ({ row }: CellProps<FormattedPackage, unknown>) =>
+        getCellIcon: ({ row }: CellProps<FormattedPackage>) =>
           row.original.difference ? "warning" : false,
         className: classes.version,
-        Cell: ({ row, value }: CellProps<FormattedPackage, unknown>) => {
-          if ("string" !== typeof value) {
-            return null;
-          }
-
-          return row.original.difference ? (
+        Cell: ({ row }: CellProps<FormattedPackage>) =>
+          row.original.difference ? (
             <>
-              <span>{value}</span>
+              <span>{row.original.packageVersion}</span>
               <span className="p-tooltip__message" role="tooltip">
                 {"delete" === row.original.difference
                   ? "Package deleted"
@@ -274,9 +265,8 @@ const PackageList: FC<PackageListProps> = ({
               </span>
             </>
           ) : (
-            value
-          );
-        },
+            row.original.packageVersion
+          ),
       },
     ],
     [],
