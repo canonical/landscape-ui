@@ -9,7 +9,6 @@ import {
 import { Link } from "react-router-dom";
 import { getFormattedDateTime } from "../../../utils/output";
 import classes from "./MachineList.module.scss";
-import { isComputer } from "./_helpers";
 
 interface MachineListProps {
   machines: Computer[];
@@ -28,24 +27,15 @@ const MachineList: FC<MachineListProps> = ({
     );
   };
 
-  const handleChange = (row: Row<Record<string, unknown>>) => {
-    if (!isComputer(row.original)) {
-      return;
-    }
-
+  const handleChange = (row: Row<Computer>) => {
     selectedIds.includes(row.original.id)
       ? setSelectedIds(selectedIds.filter((id) => id !== row.original.id))
       : setSelectedIds([...selectedIds, row.original.id]);
   };
 
-  const machinesData: Record<string, unknown>[] = useMemo(
-    () => machines,
-    [machines],
-  );
+  const machinesData = useMemo(() => machines, [machines]);
 
-  const cols = useMemo<
-    (Column<Record<string, unknown>> & { className?: string })[]
-  >(
+  const columns = useMemo<Column<Computer>[]>(
     () => [
       {
         Header: (
@@ -65,33 +55,32 @@ const MachineList: FC<MachineListProps> = ({
           </>
         ),
         accessor: "title",
-        Cell: ({ value, row }: CellProps<Record<string, unknown>, unknown>) =>
-          "string" === typeof value && isComputer(row.original) ? (
-            <>
-              <CheckboxInput
-                label={<span className="u-off-screen">{value}</span>}
-                inline
-                checked={selectedIds.includes(row.original.id)}
-                onChange={() => {
-                  handleChange(row);
-                }}
-              />
-              <Link
-                to={`/machines/${row.original.hostname
-                  .toLowerCase()
-                  .replace(/ /g, "-")}`}
-              >
-                {value}
-              </Link>
-            </>
-          ) : null,
+        Cell: ({ row }: CellProps<Computer>) => (
+          <>
+            <CheckboxInput
+              label={<span className="u-off-screen">{row.original.title}</span>}
+              inline
+              checked={selectedIds.includes(row.original.id)}
+              onChange={() => {
+                handleChange(row);
+              }}
+            />
+            <Link
+              to={`/machines/${row.original.hostname
+                .toLowerCase()
+                .replace(/ /g, "-")}`}
+            >
+              {row.original.title}
+            </Link>
+          </>
+        ),
         className: classes.name,
       },
       {
         Header: "Status",
         accessor: "reboot_required_flag",
-        Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
-          "boolean" === typeof value && value ? (
+        Cell: ({ row }: CellProps<Computer>) =>
+          row.original.reboot_required_flag ? (
             <>Reboot required</>
           ) : (
             <>No action required</>
@@ -113,14 +102,14 @@ const MachineList: FC<MachineListProps> = ({
       {
         Header: "Host name",
         accessor: "hostname",
-        Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
-          "string" === typeof value ? <>value</> : null,
+        Cell: ({ row }: CellProps<Computer>) => <>{row.original.hostname}</>,
       },
       {
         Header: "Last ping time",
         accessor: "last_ping_time",
-        Cell: ({ value }: CellProps<Record<string, unknown>, unknown>) =>
-          "string" === typeof value ? <>{getFormattedDateTime(value)}</> : null,
+        Cell: ({ row }: CellProps<Computer>) => (
+          <>{getFormattedDateTime(row.original.last_ping_time)}</>
+        ),
       },
     ],
     [selectedIds, machines],
@@ -130,7 +119,7 @@ const MachineList: FC<MachineListProps> = ({
     <>
       <ModularTable
         emptyMsg="No machines found"
-        columns={cols}
+        columns={columns}
         data={machinesData}
       />
     </>
