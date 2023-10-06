@@ -8,11 +8,11 @@ test("should create repository profile", async ({ page }) => {
   await expect(page).toHaveURL(/profiles/);
 
   await expect(
-    page.getByRole("heading", { name: "Repository Profiles" })
+    page.getByRole("heading", { name: "Repository Profiles" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Create Profile" }).click();
   await expect(
-    page.getByRole("heading", { name: "Create repository profile" })
+    page.getByRole("heading", { name: "Create repository profile" }),
   ).toBeVisible();
 
   await page.locator('input[name="title"]').fill("test-profile");
@@ -72,18 +72,18 @@ test("should create repository profile", async ({ page }) => {
   await expect(page.getByText("test-profile", { exact: true })).toBeVisible();
 
   const testProfileRow = page.getByRole("row").filter({
-    has: page.getByText("test-profile", { exact: true }),
+    has: page.getByRole("rowheader", { name: "test-profile", exact: true }),
   });
 
   await expect(testProfileRow).toHaveCount(1);
 
   await testProfileRow.click();
 
-  await expect(
-    testProfileRow.getByRole("gridcell", { name: "Description" })
-  ).toHaveText("Test profile description");
+  await expect(testProfileRow.getByLabel("Description")).toHaveText(
+    "Test profile description",
+  );
 
-  await expect(
-    testProfileRow.getByRole("gridcell", { name: "Access group" })
-  ).toHaveText("Desktop machines");
+  await expect(testProfileRow.getByLabel("Access group")).toHaveText(
+    "Desktop machines",
+  );
 });

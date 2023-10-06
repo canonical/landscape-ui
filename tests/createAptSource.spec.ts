@@ -7,11 +7,11 @@ test("should create APT source", async ({ page }) => {
   await page.getByRole("link", { name: "APT Sources" }).click();
   expect(page.url().includes("apt-sources")).toBeTruthy();
   await expect(
-    page.getByRole("heading", { name: "APT Sources" })
+    page.getByRole("heading", { name: "APT Sources" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Create APT source" }).click();
   await expect(
-    page.getByRole("heading", { name: "Create APT source" })
+    page.getByRole("heading", { name: "Create APT source" }),
   ).toBeVisible();
   await page.locator('input[name="name"]').fill("test-apt-source");
   await page
@@ -27,13 +27,11 @@ test("should create APT source", async ({ page }) => {
 
   const newAptSourceRow = page
     .getByRole("row")
-    .filter({ has: page.getByRole("gridcell", { name: "test-apt-source" }) });
+    .filter({ has: page.getByRole("rowheader", { name: "test-apt-source" }) });
 
-  await expect(
-    newAptSourceRow.getByRole("gridcell", { name: "Access group" })
-  ).toHaveText("global");
+  await expect(newAptSourceRow.getByLabel("Access group")).toHaveText("global");
 
-  await expect(
-    newAptSourceRow.getByRole("gridcell", { name: "Line" })
-  ).toHaveText("deb http://archive.ubuntu.com/ubuntu jammy main");
+  await expect(newAptSourceRow.getByRole("cell", { name: "Line" })).toHaveText(
+    "deb http://archive.ubuntu.com/ubuntu jammy main",
+  );
 });

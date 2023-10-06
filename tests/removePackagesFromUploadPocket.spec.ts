@@ -8,8 +8,8 @@ test("should remove packages from upload pocket", async ({ page }) => {
         .request()
         .url()
         .includes(
-          "packages.1=package+3&packages.2=package+4&packages.3=package+5"
-        )
+          "packages.1=package+3&packages.2=package+4&packages.3=package+5",
+        ),
     ).toBeTruthy();
 
     route.fulfill({
@@ -47,7 +47,7 @@ test("should remove packages from upload pocket", async ({ page }) => {
     })
     .click();
   await expect(
-    page.getByRole("heading", { name: "test-snapshot test-upload-pocket" })
+    page.getByRole("heading", { name: "test-snapshot test-upload-pocket" }),
   ).toBeVisible();
 
   await expect(page.getByRole("complementary").getByRole("row")).toHaveCount(6);
@@ -65,10 +65,13 @@ test("should remove packages from upload pocket", async ({ page }) => {
   await expect(
     page.getByRole("button", {
       name: "Remove selected packages from test-upload-pocket pocket of test-distro/test-snapshot",
-    })
+    }),
   ).toBeDisabled();
 
-  await page.getByText("Package", { exact: true }).click();
+  await page
+    .getByRole("row", { name: "Toggle all Package Version" })
+    .locator("label")
+    .click();
 
   for (const row of rows) {
     await expect(row.getByRole("checkbox")).toBeChecked();

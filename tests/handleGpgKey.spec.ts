@@ -44,7 +44,7 @@ test("should handle GPG key", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "GPG Keys" })).toBeVisible();
   await page.getByRole("button", { name: "Import GPG key" }).click();
   await expect(
-    page.getByRole("heading", { name: "Import GPG key" })
+    page.getByRole("heading", { name: "Import GPG key" }),
   ).toBeVisible();
   await page.locator('input[name="name"]').fill("test-gpg-key");
   await page.locator('textarea[name="material"]').fill(TEST_GPG_MATERIAL);
@@ -57,22 +57,20 @@ test("should handle GPG key", async ({ page }) => {
 
   const newGpgKeyRow = page
     .getByRole("row")
-    .filter({ has: page.getByRole("gridcell", { name: "test-gpg-key" }) });
+    .filter({ has: page.getByRole("rowheader", { name: "test-gpg-key" }) });
 
-  await expect(
-    newGpgKeyRow.getByRole("gridcell", { name: "Access type" })
-  ).toHaveText(/public/i);
+  await expect(newGpgKeyRow.getByLabel("Access type")).toHaveText(/public/i);
 
   await page
     .getByRole("button", { name: "Remove test-gpg-key GPG key" })
     .click();
   await expect(
-    page.getByRole("dialog", { name: "Deleting test-gpg-key GPG key" })
+    page.getByRole("dialog", { name: "Deleting test-gpg-key GPG key" }),
   ).toBeVisible();
   await expect(
     page.getByText(
-      "Are you sure? This action is permanent and can not be undone."
-    )
+      "Are you sure? This action is permanent and can not be undone.",
+    ),
   ).toBeVisible();
   await page
     .getByRole("button", { name: "Delete test-gpg-key GPG key" })
