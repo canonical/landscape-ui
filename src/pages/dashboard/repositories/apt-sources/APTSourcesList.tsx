@@ -33,24 +33,19 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
       {
         accessor: "name",
         Header: "Name",
-        role: "rowheader",
-        "aria-label": "Name",
       },
       {
         accessor: "access_group",
         Header: "Access group",
-        "aria-label": "Access group",
         className: classes.accessGroup,
       },
       {
         accessor: "line",
         Header: "Line",
-        "aria-label": "Line",
         className: classes.line,
       },
       {
         accessor: "id",
-        "aria-label": "Actions",
         className: classes.actions,
         Cell: ({ row }: CellProps<APTSource>) => (
           <Button
@@ -98,8 +93,22 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
   return (
     <ModularTable
       columns={columns}
-      data={useMemo(() => items, [])}
+      data={useMemo(() => items, [items.length])}
       emptyMsg="No APT sources yet."
+      getCellProps={({ column }) => {
+        switch (column.id) {
+          case "name":
+            return { role: "rowheader" };
+          case "access_group":
+            return { "aria-label": "Access group" };
+          case "line":
+            return { "aria-label": "Line" };
+          case "id":
+            return { "aria-label": "Actions" };
+          default:
+            return {};
+        }
+      }}
     />
   );
 };

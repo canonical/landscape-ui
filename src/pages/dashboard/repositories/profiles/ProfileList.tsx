@@ -62,19 +62,15 @@ const ProfileList: FC<DistributionProfileListProps> = ({
       {
         accessor: "title",
         Header: "Title",
-        role: "rowheader",
-        "aria-label": "Title",
       },
       {
         accessor: "description",
         Header: "Description",
-        "aria-label": "Description",
         className: classes.description,
       },
       {
         accessor: "access_group",
         Header: "Access group",
-        "aria-label": "Access group",
         className: classes.accessGroup,
         Cell: ({ row }: CellProps<RepositoryProfile>) => (
           <>{getAccessGroupLabel(row.original.access_group)}</>
@@ -82,7 +78,6 @@ const ProfileList: FC<DistributionProfileListProps> = ({
       },
       {
         accessor: "id",
-        "aria-label": "Actions",
         className: classes.actions,
         Cell: ({ row }: CellProps<RepositoryProfile>) => (
           <div className={classes.dividedBlocks}>
@@ -151,7 +146,21 @@ const ProfileList: FC<DistributionProfileListProps> = ({
   return (
     <ModularTable
       columns={columns}
-      data={useMemo(() => repositoryProfiles, [])}
+      data={useMemo(() => repositoryProfiles, [repositoryProfiles.length])}
+      getCellProps={({ column }) => {
+        switch (column.id) {
+          case "title":
+            return { role: "rowheader" };
+          case "description":
+            return { "aria-label": "Description" };
+          case "access_group":
+            return { "aria-label": "Access group" };
+          case "id":
+            return { "aria-label": "Actions" };
+          default:
+            return {};
+        }
+      }}
       emptyMsg="No profiles yet."
     />
   );

@@ -33,26 +33,21 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
       {
         accessor: "name",
         Header: "Name",
-        role: "rowheader",
-        "aria-label": "Name",
       },
       {
         accessor: "has_secret",
         Header: "Access type",
+        className: classes.accessType,
         Cell: ({ row }: CellProps<GPGKey>) =>
           row.original.has_secret ? "Private" : "Public",
-        "aria-label": "Access type",
-        className: classes.accessType,
       },
       {
         accessor: "fingerprint",
         Header: "Fingerprint",
-        "aria-label": "Fingerprint",
         className: classes.fingerprint,
       },
       {
         accessor: "id",
-        "aria-label": "Actions",
         className: classes.actions,
         Cell: ({ row }: CellProps<GPGKey>) => (
           <Button
@@ -100,7 +95,21 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
   return (
     <ModularTable
       columns={columns}
-      data={useMemo(() => items, [])}
+      data={useMemo(() => items, [items.length])}
+      getCellProps={({ column }) => {
+        switch (column.id) {
+          case "name":
+            return { role: "rowheader" };
+          case "has_secret":
+            return { "aria-label": "Access type" };
+          case "fingerprint":
+            return { "aria-label": "Fingerprint" };
+          case "id":
+            return { "aria-label": "Actions" };
+          default:
+            return {};
+        }
+      }}
       emptyMsg="You have no GPG keys yet."
     />
   );

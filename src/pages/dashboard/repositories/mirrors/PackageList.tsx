@@ -269,7 +269,14 @@ const PackageList: FC<PackageListProps> = ({
           ),
       },
     ],
-    [],
+    [
+      selectedPackages.length,
+      currentPage,
+      itemsPerPage,
+      hasUpdatedOrDeletedPackages,
+      pocketPackages.length,
+      diffPullPocket.length,
+    ],
   );
 
   const {
@@ -462,6 +469,16 @@ const PackageList: FC<PackageListProps> = ({
         getRowProps={({ original }) => ({
           className: original.difference ? "p-tooltip--top-center" : "",
         })}
+        getCellProps={({ column }) => {
+          switch (column.id) {
+            case "packageName":
+              return { role: "rowheader" };
+            case "packageVersion":
+              return { "aria-label": "Version" };
+            default:
+              return {};
+          }
+        }}
       />
       <TablePagination
         currentPage={currentPage}
