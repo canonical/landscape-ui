@@ -1,5 +1,29 @@
-.content {
-  td {
-    overflow: initial;
+@import "vanilla-framework/scss/settings_breakpoints";
+
+.actions,
+.accessType,
+.fingerprint {
+  width: 100%;
+}
+
+.fingerprint {
+  max-width: 50%;
+
+  @media (min-width: $breakpoint-x-large) {
+    max-width: 40%;
   }
+}
+
+.accessType {
+  max-width: 15%;
+
+  @media (min-width: $breakpoint-x-large) {
+    max-width: 20%;
+  }
+}
+
+.actions {
+  max-width: 10%;
+  text-align: right;
+  overflow: initial;
 }

@@ -7,7 +7,7 @@ type RepositoryProfilePocket = Pocket & {
   series: Pick<Series, "name" | "creation_time">;
 };
 
-export interface RepositoryProfile {
+export interface RepositoryProfile extends Record<string, unknown> {
   access_group: string;
   all_computers: boolean;
   apt_sources: string[];

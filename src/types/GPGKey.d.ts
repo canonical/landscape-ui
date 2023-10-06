@@ -1,4 +1,4 @@
-export interface GPGKey {
+export interface GPGKey extends Record<string, unknown> {
   fingerprint: string;
   has_secret: boolean;
   id: number;
