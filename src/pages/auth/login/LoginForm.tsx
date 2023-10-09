@@ -23,6 +23,7 @@ interface RequestParams {
 
 interface RequestResponse {
   token: string;
+  email: string;
 }
 
 interface FormProps {
@@ -67,12 +68,12 @@ const LoginForm: FC = () => {
         setUser(
           {
             name: "Yurii Test",
-            email: "john@example.com",
+            email: data.email,
             token: data.token,
           },
           values.remember,
         );
-      } catch (error: any) {
+      } catch (error) {
         debug(error);
       }
 
