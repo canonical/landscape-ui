@@ -3,7 +3,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { ApiError } from "../types/ApiError";
 import useFetch from "./useFetch";
-import { AccessGroup } from "../types/accessGroup";
+import { AccessGroup } from "../types/AccessGroup";
 
 interface useAccessGroupResult {
   getAccessGroupQuery: QueryFnType<AxiosResponse<AccessGroup[]>, {}>;

@@ -1,5 +1,5 @@
 import { Distribution } from "../../../../types/Distribution";
-import { AccessGroup } from "../../../../types/accessGroup";
+import { AccessGroup } from "../../../../types/AccessGroup";
 import { APTSource } from "../../../../types/APTSource";
 import {
   RepositoryProfile,
