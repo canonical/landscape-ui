@@ -439,8 +439,8 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
         <div className="form-buttons">
           <FormButtons
             isLoading={isCreating}
-            positiveButtonTitle="Create mirror"
-            buttonAriaLabel="Create mirror"
+            positiveButtonTitle="Add series"
+            buttonAriaLabel="Add series"
           />
         </div>
       </Form>
