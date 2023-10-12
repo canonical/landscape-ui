@@ -3,7 +3,7 @@ import { Series } from "../../../../types/Series";
 import { Distribution } from "../../../../types/Distribution";
 import useDebug from "../../../../hooks/useDebug";
 import useSidePanel from "../../../../hooks/useSidePanel";
-import { useFormik } from "formik";
+import { FormikProvider, useFormik } from "formik";
 import * as Yup from "yup";
 import usePockets, {
   CreateMirrorPocketParams,
@@ -11,7 +11,6 @@ import usePockets, {
   CreateUploadPocketParams,
 } from "../../../../hooks/usePockets";
 import {
-  Button,
   CheckboxInput,
   Form,
   Input,
@@ -38,6 +37,7 @@ import SelectGrouped, {
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 import CheckboxGroup from "../../../../components/form/CheckboxGroup";
 import FieldDescription from "../../../../components/form/FieldDescription";
+import FormButtons from "../../../../components/form/FormButtons";
 
 interface FormProps
   extends Omit<CreateMirrorPocketParams, "mode">,
@@ -291,281 +291,281 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   );
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate>
-      <Select
-        label="Type"
-        required
-        options={[
-          { label: "Ubuntu", value: "ubuntu" },
-          { label: "Third party", value: "third-party" },
-        ]}
-        {...formik.getFieldProps("type")}
-        error={formik.touched.type && formik.errors.type}
-      />
-
-      <Select
-        label="Mode"
-        required
-        options={[...PRE_DEFINED_POCKET_MODE_OPTIONS]}
-        {...formik.getFieldProps("mode")}
-        error={formik.touched.mode && formik.errors.mode}
-      />
-
-      {"mirror" === formik.values.mode && (
-        <Input
-          type="text"
-          label="Mirror URI"
+    <FormikProvider value={formik}>
+      <Form onSubmit={formik.handleSubmit} noValidate>
+        <Select
+          label="Type"
           required
-          {...formik.getFieldProps("mirror_uri")}
-          error={formik.touched.mirror_uri && formik.errors.mirror_uri}
-        />
-      )}
-
-      <div
-        className={classNames({
-          row: "pull" === formik.values.mode,
-          "u-no-padding--left": "pull" === formik.values.mode,
-          "u-no-padding--right": "pull" === formik.values.mode,
-        })}
-      >
-        <Input
-          type="text"
-          label="Name"
-          required
-          wrapperClassName={classNames({
-            "col-6": "pull" === formik.values.mode,
-          })}
-          style={{ display: "block !important" }}
-          {...formik.getFieldProps("name")}
-          error={formik.touched.name && formik.errors.name}
+          options={[
+            { label: "Ubuntu", value: "ubuntu" },
+            { label: "Third party", value: "third-party" },
+          ]}
+          {...formik.getFieldProps("type")}
+          error={formik.touched.type && formik.errors.type}
         />
 
-        {"pull" == formik.values.mode && (
-          <SelectGrouped
-            label="Pull from"
-            required
-            name="pull_pocket"
-            wrapperClassName="col-6"
-            groupedOptions={groupedPocketOptionsNew}
-            option={formik.values.pull_pocket}
-            group={formik.values.pull_series}
-            emptyOption={{ enabled: true, label: "Select pull pocket" }}
-            onChange={async (newOption, newGroup) => {
-              await formik.setFieldValue("pull_pocket", newOption);
-              await formik.setFieldValue("pull_series", newGroup);
-            }}
-            onBlur={formik.handleBlur}
-            error={formik.touched.pull_pocket && formik.errors.pull_pocket}
-          />
-        )}
-      </div>
+        <Select
+          label="Mode"
+          required
+          options={[...PRE_DEFINED_POCKET_MODE_OPTIONS]}
+          {...formik.getFieldProps("mode")}
+          error={formik.touched.mode && formik.errors.mode}
+        />
 
-      <Select
-        label="GPG Key"
-        required
-        options={[
-          { label: "Select GPG key", value: "" },
-          ...gpgKeys
-            .filter(({ has_secret }) => has_secret)
-            .map((item) => ({
-              label: item.name,
-              value: item.name,
-            })),
-        ]}
-        {...formik.getFieldProps("gpg_key")}
-        error={formik.touched.gpg_key && formik.errors.gpg_key}
-      />
-
-      {"mirror" === formik.values.mode && (
-        <>
+        {"mirror" === formik.values.mode && (
           <Input
             type="text"
-            label={
-              <FieldDescription
-                label="Mirror suite"
-                description={
-                  <>
-                    <span>
-                      {
-                        "The specific sub-directory under dists/ that should be mirrored. If the suite name ends with a ‘/’, the remote repository is flat (no dists/ structure, see "
-                      }
-                    </span>
-                    <a href="http://wiki.debian.org/RepositoryFormat#Flat_Repository_Format">
-                      wiki.debian.org/RepositoryFormat#Flat_Repository_Format
-                    </a>
-                    <span>
-                      ); in this case a single value must be passed for the
-                      ‘components’ parameter. Packages from the remote
-                      repository will be mirrored in the specified component.
-                      This parameter is optional and defaults to the same name
-                      as local series and pocket.
-                    </span>
-                  </>
-                }
-              />
-            }
-            {...formik.getFieldProps("mirror_suite")}
-            error={formik.touched.mirror_suite && formik.errors.mirror_suite}
+            label="Mirror URI"
+            required
+            {...formik.getFieldProps("mirror_uri")}
+            error={formik.touched.mirror_uri && formik.errors.mirror_uri}
+          />
+        )}
+
+        <div
+          className={classNames({
+            row: "pull" === formik.values.mode,
+            "u-no-padding--left": "pull" === formik.values.mode,
+            "u-no-padding--right": "pull" === formik.values.mode,
+          })}
+        >
+          <Input
+            type="text"
+            label="Name"
+            required
+            wrapperClassName={classNames({
+              "col-6": "pull" === formik.values.mode,
+            })}
+            style={{ display: "block !important" }}
+            {...formik.getFieldProps("name")}
+            error={formik.touched.name && formik.errors.name}
           />
 
-          <Select
-            label="Mirror GPG key"
-            options={[
-              { label: "Select GPG key", value: "" },
-              ...gpgKeys
+          {"pull" == formik.values.mode && (
+            <SelectGrouped
+              label="Pull from"
+              required
+              name="pull_pocket"
+              wrapperClassName="col-6"
+              groupedOptions={groupedPocketOptionsNew}
+              option={formik.values.pull_pocket}
+              group={formik.values.pull_series}
+              emptyOption={{ enabled: true, label: "Select pull pocket" }}
+              onChange={async (newOption, newGroup) => {
+                await formik.setFieldValue("pull_pocket", newOption);
+                await formik.setFieldValue("pull_series", newGroup);
+              }}
+              onBlur={formik.handleBlur}
+              error={formik.touched.pull_pocket && formik.errors.pull_pocket}
+            />
+          )}
+        </div>
+
+        <Select
+          label="GPG Key"
+          required
+          options={[
+            { label: "Select GPG key", value: "" },
+            ...gpgKeys
+              .filter(({ has_secret }) => has_secret)
+              .map((item) => ({
+                label: item.name,
+                value: item.name,
+              })),
+          ]}
+          {...formik.getFieldProps("gpg_key")}
+          error={formik.touched.gpg_key && formik.errors.gpg_key}
+        />
+
+        {"mirror" === formik.values.mode && (
+          <>
+            <Input
+              type="text"
+              label={
+                <FieldDescription
+                  label="Mirror suite"
+                  description={
+                    <>
+                      <span>
+                        {
+                          "The specific sub-directory under dists/ that should be mirrored. If the suite name ends with a ‘/’, the remote repository is flat (no dists/ structure, see "
+                        }
+                      </span>
+                      <a href="http://wiki.debian.org/RepositoryFormat#Flat_Repository_Format">
+                        wiki.debian.org/RepositoryFormat#Flat_Repository_Format
+                      </a>
+                      <span>
+                        ); in this case a single value must be passed for the
+                        ‘components’ parameter. Packages from the remote
+                        repository will be mirrored in the specified component.
+                        This parameter is optional and defaults to the same name
+                        as local series and pocket.
+                      </span>
+                    </>
+                  }
+                />
+              }
+              {...formik.getFieldProps("mirror_suite")}
+              error={formik.touched.mirror_suite && formik.errors.mirror_suite}
+            />
+
+            <Select
+              label="Mirror GPG key"
+              options={[
+                { label: "Select GPG key", value: "" },
+                ...gpgKeys
+                  .filter(({ has_secret }) => !has_secret)
+                  .map((item) => ({
+                    label: item.name,
+                    value: item.name,
+                  })),
+              ]}
+              {...formik.getFieldProps("mirror_gpg_key")}
+              error={
+                formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
+              }
+              help="If none is given, the stock Ubuntu archive one will be used."
+            />
+          </>
+        )}
+
+        {"pull" === formik.values.mode && (
+          <>
+            <Select
+              label="Filter type"
+              options={filterTypeOptions}
+              {...formik.getFieldProps("filter_type")}
+              error={formik.touched.filter_type && formik.errors.filter_type}
+            />
+
+            {"" !== formik.values.filter_type && (
+              <Textarea
+                label="Filter packages"
+                rows={3}
+                help="List packages to filter separated by commas"
+                {...formik.getFieldProps("filters")}
+                onChange={(event) => {
+                  formik.setFieldValue(
+                    "filters",
+                    event.target.value.replace(/\s/g, "").split(","),
+                  );
+                }}
+                value={formik.values.filters.join(",")}
+                error={formik.touched.filters && formik.errors.filters}
+              />
+            )}
+          </>
+        )}
+
+        {"upload" === formik.values.mode && (
+          <>
+            <CheckboxInput
+              label="Allow uploaded packages to be unsigned"
+              {...formik.getFieldProps("upload_allow_unsigned")}
+              checked={formik.values.upload_allow_unsigned}
+            />
+
+            <Select
+              label="Uploader GPG keys"
+              multiple
+              disabled={formik.values.upload_allow_unsigned}
+              {...formik.getFieldProps("upload_gpg_keys")}
+              options={gpgKeys
                 .filter(({ has_secret }) => !has_secret)
                 .map((item) => ({
                   label: item.name,
                   value: item.name,
-                })),
-            ]}
-            {...formik.getFieldProps("mirror_gpg_key")}
-            error={
-              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
-            }
-            help="If none is given, the stock Ubuntu archive one will be used."
-          />
-        </>
-      )}
+                }))}
+              error={
+                formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
+              }
+            />
+          </>
+        )}
 
-      {"pull" === formik.values.mode && (
-        <>
-          <Select
-            label="Filter type"
-            options={filterTypeOptions}
-            {...formik.getFieldProps("filter_type")}
-            error={formik.touched.filter_type && formik.errors.filter_type}
-          />
+        {"ubuntu" === formik.values.type && (
+          <>
+            <CheckboxGroup
+              label="Components"
+              required
+              options={COMPONENT_OPTIONS}
+              {...formik.getFieldProps("components")}
+              onChange={(newOptions) => {
+                formik.setFieldValue("components", newOptions);
+              }}
+              error={formik.touched.components && formik.errors.components}
+            />
 
-          {"" !== formik.values.filter_type && (
-            <Textarea
-              label="Filter packages"
-              rows={3}
-              help="List packages to filter separated by commas"
-              {...formik.getFieldProps("filters")}
+            <CheckboxGroup
+              label="Architectures"
+              required
+              options={ARCHITECTURE_OPTIONS}
+              {...formik.getFieldProps("architectures")}
+              onChange={(newOptions) => {
+                formik.setFieldValue("architectures", newOptions);
+              }}
+              error={
+                formik.touched.architectures && formik.errors.architectures
+              }
+            />
+          </>
+        )}
+
+        {"third-party" === formik.values.type && (
+          <>
+            <Input
+              type="text"
+              label="Components"
+              required
+              {...formik.getFieldProps("components")}
+              value={formik.values.components.join(",")}
               onChange={(event) => {
                 formik.setFieldValue(
-                  "filters",
+                  "components",
                   event.target.value.replace(/\s/g, "").split(","),
                 );
               }}
-              value={formik.values.filters.join(",")}
-              error={formik.touched.filters && formik.errors.filters}
+              error={formik.touched.components && formik.errors.components}
             />
-          )}
-        </>
-      )}
 
-      {"upload" === formik.values.mode && (
-        <>
-          <CheckboxInput
-            label="Allow uploaded packages to be unsigned"
-            {...formik.getFieldProps("upload_allow_unsigned")}
-            checked={formik.values.upload_allow_unsigned}
-          />
+            <Input
+              type="text"
+              label="Architectures"
+              required
+              {...formik.getFieldProps("architectures")}
+              value={formik.values.architectures.join(",")}
+              onChange={(event) => {
+                formik.setFieldValue(
+                  "architectures",
+                  event.target.value.replace(/\s/g, "").split(","),
+                );
+              }}
+              error={
+                formik.touched.architectures && formik.errors.architectures
+              }
+            />
+          </>
+        )}
 
-          <Select
-            label="Uploader GPG keys"
-            multiple
-            disabled={formik.values.upload_allow_unsigned}
-            {...formik.getFieldProps("upload_gpg_keys")}
-            options={gpgKeys
-              .filter(({ has_secret }) => !has_secret)
-              .map((item) => ({
-                label: item.name,
-                value: item.name,
-              }))}
-            error={
-              formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
+        <CheckboxInput
+          label="Include .udeb packages (debian-installer)"
+          {...formik.getFieldProps("include_udeb")}
+          checked={formik.values.include_udeb}
+        />
+
+        <div className="form-buttons">
+          <FormButtons
+            isLoading={
+              createPocketLoading ||
+              addPackageFiltersToPocketLoading ||
+              addUploaderGPGKeysToPocketLoading
             }
+            positiveButtonTitle="Create"
+            buttonAriaLabel="Create pocket"
           />
-        </>
-      )}
-
-      {"ubuntu" === formik.values.type && (
-        <>
-          <CheckboxGroup
-            label="Components"
-            required
-            options={COMPONENT_OPTIONS}
-            {...formik.getFieldProps("components")}
-            onChange={(newOptions) => {
-              formik.setFieldValue("components", newOptions);
-            }}
-            error={formik.touched.components && formik.errors.components}
-          />
-
-          <CheckboxGroup
-            label="Architectures"
-            required
-            options={ARCHITECTURE_OPTIONS}
-            {...formik.getFieldProps("architectures")}
-            onChange={(newOptions) => {
-              formik.setFieldValue("architectures", newOptions);
-            }}
-            error={formik.touched.architectures && formik.errors.architectures}
-          />
-        </>
-      )}
-
-      {"third-party" === formik.values.type && (
-        <>
-          <Input
-            type="text"
-            label="Components"
-            required
-            {...formik.getFieldProps("components")}
-            value={formik.values.components.join(",")}
-            onChange={(event) => {
-              formik.setFieldValue(
-                "components",
-                event.target.value.replace(/\s/g, "").split(","),
-              );
-            }}
-            error={formik.touched.components && formik.errors.components}
-          />
-
-          <Input
-            type="text"
-            label="Architectures"
-            required
-            {...formik.getFieldProps("architectures")}
-            value={formik.values.architectures.join(",")}
-            onChange={(event) => {
-              formik.setFieldValue(
-                "architectures",
-                event.target.value.replace(/\s/g, "").split(","),
-              );
-            }}
-            error={formik.touched.architectures && formik.errors.architectures}
-          />
-        </>
-      )}
-
-      <CheckboxInput
-        label="Include .udeb packages (debian-installer)"
-        {...formik.getFieldProps("include_udeb")}
-        checked={formik.values.include_udeb}
-      />
-
-      <div className="form-buttons">
-        <Button
-          type="submit"
-          appearance="positive"
-          disabled={
-            createPocketLoading ||
-            addPackageFiltersToPocketLoading ||
-            addUploaderGPGKeysToPocketLoading
-          }
-          aria-label="Create pocket"
-        >
-          Create
-        </Button>
-        <Button type="button" onClick={closeSidePanel}>
-          Cancel
-        </Button>
-      </div>
-    </Form>
+        </div>
+      </Form>
+    </FormikProvider>
   );
 };
 
