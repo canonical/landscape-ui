@@ -146,7 +146,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
   return (
     <ModularTable
       columns={columns}
-      data={useMemo(() => repositoryProfiles, [repositoryProfiles.length])}
+      data={useMemo(() => repositoryProfiles, [repositoryProfiles])}
       getCellProps={({ column }) => {
         switch (column.id) {
           case "title":

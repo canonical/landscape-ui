@@ -1,12 +1,13 @@
 import { FC, useEffect } from "react";
-import { Button, Form, Input, Textarea } from "@canonical/react-components";
-import { useFormik } from "formik";
+import { Form, Input, Textarea } from "@canonical/react-components";
+import { FormikProvider, useFormik } from "formik";
 import useDebug from "../../../../hooks/useDebug";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import * as Yup from "yup";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
 import useNotify from "../../../../hooks/useNotify";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
+import FormButtons from "../../../../components/form/FormButtons";
 
 interface FormProps {
   name: string;
@@ -62,45 +63,40 @@ const NewGPGKeyForm: FC = () => {
   useEffect(() => notify.clear, []);
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate>
-      <Input
-        type="text"
-        label="Name"
-        required
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
-        {...formik.getFieldProps("name")}
-      />
+    <FormikProvider value={formik}>
+      <Form onSubmit={formik.handleSubmit} noValidate>
+        <Input
+          type="text"
+          label="Name"
+          required
+          error={
+            formik.touched.name && formik.errors.name
+              ? formik.errors.name
+              : undefined
+          }
+          {...formik.getFieldProps("name")}
+        />
 
-      <Textarea
-        label="Material"
-        required
-        rows={10}
-        error={
-          formik.touched.material && formik.errors.material
-            ? formik.errors.material
-            : undefined
-        }
-        {...formik.getFieldProps("material")}
-      />
-
-      <div className="form-buttons">
-        <Button
-          type="submit"
-          appearance="positive"
-          disabled={isLoading}
-          aria-label="Import GPG key"
-        >
-          Import key
-        </Button>
-        <Button type="button" onClick={closeSidePanel}>
-          Cancel
-        </Button>
-      </div>
-    </Form>
+        <Textarea
+          label="Material"
+          required
+          rows={10}
+          error={
+            formik.touched.material && formik.errors.material
+              ? formik.errors.material
+              : undefined
+          }
+          {...formik.getFieldProps("material")}
+        />
+        <div className="form-buttons">
+          <FormButtons
+            isLoading={isLoading}
+            positiveButtonTitle="Import key"
+            buttonAriaLabel="Import GPG key"
+          />
+        </div>
+      </Form>
+    </FormikProvider>
   );
 };
 
