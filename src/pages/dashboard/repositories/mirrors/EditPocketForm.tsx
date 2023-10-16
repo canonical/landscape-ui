@@ -445,19 +445,16 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         checked={formik.values.include_udeb}
       />
 
-      <div className="form-buttons">
-        <SidePanelFormButtons
-          disabled={
-            isEditing ||
-            isAddingPackageFiltersToPocket ||
-            isRemovingPackageFiltersFromPocket ||
-            isAddingUploaderGPGKeysToPocket ||
-            isRemovingUploaderGPGKeysFromPocket
-          }
-          buttonAriaLabel="Save changes"
-          positiveButtonTitle="Save changes"
-        />
-      </div>
+      <SidePanelFormButtons
+        disabled={
+          isEditing ||
+          isAddingPackageFiltersToPocket ||
+          isRemovingPackageFiltersFromPocket ||
+          isAddingUploaderGPGKeysToPocket ||
+          isRemovingUploaderGPGKeysFromPocket
+        }
+        positiveButtonTitle="Save changes"
+      />
     </Form>
   );
 };

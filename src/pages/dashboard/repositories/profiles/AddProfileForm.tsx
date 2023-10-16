@@ -536,19 +536,17 @@ const AddProfileForm: FC = () => {
             </fieldset>
           )}
 
-          <div className={classes.buttons}>
-            <SidePanelFormButtons
-              disabled={
-                isCreating ||
-                isAssociating ||
-                isAddingAPTSourcesToRepositoryProfile ||
-                isAddingPocketsToRepositoryProfile
-              }
-              positiveButtonTitle="Create profile"
-              buttonAriaLabel="Create profile"
-              specificButtonStyle="u-no-margin--bottom"
-            />
-          </div>
+          <SidePanelFormButtons
+            disabled={
+              isCreating ||
+              isAssociating ||
+              isAddingAPTSourcesToRepositoryProfile ||
+              isAddingPocketsToRepositoryProfile
+            }
+            bottomSticky={true}
+            positiveButtonTitle="Create profile"
+            buttonAriaLabel="Create profile"
+          />
         </div>
       </Form>
     </>

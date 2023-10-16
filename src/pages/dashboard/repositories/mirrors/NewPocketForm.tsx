@@ -548,17 +548,15 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         checked={formik.values.include_udeb}
       />
 
-      <div className="form-buttons">
-        <SidePanelFormButtons
-          disabled={
-            createPocketLoading ||
-            addPackageFiltersToPocketLoading ||
-            addUploaderGPGKeysToPocketLoading
-          }
-          positiveButtonTitle="Create"
-          buttonAriaLabel="Create pocket"
-        />
-      </div>
+      <SidePanelFormButtons
+        disabled={
+          createPocketLoading ||
+          addPackageFiltersToPocketLoading ||
+          addUploaderGPGKeysToPocketLoading
+        }
+        positiveButtonTitle="Create"
+        buttonAriaLabel="Create pocket"
+      />
     </Form>
   );
 };
