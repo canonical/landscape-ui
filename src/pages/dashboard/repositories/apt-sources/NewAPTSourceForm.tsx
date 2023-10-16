@@ -140,13 +140,10 @@ const NewAPTSourceForm: FC = () => {
         {...formik.getFieldProps("access_group")}
         error={formik.touched.access_group && formik.errors.access_group}
       />
-      <div className="form-buttons">
-        <SidePanelFormButtons
-          disabled={isLoading}
-          positiveButtonTitle="Create APT Source"
-          buttonAriaLabel="Create APT source"
-        />
-      </div>
+      <SidePanelFormButtons
+        disabled={isLoading}
+        positiveButtonTitle="Create APT Source"
+      />
     </Form>
   );
 };

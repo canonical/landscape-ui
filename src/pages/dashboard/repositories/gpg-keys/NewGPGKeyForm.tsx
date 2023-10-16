@@ -87,13 +87,10 @@ const NewGPGKeyForm: FC = () => {
         }
         {...formik.getFieldProps("material")}
       />
-      <div className="form-buttons">
-        <SidePanelFormButtons
-          disabled={isLoading}
-          positiveButtonTitle="Import key"
-          buttonAriaLabel="Import GPG key"
-        />
-      </div>
+      <SidePanelFormButtons
+        disabled={isLoading}
+        positiveButtonTitle="Import key"
+      />
     </Form>
   );
 };

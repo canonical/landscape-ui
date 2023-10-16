@@ -426,13 +426,10 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
         {...formik.getFieldProps("include_udeb")}
       />
 
-      <div className="form-buttons">
-        <SidePanelFormButtons
-          disabled={isCreating}
-          positiveButtonTitle="Add series"
-          buttonAriaLabel="Add series"
-        />
-      </div>
+      <SidePanelFormButtons
+        disabled={isCreating}
+        positiveButtonTitle="Add series"
+      />
     </Form>
   );
 };

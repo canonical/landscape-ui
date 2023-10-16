@@ -658,23 +658,20 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
             </fieldset>
           )}
 
-          <div className={classes.buttons}>
-            <SidePanelFormButtons
-              disabled={
-                isEditing ||
-                isAssociating ||
-                isDisassociating ||
-                isAddingAPTSourcesToRepositoryProfile ||
-                isRemovingAPTSourceFromRepositoryProfile ||
-                isAddingPocketsToRepositoryProfile ||
-                isRemovingPocketsFromRepositoryProfile ||
-                !profileChanged
-              }
-              positiveButtonTitle="Save changes"
-              buttonAriaLabel="Save changes"
-              specificButtonStyle="u-no-margin--bottom"
-            />
-          </div>
+          <SidePanelFormButtons
+            disabled={
+              isEditing ||
+              isAssociating ||
+              isDisassociating ||
+              isAddingAPTSourcesToRepositoryProfile ||
+              isRemovingAPTSourceFromRepositoryProfile ||
+              isAddingPocketsToRepositoryProfile ||
+              isRemovingPocketsFromRepositoryProfile ||
+              !profileChanged
+            }
+            bottomSticky={true}
+            positiveButtonTitle="Save changes"
+          />
         </div>
       </Form>
     </>

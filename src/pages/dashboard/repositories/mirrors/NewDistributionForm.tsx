@@ -94,13 +94,10 @@ const NewDistributionForm: FC = () => {
         error={formik.touched.access_group && formik.errors.access_group}
       />
 
-      <div className="form-buttons">
-        <SidePanelFormButtons
-          disabled={isCreatingDistribution}
-          buttonAriaLabel="Create distribution"
-          positiveButtonTitle="Create distribution"
-        />
-      </div>
+      <SidePanelFormButtons
+        disabled={isCreatingDistribution}
+        positiveButtonTitle="Create distribution"
+      />
     </Form>
   );
 };

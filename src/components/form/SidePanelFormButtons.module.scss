@@ -1,0 +1,12 @@
+@import "vanilla-framework/scss/patterns_lists";
+
+.buttons {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  @include vf-list-item-divided;
+  margin-left: -$sph--x-large;
+  padding-left: $sph--x-large;
+  padding-top: $spv--large;
+  background-color: $color-x-light;
+}

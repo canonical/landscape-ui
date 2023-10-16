@@ -6,8 +6,9 @@ import * as Yup from "yup";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import useSeries from "../../../../hooks/useSeries";
 import useDebug from "../../../../hooks/useDebug";
-import { Button, Input } from "@canonical/react-components";
+import { Input } from "@canonical/react-components";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
+import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
 
 interface FormProps {
   distribution: Distribution["name"];
@@ -78,14 +79,10 @@ const SnapshotForm: FC<SnapshotFormProps> = ({ distribution, origin }) => {
         error={formik.touched.name && formik.errors.name}
       />
 
-      <div className="form-buttons">
-        <Button type="submit" appearance="positive" disabled={isLoading}>
-          Create and sync
-        </Button>
-        <Button type="button" onClick={closeSidePanel}>
-          Cancel
-        </Button>
-      </div>
+      <SidePanelFormButtons
+        disabled={isLoading}
+        positiveButtonTitle="Create and sync"
+      />
     </form>
   );
 };
