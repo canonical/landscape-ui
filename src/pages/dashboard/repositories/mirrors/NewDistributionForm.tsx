@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
-import { FormikProvider, useFormik } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
 import { string } from "yup";
 import useDebug from "../../../../hooks/useDebug";
@@ -9,7 +9,7 @@ import useSidePanel from "../../../../hooks/useSidePanel";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
 import { SelectOption } from "../../../../types/SelectOption";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
-import FormButtons from "../../../../components/form/FormButtons";
+import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
 
 const NewDistributionForm: FC = () => {
   const debug = useDebug();
@@ -75,35 +75,33 @@ const NewDistributionForm: FC = () => {
   });
 
   return (
-    <FormikProvider value={formik}>
-      <Form onSubmit={formik.handleSubmit} noValidate>
-        <Input
-          type="text"
-          label="Distribution name"
-          required
-          {...formik.getFieldProps("name")}
-          error={formik.touched.name && formik.errors.name}
-        />
+    <Form onSubmit={formik.handleSubmit} noValidate>
+      <Input
+        type="text"
+        label="Distribution name"
+        required
+        {...formik.getFieldProps("name")}
+        error={formik.touched.name && formik.errors.name}
+      />
 
-        <Select
-          label="Access group"
-          options={[
-            { label: "Select access group", value: "" },
-            ...accessGroupsOptions,
-          ]}
-          {...formik.getFieldProps("access_group")}
-          error={formik.touched.access_group && formik.errors.access_group}
-        />
+      <Select
+        label="Access group"
+        options={[
+          { label: "Select access group", value: "" },
+          ...accessGroupsOptions,
+        ]}
+        {...formik.getFieldProps("access_group")}
+        error={formik.touched.access_group && formik.errors.access_group}
+      />
 
-        <div className="form-buttons">
-          <FormButtons
-            isLoading={isCreatingDistribution}
-            buttonAriaLabel="Create distribution"
-            positiveButtonTitle="Create distribution"
-          />
-        </div>
-      </Form>
-    </FormikProvider>
+      <div className="form-buttons">
+        <SidePanelFormButtons
+          disabled={isCreatingDistribution}
+          buttonAriaLabel="Create distribution"
+          positiveButtonTitle="Create distribution"
+        />
+      </div>
+    </Form>
   );
 };
 
