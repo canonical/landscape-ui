@@ -20,7 +20,7 @@ const MENU_ITEMS: MenuItem[] = [
   {
     label: "Activities",
     path: "/activities",
-    icon: "pods",
+    icon: "status",
   },
   {
     label: "Repositories",
