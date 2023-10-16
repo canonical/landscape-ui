@@ -35,6 +35,8 @@ const TablePagination: FC<TablePaginationProps> = ({
     setPageNumber(currentPage);
   }, [currentPage]);
 
+  if (totalPages <= 1) return null;
+
   return (
     <div className={classNames(classes.wrapper, className)}>
       {description && (
