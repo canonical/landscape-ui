@@ -1,5 +1,5 @@
 import { FC, useRef, useState } from "react";
-import { FormikProvider, useFormik } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
   CheckboxInput,
@@ -27,7 +27,7 @@ import {
   getFilteredAptSources,
   getFilteredDistributionPocketOptions,
 } from "./_helpers";
-import FormButtons from "../../../../components/form/FormButtons";
+import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
 interface FormProps {
   title: string;
   description: string;
@@ -236,256 +236,129 @@ const AddProfileForm: FC = () => {
           },
         ]}
       />
-      <FormikProvider value={formik}>
-        <Form onSubmit={formik.handleSubmit} noValidate>
-          <div className={classes.formInner}>
-            {0 === currentTab && (
-              <>
-                <Input
-                  type="text"
-                  label="Title"
-                  required
-                  error={formik.touched.title && formik.errors.title}
-                  onError={(event) => {
-                    setCurrentTab(0);
-                    event.currentTarget.focus();
-                  }}
-                  {...formik.getFieldProps("title")}
-                />
-                <Input
-                  type="text"
-                  label="Description"
-                  error={
-                    formik.touched.description && formik.errors.description
-                  }
-                  {...formik.getFieldProps("description")}
-                />
-                <Select
-                  label="Access group"
-                  options={[
-                    { label: "Select access group", value: "" },
-                    ...accessGroupsOptions,
-                  ]}
-                  error={
-                    formik.touched.access_group && formik.errors.access_group
-                  }
-                  disabled={isGettingAccessGroups}
-                  {...formik.getFieldProps("access_group")}
-                />
-                <CheckboxInput
-                  label="All computers"
-                  {...formik.getFieldProps("all_computers")}
-                  checked={formik.values.all_computers}
-                />
-                <Input
-                  type="text"
-                  label="Tags"
-                  error={
-                    formik.touched.tags && formik.errors.tags
-                      ? formik.errors.tags
-                      : undefined
-                  }
-                  {...formik.getFieldProps("tags")}
-                  value={formik.values.tags.join(",")}
-                  onChange={(event) => {
-                    formik.setFieldValue(
-                      "tags",
-                      event.target.value.replace(/\s/g, "").split(","),
-                    );
-                  }}
-                  help="List the tag names separated by commas"
-                  disabled={formik.values.all_computers}
-                />
-              </>
-            )}
+      <Form onSubmit={formik.handleSubmit} noValidate>
+        <div className={classes.formInner}>
+          {0 === currentTab && (
+            <>
+              <Input
+                type="text"
+                label="Title"
+                required
+                error={formik.touched.title && formik.errors.title}
+                onError={(event) => {
+                  setCurrentTab(0);
+                  event.currentTarget.focus();
+                }}
+                {...formik.getFieldProps("title")}
+              />
+              <Input
+                type="text"
+                label="Description"
+                error={formik.touched.description && formik.errors.description}
+                {...formik.getFieldProps("description")}
+              />
+              <Select
+                label="Access group"
+                options={[
+                  { label: "Select access group", value: "" },
+                  ...accessGroupsOptions,
+                ]}
+                error={
+                  formik.touched.access_group && formik.errors.access_group
+                }
+                disabled={isGettingAccessGroups}
+                {...formik.getFieldProps("access_group")}
+              />
+              <CheckboxInput
+                label="All computers"
+                {...formik.getFieldProps("all_computers")}
+                checked={formik.values.all_computers}
+              />
+              <Input
+                type="text"
+                label="Tags"
+                error={
+                  formik.touched.tags && formik.errors.tags
+                    ? formik.errors.tags
+                    : undefined
+                }
+                {...formik.getFieldProps("tags")}
+                value={formik.values.tags.join(",")}
+                onChange={(event) => {
+                  formik.setFieldValue(
+                    "tags",
+                    event.target.value.replace(/\s/g, "").split(","),
+                  );
+                }}
+                help="List the tag names separated by commas"
+                disabled={formik.values.all_computers}
+              />
+            </>
+          )}
 
-            {[1, 2].includes(currentTab) && (
-              <div className="p-search-box">
-                <label className="u-off-screen" htmlFor="search">
-                  {`Search ${currentTab === 1 ? "pockets" : "APT sources"}`}
-                </label>
-                <input
-                  ref={inputRef}
-                  type="search"
-                  id="search"
-                  className="p-search-box__input"
-                  name="search"
-                  placeholder="Search"
-                  value={searchText}
-                  onChange={(event) => {
-                    setSearchText(event.target.value);
-                  }}
-                />
-                {searchText && (
-                  <button
-                    type="reset"
-                    className="p-search-box__reset"
-                    onClick={() => {
-                      if (!inputRef.current) {
-                        return;
-                      }
+          {[1, 2].includes(currentTab) && (
+            <div className="p-search-box">
+              <label className="u-off-screen" htmlFor="search">
+                {`Search ${currentTab === 1 ? "pockets" : "APT sources"}`}
+              </label>
+              <input
+                ref={inputRef}
+                type="search"
+                id="search"
+                className="p-search-box__input"
+                name="search"
+                placeholder="Search"
+                value={searchText}
+                onChange={(event) => {
+                  setSearchText(event.target.value);
+                }}
+              />
+              {searchText && (
+                <button
+                  type="reset"
+                  className="p-search-box__reset"
+                  onClick={() => {
+                    if (!inputRef.current) {
+                      return;
+                    }
 
-                      setSearchText("");
-                      inputRef.current.focus();
-                    }}
-                    aria-label="Reset search"
-                  >
-                    <i className="p-icon--close">Close</i>
-                  </button>
+                    setSearchText("");
+                    inputRef.current.focus();
+                  }}
+                  aria-label="Reset search"
+                >
+                  <i className="p-icon--close">Close</i>
+                </button>
+              )}
+              <span
+                className={classNames(
+                  "p-search-box__button p-button--base",
+                  classes.searchIcon,
                 )}
-                <span
-                  className={classNames(
-                    "p-search-box__button p-button--base",
-                    classes.searchIcon,
-                  )}
-                >
-                  <i className="p-icon--search">Search</i>
-                </span>
-              </div>
-            )}
+              >
+                <i className="p-icon--search">Search</i>
+              </span>
+            </div>
+          )}
 
-            {1 === currentTab && (
-              <>
-                <fieldset
-                  className={classNames("checkbox-group", {
-                    "is-error": formik.touched.pockets && formik.errors.pockets,
-                  })}
-                >
-                  <Row className="u-no-padding--left u-no-padding--right">
-                    <Col small={1} medium={2} size={3}>
-                      <h5
-                        className={classNames(
-                          "p-text--x-small",
-                          classes.uppercase,
-                        )}
-                      >
-                        Distribution
-                      </h5>
-                    </Col>
-                    <Col small={1} medium={2} size={4}>
-                      <h5
-                        className={classNames(
-                          "p-text--x-small",
-                          classes.uppercase,
-                        )}
-                      >
-                        Series
-                      </h5>
-                    </Col>
-                    <Col small={2} medium={2} size={5}>
-                      <h5
-                        className={classNames(
-                          "p-text--x-small",
-                          classes.uppercase,
-                        )}
-                      >
-                        Pocket
-                      </h5>
-                    </Col>
-                  </Row>
-
-                  {0 === filteredDistributionPocketOptions.length &&
-                    distributionPocketOptions.length > 0 && (
-                      <p>No pockets found.</p>
-                    )}
-
-                  {filteredDistributionPocketOptions.length > 0 && (
-                    <ul className="p-list--divided u-no-margin--bottom">
-                      {filteredDistributionPocketOptions.map(
-                        ({ distributionName, series }) => (
-                          <li key={distributionName} className="p-list__item">
-                            <Row className="u-no-padding--left u-no-padding--right">
-                              <Col small={1} medium={2} size={3}>
-                                <p
-                                  className={classNames(
-                                    "u-no-margin--bottom",
-                                    classes.label,
-                                  )}
-                                >
-                                  {distributionName}
-                                </p>
-                              </Col>
-                              <Col small={3} medium={4} size={9}>
-                                <ul className="p-list--divided u-no-padding--top u-no-margin--left">
-                                  {series.map(({ seriesName, pockets }) => (
-                                    <li
-                                      key={seriesName}
-                                      className="p-list__item"
-                                    >
-                                      <Row className="u-no-padding--left u-no-padding--right">
-                                        <Col small={1} medium={2} size={4}>
-                                          <p className="u-no-margin--bottom">
-                                            {seriesName}
-                                          </p>
-                                        </Col>
-                                        <Col small={2} medium={2} size={5}>
-                                          <ul className="p-list--divided u-no-padding--top u-no-margin--left">
-                                            {pockets.map(
-                                              ({ pocketName, value }) => (
-                                                <li
-                                                  key={value}
-                                                  className="p-list__item"
-                                                >
-                                                  <CheckboxInput
-                                                    label={pocketName}
-                                                    labelClassName={
-                                                      classes.label
-                                                    }
-                                                    {...formik.getFieldProps(
-                                                      "pockets",
-                                                    )}
-                                                    checked={formik.values.pockets.includes(
-                                                      value,
-                                                    )}
-                                                    onChange={() =>
-                                                      formik.setFieldValue(
-                                                        "pockets",
-                                                        formik.values.pockets.includes(
-                                                          value,
-                                                        )
-                                                          ? formik.values.pockets.filter(
-                                                              (item) =>
-                                                                item !== value,
-                                                            )
-                                                          : [
-                                                              ...formik.values
-                                                                .pockets,
-                                                              value,
-                                                            ],
-                                                      )
-                                                    }
-                                                  />
-                                                </li>
-                                              ),
-                                            )}
-                                          </ul>
-                                        </Col>
-                                      </Row>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </Col>
-                            </Row>
-                          </li>
-                        ),
-                      )}
-                    </ul>
-                  )}
-                </fieldset>
-                <p className="p-form-help-text">
-                  {`${formik.values.pockets.length} selected`}
-                </p>
-              </>
-            )}
-
-            {2 === currentTab && (
+          {1 === currentTab && (
+            <>
               <fieldset
                 className={classNames("checkbox-group", {
-                  "is-error":
-                    formik.touched.apt_sources && formik.errors.apt_sources,
+                  "is-error": formik.touched.pockets && formik.errors.pockets,
                 })}
               >
                 <Row className="u-no-padding--left u-no-padding--right">
+                  <Col small={1} medium={2} size={3}>
+                    <h5
+                      className={classNames(
+                        "p-text--x-small",
+                        classes.uppercase,
+                      )}
+                    >
+                      Distribution
+                    </h5>
+                  </Col>
                   <Col small={1} medium={2} size={4}>
                     <h5
                       className={classNames(
@@ -493,79 +366,191 @@ const AddProfileForm: FC = () => {
                         classes.uppercase,
                       )}
                     >
-                      Name
+                      Series
                     </h5>
                   </Col>
-                  <Col small={3} medium={4} size={8}>
+                  <Col small={2} medium={2} size={5}>
                     <h5
                       className={classNames(
                         "p-text--x-small",
                         classes.uppercase,
                       )}
                     >
-                      Line
+                      Pocket
                     </h5>
                   </Col>
                 </Row>
 
-                {0 === filteredAptSources.length && aptSources.length > 0 && (
-                  <p>No APT sources found.</p>
-                )}
+                {0 === filteredDistributionPocketOptions.length &&
+                  distributionPocketOptions.length > 0 && (
+                    <p>No pockets found.</p>
+                  )}
 
-                {filteredAptSources.length > 0 && (
+                {filteredDistributionPocketOptions.length > 0 && (
                   <ul className="p-list--divided u-no-margin--bottom">
-                    {filteredAptSources.map(({ name, line }) => (
-                      <li key={name} className="p-list__item">
-                        <Row className="u-no-padding--left u-no-padding--right">
-                          <Col small={1} medium={2} size={4}>
-                            <CheckboxInput
-                              label={name}
-                              {...formik.getFieldProps("apt_sources")}
-                              checked={formik.values.apt_sources.includes(name)}
-                              onChange={() =>
-                                formik.setFieldValue(
-                                  "apt_sources",
-                                  formik.values.apt_sources.includes(name)
-                                    ? formik.values.apt_sources.filter(
-                                        (item) => item !== name,
-                                      )
-                                    : [...formik.values.apt_sources, name],
-                                )
-                              }
-                            />
-                          </Col>
-                          <Col small={3} medium={4} size={8}>
-                            <p
-                              className="u-no-margin--bottom u-truncate"
-                              title={line}
-                            >
-                              {line}
-                            </p>
-                          </Col>
-                        </Row>
-                      </li>
-                    ))}
+                    {filteredDistributionPocketOptions.map(
+                      ({ distributionName, series }) => (
+                        <li key={distributionName} className="p-list__item">
+                          <Row className="u-no-padding--left u-no-padding--right">
+                            <Col small={1} medium={2} size={3}>
+                              <p
+                                className={classNames(
+                                  "u-no-margin--bottom",
+                                  classes.label,
+                                )}
+                              >
+                                {distributionName}
+                              </p>
+                            </Col>
+                            <Col small={3} medium={4} size={9}>
+                              <ul className="p-list--divided u-no-padding--top u-no-margin--left">
+                                {series.map(({ seriesName, pockets }) => (
+                                  <li key={seriesName} className="p-list__item">
+                                    <Row className="u-no-padding--left u-no-padding--right">
+                                      <Col small={1} medium={2} size={4}>
+                                        <p className="u-no-margin--bottom">
+                                          {seriesName}
+                                        </p>
+                                      </Col>
+                                      <Col small={2} medium={2} size={5}>
+                                        <ul className="p-list--divided u-no-padding--top u-no-margin--left">
+                                          {pockets.map(
+                                            ({ pocketName, value }) => (
+                                              <li
+                                                key={value}
+                                                className="p-list__item"
+                                              >
+                                                <CheckboxInput
+                                                  label={pocketName}
+                                                  labelClassName={classes.label}
+                                                  {...formik.getFieldProps(
+                                                    "pockets",
+                                                  )}
+                                                  checked={formik.values.pockets.includes(
+                                                    value,
+                                                  )}
+                                                  onChange={() =>
+                                                    formik.setFieldValue(
+                                                      "pockets",
+                                                      formik.values.pockets.includes(
+                                                        value,
+                                                      )
+                                                        ? formik.values.pockets.filter(
+                                                            (item) =>
+                                                              item !== value,
+                                                          )
+                                                        : [
+                                                            ...formik.values
+                                                              .pockets,
+                                                            value,
+                                                          ],
+                                                    )
+                                                  }
+                                                />
+                                              </li>
+                                            ),
+                                          )}
+                                        </ul>
+                                      </Col>
+                                    </Row>
+                                  </li>
+                                ))}
+                              </ul>
+                            </Col>
+                          </Row>
+                        </li>
+                      ),
+                    )}
                   </ul>
                 )}
               </fieldset>
-            )}
+              <p className="p-form-help-text">
+                {`${formik.values.pockets.length} selected`}
+              </p>
+            </>
+          )}
 
-            <div className={classes.buttons}>
-              <FormButtons
-                isLoading={
-                  isCreating ||
-                  isAssociating ||
-                  isAddingAPTSourcesToRepositoryProfile ||
-                  isAddingPocketsToRepositoryProfile
-                }
-                positiveButtonTitle="Create profile"
-                buttonAriaLabel="Create profile"
-                specificButtonStyle="u-no-margin--bottom"
-              />
-            </div>
+          {2 === currentTab && (
+            <fieldset
+              className={classNames("checkbox-group", {
+                "is-error":
+                  formik.touched.apt_sources && formik.errors.apt_sources,
+              })}
+            >
+              <Row className="u-no-padding--left u-no-padding--right">
+                <Col small={1} medium={2} size={4}>
+                  <h5
+                    className={classNames("p-text--x-small", classes.uppercase)}
+                  >
+                    Name
+                  </h5>
+                </Col>
+                <Col small={3} medium={4} size={8}>
+                  <h5
+                    className={classNames("p-text--x-small", classes.uppercase)}
+                  >
+                    Line
+                  </h5>
+                </Col>
+              </Row>
+
+              {0 === filteredAptSources.length && aptSources.length > 0 && (
+                <p>No APT sources found.</p>
+              )}
+
+              {filteredAptSources.length > 0 && (
+                <ul className="p-list--divided u-no-margin--bottom">
+                  {filteredAptSources.map(({ name, line }) => (
+                    <li key={name} className="p-list__item">
+                      <Row className="u-no-padding--left u-no-padding--right">
+                        <Col small={1} medium={2} size={4}>
+                          <CheckboxInput
+                            label={name}
+                            {...formik.getFieldProps("apt_sources")}
+                            checked={formik.values.apt_sources.includes(name)}
+                            onChange={() =>
+                              formik.setFieldValue(
+                                "apt_sources",
+                                formik.values.apt_sources.includes(name)
+                                  ? formik.values.apt_sources.filter(
+                                      (item) => item !== name,
+                                    )
+                                  : [...formik.values.apt_sources, name],
+                              )
+                            }
+                          />
+                        </Col>
+                        <Col small={3} medium={4} size={8}>
+                          <p
+                            className="u-no-margin--bottom u-truncate"
+                            title={line}
+                          >
+                            {line}
+                          </p>
+                        </Col>
+                      </Row>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </fieldset>
+          )}
+
+          <div className={classes.buttons}>
+            <SidePanelFormButtons
+              disabled={
+                isCreating ||
+                isAssociating ||
+                isAddingAPTSourcesToRepositoryProfile ||
+                isAddingPocketsToRepositoryProfile
+              }
+              positiveButtonTitle="Create profile"
+              buttonAriaLabel="Create profile"
+              specificButtonStyle="u-no-margin--bottom"
+            />
           </div>
-        </Form>
-      </FormikProvider>
+        </div>
+      </Form>
     </>
   );
 };

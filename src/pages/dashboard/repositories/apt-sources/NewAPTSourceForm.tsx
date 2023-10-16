@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
-import { useFormik, FormikProvider } from "formik";
+import { useFormik } from "formik";
 import useDebug from "../../../../hooks/useDebug";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import * as Yup from "yup";
@@ -10,7 +10,7 @@ import useGPGKeys from "../../../../hooks/useGPGKeys";
 import { SelectOption } from "../../../../types/SelectOption";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
-import FormButtons from "../../../../components/form/FormButtons";
+import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
 
 interface FormProps {
   name: string;
@@ -97,59 +97,57 @@ const NewAPTSourceForm: FC = () => {
   useEffect(() => notify.clear, []);
 
   return (
-    <FormikProvider value={formik}>
-      <Form onSubmit={formik.handleSubmit} noValidate>
-        <Input
-          type="text"
-          label="Name"
-          required
-          error={
-            formik.touched.name && formik.errors.name
-              ? formik.errors.name
-              : undefined
-          }
-          {...formik.getFieldProps("name")}
-        />
+    <Form onSubmit={formik.handleSubmit} noValidate>
+      <Input
+        type="text"
+        label="Name"
+        required
+        error={
+          formik.touched.name && formik.errors.name
+            ? formik.errors.name
+            : undefined
+        }
+        {...formik.getFieldProps("name")}
+      />
 
-        <Input
-          type="text"
-          label="APT Line"
-          required
-          error={
-            formik.touched.apt_line && formik.errors.apt_line
-              ? formik.errors.apt_line
-              : undefined
-          }
-          {...formik.getFieldProps("apt_line")}
-        />
+      <Input
+        type="text"
+        label="APT Line"
+        required
+        error={
+          formik.touched.apt_line && formik.errors.apt_line
+            ? formik.errors.apt_line
+            : undefined
+        }
+        {...formik.getFieldProps("apt_line")}
+      />
 
-        <Select
-          label="GPG key"
-          disabled={isGettingGPGKeys}
-          options={[{ label: "Select GPG key", value: "" }, ...gpgKeysOptions]}
-          {...formik.getFieldProps("gpg_key")}
-          error={formik.touched.gpg_key && formik.errors.gpg_key}
-        />
+      <Select
+        label="GPG key"
+        disabled={isGettingGPGKeys}
+        options={[{ label: "Select GPG key", value: "" }, ...gpgKeysOptions]}
+        {...formik.getFieldProps("gpg_key")}
+        error={formik.touched.gpg_key && formik.errors.gpg_key}
+      />
 
-        <Select
-          label="Access group"
-          disabled={isGettingAccessGroups}
-          options={[
-            { label: "Select access group", value: "" },
-            ...accessGroupsOptions,
-          ]}
-          {...formik.getFieldProps("access_group")}
-          error={formik.touched.access_group && formik.errors.access_group}
+      <Select
+        label="Access group"
+        disabled={isGettingAccessGroups}
+        options={[
+          { label: "Select access group", value: "" },
+          ...accessGroupsOptions,
+        ]}
+        {...formik.getFieldProps("access_group")}
+        error={formik.touched.access_group && formik.errors.access_group}
+      />
+      <div className="form-buttons">
+        <SidePanelFormButtons
+          disabled={isLoading}
+          positiveButtonTitle="Create APT Source"
+          buttonAriaLabel="Create APT source"
         />
-        <div className="form-buttons">
-          <FormButtons
-            isLoading={isLoading}
-            positiveButtonTitle="Create APT Source"
-            buttonAriaLabel="Create APT source"
-          />
-        </div>
-      </Form>
-    </FormikProvider>
+      </div>
+    </Form>
   );
 };
 
