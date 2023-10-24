@@ -22,19 +22,16 @@
   }
 }
 
+.description {
+  color: $colors--dark-theme--text-inactive;
+}
+
 .link {
   &,
-  &:visited {
-    color: $colors--dark-theme--text-inactive;
-  }
-
   &:visited,
   &:focus,
   &:hover {
-    text-decoration: none;
-  }
-
-  &:hover {
     color: $colors--dark-theme--text-default !important;
+    text-decoration: none;
   }
 }
