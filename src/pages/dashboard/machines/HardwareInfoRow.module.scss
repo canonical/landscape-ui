@@ -4,7 +4,7 @@
 .wrapper {
   display: flex;
 
-  @media (max-width: $breakpoint-small - 1px) {
+  @media (max-width: #{$breakpoint-small - 1px}) {
     flex-direction: column;
   }
 }
@@ -21,6 +21,7 @@
 }
 
 .infoRow {
+  font-weight: 500;
   padding-top: $spv--large;
   padding-bottom: $spv--large;
 }

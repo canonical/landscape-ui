@@ -13,6 +13,7 @@ interface GetComputersParams {
   offset?: number;
   with_network?: boolean;
   with_hardware?: boolean;
+  with_grouped_hardware?: boolean;
   with_annotations?: boolean;
 }
 
