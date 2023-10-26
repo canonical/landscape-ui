@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import classes from "./Navigation.module.scss";
+import { ROOT_PATH } from "../../constants";
 
 interface MenuItem {
   label: string;
@@ -13,24 +14,24 @@ interface MenuItem {
 const MENU_ITEMS: MenuItem[] = [
   {
     label: "Repositories",
-    path: "/repositories",
+    path: `${ROOT_PATH}repositories`,
     icon: "fork",
     items: [
       {
         label: "Mirrors",
-        path: "/repositories/mirrors",
+        path: `${ROOT_PATH}repositories/mirrors`,
       },
       {
         label: "Profiles",
-        path: "/repositories/profiles",
+        path: `${ROOT_PATH}repositories/profiles`,
       },
       {
         label: "GPG Keys",
-        path: "/repositories/gpg-keys",
+        path: `${ROOT_PATH}repositories/gpg-keys`,
       },
       {
         label: "APT Sources",
-        path: "/repositories/apt-sources",
+        path: `${ROOT_PATH}repositories/apt-sources`,
       },
     ],
   },
