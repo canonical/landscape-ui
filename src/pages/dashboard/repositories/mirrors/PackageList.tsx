@@ -7,9 +7,9 @@ import {
   Button,
   CheckboxInput,
   Col,
-  Input,
   ModularTable,
   Row,
+  SearchBox,
 } from "@canonical/react-components";
 import useDebug from "../../../../hooks/useDebug";
 import classNames from "classnames";
@@ -48,6 +48,8 @@ const PackageList: FC<PackageListProps> = ({
   const [selectedPackages, setSelectedPackages] = useState<number[]>([]);
   const [hasUpdatedOrDeletedPackages, setHasUpdatedOrDeletedPackages] =
     useState(false);
+  const [inputText, setInputText] = useState("");
+  const [search, setSearch] = useState("");
 
   const isSmall = useMediaQuery("(min-width: 620px)");
 
@@ -72,6 +74,9 @@ const PackageList: FC<PackageListProps> = ({
     name: pocket.name,
     series: seriesName,
     distribution: distributionName,
+    search,
+    limit: itemsPerPage,
+    offset: (currentPage - 1) * itemsPerPage,
   });
 
   if (listPocketError) {
@@ -81,12 +86,11 @@ const PackageList: FC<PackageListProps> = ({
   const pocketPackages: FormattedPackage[] = [];
 
   if (listPocketData) {
-    for (const dataKey in listPocketData.data) {
-      for (const [packageName, packageVersion] of listPocketData.data[
-        dataKey
-      ]) {
-        pocketPackages.push({ packageName, packageVersion });
-      }
+    for (const newPackage of listPocketData.data.results) {
+      pocketPackages.push({
+        packageName: newPackage.name,
+        packageVersion: newPackage.version,
+      });
     }
   }
 
@@ -183,15 +187,11 @@ const PackageList: FC<PackageListProps> = ({
   };
 
   const packagesToShow = useMemo(
-    () =>
-      getSortedPackages().filter(
-        (_, index) =>
-          index >= (currentPage - 1) * itemsPerPage &&
-          index < currentPage * itemsPerPage,
-      ),
+    () => getSortedPackages(),
     [
       currentPage,
       itemsPerPage,
+      search,
       hasUpdatedOrDeletedPackages,
       pocketPackages.length,
       diffPullPocket.length,
@@ -398,7 +398,6 @@ const PackageList: FC<PackageListProps> = ({
             <div className="p-segmented-control__list">
               {("mirror" == pocket.mode || "pull" == pocket.mode) && (
                 <Button
-                  dense
                   className="p-segmented-control__button"
                   onClick={handleSync}
                   disabled={
@@ -415,7 +414,7 @@ const PackageList: FC<PackageListProps> = ({
                 </Button>
               )}
               <Button
-                dense
+                dense={"upload" === pocket.mode}
                 className="p-segmented-control__button"
                 onClick={handleEditPocket}
                 aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${seriesName}`}
@@ -423,7 +422,7 @@ const PackageList: FC<PackageListProps> = ({
                 Edit
               </Button>
               <Button
-                dense
+                dense={"upload" === pocket.mode}
                 className="p-segmented-control__button"
                 onClick={handleRemovePocket}
                 aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${seriesName}`}
@@ -449,15 +448,37 @@ const PackageList: FC<PackageListProps> = ({
         </Col>
         {("pull" === pocket.mode || "mirror" === pocket.mode) && (
           <Col size={6} medium={3}>
-            <Input
-              type="text"
-              placeholder="Search"
-              aria-label="Package search"
-              className={classNames({
-                "is-dense": isSmall,
-                "u-no-margin--bottom": !isSmall,
-              })}
-            />
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                setSearch(inputText);
+                setCurrentPage(1);
+              }}
+              noValidate
+            >
+              <SearchBox
+                externallyControlled
+                shouldRefocusAfterReset
+                aria-label="Package search"
+                onChange={(inputValue) => {
+                  setInputText(inputValue);
+                }}
+                value={inputText}
+                onClear={() => {
+                  setInputText("");
+                  setSearch("");
+                  setCurrentPage(1);
+                }}
+                className={classNames({
+                  "is-dense": isSmall,
+                  "u-no-margin--bottom": !isSmall,
+                })}
+                onSearch={() => {
+                  setSearch(inputText);
+                  setCurrentPage(1);
+                }}
+              />
+            </form>
           </Col>
         )}
       </Row>
@@ -482,13 +503,13 @@ const PackageList: FC<PackageListProps> = ({
       />
       <TablePagination
         currentPage={currentPage}
-        totalPages={Math.ceil(pocketPackages.length / itemsPerPage)}
+        totalItems={listPocketData?.data.count}
         paginate={(page) => {
           setSelectedPackages([]);
           setCurrentPage(page);
         }}
-        itemsPerPage={itemsPerPage}
-        setItemsPerPage={(itemsNumber) => {
+        pageSize={itemsPerPage}
+        setPageSize={(itemsNumber) => {
           setItemsPerPage(itemsNumber);
         }}
       />
