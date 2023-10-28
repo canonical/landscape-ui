@@ -1,5 +1,6 @@
 import React, { FC, ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ROOT_PATH } from "../constants";
 
 const AUTH_STORAGE_KEY = "_landscape_auth";
 
@@ -71,7 +72,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem(AUTH_STORAGE_KEY);
-    navigate("/login", { replace: true });
+    navigate(`${ROOT_PATH}login`, { replace: true });
   };
 
   return (
