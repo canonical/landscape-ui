@@ -24,7 +24,6 @@ import {
   getFilteredAptSources,
   getFilteredDistributionPocketOptions,
   getFullProfilePocketNames,
-  isProfileChanged,
 } from "./_helpers";
 import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
 
@@ -68,9 +67,7 @@ interface EditProfileFormProps {
 
 const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
   const [currentTab, setCurrentTab] = useState(0);
-  const [profileChanged, setProfileChanged] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [tagsChangesTrigger, setTagsChangesTrigger] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -319,19 +316,6 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
     formik.setFieldValue("pockets", fullPocketNames);
   }, []);
 
-  useEffect(() => {
-    setProfileChanged(
-      isProfileChanged(profile, formik.values, fullPocketNames),
-    );
-  }, [
-    formik.values.title,
-    formik.values.description,
-    formik.values.all_computers,
-    formik.values.pockets.length,
-    formik.values.apt_sources.length,
-    tagsChangesTrigger,
-  ]);
-
   const { data: getAPTSourcesResponse } = getAPTSourcesQuery();
 
   const aptSources = getAPTSourcesResponse?.data ?? [];
@@ -412,8 +396,6 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                     "tags",
                     event.target.value.replace(/\s/g, "").split(","),
                   );
-
-                  setTagsChangesTrigger((prevState) => !prevState);
                 }}
                 help="List the tag names separated by commas"
                 disabled={formik.values.all_computers}
@@ -666,8 +648,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               isAddingAPTSourcesToRepositoryProfile ||
               isRemovingAPTSourceFromRepositoryProfile ||
               isAddingPocketsToRepositoryProfile ||
-              isRemovingPocketsFromRepositoryProfile ||
-              !profileChanged
+              isRemovingPocketsFromRepositoryProfile
             }
             bottomSticky={true}
             positiveButtonTitle="Save changes"
