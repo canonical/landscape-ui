@@ -17,6 +17,10 @@
   padding: $sp-medium;
   opacity: 0;
 
+  .menuOpen & {
+    opacity: 1;
+  }
+
   @media screen and (min-width: $breakpoint-large) {
     opacity: 1;
   }

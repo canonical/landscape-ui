@@ -24,9 +24,12 @@ const Sidebar: FC = () => {
       <header
         className={classNames(
           "l-navigation",
-          { "is-collapsed": menuClosed },
-          betaClasses.navigation,
           desktopHeaderClasses.header,
+          betaClasses.navigation,
+          {
+            "is-collapsed": menuClosed,
+            [betaClasses.menuOpen]: !menuClosed,
+          },
         )}
       >
         <div className="l-navigation__drawer">
