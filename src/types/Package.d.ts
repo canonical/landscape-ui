@@ -15,3 +15,11 @@ export interface PackageDiff {
 export interface PackagesList {
   [componentArchitecturePair: string]: Package[];
 }
+
+export interface PackageObject {
+  arch: string;
+  component: string;
+  name: string;
+  udeb: boolean;
+  version: string;
+}

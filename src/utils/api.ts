@@ -30,6 +30,8 @@ export const generateRequestParams = (
       });
     } else if ("boolean" === typeof value) {
       paramsToPass[param] = `${value}`;
+    } else if ("number" === typeof value) {
+      paramsToPass[param] = `${value}`;
     } else if (
       "" !== value &&
       undefined !== value &&

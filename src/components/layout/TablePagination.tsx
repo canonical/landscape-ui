@@ -1,39 +1,57 @@
-import { FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Button, Icon, Select } from "@canonical/react-components";
 import classes from "./TablePagination.module.scss";
 import classNames from "classnames";
 
-export enum Label {
-  Pagination = "Table pagination",
-  PreviousPage = "Previous page",
-  NextPage = "Next page",
-}
-
 interface TablePaginationProps {
   currentPage: number;
-  totalPages: number;
+  totalItems: number | undefined;
   paginate: (page: number) => void;
-  itemsPerPage: number;
-  setItemsPerPage: (itemsNumber: number) => void;
+  pageSize: number;
+  setPageSize: (itemsNumber: number) => void;
   className?: string;
   description?: string | false;
 }
 
 const TablePagination: FC<TablePaginationProps> = ({
-  totalPages,
+  totalItems,
   currentPage,
   paginate,
-  itemsPerPage,
-  setItemsPerPage,
+  pageSize,
+  setPageSize,
   className = "",
   description = false,
 }) => {
   const [pageNumber, setPageNumber] = useState<number | "">("");
   const [error, setError] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     setPageNumber(currentPage);
   }, [currentPage]);
+
+  useEffect(() => {
+    if (!totalItems) {
+      return;
+    }
+
+    setTotalPages(Math.ceil(totalItems / pageSize));
+  }, [totalItems]);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value) {
+      setPageNumber(e.target.valueAsNumber);
+      if (e.target.valueAsNumber > totalPages || e.target.valueAsNumber < 1) {
+        setError(`"${e.target.valueAsNumber}" is not a valid page number.`);
+      } else {
+        setError("");
+        paginate(e.target.valueAsNumber);
+      }
+    } else {
+      setPageNumber("");
+      setError("Enter a page number.");
+    }
+  };
 
   if (totalPages <= 1) {
     return null;
@@ -61,12 +79,12 @@ const TablePagination: FC<TablePaginationProps> = ({
             { label: "50 / page", value: 50 },
             { label: "100 / page", value: 100 },
           ]}
-          value={itemsPerPage}
+          value={pageSize}
           onChange={(event) => {
-            setItemsPerPage(parseInt(event.target.value));
+            setPageSize(parseInt(event.target.value));
           }}
         />
-        <nav aria-label={Label.Pagination} className="p-pagination">
+        <nav aria-label="Table pagination" className="p-pagination">
           <span
             className={classNames(
               "p-pagination__items",
@@ -74,7 +92,7 @@ const TablePagination: FC<TablePaginationProps> = ({
             )}
           >
             <Button
-              aria-label={Label.PreviousPage}
+              aria-label="Previous page"
               appearance="link"
               className="p-pagination__link--previous u-no-margin--right u-no-margin--bottom"
               disabled={currentPage === 1}
@@ -113,25 +131,7 @@ const TablePagination: FC<TablePaginationProps> = ({
                     setPageNumber(currentPage);
                     setError("");
                   }}
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      setPageNumber(e.target.valueAsNumber);
-                      if (
-                        e.target.valueAsNumber > totalPages ||
-                        e.target.valueAsNumber < 1
-                      ) {
-                        setError(
-                          `"${e.target.valueAsNumber}" is not a valid page number.`,
-                        );
-                      } else {
-                        setError("");
-                        paginate(e.target.valueAsNumber);
-                      }
-                    } else {
-                      setPageNumber("");
-                      setError("Enter a page number.");
-                    }
-                  }}
+                  onChange={handleChange}
                   required
                   type="number"
                   value={pageNumber}
@@ -152,7 +152,7 @@ const TablePagination: FC<TablePaginationProps> = ({
               of {Math.max(totalPages, 1)}
             </strong>
             <Button
-              aria-label={Label.NextPage}
+              aria-label="Next page"
               appearance="link"
               className="p-pagination__link--next u-no-margin--bottom"
               disabled={currentPage === totalPages || 0 === totalPages}
