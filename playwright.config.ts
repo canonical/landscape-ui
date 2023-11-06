@@ -5,7 +5,7 @@ export const STORAGE_STATE = path.join(__dirname, "playwright/.auth/user.json");
 
 const PORT = process.env.CI ? 4173 : 5173;
 
-const BASE_URL = `http://127.0.0.1:${PORT}`;
+const BASE_URL = `http://localhost:${PORT}`;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -27,7 +27,7 @@ export default defineConfig({
     command: process.env.CI ? "npm run preview" : "npm run dev",
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 5 * 60 * 1000,
+    timeout: 120 * 1000,
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
