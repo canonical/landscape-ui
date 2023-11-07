@@ -93,7 +93,7 @@ const HardwarePanel: FC = () => {
         });
 
   const processorRow = groupedHardware.cpu.map((cpu) => {
-    const arrayToReturn = [
+    const processorArray = [
       {
         label: "VENDOR",
         value: cpu.vendor,
@@ -112,7 +112,7 @@ const HardwarePanel: FC = () => {
       },
     ];
     if (Object.keys(cpu.cache).length > 0) {
-      arrayToReturn.push(
+      processorArray.push(
         ...Object.entries(cpu.cache).map(([key, value]) => {
           return {
             label: key,
@@ -121,12 +121,12 @@ const HardwarePanel: FC = () => {
         }),
       );
     } else {
-      arrayToReturn.push({
+      processorArray.push({
         label: "CACHE",
         value: "Not available",
       });
     }
-    return arrayToReturn;
+    return processorArray;
   });
   const multimediaRow = [
     [
