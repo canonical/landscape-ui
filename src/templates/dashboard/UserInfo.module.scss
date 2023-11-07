@@ -21,4 +21,6 @@
 
 .button {
   justify-content: flex-start !important;
+  align-items: center;
+  column-gap: $sph--small;
 }

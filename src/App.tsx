@@ -5,6 +5,7 @@ import useAuth from "./hooks/useAuth";
 import DashboardPage from "./pages/dashboard";
 import RepositoryPage from "./pages/dashboard/repositories";
 import LoadingState from "./components/layout/LoadingState";
+import { ROOT_PATH } from "./constants";
 
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 const LoginPage = lazy(() => import("./pages/auth/login"));
@@ -36,7 +37,7 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
 
   useEffect(() => {
     if (!authorized) {
-      navigate("/login", { replace: true });
+      navigate(`${ROOT_PATH}login`, { replace: true });
     }
   }, [authorized]);
 
@@ -49,7 +50,7 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
 
   useEffect(() => {
     if (authorized) {
-      navigate("/", { replace: true });
+      navigate(ROOT_PATH, { replace: true });
     }
   }, [authorized]);
 
@@ -61,7 +62,7 @@ const App: FC = () => {
     <FetchProvider>
       <Routes>
         <Route
-          path="/"
+          path={ROOT_PATH}
           element={
             <AuthRoute>
               <DashboardPage />
@@ -134,7 +135,7 @@ const App: FC = () => {
           />
         </Route>
         <Route
-          path="login"
+          path={`${ROOT_PATH}login`}
           element={
             <GuestRoute>
               <Suspense fallback={<LoadingState />}>
@@ -144,7 +145,7 @@ const App: FC = () => {
           }
         />
         <Route
-          path="*"
+          path={`${ROOT_PATH}*`}
           element={
             <Suspense fallback={<LoadingState />}>
               <PageNotFound />

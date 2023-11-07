@@ -1,10 +1,7 @@
 import { Distribution } from "../../../../types/Distribution";
 import { AccessGroup } from "../../../../types/AccessGroup";
 import { APTSource } from "../../../../types/APTSource";
-import {
-  RepositoryProfile,
-  RepositoryProfilePocket,
-} from "../../../../types/RepositoryProfile";
+import { RepositoryProfilePocket } from "../../../../types/RepositoryProfile";
 
 export const getDistributionPocketOptions = (distributions: Distribution[]) => {
   return distributions
@@ -93,57 +90,4 @@ export const getFullProfilePocketNames = (
   return profilePockets.map(({ distribution, name, series }) => {
     return `${distribution.name}/${series.name}/${name}`;
   });
-};
-
-interface IsProfileChangedProps {
-  name: string;
-  title: string;
-  description: string;
-  tags: string[];
-  all_computers: boolean;
-  apt_sources: string[];
-  pockets: string[];
-}
-
-export const isProfileChanged = (
-  profile: RepositoryProfile,
-  formikValues: IsProfileChangedProps,
-  fullPocketNames: string[],
-) => {
-  const changes: {
-    [key in keyof Omit<IsProfileChangedProps, "name">]: boolean;
-  } = {
-    title: false,
-    description: false,
-    all_computers: false,
-    tags: false,
-    apt_sources: false,
-    pockets: false,
-  };
-
-  for (const formikValuesKey in formikValues) {
-    const key = formikValuesKey as keyof IsProfileChangedProps;
-
-    if ("name" === key) {
-      continue;
-    }
-
-    if ("title" === key || "description" === key || "all_computers" === key) {
-      if ("title" === key && "" === formikValues.title) {
-        changes.title = false;
-      } else changes[key] = formikValues[key] !== profile[key];
-    } else if ("pockets" === key) {
-      changes.pockets =
-        formikValues.pockets.length !== fullPocketNames.length ||
-        !formikValues.pockets.every((pocketName) =>
-          fullPocketNames.includes(pocketName),
-        );
-    } else {
-      changes[key] =
-        profile[key].length !== formikValues[key].length ||
-        !profile[key].every((item) => formikValues[key].includes(item));
-    }
-  }
-
-  return Object.values(changes).some((value) => value);
 };
