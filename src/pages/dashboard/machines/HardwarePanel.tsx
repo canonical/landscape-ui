@@ -26,22 +26,6 @@ const HardwarePanel: FC = () => {
   const groupedHardware: GroupedHardware | undefined =
     getComputersQueryResult?.data[0].grouped_hardware;
 
-  const LABELS = {
-    MODEL: "MODEL",
-    VENDOR: "VENDOR",
-    BIOS_VENDOR: "BIOS VENDOR",
-    BIOS_DATE: "BIOS DATE",
-    SERIAL_NUMBER: "SERIAL NUMBER",
-    CHASSIS: "CHASSIS",
-    BIOS_VERSION: "BIOS VERSION",
-    IP: "IP",
-    MAC_ADDRESS: "MAC_ADDRESS",
-    DESCRIPTION: "DESCRIPTION",
-    CACHE: "CACHE",
-    CLOCK_SPEED: "CLOCK_SPEED",
-    ARCHITECTURE: "ARCHITECTURE",
-  };
-
   if (!groupedHardware) {
     return null;
   }
@@ -49,31 +33,31 @@ const HardwarePanel: FC = () => {
   const systemRow = [
     [
       {
-        label: LABELS.MODEL,
+        label: "MODEL",
         value: groupedHardware.system.model,
       },
       {
-        label: LABELS.VENDOR,
+        label: "VENDOR",
         value: groupedHardware.system.vendor,
       },
       {
-        label: LABELS.BIOS_VENDOR,
+        label: "BIOS VENDOR",
         value: groupedHardware.system.bios_vendor,
       },
       {
-        label: LABELS.BIOS_DATE,
+        label: "BIOS DATE",
         value: groupedHardware.system.bios_date,
       },
       {
-        label: LABELS.SERIAL_NUMBER,
+        label: "SERIAL NUMBER",
         value: groupedHardware.system.serial,
       },
       {
-        label: LABELS.CHASSIS,
+        label: "CHASSIS",
         value: groupedHardware.system.chassis,
       },
       {
-        label: LABELS.BIOS_VERSION,
+        label: "BIOS VERSION",
         value: groupedHardware.system.bios_version,
       },
     ],
@@ -86,63 +70,68 @@ const HardwarePanel: FC = () => {
       : groupedHardware.network.map((network) => {
           return [
             {
-              label: LABELS.IP,
+              label: "IP",
               value: network.ip,
             },
             {
-              label: LABELS.VENDOR,
+              label: "VENDOR",
               value: network.vendor,
             },
             {
-              label: LABELS.VENDOR,
+              label: "VENDOR",
               value: network.product,
             },
             {
-              label: LABELS.MAC_ADDRESS,
+              label: "MAC ADDRESS",
               value: network.mac,
             },
             {
-              label: LABELS.DESCRIPTION,
+              label: "DESCRIPTION",
               value: network.description,
             },
           ];
         });
 
   const processorRow = groupedHardware.cpu.map((cpu) => {
-    return [
+    const arrayToReturn = [
       {
-        label: LABELS.VENDOR,
+        label: "VENDOR",
         value: cpu.vendor,
       },
       {
-        label: LABELS.CACHE,
-        value:
-          cpu.cache[
-            Object.keys(cpu.cache)[0] as
-              | "L1 cache"
-              | "L2 cache"
-              | "L3 cache"
-              | "L4 cache"
-          ] ?? "Not available",
-      },
-      {
-        label: LABELS.CLOCK_SPEED,
+        label: "CLOCK SPEED",
         value: cpu.clock_speed,
       },
       {
-        label: LABELS.MODEL,
+        label: "MODEL",
         value: cpu.model,
       },
       {
-        label: LABELS.ARCHITECTURE,
+        label: "ARCHITECTURE",
         value: cpu.architecture,
       },
     ];
+    if (Object.keys(cpu.cache).length > 0) {
+      arrayToReturn.push(
+        ...Object.entries(cpu.cache).map(([key, value]) => {
+          return {
+            label: key,
+            value: value,
+          };
+        }),
+      );
+    } else {
+      arrayToReturn.push({
+        label: "CACHE",
+        value: "Not available",
+      });
+    }
+    return arrayToReturn;
   });
   const multimediaRow = [
     [
-      { label: LABELS.MODEL, value: groupedHardware.multimedia.model },
-      { label: LABELS.VENDOR, value: groupedHardware.multimedia.vendor },
+      { label: "MODEL", value: groupedHardware.multimedia.model },
+      { label: "VENDOR", value: groupedHardware.multimedia.vendor },
     ],
   ];
 
