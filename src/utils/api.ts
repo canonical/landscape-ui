@@ -34,8 +34,6 @@ export const generateRequestParams = (
       paramsToPass[param] = `${value}`;
     } else if ("boolean" === typeof value) {
       paramsToPass[param] = `${value}`;
-    } else if ("number" === typeof value) {
-      paramsToPass[param] = `${value}`;
     } else if (
       "" !== value &&
       undefined !== value &&
