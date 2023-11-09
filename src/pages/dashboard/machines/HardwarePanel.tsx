@@ -3,6 +3,7 @@ import HardwareInfoRow from "./HardwareInfoRow";
 import useComputers from "../../../hooks/useComputers";
 import { useParams } from "react-router-dom";
 import useDebug from "../../../hooks/useDebug";
+import { GroupedHardware } from "../../../types/Computer";
 
 const HardwarePanel: FC = () => {
   const { hostname } = useParams();
@@ -15,43 +16,140 @@ const HardwarePanel: FC = () => {
     getComputersQuery({
       query: `hostname:${hostname}`,
       with_hardware: true,
+      with_grouped_hardware: true,
     });
 
   if (getComputersQueryError) {
     debug(getComputersQueryError);
   }
 
-  const hardware = getComputersQueryResult?.data[0].hardware ?? [];
+  const groupedHardware: GroupedHardware | undefined =
+    getComputersQueryResult?.data[0].grouped_hardware;
 
-  const getHardwareInfo = (attribute: string) => {
-    const hardwareDescription = hardware.find(
-      ([hardwareAttribute]) => hardwareAttribute === attribute,
-    );
+  if (!groupedHardware) {
+    return null;
+  }
 
-    return hardwareDescription ? hardwareDescription[1] : "Not available";
-  };
+  const systemRow = [
+    [
+      {
+        label: "MODEL",
+        value: groupedHardware.system.model,
+      },
+      {
+        label: "VENDOR",
+        value: groupedHardware.system.vendor,
+      },
+      {
+        label: "BIOS VENDOR",
+        value: groupedHardware.system.bios_vendor,
+      },
+      {
+        label: "BIOS DATE",
+        value: groupedHardware.system.bios_date,
+      },
+      {
+        label: "SERIAL NUMBER",
+        value: groupedHardware.system.serial,
+      },
+      {
+        label: "CHASSIS",
+        value: groupedHardware.system.chassis,
+      },
+      {
+        label: "BIOS VERSION",
+        value: groupedHardware.system.bios_version,
+      },
+    ],
+  ];
+
+  const memoryRow = [[{ label: "SIZE", value: groupedHardware.memory.size }]];
+  const partitionsRow =
+    typeof groupedHardware.network === "string"
+      ? [[{ label: "Network", value: groupedHardware.network }]]
+      : groupedHardware.network.map((network) => {
+          return [
+            {
+              label: "IP",
+              value: network.ip,
+            },
+            {
+              label: "VENDOR",
+              value: network.vendor,
+            },
+            {
+              label: "VENDOR",
+              value: network.product,
+            },
+            {
+              label: "MAC ADDRESS",
+              value: network.mac,
+            },
+            {
+              label: "DESCRIPTION",
+              value: network.description,
+            },
+          ];
+        });
+
+  const processorRow = groupedHardware.cpu.map((cpu) => {
+    const processorArray = [
+      {
+        label: "VENDOR",
+        value: cpu.vendor,
+      },
+      {
+        label: "CLOCK SPEED",
+        value: cpu.clock_speed,
+      },
+      {
+        label: "MODEL",
+        value: cpu.model,
+      },
+      {
+        label: "ARCHITECTURE",
+        value: cpu.architecture,
+      },
+    ];
+    if (Object.keys(cpu.cache).length > 0) {
+      processorArray.push(
+        ...Object.entries(cpu.cache).map(([key, value]) => {
+          return {
+            label: key,
+            value: value,
+          };
+        }),
+      );
+    } else {
+      processorArray.push({
+        label: "CACHE",
+        value: "Not available",
+      });
+    }
+    return processorArray;
+  });
+  const multimediaRow = [
+    [
+      { label: "MODEL", value: groupedHardware.multimedia.model },
+      { label: "VENDOR", value: groupedHardware.multimedia.vendor },
+    ],
+  ];
 
   return (
     <>
+      <HardwareInfoRow infoRowLabel="System" infoBlocksArray={systemRow} />
       <HardwareInfoRow
-        infoRowLabel="System"
-        infoBlocksArray={[
-          [
-            { label: "Model", value: getHardwareInfo("product") },
-            { label: "Vendor", value: getHardwareInfo("vendor") },
-            {
-              label: "Bios vendor",
-              value: getHardwareInfo("firmware.vendor"),
-            },
-            { label: "Bios Date", value: getHardwareInfo("firmware.date") },
-            { label: "Serial Number", value: getHardwareInfo("serial") },
-            { label: "Chassis", value: getHardwareInfo("firmware.vendor") },
-            {
-              label: "Bios Version",
-              value: getHardwareInfo("firmware.version"),
-            },
-          ],
-        ]}
+        infoRowLabel="Processor"
+        infoBlocksArray={processorRow}
+      />
+      <HardwareInfoRow infoRowLabel="Memory" infoBlocksArray={memoryRow} />
+      <HardwareInfoRow
+        infoRowLabel="Partitions"
+        infoBlocksArray={partitionsRow}
+      />
+      <HardwareInfoRow
+        infoRowLabel="Multimedia"
+        infoBlocksArray={multimediaRow}
       />
     </>
   );
