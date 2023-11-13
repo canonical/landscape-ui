@@ -35,6 +35,7 @@ export interface CreatePullPocketParams extends CreateCommonPocketParams {
   pull_pocket: string;
   pull_series?: string;
   filter_type?: "whitelist" | "blacklist";
+  filter_packages?: string[];
 }
 
 export interface CreateUploadPocketParams extends CreateCommonPocketParams {
