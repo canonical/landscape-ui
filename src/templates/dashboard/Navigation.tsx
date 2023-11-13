@@ -45,6 +45,11 @@ const MENU_ITEMS: MenuItem[] = [
       },
     ],
   },
+  {
+    label: "Scripts",
+    path: "/scripts",
+    icon: "open-terminal",
+  },
 ];
 
 const Navigation: FC = () => {
