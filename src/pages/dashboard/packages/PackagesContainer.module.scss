@@ -1,0 +1,18 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.searchRow {
+  display: flex;
+  justify-content: flex-end;
+  position: sticky;
+  top: 9 * $sp-unit;
+  background-color: $color-x-light;
+  padding-bottom: $spv--large;
+  margin-bottom: $spv--small;
+  z-index: 1;
+}
+
+.search {
+  max-width: 50%;
+  width: 100%;
+}
