@@ -240,11 +240,11 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     SyncMirrorPocketParams
   >({
-    mutationKey: ["packages", "sync"],
+    mutationKey: ["pocketPackages", "sync"],
     mutationFn: (params) => authFetch!.get("SyncMirrorPocket", { params }),
     onSuccess: (data, variables) => {
       queryClient
-        .invalidateQueries(["packages", { ...variables }])
+        .invalidateQueries(["pocketPackages", { ...variables }])
         .catch(debug);
     },
   });
@@ -254,11 +254,11 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     PullPackagesToPocketParams
   >({
-    mutationKey: ["packages", "pull"],
+    mutationKey: ["pocketPackages", "pull"],
     mutationFn: (params) => authFetch!.get("PullPackagesToPocket", { params }),
     onSuccess: (data, variables) => {
       queryClient
-        .invalidateQueries(["packages", { ...variables }])
+        .invalidateQueries(["pocketPackages", { ...variables }])
         .catch(debug);
     },
   });
@@ -268,12 +268,12 @@ export default function usePockets(): UsePocketsResult {
     AxiosError<ApiError>,
     RemovePackagesFromPocketParams
   >({
-    mutationKey: ["packages", "remove"],
+    mutationKey: ["pocketPackages", "remove"],
     mutationFn: (params) =>
       authFetch!.get("RemovePackagesFromPocket", { params }),
     onSuccess: (data, variables) => {
       queryClient
-        .invalidateQueries(["packages", { ...variables }, "list"])
+        .invalidateQueries(["pocketPackages", { ...variables }, "list"])
         .catch(debug);
     },
   });
@@ -283,7 +283,7 @@ export default function usePockets(): UsePocketsResult {
     DiffPullPocketParams
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<PackageDiff>, AxiosError<ApiError>>({
-      queryKey: ["packages", { ...queryParams }, "difference"],
+      queryKey: ["pocketPackages", { ...queryParams }, "difference"],
       queryFn: () =>
         authFetch!.get("DiffPullPocket", {
           params: queryParams,
@@ -299,7 +299,7 @@ export default function usePockets(): UsePocketsResult {
       AxiosResponse<ApiPaginatedResponse<PackageObject>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["packages", { ...queryParams }, "list"],
+      queryKey: ["pocketPackages", { ...queryParams }, "list"],
       queryFn: () =>
         authFetch!.get("ListPocket", {
           params: queryParams,
@@ -318,7 +318,7 @@ export default function usePockets(): UsePocketsResult {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries(["distributions"]).catch(debug);
       queryClient
-        .invalidateQueries(["packages", { ...variables }])
+        .invalidateQueries(["pocketPackages", { ...variables }])
         .catch(debug);
     },
   });
@@ -334,7 +334,7 @@ export default function usePockets(): UsePocketsResult {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries(["distributions"]).catch(debug);
       queryClient
-        .invalidateQueries(["packages", { ...variables }])
+        .invalidateQueries(["pocketPackages", { ...variables }])
         .catch(debug);
     },
   });
@@ -350,7 +350,7 @@ export default function usePockets(): UsePocketsResult {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries(["distributions"]).catch(debug);
       queryClient
-        .invalidateQueries(["packages", { ...variables }])
+        .invalidateQueries(["pocketPackages", { ...variables }])
         .catch(debug);
     },
   });
@@ -366,7 +366,7 @@ export default function usePockets(): UsePocketsResult {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries(["distributions"]).catch(debug);
       queryClient
-        .invalidateQueries(["packages", { ...variables }])
+        .invalidateQueries(["pocketPackages", { ...variables }])
         .catch(debug);
     },
   });
