@@ -20,20 +20,29 @@ import {
   PRE_SELECTED_POCKETS,
 } from "../../../../data/series";
 import useSeries, { CreateSeriesParams } from "../../../../hooks/useSeries";
-import { DEFAULT_MIRROR_URI } from "../../../../constants";
+import {
+  DEFAULT_MIRROR_URI,
+  DEFAULT_SNAPSHOT_URI,
+  DISPLAY_DATE_FORMAT,
+  INPUT_DATE_FORMAT,
+  SNAPSHOT_START_DATE,
+  SNAPSHOT_TIMESTAMP_FORMAT,
+} from "../../../../constants";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
 import { Distribution } from "../../../../types/Distribution";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 import CheckboxGroup from "../../../../components/form/CheckboxGroup";
 import { SelectOption } from "../../../../types/SelectOption";
 import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
+import moment from "moment";
 
 interface FormProps extends CreateSeriesParams {
-  type: "ubuntu" | "third-party";
+  type: "ubuntu" | "ubuntu-snapshot" | "third-party";
   pockets: string[];
   components: string[];
   architectures: string[];
   hasPockets: boolean;
+  snapshotDate: string;
 }
 
 interface NewSeriesFormProps {
@@ -76,6 +85,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
       architectures: [],
       include_udeb: false,
       hasPockets: false,
+      snapshotDate: moment().format(INPUT_DATE_FORMAT),
     },
     validationSchema: Yup.object().shape({
       distribution: Yup.string().required("This field is required."),
@@ -115,6 +125,21 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
       mirror_uri: Yup.string().when("hasPockets", (values, schema) =>
         values[0]
           ? schema.nonNullable().required("This field is required.")
+          : schema,
+      ),
+      snapshotDate: Yup.string().when("type", (values, schema) =>
+        values[0] === "ubuntu-snapshot"
+          ? schema.required("This field is required.").test({
+              test: (value) => {
+                return moment(value).isBetween(
+                  moment(SNAPSHOT_START_DATE),
+                  moment(),
+                );
+              },
+              message: `The date must be between ${moment(
+                SNAPSHOT_START_DATE,
+              ).format(DISPLAY_DATE_FORMAT)} and not in the future.`,
+            })
           : schema,
       ),
       gpg_key: Yup.string().when("hasPockets", (values, schema) =>
@@ -160,6 +185,15 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
   });
 
   useEffect(() => {
+    formik.setFieldValue(
+      "mirror_uri",
+      `${DEFAULT_SNAPSHOT_URI}/${moment(formik.values.snapshotDate).format(
+        SNAPSHOT_TIMESTAMP_FORMAT,
+      )}`,
+    );
+  }, [formik.values.snapshotDate]);
+
+  useEffect(() => {
     if (!distributionData || Array.isArray(distributionData)) {
       return;
     }
@@ -168,12 +202,26 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
   }, [distributionData]);
 
   useEffect(() => {
-    if ("ubuntu" === formik.values.type) {
+    if (["ubuntu", "ubuntu-snapshot"].includes(formik.values.type)) {
       formik.setFieldValue("pockets", PRE_SELECTED_POCKETS.ubuntu);
       formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.ubuntu);
       formik.setFieldValue("architectures", PRE_SELECTED_ARCHITECTURES.ubuntu);
+    }
+
+    if ("ubuntu" === formik.values.type) {
       formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
-    } else {
+    }
+
+    if ("ubuntu-snapshot" === formik.values.type) {
+      formik.setFieldValue(
+        "mirror_uri",
+        `${DEFAULT_SNAPSHOT_URI}/${moment(formik.values.snapshotDate).format(
+          SNAPSHOT_TIMESTAMP_FORMAT,
+        )}`,
+      );
+    }
+
+    if ("third-party" === formik.values.type) {
       formik.setFieldValue("pockets", PRE_SELECTED_POCKETS.thirdParty);
       formik.setFieldValue("components", PRE_SELECTED_COMPONENTS.thirdParty);
       formik.setFieldValue(
@@ -188,7 +236,15 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
       return undefined;
     }
 
-    formik.setFieldValue("name", formik.values.mirror_series);
+    let newSeriesName = formik.values.mirror_series;
+
+    if ("ubuntu-snapshot" === formik.values.type) {
+      newSeriesName = `${newSeriesName}-snapshot-${moment(
+        formik.values.snapshotDate,
+      ).format(INPUT_DATE_FORMAT)}`;
+    }
+
+    formik.setFieldValue("name", newSeriesName);
   }, [formik.values.mirror_series]);
 
   useEffect(() => {
@@ -243,23 +299,41 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
         required
         options={[
           { label: "Ubuntu", value: "ubuntu" },
+          { label: "Ubuntu Snapshot", value: "ubuntu-snapshot" },
           { label: "Third party", value: "third-party" },
         ]}
         {...formik.getFieldProps("type")}
         error={formik.touched.type && formik.errors.type}
       />
 
-      <Input
-        type="text"
-        label="Mirror URI"
-        required={formik.values.hasPockets}
-        help="Absolute URL or file path"
-        {...formik.getFieldProps("mirror_uri")}
-        onBlur={(event) => {
-          setMirrorUri(event.target.value);
-        }}
-        error={formik.touched.mirror_uri && formik.errors.mirror_uri}
-      />
+      {"ubuntu-snapshot" !== formik.values.type && (
+        <Input
+          type="text"
+          label="Mirror URI"
+          required={formik.values.hasPockets}
+          help="Absolute URL or file path"
+          {...formik.getFieldProps("mirror_uri")}
+          onBlur={(event) => {
+            setMirrorUri(event.target.value);
+          }}
+          error={formik.touched.mirror_uri && formik.errors.mirror_uri}
+        />
+      )}
+
+      {"ubuntu-snapshot" === formik.values.type && (
+        <Input
+          type="date"
+          min={moment(SNAPSHOT_START_DATE).format(INPUT_DATE_FORMAT)}
+          max={moment().format(INPUT_DATE_FORMAT)}
+          label="Snapshot date"
+          required
+          {...formik.getFieldProps("snapshotDate")}
+          error={formik.touched.snapshotDate && formik.errors.snapshotDate}
+          help={`Starting from ${moment(SNAPSHOT_START_DATE).format(
+            DISPLAY_DATE_FORMAT,
+          )}`}
+        />
+      )}
 
       {Array.isArray(distributionData) && (
         <Select
@@ -295,25 +369,27 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
       </Row>
 
       <Row className="u-no-padding">
-        <Col size={6} medium={3} small={2}>
-          <Select
-            label="Mirror GPG key"
-            options={[
-              { label: "Select mirror GPG key", value: "" },
-              ...gpgKeys
-                .filter(({ has_secret }) => !has_secret)
-                .map(({ name }) => ({
-                  label: name,
-                  value: name,
-                })),
-            ]}
-            {...formik.getFieldProps("mirror_gpg_key")}
-            error={
-              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
-            }
-            help="If none is given, the stock Ubuntu archive one will be used."
-          />
-        </Col>
+        {"ubuntu-snapshot" !== formik.values.type && (
+          <Col size={6} medium={3} small={2}>
+            <Select
+              label="Mirror GPG key"
+              options={[
+                { label: "Select mirror GPG key", value: "" },
+                ...gpgKeys
+                  .filter(({ has_secret }) => !has_secret)
+                  .map(({ name }) => ({
+                    label: name,
+                    value: name,
+                  })),
+              ]}
+              {...formik.getFieldProps("mirror_gpg_key")}
+              error={
+                formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
+              }
+              help="If none is given, the stock Ubuntu archive one will be used."
+            />
+          </Col>
+        )}
 
         <Col size={6} medium={3} small={2}>
           <Select
@@ -334,7 +410,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
         </Col>
       </Row>
 
-      {"ubuntu" === formik.values.type && (
+      {["ubuntu", "ubuntu-snapshot"].includes(formik.values.type) && (
         <>
           <CheckboxGroup
             label="Pockets"

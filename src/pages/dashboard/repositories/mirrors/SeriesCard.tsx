@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import SeriesPocketList from "./SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
 import { Button, Spinner } from "@canonical/react-components";
@@ -11,6 +11,12 @@ import SnapshotForm from "./SnapshotForm";
 import useConfirm from "../../../../hooks/useConfirm";
 import NewPocketForm from "./NewPocketForm";
 import { useMediaQuery } from "usehooks-ts";
+import {
+  DEFAULT_SNAPSHOT_URI,
+  DISPLAY_DATE_FORMAT,
+} from "../../../../constants";
+import moment from "moment";
+import classNames from "classnames";
 
 interface SeriesCardProps {
   distribution: Distribution;
@@ -19,6 +25,22 @@ interface SeriesCardProps {
 
 const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
   const [openDropdown, setOpenDropdown] = useState(false);
+  const [snapshotDate, setSnapshotDate] = useState("");
+
+  useEffect(() => {
+    if (
+      !series ||
+      !series.pockets.length ||
+      series.pockets[0].mode !== "mirror" ||
+      !series.pockets[0].mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI)
+    ) {
+      return;
+    }
+
+    setSnapshotDate(
+      series.pockets[0].mirror_uri.replace(/^.*\/(\d{8})T\d{6}Z$/, "$1"),
+    );
+  }, [series]);
 
   const isSmall = useMediaQuery("(min-width: 620px)");
 
@@ -116,10 +138,21 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
     <div className={classes.card}>
       <div className={classes.header}>
         <h3 className={classes.title}>{series.name}</h3>
+        {!!snapshotDate && (
+          <span
+            className={classNames("u-text--muted", classes.snapshot)}
+          >{`Snapshot from ${moment(snapshotDate).format(
+            DISPLAY_DATE_FORMAT,
+          )}`}</span>
+        )}
         {isSmall ? (
           <div className={classes.cta}>
-            <CreateSnapshotButton />
-            <AddPocketButton />
+            {!snapshotDate && (
+              <>
+                <CreateSnapshotButton />
+                <AddPocketButton />
+              </>
+            )}
             <RemoveSeriesButton />
           </div>
         ) : (
@@ -143,8 +176,12 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
               id="series-cta"
               aria-hidden={!openDropdown}
             >
-              <CreateSnapshotButton className="p-contextual-menu__link" />
-              <AddPocketButton className="p-contextual-menu__link" />
+              {!snapshotDate && (
+                <>
+                  <CreateSnapshotButton className="p-contextual-menu__link" />
+                  <AddPocketButton className="p-contextual-menu__link" />
+                </>
+              )}
               <RemoveSeriesButton className="p-contextual-menu__link" />
             </span>
           </span>

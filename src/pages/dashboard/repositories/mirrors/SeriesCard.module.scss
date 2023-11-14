@@ -1,10 +1,11 @@
 @import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
 
 .card {
   border: 1px solid $color-mid-light;
 
   &:not(:last-child) {
-    margin-bottom: 1.5rem;
+    margin-bottom: $spv--x-large;
   }
 }
 
@@ -15,16 +16,27 @@
 
   background-color: $colors--light-theme--background-alt;
   border-bottom: 1px solid $color-mid-light;
-  padding: 0.5rem 1rem;
+  padding: $spv--small $sph--large;
 }
 
 .title {
   margin-bottom: 0;
-  font-size: 1rem;
+  font-size: $sp-medium;
   font-weight: 500;
   line-height: 1.5;
   padding-top: 0;
   color: $color-x-dark;
+}
+
+.snapshot {
+  margin-left: $sph--small;
+  margin-right: auto;
+
+  &:not(:first-child)::before {
+    content: "\007c";
+    margin-right: $sph--small;
+    color: $color-mid-light;
+  }
 }
 
 .cta {
@@ -32,14 +44,14 @@
     margin-bottom: 0 !important;
 
     &:not(:last-child) {
-      margin-right: 0.5rem !important;
+      margin-right: $sph--small !important;
     }
   }
 }
 
 .content {
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: $sph--large;
+  padding-right: $sph--large;
 
   table {
     margin-bottom: 0;
