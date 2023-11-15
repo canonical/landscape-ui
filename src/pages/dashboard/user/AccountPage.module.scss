@@ -1,0 +1,21 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.input {
+  width: 25rem;
+}
+
+.form {
+  margin-top: $spv--x-large;
+}
+
+.innerForm {
+  border-bottom: 1px solid $color-mid-x-light !important;
+  margin-bottom: $spv--large;
+}
+
+.submitFormButton {
+  padding-left: $spv--x-large;
+  padding-right: $spv--x-large;
+  border-radius: 3px;
+}

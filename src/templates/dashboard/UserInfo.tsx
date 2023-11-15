@@ -4,6 +4,7 @@ import { Button } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { OLD_DASHBOARD_URL } from "../../constants";
+import { Link } from "react-router-dom";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
@@ -15,9 +16,12 @@ const UserInfo: FC = () => {
         classes.container,
       )}
     >
-      <span className={classNames("p-side-navigation__label", classes.label)}>
+      <Link
+        to={"user/account"}
+        className={classNames("p-side-navigation__label", classes.label)}
+      >
         {user?.email ?? "Unknown user"}
-      </span>
+      </Link>
       <a
         href={OLD_DASHBOARD_URL}
         className={classNames(
