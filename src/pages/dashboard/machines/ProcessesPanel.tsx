@@ -144,10 +144,10 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
       />
       <TablePagination
         currentPage={currentPage}
-        totalPages={Math.ceil(totalProcesses / processesPerPage)}
+        totalItems={totalProcesses}
         paginate={handlePaginate}
-        itemsPerPage={processesPerPage}
-        setItemsPerPage={setProcessesPerPage}
+        pageSize={processesPerPage}
+        setPageSize={setProcessesPerPage}
         description={
           totalProcesses > 0 &&
           `Showing ${processes.length} out of ${totalProcesses} processes`

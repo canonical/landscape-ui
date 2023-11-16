@@ -199,13 +199,13 @@ const ActivitiesContainer: FC<ActivitiesContainerProps> = ({
       />
       <TablePagination
         currentPage={currentPage}
-        totalPages={2}
+        totalItems={getActivitiesQueryResult?.data.length}
         paginate={(page) => {
           setSelectedIds([]);
           setCurrentPage(page);
         }}
-        itemsPerPage={pageLimit}
-        setItemsPerPage={(itemsNumber) => {
+        pageSize={pageLimit}
+        setPageSize={(itemsNumber) => {
           setPageLimit(itemsNumber);
         }}
       />

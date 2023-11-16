@@ -101,10 +101,10 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
       )}
       <TablePagination
         currentPage={currentPage}
-        totalPages={Math.ceil(TOTAL_MACHINES / pageLimit)}
+        totalItems={TOTAL_MACHINES}
         paginate={handlePaginate}
-        itemsPerPage={pageLimit}
-        setItemsPerPage={setPageLimit}
+        pageSize={pageLimit}
+        setPageSize={setPageLimit}
         description={
           TOTAL_MACHINES > 0 &&
           `Showing ${computers.length} of ${TOTAL_MACHINES} machines`

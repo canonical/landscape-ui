@@ -275,13 +275,13 @@ const PackagesContainer: FC<PackagesContainerProps> = ({
         ))}
       <TablePagination
         currentPage={currentPage}
-        totalPages={10}
+        totalItems={10}
         paginate={(page) => {
           setSelectedPackageNames([]);
           setCurrentPage(page);
         }}
-        itemsPerPage={itemsPerPage}
-        setItemsPerPage={(itemsNumber) => {
+        pageSize={itemsPerPage}
+        setPageSize={(itemsNumber) => {
           setSelectedPackageNames([]);
           setCurrentPage(1);
           setItemsPerPage(itemsNumber);

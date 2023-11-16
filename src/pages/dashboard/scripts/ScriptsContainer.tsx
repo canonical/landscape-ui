@@ -190,12 +190,12 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
       />
       <TablePagination
         currentPage={currentPage}
-        totalPages={10}
+        totalItems={10}
         paginate={(page) => {
           setCurrentPage(page);
         }}
-        itemsPerPage={itemsPerPage}
-        setItemsPerPage={(itemsNumber) => {
+        pageSize={itemsPerPage}
+        setPageSize={(itemsNumber) => {
           setItemsPerPage(itemsNumber);
         }}
       />
