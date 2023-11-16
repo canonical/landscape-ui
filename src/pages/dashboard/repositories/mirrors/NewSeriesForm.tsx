@@ -298,8 +298,11 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
         label="Type"
         required
         options={[
-          { label: "Ubuntu", value: "ubuntu" },
-          { label: "Ubuntu Snapshot", value: "ubuntu-snapshot" },
+          { label: "Ubuntu Archive", value: "ubuntu" },
+          {
+            label: "Ubuntu Snapshot",
+            value: "ubuntu-snapshot",
+          },
           { label: "Third party", value: "third-party" },
         ]}
         {...formik.getFieldProps("type")}

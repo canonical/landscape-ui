@@ -7,7 +7,7 @@ import { Series } from "../../../../types/Series";
 import useSeries from "../../../../hooks/useSeries";
 import useDebug from "../../../../hooks/useDebug";
 import { Distribution } from "../../../../types/Distribution";
-import SnapshotForm from "./SnapshotForm";
+import DeriveSeriesForm from "./DeriveSeriesForm";
 import useConfirm from "../../../../hooks/useConfirm";
 import NewPocketForm from "./NewPocketForm";
 import { useMediaQuery } from "usehooks-ts";
@@ -82,22 +82,22 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
     });
   };
 
-  const CreateSnapshotButton = ({ className }: { className?: string }) => (
+  const DeriveSeriesButton = ({ className }: { className?: string }) => (
     <Button
       onClick={() => {
         setSidePanelOpen(true);
         setSidePanelContent(
-          "Create snapshot",
-          <SnapshotForm distribution={distribution} origin={series.name} />,
+          "Derive series",
+          <DeriveSeriesForm distribution={distribution} origin={series.name} />,
         );
       }}
       onMouseDown={(event) => {
         event.preventDefault();
       }}
-      aria-label={`Create snapshot for ${distribution.name}/${series.name}`}
+      aria-label={`Derive series ${distribution.name}/${series.name}`}
       className={className ?? "is-small"}
     >
-      Create snapshot
+      Derive series
     </Button>
   );
 
@@ -149,7 +149,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
           <div className={classes.cta}>
             {!snapshotDate && (
               <>
-                <CreateSnapshotButton />
+                <DeriveSeriesButton />
                 <AddPocketButton />
               </>
             )}
@@ -178,7 +178,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
             >
               {!snapshotDate && (
                 <>
-                  <CreateSnapshotButton className="p-contextual-menu__link" />
+                  <DeriveSeriesButton className="p-contextual-menu__link" />
                   <AddPocketButton className="p-contextual-menu__link" />
                 </>
               )}
