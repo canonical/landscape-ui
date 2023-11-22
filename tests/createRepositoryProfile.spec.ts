@@ -46,7 +46,7 @@ test("should create repository profile", async ({ page }) => {
     .getByRole("listitem")
     .filter({ hasText: "test-distro" })
     .getByRole("listitem")
-    .filter({ hasText: "test-snapshot" });
+    .filter({ hasText: "test-derived-series" });
 
   await testSnapshotOptions.getByText("proposes").click();
   await testSnapshotOptions.getByText("test-mirror-pocket").click();
@@ -76,8 +76,6 @@ test("should create repository profile", async ({ page }) => {
   });
 
   await expect(testProfileRow).toHaveCount(1);
-
-  await testProfileRow.click();
 
   await expect(testProfileRow.getByLabel("Description")).toHaveText(
     "Test profile description",

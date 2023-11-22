@@ -22,7 +22,7 @@ test("should handle repository profile", async ({ page }) => {
       .filter({ hasText: "test-distro" })
       .getByRole("listitem")
       .filter({ hasText: "test-mirror-jammy" })
-      .getByText("release")
+      .getByText("release"),
   ).toBeChecked();
 
   await expect(
@@ -31,22 +31,22 @@ test("should handle repository profile", async ({ page }) => {
       .filter({ hasText: "test-distro" })
       .getByRole("listitem")
       .filter({ hasText: "test-mirror-xenial" })
-      .getByText("proposes")
+      .getByText("proposes"),
   ).toBeChecked();
 
   const testSnapshotOptions = page
     .getByRole("listitem")
     .filter({ hasText: "test-distro" })
     .getByRole("listitem")
-    .filter({ hasText: "test-snapshot" });
+    .filter({ hasText: "test-derived-series" });
 
   await expect(testSnapshotOptions.getByText("proposes")).not.toBeChecked();
   await expect(
-    testSnapshotOptions.getByText("test-mirror-pocket")
+    testSnapshotOptions.getByText("test-mirror-pocket"),
   ).not.toBeChecked();
   await expect(testSnapshotOptions.getByText("test-pull-pocket")).toBeChecked();
   await expect(
-    testSnapshotOptions.getByText("test-upload-pocket")
+    testSnapshotOptions.getByText("test-upload-pocket"),
   ).toBeChecked();
 
   await page.getByTestId("apt-sources-tab").click();
@@ -60,7 +60,7 @@ test("should handle repository profile", async ({ page }) => {
   await expect(
     page.getByRole("dialog", {
       name: "Deleting test-profile repository profile",
-    })
+    }),
   ).toBeVisible();
   await expect(page.getByText("Are you sure?")).toBeVisible();
   await page
@@ -68,6 +68,6 @@ test("should handle repository profile", async ({ page }) => {
     .click();
 
   await expect(
-    page.getByText("test-profile", { exact: true })
+    page.getByText("test-profile", { exact: true }),
   ).not.toBeVisible();
 });

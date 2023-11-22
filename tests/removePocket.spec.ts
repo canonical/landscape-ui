@@ -1,11 +1,35 @@
 import { expect, test } from "@playwright/test";
 
 test("should remove test distribution pockets", async ({ page }) => {
+  const responseBody = {
+    status: "success",
+    message: "Removing pocket started",
+  };
+
+  await page.route(/\?action=RemovePocket/, (route) => {
+    if (!route.request().url().includes("name=security")) {
+      return route.continue();
+    }
+
+    expect(
+      route
+        .request()
+        .url()
+        .includes("distribution=test-distro&series=test-mirror-jammy"),
+    ).toBeTruthy();
+
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(responseBody),
+    });
+  });
+
   await page.goto("/");
   await expect(
     page.getByRole("button", {
       name: "List updates pocket of test-distro/test-mirror-jammy",
-    })
+    }),
   ).toBeVisible();
   await page
     .getByRole("button", {
@@ -13,12 +37,12 @@ test("should remove test distribution pockets", async ({ page }) => {
     })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Deleting pocket" })
+    page.getByRole("heading", { name: "Deleting pocket" }),
   ).toBeVisible();
   await expect(
     page.getByText(
-      "Do you really want to delete updates pocket from test-mirror-jammy series of tes"
-    )
+      "Do you really want to delete updates pocket from test-mirror-jammy series of tes",
+    ),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
   await page
@@ -29,7 +53,7 @@ test("should remove test distribution pockets", async ({ page }) => {
   await expect(
     page.getByRole("button", {
       name: "List updates pocket of test-distro/test-mirror-jammy",
-    })
+    }),
   ).not.toBeVisible();
 
   await page
@@ -38,7 +62,7 @@ test("should remove test distribution pockets", async ({ page }) => {
     })
     .click();
   await expect(
-    page.getByRole("heading", { name: "test-mirror-jammy security" })
+    page.getByRole("heading", { name: "test-mirror-jammy security" }),
   ).toBeVisible();
   await page
     .getByRole("complementary")
@@ -47,21 +71,20 @@ test("should remove test distribution pockets", async ({ page }) => {
     })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Deleting pocket" })
+    page.getByRole("heading", { name: "Deleting pocket" }),
   ).toBeVisible();
   await expect(
     page.getByText(
-      "Do you really want to delete security pocket from test-mirror-jammy series of te"
-    )
+      "Do you really want to delete security pocket from test-mirror-jammy series of te",
+    ),
   ).toBeVisible();
+  const responsePromise = page.waitForResponse("**/*");
   await page
     .getByRole("button", {
       name: "Delete security pocket of test-distro/test-mirror-jammy",
     })
     .click();
-  await expect(
-    page.getByRole("button", {
-      name: "List security pocket of test-distro/test-mirror-jammy",
-    })
-  ).not.toBeVisible();
+  const response = await responsePromise;
+  expect(response.status()).toBe(200);
+  expect(await response.json()).toEqual(responseBody);
 });

@@ -72,14 +72,20 @@ export default defineConfig({
       testMatch: "createMirror3.spec.ts",
     },
     {
-      name: "create-snapshot",
+      name: "create-derived-series",
       dependencies: ["create-mirror-3"],
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
-      testMatch: "createSnapshot.spec.ts",
+      testMatch: "createDerivedSeries.spec.ts",
+    },
+    {
+      name: "create-ubuntu-snapshot",
+      dependencies: ["create-derived-series"],
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      testMatch: "createUbuntuSnapshot.spec.ts",
     },
     {
       name: "remove-mirror",
-      dependencies: ["create-snapshot"],
+      dependencies: ["create-ubuntu-snapshot"],
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       testMatch: "removeMirror.spec.ts",
     },

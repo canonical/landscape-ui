@@ -8,7 +8,7 @@ test("should create mirror using page header button", async ({ page }) => {
   await page.getByRole("button", { name: "Create mirror" }).click();
 
   await expect(
-    page.getByRole("heading", { name: "Create new mirror" })
+    page.getByRole("heading", { name: "Create new mirror" }),
   ).toBeVisible();
 
   await page.locator('select[name="distribution"]').selectOption("test-distro");
@@ -22,16 +22,16 @@ test("should create mirror using page header button", async ({ page }) => {
   await page.getByText("Include .udeb packages (debian-installer)").click();
   await page
     .getByRole("complementary")
-    .getByRole("button", { name: "Create mirror" })
+    .getByRole("button", { name: "Add series" })
     .click();
 
   await expect(
-    page.getByRole("heading", { name: "test-mirror-focal" })
+    page.getByRole("heading", { name: "test-mirror-focal" }),
   ).toBeVisible();
 
   await expect(
     await page.getByRole("button", {
       name: "List backports pocket of test-distro/test-mirror-focal",
-    })
+    }),
   ).toBeVisible();
 });
