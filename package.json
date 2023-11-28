@@ -28,8 +28,8 @@
   },
   "devDependencies": {
     "@playwright/test": "1.37.1",
-    "@types/react": "18.2.21",
-    "@types/react-dom": "18.2.7",
+    "@types/react": "18.2.39",
+    "@types/react-dom": "18.2.17",
     "@types/react-table": "7.7.15",
     "@typescript-eslint/eslint-plugin": "6.6.0",
     "@typescript-eslint/parser": "6.6.0",
