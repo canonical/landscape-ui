@@ -27,7 +27,7 @@
     "yup": "1.2.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.37.1",
+    "@playwright/test": "1.40.1",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "@types/react-table": "7.7.15",
