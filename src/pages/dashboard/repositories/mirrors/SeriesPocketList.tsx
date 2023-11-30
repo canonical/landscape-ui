@@ -1,5 +1,5 @@
 import { Series } from "../../../../types/Series";
-import { FC } from "react";
+import { FC, lazy, Suspense } from "react";
 import { Button, Col, MainTable, Row } from "@canonical/react-components";
 import { Pocket } from "../../../../types/Pocket";
 import { Distribution } from "../../../../types/Distribution";
@@ -7,14 +7,16 @@ import usePockets from "../../../../hooks/usePockets";
 import useDebug from "../../../../hooks/useDebug";
 import useConfirm from "../../../../hooks/useConfirm";
 import useSidePanel from "../../../../hooks/useSidePanel";
-import EditPocketForm from "./EditPocketForm";
 import classNames from "classnames";
-import PackageList from "./PackageList";
 import classes from "./SeriesPocketList.module.scss";
 import { useMediaQuery } from "usehooks-ts";
 import InfoItem from "../../../../components/layout/InfoItem";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "../../../../constants";
+import LoadingState from "../../../../components/layout/LoadingState";
+
+const EditPocketForm = lazy(() => import("./EditPocketForm"));
+const PackageList = lazy(() => import("./PackageList"));
 
 interface SeriesPocketListProps {
   distributionName: Distribution["name"];
@@ -141,11 +143,13 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
     setSidePanelOpen(true);
     setSidePanelContent(
       `Edit ${pocket.name} pocket`,
-      <EditPocketForm
-        pocket={pocket}
-        distributionName={distributionName}
-        seriesName={series.name}
-      />,
+      <Suspense fallback={<LoadingState />}>
+        <EditPocketForm
+          pocket={pocket}
+          distributionName={distributionName}
+          seriesName={series.name}
+        />
+      </Suspense>,
     );
   };
 
@@ -153,11 +157,13 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
     setSidePanelOpen(true);
     setSidePanelContent(
       `${series.name} ${pocket.name}`,
-      <PackageList
-        pocket={pocket}
-        distributionName={distributionName}
-        seriesName={series.name}
-      />,
+      <Suspense fallback={<LoadingState />}>
+        <PackageList
+          pocket={pocket}
+          distributionName={distributionName}
+          seriesName={series.name}
+        />
+      </Suspense>,
     );
   };
 

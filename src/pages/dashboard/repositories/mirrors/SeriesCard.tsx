@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, lazy, Suspense, useEffect, useState } from "react";
 import SeriesPocketList from "./SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
 import { Button, Spinner } from "@canonical/react-components";
@@ -7,9 +7,7 @@ import { Series } from "../../../../types/Series";
 import useSeries from "../../../../hooks/useSeries";
 import useDebug from "../../../../hooks/useDebug";
 import { Distribution } from "../../../../types/Distribution";
-import DeriveSeriesForm from "./DeriveSeriesForm";
 import useConfirm from "../../../../hooks/useConfirm";
-import NewPocketForm from "./NewPocketForm";
 import { useMediaQuery } from "usehooks-ts";
 import {
   DEFAULT_SNAPSHOT_URI,
@@ -17,6 +15,11 @@ import {
 } from "../../../../constants";
 import moment from "moment";
 import classNames from "classnames";
+import LoadingState from "../../../../components/layout/LoadingState";
+
+const NewPocketForm = lazy(() => import("./NewPocketForm"));
+
+const DeriveSeriesForm = lazy(() => import("./DeriveSeriesForm"));
 
 interface SeriesCardProps {
   distribution: Distribution;
@@ -88,7 +91,12 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
         setSidePanelOpen(true);
         setSidePanelContent(
           "Derive series",
-          <DeriveSeriesForm distribution={distribution} origin={series.name} />,
+          <Suspense fallback={<LoadingState />}>
+            <DeriveSeriesForm
+              distribution={distribution}
+              origin={series.name}
+            />
+          </Suspense>,
         );
       }}
       onMouseDown={(event) => {
@@ -107,7 +115,9 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
         setSidePanelOpen(true);
         setSidePanelContent(
           `New pocket for ${series.name}`,
-          <NewPocketForm distribution={distribution} series={series} />,
+          <Suspense fallback={<LoadingState />}>
+            <NewPocketForm distribution={distribution} series={series} />
+          </Suspense>,
         );
       }}
       onMouseDown={(event) => {

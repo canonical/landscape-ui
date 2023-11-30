@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, lazy, Suspense } from "react";
 import PageHeader from "../../../../components/layout/PageHeader";
 import PageMain from "../../../../components/layout/PageMain";
 import PageContent from "../../../../components/layout/PageContent";
@@ -6,9 +6,10 @@ import { Button } from "@canonical/react-components";
 import LoadingState from "../../../../components/layout/LoadingState";
 import EmptyState from "../../../../components/layout/EmptyState";
 import useSidePanel from "../../../../hooks/useSidePanel";
-import NewGPGKeyForm from "./NewGPGKeyForm";
 import GPGKeysList from "./GPGKeysList";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
+
+const NewGPGKeyForm = lazy(() => import("./NewGPGKeyForm"));
 
 const GPGKeysPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
@@ -20,7 +21,12 @@ const GPGKeysPage: FC = () => {
 
   const handleOpen = () => {
     setSidePanelOpen(true);
-    setSidePanelContent("Import GPG key", <NewGPGKeyForm />);
+    setSidePanelContent(
+      "Import GPG key",
+      <Suspense fallback={<LoadingState />}>
+        <NewGPGKeyForm />
+      </Suspense>,
+    );
   };
 
   return (
