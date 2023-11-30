@@ -9,6 +9,6 @@ test("should remove test mirror", async ({ page }) => {
     .getByRole("button", { name: "Remove test-mirror-focal from test-distro" })
     .click();
   await expect(
-    page.getByRole("heading", { name: "test-mirror-focal" })
+    page.getByRole("heading", { name: "test-mirror-focal" }),
   ).not.toBeVisible();
 });

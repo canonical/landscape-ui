@@ -8,6 +8,7 @@ interface PocketCommon {
   gpg_key: GPGKey;
   include_udeb: boolean;
   name: string;
+  package_count: number;
 }
 
 interface MirrorPocket {

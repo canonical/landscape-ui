@@ -13,9 +13,9 @@ test("should remove test distribution if present", async ({ page }) => {
       .first()
       .or(
         page.getByText(
-          "To create a new mirror you must first create a distribution"
-        )
-      )
+          "To create a new mirror you must first create a distribution",
+        ),
+      ),
   ).toBeVisible();
 
   const removeDistributionButton = page.getByRole("button", {
@@ -34,11 +34,11 @@ test("should remove test distribution if present", async ({ page }) => {
     .click();
 
   await expect(
-    page.getByRole("dialog", { name: "Removing test-distro distribution" })
+    page.getByRole("dialog", { name: "Removing test-distro distribution" }),
   ).not.toBeVisible();
 
   await expect(
-    page.getByRole("heading", { name: "test-distro" })
+    page.getByRole("heading", { name: "test-distro" }),
   ).not.toBeVisible();
 });
 
@@ -52,7 +52,7 @@ test("should remove test GPG key if present", async ({ page }) => {
         name: /Remove/i,
       })
       .first()
-      .or(page.getByText("You haven’t added any GPG keys yet."))
+      .or(page.getByText("You haven’t added any GPG keys yet.")),
   ).toBeVisible();
 
   const removeGpgKeyButton = page.getByRole("button", {
@@ -71,7 +71,7 @@ test("should remove test GPG key if present", async ({ page }) => {
     .click();
 
   await expect(
-    page.getByRole("dialog", { name: "Deleting test-gpg-key GPG key" })
+    page.getByRole("dialog", { name: "Deleting test-gpg-key GPG key" }),
   ).not.toBeVisible();
 
   await expect(removeGpgKeyButton).not.toBeVisible();
@@ -87,7 +87,7 @@ test("should remove test APT source if present", async ({ page }) => {
         name: /Remove/i,
       })
       .first()
-      .or(page.getByText("You haven’t added any APT sources yet."))
+      .or(page.getByText("You haven’t added any APT sources yet.")),
   ).toBeVisible();
 
   const removeAptSourceButton = page.getByRole("button", {
@@ -106,7 +106,7 @@ test("should remove test APT source if present", async ({ page }) => {
     .click();
 
   await expect(
-    page.getByRole("dialog", { name: "Deleting test-apt-source APT source" })
+    page.getByRole("dialog", { name: "Deleting test-apt-source APT source" }),
   ).not.toBeVisible();
 
   await expect(removeAptSourceButton).not.toBeVisible();
@@ -122,7 +122,7 @@ test("should remove test repository profile if present", async ({ page }) => {
         name: /Remove/i,
       })
       .first()
-      .or(page.getByText("You haven’t added any profile yet."))
+      .or(page.getByText("You haven’t added any profile yet.")),
   ).toBeVisible();
 
   const removeRepositoryProfileButton = page.getByRole("button", {
@@ -143,7 +143,7 @@ test("should remove test repository profile if present", async ({ page }) => {
   await expect(
     page.getByRole("dialog", {
       name: "Deleting test-profile repository profile",
-    })
+    }),
   ).not.toBeVisible();
 
   await expect(removeRepositoryProfileButton).not.toBeVisible();

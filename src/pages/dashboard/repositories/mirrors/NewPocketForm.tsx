@@ -50,7 +50,7 @@ interface FormProps
     | CreateUploadPocketParams["mode"];
   pull_series: string;
   filter_type: CreatePullPocketParams["filter_type"] | "";
-  filters: string[];
+  filter_packages: string[];
   upload_gpg_keys: string[];
 }
 
@@ -71,7 +71,7 @@ const initialValues: FormProps = {
   upload_allow_unsigned: false,
   mirror_suite: "",
   mirror_gpg_key: "",
-  filters: [],
+  filter_packages: [],
   upload_gpg_keys: [],
 };
 
@@ -121,6 +121,7 @@ const getCreatePocketParams = (
         pull_series: values.pull_series,
         pull_pocket: values.pull_pocket,
         filter_type: "" !== values.filter_type ? values.filter_type : undefined,
+        filter_packages: values.filter_packages,
       };
     default:
       return assertNever(values.mode, "pocket mode");
@@ -135,19 +136,11 @@ interface NewPocketFormProps {
 const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const {
-    createPocketQuery,
-    addPackageFiltersToPocketQuery,
-    addUploaderGPGKeysToPocketQuery,
-  } = usePockets();
+  const { createPocketQuery, addUploaderGPGKeysToPocketQuery } = usePockets();
   const { getGPGKeysQuery } = useGPGKeys();
 
   const { mutateAsync: createPocket, isLoading: createPocketLoading } =
     createPocketQuery;
-  const {
-    mutateAsync: addPackageFiltersToPocket,
-    isLoading: addPackageFiltersToPocketLoading,
-  } = addPackageFiltersToPocketQuery;
   const {
     mutateAsync: addUploaderGPGKeysToPocket,
     isLoading: addUploaderGPGKeysToPocketLoading,
@@ -210,7 +203,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
     }),
     pull_series: Yup.string(),
     filter_type: Yup.string<"blacklist" | "whitelist">(),
-    filters: Yup.array(),
+    filter_packages: Yup.array().of(Yup.string().defined()),
     upload_allow_unsigned: Yup.boolean(),
   });
 
@@ -221,20 +214,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       try {
         await createPocket(getCreatePocketParams(values));
 
-        if ("pull" === values.mode) {
-          if (values.filter_type) {
-            const filters = values.filters.filter((x) => x);
-
-            if (filters.length) {
-              await addPackageFiltersToPocket({
-                name: values.name,
-                distribution: values.distribution,
-                series: values.series,
-                packages: filters,
-              });
-            }
-          }
-        } else if (
+        if (
           "upload" === values.mode &&
           !values.upload_allow_unsigned &&
           values.upload_gpg_keys.length
@@ -442,15 +422,17 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               label="Filter packages"
               rows={3}
               help="List packages to filter separated by commas"
-              {...formik.getFieldProps("filters")}
+              {...formik.getFieldProps("filter_packages")}
               onChange={(event) => {
                 formik.setFieldValue(
-                  "filters",
+                  "filter_packages",
                   event.target.value.replace(/\s/g, "").split(","),
                 );
               }}
-              value={formik.values.filters.join(",")}
-              error={formik.touched.filters && formik.errors.filters}
+              value={formik.values.filter_packages.join(",")}
+              error={
+                formik.touched.filter_packages && formik.errors.filter_packages
+              }
             />
           )}
         </>
@@ -549,11 +531,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       />
 
       <SidePanelFormButtons
-        disabled={
-          createPocketLoading ||
-          addPackageFiltersToPocketLoading ||
-          addUploaderGPGKeysToPocketLoading
-        }
+        disabled={createPocketLoading || addUploaderGPGKeysToPocketLoading}
         positiveButtonTitle="Create"
         buttonAriaLabel="Create pocket"
       />

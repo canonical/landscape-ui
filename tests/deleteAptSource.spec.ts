@@ -10,12 +10,12 @@ test("should delete APT source", async ({ page }) => {
     .getByRole("button", { name: "Remove test-apt-source APT source" })
     .click();
   await expect(
-    page.getByRole("dialog", { name: "Deleting test-apt-source APT source" })
+    page.getByRole("dialog", { name: "Deleting test-apt-source APT source" }),
   ).toBeVisible();
   await expect(
     page.getByText(
-      "Are you sure? This action is permanent and can not be undone."
-    )
+      "Are you sure? This action is permanent and can not be undone.",
+    ),
   ).toBeVisible();
   await page
     .getByRole("button", { name: "Delete test-apt-source APT source" })
@@ -24,6 +24,6 @@ test("should delete APT source", async ({ page }) => {
   await expect(
     page
       .getByRole("row")
-      .filter({ has: page.getByRole("gridcell", { name: "test-apt-source" }) })
+      .filter({ has: page.getByRole("gridcell", { name: "test-apt-source" }) }),
   ).toHaveCount(0);
 });

@@ -6,10 +6,10 @@ test.beforeEach(async ({ page }) => {
 
 test("should create distribution", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Create mirror" })).toHaveCount(
-    1
+    1,
   );
   await expect(
-    page.getByRole("button", { name: "Create distribution" })
+    page.getByRole("button", { name: "Create distribution" }),
   ).toBeVisible();
 
   await page.getByRole("button", { name: "Create distribution" }).click();
@@ -21,15 +21,15 @@ test("should create distribution", async ({ page }) => {
     .click();
 
   await expect(
-    page.getByRole("heading", { name: "test-distro" })
+    page.getByRole("heading", { name: "test-distro" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "No series have been created yet" })
+    page.getByRole("heading", { name: "No series have been created yet" }),
   ).toBeVisible();
   await expect(
-    page.getByText("Create a new mirror or series to get started")
+    page.getByText("Create a new mirror or series to get started"),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Create mirror for test-distro" })
+    page.getByRole("button", { name: "Create mirror for test-distro" }),
   ).toBeVisible();
 });

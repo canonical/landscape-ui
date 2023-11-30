@@ -216,7 +216,9 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           "aria-label": "Last synced date",
         },
         {
-          content: "",
+          content: `${pocket.package_count} ${
+            pocket.package_count === 1 ? "package" : "packages"
+          }`,
           "aria-label": "Content",
         },
         {

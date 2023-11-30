@@ -10,7 +10,7 @@ test("should log in", async ({ page }) => {
 
   await expect(page).toHaveURL(/repositories\/mirrors/);
   await expect(
-    page.getByRole("heading", { name: "Repository Mirrors" })
+    page.getByRole("heading", { name: "Repository Mirrors" }),
   ).toBeVisible();
 
   await page.context().storageState({ path: STORAGE_STATE });

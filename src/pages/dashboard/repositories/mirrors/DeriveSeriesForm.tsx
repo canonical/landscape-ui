@@ -16,12 +16,12 @@ interface FormProps {
   name: string;
 }
 
-interface SnapshotFormProps {
+interface DeriveSeriesProps {
   distribution: Distribution;
   origin: Series["name"];
 }
 
-const SnapshotForm: FC<SnapshotFormProps> = ({ distribution, origin }) => {
+const DeriveSeriesForm: FC<DeriveSeriesProps> = ({ distribution, origin }) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
 
@@ -73,18 +73,20 @@ const SnapshotForm: FC<SnapshotFormProps> = ({ distribution, origin }) => {
     <form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        label="Snapshot name"
+        label="Series name"
         required
         {...formik.getFieldProps("name")}
         error={formik.touched.name && formik.errors.name}
       />
 
+      <p className="u-text--muted">{`You are deriving ${distribution.name}/${origin}.`}</p>
+
       <SidePanelFormButtons
         disabled={isLoading}
-        positiveButtonTitle="Create and sync"
+        positiveButtonTitle="Derive series"
       />
     </form>
   );
 };
 
-export default SnapshotForm;
+export default DeriveSeriesForm;

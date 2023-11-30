@@ -28,12 +28,45 @@ test("should remove packages from upload pocket", async ({ page }) => {
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({
-        "main/amd64": [
-          ["package 1", "1.1"],
-          ["package 2", "1.2"],
-          ["package 3", "1.3"],
-          ["package 4", "1.4"],
-          ["package 5", "1.5"],
+        count: 5,
+        next: null,
+        previous: null,
+        results: [
+          {
+            name: "package 1",
+            version: "1.1",
+            component: "main",
+            arch: "amd64",
+            udeb: false,
+          },
+          {
+            name: "package 2",
+            version: "1.2",
+            component: "main",
+            arch: "amd64",
+            udeb: false,
+          },
+          {
+            name: "package 3",
+            version: "1.3",
+            component: "main",
+            arch: "amd64",
+            udeb: false,
+          },
+          {
+            name: "package 4",
+            version: "1.4",
+            component: "main",
+            arch: "amd64",
+            udeb: false,
+          },
+          {
+            name: "package 5",
+            version: "1.5",
+            component: "main",
+            arch: "amd64",
+            udeb: false,
+          },
         ],
       }),
     });
@@ -43,11 +76,13 @@ test("should remove packages from upload pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "List test-upload-pocket pocket of test-distro/test-snapshot",
+      name: "List test-upload-pocket pocket of test-distro/test-derived-series",
     })
     .click();
   await expect(
-    page.getByRole("heading", { name: "test-snapshot test-upload-pocket" }),
+    page.getByRole("heading", {
+      name: "test-derived-series test-upload-pocket",
+    }),
   ).toBeVisible();
 
   await expect(page.getByRole("complementary").getByRole("row")).toHaveCount(6);
@@ -64,7 +99,7 @@ test("should remove packages from upload pocket", async ({ page }) => {
 
   await expect(
     page.getByRole("button", {
-      name: "Remove selected packages from test-upload-pocket pocket of test-distro/test-snapshot",
+      name: "Remove selected packages from test-upload-pocket pocket of test-distro/test-derived-series",
     }),
   ).toBeDisabled();
 
@@ -82,7 +117,7 @@ test("should remove packages from upload pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Remove selected packages from test-upload-pocket pocket of test-distro/test-snapshot",
+      name: "Remove selected packages from test-upload-pocket pocket of test-distro/test-derived-series",
     })
     .click();
 });

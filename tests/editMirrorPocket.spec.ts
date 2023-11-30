@@ -4,12 +4,12 @@ test("should edit mirror pocket", async ({ page }) => {
   await page.goto("/");
   await page
     .getByRole("button", {
-      name: "Edit test-mirror-pocket pocket of test-distro/test-snapshot",
+      name: "Edit test-mirror-pocket pocket of test-distro/test-derived-series",
     })
     .click();
 
   await expect(
-    page.getByRole("heading", { name: "Edit test-mirror-pocket pocket" })
+    page.getByRole("heading", { name: "Edit test-mirror-pocket pocket" }),
   ).toBeVisible();
 
   const components = await page
@@ -22,19 +22,19 @@ test("should edit mirror pocket", async ({ page }) => {
   }
 
   await expect(
-    page.locator("label").filter({ hasText: "amd64" }).getByRole("checkbox")
+    page.locator("label").filter({ hasText: "amd64" }).getByRole("checkbox"),
   ).toBeChecked();
   await expect(
-    page.locator("label").filter({ hasText: "i386" }).getByRole("checkbox")
+    page.locator("label").filter({ hasText: "i386" }).getByRole("checkbox"),
   ).not.toBeChecked();
   await expect(page.locator('select[name="mirror_gpg_key"]')).toHaveValue(
-    "esm-apps-key"
+    "esm-apps-key",
   );
   await expect(
     page
       .locator("label")
       .filter({ hasText: "Include .udeb packages (debian-installer)" })
-      .getByRole("checkbox")
+      .getByRole("checkbox"),
   ).toBeChecked();
 
   await page.getByText("Universe").click();
@@ -48,17 +48,17 @@ test("should edit mirror pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Edit test-mirror-pocket pocket of test-distro/test-snapshot",
+      name: "Edit test-mirror-pocket pocket of test-distro/test-derived-series",
     })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Edit test-mirror-pocket pocket" })
+    page.getByRole("heading", { name: "Edit test-mirror-pocket pocket" }),
   ).toBeVisible();
   await expect(
     page
       .getByRole("group", { name: "* Components" })
       .locator("label")
-      .filter({ hasText: "Main" })
+      .filter({ hasText: "Main" }),
   ).toBeChecked();
 
   const shouldBeUncheckedLocators = await page
@@ -72,16 +72,16 @@ test("should edit mirror pocket", async ({ page }) => {
   }
 
   await expect(
-    page.locator("label").filter({ hasText: "amd64" }).getByRole("checkbox")
+    page.locator("label").filter({ hasText: "amd64" }).getByRole("checkbox"),
   ).not.toBeChecked();
   await expect(
-    page.locator("label").filter({ hasText: "i386" }).getByRole("checkbox")
+    page.locator("label").filter({ hasText: "i386" }).getByRole("checkbox"),
   ).toBeChecked();
   await expect(page.locator('select[name="mirror_gpg_key"]')).toHaveValue("-");
   await expect(
     page
       .locator("label")
       .filter({ hasText: "Include .udeb packages (debian-installer)" })
-      .getByRole("checkbox")
+      .getByRole("checkbox"),
   ).not.toBeChecked();
 });

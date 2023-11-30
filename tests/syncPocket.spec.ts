@@ -17,34 +17,34 @@ test("should sync mirror pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Synchronize test-mirror-pocket pocket of test-distro/test-snapshot",
+      name: "Synchronize test-mirror-pocket pocket of test-distro/test-derived-series",
     })
     .click();
   await expect(
     page.getByRole("dialog", {
       name: "Synchronizing test-mirror-pocket pocket",
-    })
+    }),
   ).toBeVisible();
   await expect(
-    page.getByText("Do you want to synchronize packages?")
+    page.getByText("Do you want to synchronize packages?"),
   ).toBeVisible();
 
   await page
     .getByRole("dialog", { name: "Synchronizing test-mirror-pocket pocket" })
     .getByRole("button", {
-      name: "Synchronize test-mirror-pocket pocket of test-distro/test-snapshot",
+      name: "Synchronize test-mirror-pocket pocket of test-distro/test-derived-series",
     })
     .click();
 
   await page
     .getByRole("button", {
-      name: "List test-mirror-pocket pocket of test-distro/test-snapshot",
+      name: "List test-mirror-pocket pocket of test-distro/test-derived-series",
     })
     .click();
   await page
     .getByRole("complementary")
     .getByRole("button", {
-      name: "Synchronize test-mirror-pocket pocket of test-distro/test-snapshot",
+      name: "Synchronize test-mirror-pocket pocket of test-distro/test-derived-series",
     })
     .click();
 });

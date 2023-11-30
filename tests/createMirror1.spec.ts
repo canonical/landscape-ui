@@ -11,33 +11,33 @@ test("should create mirror using distribution empty state button", async ({
     .getByRole("button", { name: "Create mirror for test-distro" })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Create mirror for test-distro" })
+    page.getByRole("heading", { name: "Create mirror for test-distro" }),
   ).toBeVisible();
   await page.locator('select[name="mirror_series"]').selectOption("jammy");
   await page.locator('input[name="name"]').fill("test-mirror-jammy");
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page
     .getByRole("complementary")
-    .getByRole("button", { name: "Create mirror" })
+    .getByRole("button", { name: "Add series" })
     .click();
 
   await expect(
-    await page.getByRole("heading", { name: "test-mirror-jammy" })
+    await page.getByRole("heading", { name: "test-mirror-jammy" }),
   ).toBeVisible();
 
   await expect(
     await page.getByRole("button", {
       name: "List release pocket of test-distro/test-mirror-jammy",
-    })
+    }),
   ).toBeVisible();
   await expect(
     await page.getByRole("button", {
       name: "List security pocket of test-distro/test-mirror-jammy",
-    })
+    }),
   ).toBeVisible();
   await expect(
     await page.getByRole("button", {
       name: "List updates pocket of test-distro/test-mirror-jammy",
-    })
+    }),
   ).toBeVisible();
 });

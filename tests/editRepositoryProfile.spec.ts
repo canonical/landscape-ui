@@ -10,7 +10,7 @@ test("should edit repository profile", async ({ page }) => {
     .getByRole("button", { name: "Edit test-profile repository profile" })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Edit test-profile" })
+    page.getByRole("heading", { name: "Edit test-profile" }),
   ).toBeVisible();
   await expect(page.getByText("All computers")).toBeChecked();
   await expect(page.locator('input[name="tags"]')).toBeDisabled();
@@ -26,7 +26,7 @@ test("should edit repository profile", async ({ page }) => {
       .filter({ hasText: "test-distro" })
       .getByRole("listitem")
       .filter({ hasText: "test-mirror-jammy" })
-      .getByText("release")
+      .getByText("release"),
   ).toBeChecked();
 
   await expect(
@@ -35,24 +35,24 @@ test("should edit repository profile", async ({ page }) => {
       .filter({ hasText: "test-distro" })
       .getByRole("listitem")
       .filter({ hasText: "test-mirror-xenial" })
-      .getByText("proposes")
+      .getByText("proposes"),
   ).toBeChecked();
 
   const testSnapshotOptions = page
     .getByRole("listitem")
     .filter({ hasText: "test-distro" })
     .getByRole("listitem")
-    .filter({ hasText: "test-snapshot" });
+    .filter({ hasText: "test-derived-series" });
 
   await expect(testSnapshotOptions.getByText("proposes")).toBeChecked();
   await expect(
-    testSnapshotOptions.getByText("test-mirror-pocket")
+    testSnapshotOptions.getByText("test-mirror-pocket"),
   ).toBeChecked();
   await expect(
-    testSnapshotOptions.getByText("test-pull-pocket")
+    testSnapshotOptions.getByText("test-pull-pocket"),
   ).not.toBeChecked();
   await expect(
-    testSnapshotOptions.getByText("test-upload-pocket")
+    testSnapshotOptions.getByText("test-upload-pocket"),
   ).not.toBeChecked();
 
   await testSnapshotOptions.getByText("proposes").click();

@@ -17,18 +17,18 @@ test("should pull packages to test pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Pull packages to test-pull-pocket pocket of test-distro/test-snapshot",
+      name: "Pull packages to test-pull-pocket pocket of test-distro/test-derived-series",
     })
     .click();
   await expect(
     page.getByRole("dialog", {
       name: "Pulling packages to test-pull-pocket pocket",
-    })
+    }),
   ).toBeVisible();
   await expect(
     page.getByText(
-      "Do you want to pull packages from test-snapshot/test-mirror-pocket?"
-    )
+      "Do you want to pull packages from test-derived-series/test-mirror-pocket?",
+    ),
   ).toBeVisible();
 
   await page
@@ -36,28 +36,28 @@ test("should pull packages to test pocket", async ({ page }) => {
       name: "Pulling packages to test-pull-pocket pocket",
     })
     .getByRole("button", {
-      name: "Pull packages to test-pull-pocket pocket of test-distro/test-snapshot",
+      name: "Pull packages to test-pull-pocket pocket of test-distro/test-derived-series",
     })
     .click();
 
   await expect(
     page.getByRole("dialog", {
       name: "Pulling packages to test-pull-pocket pocket",
-    })
+    }),
   ).not.toBeVisible();
 
   await page
     .getByRole("button", {
-      name: "List test-pull-pocket pocket of test-distro/test-snapshot",
+      name: "List test-pull-pocket pocket of test-distro/test-derived-series",
     })
     .click();
   await expect(
-    page.getByRole("heading", { name: "test-snapshot test-pull-pocket" })
+    page.getByRole("heading", { name: "test-derived-series test-pull-pocket" }),
   ).toBeVisible();
   await page
     .getByRole("complementary")
     .getByRole("button", {
-      name: "Pull packages to test-pull-pocket pocket of test-distro/test-snapshot",
+      name: "Pull packages to test-pull-pocket pocket of test-distro/test-derived-series",
     })
     .click();
 });

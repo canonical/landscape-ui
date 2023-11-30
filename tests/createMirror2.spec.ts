@@ -8,7 +8,7 @@ test("should add series to test distribution", async ({ page }) => {
   await page.getByRole("button", { name: "Add series to test-distro" }).click();
 
   await expect(
-    page.getByRole("heading", { name: "Add series to test-distro" })
+    page.getByRole("heading", { name: "Add series to test-distro" }),
   ).toBeVisible();
 
   await page.locator('select[name="mirror_series"]').selectOption("xenial");
@@ -25,16 +25,16 @@ test("should add series to test distribution", async ({ page }) => {
   await page.getByText("amd64").click();
   await page
     .getByRole("complementary")
-    .getByRole("button", { name: "Create mirror" })
+    .getByRole("button", { name: "Add series" })
     .click();
 
   await expect(
-    page.getByRole("heading", { name: "test-mirror-xenial" })
+    page.getByRole("heading", { name: "test-mirror-xenial" }),
   ).toBeVisible();
 
   await expect(
     await page.getByRole("button", {
       name: "List proposes pocket of test-distro/test-mirror-xenial",
-    })
+    }),
   ).toBeVisible();
 });

@@ -22,7 +22,10 @@ import {
   COMPONENT_OPTIONS,
 } from "../../../../data/series";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
-import { DEFAULT_MIRROR_URI } from "../../../../constants";
+import {
+  DEFAULT_MIRROR_URI,
+  DEFAULT_SNAPSHOT_URI,
+} from "../../../../constants";
 import { Pocket } from "../../../../types/Pocket";
 import { assertNever } from "../../../../utils/debug";
 import { AxiosResponse } from "axios";
@@ -337,64 +340,65 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         error={formik.touched.gpg_key && formik.errors.gpg_key}
       />
 
-      {"mirror" === pocket.mode && (
-        <>
-          <Input
-            type="text"
-            label="Mirror URI"
-            {...formik.getFieldProps("mirror_uri")}
-            error={formik.touched.mirror_uri && formik.errors.mirror_uri}
-          />
+      {"mirror" === pocket.mode &&
+        !pocket.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI) && (
+          <>
+            <Input
+              type="text"
+              label="Mirror URI"
+              {...formik.getFieldProps("mirror_uri")}
+              error={formik.touched.mirror_uri && formik.errors.mirror_uri}
+            />
 
-          <Input
-            type="text"
-            label={
-              <FieldDescription
-                label="Mirror suite"
-                description={
-                  <>
-                    <span>
-                      {
-                        "The specific sub-directory under dists/ that should be mirrored. If the suite name ends with a ‘/’, the remote repository is flat (no dists/ structure, see "
-                      }
-                    </span>
-                    <a href="http://wiki.debian.org/RepositoryFormat#Flat_Repository_Format">
-                      wiki.debian.org/RepositoryFormat#Flat_Repository_Format
-                    </a>
-                    <span>
-                      ); in this case a single value must be passed for the
-                      ‘components’ parameter. Packages from the remote
-                      repository will be mirrored in the specified component.
-                      This parameter is optional and defaults to the same name
-                      as local series and pocket.
-                    </span>
-                  </>
-                }
-              />
-            }
-            {...formik.getFieldProps("mirror_suite")}
-            error={formik.touched.mirror_suite && formik.errors.mirror_suite}
-          />
+            <Input
+              type="text"
+              label={
+                <FieldDescription
+                  label="Mirror suite"
+                  description={
+                    <>
+                      <span>
+                        {
+                          "The specific sub-directory under dists/ that should be mirrored. If the suite name ends with a ‘/’, the remote repository is flat (no dists/ structure, see "
+                        }
+                      </span>
+                      <a href="http://wiki.debian.org/RepositoryFormat#Flat_Repository_Format">
+                        wiki.debian.org/RepositoryFormat#Flat_Repository_Format
+                      </a>
+                      <span>
+                        ); in this case a single value must be passed for the
+                        ‘components’ parameter. Packages from the remote
+                        repository will be mirrored in the specified component.
+                        This parameter is optional and defaults to the same name
+                        as local series and pocket.
+                      </span>
+                    </>
+                  }
+                />
+              }
+              {...formik.getFieldProps("mirror_suite")}
+              error={formik.touched.mirror_suite && formik.errors.mirror_suite}
+            />
 
-          <Select
-            label="Mirror GPG key"
-            options={[
-              { label: "Select GPG key", value: "-" },
-              ...gpgKeys
-                .filter(({ has_secret }) => !has_secret)
-                .map((item) => ({
-                  label: item.name,
-                  value: item.name,
-                })),
-            ]}
-            {...formik.getFieldProps("mirror_gpg_key")}
-            error={
-              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
-            }
-            help="If none is given, the stock Ubuntu archive one will be used."
-          />
-        </>
-      )}
+            <Select
+              label="Mirror GPG key"
+              options={[
+                { label: "Select GPG key", value: "-" },
+                ...gpgKeys
+                  .filter(({ has_secret }) => !has_secret)
+                  .map((item) => ({
+                    label: item.name,
+                    value: item.name,
+                  })),
+              ]}
+              {...formik.getFieldProps("mirror_gpg_key")}
+              error={
+                formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
+              }
+              help="If none is given, the stock Ubuntu archive one will be used."
+            />
+          </>
+        )}
 
       {"upload" === pocket.mode && (
         <>

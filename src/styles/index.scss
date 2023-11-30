@@ -103,3 +103,7 @@
     @include vf-icon-double-chevron-left($color-x-light);
   }
 }
+
+.p-modal__footer {
+  text-align: left;
+}
