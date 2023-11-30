@@ -28,6 +28,9 @@ const SingleMachine = lazy(
 const ActivitiesPage = lazy(() => import("./pages/dashboard/activities"));
 const ScriptsPage = lazy(() => import("./pages/dashboard/scripts"));
 const PackagesPage = lazy(() => import("./pages/dashboard/packages"));
+const SavedSearchesPage = lazy(
+  () => import("./pages/dashboard/machines/savedSearches"),
+);
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -124,6 +127,14 @@ const App: FC = () => {
             element={
               <AuthRoute>
                 <SingleMachine />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="machines/searches"
+            element={
+              <AuthRoute>
+                <SavedSearchesPage />
               </AuthRoute>
             }
           />

@@ -73,9 +73,11 @@ export const MACHINE_SEARCH_HELP_TERMS: {
         </span>
         <br />
         <span>
-          <code>&lt;type&gt;</code> can be package-upgrades, security-upgrades,
-          package-profiles, package-reporter, esm-disabled, computer-offline,
-          computer-reboot, computer-duplicates, unapproved-activities.
+          <code>&lt;type&gt;</code> can be <code>package-upgrades</code>,{" "}
+          <code>security-upgrades</code>,<code>package-profiles</code>,{" "}
+          <code>package-reporter</code>, <code>esm-disabled</code>,{" "}
+          <code>computer-offline</code>,<code>computer-reboot</code>,{" "}
+          <code>computer-duplicates</code>, <code>unapproved-activities</code>.
         </span>
       </>
     ),
@@ -142,6 +144,55 @@ export const MACHINE_SEARCH_HELP_TERMS: {
     description: (
       <span>
         Computers associated with the <code>&lt;name&gt;</code> removal profile
+      </span>
+    ),
+  },
+  {
+    term: "tag:<keyword>",
+    description: (
+      <span>
+        Computers associated with the <code>&lt;keyword&gt;</code> tag
+      </span>
+    ),
+  },
+  {
+    term: "hostname:<keyword>",
+    description: (
+      <span>
+        Computer with the hostname <code>&lt;keyword&gt;</code>
+      </span>
+    ),
+  },
+  {
+    term: "title:<keyword>",
+    description: (
+      <span>
+        Computer with the title <code>&lt;keyword&gt;</code>
+      </span>
+    ),
+  },
+  {
+    term: "license-id:<license_id>",
+    description: (
+      <span>
+        Search for computers licensed to the specified{" "}
+        <code>&lt;license_id&gt;</code>
+      </span>
+    ),
+  },
+  {
+    term: "needs:license OR license-id:none",
+    description:
+      "Search for computers that do not have a Landscape license, and, as a result, are not managed",
+  },
+  {
+    term: "annotation:<key>",
+    description: (
+      <span>
+        Search for computers which define the specified annotation key.
+        Optionally specify <code>annotation:&lt;key&gt;:&lt;string&gt;</code>{" "}
+        which will only return computers whose key matches and value also
+        contains the <code>&lt;string&gt;</code> specified
       </span>
     ),
   },

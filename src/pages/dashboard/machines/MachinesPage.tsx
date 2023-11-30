@@ -12,7 +12,6 @@ import useAuth from "../../../hooks/useAuth";
 import classes from "./MachinesPage.module.scss";
 
 const MachinesPage: FC = () => {
-  const [visualTitle, setVisualTitle] = useState("");
   const [selected, setSelected] = useState<number[]>([]);
 
   const debug = useDebug();
@@ -154,8 +153,6 @@ const MachinesPage: FC = () => {
       <PageHeader
         title="Machines"
         className={classes.header}
-        hideTitle
-        visualTitle={visualTitle}
         actions={[
           <div key="buttons" className="p-segmented-control">
             <div className="p-segmented-control__list">
@@ -201,7 +198,6 @@ const MachinesPage: FC = () => {
       />
       <PageContent>
         <MachinesContainer
-          setVisualTitle={setVisualTitle}
           selectedIds={selected}
           setSelectedIds={setSelected}
         />

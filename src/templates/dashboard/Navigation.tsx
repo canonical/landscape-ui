@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import classes from "./Navigation.module.scss";
@@ -14,17 +14,27 @@ interface MenuItem {
 const MENU_ITEMS: MenuItem[] = [
   {
     label: "Machines",
-    path: "/machines",
+    path: `${ROOT_PATH}machines`,
     icon: "pods",
+    items: [
+      {
+        label: "Machines",
+        path: `${ROOT_PATH}machines`,
+      },
+      {
+        label: "Searches",
+        path: `${ROOT_PATH}machines/searches`,
+      },
+    ],
   },
   {
     label: "Activities",
-    path: "/activities",
+    path: `${ROOT_PATH}activities`,
     icon: "status",
   },
   {
     label: "Packages",
-    path: "/packages",
+    path: `${ROOT_PATH}packages`,
     icon: "drag",
   },
   {
@@ -52,13 +62,17 @@ const MENU_ITEMS: MenuItem[] = [
   },
   {
     label: "Scripts",
-    path: "/scripts",
+    path: `${ROOT_PATH}scripts`,
     icon: "open-terminal",
   },
 ];
 
 const Navigation: FC = () => {
   const [expanded, setExpanded] = useState("");
+
+  useEffect(() => {
+    setExpanded(`${ROOT_PATH}repositories`);
+  }, []);
 
   const { pathname } = useLocation();
 

@@ -35,7 +35,7 @@ const ProfilesPage: FC = () => {
             onClick={handleAddProfile}
             type="button"
           >
-            Create Profile
+            Create profile
           </Button>,
         ]}
       />
