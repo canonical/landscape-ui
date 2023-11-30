@@ -43,7 +43,7 @@
     "prettier": "3.0.3",
     "sass": "1.66.1",
     "stylelint": "15.10.3",
-    "stylelint-config-standard-scss": "11.0.0",
+    "stylelint-config-standard-scss": "11.1.0",
     "stylelint-order": "6.0.3",
     "stylelint-prettier": "4.0.2",
     "stylelint-scss": "5.1.0",
