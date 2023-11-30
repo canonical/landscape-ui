@@ -1,11 +1,13 @@
-import { FC } from "react";
+import { FC, lazy, Suspense } from "react";
 import PageMain from "../../../../components/layout/PageMain";
 import PageHeader from "../../../../components/layout/PageHeader";
 import PageContent from "../../../../components/layout/PageContent";
 import SavedSearchesContainer from "./SavedSearchesContainer";
 import useSidePanel from "../../../../hooks/useSidePanel";
-import SingleSavedSearch from "./SingleSavedSearch";
 import { Button } from "@canonical/react-components";
+import LoadingState from "../../../../components/layout/LoadingState";
+
+const SingleSavedSearch = lazy(() => import("./SingleSavedSearch"));
 
 const SavedSearchesPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
@@ -17,13 +19,18 @@ const SavedSearchesPage: FC = () => {
         sticky
         actions={[
           <Button
-            key="create-saved-search"
+            key="create-search"
             appearance="positive"
             onClick={() => {
-              setSidePanelContent("Create saved search", <SingleSavedSearch />);
+              setSidePanelContent(
+                "Create search",
+                <Suspense fallback={<LoadingState />}>
+                  <SingleSavedSearch />
+                </Suspense>,
+              );
               setSidePanelOpen(true);
             }}
-            aria-label="Create saved search"
+            aria-label="Create search"
           >
             <span>Create search</span>
           </Button>,

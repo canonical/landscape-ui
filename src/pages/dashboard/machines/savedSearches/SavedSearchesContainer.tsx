@@ -1,4 +1,4 @@
-import { FC, Suspense, useMemo, useState } from "react";
+import { FC, lazy, Suspense, useMemo, useState } from "react";
 import useDebug from "../../../../hooks/useDebug";
 import { useSavedSearches } from "../../../../hooks/useSavedSearches";
 import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
@@ -10,9 +10,10 @@ import { SavedSearch } from "../../../../types/SavedSearch";
 import classes from "./SavedSearchesContainer.module.scss";
 import TablePagination from "../../../../components/layout/TablePagination";
 import useSidePanel from "../../../../hooks/useSidePanel";
-import SingleSavedSearch from "./SingleSavedSearch";
 import useConfirm from "../../../../hooks/useConfirm";
 import LoadingState from "../../../../components/layout/LoadingState";
+
+const SingleSavedSearch = lazy(() => import("./SingleSavedSearch"));
 
 const SavedSearchesContainer: FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,7 +45,7 @@ const SavedSearchesContainer: FC = () => {
 
   const handleEditSavedSearch = (savedSearch: SavedSearch) => {
     setSidePanelContent(
-      "Edit saved search",
+      `Edit "${savedSearch.name}" search`,
       <Suspense fallback={<LoadingState />}>
         <SingleSavedSearch savedSearch={savedSearch} />
       </Suspense>,
@@ -55,10 +56,10 @@ const SavedSearchesContainer: FC = () => {
   const handleRemoveSavedSearch = (savedSearch: SavedSearch) => {
     confirmModal({
       body: "Are you sure?",
-      title: `Removing "${savedSearch.title}" saved search`,
+      title: `Removing "${savedSearch.title}" search`,
       buttons: [
         <Button
-          key={`remove-script-${savedSearch.title}`}
+          key={`remove-search-${savedSearch.title}`}
           appearance="negative"
           hasIcon={true}
           onClick={async () => {
@@ -72,7 +73,7 @@ const SavedSearchesContainer: FC = () => {
               closeConfirmModal();
             }
           }}
-          aria-label={`Remove ${savedSearch.title} saved search`}
+          aria-label={`Remove ${savedSearch.title} search`}
         >
           {removeSavedSearchQueryLoading && <LoadingState />}
           Remove
@@ -113,7 +114,7 @@ const SavedSearchesContainer: FC = () => {
                 hasIcon
                 appearance="base"
                 className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
-                aria-label={`Edit ${row.original.title} saved search`}
+                aria-label={`Edit ${row.original.title} search`}
                 onClick={() => {
                   handleEditSavedSearch(row.original);
                 }}
@@ -128,7 +129,7 @@ const SavedSearchesContainer: FC = () => {
                 hasIcon
                 appearance="base"
                 className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
-                aria-label={`Remove ${row.original.title} saved search`}
+                aria-label={`Remove ${row.original.title} search`}
                 onClick={() => {
                   handleRemoveSavedSearch(row.original);
                 }}

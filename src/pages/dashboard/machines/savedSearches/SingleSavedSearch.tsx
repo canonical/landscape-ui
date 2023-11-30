@@ -77,21 +77,19 @@ const SingleSavedSearch: FC<SingleSavedSearchProps> = ({ savedSearch }) => {
       />
       <Input
         type="text"
-        label="Name"
-        placeholder={formik.values.title
-          .toLowerCase()
-          .replace(/[^-a-z0-9]/g, " ")
-          .replace(/\s+/g, "-")}
-        {...formik.getFieldProps("name")}
-        error={formik.touched.name && formik.errors.name}
-      />
-      <Input
-        type="text"
         label="Search"
         required
         {...formik.getFieldProps("search")}
         error={formik.touched.search && formik.errors.search}
       />
+      {!savedSearch && (
+        <Input
+          type="text"
+          label="Name"
+          {...formik.getFieldProps("name")}
+          error={formik.touched.name && formik.errors.name}
+        />
+      )}
 
       <SidePanelFormButtons
         disabled={formik.isSubmitting}
