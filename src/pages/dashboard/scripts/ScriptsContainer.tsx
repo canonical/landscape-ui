@@ -15,6 +15,7 @@ import useConfirm from "../../../hooks/useConfirm";
 import classes from "./ScriptsContainer.module.scss";
 import useSidePanel from "../../../hooks/useSidePanel";
 import LoadingState from "../../../components/layout/LoadingState";
+import EmptyState from "../../../components/layout/EmptyState";
 
 const SingleScript = lazy(() => import("./SingleScript"));
 
@@ -36,7 +37,6 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
   const {
     data: getScriptsQueryResult,
     isLoading: getScriptsQueryLoading,
-    isFetching: getScriptsQueryFetching,
     error: getScriptsQueryError,
   } = getScriptsQuery({
     limit: itemsPerPage,
@@ -45,7 +45,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
 
   const scripts = useMemo(
     () => getScriptsQueryResult?.data ?? [],
-    [getScriptsQueryFetching],
+    [getScriptsQueryResult],
   );
 
   if (getScriptsQueryError) {
@@ -164,41 +164,73 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
         ),
       },
     ],
-    [getScriptsQueryFetching],
+    [getScriptsQueryResult],
   );
 
   return (
     <>
-      <ModularTable
-        columns={columns}
-        data={scripts}
-        emptyMsg={getScriptsQueryLoading ? "Loading..." : "No scripts found."}
-        getCellProps={({ column }) => {
-          switch (column.id) {
-            case "title":
-              return { role: "rowheader" };
-            case "access_group":
-              return { "aria-label": "Access group" };
-            case "creator.name":
-              return { "aria-label": "Creator" };
-            case "id":
-              return { "aria-label": "Actions" };
-            default:
-              return {};
+      {getScriptsQueryLoading && <LoadingState />}
+      {!getScriptsQueryLoading && 0 === scripts.length && (
+        <EmptyState
+          title="No scripts found"
+          icon="connected"
+          body={
+            <>
+              <p className="u-no-margin--bottom">
+                You haven’t added any script yet.
+              </p>
+              <a href="https://ubuntu.com/landscape/docs/managing-computers">
+                How to manage computers in Landscape
+              </a>
+            </>
           }
-        }}
-      />
-      <TablePagination
-        currentPage={currentPage}
-        totalItems={10}
-        paginate={(page) => {
-          setCurrentPage(page);
-        }}
-        pageSize={itemsPerPage}
-        setPageSize={(itemsNumber) => {
-          setItemsPerPage(itemsNumber);
-        }}
-      />
+          cta={[
+            <Button
+              appearance="positive"
+              key="table-create-new-mirror"
+              onClick={() => {}}
+              type="button"
+            >
+              Create APT source
+            </Button>,
+          ]}
+        />
+      )}
+      {!getScriptsQueryLoading && scripts.length > 0 && (
+        <>
+          <ModularTable
+            columns={columns}
+            data={scripts}
+            emptyMsg={
+              getScriptsQueryLoading ? "Loading..." : "No scripts found."
+            }
+            getCellProps={({ column }) => {
+              if (column.id === "title") {
+                return { role: "rowheader" };
+              } else if (column.id === "access_group") {
+                return { "aria-label": "Access group" };
+              } else if (column.id === "creator.name") {
+                return { "aria-label": "Creator" };
+              } else if (column.id === "id") {
+                return { "aria-label": "Actions" };
+              } else {
+                return {};
+              }
+            }}
+          />
+          <TablePagination
+            currentPage={currentPage}
+            totalItems={10}
+            paginate={(page) => {
+              setCurrentPage(page);
+            }}
+            pageSize={itemsPerPage}
+            setPageSize={(itemsNumber) => {
+              setItemsPerPage(itemsNumber);
+            }}
+          />
+        </>
+      )}
     </>
   );
 };
