@@ -111,3 +111,16 @@
 .p-modal__footer {
   text-align: left;
 }
+
+@mixin vf-icon--account($color) {
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 1a4 4 0 014 4v.5a3.987 3.987 0 01-1.139 2.795 6 6 0 014.135 5.48L15 14H1a6.003 6.003 0 014.14-5.706A3.98 3.98 0 014 5.5V5a4 4 0 014-4zm1 8.5H7a4.502 4.502 0 00-4.203 2.888l-.04.112h10.486l-.03-.084a4.504 4.504 0 00-4-2.911L9 9.5zm-1-7a2.5 2.5 0 00-2.495 2.336L5.5 5v.5a2.5 2.5 0 004.995.164L10.5 5.5V5A2.5 2.5 0 008 2.5z' fill='#{vf-url-friendly-color($color)}' fill-rule='nonzero'/%3E%3C/svg%3E");
+}
+
+.p-icon--account {
+  @extend %icon;
+  @include vf-icon--account(hsla(0, 0%, 100%, 0.75));
+
+  [class*="p-side-navigation--"].is-dark .p-side-navigation__link:hover & {
+    @include vf-icon--account($color-x-light);
+  }
+}

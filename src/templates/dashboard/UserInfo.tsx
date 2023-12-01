@@ -4,10 +4,11 @@ import { Button } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { OLD_DASHBOARD_URL } from "../../constants";
+import { useNavigate } from "react-router-dom";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
-
+  const navigate = useNavigate();
   return (
     <div
       className={classNames(
@@ -15,9 +16,21 @@ const UserInfo: FC = () => {
         classes.container,
       )}
     >
-      <span className={classNames("p-side-navigation__label", classes.label)}>
-        {user?.email ?? "Unknown user"}
-      </span>
+      <Button
+        appearance="base"
+        className={classNames(
+          "p-side-navigation__link is-dark u-no-margin--bottom",
+          classes.button,
+        )}
+        onClick={() => {
+          navigate("/account");
+        }}
+      >
+        <i className={classNames("p-icon--account")} />
+        <span className="p-side-navigation__label">
+          {user?.name ?? "Unknown user"}
+        </span>
+      </Button>
       <a
         href={OLD_DASHBOARD_URL}
         className={classNames(
@@ -36,7 +49,7 @@ const UserInfo: FC = () => {
         )}
         onClick={logout}
       >
-        <i className={classNames("p-icon--logout", classes.icon)} />
+        <i className="p-icon--logout" />
         <span className="p-side-navigation__label">Log out</span>
       </Button>
     </div>

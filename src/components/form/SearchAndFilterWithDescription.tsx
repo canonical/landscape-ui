@@ -11,16 +11,18 @@ interface SearchAndFilterWithDescriptionProps {
   filterPanelData: SearchAndFilterData[];
   returnSearchData: (searchData: SearchAndFilterChip[]) => void;
   onClick: () => void;
+  existingSearchData?: SearchAndFilterChip[];
 }
 
 const SearchAndFilterWithDescription: FC<
   SearchAndFilterWithDescriptionProps
-> = ({ filterPanelData, returnSearchData, onClick }) => {
+> = ({ filterPanelData, returnSearchData, onClick, existingSearchData }) => {
   return (
     <div>
       <div className={classNames(classes.wrapper)}>
         <div className={classes.search}>
           <SearchAndFilter
+            existingSearchData={existingSearchData}
             filterPanelData={filterPanelData}
             returnSearchData={returnSearchData}
           />

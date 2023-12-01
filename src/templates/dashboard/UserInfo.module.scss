@@ -8,18 +8,10 @@
   padding-top: $spv--small;
 }
 
-.label,
 .button {
   padding-bottom: 0.7 * $sp-unit !important;
   padding-left: $sph--small !important;
   padding-top: 0.7 * $sp-unit !important;
-}
-
-.label {
-  border: 1px solid transparent;
-}
-
-.button {
   justify-content: flex-start !important;
   align-items: center;
   column-gap: $sph--small;
