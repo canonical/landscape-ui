@@ -1,0 +1,68 @@
+import { Button } from "@canonical/react-components";
+import classNames from "classnames";
+import { FC } from "react";
+import EmptyState from "../../../../components/layout/EmptyState";
+import LoadingState from "../../../../components/layout/LoadingState";
+import useAccessGroup from "../../../../hooks/useAccessGroup";
+import useSidePanel from "../../../../hooks/useSidePanel";
+import AccessGroupList from "./AccessGroupList";
+import NewAccessGroupForm from "./NewAccessGroupForm";
+import classes from "./AccessGroupsPage.module.scss";
+const AccessGroupsPage: FC = () => {
+  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { getAccessGroupQuery } = useAccessGroup();
+  const { data: accessGroupResponse, isLoading } = getAccessGroupQuery();
+
+  const accessGroupData = accessGroupResponse?.data ?? [];
+
+  const handleAddAccessGroup = () => {
+    setSidePanelOpen(true);
+    setSidePanelContent("Create access group", <NewAccessGroupForm />);
+  };
+
+  const AddNewAccessGroupButton = ({ className }: { className?: string }) => (
+    <Button
+      appearance="positive"
+      onClick={handleAddAccessGroup}
+      onMouseDown={(event) => {
+        event.preventDefault();
+      }}
+      type="button"
+      className={classNames("u-no-margin--right", className)}
+    >
+      Create access group
+    </Button>
+  );
+
+  return (
+    <>
+      <div className={classes.header}>
+        <p className="p-heading--4">Access groups</p>
+        <AddNewAccessGroupButton key="create-new-access-group-button" />
+      </div>
+      {isLoading && <LoadingState />}
+      {!isLoading && accessGroupData.length === 0 && (
+        <EmptyState
+          title="No access groups found"
+          icon="copy"
+          body={
+            <>
+              <p className="u-no-margin--bottom">
+                You haven&#39;t added any access groups yet.
+              </p>
+              <a href="https://ubuntu.com/landscape/docs/access-groups">
+                How to manage access groups in Landscape
+              </a>
+            </>
+          }
+          cta={[<AddNewAccessGroupButton key="empty-state-new-button" />]}
+        />
+      )}
+      {!isLoading && accessGroupData.length > 0 && (
+        <AccessGroupList accessGroupData={accessGroupData} />
+      )}
+    </>
+  );
+};
+
+export default AccessGroupsPage;

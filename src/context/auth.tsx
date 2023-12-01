@@ -4,10 +4,16 @@ import { ROOT_PATH } from "../constants";
 
 const AUTH_STORAGE_KEY = "_landscape_auth";
 
+export interface Account {
+  title: string;
+  name: string;
+}
+
 export interface AuthUser {
   email: string;
   name: string;
   token: string;
+  accounts: Account[];
 }
 
 export interface AuthContextProps {
@@ -58,6 +64,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       name: savedState.name ?? "",
       email: savedState.email ?? "",
       token: savedState.token ?? "",
+      accounts: savedState.accounts ?? [],
     });
   }, []);
 

@@ -13,6 +13,7 @@ import SearchHelpPopup from "../../../components/layout/SearchHelpPopup";
 import { MACHINE_SEARCH_HELP_TERMS } from "./_data";
 import { useSavedSearches } from "../../../hooks/useSavedSearches";
 import useDebug from "../../../hooks/useDebug";
+import { useLocation } from "react-router-dom";
 
 const TOTAL_MACHINES = 9;
 
@@ -31,6 +32,8 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageLimit, setPageLimit] = useState(50);
   const [showSearchHelp, setShowSearchHelp] = useState(false);
+  const location = useLocation();
+  const locationState = location.state as { chipData?: SearchAndFilterChip };
 
   const debug = useDebug();
 
@@ -85,6 +88,9 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
       <div className={classes.top}>
         <div className={classes.search}>
           <SearchAndFilterWithDescription
+            existingSearchData={
+              locationState?.chipData ? [locationState.chipData] : undefined
+            }
             filterPanelData={searchAndFilterData}
             returnSearchData={(searchData) => {
               setSearchAndFilterChips(searchData);

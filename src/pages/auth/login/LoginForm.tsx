@@ -14,6 +14,7 @@ import AppNotification from "../../../components/layout/AppNotification";
 import axios, { AxiosResponse } from "axios";
 import { API_URL } from "../../../constants";
 import useAuth from "../../../hooks/useAuth";
+import { Account } from "../../../context/auth";
 
 interface RequestParams {
   email: string;
@@ -22,8 +23,10 @@ interface RequestParams {
 }
 
 interface RequestResponse {
+  name: string;
   token: string;
   email: string;
+  accounts: Account[];
 }
 
 interface FormProps {
@@ -67,9 +70,10 @@ const LoginForm: FC = () => {
 
         setUser(
           {
-            name: "Yurii Test",
+            name: data.name,
             email: data.email,
             token: data.token,
+            accounts: data.accounts,
           },
           values.remember,
         );
