@@ -47,9 +47,13 @@ interface FormProps extends CreateSeriesParams {
 
 interface NewSeriesFormProps {
   distributionData: Distribution | Distribution[];
+  ctaText?: string;
 }
 
-const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
+const NewSeriesForm: FC<NewSeriesFormProps> = ({
+  distributionData,
+  ctaText = "Create mirror",
+}) => {
   const [mirrorUri, setMirrorUri] = useState(DEFAULT_MIRROR_URI);
   const [seriesOptions, setSeriesOptions] = useState<SelectOption[]>([]);
 
@@ -529,7 +533,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({ distributionData }) => {
 
       <SidePanelFormButtons
         disabled={isCreating}
-        positiveButtonTitle="Add series"
+        positiveButtonTitle={ctaText}
       />
     </Form>
   );

@@ -62,7 +62,10 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
         setSidePanelOpen(true);
         setSidePanelContent(
           `Add series to ${distribution.name}`,
-          <NewSeriesForm distributionData={distribution} />,
+          <NewSeriesForm
+            distributionData={distribution}
+            ctaText="Add series"
+          />,
         );
       }}
       onMouseDown={(event) => {
