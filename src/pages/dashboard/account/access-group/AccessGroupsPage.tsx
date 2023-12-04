@@ -3,11 +3,13 @@ import classNames from "classnames";
 import { FC } from "react";
 import EmptyState from "../../../../components/layout/EmptyState";
 import LoadingState from "../../../../components/layout/LoadingState";
+import PageHeader from "../../../../components/layout/PageHeader";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import AccessGroupList from "./AccessGroupList";
 import NewAccessGroupForm from "./NewAccessGroupForm";
-import classes from "./AccessGroupsPage.module.scss";
+import PageMain from "../../../../components/layout/PageMain";
+import PageContent from "../../../../components/layout/PageContent";
 const AccessGroupsPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useAccessGroup();
@@ -35,33 +37,37 @@ const AccessGroupsPage: FC = () => {
   );
 
   return (
-    <>
-      <div className={classes.header}>
-        <p className="p-heading--4">Access groups</p>
-        <AddNewAccessGroupButton key="create-new-access-group-button" />
-      </div>
-      {isLoading && <LoadingState />}
-      {!isLoading && accessGroupData.length === 0 && (
-        <EmptyState
-          title="No access groups found"
-          icon="copy"
-          body={
-            <>
-              <p className="u-no-margin--bottom">
-                You haven&#39;t added any access groups yet.
-              </p>
-              <a href="https://ubuntu.com/landscape/docs/access-groups">
-                How to manage access groups in Landscape
-              </a>
-            </>
-          }
-          cta={[<AddNewAccessGroupButton key="empty-state-new-button" />]}
-        />
-      )}
-      {!isLoading && accessGroupData.length > 0 && (
-        <AccessGroupList accessGroupData={accessGroupData} />
-      )}
-    </>
+    <PageMain>
+      <PageHeader
+        title="Access groups"
+        actions={[
+          <AddNewAccessGroupButton key="create-new-access-group-button" />,
+        ]}
+      />
+      <PageContent>
+        {isLoading && <LoadingState />}
+        {!isLoading && accessGroupData.length === 0 && (
+          <EmptyState
+            title="No access groups found"
+            icon="copy"
+            body={
+              <>
+                <p className="u-no-margin--bottom">
+                  You haven&#39;t added any access groups yet.
+                </p>
+                <a href="https://ubuntu.com/landscape/docs/access-groups">
+                  How to manage access groups in Landscape
+                </a>
+              </>
+            }
+            cta={[<AddNewAccessGroupButton key="empty-state-new-button" />]}
+          />
+        )}
+        {!isLoading && accessGroupData.length > 0 && (
+          <AccessGroupList accessGroupData={accessGroupData} />
+        )}
+      </PageContent>
+    </PageMain>
   );
 };
 
