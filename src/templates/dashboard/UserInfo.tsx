@@ -23,7 +23,7 @@ const UserInfo: FC = () => {
           classes.button,
         )}
         onClick={() => {
-          navigate("/account");
+          navigate("/user");
         }}
       >
         <i className={classNames("p-icon--account")} />

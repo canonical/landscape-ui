@@ -4,8 +4,8 @@ import LoadingState from "../../../../components/layout/LoadingState";
 import useAuth from "../../../../hooks/useAuth";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import EditAccountForm from "./EditAccountForm";
-import classes from "./OverviewPage.module.scss";
 import { AuthUser } from "../../../../context/auth";
+import PageHeader from "../../../../components/layout/PageHeader";
 const OverviewPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { user } = useAuth();
@@ -21,13 +21,22 @@ const OverviewPage: FC = () => {
   };
 
   return (
-    <div className={classes.header}>
-      <p className="p-heading--4">My account</p>
-      <Button hasIcon type="button" onClick={handleEditAccount}>
-        <Icon name="edit" />
-        <span>Edit</span>
-      </Button>
-    </div>
+    <>
+      <PageHeader
+        title="My account"
+        actions={[
+          <Button
+            key="my-account-edit-button"
+            hasIcon
+            type="button"
+            onClick={handleEditAccount}
+          >
+            <Icon name="edit" />
+            <span>Edit</span>
+          </Button>,
+        ]}
+      />
+    </>
   );
 };
 

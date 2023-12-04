@@ -32,6 +32,11 @@ const SavedSearchesPage = lazy(
   () => import("./pages/dashboard/machines/savedSearches"),
 );
 const AccountPage = lazy(() => import("./pages/dashboard/account"));
+const OverviewPage = lazy(() => import("./pages/dashboard/account/overview"));
+const AccessGroupsPage = lazy(
+  () => import("./pages/dashboard/account/access-group"),
+);
+const UserPage = lazy(() => import("./pages/dashboard/user"));
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -168,6 +173,30 @@ const App: FC = () => {
             element={
               <AuthRoute>
                 <AccountPage />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="account/overview"
+            element={
+              <AuthRoute>
+                <OverviewPage />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="account/access-groups"
+            element={
+              <AuthRoute>
+                <AccessGroupsPage />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="user"
+            element={
+              <AuthRoute>
+                <UserPage />
               </AuthRoute>
             }
           />

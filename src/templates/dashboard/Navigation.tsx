@@ -65,6 +65,21 @@ const MENU_ITEMS: MenuItem[] = [
     path: `${ROOT_PATH}scripts`,
     icon: "open-terminal",
   },
+  {
+    label: "Account",
+    path: `${ROOT_PATH}account`,
+    icon: "units",
+    items: [
+      {
+        label: "Overview",
+        path: `${ROOT_PATH}account/overview`,
+      },
+      {
+        label: "Access groups",
+        path: `${ROOT_PATH}account/access-groups`,
+      },
+    ],
+  },
 ];
 
 const Navigation: FC = () => {
