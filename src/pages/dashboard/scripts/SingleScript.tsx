@@ -5,17 +5,13 @@ import useDebug from "../../../hooks/useDebug";
 import useScripts from "../../../hooks/useScripts";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import {
-  Button,
-  Form,
-  Input,
-  Select,
-  Textarea,
-} from "@canonical/react-components";
-import { assertNever } from "../../../utils/debug";
+import { Button, Form, Input, Select } from "@canonical/react-components";
 import useAccessGroup from "../../../hooks/useAccessGroup";
 import { SelectOption } from "../../../types/SelectOption";
 import { Buffer } from "buffer";
+import classes from "./SingleScript.module.scss";
+import classNames from "classnames";
+import { Editor } from "@monaco-editor/react";
 
 interface FormProps extends Pick<Script, "title" | "time_limit" | "username"> {
   code: string;
@@ -284,22 +280,15 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
   );
 
   const submitButtonText = useMemo(() => {
-    const action = props.action;
-
-    try {
-      switch (action) {
-        case "create":
-          return "Create";
-        case "edit":
-          return "Save changes";
-        case "copy":
-          return "Copy";
-        default:
-          assertNever(action, "action");
-      }
-    } catch (error) {
-      debug(error);
+    if (props.action === "create") {
+      return "Create";
     }
+
+    if (props.action === "edit") {
+      return "Save changes";
+    }
+
+    return "Copy";
   }, [props.action]);
 
   const FileInputs = [
@@ -462,13 +451,49 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
             {...formik.getFieldProps("time_limit")}
             error={formik.touched.time_limit && formik.errors.time_limit}
           />
-          <Textarea
-            rows={6}
-            label="Code"
-            required={"create" === props.action}
-            {...formik.getFieldProps("code")}
-            error={formik.touched.code && formik.errors.code}
-          />
+
+          <div
+            className={classNames("p-form__group p-form-validation", {
+              "is-error": formik.touched.code && !!formik.errors.code,
+            })}
+          >
+            <label
+              className={classNames("p-form__label", {
+                "is-required": "create" === props.action,
+              })}
+              htmlFor="code"
+            >
+              Code
+            </label>
+            <div className="p-form__control u-clearfix">
+              <Editor
+                language="shell"
+                height="16rem"
+                className={classNames(classes.highlighter, {
+                  [classes.error]: formik.touched.code && !!formik.errors.code,
+                })}
+                {...formik.getFieldProps("code")}
+                onChange={(value) => {
+                  formik.setFieldValue("code", value);
+                }}
+                options={{
+                  minimap: { enabled: false },
+                  renderLineHighlight: "none",
+                  padding: { top: 8, bottom: 8 },
+                }}
+              />
+
+              {formik.touched.code && formik.errors.code && (
+                <p
+                  className="p-form-validation__message"
+                  id="code-error-message"
+                >
+                  {formik.errors.code}
+                </p>
+              )}
+            </div>
+          </div>
+
           <Input
             type="text"
             label="Run as user"
