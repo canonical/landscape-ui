@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import { mockProcesses } from "./_data";
 import {
+  Button,
   CheckboxInput,
   MainTable,
   SearchBox,
@@ -20,7 +21,8 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [processesPerPage, setProcessesPerPage] = useState(50);
   const [selected, setSelected] = useState<number[]>([]);
-
+  const [search, setSearch] = useState("");
+  const [inputText, setInputText] = useState("");
   const toggleAll = () => {
     setSelected((prevState) =>
       0 === prevState.length ? processes.map(({ pid }) => pid) : [],
@@ -38,6 +40,12 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
     processesPerPage,
     (currentPage - 1) * processesPerPage,
   );
+
+  const getFilteredProcesses = () => {
+    return search
+      ? processes.filter(({ name }) => name.match(search))
+      : processes;
+  };
 
   const totalProcesses = mockProcesses.filter(
     ({ computer_id }) => computer_id === machineId,
@@ -69,7 +77,7 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
     { content: "Group" },
   ];
 
-  const rows: MainTableRow[] = processes.map(
+  const rows: MainTableRow[] = getFilteredProcesses().map(
     ({ name, state, vm_size, cpu_utilization, pid, start_time, uid, gid }) => {
       return {
         columns: [
@@ -83,11 +91,13 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
                   }
                   checked={selected.includes(pid)}
                   onChange={() => {
-                    setSelected((prevState) =>
-                      prevState.includes(pid)
-                        ? prevState.filter((pid) => pid !== pid)
-                        : [...prevState, pid],
-                    );
+                    setSelected((prevState) => {
+                      return prevState.includes(pid)
+                        ? prevState.filter(
+                            (prevStatePid) => prevStatePid !== pid,
+                          )
+                        : [...prevState, pid];
+                    });
                   }}
                 />
                 <span>{name}</span>
@@ -115,25 +125,60 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ machineId }) => {
     setCurrentPage(page);
     setSelected([]);
   };
-
+  const handleClearSearchBox = () => {
+    setSearch("");
+    setInputText("");
+    setCurrentPage(1);
+  };
+  const handleEndProcess = () => {
+    // TODO: add endProcess Activity API call
+  };
+  const handleKillProcess = () => {
+    // TODO: add killProcess Activity API call
+  };
   return (
     <>
       <div className={classes.header}>
-        <SearchBox className={classes.search} />
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            setSearch(inputText);
+            setCurrentPage(1);
+          }}
+          noValidate
+        >
+          <SearchBox
+            externallyControlled
+            shouldRefocusAfterReset
+            aria-label="Process search"
+            onChange={(inputValue) => {
+              setInputText(inputValue);
+            }}
+            value={inputText}
+            onSearch={() => {
+              setSearch(inputText);
+              setCurrentPage(1);
+            }}
+            onClear={handleClearSearchBox}
+            className={classes.search}
+          />
+        </form>
         <div className="p-segmented-control">
           <div className="p-segmented-control__list">
-            <button
+            <Button
               className="p-segmented-control__button"
               disabled={0 === selected.length}
+              onClick={handleEndProcess}
             >
               End process
-            </button>
-            <button
+            </Button>
+            <Button
               className="p-segmented-control__button"
               disabled={0 === selected.length}
+              onClick={handleKillProcess}
             >
               Kill process
-            </button>
+            </Button>
           </div>
         </div>
       </div>
