@@ -107,3 +107,7 @@
 .p-modal__footer {
   text-align: left;
 }
+
+.u-off-screen:not(:focus):not(:active) {
+  top: 0;
+}
