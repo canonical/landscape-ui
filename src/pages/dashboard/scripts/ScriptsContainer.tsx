@@ -191,7 +191,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
               onClick={() => {}}
               type="button"
             >
-              Create APT source
+              Create script
             </Button>,
           ]}
         />
