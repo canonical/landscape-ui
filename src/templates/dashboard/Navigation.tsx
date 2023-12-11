@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import classes from "./Navigation.module.scss";
@@ -41,6 +41,16 @@ const Navigation: FC = () => {
   const [expanded, setExpanded] = useState("");
 
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    const shouldBeExpandedPath = MENU_ITEMS.filter(
+      ({ items }) => items && items.length > 0,
+    ).find(({ path }) => pathname.startsWith(path))?.path;
+
+    if (shouldBeExpandedPath) {
+      setExpanded(shouldBeExpandedPath);
+    }
+  }, []);
 
   return (
     <div className="p-side-navigation--icons is-dark">

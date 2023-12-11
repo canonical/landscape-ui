@@ -27,27 +27,31 @@ interface AuthRouteProps {
 }
 
 const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
-  const { authorized } = useAuth();
+  const { authorized, authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authorized) {
-      navigate(`${ROOT_PATH}login`, { replace: true });
+    if (authorized || authLoading) {
+      return;
     }
-  }, [authorized]);
+
+    navigate(`${ROOT_PATH}login`, { replace: true });
+  }, [authorized, authLoading]);
 
   return <>{children}</>;
 };
 
 const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
-  const { authorized } = useAuth();
+  const { authorized, authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (authorized) {
-      navigate(ROOT_PATH, { replace: true });
+    if (!authorized || authLoading) {
+      return;
     }
-  }, [authorized]);
+
+    navigate(ROOT_PATH, { replace: true });
+  }, [authorized, authLoading]);
 
   return <>{children}</>;
 };
