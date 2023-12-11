@@ -124,3 +124,7 @@
     @include vf-icon--account($color-x-light);
   }
 }
+
+.u-off-screen:not(:focus):not(:active) {
+  top: 0;
+}
