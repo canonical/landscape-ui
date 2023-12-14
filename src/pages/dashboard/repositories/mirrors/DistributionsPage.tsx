@@ -21,7 +21,9 @@ const DistributionsPage: FC = () => {
 
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { getDistributionsQuery } = useDistributions();
-  const { data, isLoading, error } = getDistributionsQuery();
+  const { data, isLoading, error } = getDistributionsQuery({
+    include_latest_sync: true,
+  });
   const debug = useDebug();
 
   if (error) {

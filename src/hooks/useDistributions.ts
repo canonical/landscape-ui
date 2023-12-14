@@ -13,6 +13,7 @@ import { ApiError } from "../types/ApiError";
 
 interface GetDistributionsParams {
   names?: string[];
+  include_latest_sync?: boolean;
 }
 
 interface CreateDistributionParams {

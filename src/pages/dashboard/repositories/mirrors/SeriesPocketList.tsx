@@ -13,6 +13,8 @@ import PackageList from "./PackageList";
 import classes from "./SeriesPocketList.module.scss";
 import { useMediaQuery } from "usehooks-ts";
 import InfoItem from "../../../../components/layout/InfoItem";
+import moment from "moment";
+import { DISPLAY_DATE_TIME_FORMAT } from "../../../../constants";
 
 interface SeriesPocketListProps {
   distributionName: Distribution["name"];
@@ -167,6 +169,18 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
     {},
   ];
 
+  const getLastSyncedTime = (pocket: Pocket) => {
+    if (pocket.mode === "upload") {
+      return "N/A";
+    }
+
+    if (pocket.last_sync_status !== "synced") {
+      return "---";
+    }
+
+    return moment(pocket.last_sync_time).format(DISPLAY_DATE_TIME_FORMAT);
+  };
+
   const rows = series.pockets.map((pocket) => {
     return {
       columns: [
@@ -212,7 +226,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           "aria-label": "Mode",
         },
         {
-          content: "",
+          content: getLastSyncedTime(pocket),
           "aria-label": "Last synced date",
         },
         {
