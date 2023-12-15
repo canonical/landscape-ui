@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, lazy, Suspense, useState } from "react";
 import SeriesCard from "./SeriesCard";
 import { Button, Spinner } from "@canonical/react-components";
 import useSidePanel from "../../../../hooks/useSidePanel";
@@ -9,8 +9,10 @@ import { Distribution } from "../../../../types/Distribution";
 import useConfirm from "../../../../hooks/useConfirm";
 import EmptyDistribution from "./EmptyDistribution";
 import classNames from "classnames";
-import NewSeriesForm from "./NewSeriesForm";
 import { useMediaQuery } from "usehooks-ts";
+import LoadingState from "../../../../components/layout/LoadingState";
+
+const NewSeriesForm = lazy(() => import("./NewSeriesForm"));
 
 interface DistributionCardProps {
   distribution: Distribution;
@@ -62,7 +64,12 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
         setSidePanelOpen(true);
         setSidePanelContent(
           `Add series to ${distribution.name}`,
-          <NewSeriesForm distributionData={distribution} />,
+          <Suspense fallback={<LoadingState />}>
+            <NewSeriesForm
+              distributionData={distribution}
+              ctaText="Add series"
+            />
+          </Suspense>,
         );
       }}
       onMouseDown={(event) => {

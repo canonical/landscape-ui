@@ -1,9 +1,11 @@
-import { FC } from "react";
+import { FC, lazy, Suspense } from "react";
 import { Distribution } from "../../../../types/Distribution";
 import { Button } from "@canonical/react-components";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import classes from "./EmptyDistribution.module.scss";
-import NewSeriesForm from "./NewSeriesForm";
+import LoadingState from "../../../../components/layout/LoadingState";
+
+const NewSeriesForm = lazy(() => import("./NewSeriesForm"));
 
 interface EmptyDistributionProps {
   distribution: Distribution;
@@ -33,7 +35,9 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
             setSidePanelOpen(true);
             setSidePanelContent(
               `Create mirror for ${distribution.name}`,
-              <NewSeriesForm distributionData={distribution} />,
+              <Suspense fallback={<LoadingState />}>
+                <NewSeriesForm distributionData={distribution} />
+              </Suspense>,
             );
           }}
           aria-label={`Create mirror for ${distribution.name}`}

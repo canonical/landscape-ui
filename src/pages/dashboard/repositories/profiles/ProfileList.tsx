@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, lazy, Suspense, useMemo } from "react";
 import { RepositoryProfile } from "../../../../types/RepositoryProfile";
 import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
 import {
@@ -12,11 +12,13 @@ import useConfirm from "../../../../hooks/useConfirm";
 import useDebug from "../../../../hooks/useDebug";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import { SelectOption } from "../../../../types/SelectOption";
-import EditProfileForm from "./EditProfileForm";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
 import classes from "./ProfileList.module.scss";
 import { Column } from "@canonical/react-components/node_modules/@types/react-table";
 import { CellProps } from "react-table";
+import LoadingState from "../../../../components/layout/LoadingState";
+
+const EditProfileForm = lazy(() => import("./EditProfileForm"));
 
 interface DistributionProfileListProps {
   repositoryProfiles: RepositoryProfile[];
@@ -45,7 +47,9 @@ const ProfileList: FC<DistributionProfileListProps> = ({
     setSidePanelOpen(true);
     setSidePanelContent(
       `Edit ${profile.title}`,
-      <EditProfileForm profile={profile} />,
+      <Suspense fallback={<LoadingState />}>
+        <EditProfileForm profile={profile} />
+      </Suspense>,
     );
   };
 

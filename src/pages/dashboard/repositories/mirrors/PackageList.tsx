@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, lazy, Suspense, useMemo, useState } from "react";
 import { Pocket } from "../../../../types/Pocket";
 import { Distribution } from "../../../../types/Distribution";
 import { Series } from "../../../../types/Series";
@@ -15,7 +15,6 @@ import useDebug from "../../../../hooks/useDebug";
 import classNames from "classnames";
 import useConfirm from "../../../../hooks/useConfirm";
 import useSidePanel from "../../../../hooks/useSidePanel";
-import EditPocketForm from "./EditPocketForm";
 import classes from "./PackageList.module.scss";
 import TablePagination from "../../../../components/layout/TablePagination";
 import {
@@ -24,6 +23,9 @@ import {
   HeaderProps,
 } from "@canonical/react-components/node_modules/@types/react-table";
 import { useMediaQuery } from "usehooks-ts";
+import LoadingState from "../../../../components/layout/LoadingState";
+
+const EditPocketForm = lazy(() => import("./EditPocketForm"));
 
 interface FormattedPackage extends Record<string, unknown> {
   packageName: string;
@@ -340,11 +342,13 @@ const PackageList: FC<PackageListProps> = ({
   const handleEditPocket = () => {
     setSidePanelContent(
       `Edit ${pocket.name} pocket`,
-      <EditPocketForm
-        pocket={pocket}
-        distributionName={distributionName}
-        seriesName={seriesName}
-      />,
+      <Suspense fallback={<LoadingState />}>
+        <EditPocketForm
+          pocket={pocket}
+          distributionName={distributionName}
+          seriesName={seriesName}
+        />
+      </Suspense>,
     );
   };
 
@@ -367,11 +371,12 @@ const PackageList: FC<PackageListProps> = ({
                 series: seriesName,
                 name: pocket.name,
               });
+
+              closeSidePanel();
             } catch (error) {
               debug(error);
             } finally {
               closeConfirmModal();
-              closeSidePanel();
             }
           }}
           aria-label={`Delete ${pocket.name} pocket of ${distributionName}/${seriesName}`}

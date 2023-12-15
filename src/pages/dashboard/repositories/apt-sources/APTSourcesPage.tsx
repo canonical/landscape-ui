@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, lazy, Suspense } from "react";
 import PageHeader from "../../../../components/layout/PageHeader";
 import PageMain from "../../../../components/layout/PageMain";
 import PageContent from "../../../../components/layout/PageContent";
@@ -6,9 +6,10 @@ import { Button } from "@canonical/react-components";
 import LoadingState from "../../../../components/layout/LoadingState";
 import EmptyState from "../../../../components/layout/EmptyState";
 import useSidePanel from "../../../../hooks/useSidePanel";
-import NewAPTSourceForm from "./NewAPTSourceForm";
 import APTSourcesList from "./APTSourcesList";
 import useAPTSources from "../../../../hooks/useAPTSources";
+
+const NewAPTSourceForm = lazy(() => import("./NewAPTSourceForm"));
 
 const APTSourcesPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
@@ -20,7 +21,12 @@ const APTSourcesPage: FC = () => {
 
   const handleOpen = () => {
     setSidePanelOpen(true);
-    setSidePanelContent("Create APT source", <NewAPTSourceForm />);
+    setSidePanelContent(
+      "Create APT source",
+      <Suspense fallback={<LoadingState />}>
+        <NewAPTSourceForm />
+      </Suspense>,
+    );
   };
 
   return (

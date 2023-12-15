@@ -91,6 +91,16 @@ const Navigation: FC = () => {
 
   const { pathname } = useLocation();
 
+  useEffect(() => {
+    const shouldBeExpandedPath = MENU_ITEMS.filter(
+      ({ items }) => items && items.length > 0,
+    ).find(({ path }) => pathname.startsWith(path))?.path;
+
+    if (shouldBeExpandedPath) {
+      setExpanded(shouldBeExpandedPath);
+    }
+  }, []);
+
   return (
     <div className="p-side-navigation--icons is-dark">
       <nav aria-label="Main">

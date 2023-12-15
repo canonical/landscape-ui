@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, lazy, Suspense } from "react";
 import PageHeader from "../../../../components/layout/PageHeader";
 import PageMain from "../../../../components/layout/PageMain";
 import PageContent from "../../../../components/layout/PageContent";
@@ -8,7 +8,8 @@ import LoadingState from "../../../../components/layout/LoadingState";
 import EmptyState from "../../../../components/layout/EmptyState";
 import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
 import ProfileList from "./ProfileList";
-import AddProfileForm from "./AddProfileForm";
+
+const AddProfileForm = lazy(() => import("./AddProfileForm"));
 
 const ProfilesPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
@@ -21,7 +22,12 @@ const ProfilesPage: FC = () => {
 
   const handleAddProfile = () => {
     setSidePanelOpen(true);
-    setSidePanelContent("Create repository profile", <AddProfileForm />);
+    setSidePanelContent(
+      "Create repository profile",
+      <Suspense fallback={<LoadingState />}>
+        <AddProfileForm />
+      </Suspense>,
+    );
   };
 
   return (

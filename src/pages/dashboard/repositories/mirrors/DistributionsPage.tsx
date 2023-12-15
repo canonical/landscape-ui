@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, lazy, Suspense, useState } from "react";
 import PageHeader from "../../../../components/layout/PageHeader";
 import PageMain from "../../../../components/layout/PageMain";
 import PageContent from "../../../../components/layout/PageContent";
@@ -8,11 +8,12 @@ import EmptyState from "../../../../components/layout/EmptyState";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import useDistributions from "../../../../hooks/useDistributions";
 import DistributionCard from "./DistributionCard";
-import NewDistributionForm from "./NewDistributionForm";
-import NewSeriesForm from "./NewSeriesForm";
 import useDebug from "../../../../hooks/useDebug";
 import { useMediaQuery } from "usehooks-ts";
 import classNames from "classnames";
+
+const NewDistributionForm = lazy(() => import("./NewDistributionForm"));
+const NewSeriesForm = lazy(() => import("./NewSeriesForm"));
 
 const DistributionsPage: FC = () => {
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -21,7 +22,9 @@ const DistributionsPage: FC = () => {
 
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { getDistributionsQuery } = useDistributions();
-  const { data, isLoading, error } = getDistributionsQuery();
+  const { data, isLoading, error } = getDistributionsQuery({
+    include_latest_sync: true,
+  });
   const debug = useDebug();
 
   if (error) {
@@ -34,7 +37,12 @@ const DistributionsPage: FC = () => {
     <Button
       onClick={() => {
         setSidePanelOpen(true);
-        setSidePanelContent("Create distribution", <NewDistributionForm />);
+        setSidePanelContent(
+          "Create distribution",
+          <Suspense fallback={<LoadingState />}>
+            <NewDistributionForm />
+          </Suspense>,
+        );
       }}
       onMouseDown={(event) => {
         event.preventDefault();
@@ -53,7 +61,9 @@ const DistributionsPage: FC = () => {
         setSidePanelOpen(true);
         setSidePanelContent(
           "Create new mirror",
-          <NewSeriesForm distributionData={distributions} />,
+          <Suspense fallback={<LoadingState />}>
+            <NewSeriesForm distributionData={distributions} />
+          </Suspense>,
         );
       }}
       onMouseDown={(event) => {
@@ -128,7 +138,9 @@ const DistributionsPage: FC = () => {
                   setSidePanelOpen(true);
                   setSidePanelContent(
                     "Create distribution",
-                    <NewDistributionForm />,
+                    <Suspense fallback={<LoadingState />}>
+                      <NewDistributionForm />
+                    </Suspense>,
                   );
                 }}
                 type="button"
