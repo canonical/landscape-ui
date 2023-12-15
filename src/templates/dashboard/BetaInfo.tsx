@@ -16,7 +16,7 @@ const BetaInfo: FC = () => {
         href="https://discourse.ubuntu.com/t/feedback-on-landscape-beta/38655"
         className={classes.link}
         target="_blank"
-        rel="noopener noreferrer"
+        rel="nofollow noopener noreferrer"
       >
         <span>Send feedback</span>
         <i
