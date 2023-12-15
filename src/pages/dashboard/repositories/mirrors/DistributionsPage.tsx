@@ -126,7 +126,11 @@ const DistributionsPage: FC = () => {
                 <p className="u-no-margin--bottom">
                   To create a new mirror you must first create a distribution
                 </p>
-                <a href="https://ubuntu.com/landscape/docs/repositories">
+                <a
+                  href="https://ubuntu.com/landscape/docs/repositories"
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                >
                   How to manage repositories in Landscape
                 </a>
               </>

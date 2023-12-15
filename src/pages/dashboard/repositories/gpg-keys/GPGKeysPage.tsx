@@ -56,7 +56,11 @@ const GPGKeysPage: FC = () => {
                 <p className="u-no-margin--bottom">
                   You haven’t added any GPG keys yet.
                 </p>
-                <a href="https://ubuntu.com/landscape/docs/repositories">
+                <a
+                  href="https://ubuntu.com/landscape/docs/repositories"
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                >
                   How to manage GPG keys in Landscape
                 </a>
               </>

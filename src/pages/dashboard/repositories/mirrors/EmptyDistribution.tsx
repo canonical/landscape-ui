@@ -24,7 +24,11 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
           Create a new mirror or series to get started
         </p>
         <p className="u-no-margin--top">
-          <a href="https://ubuntu.com/landscape/docs/repositories">
+          <a
+            href="https://ubuntu.com/landscape/docs/repositories"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >
             How to manage repositories in Landscape
           </a>
         </p>
