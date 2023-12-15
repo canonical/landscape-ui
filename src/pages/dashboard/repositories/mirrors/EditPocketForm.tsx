@@ -362,7 +362,11 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                           "The specific sub-directory under dists/ that should be mirrored. If the suite name ends with a ‘/’, the remote repository is flat (no dists/ structure, see "
                         }
                       </span>
-                      <a href="http://wiki.debian.org/RepositoryFormat#Flat_Repository_Format">
+                      <a
+                        href="http://wiki.debian.org/RepositoryFormat#Flat_Repository_Format"
+                        target="_blank"
+                        rel="nofollow noopener"
+                      >
                         wiki.debian.org/RepositoryFormat#Flat_Repository_Format
                       </a>
                       <span>
