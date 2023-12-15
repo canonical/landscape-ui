@@ -69,6 +69,8 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       accounts: savedState.accounts ?? {},
       current_account: savedState.current_account ?? "",
     });
+
+    setLoading(false);
   }, []);
 
   const handleSetUser = (user: AuthUser, remember?: boolean) => {
