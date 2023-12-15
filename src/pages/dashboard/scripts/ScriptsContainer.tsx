@@ -179,7 +179,11 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
               <p className="u-no-margin--bottom">
                 You haven’t added any script yet.
               </p>
-              <a href="https://ubuntu.com/landscape/docs/managing-computers">
+              <a
+                href="https://ubuntu.com/landscape/docs/managing-computers"
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+              >
                 How to manage computers in Landscape
               </a>
             </>

@@ -10,6 +10,7 @@ import AccessGroupList from "./AccessGroupList";
 import NewAccessGroupForm from "./NewAccessGroupForm";
 import PageMain from "../../../../components/layout/PageMain";
 import PageContent from "../../../../components/layout/PageContent";
+
 const AccessGroupsPage: FC = () => {
   const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useAccessGroup();
@@ -55,7 +56,11 @@ const AccessGroupsPage: FC = () => {
                 <p className="u-no-margin--bottom">
                   You haven&#39;t added any access groups yet.
                 </p>
-                <a href="https://ubuntu.com/landscape/docs/access-groups">
+                <a
+                  href="https://ubuntu.com/landscape/docs/access-groups"
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                >
                   How to manage access groups in Landscape
                 </a>
               </>
