@@ -14,20 +14,14 @@ import AppNotification from "../../../components/layout/AppNotification";
 import axios, { AxiosResponse } from "axios";
 import { API_URL } from "../../../constants";
 import useAuth from "../../../hooks/useAuth";
-import { Account } from "../../../context/auth";
+import { AuthUser } from "../../../context/auth";
 
 interface RequestParams {
   email: string;
   password: string;
-  account: "onward";
 }
 
-interface RequestResponse {
-  name: string;
-  token: string;
-  email: string;
-  accounts: Account[];
-}
+interface RequestResponse extends AuthUser {}
 
 interface FormProps {
   email: string;
@@ -65,18 +59,9 @@ const LoginForm: FC = () => {
         >(`${API_URL}login`, {
           email: values.email,
           password: values.password,
-          account: "onward",
         });
 
-        setUser(
-          {
-            name: data.name,
-            email: data.email,
-            token: data.token,
-            accounts: data.accounts,
-          },
-          values.remember,
-        );
+        setUser(data, values.remember);
       } catch (error) {
         debug(error);
       }
