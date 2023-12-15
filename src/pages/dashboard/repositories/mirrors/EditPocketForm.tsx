@@ -365,7 +365,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                       <a
                         href="http://wiki.debian.org/RepositoryFormat#Flat_Repository_Format"
                         target="_blank"
-                        rel="nofollow noopener"
+                        rel="nofollow noopener noreferrer"
                       >
                         wiki.debian.org/RepositoryFormat#Flat_Repository_Format
                       </a>
