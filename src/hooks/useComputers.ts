@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import { QueryFnType } from "../types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
 import { Computer } from "../types/Computer";
@@ -76,7 +76,7 @@ interface RenameComputersParams {
 
 export default function useComputers() {
   const queryClient = useQueryClient();
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
   const debug = useDebug();
 
   const getComputersQuery: QueryFnType<

@@ -2,7 +2,7 @@ import { QueryFnType } from "../types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { ApiError } from "../types/ApiError";
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import { Administrator } from "../types/Administrator";
 
 interface useAdministratorsResult {
@@ -10,7 +10,7 @@ interface useAdministratorsResult {
 }
 
 export default function useAdministrators(): useAdministratorsResult {
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
 
   const getAdministratorsQuery: QueryFnType<
     AxiosResponse<Administrator[]>,

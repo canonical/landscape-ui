@@ -1,4 +1,4 @@
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QueryFnType } from "../types/QueryFnType";
 import { SavedSearch } from "../types/SavedSearch";
@@ -27,7 +27,7 @@ interface RemoveSavedSearchParams {
 }
 
 export const useSavedSearches = () => {
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
   const queryClient = useQueryClient();
 
   const getSavedSearchesQuery: QueryFnType<

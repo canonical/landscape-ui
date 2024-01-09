@@ -2,6 +2,7 @@ import React, { FC, ReactNode } from "react";
 import axios, { AxiosError, AxiosInstance } from "axios";
 
 import { API_URL } from "../constants";
+import { generateRequestParams } from "../utils/api";
 import useAuth from "../hooks/useAuth";
 
 export const FetchContext = React.createContext<AxiosInstance | null>(null);
@@ -21,7 +22,8 @@ const FetchProvider: FC<FetchProviderProps> = ({ children }) => {
     authFetch.interceptors.request.use(
       (config) => {
         config.headers["Authorization"] = `Bearer ${user.token}`;
-        return config;
+
+        return generateRequestParams(config);
       },
       (error: AxiosError) => {
         Promise.reject(error);

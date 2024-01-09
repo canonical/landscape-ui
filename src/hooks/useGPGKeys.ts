@@ -1,4 +1,4 @@
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import {
   useMutation,
   UseMutationResult,
@@ -40,7 +40,7 @@ interface UseGPGKeysResult {
 
 export default function useGPGKeys(): UseGPGKeysResult {
   const queryClient = useQueryClient();
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
   const debug = useDebug();
 
   const getGPGKeysQuery: QueryFnType<

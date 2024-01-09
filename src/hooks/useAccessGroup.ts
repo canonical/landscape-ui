@@ -7,7 +7,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { ApiError } from "../types/ApiError";
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import { AccessGroup } from "../types/AccessGroup";
 import useDebug from "./useDebug";
 
@@ -34,7 +34,7 @@ interface RemoveAccessGroupParams {
 }
 
 export default function useAccessGroup(): useAccessGroupResult {
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
   const queryClient = useQueryClient();
   const debug = useDebug();
 

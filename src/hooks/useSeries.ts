@@ -1,4 +1,4 @@
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import {
   useMutation,
   UseMutationResult,
@@ -77,7 +77,7 @@ interface UseSeriesResult {
 
 export default function useSeries(): UseSeriesResult {
   const queryClient = useQueryClient();
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
   const debug = useDebug();
 
   const createSeriesQuery = useMutation<
