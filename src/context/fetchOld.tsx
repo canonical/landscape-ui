@@ -1,7 +1,8 @@
 import React, { FC, ReactNode } from "react";
 import axios, { AxiosError, AxiosInstance } from "axios";
 
-import { API_URL } from "../constants";
+import { API_URL_OLD } from "../constants";
+import { generateRequestParams } from "../utils/api";
 import useAuth from "../hooks/useAuth";
 
 export const FetchContext = React.createContext<AxiosInstance | null>(null);
@@ -10,18 +11,18 @@ type FetchProviderProps = {
   children: ReactNode;
 };
 
-const FetchProvider: FC<FetchProviderProps> = ({ children }) => {
+const FetchOldProvider: FC<FetchProviderProps> = ({ children }) => {
   const { user } = useAuth();
-
   const authFetch = axios.create({
-    baseURL: API_URL,
+    baseURL: API_URL_OLD,
   });
 
   if (user && user.token) {
     authFetch.interceptors.request.use(
       (config) => {
         config.headers["Authorization"] = `Bearer ${user.token}`;
-        return config;
+
+        return generateRequestParams(config);
       },
       (error: AxiosError) => {
         Promise.reject(error);
@@ -34,4 +35,4 @@ const FetchProvider: FC<FetchProviderProps> = ({ children }) => {
   );
 };
 
-export default FetchProvider;
+export default FetchOldProvider;

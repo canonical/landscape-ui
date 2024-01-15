@@ -2,7 +2,7 @@ import { QueryFnType } from "../types/QueryFnType";
 import { Script } from "../types/Script";
 import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import { ApiError } from "../types/ApiError";
 import { Activity } from "../types/Activity";
 
@@ -60,7 +60,7 @@ interface CreateScriptAttachmentParams {
 
 export default function useScripts() {
   const queryClient = useQueryClient();
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
 
   const getScriptsQuery: QueryFnType<
     AxiosResponse<Script[]>,

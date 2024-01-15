@@ -1,4 +1,4 @@
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import {
   useMutation,
   UseMutationResult,
@@ -124,7 +124,7 @@ interface UseRepositoryProfilesResult {
 
 export default function useRepositoryProfiles(): UseRepositoryProfilesResult {
   const queryClient = useQueryClient();
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
   const debug = useDebug();
 
   const getRepositoryProfilesQuery: QueryFnType<
