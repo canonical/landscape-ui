@@ -1,4 +1,4 @@
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import {
   useMutation,
   UseMutationResult,
@@ -44,7 +44,7 @@ interface UseDistributionsResult {
 
 export default function useDistributions(): UseDistributionsResult {
   const queryClient = useQueryClient();
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
   const debug = useDebug();
 
   const getDistributionsQuery: QueryFnType<

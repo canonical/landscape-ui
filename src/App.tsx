@@ -1,6 +1,7 @@
 import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import FetchProvider from "./context/fetch";
+import FetchOldProvider from "./context/fetchOld";
 import useAuth from "./hooks/useAuth";
 import DashboardPage from "./pages/dashboard";
 import RepositoryPage from "./pages/dashboard/repositories";
@@ -74,157 +75,159 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
 
 const App: FC = () => {
   return (
-    <FetchProvider>
-      <Routes>
-        <Route
-          path={ROOT_PATH}
-          element={
-            <AuthRoute>
-              <DashboardPage />
-            </AuthRoute>
-          }
-        >
+    <FetchOldProvider>
+      <FetchProvider>
+        <Routes>
           <Route
-            path="repositories"
+            path={ROOT_PATH}
             element={
               <AuthRoute>
-                <RepositoryPage />
+                <DashboardPage />
               </AuthRoute>
+            }
+          >
+            <Route
+              path="repositories"
+              element={
+                <AuthRoute>
+                  <RepositoryPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="repositories/mirrors"
+              element={
+                <AuthRoute>
+                  <DistributionsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="repositories/profiles"
+              element={
+                <AuthRoute>
+                  <ProfilesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="repositories/gpg-keys"
+              element={
+                <AuthRoute>
+                  <GPGKeysPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="repositories/apt-sources"
+              element={
+                <AuthRoute>
+                  <APTSourcesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="machines"
+              element={
+                <AuthRoute>
+                  <MachinesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="machines/:hostname"
+              element={
+                <AuthRoute>
+                  <SingleMachine />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="machines/searches"
+              element={
+                <AuthRoute>
+                  <SavedSearchesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="activities"
+              element={
+                <AuthRoute>
+                  <ActivitiesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="scripts"
+              element={
+                <AuthRoute>
+                  <ScriptsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="packages"
+              element={
+                <AuthRoute>
+                  <PackagesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="account"
+              element={
+                <AuthRoute>
+                  <AccountPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="account/overview"
+              element={
+                <AuthRoute>
+                  <OverviewPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="account/access-groups"
+              element={
+                <AuthRoute>
+                  <AccessGroupsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="user"
+              element={
+                <AuthRoute>
+                  <UserPage />
+                </AuthRoute>
+              }
+            />
+          </Route>
+          <Route
+            path={`${ROOT_PATH}login`}
+            element={
+              <GuestRoute>
+                <Suspense fallback={<LoadingState />}>
+                  <LoginPage />
+                </Suspense>
+              </GuestRoute>
             }
           />
           <Route
-            path="repositories/mirrors"
+            path={`${ROOT_PATH}*`}
             element={
-              <AuthRoute>
-                <DistributionsPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="repositories/profiles"
-            element={
-              <AuthRoute>
-                <ProfilesPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="repositories/gpg-keys"
-            element={
-              <AuthRoute>
-                <GPGKeysPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="repositories/apt-sources"
-            element={
-              <AuthRoute>
-                <APTSourcesPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="machines"
-            element={
-              <AuthRoute>
-                <MachinesPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="machines/:hostname"
-            element={
-              <AuthRoute>
-                <SingleMachine />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="machines/searches"
-            element={
-              <AuthRoute>
-                <SavedSearchesPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="activities"
-            element={
-              <AuthRoute>
-                <ActivitiesPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="scripts"
-            element={
-              <AuthRoute>
-                <ScriptsPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="packages"
-            element={
-              <AuthRoute>
-                <PackagesPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="account"
-            element={
-              <AuthRoute>
-                <AccountPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="account/overview"
-            element={
-              <AuthRoute>
-                <OverviewPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="account/access-groups"
-            element={
-              <AuthRoute>
-                <AccessGroupsPage />
-              </AuthRoute>
-            }
-          />
-          <Route
-            path="user"
-            element={
-              <AuthRoute>
-                <UserPage />
-              </AuthRoute>
-            }
-          />
-        </Route>
-        <Route
-          path={`${ROOT_PATH}login`}
-          element={
-            <GuestRoute>
               <Suspense fallback={<LoadingState />}>
-                <LoginPage />
+                <PageNotFound />
               </Suspense>
-            </GuestRoute>
-          }
-        />
-        <Route
-          path={`${ROOT_PATH}*`}
-          element={
-            <Suspense fallback={<LoadingState />}>
-              <PageNotFound />
-            </Suspense>
-          }
-        />
-      </Routes>
-    </FetchProvider>
+            }
+          />
+        </Routes>
+      </FetchProvider>
+    </FetchOldProvider>
   );
 };
 

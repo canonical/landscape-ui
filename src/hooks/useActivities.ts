@@ -3,7 +3,7 @@ import { Activity } from "../types/Activity";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiError } from "../types/ApiError";
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 
 interface GetActivitiesParams {
   query?: string;
@@ -20,7 +20,7 @@ interface ApproveActivitiesParams {
 }
 
 export default function useActivities() {
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
   const queryClient = useQueryClient();
 
   const getActivitiesQuery: QueryFnType<

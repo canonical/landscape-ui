@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 import { QueryFnType } from "../types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiError } from "../types/ApiError";
@@ -42,7 +42,7 @@ interface UpgradePackagesParams {
 
 export const usePackages = () => {
   const queryClient = useQueryClient();
-  const authFetch = useFetch();
+  const authFetch = useFetchOld();
   const debug = useDebug();
 
   const getPackagesQuery: QueryFnType<
