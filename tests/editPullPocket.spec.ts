@@ -4,7 +4,7 @@ test("should edit pull pocket", async ({ page }) => {
   await page.goto("/");
   await page
     .getByRole("button", {
-      name: "Edit test-pull-pocket pocket of test-distro/test-derived-series",
+      name: "Edit test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
   await expect(
@@ -27,7 +27,7 @@ test("should edit pull pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Edit test-pull-pocket pocket of test-distro/test-derived-series",
+      name: "Edit test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
   await expect(page.getByRole("textbox")).toHaveValue("apache2,apt");

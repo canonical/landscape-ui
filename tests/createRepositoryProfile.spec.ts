@@ -3,7 +3,6 @@ import { expect, test } from "@playwright/test";
 test("should create repository profile", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Repositories" }).click();
   await page.getByRole("link", { name: "Profiles" }).click();
   await expect(page).toHaveURL(/profiles/);
 
@@ -15,11 +14,11 @@ test("should create repository profile", async ({ page }) => {
     page.getByRole("heading", { name: "Create repository profile" }),
   ).toBeVisible();
 
-  await page.locator('input[name="title"]').fill("test-profile");
+  await page.locator('input[name="title"]').fill("test-e2e-profile");
   await page
     .locator('input[name="description"]')
     .fill("Test profile description");
-  await page.getByRole("combobox").selectOption("desktop");
+  await page.getByRole("combobox").selectOption("global");
   await expect(page.locator('input[name="tags"]')).toBeEnabled();
   await page.getByText("All computers").click();
   await expect(page.locator('input[name="tags"]')).toBeDisabled();
@@ -28,7 +27,7 @@ test("should create repository profile", async ({ page }) => {
 
   await page
     .getByRole("listitem")
-    .filter({ hasText: "test-distro" })
+    .filter({ hasText: "test-e2e-distro" })
     .getByRole("listitem")
     .filter({ hasText: "test-mirror-jammy" })
     .getByText("release")
@@ -36,20 +35,20 @@ test("should create repository profile", async ({ page }) => {
 
   await page
     .getByRole("listitem")
-    .filter({ hasText: "test-distro" })
+    .filter({ hasText: "test-e2e-distro" })
     .getByRole("listitem")
     .filter({ hasText: "test-mirror-xenial" })
     .getByText("proposes")
     .click();
 
-  const testSnapshotOptions = page
+  const testDerivedSeriesOptions = page
     .getByRole("listitem")
-    .filter({ hasText: "test-distro" })
+    .filter({ hasText: "test-e2e-distro" })
     .getByRole("listitem")
     .filter({ hasText: "test-derived-series" });
 
-  await testSnapshotOptions.getByText("proposes").click();
-  await testSnapshotOptions.getByText("test-mirror-pocket").click();
+  await testDerivedSeriesOptions.getByText("proposes").click();
+  await testDerivedSeriesOptions.getByText("test-mirror-pocket").click();
 
   await page.getByTestId("apt-sources-tab").click();
 
@@ -59,20 +58,22 @@ test("should create repository profile", async ({ page }) => {
     .filter({ hasNot: page.getByRole("tab") });
 
   expect(await rows.count()).toBeGreaterThanOrEqual(1);
-  await page.getByPlaceholder("Search").fill("apt");
+  await page.getByPlaceholder("Search").fill("e2e");
   expect(await rows.count()).toEqual(1);
 
-  await page.getByText("test-apt-source").click();
+  await page.getByText("test-e2e-apt-source").click();
   await page.getByRole("button", { name: "Reset search" }).click();
   expect(await rows.count()).toBeGreaterThanOrEqual(1);
   await page
     .getByRole("button", { name: "Create profile", exact: true })
     .click();
 
-  await expect(page.getByText("test-profile", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("test-e2e-profile", { exact: true }),
+  ).toBeVisible();
 
   const testProfileRow = page.getByRole("row").filter({
-    has: page.getByRole("rowheader", { name: "test-profile", exact: true }),
+    has: page.getByRole("rowheader", { name: "test-e2e-profile", exact: true }),
   });
 
   await expect(testProfileRow).toHaveCount(1);
@@ -82,6 +83,6 @@ test("should create repository profile", async ({ page }) => {
   );
 
   await expect(testProfileRow.getByLabel("Access group")).toHaveText(
-    "Desktop machines",
+    "Global access",
   );
 });

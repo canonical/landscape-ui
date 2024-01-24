@@ -99,7 +99,7 @@ const Navigation: FC = () => {
     if (shouldBeExpandedPath) {
       setExpanded(shouldBeExpandedPath);
     }
-  }, []);
+  }, [pathname]);
 
   return (
     <div className="p-side-navigation--icons is-dark">

@@ -5,7 +5,7 @@ test("should create pockets with the different mode", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Create new pocket for test-distro/test-derived-series",
+      name: "Create new pocket for test-e2e-distro/test-derived-series",
     })
     .click();
   await expect(page.locator('select[name="mode"]')).toHaveValue("mirror");
@@ -25,13 +25,13 @@ test("should create pockets with the different mode", async ({ page }) => {
   await page.locator('input[name="mirror_suite"]').fill("trusty-security");
   await page
     .locator('select[name="mirror_gpg_key"]')
-    .selectOption("esm-apps-key");
+    .selectOption("test-e2e-gpg-key");
   await page.getByText("Include .udeb packages (debian-installer)").click();
   await page.getByRole("button", { name: "Create pocket" }).click();
 
   await expect(
     page.getByRole("button", {
-      name: "List test-mirror-pocket pocket of test-distro/test-derived-series",
+      name: "List test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
     }),
   ).toBeVisible();
   await expect(
@@ -39,7 +39,7 @@ test("should create pockets with the different mode", async ({ page }) => {
       .getByRole("row")
       .filter({
         has: page.getByRole("button", {
-          name: "List test-mirror-pocket pocket of test-distro/test-derived-series",
+          name: "List test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
         }),
       })
       .getByRole("gridcell", { name: "Mode" }),
@@ -47,7 +47,7 @@ test("should create pockets with the different mode", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Create new pocket for test-distro/test-derived-series",
+      name: "Create new pocket for test-e2e-distro/test-derived-series",
     })
     .click();
   await page.locator('select[name="mode"]').selectOption("pull");
@@ -61,7 +61,7 @@ test("should create pockets with the different mode", async ({ page }) => {
 
   await expect(
     page.getByRole("button", {
-      name: "List test-pull-pocket pocket of test-distro/test-derived-series",
+      name: "List test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     }),
   ).toBeVisible();
   await expect(
@@ -69,7 +69,7 @@ test("should create pockets with the different mode", async ({ page }) => {
       .getByRole("row")
       .filter({
         has: page.getByRole("button", {
-          name: "List test-pull-pocket pocket of test-distro/test-derived-series",
+          name: "List test-pull-pocket pocket of test-e2e-distro/test-derived-series",
         }),
       })
       .getByRole("gridcell", { name: "Mode" }),
@@ -77,7 +77,7 @@ test("should create pockets with the different mode", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Create new pocket for test-distro/test-derived-series",
+      name: "Create new pocket for test-e2e-distro/test-derived-series",
     })
     .click();
   await page.locator('select[name="mode"]').selectOption("upload");
@@ -89,7 +89,7 @@ test("should create pockets with the different mode", async ({ page }) => {
 
   await expect(
     page.getByRole("button", {
-      name: "List test-upload-pocket pocket of test-distro/test-derived-series",
+      name: "List test-upload-pocket pocket of test-e2e-distro/test-derived-series",
     }),
   ).toBeVisible();
   await expect(
@@ -97,7 +97,7 @@ test("should create pockets with the different mode", async ({ page }) => {
       .getByRole("row")
       .filter({
         has: page.getByRole("button", {
-          name: "List test-upload-pocket pocket of test-distro/test-derived-series",
+          name: "List test-upload-pocket pocket of test-e2e-distro/test-derived-series",
         }),
       })
       .getByRole("gridcell", { name: "Mode" }),

@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "prepare": "husky install",
     "test": "playwright test",
+    "test:ui": "playwright test --ui",
     "test:codegen": "playwright codegen 127.0.0.1:5173",
     "test:report": "playwright show-report"
   },

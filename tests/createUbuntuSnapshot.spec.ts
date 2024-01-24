@@ -5,7 +5,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("should create ubuntu snapshot", async ({ page }) => {
-  await page.getByRole("button", { name: "Create mirror" }).click();
+  await page
+    .getByRole("button", { name: "Create mirror", exact: true })
+    .click();
 
   await expect(
     page.getByRole("heading", { name: "Create new mirror" }),
@@ -17,7 +19,9 @@ test("should create ubuntu snapshot", async ({ page }) => {
   await expect(page.getByText("Snapshot date")).toBeVisible();
 
   await page.locator('input[name="snapshotDate"]').fill("2023-07-20");
-  await page.locator('select[name="distribution"]').selectOption("test-distro");
+  await page
+    .locator('select[name="distribution"]')
+    .selectOption("test-e2e-distro");
   await page.locator('select[name="mirror_series"]').selectOption("noble");
 
   await expect(page.locator('input[name="name"]')).toHaveValue(
@@ -27,7 +31,7 @@ test("should create ubuntu snapshot", async ({ page }) => {
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page
     .getByRole("complementary")
-    .getByRole("button", { name: "Add series" })
+    .getByRole("button", { name: "Create mirror" })
     .click();
 
   await expect(
@@ -35,17 +39,17 @@ test("should create ubuntu snapshot", async ({ page }) => {
   ).toBeVisible();
   await expect(
     page.getByRole("button", {
-      name: "List release pocket of test-distro/noble-snapshot-2023-07-20",
+      name: "List release pocket of test-e2e-distro/noble-snapshot-2023-07-20",
     }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", {
-      name: "List security pocket of test-distro/noble-snapshot-2023-07-20",
+      name: "List security pocket of test-e2e-distro/noble-snapshot-2023-07-20",
     }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", {
-      name: "List updates pocket of test-distro/noble-snapshot-2023-07-20",
+      name: "List updates pocket of test-e2e-distro/noble-snapshot-2023-07-20",
     }),
   ).toBeVisible();
 });

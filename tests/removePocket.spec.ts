@@ -15,7 +15,7 @@ test("should remove test distribution pockets", async ({ page }) => {
       route
         .request()
         .url()
-        .includes("distribution=test-distro&series=test-mirror-jammy"),
+        .includes("distribution=test-e2e-distro&series=test-mirror-jammy"),
     ).toBeTruthy();
 
     route.fulfill({
@@ -28,12 +28,12 @@ test("should remove test distribution pockets", async ({ page }) => {
   await page.goto("/");
   await expect(
     page.getByRole("button", {
-      name: "List updates pocket of test-distro/test-mirror-jammy",
+      name: "List updates pocket of test-e2e-distro/test-mirror-jammy",
     }),
   ).toBeVisible();
   await page
     .getByRole("button", {
-      name: "Remove updates pocket of test-distro/test-mirror-jammy",
+      name: "Remove updates pocket of test-e2e-distro/test-mirror-jammy",
     })
     .click();
   await expect(
@@ -47,18 +47,18 @@ test("should remove test distribution pockets", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
   await page
     .getByRole("button", {
-      name: "Delete updates pocket of test-distro/test-mirror-jammy",
+      name: "Delete updates pocket of test-e2e-distro/test-mirror-jammy",
     })
     .click();
   await expect(
     page.getByRole("button", {
-      name: "List updates pocket of test-distro/test-mirror-jammy",
+      name: "List updates pocket of test-e2e-distro/test-mirror-jammy",
     }),
   ).not.toBeVisible();
 
   await page
     .getByRole("button", {
-      name: "List security pocket of test-distro/test-mirror-jammy",
+      name: "List security pocket of test-e2e-distro/test-mirror-jammy",
     })
     .click();
   await expect(
@@ -67,7 +67,7 @@ test("should remove test distribution pockets", async ({ page }) => {
   await page
     .getByRole("complementary")
     .getByRole("button", {
-      name: "Remove security pocket of test-distro/test-mirror-jammy",
+      name: "Remove security pocket of test-e2e-distro/test-mirror-jammy",
     })
     .click();
   await expect(
@@ -81,7 +81,7 @@ test("should remove test distribution pockets", async ({ page }) => {
   const responsePromise = page.waitForResponse("**/*");
   await page
     .getByRole("button", {
-      name: "Delete security pocket of test-distro/test-mirror-jammy",
+      name: "Delete security pocket of test-e2e-distro/test-mirror-jammy",
     })
     .click();
   const response = await responsePromise;
