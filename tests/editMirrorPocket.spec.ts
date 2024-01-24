@@ -4,7 +4,7 @@ test("should edit mirror pocket", async ({ page }) => {
   await page.goto("/");
   await page
     .getByRole("button", {
-      name: "Edit test-mirror-pocket pocket of test-distro/test-derived-series",
+      name: "Edit test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
 
@@ -28,7 +28,7 @@ test("should edit mirror pocket", async ({ page }) => {
     page.locator("label").filter({ hasText: "i386" }).getByRole("checkbox"),
   ).not.toBeChecked();
   await expect(page.locator('select[name="mirror_gpg_key"]')).toHaveValue(
-    "esm-apps-key",
+    "test-e2e-gpg-key",
   );
   await expect(
     page
@@ -48,7 +48,7 @@ test("should edit mirror pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Edit test-mirror-pocket pocket of test-distro/test-derived-series",
+      name: "Edit test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
   await expect(

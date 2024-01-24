@@ -3,14 +3,13 @@ import { expect, test } from "@playwright/test";
 test("should edit repository profile", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Repositories" }).click();
   await page.getByRole("link", { name: "Profiles" }).click();
 
   await page
-    .getByRole("button", { name: "Edit test-profile repository profile" })
+    .getByRole("button", { name: "Edit test-e2e-profile repository profile" })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Edit test-profile" }),
+    page.getByRole("heading", { name: "Edit test-e2e-profile" }),
   ).toBeVisible();
   await expect(page.getByText("All computers")).toBeChecked();
   await expect(page.locator('input[name="tags"]')).toBeDisabled();
@@ -23,7 +22,7 @@ test("should edit repository profile", async ({ page }) => {
   await expect(
     page
       .getByRole("listitem")
-      .filter({ hasText: "test-distro" })
+      .filter({ hasText: "test-e2e-distro" })
       .getByRole("listitem")
       .filter({ hasText: "test-mirror-jammy" })
       .getByText("release"),
@@ -32,38 +31,38 @@ test("should edit repository profile", async ({ page }) => {
   await expect(
     page
       .getByRole("listitem")
-      .filter({ hasText: "test-distro" })
+      .filter({ hasText: "test-e2e-distro" })
       .getByRole("listitem")
       .filter({ hasText: "test-mirror-xenial" })
       .getByText("proposes"),
   ).toBeChecked();
 
-  const testSnapshotOptions = page
+  const testDerivedSeriesOptions = page
     .getByRole("listitem")
-    .filter({ hasText: "test-distro" })
+    .filter({ hasText: "test-e2e-distro" })
     .getByRole("listitem")
     .filter({ hasText: "test-derived-series" });
 
-  await expect(testSnapshotOptions.getByText("proposes")).toBeChecked();
+  await expect(testDerivedSeriesOptions.getByText("proposes")).toBeChecked();
   await expect(
-    testSnapshotOptions.getByText("test-mirror-pocket"),
+    testDerivedSeriesOptions.getByText("test-mirror-pocket"),
   ).toBeChecked();
   await expect(
-    testSnapshotOptions.getByText("test-pull-pocket"),
+    testDerivedSeriesOptions.getByText("test-pull-pocket"),
   ).not.toBeChecked();
   await expect(
-    testSnapshotOptions.getByText("test-upload-pocket"),
+    testDerivedSeriesOptions.getByText("test-upload-pocket"),
   ).not.toBeChecked();
 
-  await testSnapshotOptions.getByText("proposes").click();
-  await testSnapshotOptions.getByText("test-mirror-pocket").click();
-  await testSnapshotOptions.getByText("test-pull-pocket").click();
-  await testSnapshotOptions.getByText("test-upload-pocket").click();
+  await testDerivedSeriesOptions.getByText("proposes").click();
+  await testDerivedSeriesOptions.getByText("test-mirror-pocket").click();
+  await testDerivedSeriesOptions.getByText("test-pull-pocket").click();
+  await testDerivedSeriesOptions.getByText("test-upload-pocket").click();
 
   await page.getByTestId("apt-sources-tab").click();
 
-  await expect(page.getByText("test-apt-source")).toBeChecked();
-  await page.getByText("test-apt-source").click();
+  await expect(page.getByText("test-e2e-apt-source")).toBeChecked();
+  await page.getByText("test-e2e-apt-source").click();
 
   await page.getByRole("button", { name: "Save changes" }).click();
 

@@ -3,14 +3,15 @@ import { expect, test } from "@playwright/test";
 test("should delete APT source", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Repositories" }).click();
   await page.getByRole("link", { name: "APT Sources" }).click();
 
   await page
-    .getByRole("button", { name: "Remove test-apt-source APT source" })
+    .getByRole("button", { name: "Remove test-e2e-apt-source APT source" })
     .click();
   await expect(
-    page.getByRole("dialog", { name: "Deleting test-apt-source APT source" }),
+    page.getByRole("dialog", {
+      name: "Deleting test-e2e-apt-source APT source",
+    }),
   ).toBeVisible();
   await expect(
     page.getByText(
@@ -18,12 +19,12 @@ test("should delete APT source", async ({ page }) => {
     ),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Delete test-apt-source APT source" })
+    .getByRole("button", { name: "Delete test-e2e-apt-source APT source" })
     .click();
 
   await expect(
-    page
-      .getByRole("row")
-      .filter({ has: page.getByRole("gridcell", { name: "test-apt-source" }) }),
+    page.getByRole("row").filter({
+      has: page.getByRole("gridcell", { name: "test-e2e-apt-source" }),
+    }),
   ).toHaveCount(0);
 });

@@ -3,11 +3,10 @@ import { expect, test } from "@playwright/test";
 test("should handle repository profile", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("button", { name: "Repositories" }).click();
   await page.getByRole("link", { name: "Profiles" }).click();
 
   await page
-    .getByRole("button", { name: "Edit test-profile repository profile" })
+    .getByRole("button", { name: "Edit test-e2e-profile repository profile" })
     .click();
 
   await expect(page.getByText("All computers")).not.toBeChecked();
@@ -19,7 +18,7 @@ test("should handle repository profile", async ({ page }) => {
   await expect(
     page
       .getByRole("listitem")
-      .filter({ hasText: "test-distro" })
+      .filter({ hasText: "test-e2e-distro" })
       .getByRole("listitem")
       .filter({ hasText: "test-mirror-jammy" })
       .getByText("release"),
@@ -28,7 +27,7 @@ test("should handle repository profile", async ({ page }) => {
   await expect(
     page
       .getByRole("listitem")
-      .filter({ hasText: "test-distro" })
+      .filter({ hasText: "test-e2e-distro" })
       .getByRole("listitem")
       .filter({ hasText: "test-mirror-xenial" })
       .getByText("proposes"),
@@ -36,7 +35,7 @@ test("should handle repository profile", async ({ page }) => {
 
   const testSnapshotOptions = page
     .getByRole("listitem")
-    .filter({ hasText: "test-distro" })
+    .filter({ hasText: "test-e2e-distro" })
     .getByRole("listitem")
     .filter({ hasText: "test-derived-series" });
 
@@ -51,23 +50,23 @@ test("should handle repository profile", async ({ page }) => {
 
   await page.getByTestId("apt-sources-tab").click();
 
-  await expect(page.getByText("test-apt-source")).not.toBeChecked();
+  await expect(page.getByText("test-e2e-apt-source")).not.toBeChecked();
 
   await page.getByRole("button", { name: "Close side panel" }).click();
   await page
-    .getByRole("button", { name: "Remove test-profile repository profile" })
+    .getByRole("button", { name: "Remove test-e2e-profile repository profile" })
     .click();
   await expect(
     page.getByRole("dialog", {
-      name: "Deleting test-profile repository profile",
+      name: "Deleting test-e2e-profile repository profile",
     }),
   ).toBeVisible();
   await expect(page.getByText("Are you sure?")).toBeVisible();
   await page
-    .getByRole("button", { name: "Delete test-profile repository profile" })
+    .getByRole("button", { name: "Delete test-e2e-profile repository profile" })
     .click();
 
   await expect(
-    page.getByText("test-profile", { exact: true }),
+    page.getByText("test-e2e-profile", { exact: true }),
   ).not.toBeVisible();
 });

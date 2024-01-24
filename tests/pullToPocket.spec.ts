@@ -17,7 +17,7 @@ test("should pull packages to test pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Pull packages to test-pull-pocket pocket of test-distro/test-derived-series",
+      name: "Pull packages to test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
   await expect(
@@ -36,7 +36,7 @@ test("should pull packages to test pocket", async ({ page }) => {
       name: "Pulling packages to test-pull-pocket pocket",
     })
     .getByRole("button", {
-      name: "Pull packages to test-pull-pocket pocket of test-distro/test-derived-series",
+      name: "Pull packages to test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
 
@@ -48,7 +48,7 @@ test("should pull packages to test pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "List test-pull-pocket pocket of test-distro/test-derived-series",
+      name: "List test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
   await expect(
@@ -57,7 +57,7 @@ test("should pull packages to test pocket", async ({ page }) => {
   await page
     .getByRole("complementary")
     .getByRole("button", {
-      name: "Pull packages to test-pull-pocket pocket of test-distro/test-derived-series",
+      name: "Pull packages to test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
 });

@@ -23,7 +23,7 @@ test("should create test derived series", async ({ page }) => {
       .getByRole("rowgroup")
       .filter({
         has: page.getByRole("button", {
-          name: "List proposes pocket of test-distro/test-derived-series",
+          name: "List proposes pocket of test-e2e-distro/test-derived-series",
         }),
       })
       .getByRole("gridcell", { name: "Mode" }),

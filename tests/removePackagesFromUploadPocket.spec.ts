@@ -76,7 +76,7 @@ test("should remove packages from upload pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "List test-upload-pocket pocket of test-distro/test-derived-series",
+      name: "List test-upload-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
   await expect(
@@ -99,7 +99,7 @@ test("should remove packages from upload pocket", async ({ page }) => {
 
   await expect(
     page.getByRole("button", {
-      name: "Remove selected packages from test-upload-pocket pocket of test-distro/test-derived-series",
+      name: "Remove selected packages from test-upload-pocket pocket of test-e2e-distro/test-derived-series",
     }),
   ).toBeDisabled();
 
@@ -117,7 +117,7 @@ test("should remove packages from upload pocket", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Remove selected packages from test-upload-pocket pocket of test-distro/test-derived-series",
+      name: "Remove selected packages from test-upload-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
 });

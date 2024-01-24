@@ -1,4 +1,4 @@
-import { FC, lazy, Suspense, useMemo } from "react";
+import { FC, HTMLProps, lazy, Suspense, useMemo } from "react";
 import { RepositoryProfile } from "../../../../types/RepositoryProfile";
 import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
 import {
@@ -14,8 +14,7 @@ import useSidePanel from "../../../../hooks/useSidePanel";
 import { SelectOption } from "../../../../types/SelectOption";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
 import classes from "./ProfileList.module.scss";
-import { Column } from "@canonical/react-components/node_modules/@types/react-table";
-import { CellProps } from "react-table";
+import { Cell, CellProps, Column, TableCellProps } from "react-table";
 import LoadingState from "../../../../components/layout/LoadingState";
 
 const EditProfileForm = lazy(() => import("./EditProfileForm"));
@@ -53,13 +52,43 @@ const ProfileList: FC<DistributionProfileListProps> = ({
     );
   };
 
-  const getAccessGroupLabel = (accessGroup: string) => {
-    const accessGroupOption = accessGroupsOptions.find(
-      ({ value }) => accessGroup === value,
-    );
-
-    return accessGroupOption ? accessGroupOption.label : accessGroup;
+  const handleRemoveProfile = (profileName: string) => {
+    confirmModal({
+      body: "Are you sure?",
+      title: `Deleting ${profileName} repository profile`,
+      buttons: [
+        <Button
+          key={`delete-profile-${profileName}`}
+          appearance="negative"
+          hasIcon={true}
+          onClick={async () => {
+            try {
+              await removeRepositoryProfile({
+                name: profileName,
+              });
+            } catch (error: unknown) {
+              debug(error);
+            } finally {
+              closeConfirmModal();
+            }
+          }}
+          aria-label={`Delete ${profileName} repository profile`}
+        >
+          {isRemoving && <Spinner />}
+          Delete
+        </Button>,
+      ],
+    });
   };
+
+  const getAccessGroupLabel = (accessGroup: string) => {
+    return (
+      accessGroupsOptions.find(({ value }) => accessGroup === value)?.label ??
+      accessGroup
+    );
+  };
+
+  const profiles = useMemo(() => repositoryProfiles, [repositoryProfiles]);
 
   const columns = useMemo<Column<RepositoryProfile>[]>(
     () => [
@@ -107,34 +136,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
                 appearance="base"
                 className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
                 aria-label={`Remove ${row.original.name} repository profile`}
-                onClick={() => {
-                  confirmModal({
-                    body: "Are you sure?",
-                    title: `Deleting ${row.original.name} repository profile`,
-                    buttons: [
-                      <Button
-                        key={`delete-profile-${row.original.name}`}
-                        appearance="negative"
-                        hasIcon={true}
-                        onClick={async () => {
-                          try {
-                            await removeRepositoryProfile({
-                              name: row.original.name,
-                            });
-                          } catch (error: unknown) {
-                            debug(error);
-                          } finally {
-                            closeConfirmModal();
-                          }
-                        }}
-                        aria-label={`Delete ${row.original.name} repository profile`}
-                      >
-                        {isRemoving && <Spinner />}
-                        Delete
-                      </Button>,
-                    ],
-                  });
-                }}
+                onClick={() => handleRemoveProfile(row.original.name)}
               >
                 <span className="p-tooltip__message">Delete</span>
                 <Icon name={ICONS.delete} className="u-no-margin--left" />
@@ -144,27 +146,31 @@ const ProfileList: FC<DistributionProfileListProps> = ({
         ),
       },
     ],
-    [],
+    [profiles, accessGroupsOptions],
   );
+
+  const handleCellProps = ({ column }: Cell<RepositoryProfile>) => {
+    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
+      {};
+
+    if (column.id === "title") {
+      cellProps.role = "rowheader";
+    } else if (column.id === "description") {
+      cellProps["aria-label"] = "Description";
+    } else if (column.id === "access_group") {
+      cellProps["aria-label"] = "Access group";
+    } else if (column.id === "id") {
+      cellProps["aria-label"] = "Actions";
+    }
+
+    return cellProps;
+  };
 
   return (
     <ModularTable
       columns={columns}
-      data={useMemo(() => repositoryProfiles, [repositoryProfiles])}
-      getCellProps={({ column }) => {
-        switch (column.id) {
-          case "title":
-            return { role: "rowheader" };
-          case "description":
-            return { "aria-label": "Description" };
-          case "access_group":
-            return { "aria-label": "Access group" };
-          case "id":
-            return { "aria-label": "Actions" };
-          default:
-            return {};
-        }
-      }}
+      data={profiles}
+      getCellProps={handleCellProps}
       emptyMsg="No profiles yet."
     />
   );
