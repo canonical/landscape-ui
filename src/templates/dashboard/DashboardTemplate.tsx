@@ -11,8 +11,8 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
   return (
     <NotifyProvider>
       <div className="l-application" role="presentation">
-        <Sidebar />
         <SidePanelProvider>
+          <Sidebar />
           <main className="l-main">{children}</main>
         </SidePanelProvider>
       </div>

@@ -1,8 +1,18 @@
 import React, { FC, ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROOT_PATH } from "../constants";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AUTH_STORAGE_KEY = "_landscape_auth";
+
+function getFromLocalStorage(key: string) {
+  const item = localStorage.getItem(key);
+  return item ? JSON.parse(item) : null;
+}
+
+function setToLocalStorage(key: string, value: any) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
 
 export interface Account {
   title: string;
@@ -22,6 +32,7 @@ export interface AuthContextProps {
   authorized: boolean;
   authLoading: boolean;
   user: AuthUser | null;
+  switchAccount: (newToken: string, newAccount: string) => void;
   setUser: (user: AuthUser, remember?: boolean) => void;
   logout: () => void;
 }
@@ -31,6 +42,7 @@ const initialState: AuthContextProps = {
   authLoading: false,
   user: null,
   setUser: () => undefined,
+  switchAccount: () => undefined,
   logout: () => undefined,
 };
 
@@ -41,24 +53,23 @@ interface AuthProviderProps {
 }
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const maybeSavedState = localStorage.getItem(AUTH_STORAGE_KEY);
-
+    const maybeSavedState = getFromLocalStorage(AUTH_STORAGE_KEY);
     if (!maybeSavedState) {
       setLoading(false);
       return undefined;
     }
 
-    const savedState = JSON.parse(maybeSavedState);
+    const savedState = maybeSavedState;
 
     if (!savedState) {
       setLoading(false);
       localStorage.removeItem(AUTH_STORAGE_KEY);
-
       return;
     }
 
@@ -66,7 +77,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       name: savedState.name ?? "",
       email: savedState.email ?? "",
       token: savedState.token ?? "",
-      accounts: savedState.accounts ?? {},
+      accounts: savedState.accounts ?? [],
       current_account: savedState.current_account ?? "",
     });
 
@@ -75,9 +86,23 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const handleSetUser = (user: AuthUser, remember?: boolean) => {
     setUser(user);
-
     if (remember) {
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+      setToLocalStorage(AUTH_STORAGE_KEY, user);
+    }
+  };
+
+  const handleSwitchAccount = (newToken: string, newAccount: string) => {
+    const maybeSavedState = getFromLocalStorage(AUTH_STORAGE_KEY);
+    const newUser = {
+      ...user!,
+      current_account: newAccount,
+      token: newToken,
+    };
+    setUser(newUser);
+    queryClient.removeQueries();
+    queryClient.refetchQueries();
+    if (maybeSavedState) {
+      setToLocalStorage(AUTH_STORAGE_KEY, newUser);
     }
   };
 
@@ -95,6 +120,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         authLoading: loading,
         logout: handleLogout,
         setUser: handleSetUser,
+        switchAccount: handleSwitchAccount,
       }}
     >
       {children}

@@ -1,0 +1,26 @@
+@import "vanilla-framework/scss/settings_breakpoints";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.selectLabel {
+  padding-left: $sph--small !important;
+}
+
+.navigation {
+  &:hover,
+  &:focus-within {
+    .container {
+      opacity: 1;
+    }
+  }
+}
+
+.container {
+  opacity: 0;
+  .menuOpen & {
+    opacity: 1;
+  }
+  @media screen and (min-width: $breakpoint-large) {
+    opacity: 1;
+  }
+}

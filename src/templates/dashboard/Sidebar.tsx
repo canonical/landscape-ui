@@ -8,7 +8,8 @@ import UserInfo from "./UserInfo";
 import BetaInfo from "./BetaInfo";
 import betaClasses from "./BetaInfo.module.scss";
 import desktopHeaderClasses from "./DesktopHeader.module.scss";
-
+import organisationSwitchClasses from "./OrganisationSwitch.module.scss";
+import OrganisationSwitch from "./OrganisationSwitch";
 const Sidebar: FC = () => {
   const [menuClosed, setMenuClosed] = useState(true);
 
@@ -26,9 +27,11 @@ const Sidebar: FC = () => {
           "l-navigation",
           desktopHeaderClasses.header,
           betaClasses.navigation,
+          organisationSwitchClasses.navigation,
           {
             "is-collapsed": menuClosed,
             [betaClasses.menuOpen]: !menuClosed,
+            [organisationSwitchClasses.menuOpen]: !menuClosed,
           },
         )}
       >
@@ -37,6 +40,7 @@ const Sidebar: FC = () => {
             <div className={classes.container}>
               <DesktopHeader closeMenu={() => setMenuClosed(true)} />
               <div className={classes.navigation}>
+                <OrganisationSwitch />
                 <Navigation />
               </div>
               <div className={classes.footer}>
