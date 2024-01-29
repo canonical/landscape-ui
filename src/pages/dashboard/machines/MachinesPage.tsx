@@ -94,14 +94,14 @@ const MachinesPage: FC = () => {
 
   const handleRebootComputer = async () => {
     confirmModal({
-      title: "Rebooting selected machines",
-      body: `Are you sure you want to reboot ${selected.length} machine${
+      title: "Restarting selected machines",
+      body: `Are you sure you want to restart ${selected.length} machine${
         selected.length > 1 ? "s" : ""
       }?`,
       buttons: [
         <Button
-          key="reboot"
-          appearance="brand"
+          key="restart"
+          appearance="negative"
           onClick={async () => {
             try {
               await rebootComputers({
@@ -114,7 +114,7 @@ const MachinesPage: FC = () => {
             }
           }}
         >
-          Reboot
+          Restart
         </Button>,
       ],
     });
