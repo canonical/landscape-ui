@@ -1,5 +1,10 @@
 import { FC } from "react";
-import { CheckboxInput, Input, Modal } from "@canonical/react-components";
+import {
+  Button,
+  CheckboxInput,
+  Input,
+  Modal,
+} from "@canonical/react-components";
 import classes from "./ActivityConfirmation.module.scss";
 
 export interface ActivityProps {
@@ -35,22 +40,18 @@ const ActivityConfirmation: FC<ActivityConfirmationProps> = ({
         close={onClose}
         buttonRow={
           <>
-            <button
-              className="u-no-margin--bottom"
-              aria-controls="modal"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              className="p-button--negative u-no-margin--bottom"
+            <Button
+              appearance="negative"
               onClick={activityProps.acceptButton.onClick}
               disabled={
                 !checkboxValue && new Date(inputValue).getTime() < Date.now()
               }
             >
               {activityProps.acceptButton.label}
-            </button>
+            </Button>
+            <Button aria-controls="modal" onClick={onClose}>
+              Cancel
+            </Button>
           </>
         }
       >
