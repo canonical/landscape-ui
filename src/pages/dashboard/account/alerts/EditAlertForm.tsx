@@ -109,7 +109,7 @@ const EditAlertForm: FC<EditAlertFormProps> = ({ alert }) => {
       )}
       <SidePanelFormButtons
         disabled={associateLoading || disassociateLoading}
-        positiveButtonTitle="Save changes"
+        submitButtonText="Save changes"
         removeButtonMargin
       />
     </Form>

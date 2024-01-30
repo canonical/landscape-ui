@@ -32,13 +32,12 @@ const AlertList: FC<AlertListProps> = ({
   setSelectedAlerts,
 }) => {
   const debug = useDebug();
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { unsubscribeQuery, subscribeQuery } = useAlerts();
   const { mutateAsync: subscribeMutation } = subscribeQuery;
   const { mutateAsync: unsubscribeMutation } = unsubscribeQuery;
 
   const handleEditAlert = (alert: Alert) => {
-    setSidePanelOpen(true);
     setSidePanelContent(
       `Edit ${alert.alert_type} alert`,
       <Suspense fallback={<LoadingState />}>
@@ -48,7 +47,6 @@ const AlertList: FC<AlertListProps> = ({
   };
 
   const handleShowSubscribers = (alert: Alert) => {
-    setSidePanelOpen(true);
     setSidePanelContent(
       alert.alert_type,
       <Suspense fallback={<LoadingState />}>

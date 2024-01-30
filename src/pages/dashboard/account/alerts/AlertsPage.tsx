@@ -11,7 +11,7 @@ import useNotify from "../../../../hooks/useNotify";
 
 const AlertsPage: FC = () => {
   const debug = useDebug();
-  const notify = useNotify();
+  const { notify } = useNotify();
   const { confirmModal, closeConfirmModal } = useConfirm();
   const [selectedAlerts, setSelectedAlerts] = useState<string[]>([]);
   const { subscribeQuery, unsubscribeQuery } = useAlerts();
