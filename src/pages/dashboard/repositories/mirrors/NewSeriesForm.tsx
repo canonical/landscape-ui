@@ -531,10 +531,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
         {...formik.getFieldProps("include_udeb")}
       />
 
-      <SidePanelFormButtons
-        disabled={isCreating}
-        positiveButtonTitle={ctaText}
-      />
+      <SidePanelFormButtons disabled={isCreating} submitButtonText={ctaText} />
     </Form>
   );
 };

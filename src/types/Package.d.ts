@@ -26,6 +26,10 @@ export interface Package extends Record<string, unknown> {
     upgrades: number[];
     held: number[];
   };
+  usn?: {
+    name: string;
+    summary: string;
+  };
 }
 
 export interface PackageObject {

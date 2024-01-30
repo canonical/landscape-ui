@@ -12,17 +12,17 @@ import useNotify from "../hooks/useNotify";
 import classes from "./SidePanelProvider.module.scss";
 
 interface SidePanelContextProps {
-  setSidePanelOpen: (newState: boolean) => void;
-  setSidePanelContent: (title: string, newState: ReactNode | null) => void;
+  setSidePanelContent: (
+    title: string,
+    newState: ReactNode | null,
+    isWidePanel?: boolean,
+  ) => void;
   closeSidePanel: () => void;
-  isSidePanelOpen: boolean;
 }
 
 const initialState: SidePanelContextProps = {
-  setSidePanelOpen: () => undefined,
   setSidePanelContent: () => undefined,
   closeSidePanel: () => undefined,
-  isSidePanelOpen: false,
 };
 
 export const SidePanelContext =
@@ -34,19 +34,12 @@ interface SidePanelProviderProps {
 
 const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
+  const [wide, setWide] = useState(false);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
 
   const { pathname } = useLocation();
-  const notify = useNotify();
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    notify.clear();
-  }, [open]);
+  const { notify, sidePanel } = useNotify();
 
   useEffect(() => {
     return handleClose;
@@ -56,26 +49,36 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     setOpen(false);
     setTitle("");
     setBody(null);
+    setWide(false);
+    sidePanel.setOpen(false);
     notify.clear();
+  };
+
+  const handleContentChange = (
+    newTitle: string,
+    newBody: ReactNode,
+    isWidePanel = false,
+  ) => {
+    setTitle(newTitle);
+    setBody(newBody);
+    setWide(isWidePanel);
+    sidePanel.setOpen(true);
+    notify.clear();
+    setOpen(true);
   };
 
   return (
     <SidePanelContext.Provider
       value={{
-        setSidePanelOpen: (newState) => setOpen(newState),
-        setSidePanelContent: (title, body) => {
-          setTitle(title);
-          setBody(body);
-        },
+        setSidePanelContent: handleContentChange,
         closeSidePanel: handleClose,
-        isSidePanelOpen: open,
       }}
     >
       {children}
       <aside
         className={classNames(
           "l-aside",
-          { "is-collapsed": !open },
+          { "is-collapsed": !open, "is-wide": wide },
           classes.container,
         )}
       >
@@ -93,7 +96,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
         </div>
         <div className={classNames("p-panel__content", classes.outerDiv)}>
           <div className={classNames("p-panel__inner", classes.innerDiv)}>
-            <AppNotification notify={notify} />
+            <AppNotification notify={notify} isSidePanelOpen={true} />
             {body}
           </div>
         </div>

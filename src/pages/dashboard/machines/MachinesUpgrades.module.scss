@@ -1,0 +1,41 @@
+@import "vanilla-framework/scss/base_placeholders";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.expanded {
+  @include vf-highlight-bar($colors--light-theme--text-default, bottom, false);
+}
+
+.expandButton[aria-expanded="true"] {
+  background-color: inherit;
+  font-weight: 550;
+}
+
+.truncated {
+  display: flex;
+  column-gap: $sph--x-small;
+  flex-wrap: wrap;
+  overflow: hidden;
+  max-height: 25.59px;
+
+  &::after {
+    content: ", ... +" attr(data-hidden-items);
+    color: $colors--light-theme--text-muted;
+  }
+}
+
+.cve {
+  &:not(:last-child) {
+    &::after {
+      content: ",";
+    }
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.innerTable {
+  background-color: $color-light;
+}

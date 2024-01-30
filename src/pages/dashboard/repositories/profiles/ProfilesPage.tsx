@@ -12,7 +12,7 @@ import ProfileList from "./ProfileList";
 const AddProfileForm = lazy(() => import("./AddProfileForm"));
 
 const ProfilesPage: FC = () => {
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
 
   const { data: repositoryProfilesResponse, isLoading } =
@@ -21,7 +21,6 @@ const ProfilesPage: FC = () => {
   const repositoryProfiles = repositoryProfilesResponse?.data ?? [];
 
   const handleAddProfile = () => {
-    setSidePanelOpen(true);
     setSidePanelContent(
       "Create repository profile",
       <Suspense fallback={<LoadingState />}>

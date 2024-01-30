@@ -31,7 +31,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
 
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const {
     removePocketQuery,
     syncMirrorPocketQuery,
@@ -140,7 +140,6 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
   };
 
   const handleEditPocket = (pocket: Pocket) => {
-    setSidePanelOpen(true);
     setSidePanelContent(
       `Edit ${pocket.name} pocket`,
       <Suspense fallback={<LoadingState />}>
@@ -154,7 +153,6 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
   };
 
   const handleListPocket = (pocket: Pocket) => {
-    setSidePanelOpen(true);
     setSidePanelContent(
       `${series.name} ${pocket.name}`,
       <Suspense fallback={<LoadingState />}>

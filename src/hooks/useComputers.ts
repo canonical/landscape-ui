@@ -6,6 +6,8 @@ import { Computer } from "../types/Computer";
 import { ApiError } from "../types/ApiError";
 import useDebug from "./useDebug";
 import { Activity } from "../types/Activity";
+import useFetch from "./useFetch";
+import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
 
 interface GetComputersParams {
   query?: string;
@@ -15,6 +17,8 @@ interface GetComputersParams {
   with_hardware?: boolean;
   with_grouped_hardware?: boolean;
   with_annotations?: boolean;
+  root_only?: boolean;
+  wsl_only?: boolean;
 }
 
 interface AddAnnotationToComputersParams {
@@ -76,17 +80,21 @@ interface RenameComputersParams {
 
 export default function useComputers() {
   const queryClient = useQueryClient();
-  const authFetch = useFetchOld();
+  const authFetchOld = useFetchOld();
+  const authFetch = useFetch();
   const debug = useDebug();
 
   const getComputersQuery: QueryFnType<
-    AxiosResponse<Computer[]>,
+    AxiosResponse<ApiPaginatedResponse<Computer>>,
     GetComputersParams
   > = (queryParams = {}, config = {}) =>
-    useQuery<AxiosResponse<Computer[]>, AxiosError<ApiError>>({
-      queryKey: ["computers", { ...queryParams }],
+    useQuery<
+      AxiosResponse<ApiPaginatedResponse<Computer>>,
+      AxiosError<ApiError>
+    >({
+      queryKey: ["computers", queryParams],
       queryFn: () =>
-        authFetch!.get("GetComputers", {
+        authFetch!.get("computers", {
           params: queryParams,
         }),
       ...config,
@@ -99,7 +107,7 @@ export default function useComputers() {
   >({
     mutationKey: ["computers", "annotation", "add"],
     mutationFn: (params) =>
-      authFetch!.get("AddAnnotationToComputers", { params }),
+      authFetchOld!.get("AddAnnotationToComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -112,7 +120,7 @@ export default function useComputers() {
   >({
     mutationKey: ["computers", "annotation", "remove"],
     mutationFn: (params) =>
-      authFetch!.get("RemoveAnnotationFromComputers", { params }),
+      authFetchOld!.get("RemoveAnnotationFromComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -124,7 +132,7 @@ export default function useComputers() {
     AddTagsToComputersParams
   >({
     mutationKey: ["computers", "tags", "add"],
-    mutationFn: (params) => authFetch!.get("AddTagsToComputers", { params }),
+    mutationFn: (params) => authFetchOld!.get("AddTagsToComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -137,7 +145,7 @@ export default function useComputers() {
   >({
     mutationKey: ["computers", "tags", "remove"],
     mutationFn: (params) =>
-      authFetch!.get("RemoveTagsFromComputers", { params }),
+      authFetchOld!.get("RemoveTagsFromComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -150,7 +158,7 @@ export default function useComputers() {
   >({
     mutationKey: ["computers", "access_group", "change"],
     mutationFn: (params) =>
-      authFetch!.get("ChangeComputersAccessGroup", { params }),
+      authFetchOld!.get("ChangeComputersAccessGroup", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -162,7 +170,7 @@ export default function useComputers() {
     RemoveComputers
   >({
     mutationKey: ["computers", "remove"],
-    mutationFn: (params) => authFetch!.get("RemoveComputers", { params }),
+    mutationFn: (params) => authFetchOld!.get("RemoveComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -174,7 +182,7 @@ export default function useComputers() {
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<Computer[]>, AxiosError<ApiError>>({
       queryKey: ["computers", "pending"],
-      queryFn: () => authFetch!.get("GetPendingComputers"),
+      queryFn: () => authFetchOld!.get("GetPendingComputers"),
       ...config,
     });
 
@@ -185,7 +193,7 @@ export default function useComputers() {
   >({
     mutationKey: ["computers", "pending", "accept"],
     mutationFn: (params) =>
-      authFetch!.get("AcceptPendingComputers", { params }),
+      authFetchOld!.get("AcceptPendingComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -198,7 +206,7 @@ export default function useComputers() {
   >({
     mutationKey: ["computers", "pending", "reject"],
     mutationFn: (params) =>
-      authFetch!.get("RejectPendingComputers", { params }),
+      authFetchOld!.get("RejectPendingComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -210,7 +218,7 @@ export default function useComputers() {
     CreateCloudOtpsParams
   >({
     mutationKey: ["computers", "cloud_otps", "create"],
-    mutationFn: (params) => authFetch!.get("CreateCloudOtps", { params }),
+    mutationFn: (params) => authFetchOld!.get("CreateCloudOtps", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -222,7 +230,7 @@ export default function useComputers() {
     RebootComputersParams
   >({
     mutationKey: ["computers", "reboot"],
-    mutationFn: (params) => authFetch!.get("RebootComputers", { params }),
+    mutationFn: (params) => authFetchOld!.get("RebootComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -234,7 +242,7 @@ export default function useComputers() {
     ShutdownComputersParams
   >({
     mutationKey: ["computers", "shutdown"],
-    mutationFn: (params) => authFetch!.get("ShutdownComputers", { params }),
+    mutationFn: (params) => authFetchOld!.get("ShutdownComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },
@@ -246,7 +254,7 @@ export default function useComputers() {
     RenameComputersParams
   >({
     mutationKey: ["computers", "rename"],
-    mutationFn: (params) => authFetch!.get("RenameComputers", { params }),
+    mutationFn: (params) => authFetchOld!.get("RenameComputers", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["computers"]).catch(debug);
     },

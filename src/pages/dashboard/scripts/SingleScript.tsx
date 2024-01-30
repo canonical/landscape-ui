@@ -2,20 +2,16 @@ import { FC, useEffect, useMemo } from "react";
 import { Script } from "../../../types/Script";
 import useSidePanel from "../../../hooks/useSidePanel";
 import useDebug from "../../../hooks/useDebug";
-import useScripts from "../../../hooks/useScripts";
+import useScripts, { CreateScriptParams } from "../../../hooks/useScripts";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Button, Form, Input, Select } from "@canonical/react-components";
 import useAccessGroup from "../../../hooks/useAccessGroup";
 import { SelectOption } from "../../../types/SelectOption";
 import { Buffer } from "buffer";
-import classes from "./SingleScript.module.scss";
-import classNames from "classnames";
-import { Editor } from "@monaco-editor/react";
+import CodeEditor from "../../../components/form/CodeEditor";
 
-interface FormProps extends Pick<Script, "title" | "time_limit" | "username"> {
-  code: string;
-  access_group: string;
+interface FormProps extends CreateScriptParams {
   attachments: {
     first: File | null;
     second: File | null;
@@ -452,47 +448,15 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
             error={formik.touched.time_limit && formik.errors.time_limit}
           />
 
-          <div
-            className={classNames("p-form__group p-form-validation", {
-              "is-error": formik.touched.code && !!formik.errors.code,
-            })}
-          >
-            <label
-              className={classNames("p-form__label", {
-                "is-required": "create" === props.action,
-              })}
-              htmlFor="code"
-            >
-              Code
-            </label>
-            <div className="p-form__control u-clearfix">
-              <Editor
-                language="shell"
-                height="16rem"
-                className={classNames(classes.highlighter, {
-                  [classes.error]: formik.touched.code && !!formik.errors.code,
-                })}
-                {...formik.getFieldProps("code")}
-                onChange={(value) => {
-                  formik.setFieldValue("code", value);
-                }}
-                options={{
-                  minimap: { enabled: false },
-                  renderLineHighlight: "none",
-                  padding: { top: 8, bottom: 8 },
-                }}
-              />
-
-              {formik.touched.code && formik.errors.code && (
-                <p
-                  className="p-form-validation__message"
-                  id="code-error-message"
-                >
-                  {formik.errors.code}
-                </p>
-              )}
-            </div>
-          </div>
+          <CodeEditor
+            label="Code"
+            required
+            onChange={(value) => {
+              formik.setFieldValue("code", value ?? "");
+            }}
+            value={formik.values.code}
+            error={formik.touched.code && formik.errors.code}
+          />
 
           <Input
             type="text"

@@ -536,8 +536,8 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
 
       <SidePanelFormButtons
         disabled={createPocketLoading || addUploaderGPGKeysToPocketLoading}
-        positiveButtonTitle="Create"
-        buttonAriaLabel="Create pocket"
+        submitButtonText="Create"
+        submitButtonAriaLabel="Create pocket"
       />
     </Form>
   );

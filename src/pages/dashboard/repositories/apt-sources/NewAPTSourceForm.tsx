@@ -1,11 +1,10 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import useDebug from "../../../../hooks/useDebug";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import * as Yup from "yup";
 import useAPTSources from "../../../../hooks/useAPTSources";
-import useNotify from "../../../../hooks/useNotify";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
 import { SelectOption } from "../../../../types/SelectOption";
 import useAccessGroup from "../../../../hooks/useAccessGroup";
@@ -30,8 +29,6 @@ const NewAPTSourceForm: FC = () => {
   const { getAccessGroupQuery } = useAccessGroup();
   const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =
     getAccessGroupQuery();
-
-  const notify = useNotify();
 
   const accessGroupsOptions = (accessGroupsResponse?.data ?? []).map(
     (accessGroup) => ({
@@ -94,8 +91,6 @@ const NewAPTSourceForm: FC = () => {
     },
   });
 
-  useEffect(() => notify.clear, []);
-
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
@@ -142,7 +137,7 @@ const NewAPTSourceForm: FC = () => {
       />
       <SidePanelFormButtons
         disabled={isLoading}
-        positiveButtonTitle="Create APT Source"
+        submitButtonText="Create APT Source"
       />
     </Form>
   );

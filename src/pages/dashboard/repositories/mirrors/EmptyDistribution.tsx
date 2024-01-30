@@ -12,7 +12,7 @@ interface EmptyDistributionProps {
 }
 
 const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
 
   return (
     <div className={classes.card}>
@@ -36,7 +36,6 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
           appearance="positive"
           className="u-no-margin--bottom"
           onClick={() => {
-            setSidePanelOpen(true);
             setSidePanelContent(
               `Create mirror for ${distribution.name}`,
               <Suspense fallback={<LoadingState />}>

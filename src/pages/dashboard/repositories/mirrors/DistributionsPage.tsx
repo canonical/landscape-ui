@@ -20,7 +20,7 @@ const DistributionsPage: FC = () => {
 
   const isSmall = useMediaQuery("(min-width: 620px)");
 
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { getDistributionsQuery } = useDistributions();
   const { data, isLoading, error } = getDistributionsQuery({
     include_latest_sync: true,
@@ -36,7 +36,6 @@ const DistributionsPage: FC = () => {
   const AddDistributionButton = ({ className }: { className?: string }) => (
     <Button
       onClick={() => {
-        setSidePanelOpen(true);
         setSidePanelContent(
           "Create distribution",
           <Suspense fallback={<LoadingState />}>
@@ -58,7 +57,6 @@ const DistributionsPage: FC = () => {
     <Button
       appearance="positive"
       onClick={() => {
-        setSidePanelOpen(true);
         setSidePanelContent(
           "Create new mirror",
           <Suspense fallback={<LoadingState />}>
@@ -139,7 +137,6 @@ const DistributionsPage: FC = () => {
               <Button
                 key="create-distribution"
                 onClick={() => {
-                  setSidePanelOpen(true);
                   setSidePanelContent(
                     "Create distribution",
                     <Suspense fallback={<LoadingState />}>

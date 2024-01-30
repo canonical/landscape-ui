@@ -48,7 +48,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
   const isSmall = useMediaQuery("(min-width: 620px)");
 
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { removeSeriesQuery } = useSeries();
   const debug = useDebug();
 
@@ -88,7 +88,6 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
   const DeriveSeriesButton = ({ className }: { className?: string }) => (
     <Button
       onClick={() => {
-        setSidePanelOpen(true);
         setSidePanelContent(
           "Derive series",
           <Suspense fallback={<LoadingState />}>
@@ -112,7 +111,6 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
   const AddPocketButton = ({ className }: { className?: string }) => (
     <Button
       onClick={() => {
-        setSidePanelOpen(true);
         setSidePanelContent(
           `New pocket for ${series.name}`,
           <Suspense fallback={<LoadingState />}>

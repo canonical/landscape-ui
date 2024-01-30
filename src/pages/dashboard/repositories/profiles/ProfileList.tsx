@@ -28,7 +28,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
 }) => {
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { removeRepositoryProfileQuery } = useRepositoryProfiles();
   const { mutateAsync: removeRepositoryProfile, isLoading: isRemoving } =
     removeRepositoryProfileQuery;
@@ -43,7 +43,6 @@ const ProfileList: FC<DistributionProfileListProps> = ({
   }));
 
   const handleEditProfile = (profile: RepositoryProfile) => {
-    setSidePanelOpen(true);
     setSidePanelContent(
       `Edit ${profile.title}`,
       <Suspense fallback={<LoadingState />}>

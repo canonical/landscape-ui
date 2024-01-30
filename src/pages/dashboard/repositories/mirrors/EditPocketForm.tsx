@@ -461,7 +461,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
           isAddingUploaderGPGKeysToPocket ||
           isRemovingUploaderGPGKeysFromPocket
         }
-        positiveButtonTitle="Save changes"
+        submitButtonText="Save changes"
       />
     </Form>
   );

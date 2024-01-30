@@ -1,4 +1,4 @@
-export interface Process {
+export interface Process extends Record<string, unknown> {
   computer_id: number;
   pid: number;
   uid: number;

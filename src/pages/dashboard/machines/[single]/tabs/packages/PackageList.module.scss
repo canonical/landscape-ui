@@ -1,0 +1,18 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.checkbox {
+  width: $sp-x-large;
+}
+
+.details {
+  max-width: 40%;
+  width: 100%;
+}
+
+.disabledRow {
+  opacity: 0.5;
+}
+
+.hiddenCell {
+  display: none;
+}

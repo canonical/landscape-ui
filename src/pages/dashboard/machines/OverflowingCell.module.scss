@@ -1,0 +1,27 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  display: flex;
+}
+
+.truncated {
+  display: flex;
+  column-gap: $sph--x-small;
+  flex-wrap: wrap;
+  overflow: hidden;
+  max-height: 25.59px;
+  flex-shrink: 1;
+}
+
+.item {
+  &:not(:last-child) {
+    &::after {
+      content: ", ";
+    }
+  }
+}
+
+.count {
+  white-space: nowrap;
+}

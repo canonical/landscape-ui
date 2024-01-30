@@ -7,6 +7,8 @@ import DashboardPage from "./pages/dashboard";
 import RepositoryPage from "./pages/dashboard/repositories";
 import LoadingState from "./components/layout/LoadingState";
 import { ROOT_PATH } from "./constants";
+import AppNotification from "./components/layout/AppNotification";
+import useNotify from "./hooks/useNotify";
 
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 const LoginPage = lazy(() => import("./pages/auth/login"));
@@ -23,14 +25,11 @@ const APTSourcesPage = lazy(
   () => import("./pages/dashboard/repositories/apt-sources"),
 );
 const MachinesPage = lazy(() => import("./pages/dashboard/machines"));
-const SingleMachine = lazy(
-  () => import("./pages/dashboard/machines/SingleMachine"),
-);
+const SingleMachine = lazy(() => import("./pages/dashboard/machines/[single]"));
 const ActivitiesPage = lazy(() => import("./pages/dashboard/activities"));
 const ScriptsPage = lazy(() => import("./pages/dashboard/scripts"));
-const PackagesPage = lazy(() => import("./pages/dashboard/packages"));
 const SavedSearchesPage = lazy(
-  () => import("./pages/dashboard/machines/savedSearches"),
+  () => import("./pages/dashboard/machines/saved-searches"),
 );
 const AccountPage = lazy(() => import("./pages/dashboard/account"));
 const OverviewPage = lazy(() => import("./pages/dashboard/account/overview"));
@@ -75,9 +74,12 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
 };
 
 const App: FC = () => {
+  const { notify, sidePanel } = useNotify();
+
   return (
     <FetchOldProvider>
       <FetchProvider>
+        {!sidePanel.open && <AppNotification notify={notify} />}
         <Routes>
           <Route
             path={ROOT_PATH}
@@ -144,6 +146,14 @@ const App: FC = () => {
               }
             />
             <Route
+              path="machines/:hostname/:childHostname"
+              element={
+                <AuthRoute>
+                  <SingleMachine />
+                </AuthRoute>
+              }
+            />
+            <Route
               path="machines/searches"
               element={
                 <AuthRoute>
@@ -164,14 +174,6 @@ const App: FC = () => {
               element={
                 <AuthRoute>
                   <ScriptsPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="packages"
-              element={
-                <AuthRoute>
-                  <PackagesPage />
                 </AuthRoute>
               }
             />

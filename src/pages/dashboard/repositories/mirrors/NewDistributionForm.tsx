@@ -96,7 +96,7 @@ const NewDistributionForm: FC = () => {
 
       <SidePanelFormButtons
         disabled={isCreatingDistribution}
-        positiveButtonTitle="Create distribution"
+        submitButtonText="Create distribution"
       />
     </Form>
   );

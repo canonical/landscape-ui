@@ -7,74 +7,142 @@ import {
   Row,
 } from "@canonical/react-components/node_modules/@types/react-table";
 import { Link } from "react-router-dom";
-import { getFormattedDateTime } from "../../../utils/output";
 import classes from "./MachineList.module.scss";
+import moment from "moment";
+import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT } from "../../../constants";
+import classNames from "classnames";
 
 interface MachineListProps {
   machines: Computer[];
-  selectedIds: number[];
-  setSelectedIds: (ids: number[]) => void;
+  selectedMachines: Computer[];
+  setSelectedMachines: (machines: Computer[]) => void;
+  groupBy: string;
 }
 
 const MachineList: FC<MachineListProps> = ({
   machines,
-  selectedIds,
-  setSelectedIds,
+  selectedMachines,
+  setSelectedMachines,
+  groupBy,
 }) => {
   const toggleAll = () => {
-    setSelectedIds(
-      selectedIds.length !== 0 ? [] : machines.map(({ id }) => id),
-    );
+    setSelectedMachines(selectedMachines.length !== 0 ? [] : machines);
   };
 
   const handleChange = (row: Row<Computer>) => {
-    selectedIds.includes(row.original.id)
-      ? setSelectedIds(selectedIds.filter((id) => id !== row.original.id))
-      : setSelectedIds([...selectedIds, row.original.id]);
+    if (groupBy === "parent" && row.original.children.length > 0) {
+      const childrenIds = row.original.children.map(({ id }) => id);
+
+      selectedMachines.some(({ id }) => childrenIds.includes(id))
+        ? setSelectedMachines(
+            selectedMachines.filter(({ id }) => !childrenIds.includes(id)),
+          )
+        : setSelectedMachines([
+            ...selectedMachines,
+            ...row.original.children.map((child) => ({
+              ...child,
+              parent: row.original,
+              children: [],
+            })),
+          ]);
+    } else {
+      selectedMachines.some(({ id }) => id === row.original.id)
+        ? setSelectedMachines(
+            selectedMachines.filter(({ id }) => id !== row.original.id),
+          )
+        : setSelectedMachines([...selectedMachines, row.original]);
+    }
   };
 
-  const machinesData = useMemo(() => machines, [machines]);
+  const machinesData = useMemo(() => {
+    return groupBy === "parent"
+      ? machines.map((machine) => ({
+          ...machine,
+          subRows: machine.children.map((child) => ({
+            ...child,
+            parent: machine,
+            children: [],
+          })),
+        }))
+      : machines;
+  }, [machines, groupBy]);
+
+  const figureCheckboxState = (computer: Computer) => {
+    const selectedMachinesIds = selectedMachines.map(({ id }) => id);
+
+    if (
+      groupBy === "parent" &&
+      !computer.is_wsl_instance &&
+      computer.children.length > 0
+    ) {
+      if (
+        computer.children.every(({ id }) => selectedMachinesIds.includes(id))
+      ) {
+        return "checked";
+      }
+
+      return computer.children.some(({ id }) =>
+        selectedMachinesIds.includes(id),
+      )
+        ? "indeterminate"
+        : "unchecked";
+    }
+
+    return selectedMachinesIds.includes(computer.id) ? "checked" : "unchecked";
+  };
 
   const columns = useMemo<Column<Computer>[]>(
     () => [
       {
+        accessor: "title",
         Header: (
           <>
             <CheckboxInput
-              label={<span className="u-off-screen">Toggle all</span>}
+              label={<span className="u-off-screen">Toggle all machines</span>}
               inline
               onChange={toggleAll}
+              disabled={machines.length === 0}
               checked={
-                selectedIds.length === machines.length && machines.length !== 0
+                selectedMachines.length === machines.length &&
+                machines.length !== 0
               }
               indeterminate={
-                selectedIds.length !== 0 && selectedIds.length < machines.length
+                selectedMachines.length !== 0 &&
+                selectedMachines.length < machines.length
               }
             />
             <span>Name</span>
           </>
         ),
-        accessor: "title",
         Cell: ({ row }: CellProps<Computer>) => (
-          <>
+          <div
+            className={classNames(classes.rowHeader, {
+              [classes.nested]:
+                (row as Row<Computer> & { depth: number }).depth > 0,
+            })}
+          >
             <CheckboxInput
               label={<span className="u-off-screen">{row.original.title}</span>}
-              inline
-              checked={selectedIds.includes(row.original.id)}
+              labelClassName="u-no-margin--bottom u-no-padding--top"
+              checked={figureCheckboxState(row.original) === "checked"}
+              indeterminate={
+                figureCheckboxState(row.original) === "indeterminate"
+              }
               onChange={() => {
                 handleChange(row);
               }}
             />
             <Link
-              to={`/machines/${row.original.hostname
-                .toLowerCase()
-                .replace(/ /g, "-")}`}
+              to={
+                row.original.parent
+                  ? `/machines/${row.original.parent.hostname}/${row.original.hostname}`
+                  : `/machines/${row.original.hostname}`
+              }
             >
               {row.original.title}
             </Link>
-          </>
+          </div>
         ),
-        className: classes.name,
       },
       {
         Header: "Status",
@@ -97,7 +165,35 @@ const MachineList: FC<MachineListProps> = ({
         Header: "Upgrades",
       },
       {
+        accessor: "distribution",
+        Header: "OS",
+        Cell: ({ row }: CellProps<Computer>) => (
+          <>
+            {row.original.distribution.match(/\d{1,2}\.\d{2}/)
+              ? `${row.original.is_wsl_instance ? "WSL - " : ""}Ubuntu\xA0${
+                  row.original.distribution
+                }`
+              : `Windows ${row.original.distribution}`}
+          </>
+        ),
+      },
+      {
+        accessor: "ubuntu_pro_info",
         Header: "Ubuntu pro",
+        Cell: ({ row }: CellProps<Computer>) => (
+          <>
+            {row.original.ubuntu_pro_info &&
+            moment(
+              row.original.ubuntu_pro_info.expires,
+              INPUT_DATE_FORMAT,
+            ).isValid()
+              ? `Exp. ${moment(
+                  row.original.ubuntu_pro_info.expires,
+                  INPUT_DATE_FORMAT,
+                ).format(DISPLAY_DATE_FORMAT)}`
+              : "---"}
+          </>
+        ),
       },
       {
         Header: "Host name",
@@ -108,11 +204,17 @@ const MachineList: FC<MachineListProps> = ({
         Header: "Last ping time",
         accessor: "last_ping_time",
         Cell: ({ row }: CellProps<Computer>) => (
-          <>{getFormattedDateTime(row.original.last_ping_time)}</>
+          <>
+            {moment(row.original.last_ping_time, INPUT_DATE_FORMAT).isValid()
+              ? moment(row.original.last_ping_time, INPUT_DATE_FORMAT).format(
+                  DISPLAY_DATE_FORMAT,
+                )
+              : "---"}
+          </>
         ),
       },
     ],
-    [selectedIds, machines],
+    [selectedMachines.length, machines, groupBy],
   );
 
   return (

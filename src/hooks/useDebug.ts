@@ -16,7 +16,7 @@ const isApiError = (error: unknown): error is ApiError => {
 };
 
 export default function useDebug() {
-  const notify = useNotify();
+  const { notify } = useNotify();
   const { logout } = useAuth();
 
   return (error: unknown) => {

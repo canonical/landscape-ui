@@ -12,7 +12,7 @@ import useGPGKeys from "../../../../hooks/useGPGKeys";
 const NewGPGKeyForm = lazy(() => import("./NewGPGKeyForm"));
 
 const GPGKeysPage: FC = () => {
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { getGPGKeysQuery } = useGPGKeys();
 
   const { data, isLoading } = getGPGKeysQuery();
@@ -20,7 +20,6 @@ const GPGKeysPage: FC = () => {
   const items = data?.data ?? [];
 
   const handleOpen = () => {
-    setSidePanelOpen(true);
     setSidePanelContent(
       "Import GPG key",
       <Suspense fallback={<LoadingState />}>

@@ -12,7 +12,7 @@ import useAPTSources from "../../../../hooks/useAPTSources";
 const NewAPTSourceForm = lazy(() => import("./NewAPTSourceForm"));
 
 const APTSourcesPage: FC = () => {
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { getAPTSourcesQuery } = useAPTSources();
 
   const { data, isLoading } = getAPTSourcesQuery();
@@ -20,7 +20,6 @@ const APTSourcesPage: FC = () => {
   const items = data?.data ?? [];
 
   const handleOpen = () => {
-    setSidePanelOpen(true);
     setSidePanelContent(
       "Create APT source",
       <Suspense fallback={<LoadingState />}>

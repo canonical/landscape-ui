@@ -651,7 +651,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               isRemovingPocketsFromRepositoryProfile
             }
             bottomSticky={true}
-            positiveButtonTitle="Save changes"
+            submitButtonText="Save changes"
           />
         </div>
       </Form>

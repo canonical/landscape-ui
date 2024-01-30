@@ -61,13 +61,15 @@ const PageHeader: FC<PageHeaderProps> = ({
         {hideTitle ? (
           <>
             <h1 className="u-off-screen">{title}</h1>
-            <div
-              className={classNames("p-panel__title", classes.visualTitle, {
-                "u-no-padding--bottom": !isSmall,
-              })}
-            >
-              {visualTitle}
-            </div>
+            {visualTitle && (
+              <div
+                className={classNames("p-panel__title", classes.visualTitle, {
+                  "u-no-padding--bottom": !isSmall,
+                })}
+              >
+                {visualTitle}
+              </div>
+            )}
           </>
         ) : (
           <h1

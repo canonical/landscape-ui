@@ -28,6 +28,7 @@ import {
   getFilteredDistributionPocketOptions,
 } from "./_helpers";
 import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
+
 interface FormProps {
   title: string;
   description: string;
@@ -544,8 +545,8 @@ const AddProfileForm: FC = () => {
               isAddingPocketsToRepositoryProfile
             }
             bottomSticky={true}
-            positiveButtonTitle="Create profile"
-            buttonAriaLabel="Create profile"
+            submitButtonText="Create profile"
+            submitButtonAriaLabel="Create profile"
           />
         </div>
       </Form>

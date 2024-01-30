@@ -24,7 +24,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
   const isSmall = useMediaQuery("(min-width: 620px)");
 
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { removeDistributionQuery } = useDistributions();
   const { mutateAsync: removeDistribution, isLoading: isRemoving } =
     removeDistributionQuery;
@@ -61,7 +61,6 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
   const AddSeriesButton = ({ className }: { className?: string }) => (
     <Button
       onClick={() => {
-        setSidePanelOpen(true);
         setSidePanelContent(
           `Add series to ${distribution.name}`,
           <Suspense fallback={<LoadingState />}>

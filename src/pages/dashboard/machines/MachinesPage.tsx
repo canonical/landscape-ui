@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, lazy, Suspense, useState } from "react";
 import PageMain from "../../../components/layout/PageMain";
 import PageHeader from "../../../components/layout/PageHeader";
 import PageContent from "../../../components/layout/PageContent";
@@ -7,61 +7,39 @@ import { Button, Icon } from "@canonical/react-components";
 import useDebug from "../../../hooks/useDebug";
 import useComputers from "../../../hooks/useComputers";
 import useConfirm from "../../../hooks/useConfirm";
-import useScripts from "../../../hooks/useScripts";
-import useAuth from "../../../hooks/useAuth";
 import classes from "./MachinesPage.module.scss";
+import useSidePanel from "../../../hooks/useSidePanel";
+import { Computer } from "../../../types/Computer";
+import LoadingState from "../../../components/layout/LoadingState";
+import MachinesUpgrades from "./MachinesUpgrades";
+
+const RunScriptForm = lazy(() => import("./RunScriptForm"));
 
 const MachinesPage: FC = () => {
-  const [selected, setSelected] = useState<number[]>([]);
+  const [selected, setSelected] = useState<Computer[]>([]);
 
   const debug = useDebug();
-  const { user } = useAuth();
-
+  const { setSidePanelContent } = useSidePanel();
   const { confirmModal, closeConfirmModal } = useConfirm();
 
-  const { rebootComputersQuery, removeComputersQuery, shutdownComputersQuery } =
-    useComputers();
-  const { executeScriptQuery } = useScripts();
+  const { rebootComputersQuery, shutdownComputersQuery } = useComputers();
 
   const { mutateAsync: rebootComputers, isLoading: rebootComputersLoading } =
     rebootComputersQuery;
-  const { mutateAsync: removeComputers, isLoading: removeComputersLoading } =
-    removeComputersQuery;
   const {
     mutateAsync: shutdownComputers,
     isLoading: shutdownComputersLoading,
   } = shutdownComputersQuery;
 
-  const { mutateAsync: executeScript } = executeScriptQuery;
-
   const handleRunScript = async () => {
-    confirmModal({
-      title: "Choose script to run on selected machines",
-      body: `Choose a script to run on the selected machine${
-        1 === selected.length ? "" : "s"
-      }`,
-      buttons: [
-        <Button
-          key="run"
-          appearance="positive"
-          onClick={async () => {
-            try {
-              await executeScript({
-                query: `id:${selected.join(",")}`,
-                username: user?.name ?? "",
-                script_id: 1,
-              });
-            } catch (error) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
-        >
-          Run script
-        </Button>,
-      ],
-    });
+    setSidePanelContent(
+      "Run script",
+      <Suspense fallback={<LoadingState />}>
+        <RunScriptForm
+          query={`id:${selected.map(({ id }) => id).join(" id:")}`}
+        />
+      </Suspense>,
+    );
   };
 
   const handleShutdownComputer = async () => {
@@ -77,7 +55,7 @@ const MachinesPage: FC = () => {
           onClick={async () => {
             try {
               await shutdownComputers({
-                computer_ids: selected,
+                computer_ids: selected.map(({ id }) => id),
               });
             } catch (error) {
               debug(error);
@@ -105,7 +83,7 @@ const MachinesPage: FC = () => {
           onClick={async () => {
             try {
               await rebootComputers({
-                computer_ids: selected,
+                computer_ids: selected.map(({ id }) => id),
               });
             } catch (error) {
               debug(error);
@@ -120,32 +98,12 @@ const MachinesPage: FC = () => {
     });
   };
 
-  const handleRemoveComputer = async () => {
-    confirmModal({
-      title: "Removing selected machines",
-      body: `Are you sure you want to remove ${selected.length} machine${
-        selected.length > 1 ? "s" : ""
-      }?`,
-      buttons: [
-        <Button
-          key="remove"
-          appearance="negative"
-          onClick={async () => {
-            try {
-              await removeComputers({
-                computer_ids: selected,
-              });
-            } catch (error) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
-        >
-          Remove
-        </Button>,
-      ],
-    });
+  const handleUpgradesRequest = () => {
+    setSidePanelContent(
+      "Upgrades",
+      <MachinesUpgrades selectedMachines={selected} />,
+      true,
+    );
   };
 
   return (
@@ -156,25 +114,7 @@ const MachinesPage: FC = () => {
         actions={[
           <div key="buttons" className="p-segmented-control">
             <div className="p-segmented-control__list">
-              <button
-                className="p-segmented-control__button"
-                type="button"
-                onClick={handleRunScript}
-                disabled={0 === selected.length}
-              >
-                <Icon name="code" />
-                <span>Run script</span>
-              </button>
-              <button
-                className="p-segmented-control__button"
-                type="button"
-                onClick={handleShutdownComputer}
-                disabled={shutdownComputersLoading || 0 === selected.length}
-              >
-                <Icon name="power-off" />
-                <span>Shutdown</span>
-              </button>
-              <button
+              <Button
                 className="p-segmented-control__button"
                 type="button"
                 onClick={handleRebootComputer}
@@ -182,24 +122,44 @@ const MachinesPage: FC = () => {
               >
                 <Icon name="restart" />
                 <span>Restart</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 className="p-segmented-control__button"
                 type="button"
-                onClick={handleRemoveComputer}
-                disabled={removeComputersLoading || 0 === selected.length}
+                onClick={handleShutdownComputer}
+                disabled={shutdownComputersLoading || 0 === selected.length}
               >
-                <Icon name="delete" />
-                <span>Remove</span>
-              </button>
+                <Icon name="power-off" />
+                <span>Shutdown</span>
+              </Button>
+              <Button
+                className="p-segmented-control__button"
+                type="button"
+                onClick={handleRunScript}
+                disabled={0 === selected.length}
+              >
+                <Icon name="code" />
+                <span>Run script</span>
+              </Button>
+              <Button
+                className="p-segmented-control__button"
+                type="button"
+                onClick={handleUpgradesRequest}
+                disabled={0 === selected.length}
+              >
+                <Icon name="begin-downloading" />
+                <span>Request upgrades</span>
+              </Button>
             </div>
           </div>,
         ]}
       />
       <PageContent>
         <MachinesContainer
-          selectedIds={selected}
-          setSelectedIds={setSelected}
+          selectedMachines={selected}
+          setSelectedMachines={(machines) => {
+            setSelected(machines);
+          }}
         />
       </PageContent>
     </PageMain>

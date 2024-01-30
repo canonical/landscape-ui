@@ -5,6 +5,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useFetchOld from "./useFetchOld";
 import { ApiError } from "../types/ApiError";
 import { Activity } from "../types/Activity";
+import useFetch from "./useFetch";
+import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
 
 interface GetScriptsParams {
   limit?: number;
@@ -15,7 +17,7 @@ interface GetScriptCodeParams {
   script_id: number;
 }
 
-interface ExecuteScriptParams {
+export interface ExecuteScriptParams {
   query: string;
   script_id: number;
   username: string;
@@ -26,7 +28,7 @@ interface RemoveScriptParams {
   script_id: number;
 }
 
-interface CreateScriptParams {
+export interface CreateScriptParams {
   title: string;
   time_limit: number;
   code: string;
@@ -60,25 +62,29 @@ interface CreateScriptAttachmentParams {
 
 export default function useScripts() {
   const queryClient = useQueryClient();
-  const authFetch = useFetchOld();
+  const authFetchOld = useFetchOld();
+  const authFetch = useFetch();
 
   const getScriptsQuery: QueryFnType<
-    AxiosResponse<Script[]>,
+    AxiosResponse<ApiPaginatedResponse<Script>>,
     GetScriptsParams
   > = (queryParams = {}, config = {}) =>
-    useQuery<AxiosResponse<Script[]>, AxiosError<ApiError>>({
-      queryKey: ["scripts", { ...queryParams }],
-      queryFn: () => authFetch!.get("GetScripts", { params: queryParams }),
-      ...config,
-    });
+    useQuery<AxiosResponse<ApiPaginatedResponse<Script>>, AxiosError<ApiError>>(
+      {
+        queryKey: ["scripts", queryParams],
+        queryFn: () => authFetch!.get("scripts", { params: queryParams }),
+        ...config,
+      },
+    );
 
   const getScriptCodeQuery: QueryFnType<
     AxiosResponse<string>,
     GetScriptCodeParams
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<string>, AxiosError<ApiError>>({
-      queryKey: ["scriptCode", { ...queryParams }],
-      queryFn: () => authFetch!.get("GetScriptCode", { params: queryParams }),
+      queryKey: ["scriptCode", queryParams],
+      queryFn: () =>
+        authFetchOld!.get("GetScriptCode", { params: queryParams }),
       ...config,
     });
 
@@ -88,7 +94,7 @@ export default function useScripts() {
     ExecuteScriptParams
   >({
     mutationKey: ["scripts", "execute"],
-    mutationFn: (params) => authFetch!.get("ExecuteScript", { params }),
+    mutationFn: (params) => authFetchOld!.get("ExecuteScript", { params }),
   });
 
   const removeScriptQuery = useMutation<
@@ -97,7 +103,7 @@ export default function useScripts() {
     RemoveScriptParams
   >({
     mutationKey: ["scripts", "remove"],
-    mutationFn: (params) => authFetch!.get("RemoveScript", { params }),
+    mutationFn: (params) => authFetchOld!.get("RemoveScript", { params }),
     onSuccess: () => queryClient.invalidateQueries(["scripts"]),
   });
 
@@ -107,7 +113,7 @@ export default function useScripts() {
     CreateScriptParams
   >({
     mutationKey: ["scripts", "create"],
-    mutationFn: (params) => authFetch!.get("CreateScript", { params }),
+    mutationFn: (params) => authFetchOld!.get("CreateScript", { params }),
     onSuccess: () => queryClient.invalidateQueries(["scripts"]),
   });
 
@@ -117,7 +123,7 @@ export default function useScripts() {
     EditScriptParams
   >({
     mutationKey: ["scripts", "edit"],
-    mutationFn: (params) => authFetch!.get("EditScript", { params }),
+    mutationFn: (params) => authFetchOld!.get("EditScript", { params }),
     onSuccess: () => queryClient.invalidateQueries(["scripts"]),
   });
 
@@ -127,7 +133,7 @@ export default function useScripts() {
     CopyScriptParams
   >({
     mutationKey: ["scripts", "copy"],
-    mutationFn: (params) => authFetch!.get("CopyScript", { params }),
+    mutationFn: (params) => authFetchOld!.get("CopyScript", { params }),
     onSuccess: () => queryClient.invalidateQueries(["scripts"]),
   });
 
@@ -138,7 +144,7 @@ export default function useScripts() {
   >({
     mutationKey: ["scripts", "removeAttachment"],
     mutationFn: (params) =>
-      authFetch!.get("RemoveScriptAttachment", { params }),
+      authFetchOld!.get("RemoveScriptAttachment", { params }),
     onSuccess: () => queryClient.invalidateQueries(["scripts"]),
   });
 
@@ -149,7 +155,7 @@ export default function useScripts() {
   >({
     mutationKey: ["scripts", "createAttachment"],
     mutationFn: (params) =>
-      authFetch!.get("CreateScriptAttachment", { params }),
+      authFetchOld!.get("CreateScriptAttachment", { params }),
     onSuccess: () => queryClient.invalidateQueries(["scripts"]),
   });
 

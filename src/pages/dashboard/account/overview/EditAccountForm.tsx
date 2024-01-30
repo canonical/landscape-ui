@@ -75,7 +75,7 @@ const EditAccountForm: FC<EditAccountFormProps> = ({ user }) => {
       />
       <SidePanelFormButtons
         disabled={isLoading}
-        positiveButtonTitle="Save changes"
+        submitButtonText="Save changes"
         removeButtonMargin
       />
     </Form>

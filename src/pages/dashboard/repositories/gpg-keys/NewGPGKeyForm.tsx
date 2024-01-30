@@ -1,11 +1,10 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Form, Input, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import useDebug from "../../../../hooks/useDebug";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import * as Yup from "yup";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
-import useNotify from "../../../../hooks/useNotify";
 import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
 
@@ -18,7 +17,6 @@ const NewGPGKeyForm: FC = () => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
   const { importGPGKeyQuery, getGPGKeysQuery } = useGPGKeys();
-  const notify = useNotify();
 
   const { mutateAsync, isLoading } = importGPGKeyQuery;
 
@@ -60,8 +58,6 @@ const NewGPGKeyForm: FC = () => {
     },
   });
 
-  useEffect(() => notify.clear, []);
-
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
@@ -89,7 +85,7 @@ const NewGPGKeyForm: FC = () => {
       />
       <SidePanelFormButtons
         disabled={isLoading}
-        positiveButtonTitle="Import key"
+        submitButtonText="Import key"
       />
     </Form>
   );

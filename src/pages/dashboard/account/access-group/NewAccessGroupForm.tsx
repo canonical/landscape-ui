@@ -68,7 +68,7 @@ const NewAccessGroupForm = () => {
       />
       <SidePanelFormButtons
         disabled={isLoading}
-        positiveButtonTitle="Create"
+        submitButtonText="Create"
         removeButtonMargin
       />
     </Form>

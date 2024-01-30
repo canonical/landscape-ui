@@ -3,20 +3,23 @@ import { Button } from "@canonical/react-components";
 import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./SidePanelFormButtons.module.scss";
 import classNames from "classnames";
+
 interface SidePanelFormButtonsProps {
   disabled: boolean;
-  positiveButtonTitle: string;
-  buttonAriaLabel?: string;
+  submitButtonText: string;
   bottomSticky?: boolean;
   removeButtonMargin?: boolean;
+  submitButtonAppearance?: "positive" | "negative" | "brand";
+  submitButtonAriaLabel?: string;
 }
 
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   disabled,
-  positiveButtonTitle,
-  buttonAriaLabel,
+  submitButtonText,
+  submitButtonAriaLabel,
   bottomSticky = false,
   removeButtonMargin = true,
+  submitButtonAppearance = "positive",
 }) => {
   const { closeSidePanel } = useSidePanel();
   return (
@@ -29,16 +32,17 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
       <Button
         className={classNames({ "u-no-margin--bottom": removeButtonMargin })}
         type="submit"
-        appearance="positive"
+        appearance={submitButtonAppearance}
         disabled={disabled}
-        aria-label={buttonAriaLabel}
+        aria-label={submitButtonAriaLabel}
       >
-        {positiveButtonTitle}
+        {submitButtonText}
       </Button>
       <Button
         className={classNames({ "u-no-margin--bottom": removeButtonMargin })}
         type="button"
         onClick={closeSidePanel}
+        disabled={disabled}
       >
         Cancel
       </Button>

@@ -5,6 +5,8 @@ import { AxiosError, AxiosResponse } from "axios";
 import { ApiError } from "../types/ApiError";
 import { Package } from "../types/Package";
 import useDebug from "./useDebug";
+import useFetch from "./useFetch";
+import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
 
 interface GetPackagesParams {
   query: string;
@@ -18,41 +20,34 @@ interface GetPackagesParams {
   upgrade?: boolean;
 }
 
-interface InstallPackagesParams {
+export interface CommonPackagesActionParams {
   query: string;
   packages: string[];
   deliver_after?: string;
   deliver_delay_window?: number;
 }
 
-interface RemovePackagesParams {
-  query: string;
-  packages: string[];
-  deliver_after?: string;
-  deliver_delay_window?: number;
-}
-
-interface UpgradePackagesParams {
-  query: string;
-  packages: string[];
+interface UpgradePackagesParams extends CommonPackagesActionParams {
   security_only?: boolean;
-  deliver_after?: string;
-  deliver_delay_window?: number;
 }
 
 export const usePackages = () => {
   const queryClient = useQueryClient();
-  const authFetch = useFetchOld();
+  const authFetchOld = useFetchOld();
+  const authFetch = useFetch();
   const debug = useDebug();
 
   const getPackagesQuery: QueryFnType<
-    AxiosResponse<Package[]>,
+    AxiosResponse<ApiPaginatedResponse<Package>>,
     GetPackagesParams
   > = (queryParams, config = {}) => {
-    return useQuery<AxiosResponse<Package[]>, AxiosError<ApiError>>({
-      queryKey: ["packages", { ...queryParams }],
+    return useQuery<
+      AxiosResponse<ApiPaginatedResponse<Package>>,
+      AxiosError<ApiError>
+    >({
+      queryKey: ["packages", queryParams],
       queryFn: () =>
-        authFetch!.get("GetPackages", {
+        authFetch!.get("packages", {
           params: queryParams,
         }),
       ...config,
@@ -62,10 +57,10 @@ export const usePackages = () => {
   const installPackagesQuery = useMutation<
     AxiosResponse<unknown>,
     AxiosError<ApiError>,
-    InstallPackagesParams
+    CommonPackagesActionParams
   >({
     mutationKey: ["packages", "install"],
-    mutationFn: (params) => authFetch!.get("InstallPackages", { params }),
+    mutationFn: (params) => authFetchOld!.get("InstallPackages", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["packages"]).catch(debug);
     },
@@ -74,10 +69,10 @@ export const usePackages = () => {
   const removePackagesQuery = useMutation<
     AxiosResponse<unknown>,
     AxiosError<ApiError>,
-    RemovePackagesParams
+    CommonPackagesActionParams
   >({
     mutationKey: ["packages", "install"],
-    mutationFn: (params) => authFetch!.get("RemovePackages", { params }),
+    mutationFn: (params) => authFetchOld!.get("RemovePackages", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["packages"]).catch(debug);
     },
@@ -89,7 +84,7 @@ export const usePackages = () => {
     UpgradePackagesParams
   >({
     mutationKey: ["packages", "upgrade"],
-    mutationFn: (params) => authFetch!.get("UpgradePackages", { params }),
+    mutationFn: (params) => authFetchOld!.get("UpgradePackages", { params }),
     onSuccess: () => {
       queryClient.invalidateQueries(["packages"]).catch(debug);
     },

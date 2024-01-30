@@ -3,9 +3,16 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/global_functions";
 
-.icon {
-  margin-left: -2.5 * $sp-unit;
-  margin-right: $sp-x-small;
+.checkbox {
+  width: $sp-x-large;
+}
+
+.rowHeader {
+  display: flex;
+
+  &.nested {
+    padding-left: $sp-x-large;
+  }
 }
 
 .restartError {

@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiError } from "../types/ApiError";
 import useFetchOld from "./useFetchOld";
+import useFetch from "./useFetch";
+import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
 
 interface GetActivitiesParams {
   query?: string;
@@ -20,17 +22,21 @@ interface ApproveActivitiesParams {
 }
 
 export default function useActivities() {
-  const authFetch = useFetchOld();
+  const authFetchOld = useFetchOld();
+  const authFetch = useFetch();
   const queryClient = useQueryClient();
 
   const getActivitiesQuery: QueryFnType<
-    AxiosResponse<Activity[]>,
+    AxiosResponse<ApiPaginatedResponse<Activity>>,
     GetActivitiesParams
   > = (queryParams = {}, config = {}) => {
-    return useQuery<AxiosResponse<Activity[]>, AxiosError<ApiError>>({
-      queryKey: ["activities", { queryParams }],
+    return useQuery<
+      AxiosResponse<ApiPaginatedResponse<Activity>>,
+      AxiosError<ApiError>
+    >({
+      queryKey: ["activities", queryParams],
       queryFn: () =>
-        authFetch!.get("GetActivities", {
+        authFetch!.get("activities", {
           params: queryParams,
         }),
       ...config,
@@ -44,7 +50,7 @@ export default function useActivities() {
     return useQuery<AxiosResponse<string[]>, AxiosError<ApiError>>({
       queryKey: ["activityTypes"],
       queryFn: () =>
-        authFetch!.get("GetActivityTypes", { params: queryParams }),
+        authFetchOld!.get("GetActivityTypes", { params: queryParams }),
       ...config,
     });
   };
@@ -55,7 +61,7 @@ export default function useActivities() {
     CancelActivitiesParams
   >({
     mutationKey: ["activities", "cancel"],
-    mutationFn: (params) => authFetch!.get("CancelActivities", { params }),
+    mutationFn: (params) => authFetchOld!.get("CancelActivities", { params }),
     onSuccess: () => queryClient.invalidateQueries(["activities"]),
   });
 
@@ -65,7 +71,7 @@ export default function useActivities() {
     ApproveActivitiesParams
   >({
     mutationKey: ["activities", "approve"],
-    mutationFn: (params) => authFetch!.get("ApproveActivities", { params }),
+    mutationFn: (params) => authFetchOld!.get("ApproveActivities", { params }),
     onSuccess: () => queryClient.invalidateQueries(["activities"]),
   });
 

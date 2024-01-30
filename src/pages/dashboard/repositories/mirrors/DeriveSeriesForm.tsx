@@ -83,7 +83,7 @@ const DeriveSeriesForm: FC<DeriveSeriesProps> = ({ distribution, origin }) => {
 
       <SidePanelFormButtons
         disabled={isLoading}
-        positiveButtonTitle="Derive series"
+        submitButtonText="Derive series"
       />
     </form>
   );

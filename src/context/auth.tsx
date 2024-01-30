@@ -7,10 +7,21 @@ const AUTH_STORAGE_KEY = "_landscape_auth";
 
 function getFromLocalStorage(key: string) {
   const item = localStorage.getItem(key);
-  return item ? JSON.parse(item) : null;
+
+  if (!item) {
+    return null;
+  }
+
+  try {
+    const parsed: AuthUser = JSON.parse(item);
+
+    return parsed;
+  } catch {
+    return null;
+  }
 }
 
-function setToLocalStorage(key: string, value: any) {
+function setToLocalStorage(key: string, value: AuthUser) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
@@ -60,26 +71,10 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const maybeSavedState = getFromLocalStorage(AUTH_STORAGE_KEY);
-    if (!maybeSavedState) {
-      setLoading(false);
-      return undefined;
-    }
 
-    const savedState = maybeSavedState;
-
-    if (!savedState) {
-      setLoading(false);
-      localStorage.removeItem(AUTH_STORAGE_KEY);
-      return;
-    }
-
-    setUser({
-      name: savedState.name ?? "",
-      email: savedState.email ?? "",
-      token: savedState.token ?? "",
-      accounts: savedState.accounts ?? [],
-      current_account: savedState.current_account ?? "",
-    });
+    maybeSavedState
+      ? setUser(maybeSavedState)
+      : localStorage.removeItem(AUTH_STORAGE_KEY);
 
     setLoading(false);
   }, []);

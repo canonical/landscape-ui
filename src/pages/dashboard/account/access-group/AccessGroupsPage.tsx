@@ -12,14 +12,13 @@ import PageMain from "../../../../components/layout/PageMain";
 import PageContent from "../../../../components/layout/PageContent";
 
 const AccessGroupsPage: FC = () => {
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useAccessGroup();
   const { data: accessGroupResponse, isLoading } = getAccessGroupQuery();
 
   const accessGroupData = accessGroupResponse?.data ?? [];
 
   const handleAddAccessGroup = () => {
-    setSidePanelOpen(true);
     setSidePanelContent("Create access group", <NewAccessGroupForm />);
   };
 

@@ -7,11 +7,10 @@ import EditAccountForm from "./EditAccountForm";
 import { AuthUser } from "../../../../context/auth";
 import PageHeader from "../../../../components/layout/PageHeader";
 const OverviewPage: FC = () => {
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { user } = useAuth();
 
   const handleEditAccount = async () => {
-    setSidePanelOpen(true);
     setSidePanelContent(
       "Edit Account",
       <Suspense fallback={<LoadingState />}>

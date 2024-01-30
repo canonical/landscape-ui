@@ -12,7 +12,7 @@ export const mockProcesses: Process[] = [
     start_time: "2021-01-01 00:00:00",
     vm_size: 10240,
     cpu_utilization: 0.1,
-    computer_id: 13,
+    computer_id: 1,
   },
   {
     pid: 1001,
@@ -23,7 +23,7 @@ export const mockProcesses: Process[] = [
     start_time: "2022-05-07 00:00:00",
     vm_size: 10240,
     cpu_utilization: 0.2,
-    computer_id: 13,
+    computer_id: 1,
   },
   {
     pid: 1002,
@@ -34,7 +34,7 @@ export const mockProcesses: Process[] = [
     start_time: "2023-10-03 00:00:00",
     vm_size: 5120,
     cpu_utilization: 0.18,
-    computer_id: 13,
+    computer_id: 1,
   },
   {
     pid: 1003,
@@ -382,5 +382,244 @@ export const MACHINE_SEARCH_HELP_TERMS: {
         contains the <code>&lt;string&gt;</code> specified
       </span>
     ),
+  },
+];
+
+export const mockUsns = [
+  {
+    cves_ids: ["CVE-9667-0317", "CVE-9667-0318", "CVE-9667-0319"],
+    published: "2024-01-11T14:01:38.786Z",
+    release_packages: [
+      {
+        name: "findutils",
+        current_version: "4.2.31-1ubuntu2.1",
+        fix_version: "4.2.31-1ubuntu2.1-2",
+        summary: "utilities for finding files--find, xargs, and locate",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libpci2",
+        current_version: "2:2.1.11-3build1",
+        fix_version: "2:2.1.11-3build1-2",
+        summary: "Obsolete shared library for accessing pci devices",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libthai0",
+        current_version: "0.1.9-1",
+        fix_version: "0.1.9-1-1",
+        summary: "Thai language support library",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "findutils",
+        current_version: "4.2.31-1ubuntu2.1",
+        fix_version: "4.2.31-1ubuntu2.1-2",
+        summary: "utilities for finding files--find, xargs, and locate",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libpci2",
+        current_version: "2:2.1.11-3build1",
+        fix_version: "2:2.1.11-3build1-2",
+        summary: "Obsolete shared library for accessing pci devices",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libthai0",
+        current_version: "0.1.9-1",
+        fix_version: "0.1.9-1-1",
+        summary: "Thai language support library",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+    ],
+    summary: "1-1 summary",
+    name: "1-1",
+  },
+  {
+    cves_ids: ["CVE-9667-0317"],
+    published: "2024-01-11T14:01:38.786Z",
+    release_packages: [
+      {
+        name: "findutils",
+        current_version: "4.2.31-1ubuntu2.1",
+        fix_version: "4.2.31-1ubuntu2.1-2",
+        summary: "utilities for finding files--find, xargs, and locate",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libpci2",
+        current_version: "2:2.1.11-3build1",
+        fix_version: "2:2.1.11-3build1-2",
+        summary: "Obsolete shared library for accessing pci devices",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libthai0",
+        current_version: "0.1.9-1",
+        fix_version: "0.1.9-1-1",
+        summary: "Thai language support library",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "findutils",
+        current_version: "4.2.31-1ubuntu2.1",
+        fix_version: "4.2.31-1ubuntu2.1-2",
+        summary: "utilities for finding files--find, xargs, and locate",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+    ],
+    summary: "1-2 summary",
+    name: "1-2",
+  },
+  {
+    cves_ids: ["CVE-9667-0317"],
+    published: "2024-01-11T14:01:38.786Z",
+    release_packages: [
+      {
+        name: "libpci2",
+        current_version: "2:2.1.11-3build1",
+        fix_version: "2:2.1.11-3build1-2",
+        summary: "Obsolete shared library for accessing pci devices",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libthai0",
+        current_version: "0.1.9-1",
+        fix_version: "0.1.9-1-1",
+        summary: "Thai language support library",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+    ],
+    summary: "1-3 summary",
+    name: "1-3",
+  },
+  {
+    cves_ids: ["CVE-9667-0317"],
+    published: "2024-01-11T14:01:38.786Z",
+    release_packages: [
+      {
+        name: "findutils",
+        current_version: "4.2.31-1ubuntu2.1",
+        fix_version: "4.2.31-1ubuntu2.1-2",
+        summary: "utilities for finding files--find, xargs, and locate",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libpci2",
+        current_version: "2:2.1.11-3build1",
+        fix_version: "2:2.1.11-3build1-2",
+        summary: "Obsolete shared library for accessing pci devices",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libthai0",
+        current_version: "0.1.9-1",
+        fix_version: "0.1.9-1-1",
+        summary: "Thai language support library",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "findutils",
+        current_version: "4.2.31-1ubuntu2.1",
+        fix_version: "4.2.31-1ubuntu2.1-2",
+        summary: "utilities for finding files--find, xargs, and locate",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+      {
+        name: "libthai0",
+        current_version: "0.1.9-1",
+        fix_version: "0.1.9-1-1",
+        summary: "Thai language support library",
+        computers: {
+          installed: [],
+          available: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          upgrades: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+          held: [],
+        },
+      },
+    ],
+    summary: "1-4 summary",
+    name: "1-4",
   },
 ];

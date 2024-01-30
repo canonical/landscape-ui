@@ -10,7 +10,7 @@ import LoadingState from "../../../components/layout/LoadingState";
 const SingleScript = lazy(() => import("./SingleScript"));
 
 const ScriptsPage: FC = () => {
-  const { setSidePanelOpen, setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
 
   return (
     <PageMain>
@@ -27,7 +27,6 @@ const ScriptsPage: FC = () => {
                   <SingleScript action="create" />
                 </Suspense>,
               );
-              setSidePanelOpen(true);
             }}
           >
             Create script

@@ -33,11 +33,6 @@ const MENU_ITEMS: MenuItem[] = [
     icon: "status",
   },
   {
-    label: "Packages",
-    path: `${ROOT_PATH}packages`,
-    icon: "drag",
-  },
-  {
     label: "Repositories",
     path: `${ROOT_PATH}repositories`,
     icon: "fork",

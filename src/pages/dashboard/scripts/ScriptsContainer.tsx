@@ -27,7 +27,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
 
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { setSidePanelContent, setSidePanelOpen } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
 
   const { getScriptsQuery, removeScriptQuery } = useScripts();
 
@@ -44,7 +44,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
   });
 
   const scripts = useMemo(
-    () => getScriptsQueryResult?.data ?? [],
+    () => getScriptsQueryResult?.data.results ?? [],
     [getScriptsQueryResult],
   );
 
@@ -66,7 +66,6 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
         <SingleScript {...scriptProps} />
       </Suspense>,
     );
-    setSidePanelOpen(true);
   };
 
   const columns = useMemo<Column<Script>[]>(
@@ -224,13 +223,18 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
           />
           <TablePagination
             currentPage={currentPage}
-            totalItems={10}
+            totalItems={getScriptsQueryResult?.data.count}
             paginate={(page) => {
               setCurrentPage(page);
             }}
             pageSize={itemsPerPage}
             setPageSize={(itemsNumber) => {
               setItemsPerPage(itemsNumber);
+            }}
+            currentItemCount={scripts.length}
+            itemLabels={{
+              singular: "script",
+              plural: "scripts",
             }}
           />
         </>

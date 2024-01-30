@@ -14,17 +14,24 @@ import { MACHINE_SEARCH_HELP_TERMS } from "./_data";
 import { useSavedSearches } from "../../../hooks/useSavedSearches";
 import useDebug from "../../../hooks/useDebug";
 import { useLocation } from "react-router-dom";
+import { Computer } from "../../../types/Computer";
+import { Select } from "@canonical/react-components";
+import { SelectOption } from "../../../types/SelectOption";
 
-const TOTAL_MACHINES = 9;
+const osFilterOptions: SelectOption[] = [
+  { label: "All", value: "" },
+  { label: "Ubuntu", value: "NOT distribution:windows" },
+  { label: "Windows", value: "distribution:windows" },
+];
 
 interface MachinesContainerProps {
-  selectedIds: number[];
-  setSelectedIds: (ids: number[]) => void;
+  selectedMachines: Computer[];
+  setSelectedMachines: (machines: Computer[]) => void;
 }
 
 const MachinesContainer: FC<MachinesContainerProps> = ({
-  selectedIds,
-  setSelectedIds,
+  selectedMachines,
+  setSelectedMachines,
 }) => {
   const [searchAndFilterChips, setSearchAndFilterChips] = useState<
     SearchAndFilterChip[]
@@ -32,6 +39,9 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageLimit, setPageLimit] = useState(50);
   const [showSearchHelp, setShowSearchHelp] = useState(false);
+  const [groupBy, setGroupBy] = useState("");
+  const [osFilter, setOsFilter] = useState("");
+
   const location = useLocation();
   const locationState = location.state as { chipData?: SearchAndFilterChip };
 
@@ -65,9 +75,10 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
     isLoading: getComputersQueryLoading,
     error: getComputersQueryError,
   } = getComputersQuery({
-    query: searchAndFilterChips
+    query: `${searchAndFilterChips
       .map(({ lead, value }) => (lead ? `${lead}:${value}` : value))
-      .join(" "),
+      .join(" ")}${osFilter ?? ""}`.trim(),
+    root_only: groupBy === "parent",
     limit: pageLimit,
     offset: (currentPage - 1) * pageLimit,
   });
@@ -76,17 +87,18 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
     debug(getComputersQueryError);
   }
 
-  const computers = getComputersQueryResult?.data ?? [];
+  const computers = getComputersQueryResult?.data.results ?? [];
+  const computersCount = getComputersQueryResult?.data.count ?? 0;
 
   const handlePaginate = (page: number) => {
     setCurrentPage(page);
-    setSelectedIds([]);
+    setSelectedMachines([]);
   };
 
   return (
     <>
       <div className={classes.top}>
-        <div className={classes.search}>
+        <div className={classes.searchContainer}>
           <SearchAndFilterWithDescription
             existingSearchData={
               locationState?.chipData ? [locationState.chipData] : undefined
@@ -100,6 +112,31 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
             }}
           />
         </div>
+        <Select
+          label="Group by"
+          wrapperClassName={classes.select}
+          className="u-no-margin--bottom"
+          options={[
+            { label: "None", value: "" },
+            { label: "Parent", value: "parent" },
+          ]}
+          value={groupBy}
+          onChange={(event) => {
+            setSelectedMachines([]);
+            setGroupBy(event.target.value);
+          }}
+        />
+        <Select
+          label="OS"
+          wrapperClassName={classes.select}
+          className="u-no-margin--bottom"
+          options={osFilterOptions}
+          value={osFilter}
+          onChange={(event) => {
+            setSelectedMachines([]);
+            setOsFilter(event.target.value);
+          }}
+        />
       </div>
       <SearchHelpPopup
         open={showSearchHelp}
@@ -113,24 +150,23 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
       ) : (
         <MachineList
           machines={computers}
-          selectedIds={selectedIds}
-          setSelectedIds={(ids) => {
-            setSelectedIds(ids);
+          selectedMachines={selectedMachines}
+          setSelectedMachines={(machines) => {
+            setSelectedMachines(machines);
           }}
+          groupBy={groupBy}
         />
       )}
       <TablePagination
         currentPage={currentPage}
-        totalItems={TOTAL_MACHINES}
+        totalItems={computersCount}
         paginate={handlePaginate}
         pageSize={pageLimit}
         setPageSize={(itemsNumber) => {
           setPageLimit(itemsNumber);
         }}
-        description={
-          TOTAL_MACHINES > 0 &&
-          `Showing ${computers.length} of ${TOTAL_MACHINES} machines`
-        }
+        itemLabels={{ singular: "machine", plural: "machines" }}
+        currentItemCount={computers.length}
       />
     </>
   );

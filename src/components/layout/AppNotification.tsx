@@ -1,12 +1,18 @@
 import React, { FC } from "react";
 import { Notification } from "@canonical/react-components";
 import { NotificationHelper } from "../../types/Notification";
+import classes from "./AppNotification.module.scss";
+import classNames from "classnames";
 
 type AppNotificationProps = {
   notify: NotificationHelper;
+  isSidePanelOpen?: boolean;
 };
 
-const AppNotification: FC<AppNotificationProps> = ({ notify }) => {
+const AppNotification: FC<AppNotificationProps> = ({
+  notify,
+  isSidePanelOpen = false,
+}) => {
   if (!notify.notification) {
     return null;
   }
@@ -14,9 +20,16 @@ const AppNotification: FC<AppNotificationProps> = ({ notify }) => {
   const { type, message, actions } = notify.notification;
 
   return (
-    <Notification severity={type} onDismiss={notify.clear} actions={actions}>
-      {message}
-    </Notification>
+    <div className={classNames({ [classes.container]: !isSidePanelOpen })}>
+      <Notification
+        className={classNames({ [classes.notification]: !isSidePanelOpen })}
+        severity={type}
+        onDismiss={notify.clear}
+        actions={actions}
+      >
+        {message}
+      </Notification>
+    </div>
   );
 };
 

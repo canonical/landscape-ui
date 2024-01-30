@@ -5,22 +5,27 @@ import classNames from "classnames";
 
 interface TablePaginationProps {
   currentPage: number;
-  totalItems: number | undefined;
-  paginate: (page: number) => void;
   pageSize: number;
+  paginate: (page: number) => void;
   setPageSize: (itemsNumber: number) => void;
+  totalItems: number | undefined;
   className?: string;
-  description?: string | false;
+  currentItemCount?: number;
+  itemLabels?: {
+    singular: string;
+    plural: string;
+  };
 }
 
 const TablePagination: FC<TablePaginationProps> = ({
-  totalItems,
   currentPage,
-  paginate,
   pageSize,
+  paginate,
   setPageSize,
+  totalItems,
   className = "",
-  description = false,
+  currentItemCount = 0,
+  itemLabels,
 }) => {
   const [pageNumber, setPageNumber] = useState<number | "">("");
   const [error, setError] = useState("");
@@ -59,114 +64,122 @@ const TablePagination: FC<TablePaginationProps> = ({
 
   return (
     <div className={classNames(classes.wrapper, className)}>
-      {description && (
+      {!!currentItemCount && !!itemLabels && !!totalItems && (
         <p
           className={classNames(
             "p-heading--5 u-no-margin--bottom u-no-padding--top",
             classes.description,
           )}
         >
-          {description}
+          {`Showing ${currentItemCount} of ${totalItems} ${
+            totalItems > 1 ? itemLabels.plural : itemLabels.singular
+          }`}
         </p>
       )}
-      <div className={classes.paginationContainer}>
-        <Select
-          label="Machines per page"
-          labelClassName="u-off-screen"
-          className="u-no-margin--bottom"
-          options={[
-            { label: "20 / page", value: 20 },
-            { label: "50 / page", value: 50 },
-            { label: "100 / page", value: 100 },
-          ]}
-          value={pageSize}
-          onChange={(event) => {
-            setPageSize(parseInt(event.target.value));
-          }}
-        />
-        <nav aria-label="Table pagination" className="p-pagination">
-          <span
-            className={classNames(
-              "p-pagination__items",
-              classes.paginationWrapper,
-            )}
-          >
-            <Button
-              aria-label="Previous page"
-              appearance="link"
-              className="p-pagination__link--previous u-no-margin--right u-no-margin--bottom"
-              disabled={currentPage === 1}
-              onClick={() => {
-                setPageNumber((page) => Number(page) - 1);
-                paginate(currentPage - 1);
-              }}
-              type="button"
+      {totalItems && totalItems > 20 && (
+        <div className={classes.paginationContainer}>
+          <Select
+            label="Machines per page"
+            labelClassName="u-off-screen"
+            className="u-no-margin--bottom"
+            options={[
+              { label: "20 / page", value: 20 },
+              { label: "50 / page", value: 50 },
+              { label: "100 / page", value: 100 },
+            ]}
+            value={pageSize}
+            onChange={(event) => {
+              setPageSize(parseInt(event.target.value));
+            }}
+          />
+          <nav aria-label="Table pagination" className="p-pagination">
+            <span
+              className={classNames(
+                "p-pagination__items",
+                classes.paginationWrapper,
+              )}
             >
-              <Icon name="chevron-down" />
-            </Button>
-            <strong>Page </strong>
-            <div
-              className={classNames("p-form__group p-form-validation", {
-                "is-error": error,
-              })}
-            >
+              <Button
+                aria-label="Previous page"
+                appearance="link"
+                className="p-pagination__link--previous u-no-margin--right u-no-margin--bottom"
+                disabled={currentPage === 1}
+                onClick={() => {
+                  setPageNumber((page) => Number(page) - 1);
+                  paginate(currentPage - 1);
+                }}
+                type="button"
+              >
+                <Icon name="chevron-down" />
+              </Button>
+              <strong>Page </strong>
               <div
-                className={classNames("p-form__control", classes.inputWrapper, {
-                  [classes.withError]: error,
+                className={classNames("p-form__group p-form-validation", {
+                  "is-error": error,
                 })}
               >
-                <input
-                  aria-label="page number"
+                <div
                   className={classNames(
-                    "p-form-validation__input p-pagination__input u-no-margin--bottom",
-                    classes.input,
+                    "p-form__control",
+                    classes.inputWrapper,
                     {
-                      [classes.smallInput]: !pageNumber || pageNumber < 10,
-                      [classes.mediumInput]: pageNumber && pageNumber > 9,
-                      [classes.largeInput]: pageNumber && pageNumber > 99,
-                      [classes.xLargeInput]: pageNumber && pageNumber > 999,
+                      [classes.withError]: error,
                     },
                   )}
-                  onBlur={() => {
-                    setPageNumber(currentPage);
-                    setError("");
-                  }}
-                  onChange={handleChange}
-                  required
-                  type="number"
-                  value={pageNumber}
-                />
-                {error && (
-                  <p
+                >
+                  <input
+                    aria-label="page number"
                     className={classNames(
-                      "p-form-validation__message u-no-margin--bottom",
-                      classes.error,
+                      "p-form-validation__input p-pagination__input u-no-margin--bottom",
+                      classes.input,
+                      {
+                        [classes.smallInput]: !pageNumber || pageNumber < 10,
+                        [classes.mediumInput]: pageNumber && pageNumber > 9,
+                        [classes.largeInput]: pageNumber && pageNumber > 99,
+                        [classes.xLargeInput]: pageNumber && pageNumber > 999,
+                      },
                     )}
-                  >
-                    {error}
-                  </p>
-                )}
+                    onBlur={() => {
+                      setPageNumber(currentPage);
+                      setError("");
+                    }}
+                    onChange={handleChange}
+                    required
+                    type="number"
+                    value={pageNumber}
+                  />
+                  {error && (
+                    <p
+                      className={classNames(
+                        "p-form-validation__message u-no-margin--bottom",
+                        classes.error,
+                      )}
+                    >
+                      {error}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-            <strong className={classes.noWrap}>
-              of {Math.max(totalPages, 1)}
-            </strong>
-            <Button
-              aria-label="Next page"
-              appearance="link"
-              className="p-pagination__link--next u-no-margin--bottom"
-              disabled={currentPage === totalPages || 0 === totalPages}
-              onClick={() => {
-                setPageNumber((page) => Number(page) + 1);
-                paginate(currentPage + 1);
-              }}
-              type="button"
-            >
-              <Icon name="chevron-down" />
-            </Button>
-          </span>
-        </nav>
-      </div>
+              <strong className={classes.noWrap}>
+                of {Math.max(totalPages, 1)}
+              </strong>
+              <Button
+                aria-label="Next page"
+                appearance="link"
+                className="p-pagination__link--next u-no-margin--bottom"
+                disabled={currentPage === totalPages || 0 === totalPages}
+                onClick={() => {
+                  setPageNumber((page) => Number(page) + 1);
+                  paginate(currentPage + 1);
+                }}
+                type="button"
+              >
+                <Icon name="chevron-down" />
+              </Button>
+            </span>
+          </nav>
+        </div>
+      )}
     </div>
   );
 };

@@ -7,11 +7,18 @@
   background-color: $color-x-light;
   z-index: 1;
   padding-bottom: $spv--large;
+  display: flex;
+  column-gap: $sph--x-large;
 }
 
-.search {
-  margin-left: auto;
-  max-width: 50%;
+.select {
+  column-gap: $sph--small;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.searchContainer {
+  flex-basis: 30rem;
 }
 
 .widgets {

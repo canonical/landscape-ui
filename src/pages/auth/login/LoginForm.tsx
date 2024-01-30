@@ -1,6 +1,5 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import useDebug from "../../../hooks/useDebug";
-import useNotify from "../../../hooks/useNotify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -10,7 +9,6 @@ import {
   Input,
   PasswordToggle,
 } from "@canonical/react-components";
-import AppNotification from "../../../components/layout/AppNotification";
 import axios, { AxiosResponse } from "axios";
 import { API_URL } from "../../../constants";
 import useAuth from "../../../hooks/useAuth";
@@ -31,7 +29,6 @@ interface FormProps {
 
 const LoginForm: FC = () => {
   const debug = useDebug();
-  const notify = useNotify();
   const { setUser } = useAuth();
   const [isLoading, setLoading] = useState(false);
 
@@ -70,8 +67,6 @@ const LoginForm: FC = () => {
     },
   });
 
-  useEffect(() => notify.clear, []);
-
   return (
     <Form onSubmit={formik.handleSubmit}>
       <Input
@@ -100,8 +95,6 @@ const LoginForm: FC = () => {
         label="Remember this device"
         {...formik.getFieldProps("remember")}
       />
-
-      <AppNotification notify={notify} />
 
       <div className="form-buttons">
         <Button type="submit" appearance="positive" disabled={isLoading}>
