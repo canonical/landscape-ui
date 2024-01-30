@@ -34,6 +34,7 @@ const SavedSearchesPage = lazy(
 );
 const AccountPage = lazy(() => import("./pages/dashboard/account"));
 const OverviewPage = lazy(() => import("./pages/dashboard/account/overview"));
+const AlertsPage = lazy(() => import("./pages/dashboard/account/alerts"));
 const AccessGroupsPage = lazy(
   () => import("./pages/dashboard/account/access-group"),
 );
@@ -187,6 +188,14 @@ const App: FC = () => {
               element={
                 <AuthRoute>
                   <OverviewPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="account/alerts"
+              element={
+                <AuthRoute>
+                  <AlertsPage />
                 </AuthRoute>
               }
             />

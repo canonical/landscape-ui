@@ -13,6 +13,7 @@ interface CheckboxGroupProps {
   onBlur?: FocusEventHandler<HTMLInputElement>;
   error?: ReactNode;
   required?: boolean;
+  disabled?: boolean;
   className?: string;
   style?: CSSProperties;
 }
@@ -28,6 +29,7 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
   onBlur,
   name,
   style,
+  disabled,
 }) => {
   return (
     <fieldset
@@ -38,6 +40,7 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
         },
         className,
       )}
+      disabled={disabled}
       style={style}
     >
       <legend className={classNames({ [classes.required]: required })}>

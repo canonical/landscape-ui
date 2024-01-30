@@ -75,6 +75,10 @@ const MENU_ITEMS: MenuItem[] = [
         path: `${ROOT_PATH}account/overview`,
       },
       {
+        label: "Alerts",
+        path: `${ROOT_PATH}account/alerts`,
+      },
+      {
         label: "Access groups",
         path: `${ROOT_PATH}account/access-groups`,
       },
