@@ -1,0 +1,22 @@
+@import "vanilla-framework/scss/settings_breakpoints";
+@import "vanilla-framework/scss/utilities_off-screen";
+@include vf-u-off-screen;
+
+.actions {
+  overflow: initial;
+  text-align: right;
+}
+
+.description {
+  width: 30%;
+}
+
+.name {
+  width: 20%;
+}
+
+.switch {
+  :global(.p-switch__label) {
+    @extend .u-off-screen;
+  }
+}
