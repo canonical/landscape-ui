@@ -177,10 +177,6 @@ const ProcessesPanel: FC = () => {
           pageSize={pageSize}
           setPageSize={setPageSize}
           currentItemCount={processes.length}
-          itemLabels={{
-            singular: "process",
-            plural: "processes",
-          }}
         />
       </>
     )

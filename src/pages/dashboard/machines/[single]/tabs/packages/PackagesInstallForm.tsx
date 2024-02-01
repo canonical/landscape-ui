@@ -118,8 +118,6 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ query }) => {
         pageSize={pageSize}
         setPageSize={handlePageSize}
         className={classes.pagination}
-        currentItemCount={getPackagesQueryResult?.data.results.length}
-        itemLabels={{ singular: "package", plural: "packages" }}
       />
 
       <div className={classes.buttons}>

@@ -6,11 +6,11 @@ import useDebug from "../../../hooks/useDebug";
 import useSidePanel from "../../../hooks/useSidePanel";
 import { Computer } from "../../../types/Computer";
 import { Cell, CellProps, Column, TableCellProps } from "react-table";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import classes from "./MachinesUpgrades.module.scss";
 import { mockUsns } from "./_data";
 import moment from "moment";
-import { DISPLAY_DATE_FORMAT } from "../../../constants";
+import { DISPLAY_DATE_FORMAT, ROOT_PATH } from "../../../constants";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import LoadingState from "../../../components/layout/LoadingState";
@@ -76,7 +76,6 @@ const MachinesUpgrades: FC<MachinesUpgradesProps> = ({ selectedMachines }) => {
   const [expandedUsn, setExpandedUsn] = useState<string>("");
   const [innerTableLimit, setInnerTableLimit] = useState(2);
 
-  const navigate = useNavigate();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { getPackagesQuery, upgradePackagesQuery } = usePackages();
@@ -367,18 +366,13 @@ const MachinesUpgrades: FC<MachinesUpgradesProps> = ({ selectedMachines }) => {
         accessor: "title",
         Header: "Machine",
         Cell: ({ row }: CellProps<Computer>) => (
-          <Button
-            type="button"
-            appearance="link"
+          <Link
             className="u-no-margin--bottom u-no-padding--top"
-            onClick={() => {
-              navigate(`/machines/${row.original.hostname}`, {
-                state: { tab: "packages", filter: "upgrade", selectAll: true },
-              });
-            }}
+            to={`${ROOT_PATH}machines/${row.original.hostname}`}
+            state={{ tab: "packages", filter: "upgrade", selectAll: true }}
           >
             {row.original.title}
-          </Button>
+          </Link>
         ),
       },
       {

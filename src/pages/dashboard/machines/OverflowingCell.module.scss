@@ -9,17 +9,16 @@
   display: flex;
   column-gap: $sph--x-small;
   flex-wrap: wrap;
-  overflow: hidden;
-  max-height: 25.59px;
   flex-shrink: 1;
 }
 
+.hidden {
+  max-height: 25.59px;
+  overflow: hidden;
+}
+
 .item {
-  &:not(:last-child) {
-    &::after {
-      content: ", ";
-    }
-  }
+  display: flex;
 }
 
 .count {

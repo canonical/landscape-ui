@@ -79,6 +79,7 @@ const EditComputer: FC<EditComputerProps> = ({ computer, license }) => {
         aria-label="Title"
         type="text"
         required
+        disabled={computer.is_wsl_instance}
         {...formik.getFieldProps("title")}
         error={formik.touched.title && formik.errors.title}
       />

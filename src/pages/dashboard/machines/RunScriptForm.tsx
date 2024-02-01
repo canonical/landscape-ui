@@ -335,9 +335,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "attachments.first",
-                event.target.files && event.target.files.length
-                  ? event.target.files[0]
-                  : null,
+                event.target.files?.[0] ?? null,
               );
             }}
             error={
@@ -353,9 +351,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "attachments.second",
-                event.target.files && event.target.files.length
-                  ? event.target.files[0]
-                  : null,
+                event.target.files?.[0] ?? null,
               );
             }}
             error={
@@ -371,9 +367,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "attachments.third",
-                event.target.files && event.target.files.length
-                  ? event.target.files[0]
-                  : null,
+                event.target.files?.[0] ?? null,
               );
             }}
             error={
@@ -389,9 +383,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "attachments.fourth",
-                event.target.files && event.target.files.length
-                  ? event.target.files[0]
-                  : null,
+                event.target.files?.[0] ?? null,
               );
             }}
             error={
@@ -407,9 +399,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
             onChange={(event) => {
               formik.setFieldValue(
                 "attachments.fifth",
-                event.target.files && event.target.files.length
-                  ? event.target.files[0]
-                  : null,
+                event.target.files?.[0] ?? null,
               );
             }}
             error={

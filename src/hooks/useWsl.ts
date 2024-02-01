@@ -13,12 +13,9 @@ interface GetWslParams {
   offset?: number;
 }
 
-interface CreateChildComputerParams {
+export interface CreateChildComputerParams {
   parent_id: number;
-  computer_name?: string;
-  data_id?: string;
-  token?: string;
-  cloud_init?: string; // <b64 encoded cloud_init file>
+  computer_name: string;
 }
 
 interface SetDefaultChildComputerParams {

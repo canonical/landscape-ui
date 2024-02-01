@@ -26,7 +26,7 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ tabState }) => {
       return;
     }
 
-    setFilter(tabState.filter);
+    handleFilterChange(tabState.filter);
   }, [tabState]);
 
   const handlePackageSearchChange = (searchText: string) => {
@@ -122,7 +122,6 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ tabState }) => {
         pageSize={pageSize}
         setPageSize={handlePageSizeChange}
         currentItemCount={getPackagesQueryResult?.data.results.length}
-        itemLabels={{ singular: "package", plural: "packages" }}
       />
     </>
   );

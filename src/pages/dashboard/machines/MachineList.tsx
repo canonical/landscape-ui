@@ -9,7 +9,11 @@ import {
 import { Link } from "react-router-dom";
 import classes from "./MachineList.module.scss";
 import moment from "moment";
-import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT } from "../../../constants";
+import {
+  DISPLAY_DATE_FORMAT,
+  INPUT_DATE_FORMAT,
+  ROOT_PATH,
+} from "../../../constants";
 import classNames from "classnames";
 
 interface MachineListProps {
@@ -135,8 +139,8 @@ const MachineList: FC<MachineListProps> = ({
             <Link
               to={
                 row.original.parent
-                  ? `/machines/${row.original.parent.hostname}/${row.original.hostname}`
-                  : `/machines/${row.original.hostname}`
+                  ? `${ROOT_PATH}machines/${row.original.parent.hostname}/${row.original.hostname}`
+                  : `${ROOT_PATH}machines/${row.original.hostname}`
               }
             >
               {row.original.title}

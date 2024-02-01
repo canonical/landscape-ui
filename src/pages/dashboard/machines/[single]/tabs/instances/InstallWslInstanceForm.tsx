@@ -16,19 +16,18 @@ const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
   const debug = useDebug();
   const { createChildComputerQuery } = useWsl();
 
-  const { mutateAsync } = createChildComputerQuery;
+  const { mutateAsync: createChildComputer } = createChildComputerQuery;
 
   const formik = useFormik({
-    initialValues: { instanceType: "ubuntu" },
+    initialValues: { instanceType: "Ubuntu" },
     validationSchema: Yup.object({
-      instanceType: Yup.string().required("Required"),
+      instanceType: Yup.string().required("This field is required"),
     }),
     onSubmit: async (values) => {
-      console.log(values); // todo: use form values for actual submit
-
       try {
-        await mutateAsync({
+        await createChildComputer({
           parent_id: parentId,
+          computer_name: values.instanceType,
         });
       } catch (error) {
         debug(error);
@@ -40,13 +39,12 @@ const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Select
         label="Instance type"
+        required
         options={[
-          { label: "Ubuntu", value: "ubuntu" },
-          { label: "CentOS", value: "centos" },
-          { label: "Windows", value: "windows" },
+          { label: "Ubuntu", value: "Ubuntu" },
+          { label: "Ubuntu-22.04", value: "Ubuntu-22.04" },
         ]}
         {...formik.getFieldProps("instanceType")}
-        required
         error={formik.touched.instanceType && formik.errors.instanceType}
       />
 

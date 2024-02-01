@@ -1,4 +1,4 @@
-import { FC, lazy, Suspense, useEffect, useState } from "react";
+import { FC, lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useComputers from "../../../../hooks/useComputers";
 import PageMain from "../../../../components/layout/PageMain";
@@ -11,6 +11,7 @@ import { Breadcrumb } from "../../../../types/Breadcrumb";
 import classes from "./SingleMachine.module.scss";
 import EmptyState from "../../../../components/layout/EmptyState";
 import { ROOT_PATH } from "../../../../constants";
+import useAuth from "../../../../hooks/useAuth";
 
 const InfoPanel = lazy(() => import("./tabs/info"));
 const ProcessesPanel = lazy(() => import("./tabs/processes"));
@@ -66,9 +67,28 @@ const SingleMachine: FC = () => {
   const [currentTabLinkId, setCurrentTabLinkId] = useState("tab-link-info");
 
   const { hostname, childHostname } = useParams();
+  const { user } = useAuth();
   const { state } = useLocation();
   const navigate = useNavigate();
   const debug = useDebug();
+
+  const userAccountRef = useRef("");
+
+  useEffect(() => {
+    if (!user?.current_account) {
+      return;
+    }
+
+    if (!userAccountRef.current) {
+      userAccountRef.current = user.current_account;
+    }
+
+    if (userAccountRef.current === user.current_account) {
+      return;
+    }
+
+    navigate(`${ROOT_PATH}machines`, { replace: true });
+  }, [user?.current_account]);
 
   useEffect(() => {
     if (state?.tab) {
@@ -95,16 +115,16 @@ const SingleMachine: FC = () => {
   const getBreadcrumbs = (): Breadcrumb[] | undefined => {
     if (!childHostname) {
       return [
-        { label: "Machines", path: "/machines" },
+        { label: "Machines", path: `${ROOT_PATH}machines` },
         { label: machine?.title ?? hostname ?? "", current: true },
       ];
     }
 
     return [
-      { label: "Machines", path: "/machines" },
+      { label: "Machines", path: `${ROOT_PATH}machines` },
       {
         label: machine?.title ?? hostname ?? "",
-        path: `/machines/${machine?.hostname ?? hostname}`,
+        path: `${ROOT_PATH}machines/${machine?.hostname ?? hostname}`,
       },
       {
         label:

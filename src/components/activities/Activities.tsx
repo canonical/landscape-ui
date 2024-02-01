@@ -179,7 +179,6 @@ const Activities: FC<ActivitiesProps> = ({ query = "" }) => {
         pageSize={pageSize}
         setPageSize={handlePageSizeChange}
         currentItemCount={activities.length}
-        itemLabels={{ singular: "activity", plural: "activities" }}
       />
     </>
   );

@@ -1,11 +1,8 @@
-import { FC, lazy, Suspense, useMemo, useState } from "react";
+import { FC, HTMLProps, lazy, Suspense, useMemo, useState } from "react";
 import useDebug from "../../../../hooks/useDebug";
 import { useSavedSearches } from "../../../../hooks/useSavedSearches";
 import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import { Cell, CellProps, Column, TableCellProps } from "react-table";
 import { SavedSearch } from "../../../../types/SavedSearch";
 import classes from "./SavedSearchesContainer.module.scss";
 import TablePagination from "../../../../components/layout/TablePagination";
@@ -144,6 +141,23 @@ const SavedSearchesContainer: FC = () => {
     [getSavedSearchesQueryResult],
   );
 
+  const handleCellProps = ({ column: { id } }: Cell<SavedSearch>) => {
+    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
+      {};
+
+    if (id === "title") {
+      cellProps.role = "rowheader";
+    } else if (id === "name") {
+      cellProps["aria-label"] = "Name";
+    } else if (id === "search") {
+      cellProps["aria-label"] = "Search";
+    } else if (id === "id") {
+      cellProps["aria-label"] = "Actions";
+    }
+
+    return cellProps;
+  };
+
   return (
     <>
       {getSavedSearchesQueryLoading ? (
@@ -153,25 +167,12 @@ const SavedSearchesContainer: FC = () => {
           columns={columns}
           data={savedSearches}
           emptyMsg="You have no saved searches yet."
-          getCellProps={({ column }) => {
-            switch (column.id) {
-              case "title":
-                return { role: "rowheader" };
-              case "name":
-                return { "aria-label": "Name" };
-              case "search":
-                return { "aria-label": "Search" };
-              case "id":
-                return { "aria-label": "Actions" };
-              default:
-                return {};
-            }
-          }}
+          getCellProps={handleCellProps}
         />
       )}
       <TablePagination
         currentPage={currentPage}
-        totalItems={10}
+        totalItems={savedSearches.length}
         paginate={(page) => {
           setCurrentPage(page);
         }}
@@ -179,6 +180,7 @@ const SavedSearchesContainer: FC = () => {
         setPageSize={(itemsNumber) => {
           setPageSize(itemsNumber);
         }}
+        currentItemCount={savedSearches.length}
       />
     </>
   );

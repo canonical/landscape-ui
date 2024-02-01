@@ -11,10 +11,6 @@ interface TablePaginationProps {
   totalItems: number | undefined;
   className?: string;
   currentItemCount?: number;
-  itemLabels?: {
-    singular: string;
-    plural: string;
-  };
 }
 
 const TablePagination: FC<TablePaginationProps> = ({
@@ -25,7 +21,6 @@ const TablePagination: FC<TablePaginationProps> = ({
   totalItems,
   className = "",
   currentItemCount = 0,
-  itemLabels,
 }) => {
   const [pageNumber, setPageNumber] = useState<number | "">("");
   const [error, setError] = useState("");
@@ -41,7 +36,7 @@ const TablePagination: FC<TablePaginationProps> = ({
     }
 
     setTotalPages(Math.ceil(totalItems / pageSize));
-  }, [totalItems]);
+  }, [totalItems, pageSize]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
@@ -58,13 +53,13 @@ const TablePagination: FC<TablePaginationProps> = ({
     }
   };
 
-  if (totalPages <= 1) {
+  if (totalPages <= 1 && (!currentItemCount || !totalItems)) {
     return null;
   }
 
   return (
     <div className={classNames(classes.wrapper, className)}>
-      {!!currentItemCount && !!itemLabels && !!totalItems && (
+      {!!currentItemCount && !!totalItems && (
         <p
           className={classNames(
             "p-heading--5 u-no-margin--bottom u-no-padding--top",
@@ -72,11 +67,11 @@ const TablePagination: FC<TablePaginationProps> = ({
           )}
         >
           {`Showing ${currentItemCount} of ${totalItems} ${
-            totalItems > 1 ? itemLabels.plural : itemLabels.singular
+            totalItems > 1 ? "results" : "result"
           }`}
         </p>
       )}
-      {totalItems && totalItems > 20 && (
+      {totalPages > 1 && (
         <div className={classes.paginationContainer}>
           <Select
             label="Machines per page"

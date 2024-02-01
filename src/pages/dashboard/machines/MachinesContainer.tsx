@@ -165,7 +165,6 @@ const MachinesContainer: FC<MachinesContainerProps> = ({
         setPageSize={(itemsNumber) => {
           setPageLimit(itemsNumber);
         }}
-        itemLabels={{ singular: "machine", plural: "machines" }}
         currentItemCount={computers.length}
       />
     </>

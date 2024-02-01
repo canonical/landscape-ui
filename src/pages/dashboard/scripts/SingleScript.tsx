@@ -296,16 +296,11 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
       onChange={(event) => {
         formik.setFieldValue(
           "attachments.first",
-          event.target.files && event.target.files.length
-            ? event.target.files[0]
-            : null,
+          event.target.files?.[0] ?? null,
         );
       }}
       error={
-        formik.touched.attachments &&
-        formik.touched.attachments.first &&
-        formik.errors.attachments &&
-        formik.errors.attachments.first
+        formik.touched.attachments?.first && formik.errors.attachments?.first
       }
     />,
     <Input
@@ -316,16 +311,11 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
       onChange={(event) => {
         formik.setFieldValue(
           "attachments.second",
-          event.target.files && event.target.files.length
-            ? event.target.files[0]
-            : null,
+          event.target.files?.[0] ?? null,
         );
       }}
       error={
-        formik.touched.attachments &&
-        formik.touched.attachments.second &&
-        formik.errors.attachments &&
-        formik.errors.attachments.second
+        formik.touched.attachments?.second && formik.errors.attachments?.second
       }
     />,
     <Input
@@ -336,16 +326,11 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
       onChange={(event) => {
         formik.setFieldValue(
           "attachments.third",
-          event.target.files && event.target.files.length
-            ? event.target.files[0]
-            : null,
+          event.target.files?.[0] ?? null,
         );
       }}
       error={
-        formik.touched.attachments &&
-        formik.touched.attachments.third &&
-        formik.errors.attachments &&
-        formik.errors.attachments.third
+        formik.touched.attachments?.third && formik.errors.attachments?.third
       }
     />,
     <Input
@@ -356,16 +341,11 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
       onChange={(event) => {
         formik.setFieldValue(
           "attachments.fourth",
-          event.target.files && event.target.files.length
-            ? event.target.files[0]
-            : null,
+          event.target.files?.[0] ?? null,
         );
       }}
       error={
-        formik.touched.attachments &&
-        formik.touched.attachments.fourth &&
-        formik.errors.attachments &&
-        formik.errors.attachments.fourth
+        formik.touched.attachments?.fourth && formik.errors.attachments?.fourth
       }
     />,
     <Input
@@ -376,16 +356,11 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
       onChange={(event) => {
         formik.setFieldValue(
           "attachments.fifth",
-          event.target.files && event.target.files.length
-            ? event.target.files[0]
-            : null,
+          event.target.files?.[0] ?? null,
         );
       }}
       error={
-        formik.touched.attachments &&
-        formik.touched.attachments.fifth &&
-        formik.errors.attachments &&
-        formik.errors.attachments.fifth
+        formik.touched.attachments?.fifth && formik.errors.attachments?.fifth
       }
     />,
   ];

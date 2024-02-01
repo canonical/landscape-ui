@@ -14,6 +14,7 @@ import InstancesPanelHeader from "./InstancesPanelHeader";
 import LoadingState from "../../../../../../components/layout/LoadingState";
 import { useWsl } from "../../../../../../hooks/useWsl";
 import useConfirm from "../../../../../../hooks/useConfirm";
+import { ROOT_PATH } from "../../../../../../constants";
 
 const InstancesPanel: FC = () => {
   const [selectedComputers, setSelectedComputers] = useState<
@@ -169,7 +170,9 @@ const InstancesPanel: FC = () => {
                 );
               }}
             />
-            <Link to={`/machines/${hostname}/${row.original.hostname}`}>
+            <Link
+              to={`${ROOT_PATH}machines/${hostname}/${row.original.hostname}`}
+            >
               {row.original.title}
             </Link>
           </div>

@@ -232,10 +232,6 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
               setItemsPerPage(itemsNumber);
             }}
             currentItemCount={scripts.length}
-            itemLabels={{
-              singular: "script",
-              plural: "scripts",
-            }}
           />
         </>
       )}
