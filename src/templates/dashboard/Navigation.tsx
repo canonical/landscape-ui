@@ -13,24 +13,47 @@ interface MenuItem {
 
 const MENU_ITEMS: MenuItem[] = [
   {
-    label: "Machines",
-    path: `${ROOT_PATH}machines`,
-    icon: "pods",
-    items: [
-      {
-        label: "Machines",
-        path: `${ROOT_PATH}machines`,
-      },
-      {
-        label: "Searches",
-        path: `${ROOT_PATH}machines/searches`,
-      },
-    ],
+    label: "Overview",
+    path: `${ROOT_PATH}overview`,
+    icon: "switcher-dashboard",
+  },
+  {
+    label: "Instances",
+    path: `${ROOT_PATH}instances`,
+    icon: "machines",
   },
   {
     label: "Activities",
     path: `${ROOT_PATH}activities`,
-    icon: "status",
+    icon: "switcher-environments",
+  },
+  {
+    label: "Scripts",
+    path: `${ROOT_PATH}scripts`,
+    icon: "code",
+  },
+  {
+    label: "Profiles",
+    path: `${ROOT_PATH}profile`,
+    icon: "cluster",
+    items: [
+      {
+        label: "Package profiles",
+        path: `${ROOT_PATH}profiles/package`,
+      },
+      {
+        label: "Upgrade profiles",
+        path: `${ROOT_PATH}profiles/upgrade`,
+      },
+      {
+        label: "Removal profiles",
+        path: `${ROOT_PATH}profiles/removal`,
+      },
+      {
+        label: "WSL profiles",
+        path: `${ROOT_PATH}profiles/wsl`,
+      },
+    ],
   },
   {
     label: "Repositories",
@@ -42,7 +65,7 @@ const MENU_ITEMS: MenuItem[] = [
         path: `${ROOT_PATH}repositories/mirrors`,
       },
       {
-        label: "Profiles",
+        label: "Repository profiles",
         path: `${ROOT_PATH}repositories/profiles`,
       },
       {
@@ -56,26 +79,55 @@ const MENU_ITEMS: MenuItem[] = [
     ],
   },
   {
-    label: "Scripts",
-    path: `${ROOT_PATH}scripts`,
-    icon: "open-terminal",
-  },
-  {
-    label: "Account",
-    path: `${ROOT_PATH}account`,
-    icon: "units",
+    label: "Monitoring",
+    path: `${ROOT_PATH}monitoring`,
+    icon: "status",
     items: [
       {
-        label: "Overview",
-        path: `${ROOT_PATH}account/overview`,
+        label: "Reports",
+        path: `${ROOT_PATH}monitoring/reports`,
+      },
+      {
+        label: "Event logs",
+        path: `${ROOT_PATH}monitoring/event-logs`,
       },
       {
         label: "Alerts",
-        path: `${ROOT_PATH}account/alerts`,
+        path: `${ROOT_PATH}monitoring/alerts`,
+      },
+    ],
+  },
+  {
+    label: "Org. settings",
+    path: `${ROOT_PATH}settings`,
+    icon: "settings",
+    items: [
+      {
+        label: "Administrators",
+        path: `${ROOT_PATH}settings/administrators`,
       },
       {
         label: "Access groups",
-        path: `${ROOT_PATH}account/access-groups`,
+        path: `${ROOT_PATH}settings/access-groups`,
+      },
+    ],
+  },
+  {
+    label: "Help",
+    path: `${ROOT_PATH}Help`,
+    icon: "help",
+    items: [
+      {
+        label: "Legal",
+        path: "https://ubuntu.com/legal",
+      },
+      {
+        label: "Documentation",
+        path: "https://ubuntu.com/landscape/docs",
+      },
+      {
+        label: "Support",
+        path: "https://portal.support.canonical.com/staff/s/",
       },
     ],
   },
@@ -105,7 +157,12 @@ const Navigation: FC = () => {
       <nav aria-label="Main">
         <ul className="u-no-margin--bottom u-no-margin--left u-no-padding--left">
           {MENU_ITEMS.map((item) => (
-            <li key={item.path} className="p-side-navigation__item">
+            <li
+              key={item.path}
+              className={classNames("p-side-navigation__item", {
+                [classes.helpContainer]: item.label === "Help",
+              })}
+            >
               {item.items && item.items.length > 0 ? (
                 <button
                   className={classNames(
@@ -171,28 +228,45 @@ const Navigation: FC = () => {
                 >
                   {item.items.map((subItem) => (
                     <li key={subItem.path}>
-                      <Link
-                        className={classNames(
-                          "p-side-navigation__link",
-                          classes.link,
-                        )}
-                        to={subItem.path}
-                        aria-current={
-                          pathname === subItem.path ? "page" : undefined
-                        }
-                      >
-                        {subItem.icon && (
-                          <i
-                            className={classNames(
-                              `p-icon--${subItem.icon} is-light p-side-navigation__icon`,
-                              classes.icon,
-                            )}
-                          />
-                        )}
-                        <span className="p-side-navigation__label">
-                          {subItem.label}
-                        </span>
-                      </Link>
+                      {subItem.path.startsWith("http") ? (
+                        <a
+                          className={classNames(
+                            "p-side-navigation__link",
+                            classes.link,
+                          )}
+                          href={subItem.path}
+                          target="_blank"
+                          rel="nofollow noopener noreferrer"
+                        >
+                          <span className="p-side-navigation__label">
+                            {subItem.label}
+                            <i className={`p-icon--external-link is-light`} />
+                          </span>
+                        </a>
+                      ) : (
+                        <Link
+                          className={classNames(
+                            "p-side-navigation__link",
+                            classes.link,
+                          )}
+                          to={subItem.path}
+                          aria-current={
+                            pathname === subItem.path ? "page" : undefined
+                          }
+                        >
+                          {subItem.icon && (
+                            <i
+                              className={classNames(
+                                `p-icon--${subItem.icon} is-light p-side-navigation__icon`,
+                                classes.icon,
+                              )}
+                            />
+                          )}
+                          <span className="p-side-navigation__label">
+                            {subItem.label}
+                          </span>
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>

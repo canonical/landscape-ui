@@ -88,7 +88,7 @@ const SingleMachine: FC = () => {
       return;
     }
 
-    navigate(`${ROOT_PATH}machines`, { replace: true });
+    navigate(`${ROOT_PATH}instances`, { replace: true });
   }, [user?.current_account]);
 
   useEffect(() => {
@@ -116,16 +116,19 @@ const SingleMachine: FC = () => {
   const getBreadcrumbs = (): Breadcrumb[] | undefined => {
     if (!childHostname) {
       return [
-        { label: "Machines", path: `${ROOT_PATH}machines` },
+        { label: "Instances", path: `${ROOT_PATH}instances` },
         { label: machine?.title ?? hostname ?? "", current: true },
       ];
     }
 
     return [
-      { label: "Machines", path: `${ROOT_PATH}machines` },
+      {
+        label: "Instances",
+        path: `${ROOT_PATH}instances`,
+      },
       {
         label: machine?.title ?? hostname ?? "",
-        path: `${ROOT_PATH}machines/${machine?.hostname ?? hostname}`,
+        path: `${ROOT_PATH}instances/${machine?.hostname ?? hostname}`,
       },
       {
         label:
@@ -146,12 +149,12 @@ const SingleMachine: FC = () => {
       <PageContent>
         {!machine && getComputersQueryResult && (
           <EmptyState
-            title="Machine not found"
+            title="Instance not found"
             icon="connected"
             body={
               <>
                 <p className="u-no-margin--bottom">
-                  Seems like the machine <code>{hostname}</code> doesn&apos;t
+                  Seems like the instance <code>{hostname}</code> doesn&apos;t
                   exist
                 </p>
               </>
@@ -159,14 +162,14 @@ const SingleMachine: FC = () => {
             cta={[
               <Button
                 appearance="positive"
-                key="go-back-to-machines-page"
+                key="go-back-to-instances-page"
                 onClick={() =>
-                  navigate(`${ROOT_PATH}machines`, { replace: true })
+                  navigate(`${ROOT_PATH}instances`, { replace: true })
                 }
                 type="button"
                 aria-label="Go back"
               >
-                Back to Machines page
+                Back to Instances page
               </Button>,
               <Button
                 key="go-back-to-home-page"

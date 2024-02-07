@@ -3,7 +3,6 @@ import useAuth from "../../hooks/useAuth";
 import { Button } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
-import { OLD_DASHBOARD_URL } from "../../constants";
 import { useNavigate } from "react-router-dom";
 
 const UserInfo: FC = () => {
@@ -26,21 +25,24 @@ const UserInfo: FC = () => {
           navigate("/user");
         }}
       >
-        <i className={classNames("p-icon--account")} />
+        <i className="p-icon--account" />
         <span className="p-side-navigation__label">
           {user?.name ?? "Unknown user"}
         </span>
       </Button>
-      <a
-        href={OLD_DASHBOARD_URL}
+      <Button
+        appearance="base"
         className={classNames(
-          "p-side-navigation__link is-dark u-no-margin--bottom u-no-margin--right",
+          "p-side-navigation__link is-dark u-no-margin--bottom",
           classes.button,
         )}
+        onClick={() => {
+          navigate("/notifications");
+        }}
       >
-        <i className="p-icon--double-chevron-left" />
-        <span className="p-side-navigation__label">Old dashboard</span>
-      </a>
+        <i className="p-icon--bell" />
+        <span className="p-side-navigation__label">Notifications</span>
+      </Button>
       <Button
         appearance="base"
         className={classNames(

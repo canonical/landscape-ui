@@ -171,7 +171,7 @@ const InstancesPanel: FC = () => {
               }}
             />
             <Link
-              to={`${ROOT_PATH}machines/${hostname}/${row.original.hostname}`}
+              to={`${ROOT_PATH}instances/${hostname}/${row.original.hostname}`}
             >
               {row.original.title}
             </Link>

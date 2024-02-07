@@ -89,7 +89,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
   const handleShutdownComputer = async () => {
     setActivityProps({
       title: `Shut down ${machine.title}`,
-      description: "Are you sure you want to shut down this machine?",
+      description: "Are you sure you want to shut down this instance?",
       acceptButton: {
         label: "Shutdown",
         onClick: async () => {
@@ -111,7 +111,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
   const handleRebootComputer = async () => {
     setActivityProps({
       title: `Restart ${machine.title}`,
-      description: "Are you sure you want to restart this machine?",
+      description: "Are you sure you want to restart this instance?",
       acceptButton: {
         label: "Restart",
         onClick: async () => {

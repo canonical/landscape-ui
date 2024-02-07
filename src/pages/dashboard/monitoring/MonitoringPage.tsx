@@ -2,14 +2,14 @@ import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROOT_PATH } from "../../../constants";
 
-const AccountPage: FC = () => {
+const MonitoringPage: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`${ROOT_PATH}overview`, { replace: true });
+    navigate(`${ROOT_PATH}monitoring/alerts`, { replace: true });
   }, []);
 
   return null;
 };
 
-export default AccountPage;
+export default MonitoringPage;

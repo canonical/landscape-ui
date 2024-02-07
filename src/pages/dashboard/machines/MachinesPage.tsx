@@ -44,8 +44,8 @@ const MachinesPage: FC = () => {
 
   const handleShutdownComputer = async () => {
     confirmModal({
-      title: "Shutting down selected machines",
-      body: `Are you sure you want to shutdown ${selected.length} machine${
+      title: "Shutting down selected instances",
+      body: `Are you sure you want to shutdown ${selected.length} instance${
         selected.length > 1 ? "s" : ""
       }?`,
       buttons: [
@@ -72,8 +72,8 @@ const MachinesPage: FC = () => {
 
   const handleRebootComputer = async () => {
     confirmModal({
-      title: "Restarting selected machines",
-      body: `Are you sure you want to restart ${selected.length} machine${
+      title: "Restarting selected instances",
+      body: `Are you sure you want to restart ${selected.length} instance${
         selected.length > 1 ? "s" : ""
       }?`,
       buttons: [
@@ -109,7 +109,7 @@ const MachinesPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        title="Machines"
+        title="Instances"
         className={classes.header}
         actions={[
           <div key="buttons" className="p-segmented-control">

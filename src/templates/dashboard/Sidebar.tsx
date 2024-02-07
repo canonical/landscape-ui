@@ -5,7 +5,6 @@ import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";
 import classes from "./Sidebar.module.scss";
 import UserInfo from "./UserInfo";
-import BetaInfo from "./BetaInfo";
 import betaClasses from "./BetaInfo.module.scss";
 import desktopHeaderClasses from "./DesktopHeader.module.scss";
 import organisationSwitchClasses from "./OrganisationSwitch.module.scss";
@@ -44,7 +43,6 @@ const Sidebar: FC = () => {
                 <Navigation />
               </div>
               <div className={classes.footer}>
-                <BetaInfo />
                 <UserInfo />
               </div>
             </div>

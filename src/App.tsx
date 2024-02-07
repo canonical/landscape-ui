@@ -15,7 +15,7 @@ const LoginPage = lazy(() => import("./pages/auth/login"));
 const DistributionsPage = lazy(
   () => import("./pages/dashboard/repositories/mirrors"),
 );
-const ProfilesPage = lazy(
+const RepositoryProfilesPage = lazy(
   () => import("./pages/dashboard/repositories/profiles"),
 );
 const GPGKeysPage = lazy(
@@ -33,11 +33,35 @@ const SavedSearchesPage = lazy(
 );
 const AccountPage = lazy(() => import("./pages/dashboard/account"));
 const OverviewPage = lazy(() => import("./pages/dashboard/account/overview"));
-const AlertsPage = lazy(() => import("./pages/dashboard/account/alerts"));
-const AccessGroupsPage = lazy(
-  () => import("./pages/dashboard/account/access-group"),
+const ProfilesPage = lazy(() => import("./pages/dashboard/profiles"));
+const PackageProfilesPage = lazy(
+  () => import("./pages/dashboard/profiles/package-profiles"),
 );
+const RemovalProfilesPage = lazy(
+  () => import("./pages/dashboard/profiles/removal-profiles"),
+);
+const UpgradeProfilesPage = lazy(
+  () => import("./pages/dashboard/profiles/upgrade-profiles"),
+);
+const WSLProfilesPage = lazy(
+  () => import("./pages/dashboard/profiles/wsl-profiles"),
+);
+const SettingsPage = lazy(() => import("./pages/dashboard/settings"));
+const AccessGroupsPage = lazy(
+  () => import("./pages/dashboard/settings/access-group"),
+);
+const AdministratorsPage = lazy(
+  () => import("./pages/dashboard/settings/administrators"),
+);
+
+const MonitoringPage = lazy(() => import("./pages/dashboard/monitoring"));
+const EventLogsPage = lazy(
+  () => import("./pages/dashboard/monitoring/event-logs"),
+);
+const ReportsPage = lazy(() => import("./pages/dashboard/monitoring/reports"));
+const AlertsPage = lazy(() => import("./pages/dashboard/monitoring/alerts"));
 const UserPage = lazy(() => import("./pages/dashboard/user"));
+const NotificationsPage = lazy(() => import("./pages/dashboard/notifications"));
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -109,7 +133,7 @@ const App: FC = () => {
               path="repositories/profiles"
               element={
                 <AuthRoute>
-                  <ProfilesPage />
+                  <RepositoryProfilesPage />
                 </AuthRoute>
               }
             />
@@ -130,7 +154,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path="machines"
+              path="instances"
               element={
                 <AuthRoute>
                   <MachinesPage />
@@ -138,7 +162,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path="machines/:hostname"
+              path="instances/:hostname"
               element={
                 <AuthRoute>
                   <SingleMachine />
@@ -146,7 +170,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path="machines/:hostname/:childHostname"
+              path="instances/:hostname/:childHostname"
               element={
                 <AuthRoute>
                   <SingleMachine />
@@ -154,7 +178,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path="machines/searches"
+              path="instances/searches"
               element={
                 <AuthRoute>
                   <SavedSearchesPage />
@@ -186,7 +210,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path="account/overview"
+              path="overview"
               element={
                 <AuthRoute>
                   <OverviewPage />
@@ -194,7 +218,31 @@ const App: FC = () => {
               }
             />
             <Route
-              path="account/alerts"
+              path="monitoring"
+              element={
+                <AuthRoute>
+                  <MonitoringPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="monitoring/reports"
+              element={
+                <AuthRoute>
+                  <ReportsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="monitoring/event-logs"
+              element={
+                <AuthRoute>
+                  <EventLogsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="monitoring/alerts"
               element={
                 <AuthRoute>
                   <AlertsPage />
@@ -202,10 +250,66 @@ const App: FC = () => {
               }
             />
             <Route
-              path="account/access-groups"
+              path="settings"
+              element={
+                <AuthRoute>
+                  <SettingsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="settings/administrators"
+              element={
+                <AuthRoute>
+                  <AdministratorsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="settings/access-groups"
               element={
                 <AuthRoute>
                   <AccessGroupsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="profiles"
+              element={
+                <AuthRoute>
+                  <ProfilesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="profiles/package"
+              element={
+                <AuthRoute>
+                  <PackageProfilesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="profiles/removal"
+              element={
+                <AuthRoute>
+                  <RemovalProfilesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="profiles/upgrade"
+              element={
+                <AuthRoute>
+                  <UpgradeProfilesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="profiles/wsl"
+              element={
+                <AuthRoute>
+                  <WSLProfilesPage />
                 </AuthRoute>
               }
             />
@@ -214,6 +318,14 @@ const App: FC = () => {
               element={
                 <AuthRoute>
                   <UserPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="notifications"
+              element={
+                <AuthRoute>
+                  <NotificationsPage />
                 </AuthRoute>
               }
             />
