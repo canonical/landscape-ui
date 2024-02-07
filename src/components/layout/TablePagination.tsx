@@ -74,7 +74,7 @@ const TablePagination: FC<TablePaginationProps> = ({
       {totalPages > 1 && (
         <div className={classes.paginationContainer}>
           <Select
-            label="Machines per page"
+            label="Instances per page"
             labelClassName="u-off-screen"
             className="u-no-margin--bottom"
             options={[

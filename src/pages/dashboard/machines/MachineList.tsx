@@ -139,8 +139,8 @@ const MachineList: FC<MachineListProps> = ({
             <Link
               to={
                 row.original.parent
-                  ? `${ROOT_PATH}machines/${row.original.parent.hostname}/${row.original.hostname}`
-                  : `${ROOT_PATH}machines/${row.original.hostname}`
+                  ? `${ROOT_PATH}instances/${row.original.parent.hostname}/${row.original.hostname}`
+                  : `${ROOT_PATH}instances/${row.original.hostname}`
               }
             >
               {row.original.title}
@@ -224,7 +224,7 @@ const MachineList: FC<MachineListProps> = ({
   return (
     <>
       <ModularTable
-        emptyMsg="No machines found"
+        emptyMsg="No instances found"
         columns={columns}
         data={machinesData}
       />

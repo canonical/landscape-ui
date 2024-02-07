@@ -27,7 +27,7 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
           width={9 * 16}
         />
         <img
-          className={classNames("", classes.logoIcon)}
+          className={classes.logoIcon}
           src={LogoIcon}
           alt={APP_TITLE}
           width={1.6 * 16}

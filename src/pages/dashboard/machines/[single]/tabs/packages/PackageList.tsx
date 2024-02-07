@@ -281,7 +281,7 @@ const PackageList: FC<PackageListProps> = (props) => {
               type="button"
               appearance="link"
               onClick={() => {
-                navigate(`${ROOT_PATH}machines/${props.machineHostname}`, {
+                navigate(`${ROOT_PATH}instances/${props.machineHostname}`, {
                   state: { tab: "ubuntu-pro" },
                 });
               }}

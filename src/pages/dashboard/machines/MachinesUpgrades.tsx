@@ -364,11 +364,11 @@ const MachinesUpgrades: FC<MachinesUpgradesProps> = ({ selectedMachines }) => {
     () => [
       {
         accessor: "title",
-        Header: "Machine",
+        Header: "Instance",
         Cell: ({ row }: CellProps<Computer>) => (
           <Link
             className="u-no-margin--bottom u-no-padding--top"
-            to={`${ROOT_PATH}machines/${row.original.hostname}`}
+            to={`${ROOT_PATH}instances/${row.original.hostname}`}
             state={{ tab: "packages", filter: "upgrade", selectAll: true }}
           >
             {row.original.title}
@@ -411,7 +411,7 @@ const MachinesUpgrades: FC<MachinesUpgradesProps> = ({ selectedMachines }) => {
       </div>
 
       <div>
-        <p className="p-heading--5">Affected machines</p>
+        <p className="p-heading--5">Affected instances</p>
         <ModularTable
           columns={machineColumns}
           data={affectedMachines}
@@ -419,7 +419,7 @@ const MachinesUpgrades: FC<MachinesUpgradesProps> = ({ selectedMachines }) => {
         />
         <ExpandableTableFooter
           buttonText="Show 5 more"
-          itemName="machine"
+          itemName="instance"
           limit={affectedMachinesLimit}
           onClick={() => {
             setAffectedMachinesLimit((prevState) => prevState + 5);
