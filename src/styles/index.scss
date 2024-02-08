@@ -33,7 +33,9 @@
 @include vf-p-icon-status-queued;
 @include vf-p-icon-status-waiting;
 @include vf-p-icon-pin;
-
+@include vf-p-icon-lock-locked;
+@include vf-p-icon-lock-locked-active;
+@include vf-p-icon-lock-unlock;
 // Custom styles
 .p-panel {
   &__inner {
@@ -139,4 +141,10 @@
 
 .u-off-screen:not(:focus):not(:active) {
   top: 0;
+}
+
+.p-modal__dialog {
+  @media (min-width: $breakpoint-large) {
+    min-width: 40rem;
+  }
 }

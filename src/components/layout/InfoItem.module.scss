@@ -1,7 +1,17 @@
 @import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
 
 .wrapper {
   display: inline-block;
   padding-top: $spv--small;
   padding-bottom: $spv--small;
+}
+
+.truncated {
+  border-bottom: 1px solid $color-mid-light;
+}
+
+.showMore {
+  align-self: flex-end;
+  width: fit-content;
 }

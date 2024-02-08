@@ -19,6 +19,7 @@ const HardwarePanel = lazy(() => import("./tabs/hardware"));
 const PackagesPanel = lazy(() => import("./tabs/packages"));
 const ActivityPanel = lazy(() => import("./tabs/activities"));
 const InstancesPanel = lazy(() => import("./tabs/instances"));
+const UserPanel = lazy(() => import("./tabs/users"));
 
 const tabLinks = [
   {
@@ -235,7 +236,9 @@ const SingleMachine: FC = () => {
                 {"tab-link-ubuntu-pro" === currentTabLinkId && (
                   <p>Ubuntu Pro</p>
                 )}
-                {"tab-link-users" === currentTabLinkId && <p>Users</p>}
+                {"tab-link-users" === currentTabLinkId && (
+                  <UserPanel machineId={machine.id} />
+                )}
                 {"tab-link-reports" === currentTabLinkId && <p>Reports</p>}
                 {"tab-link-hardware" === currentTabLinkId && <HardwarePanel />}
               </Suspense>

@@ -133,7 +133,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
   const handleRemoveComputer = async () => {
     confirmModal({
       title: `Remove ${machine.title}`,
-      body: `Removing this computer will delete all associated data and free up one license slot for another computer to be registered.`,
+      body: "Removing this computer will delete all associated data and free up one license slot for another computer to be registered.",
       buttons: [
         <Button
           key="remove"
@@ -282,7 +282,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
   const handleDeleteChildComputersDialog = async () => {
     confirmModal({
       title: `Delete ${machine.title}`,
-      body: `This will remove selected WSL instance from the host and Landscape`,
+      body: "This will remove selected WSL instance from the host and Landscape",
       buttons: [
         <Button
           key="delete"
@@ -366,9 +366,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ machine }) => {
       </div>
       <div className={classes.infoRow}>
         <Row className="u-no-padding--left u-no-padding--right u-no-max-width">
-          {infoItems.map(({ label, value }) => (
-            <Col size={3} key={label}>
-              <InfoItem label={label} value={value} />
+          {infoItems.map((item) => (
+            <Col size={3} key={item.label}>
+              {!item.type && <InfoItem label={item.label} value={item.value} />}
             </Col>
           ))}
         </Row>

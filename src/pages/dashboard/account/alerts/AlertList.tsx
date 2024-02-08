@@ -9,16 +9,17 @@ import {
   Column,
   Row,
 } from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, Suspense, useMemo } from "react";
+import { FC, Suspense, lazy, useMemo } from "react";
 import LoadingState from "../../../../components/layout/LoadingState";
 import useAlerts from "../../../../hooks/useAlerts";
 import useDebug from "../../../../hooks/useDebug";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import { Alert } from "../../../../types/Alert";
 import classes from "./AlertList.module.scss";
-import EditAlertForm from "./EditAlertForm";
-import ShowSubscribersPanel from "./ShowSubscribersPanel";
 import { boolToLabel } from "../../../../utils/output";
+
+const EditAlertForm = lazy(() => import("./EditAlertForm"));
+const ShowSubscribersPanel = lazy(() => import("./ShowSubscribersPanel"));
 
 interface AlertListProps {
   alerts: Alert[];
