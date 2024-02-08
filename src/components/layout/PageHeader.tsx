@@ -24,7 +24,7 @@ const PageHeader: FC<PageHeaderProps> = ({
   breadcrumbs,
   sticky = false,
 }) => {
-  const isSmall = useMediaQuery("(min-width: 620px)");
+  const isSmallerScreen = useMediaQuery("(max-width: 619px)");
 
   return (
     <>
@@ -64,7 +64,7 @@ const PageHeader: FC<PageHeaderProps> = ({
             {visualTitle && (
               <div
                 className={classNames("p-panel__title", classes.visualTitle, {
-                  "u-no-padding--bottom": !isSmall,
+                  "u-no-padding--bottom": isSmallerScreen,
                 })}
               >
                 {visualTitle}
@@ -74,7 +74,7 @@ const PageHeader: FC<PageHeaderProps> = ({
         ) : (
           <h1
             className={classNames("p-panel__title", {
-              "u-no-padding--bottom": !isSmall,
+              "u-no-padding--bottom": isSmallerScreen,
             })}
           >
             {title}

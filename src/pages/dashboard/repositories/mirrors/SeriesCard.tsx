@@ -45,7 +45,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
     );
   }, [series]);
 
-  const isSmall = useMediaQuery("(min-width: 620px)");
+  const isLargeScreen = useMediaQuery("(min-width: 620px)");
 
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelContent } = useSidePanel();
@@ -153,7 +153,7 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
             DISPLAY_DATE_FORMAT,
           )}`}</span>
         )}
-        {isSmall ? (
+        {isLargeScreen ? (
           <div className={classes.cta}>
             {!snapshotDate && (
               <>

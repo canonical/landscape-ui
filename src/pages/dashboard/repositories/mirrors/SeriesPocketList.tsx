@@ -27,7 +27,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
   distributionName,
   series,
 }) => {
-  const isSmall = useMediaQuery("(min-width: 620px)");
+  const isLargerScreen = useMediaQuery("(min-width: 620px)");
 
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
@@ -246,11 +246,12 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
               {("mirror" == pocket.mode || "pull" == pocket.mode) && (
                 <div className={classes.dividedBlock}>
                   <Button
-                    small={isSmall}
+                    small={isLargerScreen}
                     hasIcon
-                    appearance={isSmall ? "base" : ""}
+                    appearance={isLargerScreen ? "base" : ""}
                     className={classNames("u-no-margin--bottom", {
-                      "u-no-padding--right p-tooltip--btm-center": isSmall,
+                      "u-no-padding--right p-tooltip--btm-center":
+                        isLargerScreen,
                     })}
                     aria-label={
                       "mirror" === pocket.mode
@@ -263,10 +264,10 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                   >
                     <i
                       className={classNames("p-icon--change-version", {
-                        "u-no-margin--right": isSmall,
+                        "u-no-margin--right": isLargerScreen,
                       })}
                     />
-                    {isSmall && (
+                    {isLargerScreen && (
                       <span className="p-tooltip__message">
                         {"mirror" === pocket.mode ? "Sync" : "Pull"}
                       </span>
@@ -276,11 +277,11 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
               )}
               <div className={classes.dividedBlock}>
                 <Button
-                  small={isSmall}
+                  small={isLargerScreen}
                   hasIcon
-                  appearance={isSmall ? "base" : ""}
+                  appearance={isLargerScreen ? "base" : ""}
                   className={classNames("u-no-margin--bottom", {
-                    "u-no-padding--right p-tooltip--btm-center": isSmall,
+                    "u-no-padding--right p-tooltip--btm-center": isLargerScreen,
                   })}
                   aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${series.name}`}
                   onClick={() => {
@@ -289,19 +290,21 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 >
                   <i
                     className={classNames("p-icon--edit", {
-                      "u-no-margin--right": isSmall,
+                      "u-no-margin--right": isLargerScreen,
                     })}
                   />
-                  {isSmall && <span className="p-tooltip__message">Edit</span>}
+                  {isLargerScreen && (
+                    <span className="p-tooltip__message">Edit</span>
+                  )}
                 </Button>
               </div>
               <div className={classes.dividedBlock}>
                 <Button
-                  small={isSmall}
+                  small={isLargerScreen}
                   hasIcon
-                  appearance={isSmall ? "base" : ""}
+                  appearance={isLargerScreen ? "base" : ""}
                   className={classNames("u-no-margin--bottom", {
-                    "u-no-padding--right p-tooltip--btm-center": isSmall,
+                    "u-no-padding--right p-tooltip--btm-center": isLargerScreen,
                   })}
                   aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${series.name}`}
                   onClick={() => {
@@ -310,10 +313,10 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                 >
                   <i
                     className={classNames("p-icon--delete", {
-                      "u-no-margin--right": isSmall,
+                      "u-no-margin--right": isLargerScreen,
                     })}
                   />
-                  {isSmall && (
+                  {isLargerScreen && (
                     <span className="p-tooltip__message">Delete</span>
                   )}
                 </Button>
@@ -325,7 +328,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
     };
   });
 
-  return isSmall ? (
+  return isLargerScreen ? (
     <MainTable
       className={classes.content}
       headers={headers}
