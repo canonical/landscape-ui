@@ -28,14 +28,8 @@ export const generateRequestParams = ({
 
     if ("string" === typeof value && "" !== value) {
       paramsToPass[param] = value;
-    } else if (Array.isArray(value)) {
-      value.forEach((data, index) => {
-        if ("string" === typeof data && "" !== data) {
-          paramsToPass[`${param}.${index + 1}`] = data;
-        } else if ("number" === typeof data) {
-          paramsToPass[`${param}.${index + 1}`] = `${data}`;
-        }
-      });
+    } else if (Array.isArray(value) && 0 !== value.length) {
+      paramsToPass[param] = value.toString();
     } else if (["number", "boolean"].includes(typeof value)) {
       paramsToPass[param] = `${value}`;
     } else if (
