@@ -1,11 +1,7 @@
 import { FC, useMemo } from "react";
 import { Computer } from "../../../types/Computer";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-  Row,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import { CellProps, Column, Row } from "react-table";
 import { Link } from "react-router-dom";
 import classes from "./MachineList.module.scss";
 import moment from "moment";

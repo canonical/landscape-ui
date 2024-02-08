@@ -1,9 +1,6 @@
 import { FC, isValidElement, useMemo } from "react";
 import { Modal, ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import { CellProps, Column } from "react-table";
 import classes from "./SearchHelpPopup.module.scss";
 
 interface SearchHelpPopupProps {
