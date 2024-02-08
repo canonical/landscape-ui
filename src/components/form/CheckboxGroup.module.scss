@@ -1,6 +1,10 @@
+.container {
+  overflow: visible;
+}
+
 .required {
   &::before {
-    content: '* ';
+    content: "* ";
     position: relative;
   }
 }

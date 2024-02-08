@@ -17,11 +17,7 @@ import useConfirm from "../../../../hooks/useConfirm";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import classes from "./PackageList.module.scss";
 import TablePagination from "../../../../components/layout/TablePagination";
-import {
-  CellProps,
-  Column,
-  HeaderProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import { CellProps, Column, HeaderProps } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
 import LoadingState from "../../../../components/layout/LoadingState";
 

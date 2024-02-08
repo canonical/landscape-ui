@@ -33,9 +33,8 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
     <fieldset
       className={classNames(
         "checkbox-group",
-        {
-          "is-error": error,
-        },
+        classes.container,
+        { "is-error": error },
         className,
       )}
       style={style}

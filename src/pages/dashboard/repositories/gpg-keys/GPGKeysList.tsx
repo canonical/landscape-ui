@@ -11,10 +11,7 @@ import useConfirm from "../../../../hooks/useConfirm";
 import useDebug from "../../../../hooks/useDebug";
 import useGPGKeys from "../../../../hooks/useGPGKeys";
 import classes from "./GPGKeysList.module.scss";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import { CellProps, Column } from "react-table";
 
 interface GPGKeysListProps {
   items: GPGKey[];
