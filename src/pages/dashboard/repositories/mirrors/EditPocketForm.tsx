@@ -32,6 +32,7 @@ import { AxiosResponse } from "axios";
 import CheckboxGroup from "../../../../components/form/CheckboxGroup";
 import FieldDescription from "../../../../components/form/FieldDescription";
 import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
+import MultiSelectField from "../../../../components/form/MultiSelectField";
 
 interface FormProps
   extends EditMirrorPocketParams,
@@ -142,7 +143,19 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
   } = removeUploaderGPGKeysFromPocketQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
-  const gpgKeys = gpgKeysData?.data ?? [];
+  const privateGPGKeysOptions = (gpgKeysData?.data ?? [])
+    .filter(({ has_secret }) => has_secret)
+    .map((item) => ({
+      label: item.name,
+      value: item.name,
+    }));
+
+  const publicGPGKeysOptions = (gpgKeysData?.data ?? [])
+    .filter(({ has_secret }) => !has_secret)
+    .map((item) => ({
+      label: item.name,
+      value: item.name,
+    }));
 
   const mode = pocket.mode;
 
@@ -279,7 +292,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     formik.setFieldValue("name", pocket.name);
     formik.setFieldValue("components", pocket.components);
     formik.setFieldValue("architectures", pocket.architectures);
-    formik.setFieldValue("gpg_key", pocket.gpg_key.name);
+    formik.setFieldValue("gpg_key", pocket.gpg_key?.name ?? "");
     formik.setFieldValue("include_udeb", pocket.include_udeb);
     formik.setFieldValue("mode", pocket.mode);
 
@@ -330,12 +343,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
 
       <Select
         label="GPG Key"
-        options={gpgKeys
-          .filter(({ has_secret }) => has_secret)
-          .map((item) => ({
-            label: item.name,
-            value: item.name,
-          }))}
+        options={privateGPGKeysOptions}
         {...formik.getFieldProps("gpg_key")}
         error={formik.touched.gpg_key && formik.errors.gpg_key}
       />
@@ -388,12 +396,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
               label="Mirror GPG key"
               options={[
                 { label: "Select GPG key", value: "-" },
-                ...gpgKeys
-                  .filter(({ has_secret }) => !has_secret)
-                  .map((item) => ({
-                    label: item.name,
-                    value: item.name,
-                  })),
+                ...publicGPGKeysOptions,
               ]}
               {...formik.getFieldProps("mirror_gpg_key")}
               error={
@@ -412,19 +415,26 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
             checked={formik.values.upload_allow_unsigned}
           />
 
-          <Select
+          <MultiSelectField
+            variant="condensed"
             label="Uploader GPG keys"
-            multiple
             disabled={formik.values.upload_allow_unsigned}
-            {...formik.getFieldProps("upload_gpg_keys")}
-            options={gpgKeys
-              .filter(({ has_secret }) => !has_secret)
-              .map((item) => ({
-                label: item.name,
-                value: item.name,
-              }))}
+            items={publicGPGKeysOptions}
+            selectedItems={publicGPGKeysOptions.filter(({ value }) =>
+              formik.values.upload_gpg_keys.includes(value),
+            )}
+            onItemsUpdate={(items) => {
+              formik.setFieldValue(
+                "upload_gpg_keys",
+                items.map(({ value }) => value),
+              );
+            }}
             error={
-              formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
+              (formik.touched.upload_gpg_keys &&
+                (Array.isArray(formik.errors.upload_gpg_keys)
+                  ? formik.errors.upload_gpg_keys.join(", ")
+                  : formik.errors.upload_gpg_keys)) ||
+              undefined
             }
           />
         </>

@@ -38,6 +38,7 @@ import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
 import CheckboxGroup from "../../../../components/form/CheckboxGroup";
 import FieldDescription from "../../../../components/form/FieldDescription";
 import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
+import MultiSelectField from "../../../../components/form/MultiSelectField";
 
 interface FormProps
   extends Omit<CreateMirrorPocketParams, "mode">,
@@ -147,7 +148,19 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   } = addUploaderGPGKeysToPocketQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
-  const gpgKeys = gpgKeysData?.data ?? [];
+  const privateGPGKeysOptions = (gpgKeysData?.data ?? [])
+    .filter(({ has_secret }) => has_secret)
+    .map((item) => ({
+      label: item.name,
+      value: item.name,
+    }));
+
+  const publicGPGKeysOptions = (gpgKeysData?.data ?? [])
+    .filter(({ has_secret }) => !has_secret)
+    .map((item) => ({
+      label: item.name,
+      value: item.name,
+    }));
 
   const validationSchema = Yup.object().shape({
     type: Yup.string<FormProps["type"]>().required("This field is required."),
@@ -205,6 +218,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
     filter_type: Yup.string<"blacklist" | "whitelist">(),
     filter_packages: Yup.array().of(Yup.string().defined()),
     upload_allow_unsigned: Yup.boolean(),
+    upload_gpg_keys: Yup.array().of(Yup.string().defined()),
   });
 
   const formik = useFormik<FormProps>({
@@ -345,12 +359,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         required
         options={[
           { label: "Select GPG key", value: "" },
-          ...gpgKeys
-            .filter(({ has_secret }) => has_secret)
-            .map((item) => ({
-              label: item.name,
-              value: item.name,
-            })),
+          ...privateGPGKeysOptions,
         ]}
         {...formik.getFieldProps("gpg_key")}
         error={formik.touched.gpg_key && formik.errors.gpg_key}
@@ -396,12 +405,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             label="Mirror GPG key"
             options={[
               { label: "Select GPG key", value: "" },
-              ...gpgKeys
-                .filter(({ has_secret }) => !has_secret)
-                .map((item) => ({
-                  label: item.name,
-                  value: item.name,
-                })),
+              ...publicGPGKeysOptions,
             ]}
             {...formik.getFieldProps("mirror_gpg_key")}
             error={
@@ -450,19 +454,26 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             checked={formik.values.upload_allow_unsigned}
           />
 
-          <Select
+          <MultiSelectField
+            variant="condensed"
             label="Uploader GPG keys"
-            multiple
             disabled={formik.values.upload_allow_unsigned}
-            {...formik.getFieldProps("upload_gpg_keys")}
-            options={gpgKeys
-              .filter(({ has_secret }) => !has_secret)
-              .map((item) => ({
-                label: item.name,
-                value: item.name,
-              }))}
+            items={publicGPGKeysOptions}
+            selectedItems={publicGPGKeysOptions.filter(({ value }) =>
+              formik.values.upload_gpg_keys.includes(value),
+            )}
+            onItemsUpdate={(items) => {
+              formik.setFieldValue(
+                "upload_gpg_keys",
+                items.map(({ value }) => value),
+              );
+            }}
             error={
-              formik.touched.upload_gpg_keys && formik.errors.upload_gpg_keys
+              (formik.touched.upload_gpg_keys &&
+                (Array.isArray(formik.errors.upload_gpg_keys)
+                  ? formik.errors.upload_gpg_keys[0]
+                  : formik.errors.upload_gpg_keys)) ||
+              undefined
             }
           />
         </>
