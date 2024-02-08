@@ -1,11 +1,12 @@
 import { Button, Icon } from "@canonical/react-components";
-import { FC, Suspense } from "react";
+import { FC, Suspense, lazy } from "react";
 import LoadingState from "../../../../components/layout/LoadingState";
 import useAuth from "../../../../hooks/useAuth";
 import useSidePanel from "../../../../hooks/useSidePanel";
-import EditAccountForm from "./EditAccountForm";
 import { AuthUser } from "../../../../context/auth";
 import PageHeader from "../../../../components/layout/PageHeader";
+
+const EditAccountForm = lazy(() => import("./EditAccountForm"));
 const OverviewPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
   const { user } = useAuth();

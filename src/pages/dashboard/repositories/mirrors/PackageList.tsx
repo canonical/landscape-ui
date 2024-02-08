@@ -53,7 +53,7 @@ const PackageList: FC<PackageListProps> = ({
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
 
-  const isSmall = useMediaQuery("(min-width: 620px)");
+  const isSmallerScreen = useMediaQuery("(max-width: 619px)");
 
   const debug = useDebug();
   const { closeConfirmModal, confirmModal } = useConfirm();
@@ -475,8 +475,8 @@ const PackageList: FC<PackageListProps> = ({
                   setCurrentPage(1);
                 }}
                 className={classNames({
-                  "is-dense": isSmall,
-                  "u-no-margin--bottom": !isSmall,
+                  "is-dense": !isSmallerScreen,
+                  "u-no-margin--bottom": isSmallerScreen,
                 })}
                 onSearch={() => {
                   setSearch(inputText);

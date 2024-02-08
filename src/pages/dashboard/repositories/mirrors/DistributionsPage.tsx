@@ -18,7 +18,7 @@ const NewSeriesForm = lazy(() => import("./NewSeriesForm"));
 const DistributionsPage: FC = () => {
   const [openDropdown, setOpenDropdown] = useState(false);
 
-  const isSmall = useMediaQuery("(min-width: 620px)");
+  const isLargeScreen = useMediaQuery("(min-width: 620px)");
 
   const { setSidePanelContent } = useSidePanel();
   const { getDistributionsQuery } = useDistributions();
@@ -80,7 +80,7 @@ const DistributionsPage: FC = () => {
       <PageHeader
         title="Repository Mirrors"
         actions={
-          isSmall
+          isLargeScreen
             ? [
                 <AddDistributionButton key="create-distribution-button" />,
                 <CreateMirrorButton key="create-mirror-button" />,

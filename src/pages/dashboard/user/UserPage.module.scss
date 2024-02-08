@@ -1,0 +1,15 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.isDefaultBadge {
+  margin-left: $sph--large;
+}
+
+.apiCredentials {
+  code {
+    word-break: break-all;
+  }
+}
+
+.tableHeader {
+  padding-top: $sph--large;
+}

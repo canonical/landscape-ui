@@ -44,6 +44,7 @@ export interface AuthContextProps {
   authLoading: boolean;
   user: AuthUser | null;
   switchAccount: (newToken: string, newAccount: string) => void;
+  updateUser: (user: AuthUser) => void;
   setUser: (user: AuthUser, remember?: boolean) => void;
   logout: () => void;
 }
@@ -54,6 +55,7 @@ const initialState: AuthContextProps = {
   user: null,
   setUser: () => undefined,
   switchAccount: () => undefined,
+  updateUser: () => undefined,
   logout: () => undefined,
 };
 
@@ -86,6 +88,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const handleUpdateUser = (user: AuthUser) => {
+    setUser(user);
+    setToLocalStorage(AUTH_STORAGE_KEY, user);
+  };
+
   const handleSwitchAccount = (newToken: string, newAccount: string) => {
     const maybeSavedState = getFromLocalStorage(AUTH_STORAGE_KEY);
     const newUser = {
@@ -116,6 +123,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         logout: handleLogout,
         setUser: handleSetUser,
         switchAccount: handleSwitchAccount,
+        updateUser: handleUpdateUser,
       }}
     >
       {children}

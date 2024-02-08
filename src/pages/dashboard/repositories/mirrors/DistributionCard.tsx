@@ -21,7 +21,7 @@ interface DistributionCardProps {
 const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
   const [openDropdown, setOpenDropdown] = useState(false);
 
-  const isSmall = useMediaQuery("(min-width: 620px)");
+  const isLargeScreen = useMediaQuery("(min-width: 620px)");
 
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelContent } = useSidePanel();
@@ -106,7 +106,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
         >
           {distribution.name}
         </h2>
-        {isSmall ? (
+        {isLargeScreen ? (
           <div>
             <AddSeriesButton />
             <RemoveDistributionButton />
