@@ -12,3 +12,4 @@ export const DEFAULT_SNAPSHOT_URI = "https://snapshot.ubuntu.com/ubuntu";
 export const INPUT_DATE_FORMAT = "YYYY-MM-DD";
 export const DISPLAY_DATE_FORMAT = "MMM D, YYYY";
 export const DISPLAY_DATE_TIME_FORMAT = "MMM D, YYYY, HH:mm";
+export const NOT_AVAILABLE = "N/A";

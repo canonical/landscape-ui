@@ -1,0 +1,17 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.row {
+  align-items: center;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: $sph--small;
+}
+
+.actions {
+  max-width: 15%;
+  overflow: initial;
+  text-align: right;
+}

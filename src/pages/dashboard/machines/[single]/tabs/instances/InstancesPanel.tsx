@@ -102,7 +102,7 @@ const InstancesPanel: FC = () => {
   ) => {
     confirmModal({
       title: `Delete ${instance.title}`,
-      body: `This will remove the WSL instance from the host and Landscape`,
+      body: "This will remove the WSL instance from the host and Landscape",
       buttons: [
         <Button
           key="delete"

@@ -85,6 +85,7 @@ const TablePagination: FC<TablePaginationProps> = ({
             value={pageSize}
             onChange={(event) => {
               setPageSize(parseInt(event.target.value));
+              paginate(1);
             }}
           />
           <nav aria-label="Table pagination" className="p-pagination">

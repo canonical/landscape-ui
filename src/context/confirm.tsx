@@ -3,7 +3,7 @@ import { Button, Modal } from "@canonical/react-components";
 
 interface DialogProps {
   title: string;
-  body: string;
+  body: ReactNode;
   buttons: ReactNode[];
   cancelButtonLabel?: string;
 }
@@ -27,7 +27,7 @@ type ConfirmProviderProps = {
 const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("Are you sure?");
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState<ReactNode>("");
   const [cancelButtonLabel, setCancelButtonLabel] = useState("");
   const [buttons, setButtons] = useState<ReactNode[]>([]);
 
@@ -68,7 +68,7 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
             </>
           }
         >
-          <p>{body}</p>
+          {typeof body === "string" ? <p>{body}</p> : body}
         </Modal>
       )}
     </ConfirmContext.Provider>

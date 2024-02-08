@@ -12,7 +12,7 @@ import classes from "./SeriesPocketList.module.scss";
 import { useMediaQuery } from "usehooks-ts";
 import InfoItem from "../../../../components/layout/InfoItem";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "../../../../constants";
+import { DISPLAY_DATE_TIME_FORMAT, NOT_AVAILABLE } from "../../../../constants";
 import LoadingState from "../../../../components/layout/LoadingState";
 
 const EditPocketForm = lazy(() => import("./EditPocketForm"));
@@ -175,7 +175,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
 
   const getLastSyncedTime = (pocket: Pocket) => {
     if (pocket.mode === "upload") {
-      return "N/A";
+      return NOT_AVAILABLE;
     }
 
     if (pocket.last_sync_status !== "synced") {
