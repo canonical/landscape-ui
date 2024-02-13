@@ -68,6 +68,35 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
     );
   };
 
+  const handleScriptRemove = async (script_id: number) => {
+    try {
+      await removeScript({ script_id });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleScriptRemoveDialog = (script: Script) => {
+    confirmModal({
+      title: `Removing "${script.title}" script`,
+      body: "Are you sure?",
+      buttons: [
+        <Button
+          key={`remove-script-${script.title}`}
+          appearance="negative"
+          onClick={() => handleScriptRemove(script.id)}
+          hasIcon
+          aria-label={`Remove ${script.title} script`}
+        >
+          {isRemovingScript && <Spinner />}
+          <span>Remove</span>
+        </Button>,
+      ],
+    });
+  };
+
   const columns = useMemo<Column<Script>[]>(
     () => [
       {
@@ -126,34 +155,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
                 appearance="base"
                 className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
                 aria-label={`Remove ${row.original.title} script`}
-                onClick={() => {
-                  confirmModal({
-                    body: "Are you sure?",
-                    title: `Removing "${row.original.title}" script`,
-                    buttons: [
-                      <Button
-                        key={`remove-script-${row.original.title}`}
-                        appearance="negative"
-                        hasIcon={true}
-                        onClick={async () => {
-                          try {
-                            await removeScript({
-                              script_id: row.original.id,
-                            });
-                          } catch (error: unknown) {
-                            debug(error);
-                          } finally {
-                            closeConfirmModal();
-                          }
-                        }}
-                        aria-label={`Remove ${row.original.title} script`}
-                      >
-                        {isRemovingScript && <Spinner />}
-                        Remove
-                      </Button>,
-                    ],
-                  });
-                }}
+                onClick={() => handleScriptRemoveDialog(row.original)}
               >
                 <span className="p-tooltip__message">Remove</span>
                 <Icon name={ICONS.delete} className="u-no-margin--left" />
@@ -183,7 +185,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
                 target="_blank"
                 rel="nofollow noopener noreferrer"
               >
-                How to manage computers in Landscape
+                How to manage instances in Landscape
               </a>
             </>
           }

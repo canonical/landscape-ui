@@ -32,7 +32,7 @@ interface FormProps {
   title: string;
   description: string;
   tags: string[];
-  all_computers: boolean;
+  all_instances: boolean;
   apt_sources: string[];
   pockets: string[];
 }
@@ -46,7 +46,7 @@ const validationSchema = Yup.object().shape({
   }),
   description: Yup.string().required("This field is required."),
   tags: Yup.array().of(Yup.string()),
-  all_computers: Yup.boolean(),
+  all_instances: Yup.boolean(),
   apt_sources: Yup.array().of(Yup.string()),
   pockets: Yup.array().of(Yup.string()),
 });
@@ -56,7 +56,7 @@ const initialValues: FormProps = {
   title: "",
   description: "",
   tags: [],
-  all_computers: false,
+  all_instances: false,
   apt_sources: [],
   pockets: [],
 };
@@ -141,9 +141,9 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           );
         }
 
-        if (profile.all_computers !== values.all_computers) {
+        if (profile.all_computers !== values.all_instances) {
           promises.push(
-            values.all_computers
+            values.all_instances
               ? associateRepositoryProfile({
                   name: values.name,
                   all_computers: true,
@@ -307,7 +307,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
   });
 
   useEffect(() => {
-    formik.setFieldValue("all_computers", profile.all_computers);
+    formik.setFieldValue("all_instances", profile.all_computers);
     formik.setFieldValue("description", profile.description);
     formik.setFieldValue("tags", profile.tags);
     formik.setFieldValue("title", profile.title);
@@ -385,9 +385,9 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                 {...formik.getFieldProps("description")}
               />
               <CheckboxInput
-                label="All computers"
-                {...formik.getFieldProps("all_computers")}
-                checked={formik.values.all_computers}
+                label="All instances"
+                {...formik.getFieldProps("all_instances")}
+                checked={formik.values.all_instances}
               />
               <Input
                 type="text"
@@ -406,7 +406,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
                   );
                 }}
                 help="List the tag names separated by commas"
-                disabled={formik.values.all_computers}
+                disabled={formik.values.all_instances}
               />
             </>
           )}

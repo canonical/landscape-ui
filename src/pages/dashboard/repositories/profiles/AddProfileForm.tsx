@@ -34,7 +34,7 @@ interface FormProps {
   description: string;
   access_group: string;
   tags: string[];
-  all_computers: boolean;
+  all_instances: boolean;
   apt_sources: string[];
   pockets: string[];
 }
@@ -47,7 +47,7 @@ const validationSchema = Yup.object().shape({
   description: Yup.string(),
   access_group: Yup.string(),
   tags: Yup.array().of(Yup.string()).strict(true),
-  all_computers: Yup.boolean(),
+  all_instances: Yup.boolean(),
   apt_sources: Yup.array().of(Yup.string()),
   pockets: Yup.array().of(Yup.string()),
 });
@@ -57,7 +57,7 @@ const initialValues: FormProps = {
   description: "",
   access_group: "",
   tags: [],
-  all_computers: false,
+  all_instances: false,
   apt_sources: [],
   pockets: [],
 };
@@ -118,7 +118,7 @@ const AddProfileForm: FC = () => {
 
         const promises: Promise<AxiosResponse<RepositoryProfile>>[] = [];
 
-        if (values.all_computers) {
+        if (values.all_instances) {
           promises.push(
             associateRepositoryProfile({
               name: newProfile.name,
@@ -281,9 +281,9 @@ const AddProfileForm: FC = () => {
                 {...formik.getFieldProps("access_group")}
               />
               <CheckboxInput
-                label="All computers"
-                {...formik.getFieldProps("all_computers")}
-                checked={formik.values.all_computers}
+                label="All instances"
+                {...formik.getFieldProps("all_instances")}
+                checked={formik.values.all_instances}
               />
               <Input
                 type="text"
@@ -302,7 +302,7 @@ const AddProfileForm: FC = () => {
                   );
                 }}
                 help="List the tag names separated by commas"
-                disabled={formik.values.all_computers}
+                disabled={formik.values.all_instances}
               />
             </>
           )}

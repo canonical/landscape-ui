@@ -64,7 +64,7 @@ const EditAccountForm: FC<EditAccountFormProps> = ({ user }) => {
       <Input
         type="text"
         label="Registration key"
-        help="The key used by computers when registering with this account. An empty key means clients may register without providing a key. Trailing spaces or ; or # symbols are not allowed."
+        help="The key used by instances when registering with this account. An empty key means clients may register without providing a key. Trailing spaces or ; or # symbols are not allowed."
         error={
           formik.touched.registration_key && formik.errors.registration_key
             ? formik.errors.registration_key

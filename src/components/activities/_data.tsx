@@ -50,7 +50,7 @@ export const ACTIVITY_SEARCH_HELP_TERMS: {
   {
     term: "computer:<criteria>",
     description:
-      "Search for activities related to the given computers. The criteria is itself another query argument to search computers. See Computer Queries for details.",
+      "Search for activities related to the given instances. The criteria is itself another query argument to search instances. See Instance Queries for details.",
   },
   {
     term: "type:<type>",

@@ -11,9 +11,9 @@ test("should edit repository profile", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Edit test-e2e-profile" }),
   ).toBeVisible();
-  await expect(page.getByText("All computers")).toBeChecked();
+  await expect(page.getByText("All instances")).toBeChecked();
   await expect(page.locator('input[name="tags"]')).toBeDisabled();
-  await page.getByText("All computers").click();
+  await page.getByText("All instances").click();
   await expect(page.locator('input[name="tags"]')).toBeEnabled();
   await page.locator('input[name="tags"]').fill("test-tag");
 

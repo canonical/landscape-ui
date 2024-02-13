@@ -1,6 +1,6 @@
 import { FC, Suspense, useState } from "react";
 import { Tabs } from "@canonical/react-components";
-import classes from "../../machines/[single]/SingleMachine.module.scss";
+import classes from "../../instances/[single]/SingleInstance.module.scss";
 import LoadingState from "../../../../components/layout/LoadingState";
 import AdministratorsPanel from "./tabs/administrators";
 import InvitesPanel from "./tabs/invites";

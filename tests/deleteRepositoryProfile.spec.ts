@@ -9,7 +9,7 @@ test("should handle repository profile", async ({ page }) => {
     .getByRole("button", { name: "Edit test-e2e-profile repository profile" })
     .click();
 
-  await expect(page.getByText("All computers")).not.toBeChecked();
+  await expect(page.getByText("All instances")).not.toBeChecked();
   await expect(page.locator('input[name="tags"]')).toBeEnabled();
   await expect(page.locator('input[name="tags"]')).toHaveValue("test-tag");
 
