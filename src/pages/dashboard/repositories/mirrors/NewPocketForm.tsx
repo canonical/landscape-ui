@@ -294,7 +294,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           { label: "Third party", value: "third-party" },
         ]}
         {...formik.getFieldProps("type")}
-        error={formik.touched.type && formik.errors.type}
+        error={
+          formik.touched.type && formik.errors.type
+            ? formik.errors.type
+            : undefined
+        }
       />
 
       <Select
@@ -302,7 +306,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         required
         options={[...PRE_DEFINED_POCKET_MODE_OPTIONS]}
         {...formik.getFieldProps("mode")}
-        error={formik.touched.mode && formik.errors.mode}
+        error={
+          formik.touched.mode && formik.errors.mode
+            ? formik.errors.mode
+            : undefined
+        }
       />
 
       {"mirror" === formik.values.mode && (
@@ -311,7 +319,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           label="Mirror URI"
           required
           {...formik.getFieldProps("mirror_uri")}
-          error={formik.touched.mirror_uri && formik.errors.mirror_uri}
+          error={
+            formik.touched.mirror_uri && formik.errors.mirror_uri
+              ? formik.errors.mirror_uri
+              : undefined
+          }
         />
       )}
 
@@ -331,7 +343,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           })}
           style={{ display: "block !important" }}
           {...formik.getFieldProps("name")}
-          error={formik.touched.name && formik.errors.name}
+          error={
+            formik.touched.name && formik.errors.name
+              ? formik.errors.name
+              : undefined
+          }
         />
 
         {"pull" == formik.values.mode && (
@@ -349,7 +365,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               await formik.setFieldValue("pull_series", newGroup);
             }}
             onBlur={formik.handleBlur}
-            error={formik.touched.pull_pocket && formik.errors.pull_pocket}
+            error={
+              formik.touched.pull_pocket && formik.errors.pull_pocket
+                ? formik.errors.pull_pocket
+                : undefined
+            }
           />
         )}
       </div>
@@ -362,7 +382,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           ...privateGPGKeysOptions,
         ]}
         {...formik.getFieldProps("gpg_key")}
-        error={formik.touched.gpg_key && formik.errors.gpg_key}
+        error={
+          formik.touched.gpg_key && formik.errors.gpg_key
+            ? formik.errors.gpg_key
+            : undefined
+        }
       />
 
       {"mirror" === formik.values.mode && (
@@ -398,7 +422,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               />
             }
             {...formik.getFieldProps("mirror_suite")}
-            error={formik.touched.mirror_suite && formik.errors.mirror_suite}
+            error={
+              formik.touched.mirror_suite && formik.errors.mirror_suite
+                ? formik.errors.mirror_suite
+                : undefined
+            }
           />
 
           <Select
@@ -410,6 +438,8 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             {...formik.getFieldProps("mirror_gpg_key")}
             error={
               formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
+                ? formik.errors.mirror_gpg_key
+                : undefined
             }
             help="If none is given, the stock Ubuntu archive one will be used."
           />
@@ -422,7 +452,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             label="Filter type"
             options={filterTypeOptions}
             {...formik.getFieldProps("filter_type")}
-            error={formik.touched.filter_type && formik.errors.filter_type}
+            error={
+              formik.touched.filter_type && formik.errors.filter_type
+                ? formik.errors.filter_type
+                : undefined
+            }
           />
 
           {"" !== formik.values.filter_type && (
@@ -440,6 +474,8 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               value={formik.values.filter_packages.join(",")}
               error={
                 formik.touched.filter_packages && formik.errors.filter_packages
+                  ? formik.errors.filter_packages
+                  : undefined
               }
             />
           )}
@@ -489,7 +525,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             onChange={(newOptions) => {
               formik.setFieldValue("components", newOptions);
             }}
-            error={formik.touched.components && formik.errors.components}
+            error={
+              formik.touched.components && formik.errors.components
+                ? formik.errors.components
+                : undefined
+            }
           />
 
           <CheckboxGroup
@@ -500,7 +540,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             onChange={(newOptions) => {
               formik.setFieldValue("architectures", newOptions);
             }}
-            error={formik.touched.architectures && formik.errors.architectures}
+            error={
+              formik.touched.architectures && formik.errors.architectures
+                ? formik.errors.architectures
+                : undefined
+            }
           />
         </>
       )}
@@ -519,7 +563,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
                 event.target.value.replace(/\s/g, "").split(","),
               );
             }}
-            error={formik.touched.components && formik.errors.components}
+            error={
+              formik.touched.components && formik.errors.components
+                ? formik.errors.components
+                : undefined
+            }
           />
 
           <Input
@@ -534,7 +582,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
                 event.target.value.replace(/\s/g, "").split(","),
               );
             }}
-            error={formik.touched.architectures && formik.errors.architectures}
+            error={
+              formik.touched.architectures && formik.errors.architectures
+                ? formik.errors.architectures
+                : undefined
+            }
           />
         </>
       )}

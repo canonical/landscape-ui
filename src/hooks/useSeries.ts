@@ -12,27 +12,27 @@ import { ApiError } from "../types/ApiError";
 import { QueryFnType } from "../types/QueryFnType";
 
 export interface CreateSeriesParams {
-  name: string;
   distribution: string;
-  pockets?: string[];
-  components?: string[];
+  include_udeb: boolean;
+  name: string;
   architectures?: string[];
+  components?: string[];
   gpg_key?: string;
   mirror_gpg_key?: string;
-  mirror_uri?: string;
   mirror_series?: string;
-  include_udeb: boolean;
+  mirror_uri?: string;
+  pockets?: string[];
 }
 
 export interface DeriveSeriesParams {
+  distribution: string;
   name: string;
   origin: string;
-  distribution: string;
 }
 
 export interface RemoveSeriesParams {
-  name: string;
   distribution: string;
+  name: string;
 }
 
 interface Repo {

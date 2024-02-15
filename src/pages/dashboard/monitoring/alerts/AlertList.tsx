@@ -1,11 +1,11 @@
+import { FC, lazy, Suspense, useMemo } from "react";
+import { CellProps, Column, Row } from "react-table";
 import {
   Button,
   CheckboxInput,
   ModularTable,
   Switch,
 } from "@canonical/react-components";
-import { CellProps, Column, Row } from "react-table";
-import { FC, lazy, Suspense, useMemo } from "react";
 import LoadingState from "../../../../components/layout/LoadingState";
 import useAlerts from "../../../../hooks/useAlerts";
 import useDebug from "../../../../hooks/useDebug";

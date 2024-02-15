@@ -410,7 +410,11 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
         label="Title"
         required
         {...formik.getFieldProps("title")}
-        error={formik.touched.title && formik.errors.title}
+        error={
+          formik.touched.title && formik.errors.title
+            ? formik.errors.title
+            : undefined
+        }
       />
 
       {("create" === props.action || "edit" === props.action) && (
@@ -420,7 +424,11 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
             label="Time limit (seconds)"
             required
             {...formik.getFieldProps("time_limit")}
-            error={formik.touched.time_limit && formik.errors.time_limit}
+            error={
+              formik.touched.time_limit && formik.errors.time_limit
+                ? formik.errors.time_limit
+                : undefined
+            }
           />
 
           <CodeEditor
@@ -430,14 +438,22 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
               formik.setFieldValue("code", value ?? "");
             }}
             value={formik.values.code}
-            error={formik.touched.code && formik.errors.code}
+            error={
+              formik.touched.code && formik.errors.code
+                ? formik.errors.code
+                : undefined
+            }
           />
 
           <Input
             type="text"
             label="Run as user"
             {...formik.getFieldProps("username")}
-            error={formik.touched.username && formik.errors.username}
+            error={
+              formik.touched.username && formik.errors.username
+                ? formik.errors.username
+                : undefined
+            }
           />
         </>
       )}
@@ -449,7 +465,11 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
           ...accessGroupsOptions,
         ]}
         {...formik.getFieldProps("access_group")}
-        error={formik.touched.access_group && formik.errors.access_group}
+        error={
+          formik.touched.access_group && formik.errors.access_group
+            ? formik.errors.access_group
+            : undefined
+        }
       />
 
       {("create" === props.action || "edit" === props.action) && (

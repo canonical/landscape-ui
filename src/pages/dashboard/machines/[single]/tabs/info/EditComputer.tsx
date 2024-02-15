@@ -81,21 +81,33 @@ const EditComputer: FC<EditComputerProps> = ({ computer, license }) => {
         required
         disabled={computer.is_wsl_instance}
         {...formik.getFieldProps("title")}
-        error={formik.touched.title && formik.errors.title}
+        error={
+          formik.touched.title && formik.errors.title
+            ? formik.errors.title
+            : undefined
+        }
       />
       <Textarea
         label="Comment"
         aria-label="Comment"
         rows={6}
         {...formik.getFieldProps("comment")}
-        error={formik.touched.comment && formik.errors.comment}
+        error={
+          formik.touched.comment && formik.errors.comment
+            ? formik.errors.comment
+            : undefined
+        }
       />
       <Select
         label="License"
         aria-label="License"
         required
         {...formik.getFieldProps("license")}
-        error={formik.touched.license && formik.errors.license}
+        error={
+          formik.touched.license && formik.errors.license
+            ? formik.errors.license
+            : undefined
+        }
         options={[
           {
             label: "Landscape, 234 days left, 9 seats free",

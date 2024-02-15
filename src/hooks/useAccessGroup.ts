@@ -1,39 +1,31 @@
 import { QueryFnType } from "../types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
-import {
-  UseMutationResult,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../types/ApiError";
 import useFetchOld from "./useFetchOld";
 import { AccessGroup } from "../types/AccessGroup";
 import useDebug from "./useDebug";
-
-interface useAccessGroupResult {
-  getAccessGroupQuery: QueryFnType<AxiosResponse<AccessGroup[]>, {}>;
-  createAccessGroupQuery: UseMutationResult<
-    AxiosResponse<AccessGroup>,
-    AxiosError<ApiError>,
-    CreateAccessGroupParams
-  >;
-  removeAccessGroupQuery: UseMutationResult<
-    AxiosResponse<AccessGroup>,
-    AxiosError<ApiError>,
-    RemoveAccessGroupParams
-  >;
-}
+import { Role } from "../types/Role";
 
 interface CreateAccessGroupParams {
-  title: string;
   parent: string;
+  title: string;
 }
+
 interface RemoveAccessGroupParams {
   name: string;
 }
 
-export default function useAccessGroup(): useAccessGroupResult {
+interface GetRolesParams {
+  names?: string[];
+}
+
+interface ChangeRolePersonsParams {
+  name: string;
+  persons: string[];
+}
+
+export default function useAccessGroup() {
   const authFetch = useFetchOld();
   const queryClient = useQueryClient();
   const debug = useDebug();
@@ -72,9 +64,48 @@ export default function useAccessGroup(): useAccessGroupResult {
     },
   });
 
+  const getRolesQuery: QueryFnType<AxiosResponse<Role[]>, GetRolesParams> = (
+    queryParams = {},
+    config = {},
+  ) =>
+    useQuery<AxiosResponse<Role[]>, AxiosError<ApiError>>({
+      queryKey: ["roles"],
+      queryFn: () => authFetch!.get("GetRoles", { params: queryParams }),
+      ...config,
+    });
+
+  const addPersonsToRoleQuery = useMutation<
+    AxiosResponse<Role>,
+    AxiosError<ApiError>,
+    ChangeRolePersonsParams
+  >({
+    mutationFn: (params) => authFetch!.get("AddPersonsToRole", { params }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["roles"]),
+        queryClient.invalidateQueries(["administrators"]),
+      ]),
+  });
+
+  const removePersonsFromRoleQuery = useMutation<
+    AxiosResponse<Role>,
+    AxiosError<ApiError>,
+    ChangeRolePersonsParams
+  >({
+    mutationFn: (params) => authFetch!.get("RemovePersonsFromRole", { params }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["roles"]),
+        queryClient.invalidateQueries(["administrators"]),
+      ]),
+  });
+
   return {
     getAccessGroupQuery,
     createAccessGroupQuery,
     removeAccessGroupQuery,
+    getRolesQuery,
+    addPersonsToRoleQuery,
+    removePersonsFromRoleQuery,
   };
 }

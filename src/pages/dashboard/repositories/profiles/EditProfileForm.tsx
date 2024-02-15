@@ -367,13 +367,21 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
               <Input
                 type="text"
                 label="Title"
-                error={formik.touched.title && formik.errors.title}
+                error={
+                  formik.touched.title && formik.errors.title
+                    ? formik.errors.title
+                    : undefined
+                }
                 {...formik.getFieldProps("title")}
               />
               <Input
                 type="text"
                 label="Description"
-                error={formik.touched.description && formik.errors.description}
+                error={
+                  formik.touched.description && formik.errors.description
+                    ? formik.errors.description
+                    : undefined
+                }
                 {...formik.getFieldProps("description")}
               />
               <CheckboxInput

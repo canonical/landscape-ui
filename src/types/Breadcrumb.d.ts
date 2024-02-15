@@ -5,6 +5,6 @@ export type Breadcrumb =
       current?: false;
     }
   | {
-      label: string;
       current: true;
+      label: string;
     };

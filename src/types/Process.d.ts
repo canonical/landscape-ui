@@ -1,11 +1,11 @@
 export interface Process extends Record<string, unknown> {
   computer_id: number;
-  pid: number;
-  uid: number;
+  cpu_utilization: number;
   gid: number;
   name: string;
-  state: number;
+  pid: number;
   start_time: string;
+  state: number;
+  uid: number;
   vm_size: number;
-  cpu_utilization: number;
 }

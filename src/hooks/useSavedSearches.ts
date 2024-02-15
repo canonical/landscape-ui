@@ -12,14 +12,14 @@ interface GetSavedSearchesParams {
 
 interface CreateSavedSearchParams {
   name: string;
-  title: string;
   search: string;
+  title: string;
 }
 
 interface EditSavedSearchParams {
   name: string;
-  title: string;
   search: string;
+  title: string;
 }
 
 interface RemoveSavedSearchParams {

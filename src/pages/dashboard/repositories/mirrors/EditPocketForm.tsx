@@ -327,7 +327,11 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         onChange={(newOptions) => {
           formik.setFieldValue("components", newOptions);
         }}
-        error={formik.touched.components && formik.errors.components}
+        error={
+          formik.touched.components && formik.errors.components
+            ? formik.errors.components
+            : undefined
+        }
       />
 
       <CheckboxGroup
@@ -338,14 +342,22 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         onChange={(newOptions) => {
           formik.setFieldValue("architectures", newOptions);
         }}
-        error={formik.touched.architectures && formik.errors.architectures}
+        error={
+          formik.touched.architectures && formik.errors.architectures
+            ? formik.errors.architectures
+            : undefined
+        }
       />
 
       <Select
         label="GPG Key"
         options={privateGPGKeysOptions}
         {...formik.getFieldProps("gpg_key")}
-        error={formik.touched.gpg_key && formik.errors.gpg_key}
+        error={
+          formik.touched.gpg_key && formik.errors.gpg_key
+            ? formik.errors.gpg_key
+            : undefined
+        }
       />
 
       {"mirror" === pocket.mode &&
@@ -355,7 +367,11 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
               type="text"
               label="Mirror URI"
               {...formik.getFieldProps("mirror_uri")}
-              error={formik.touched.mirror_uri && formik.errors.mirror_uri}
+              error={
+                formik.touched.mirror_uri && formik.errors.mirror_uri
+                  ? formik.errors.mirror_uri
+                  : undefined
+              }
             />
 
             <Input
@@ -389,7 +405,11 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                 />
               }
               {...formik.getFieldProps("mirror_suite")}
-              error={formik.touched.mirror_suite && formik.errors.mirror_suite}
+              error={
+                formik.touched.mirror_suite && formik.errors.mirror_suite
+                  ? formik.errors.mirror_suite
+                  : undefined
+              }
             />
 
             <Select
@@ -401,6 +421,8 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
               {...formik.getFieldProps("mirror_gpg_key")}
               error={
                 formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
+                  ? formik.errors.mirror_gpg_key
+                  : undefined
               }
               help="If none is given, the stock Ubuntu archive one will be used."
             />
@@ -453,7 +475,11 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
             );
           }}
           value={formik.values.filters.join(",")}
-          error={formik.touched.filters && formik.errors.filters}
+          error={
+            formik.touched.filters && formik.errors.filters
+              ? formik.errors.filters
+              : undefined
+          }
         />
       )}
 

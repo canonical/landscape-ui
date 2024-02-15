@@ -42,7 +42,7 @@ export default function useDebug() {
       message = "Unknown error";
     }
 
-    notify.error(message);
+    notify.error({ message });
 
     if (IS_DEV_ENV) {
       console.error(message, error);

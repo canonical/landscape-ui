@@ -13,14 +13,14 @@ import { ApiError } from "../types/ApiError";
 
 interface EditRepositoryProfileParams {
   name: string;
-  title?: string;
   description?: string;
+  title?: string;
 }
 
 interface AssociationRepositoryProfileParams {
   name: string;
-  tags?: string[];
   all_computers?: boolean;
+  tags?: string[];
 }
 
 interface GetRepositoryProfilesParams {
@@ -29,8 +29,8 @@ interface GetRepositoryProfilesParams {
 
 interface CreateRepositoryProfileParams {
   title: string;
-  description?: string;
   access_group?: string;
+  description?: string;
 }
 
 interface RemoveRepositoryProfileParams {
@@ -38,27 +38,20 @@ interface RemoveRepositoryProfileParams {
 }
 
 interface AddAPTSourcesToRepositoryProfileParams {
-  name: string;
   apt_sources: string[];
+  name: string;
 }
 
 interface RemoveAPTSourceFromRepositoryProfileParams {
-  name: string;
   apt_source: string;
+  name: string;
 }
 
-interface AddPocketsToRepositoryProfileParams {
-  name: string;
-  series: string;
+interface RepositoryProfilePocketActionParams {
   distribution: string;
-  pockets: string[];
-}
-
-interface RemovePocketsFromRepositoryProfileParams {
   name: string;
-  series: string;
-  distribution: string;
   pockets: string[];
+  series: string;
 }
 
 interface UseRepositoryProfilesResult {
@@ -112,13 +105,13 @@ interface UseRepositoryProfilesResult {
   addPocketsToRepositoryProfileQuery: UseMutationResult<
     AxiosResponse<RepositoryProfile>,
     AxiosError<ApiError>,
-    AddPocketsToRepositoryProfileParams
+    RepositoryProfilePocketActionParams
   >;
 
   removePocketsFromRepositoryProfileQuery: UseMutationResult<
     AxiosResponse<RepositoryProfile>,
     AxiosError<ApiError>,
-    RemovePocketsFromRepositoryProfileParams
+    RepositoryProfilePocketActionParams
   >;
 }
 
@@ -233,7 +226,7 @@ export default function useRepositoryProfiles(): UseRepositoryProfilesResult {
   const addPocketsToRepositoryProfileQuery = useMutation<
     AxiosResponse<RepositoryProfile>,
     AxiosError<ApiError>,
-    AddPocketsToRepositoryProfileParams
+    RepositoryProfilePocketActionParams
   >({
     mutationKey: ["repositoryProfiles"],
     mutationFn: (params) =>
@@ -246,7 +239,7 @@ export default function useRepositoryProfiles(): UseRepositoryProfilesResult {
   const removePocketsFromRepositoryProfileQuery = useMutation<
     AxiosResponse<RepositoryProfile>,
     AxiosError<ApiError>,
-    RemovePocketsFromRepositoryProfileParams
+    RepositoryProfilePocketActionParams
   >({
     mutationKey: ["repositoryProfiles"],
     mutationFn: (params) =>

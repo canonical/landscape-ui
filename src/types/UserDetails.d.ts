@@ -1,24 +1,24 @@
 export interface UserDetails {
+  accounts: AccountKeyAndRoleInformation[];
   allowable_emails: string[];
-  name: string;
   email: string;
   identity: string;
-  timezone: string;
-  last_login_time: string;
   last_login_host: string;
+  last_login_time: string;
+  name: string;
   preferred_account: string;
-  accounts: AccountKeyAndRoleInformation[];
+  timezone: string;
 }
 
 interface AccountKeyAndRoleInformation {
   name: string;
-  title: string;
   roles: string[];
+  title: string;
 }
 
 export interface ApiKeyCredentials {
-  account_name: string;
   access_key: string;
+  account_name: string;
   secret_key: string;
 }
 
@@ -34,13 +34,13 @@ export interface Credential extends ApiKeyCredentials {
 
 export interface GeneralInfoInterface {
   email: string;
-  timezone: string;
   identity: string;
+  timezone: string;
 }
 
 export interface AccountDetail {
   name: string;
-  title: string;
   roles: string[];
+  title: string;
   credentials?: Credential;
 }

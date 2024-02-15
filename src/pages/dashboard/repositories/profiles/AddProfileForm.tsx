@@ -245,7 +245,11 @@ const AddProfileForm: FC = () => {
                 type="text"
                 label="Title"
                 required
-                error={formik.touched.title && formik.errors.title}
+                error={
+                  formik.touched.title && formik.errors.title
+                    ? formik.errors.title
+                    : undefined
+                }
                 onError={(event) => {
                   setCurrentTab(0);
                   event.currentTarget.focus();
@@ -255,7 +259,11 @@ const AddProfileForm: FC = () => {
               <Input
                 type="text"
                 label="Description"
-                error={formik.touched.description && formik.errors.description}
+                error={
+                  formik.touched.description && formik.errors.description
+                    ? formik.errors.description
+                    : undefined
+                }
                 {...formik.getFieldProps("description")}
               />
               <Select
@@ -266,6 +274,8 @@ const AddProfileForm: FC = () => {
                 ]}
                 error={
                   formik.touched.access_group && formik.errors.access_group
+                    ? formik.errors.access_group
+                    : undefined
                 }
                 disabled={isGettingAccessGroups}
                 {...formik.getFieldProps("access_group")}

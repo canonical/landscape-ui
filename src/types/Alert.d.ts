@@ -10,6 +10,6 @@ export interface Alert extends Record<string, unknown> {
 
 export interface Subscriber extends Record<string, unknown> {
   email: string;
-  name: string;
   id: number;
+  name: string;
 }

@@ -16,8 +16,8 @@ interface GetGPGKeysParams {
 }
 
 interface ImportGPGKeyParams {
-  name: string;
   material: string;
+  name: string;
 }
 
 interface RemoveGPGKeyParams {

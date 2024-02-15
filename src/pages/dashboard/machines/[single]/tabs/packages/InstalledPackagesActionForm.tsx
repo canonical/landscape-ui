@@ -168,7 +168,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       {action === "downgrade" && (
-        <Row>
+        <Row className="u-no-padding--left u-no-padding--right">
           <Col size={6}>
             <InfoItem label="Current version" value={packages[0].version} />
           </Col>
@@ -278,7 +278,11 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           label="Deliver after"
           labelClassName="u-off-screen"
           {...formik.getFieldProps("deliver_after")}
-          error={formik.touched.deliver_after && formik.errors.deliver_after}
+          error={
+            formik.touched.deliver_after && formik.errors.deliver_after
+              ? formik.errors.deliver_after
+              : undefined
+          }
           help="Format YYYY-MM-DD HH:mm"
         />
       )}
@@ -316,6 +320,8 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           error={
             formik.touched.deliver_delay_window &&
             formik.errors.deliver_delay_window
+              ? formik.errors.deliver_delay_window
+              : undefined
           }
         />
       )}

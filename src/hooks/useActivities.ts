@@ -8,9 +8,9 @@ import useFetch from "./useFetch";
 import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
 
 interface GetActivitiesParams {
-  query?: string;
   limit?: number;
   offset?: number;
+  query?: string;
 }
 
 interface CancelActivitiesParams {
@@ -19,6 +19,10 @@ interface CancelActivitiesParams {
 
 interface ApproveActivitiesParams {
   query: string;
+}
+
+interface RedoUndoActivitiesParams {
+  activityIds: number[];
 }
 
 export default function useActivities() {
@@ -56,7 +60,7 @@ export default function useActivities() {
   };
 
   const cancelActivitiesQuery = useMutation<
-    string[],
+    number[],
     AxiosError<ApiError>,
     CancelActivitiesParams
   >({
@@ -75,10 +79,30 @@ export default function useActivities() {
     onSuccess: () => queryClient.invalidateQueries(["activities"]),
   });
 
+  const redoActivitiesQuery = useMutation<
+    number[],
+    AxiosError<ApiError>,
+    RedoUndoActivitiesParams
+  >({
+    mutationFn: (params) => authFetch!.post("activities/reapply", { params }),
+    onSuccess: () => queryClient.invalidateQueries(["activities"]),
+  });
+
+  const undoActivitiesQuery = useMutation<
+    number[],
+    AxiosError<ApiError>,
+    RedoUndoActivitiesParams
+  >({
+    mutationFn: (params) => authFetch!.post("activities/revert", { params }),
+    onSuccess: () => queryClient.invalidateQueries(["activities"]),
+  });
+
   return {
     getActivitiesQuery,
     getActivityTypesQuery,
     cancelActivitiesQuery,
     approveActivitiesQuery,
+    redoActivitiesQuery,
+    undoActivitiesQuery,
   };
 }

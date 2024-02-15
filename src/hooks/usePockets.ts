@@ -14,28 +14,28 @@ import { PackageDiff, PackageObject } from "../types/Package";
 import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
 
 interface CreateCommonPocketParams {
-  name: string;
-  series: string;
-  distribution: string;
-  components: string[];
   architectures: string[];
+  components: string[];
+  distribution: string;
   gpg_key: string;
   include_udeb: boolean;
+  name: string;
+  series: string;
 }
 
 export interface CreateMirrorPocketParams extends CreateCommonPocketParams {
-  mode: "mirror";
   mirror_uri: string;
-  mirror_suite?: string;
+  mode: "mirror";
   mirror_gpg_key?: string;
+  mirror_suite?: string;
 }
 
 export interface CreatePullPocketParams extends CreateCommonPocketParams {
   mode: "pull";
   pull_pocket: string;
-  pull_series?: string;
-  filter_type?: "whitelist" | "blacklist";
   filter_packages?: string[];
+  filter_type?: "whitelist" | "blacklist";
+  pull_series?: string;
 }
 
 export interface CreateUploadPocketParams extends CreateCommonPocketParams {
@@ -44,19 +44,19 @@ export interface CreateUploadPocketParams extends CreateCommonPocketParams {
 }
 
 interface EditCommonPocketParams {
+  architectures: string[];
+  components: string[];
+  distribution: string;
+  gpg_key: string;
   name: string;
   series: string;
-  distribution: string;
-  components: string[];
-  architectures: string[];
-  gpg_key: string;
   include_udeb?: boolean;
 }
 
 export interface EditMirrorPocketParams extends EditCommonPocketParams {
   mirror_uri: string;
-  mirror_suite?: string;
   mirror_gpg_key?: string;
+  mirror_suite?: string;
 }
 
 export interface EditPullPocketParams extends EditCommonPocketParams {}
@@ -66,71 +66,71 @@ export interface EditUploadPocketParams extends EditCommonPocketParams {
 }
 
 interface RemovePocketParams {
+  distribution: string;
   name: string;
   series: string;
-  distribution: string;
 }
 
 interface SyncMirrorPocketParams {
+  distribution: string;
   name: string;
   series: string;
-  distribution: string;
 }
 
 interface PullPackagesToPocketParams {
+  distribution: string;
   name: string;
   series: string;
-  distribution: string;
 }
 
 interface DiffPullPocketParams {
+  distribution: string;
   name: string;
   series: string;
-  distribution: string;
 }
 
 interface ListPocketParams {
-  name: string;
-  series: string;
   distribution: string;
   limit: number;
+  name: string;
   offset: number;
+  series: string;
   search?: string;
 }
 
 interface RemovePackagesFromPocketParams {
-  name: string;
-  series: string;
   distribution: string;
+  name: string;
   packages: string[];
+  series: string;
 }
 
 interface AddPackageFiltersToPocketParams {
-  name: string;
-  series: string;
   distribution: string;
+  name: string;
   packages: string[];
+  series: string;
 }
 
 interface RemovePackageFiltersFromPocketParams {
-  name: string;
-  series: string;
   distribution: string;
+  name: string;
   packages: string[];
+  series: string;
 }
 
 interface AddUploaderGPGKeysToPocketParams {
-  name: string;
-  series: string;
   distribution: string;
   gpg_keys: string[];
+  name: string;
+  series: string;
 }
 
 interface RemoveUploaderGPGKeysFromPocketParams {
-  name: string;
-  series: string;
   distribution: string;
   gpg_keys: string[];
+  name: string;
+  series: string;
 }
 
 interface UsePocketsResult {

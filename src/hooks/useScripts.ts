@@ -21,7 +21,8 @@ export interface ExecuteScriptParams {
   query: string;
   script_id: number;
   username: string;
-  deliver_after?: string; // YYYY-MM-DDTHH:MM:SSZ
+  // `YYYY-MM-DDTHH:MM:SSZ`
+  deliver_after?: string;
 }
 
 interface RemoveScriptParams {
@@ -29,35 +30,36 @@ interface RemoveScriptParams {
 }
 
 export interface CreateScriptParams {
-  title: string;
-  time_limit: number;
-  code: string;
-  username: string;
   access_group: string;
+  code: string;
+  time_limit: number;
+  title: string;
+  username: string;
 }
 
 interface EditScriptParams {
-  script_id: number;
-  title: string;
-  time_limit: number;
   code: string;
+  script_id: number;
+  time_limit: number;
+  title: string;
   username: string;
 }
 
 interface CopyScriptParams {
-  script_id: number;
-  destination_title: string;
   access_group: string;
+  destination_title: string;
+  script_id: number;
 }
 
 interface RemoveScriptAttachmentParams {
-  script_id: number;
   filename: string;
+  script_id: number;
 }
 
 interface CreateScriptAttachmentParams {
+  // <filename>$$<base64 encoded file contents>
+  file: string;
   script_id: number;
-  file: string; // <filename>$$<base64 encoded file contents>
 }
 
 export default function useScripts() {

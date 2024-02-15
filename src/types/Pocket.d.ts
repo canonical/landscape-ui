@@ -12,10 +12,6 @@ interface PocketCommon {
 }
 
 interface MirrorPocket {
-  mode: "mirror";
-  mirror_suite: string;
-  mirror_uri: string;
-  mirror_gpg_key?: GPGKey;
   last_sync_activity: {
     pocket_id: number;
     pocket_name: string;
@@ -27,13 +23,15 @@ interface MirrorPocket {
   last_sync_status: string | null;
   last_sync_status_message: string | null;
   last_sync_time: string | null;
+  mirror_suite: string;
+  mirror_uri: string;
+  mode: "mirror";
+  mirror_gpg_key?: GPGKey;
 }
 
 interface PullPocket {
-  mode: "pull";
   filter_type: "whitelist" | "blacklist" | null;
   filters: string[];
-  pull_pocket: string;
   last_sync_activity: {
     pocket_id: number;
     pocket_name: string;
@@ -45,6 +43,8 @@ interface PullPocket {
   last_sync_status: string | null;
   last_sync_status_message: string | null;
   last_sync_time: string | null;
+  mode: "pull";
+  pull_pocket: string;
 }
 
 interface UploadPocket {

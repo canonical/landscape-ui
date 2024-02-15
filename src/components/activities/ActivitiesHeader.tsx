@@ -28,7 +28,12 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { approveActivitiesQuery, cancelActivitiesQuery } = useActivities();
+  const {
+    approveActivitiesQuery,
+    cancelActivitiesQuery,
+    redoActivitiesQuery,
+    undoActivitiesQuery,
+  } = useActivities();
 
   const {
     mutateAsync: approveActivities,
@@ -36,6 +41,10 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   } = approveActivitiesQuery;
   const { mutateAsync: cancelActivities, isLoading: cancelActivitiesLoading } =
     cancelActivitiesQuery;
+  const { mutateAsync: redoActivities, isLoading: redoActivitiesLoading } =
+    redoActivitiesQuery;
+  const { mutateAsync: undoActivities, isLoading: undoActivitiesLoading } =
+    undoActivitiesQuery;
 
   const handleResetPage = () => {
     resetPage();
@@ -80,7 +89,17 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
     handleSearch();
   };
 
-  const handleApproveActivities = () => {
+  const handleApproveActivities = async () => {
+    try {
+      await approveActivities({ query: `id:${selectedIds.join(" OR id:")}` });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleApproveActivitiesDialog = () => {
     confirmModal({
       title: "Approve activities",
       body: "Are you sure you want to approve selected activities?",
@@ -88,17 +107,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
         <Button
           key="approve"
           appearance="positive"
-          onClick={async () => {
-            const query = `id:${selectedIds.join(" OR id:")}`;
-
-            try {
-              await approveActivities({ query });
-            } catch (error) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
+          onClick={handleApproveActivities}
         >
           Approve
         </Button>,
@@ -106,7 +115,17 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
     });
   };
 
-  const handleCancelActivities = () => {
+  const handleCancelActivities = async () => {
+    try {
+      await cancelActivities({ query: `id:${selectedIds.join(" OR id:")}` });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleCancelActivitiesDialog = () => {
     confirmModal({
       title: "Cancel activities",
       body: "Are you sure you want to cancel selected activities?",
@@ -114,19 +133,53 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
         <Button
           key="cancel"
           appearance="positive"
-          onClick={async () => {
-            const query = `id:${selectedIds.join(" OR id:")}`;
-
-            try {
-              await cancelActivities({ query });
-            } catch (error) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
+          onClick={handleCancelActivities}
         >
           Apply
+        </Button>,
+      ],
+    });
+  };
+
+  const handleRedoActivities = async () => {
+    try {
+      await redoActivities({ activityIds: selectedIds });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleRedoActivitiesDialog = () => {
+    confirmModal({
+      title: "Redo activities",
+      body: "Are you sure you want to redo selected activities?",
+      buttons: [
+        <Button key="redo" appearance="positive" onClick={handleRedoActivities}>
+          Redo
+        </Button>,
+      ],
+    });
+  };
+
+  const handleUndoActivities = async () => {
+    try {
+      await undoActivities({ activityIds: selectedIds });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleUndoActivitiesDialog = () => {
+    confirmModal({
+      title: "Undo activities",
+      body: "Are you sure you want to undo selected activities?",
+      buttons: [
+        <Button key="undo" appearance="positive" onClick={handleUndoActivities}>
+          Undo
         </Button>,
       ],
     });
@@ -173,34 +226,34 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
           <Button
             className="p-segmented-control__button u-no-margin--bottom"
             type="button"
-            onClick={handleApproveActivities}
-            disabled={approveActivitiesLoading || selectedIds.length === 0}
+            onClick={handleApproveActivitiesDialog}
+            disabled={selectedIds.length === 0 || approveActivitiesLoading}
           >
-            <span>Approve</span>
+            Approve
           </Button>
           <Button
             className="p-segmented-control__button u-no-margin--bottom"
             type="button"
-            onClick={handleCancelActivities}
-            disabled={cancelActivitiesLoading || selectedIds.length === 0}
+            onClick={handleCancelActivitiesDialog}
+            disabled={selectedIds.length === 0 || cancelActivitiesLoading}
           >
-            <span>Cancel</span>
+            Cancel
           </Button>
           <Button
             className="p-segmented-control__button u-no-margin--bottom"
             type="button"
-            onClick={() => {}}
-            disabled={selectedIds.length === 0}
+            onClick={handleUndoActivitiesDialog}
+            disabled={selectedIds.length === 0 || undoActivitiesLoading}
           >
-            <span>Undo</span>
+            Undo
           </Button>
           <Button
             className="p-segmented-control__button u-no-margin--bottom"
             type="button"
-            onClick={() => {}}
-            disabled={selectedIds.length === 0}
+            onClick={handleRedoActivitiesDialog}
+            disabled={selectedIds.length === 0 || redoActivitiesLoading}
           >
-            <span>Redo</span>
+            Redo
           </Button>
         </div>
       </div>

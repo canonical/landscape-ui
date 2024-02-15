@@ -1,17 +1,12 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.actions,
-.name {
-  width: 100%;
-}
-
 .actions {
-  max-width: 15%;
+  width: 15%;
 }
 
 .name {
-  max-width: 45%;
+  width: 45%;
 }
 
 .actions {

@@ -198,7 +198,7 @@ const PackageList: FC<PackageListProps> = (props) => {
                   type="button"
                   appearance="link"
                   className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-                  onClick={() => {}}
+                  onClick={() => undefined}
                 >
                   {`${row.original.usn?.name}, ${row.original.usn?.summary}`}
                 </Button>

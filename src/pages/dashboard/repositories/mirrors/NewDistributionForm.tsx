@@ -81,7 +81,11 @@ const NewDistributionForm: FC = () => {
         label="Distribution name"
         required
         {...formik.getFieldProps("name")}
-        error={formik.touched.name && formik.errors.name}
+        error={
+          formik.touched.name && formik.errors.name
+            ? formik.errors.name
+            : undefined
+        }
       />
 
       <Select
@@ -91,7 +95,11 @@ const NewDistributionForm: FC = () => {
           ...accessGroupsOptions,
         ]}
         {...formik.getFieldProps("access_group")}
-        error={formik.touched.access_group && formik.errors.access_group}
+        error={
+          formik.touched.access_group && formik.errors.access_group
+            ? formik.errors.access_group
+            : undefined
+        }
       />
 
       <SidePanelFormButtons

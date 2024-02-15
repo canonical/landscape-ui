@@ -2,7 +2,7 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.navigation {
+:global(.l-navigation) {
   &:hover,
   &:focus-within {
     .container {
@@ -17,7 +17,7 @@
   padding: $sp-medium;
   opacity: 0;
 
-  .menuOpen & {
+  :global(.l-navigation:not(.is-collapsed)) & {
     opacity: 1;
   }
 

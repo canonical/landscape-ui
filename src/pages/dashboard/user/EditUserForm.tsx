@@ -82,7 +82,11 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         required
         options={TIMEZONES}
         {...formik.getFieldProps("timezone")}
-        error={formik.touched.timezone && formik.errors.timezone}
+        error={
+          formik.touched.timezone && formik.errors.timezone
+            ? formik.errors.timezone
+            : undefined
+        }
       />
       {emails.length > 1 ? (
         <Select
@@ -90,7 +94,11 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           required
           options={emails}
           {...formik.getFieldProps("email")}
-          error={formik.touched.email && formik.errors.email}
+          error={
+            formik.touched.email && formik.errors.email
+              ? formik.errors.email
+              : undefined
+          }
         />
       ) : (
         <InfoItem label="Email address" value={emails[0].value} />

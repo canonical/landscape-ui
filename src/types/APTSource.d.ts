@@ -2,9 +2,9 @@ import { AccessGroup } from "./AccessGroup";
 import { GPGKey } from "./GPGKey";
 
 export interface APTSource extends Record<string, unknown> {
-  line: string;
+  access_group: AccessGroup["name"];
   gpg_key: GPGKey["name"] | null;
   id: number;
+  line: string;
   name: string;
-  access_group: AccessGroup["name"];
 }

@@ -17,7 +17,7 @@ const AppNotification: FC<AppNotificationProps> = ({
     return null;
   }
 
-  const { type, message, actions } = notify.notification;
+  const { type, message, actions, title } = notify.notification;
 
   return (
     <div className={classNames({ [classes.container]: !isSidePanelOpen })}>
@@ -26,6 +26,7 @@ const AppNotification: FC<AppNotificationProps> = ({
         severity={type}
         onDismiss={notify.clear}
         actions={actions}
+        title={title}
       >
         {message}
       </Notification>

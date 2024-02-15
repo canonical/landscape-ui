@@ -1,8 +1,8 @@
 import { QueryFnType } from "../types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
 import {
-  UseMutationResult,
   useMutation,
+  UseMutationResult,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -65,24 +65,24 @@ interface GetUsersParams {
 
 interface CreateUserParams {
   computer_ids: number[];
-  username: string;
   name: string;
   password: string;
-  require_password_reset?: boolean;
-  primary_groupname?: string;
-  location?: string;
+  username: string;
   home_phone?: string;
+  location?: string;
+  primary_groupname?: string;
+  require_password_reset?: boolean;
   work_phone?: string;
 }
 
 interface EditUserParams {
   computer_ids: number[];
   username: string;
+  home_phone?: string;
+  location?: string;
   name?: string;
   password?: string;
   primary_groupname?: string;
-  location?: string;
-  home_phone?: string;
   work_phone?: string;
 }
 
@@ -107,10 +107,10 @@ interface GetGroupsParams {
 }
 
 interface GroupMutationQueryParams {
-  computer_id: number;
-  usernames: string[];
-  groupnames: string[];
   action: "add" | "remove";
+  computer_id: number;
+  groupnames: string[];
+  usernames: string[];
 }
 
 export default function useUsers(): useUserResult {

@@ -36,15 +36,15 @@ const AlertsPage: FC = () => {
           }
         }),
       );
-      notify.success(
-        `Successfully ${
+      notify.success({
+        message: `Successfully ${
           subscribe
             ? `subscribed to the alert${selectedAlerts.length === 1 ? "" : "s"}`
             : `unsubscribed from the alert${
                 selectedAlerts.length === 1 ? "" : "s"
               }`
         }`,
-      );
+      });
       setSelectedAlerts([]);
     } catch (error) {
       debug(error);

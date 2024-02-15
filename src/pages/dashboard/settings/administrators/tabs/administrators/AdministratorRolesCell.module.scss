@@ -1,0 +1,20 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.footer {
+  margin-bottom: $spv--small;
+}
+
+.multiSelect {
+  :global(.multi-select__select-button) {
+    border-bottom-width: 0;
+    border-color: $color-mid-x-light;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-style: solid;
+
+    &:not(:hover):not([aria-expanded="true"]) {
+      background-color: $color-x-light;
+    }
+  }
+}

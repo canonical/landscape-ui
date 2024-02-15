@@ -85,7 +85,11 @@ const ProcessesPanel: FC = () => {
             <CheckboxInput
               inline
               label={<span className="u-off-screen">Toggle all processes</span>}
-              checked={selectedPids.length === processes.length}
+              checked={
+                selectedPids.length > 0 &&
+                selectedPids.length === processes.length
+              }
+              disabled={processes.length === 0}
               onChange={toggleAll}
               indeterminate={
                 selectedPids.length > 0 &&

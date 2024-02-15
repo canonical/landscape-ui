@@ -73,21 +73,33 @@ const SingleSavedSearch: FC<SingleSavedSearchProps> = ({ savedSearch }) => {
         label="Title"
         required
         {...formik.getFieldProps("title")}
-        error={formik.touched.title && formik.errors.title}
+        error={
+          formik.touched.title && formik.errors.title
+            ? formik.errors.title
+            : undefined
+        }
       />
       <Input
         type="text"
         label="Search"
         required
         {...formik.getFieldProps("search")}
-        error={formik.touched.search && formik.errors.search}
+        error={
+          formik.touched.search && formik.errors.search
+            ? formik.errors.search
+            : undefined
+        }
       />
       {!savedSearch && (
         <Input
           type="text"
           label="Name"
           {...formik.getFieldProps("name")}
-          error={formik.touched.name && formik.errors.name}
+          error={
+            formik.touched.name && formik.errors.name
+              ? formik.errors.name
+              : undefined
+          }
         />
       )}
 
