@@ -144,9 +144,9 @@ const AlertList: FC<AlertListProps> = ({
           const containingTags =
             row.original.tags.length > 0 ? row.original.tags.join(", ") : "";
           return row.original.all_computers ? (
-            <>All computers</>
+            <>All instances</>
           ) : row.original.tags.length > 0 ? (
-            <>Computers tagged with {containingTags}</>
+            <>Instances tagged with {containingTags}</>
           ) : (
             <>Account</>
           );

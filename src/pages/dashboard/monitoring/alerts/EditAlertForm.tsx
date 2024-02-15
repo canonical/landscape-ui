@@ -16,7 +16,7 @@ function findExclusiveTags(sourceTags: string[], tagsToExclude: string[]) {
 }
 
 interface FormProps {
-  all_computers: boolean;
+  all_instances: boolean;
   tags: string[];
 }
 
@@ -35,23 +35,23 @@ const EditAlertForm: FC<EditAlertFormProps> = ({ alert }) => {
   const debug = useDebug();
   const formik = useFormik<FormProps>({
     initialValues: {
-      all_computers: alert.all_computers,
+      all_instances: alert.all_computers,
       tags: alert.tags,
     },
     validationSchema: Yup.object().shape({
-      all_computers: Yup.boolean(),
+      all_instances: Yup.boolean(),
       tags: Yup.array().of(Yup.string()),
     }),
     onSubmit: async (values) => {
       try {
         const disassociatedTags = findExclusiveTags(alert.tags, values.tags);
         const promises: Promise<AxiosResponse<Alert>>[] = [];
-        if (values.all_computers) {
+        if (values.all_instances) {
           promises.push(
             associateMutate({
               name: alert.alert_type,
               tags: undefined,
-              all_computers: values.all_computers,
+              all_computers: values.all_instances,
             }),
           );
         } else {
@@ -83,11 +83,11 @@ const EditAlertForm: FC<EditAlertFormProps> = ({ alert }) => {
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <CheckboxInput
-        label="All computers"
-        checked={formik.values.all_computers}
-        {...formik.getFieldProps("all_computers")}
+        label="All instances"
+        checked={formik.values.all_instances}
+        {...formik.getFieldProps("all_instances")}
         onChange={(event) => {
-          formik.getFieldProps("all_computers").onChange(event);
+          formik.getFieldProps("all_instances").onChange(event);
           formik.setFieldValue(
             "tags",
             TAG_OPTIONS.map((tag) => tag.value),
@@ -97,7 +97,7 @@ const EditAlertForm: FC<EditAlertFormProps> = ({ alert }) => {
       {alert.tags.length > 0 ? (
         <CheckboxGroup
           label="Tags"
-          disabled={formik.values.all_computers}
+          disabled={formik.values.all_instances}
           options={TAG_OPTIONS}
           {...formik.getFieldProps("tags")}
           onChange={(newOptions) => {

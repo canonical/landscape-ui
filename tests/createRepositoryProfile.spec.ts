@@ -20,7 +20,7 @@ test("should create repository profile", async ({ page }) => {
     .fill("Test profile description");
   await page.getByRole("combobox").selectOption("global");
   await expect(page.locator('input[name="tags"]')).toBeEnabled();
-  await page.getByText("All computers").click();
+  await page.getByText("All instances").click();
   await expect(page.locator('input[name="tags"]')).toBeDisabled();
 
   await page.getByTestId("pockets-tab").click();

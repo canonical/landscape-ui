@@ -24,12 +24,16 @@ const GPGKeysPage = lazy(
 const APTSourcesPage = lazy(
   () => import("./pages/dashboard/repositories/apt-sources"),
 );
-const MachinesPage = lazy(() => import("./pages/dashboard/machines"));
-const SingleMachine = lazy(() => import("./pages/dashboard/machines/[single]"));
+const InstancesPage = lazy(
+  () => import("./pages/dashboard/instances/InstancesPage"),
+);
+const SingleInstance = lazy(
+  () => import("./pages/dashboard/instances/[single]/SingleInstance"),
+);
 const ActivitiesPage = lazy(() => import("./pages/dashboard/activities"));
 const ScriptsPage = lazy(() => import("./pages/dashboard/scripts"));
 const SavedSearchesPage = lazy(
-  () => import("./pages/dashboard/machines/saved-searches"),
+  () => import("./pages/dashboard/instances/saved-searches"),
 );
 const AccountPage = lazy(() => import("./pages/dashboard/account"));
 const OverviewPage = lazy(() => import("./pages/dashboard/account/overview"));
@@ -157,7 +161,7 @@ const App: FC = () => {
               path="instances"
               element={
                 <AuthRoute>
-                  <MachinesPage />
+                  <InstancesPage />
                 </AuthRoute>
               }
             />
@@ -165,7 +169,7 @@ const App: FC = () => {
               path="instances/:hostname"
               element={
                 <AuthRoute>
-                  <SingleMachine />
+                  <SingleInstance />
                 </AuthRoute>
               }
             />
@@ -173,7 +177,7 @@ const App: FC = () => {
               path="instances/:hostname/:childHostname"
               element={
                 <AuthRoute>
-                  <SingleMachine />
+                  <SingleInstance />
                 </AuthRoute>
               }
             />

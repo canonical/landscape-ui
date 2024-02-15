@@ -5,7 +5,7 @@ import useDebug from "../../hooks/useDebug";
 import useConfirm from "../../hooks/useConfirm";
 import useSidePanel from "../../hooks/useSidePanel";
 import useActivities from "../../hooks/useActivities";
-import useComputers from "../../hooks/useComputers";
+import useInstances from "../../hooks/useInstances";
 import InfoItem from "../layout/InfoItem";
 import { ACTIVITY_STATUSES } from "./_data";
 import moment from "moment";
@@ -26,7 +26,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
     redoActivitiesQuery,
     undoActivitiesQuery,
   } = useActivities();
-  const { getComputersQuery } = useComputers();
+  const { getInstancesQuery } = useInstances();
 
   const {
     mutateAsync: approveActivities,
@@ -135,8 +135,8 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
     });
   };
 
-  const { data: getComputersQueryResult, error: getComputersQueryError } =
-    getComputersQuery(
+  const { data: getInstancesQueryResult, error: getInstancesQueryError } =
+    getInstancesQuery(
       {
         query: `id:${activity.computer_id}`,
         root_only: false,
@@ -146,13 +146,13 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
       },
     );
 
-  if (getComputersQueryError) {
-    debug(getComputersQueryError);
+  if (getInstancesQueryError) {
+    debug(getInstancesQueryError);
   }
 
-  const computerTitle =
-    getComputersQueryResult && getComputersQueryResult.data.results.length > 0
-      ? getComputersQueryResult.data.results[0].title
+  const instanceTitle =
+    getInstancesQueryResult && getInstancesQueryResult.data.results.length > 0
+      ? getInstancesQueryResult.data.results[0].title
       : "";
 
   return (
@@ -197,9 +197,9 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
         <Col size={12}>
           <InfoItem label="Description" value={activity.summary} />
         </Col>
-        {computerTitle && (
+        {instanceTitle && (
           <Col size={12}>
-            <InfoItem label="Computer" value={computerTitle} />
+            <InfoItem label="Instance" value={instanceTitle} />
           </Col>
         )}
         <Col size={6}>

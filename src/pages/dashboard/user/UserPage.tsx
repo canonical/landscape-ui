@@ -1,6 +1,6 @@
 import { Button, Col, MainTable, Row } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC, Suspense, lazy, useState } from "react";
+import { FC, lazy, Suspense, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import InfoItem from "../../../components/layout/InfoItem";
 import LoadingState from "../../../components/layout/LoadingState";
@@ -16,7 +16,7 @@ import tableClasses from "../repositories/mirrors/SeriesPocketList.module.scss";
 import UserAccountActionButtons from "./UserAccountActionButtons";
 import userPageClasses from "./UserPage.module.scss";
 import { buildTableRows, getAccountRows, getColumnSize } from "./_helpers";
-import infoPanelClasses from "../machines/[single]/tabs/info/InfoPanel.module.scss";
+import infoPanelClasses from "../instances/[single]/tabs/info/InfoPanel.module.scss";
 
 const EditUserForm = lazy(() => import("./EditUserForm"));
 

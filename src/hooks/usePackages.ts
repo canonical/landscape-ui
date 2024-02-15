@@ -25,8 +25,8 @@ interface GetPackagesParams {
   upgrade?: boolean;
 }
 
-interface GetComputerPackagesParams {
-  computer_id: number;
+interface GetInstancePackagesParams {
+  instance_id: number;
   available?: boolean;
   held?: boolean;
   installed?: boolean;
@@ -71,8 +71,8 @@ export const usePackages = () => {
     });
   };
 
-  const getComputerPackagesQuery = (
-    { computer_id, ...queryParams }: GetComputerPackagesParams,
+  const getInstancePackagesQuery = (
+    { instance_id, ...queryParams }: GetInstancePackagesParams,
     config: Omit<
       UseQueryOptions<
         AxiosResponse<ApiPaginatedResponse<Package>>,
@@ -85,9 +85,9 @@ export const usePackages = () => {
       AxiosResponse<ApiPaginatedResponse<Package>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["packages", queryParams],
+      queryKey: ["packages", { instance_id, ...queryParams }],
       queryFn: () =>
-        authFetch!.get(`computers/${computer_id}/packages`, {
+        authFetch!.get(`computers/${instance_id}/packages`, {
           params: queryParams,
         }),
       ...config,
@@ -132,7 +132,7 @@ export const usePackages = () => {
 
   return {
     getPackagesQuery,
-    getComputerPackagesQuery,
+    getInstancePackagesQuery,
     installPackagesQuery,
     removePackagesQuery,
     upgradePackagesQuery,

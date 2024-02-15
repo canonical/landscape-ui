@@ -35,7 +35,7 @@ const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose, data }) => {
         <p>
           Available search terms for use in the search box. If multiple search
           terms are separated by OR, any of the conditions will match.
-          Otherwise, all conditions must be met for a computer to match. When a
+          Otherwise, all conditions must be met for a instance to match. When a
           term is preceded by NOT, the condition must not match. If the searched
           value contains spaces or non-ASCII characters, it must be quoted.
         </p>
