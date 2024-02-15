@@ -1,6 +1,6 @@
 import {
-  UseMutationResult,
   useMutation,
+  UseMutationResult,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -20,8 +20,8 @@ interface GenerateApiCredentialsParams {
 }
 
 interface EditUserDetailsParams {
-  name: string;
   email: string;
+  name: string;
   timezone: string;
 }
 

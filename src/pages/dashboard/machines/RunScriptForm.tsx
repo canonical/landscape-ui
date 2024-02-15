@@ -241,7 +241,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
           },
         ]}
         {...formik.getFieldProps("type")}
-        error={formik.touched.type && formik.errors.type}
+        error={
+          formik.touched.type && formik.errors.type
+            ? formik.errors.type
+            : undefined
+        }
       />
 
       {formik.values.type === "existing" && (
@@ -257,7 +261,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
           ]}
           {...formik.getFieldProps("script_id")}
           onChange={handleScriptChange}
-          error={formik.touched.script_id && formik.errors.script_id}
+          error={
+            formik.touched.script_id && formik.errors.script_id
+              ? formik.errors.script_id
+              : undefined
+          }
         />
       )}
 
@@ -268,7 +276,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
             type="text"
             required
             {...formik.getFieldProps("title")}
-            error={formik.touched.title && formik.errors.title}
+            error={
+              formik.touched.title && formik.errors.title
+                ? formik.errors.title
+                : undefined
+            }
           />
 
           <Input
@@ -276,7 +288,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
             type="number"
             required
             {...formik.getFieldProps("time_limit")}
-            error={formik.touched.time_limit && formik.errors.time_limit}
+            error={
+              formik.touched.time_limit && formik.errors.time_limit
+                ? formik.errors.time_limit
+                : undefined
+            }
           />
 
           <CodeEditor
@@ -286,7 +302,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
               formik.setFieldValue("code", value ?? "");
             }}
             value={formik.values.code}
-            error={formik.touched.code && formik.errors.code}
+            error={
+              formik.touched.code && formik.errors.code
+                ? formik.errors.code
+                : undefined
+            }
           />
 
           <Select
@@ -297,7 +317,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
               ...accessGroupsOptions,
             ]}
             {...formik.getFieldProps("access_group")}
-            error={formik.touched.access_group && formik.errors.access_group}
+            error={
+              formik.touched.access_group && formik.errors.access_group
+                ? formik.errors.access_group
+                : undefined
+            }
           />
         </>
       )}
@@ -307,7 +331,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
         type="text"
         required
         {...formik.getFieldProps("username")}
-        error={formik.touched.username && formik.errors.username}
+        error={
+          formik.touched.username && formik.errors.username
+            ? formik.errors.username
+            : undefined
+        }
       />
 
       {formik.values.type === "new" && (
@@ -422,7 +450,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
         required={!formik.values.deliverImmediately}
         disabled={formik.values.deliverImmediately}
         {...formik.getFieldProps("deliver_after")}
-        error={formik.touched.deliver_after && formik.errors.deliver_after}
+        error={
+          formik.touched.deliver_after && formik.errors.deliver_after
+            ? formik.errors.deliver_after
+            : undefined
+        }
       />
 
       <SidePanelFormButtons

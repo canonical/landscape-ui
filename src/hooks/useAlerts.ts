@@ -1,6 +1,6 @@
 import {
-  UseMutationResult,
   useMutation,
+  UseMutationResult,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -26,14 +26,14 @@ interface GetAlertSubscribersParams {
 
 interface AssociateAlertParams {
   name: string;
-  tags?: string[];
   all_computers?: boolean;
+  tags?: string[];
 }
 
 interface DisassociateAlertParams {
   name: string;
-  tags?: string[];
   all_computers?: boolean;
+  tags?: string[];
 }
 
 interface UseAlertsResult {

@@ -27,8 +27,8 @@
     display: none;
   }
 
-  .header:hover &,
-  .header:focus-within & {
+  :global(.l-navigation):hover &,
+  :global(.l-navigation):focus-within & {
     display: none;
   }
 }

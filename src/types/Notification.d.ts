@@ -7,15 +7,33 @@ declare type NotificationAction = {
 };
 
 export interface Notification {
-  actions?: NotificationAction[];
   message: string;
   type: ValueOf<typeof NotificationSeverity>;
+  actions?: NotificationAction[];
+  title?: string;
 }
 
+type NotificationMethodArgs<T = "default"> = T extends "error"
+  ? {
+      message: string;
+      actions?: NotificationAction[];
+      error?: unknown;
+      title?: string;
+    }
+  : {
+      message: string;
+      actions?: NotificationAction[];
+      title?: string;
+    };
+
+type NotificationMethod<T = "default"> = (
+  args: NotificationMethodArgs<T>,
+) => void;
+
 export interface NotificationHelper {
-  notification: Notification | null;
   clear: () => void;
-  error: (message: string, error?: any, actions?: NotificationAction[]) => void;
-  info: (message: string, actions?: NotificationAction[]) => void;
-  success: (message: string, actions?: NotificationAction[]) => void;
+  error: NotificationMethod<"error">;
+  info: NotificationMethod;
+  notification: Notification | null;
+  success: NotificationMethod;
 }

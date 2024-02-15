@@ -14,13 +14,13 @@ interface GetWslParams {
 }
 
 export interface CreateChildComputerParams {
-  parent_id: number;
   computer_name: string;
+  parent_id: number;
 }
 
 interface SetDefaultChildComputerParams {
-  parent_id: number;
   child_id: number;
+  parent_id: number;
 }
 
 interface ShutdownHostComputerParams {
@@ -29,6 +29,11 @@ interface ShutdownHostComputerParams {
 
 interface ChildComputersActionsParams {
   computer_ids: number[];
+}
+
+interface WslInstanceName {
+  label: string;
+  name: string;
 }
 
 export const useWsl = () => {
@@ -136,9 +141,21 @@ export const useWsl = () => {
       ]),
   });
 
+  const getWslInstanceNamesQuery: QueryFnType<
+    AxiosResponse<WslInstanceName[]>,
+    undefined
+  > = (_, config = {}) => {
+    return useQuery<AxiosResponse<WslInstanceName[]>, AxiosError<ApiError>>({
+      queryKey: ["wsl-instance-names"],
+      queryFn: () => authFetch!.get("wsl-instance-names"),
+      ...config,
+    });
+  };
+
   return {
     createChildComputerQuery,
     deleteChildComputersQuery,
+    getWslInstanceNamesQuery,
     getWslHostsQuery,
     setDefaultChildComputerQuery,
     shutdownHostComputerQuery,

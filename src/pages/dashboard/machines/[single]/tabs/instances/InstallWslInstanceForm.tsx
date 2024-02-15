@@ -5,6 +5,7 @@ import { Form, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import SidePanelFormButtons from "../../../../../../components/form/SidePanelFormButtons";
+import { SelectOption } from "../../../../../../types/SelectOption";
 
 interface InstallWslInstanceFormProps {
   parentId: number;
@@ -14,7 +15,22 @@ const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
   parentId,
 }) => {
   const debug = useDebug();
-  const { createChildComputerQuery } = useWsl();
+  const { createChildComputerQuery, getWslInstanceNamesQuery } = useWsl();
+
+  const {
+    data: getWslInstanceNamesQueryResult,
+    error: getWslInstanceNamesQueryError,
+  } = getWslInstanceNamesQuery();
+
+  if (getWslInstanceNamesQueryError) {
+    debug(getWslInstanceNamesQueryError);
+  }
+
+  const instanceTypeOptions: SelectOption[] =
+    getWslInstanceNamesQueryResult?.data.map(({ label, name }) => ({
+      label,
+      value: name,
+    })) || [];
 
   const { mutateAsync: createChildComputer } = createChildComputerQuery;
 
@@ -40,12 +56,13 @@ const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
       <Select
         label="Instance type"
         required
-        options={[
-          { label: "Ubuntu", value: "Ubuntu" },
-          { label: "Ubuntu-22.04", value: "Ubuntu-22.04" },
-        ]}
+        options={instanceTypeOptions}
         {...formik.getFieldProps("instanceType")}
-        error={formik.touched.instanceType && formik.errors.instanceType}
+        error={
+          formik.touched.instanceType && formik.errors.instanceType
+            ? formik.errors.instanceType
+            : undefined
+        }
       />
 
       <SidePanelFormButtons

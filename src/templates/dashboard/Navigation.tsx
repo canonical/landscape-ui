@@ -49,10 +49,6 @@ const MENU_ITEMS: MenuItem[] = [
         label: "Removal profiles",
         path: `${ROOT_PATH}profiles/removal`,
       },
-      {
-        label: "WSL profiles",
-        path: `${ROOT_PATH}profiles/wsl`,
-      },
     ],
   },
   {

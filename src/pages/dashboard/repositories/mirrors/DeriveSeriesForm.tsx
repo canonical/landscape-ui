@@ -76,7 +76,11 @@ const DeriveSeriesForm: FC<DeriveSeriesProps> = ({ distribution, origin }) => {
         label="Series name"
         required
         {...formik.getFieldProps("name")}
-        error={formik.touched.name && formik.errors.name}
+        error={
+          formik.touched.name && formik.errors.name
+            ? formik.errors.name
+            : undefined
+        }
       />
 
       <p className="u-text--muted">{`You are deriving ${distribution.name}/${origin}.`}</p>

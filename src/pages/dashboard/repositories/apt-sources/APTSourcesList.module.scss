@@ -1,29 +1,23 @@
 @import "vanilla-framework/scss/settings_breakpoints";
 
-.actions,
-.accessGroup,
 .line {
-  width: 100%;
-}
-
-.line {
-  max-width: 50%;
+  width: 50%;
 
   @media (min-width: $breakpoint-x-large) {
-    max-width: 40%;
+    width: 40%;
   }
 }
 
 .accessGroup {
-  max-width: 15%;
+  width: 15%;
 
   @media (min-width: $breakpoint-x-large) {
-    max-width: 20%;
+    width: 20%;
   }
 }
 
 .actions {
-  max-width: 10%;
+  width: 10%;
   text-align: right;
   overflow: initial;
 }

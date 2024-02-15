@@ -42,7 +42,6 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
         className={classNames({ "u-no-margin--bottom": removeButtonMargin })}
         type="button"
         onClick={closeSidePanel}
-        disabled={disabled}
       >
         Cancel
       </Button>

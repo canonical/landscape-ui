@@ -20,7 +20,12 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { closeSidePanel } = useSidePanel();
 
-  const { approveActivitiesQuery, cancelActivitiesQuery } = useActivities();
+  const {
+    approveActivitiesQuery,
+    cancelActivitiesQuery,
+    redoActivitiesQuery,
+    undoActivitiesQuery,
+  } = useActivities();
   const { getComputersQuery } = useComputers();
 
   const {
@@ -29,8 +34,22 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
   } = approveActivitiesQuery;
   const { mutateAsync: cancelActivities, isLoading: cancelActivitiesLoading } =
     cancelActivitiesQuery;
+  const { mutateAsync: redoActivities, isLoading: redoActivitiesLoading } =
+    redoActivitiesQuery;
+  const { mutateAsync: undoActivities, isLoading: undoActivitiesLoading } =
+    undoActivitiesQuery;
 
   const handleApproveActivities = async () => {
+    try {
+      await approveActivities({ query: `id:${activity.id}` });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleApproveActivitiesDialog = () => {
     confirmModal({
       title: "Approve activity",
       body: `Are you sure you want to approve ${activity.summary} activity?`,
@@ -38,15 +57,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
         <Button
           key="approve"
           appearance="positive"
-          onClick={async () => {
-            try {
-              await approveActivities({ query: `id:${activity.id}` });
-            } catch (error) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
+          onClick={handleApproveActivities}
         >
           Approve
         </Button>,
@@ -55,6 +66,16 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
   };
 
   const handleCancelActivities = async () => {
+    try {
+      await cancelActivities({ query: `id:${activity.id}` });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleCancelActivitiesDialog = () => {
     confirmModal({
       title: "Cancel activity",
       body: `Are you sure you want to cancel ${activity.summary} activity?`,
@@ -62,17 +83,53 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
         <Button
           key="cancel"
           appearance="positive"
-          onClick={async () => {
-            try {
-              await cancelActivities({ query: `id:${activity.id}` });
-            } catch (error) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
+          onClick={handleCancelActivities}
         >
           Apply
+        </Button>,
+      ],
+    });
+  };
+
+  const handleRedoActivities = async () => {
+    try {
+      await redoActivities({ activityIds: [activity.id] });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleRedoActivitiesDialog = () => {
+    confirmModal({
+      title: "Redo activity",
+      body: `Are you sure you want to redo ${activity.summary} activity?`,
+      buttons: [
+        <Button key="redo" appearance="positive" onClick={handleRedoActivities}>
+          Redo
+        </Button>,
+      ],
+    });
+  };
+
+  const handleUndoActivities = async () => {
+    try {
+      await undoActivities({ activityIds: [activity.id] });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleUndoActivitiesDialog = () => {
+    confirmModal({
+      title: "Undo activity",
+      body: `Are you sure you want to undo ${activity.summary} activity?`,
+      buttons: [
+        <Button key="undo" appearance="positive" onClick={handleUndoActivities}>
+          Undo
         </Button>,
       ],
     });
@@ -82,6 +139,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
     getComputersQuery(
       {
         query: `id:${activity.computer_id}`,
+        root_only: false,
       },
       {
         enabled: !!activity.computer_id,
@@ -92,7 +150,10 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
     debug(getComputersQueryError);
   }
 
-  const computerTitle = getComputersQueryResult?.data.results[0].title ?? "";
+  const computerTitle =
+    getComputersQueryResult && getComputersQueryResult.data.results.length > 0
+      ? getComputersQueryResult.data.results[0].title
+      : "";
 
   return (
     <>
@@ -101,32 +162,34 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activity }) => {
           <Button
             className="p-segmented-control__button"
             type="button"
-            onClick={handleApproveActivities}
+            onClick={handleApproveActivitiesDialog}
             disabled={approveActivitiesLoading}
           >
-            <span>Approve</span>
+            Approve
           </Button>
           <Button
             className="p-segmented-control__button"
             type="button"
-            onClick={handleCancelActivities}
+            onClick={handleCancelActivitiesDialog}
             disabled={cancelActivitiesLoading}
           >
-            <span>Cancel</span>
+            Cancel
           </Button>
           <Button
             className="p-segmented-control__button"
             type="button"
-            onClick={() => {}}
+            onClick={handleUndoActivitiesDialog}
+            disabled={undoActivitiesLoading}
           >
-            <span>Undo</span>
+            Undo
           </Button>
           <Button
             className="p-segmented-control__button"
             type="button"
-            onClick={() => {}}
+            onClick={handleRedoActivitiesDialog}
+            disabled={redoActivitiesLoading}
           >
-            <span>Redo</span>
+            Redo
           </Button>
         </div>
       </div>

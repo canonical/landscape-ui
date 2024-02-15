@@ -6,9 +6,9 @@ export type PocketPackage = [PocketPackageName, PocketPackageVersion];
 
 export interface PackageDiff {
   [componentArchitecturePair: string]: {
-    update?: [PocketPackageName, PocketPackageVersion, PocketPackageVersion][];
     add?: PocketPackage[];
     delete?: PocketPackage[];
+    update?: [PocketPackageName, PocketPackageVersion, PocketPackageVersion][];
   };
 }
 
@@ -17,15 +17,15 @@ export interface PocketPackagesList {
 }
 
 export interface Package extends Record<string, unknown> {
+  computers: {
+    available: number[];
+    held: number[];
+    installed: number[];
+    upgrades: number[];
+  };
   name: string;
   summary: string;
   version: string;
-  computers: {
-    available: number[];
-    installed: number[];
-    upgrades: number[];
-    held: number[];
-  };
   usn?: {
     name: string;
     summary: string;

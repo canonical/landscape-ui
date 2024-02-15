@@ -107,7 +107,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ machineId, user }) => {
         );
         await Promise.all(promises);
         closeSidePanel();
-        notify.success("User updated successfully");
+        notify.success({ message: "User updated successfully" });
       } catch (error) {
         debug(error);
       }
@@ -168,6 +168,8 @@ const EditUserForm: FC<EditUserFormProps> = ({ machineId, user }) => {
         {...formik.getFieldProps("primaryGroupValue")}
         error={
           formik.touched.primaryGroupValue && formik.errors.primaryGroupValue
+            ? formik.errors.primaryGroupValue
+            : undefined
         }
       />
       <Select

@@ -9,10 +9,10 @@ import useUsers from "../../../../../../hooks/useUsers";
 import { User } from "../../../../../../types/User";
 import NewUserForm from "../../../NewUserForm";
 import {
-  UserAction,
   getSelectedUsernames,
   getUserLockStatusCounts,
   renderModalBody,
+  UserAction,
 } from "./_helpers";
 import classes from "./UserPanelActionButtons.module.scss";
 import { useMediaQuery } from "usehooks-ts";
@@ -64,7 +64,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
         setSelected([]);
       }
       closeSidePanel();
-      notify.success(`Successfully requested to be ${actionType}`);
+      notify.success({ message: `Successfully requested to be ${actionType}` });
     } catch (error) {
       debug(error);
     } finally {

@@ -10,26 +10,26 @@ import useFetch from "./useFetch";
 import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
 
 interface GetComputersParams {
-  query?: string;
   limit?: number;
   offset?: number;
-  with_network?: boolean;
-  with_hardware?: boolean;
-  with_grouped_hardware?: boolean;
-  with_annotations?: boolean;
+  query?: string;
   root_only?: boolean;
+  with_annotations?: boolean;
+  with_grouped_hardware?: boolean;
+  with_hardware?: boolean;
+  with_network?: boolean;
   wsl_only?: boolean;
 }
 
 interface AddAnnotationToComputersParams {
-  query: string;
   key: string;
+  query: string;
   value?: string;
 }
 
 interface RemoveAnnotationFromComputersParams {
-  query: string;
   key: string;
+  query: string;
 }
 
 interface AddTagsToComputersParams {
@@ -43,8 +43,8 @@ interface RemoveTagsFromComputersParams {
 }
 
 interface ChangeComputersAccessGroupParams {
-  query: string;
   access_group: string;
+  query: string;
 }
 
 interface RemoveComputers {

@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import useFetchOld from "./useFetchOld";
 import { QueryFnType } from "../types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
@@ -20,9 +25,21 @@ interface GetPackagesParams {
   upgrade?: boolean;
 }
 
+interface GetComputerPackagesParams {
+  computer_id: number;
+  available?: boolean;
+  held?: boolean;
+  installed?: boolean;
+  limit?: number;
+  names?: string[];
+  offset?: number;
+  search?: string;
+  upgrade?: boolean;
+}
+
 export interface CommonPackagesActionParams {
-  query: string;
   packages: string[];
+  query: string;
   deliver_after?: string;
   deliver_delay_window?: number;
 }
@@ -48,6 +65,29 @@ export const usePackages = () => {
       queryKey: ["packages", queryParams],
       queryFn: () =>
         authFetch!.get("packages", {
+          params: queryParams,
+        }),
+      ...config,
+    });
+  };
+
+  const getComputerPackagesQuery = (
+    { computer_id, ...queryParams }: GetComputerPackagesParams,
+    config: Omit<
+      UseQueryOptions<
+        AxiosResponse<ApiPaginatedResponse<Package>>,
+        AxiosError<ApiError>
+      >,
+      "queryKey" | "queryFn"
+    > = {},
+  ) => {
+    return useQuery<
+      AxiosResponse<ApiPaginatedResponse<Package>>,
+      AxiosError<ApiError>
+    >({
+      queryKey: ["packages", queryParams],
+      queryFn: () =>
+        authFetch!.get(`computers/${computer_id}/packages`, {
           params: queryParams,
         }),
       ...config,
@@ -92,6 +132,7 @@ export const usePackages = () => {
 
   return {
     getPackagesQuery,
+    getComputerPackagesQuery,
     installPackagesQuery,
     removePackagesQuery,
     upgradePackagesQuery,

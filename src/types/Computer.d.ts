@@ -93,9 +93,9 @@ interface Pci {
 }
 
 interface AttachedDevice {
-  vendor: string;
-  model: string;
   description: string;
+  model: string;
+  vendor: string;
 }
 
 interface Scsi {
@@ -182,6 +182,8 @@ interface UbuntuProService {
 }
 
 interface UbuntuProInfo {
+  _doc: string;
+  _schema_version: string;
   account: UbuntuProAccount;
   attached: boolean;
   config: UbuntuProConfig;
@@ -201,26 +203,20 @@ interface UbuntuProInfo {
   simulated: boolean;
   version: string;
   warnings: [];
-  _doc: string;
-  _schema_version: string;
 }
 
 export interface ComputerWithoutRelation extends Record<string, unknown> {
   access_group: AccessGroup["name"];
-  annotations?: Record<string, string>;
   clone_id: number | null;
   cloud_instance_metadata: CloudInstanceMetadata;
   comment: string;
   container_info: string | null;
   distribution: string;
-  grouped_hardware?: GroupedHardware;
-  hardware?: HardwareDescription[];
   hostname: string;
   id: number;
   is_wsl_instance: boolean;
   last_exchange_time: string | null;
   last_ping_time: string | null;
-  network_devices?: NetworkDevice[];
   reboot_required_flag: boolean;
   secrets_name: string | null;
   tags: string[];
@@ -230,6 +226,10 @@ export interface ComputerWithoutRelation extends Record<string, unknown> {
   ubuntu_pro_info: UbuntuProInfo | null;
   update_manager_prompt: string;
   vm_info: VmInfo | null;
+  annotations?: Record<string, string>;
+  grouped_hardware?: GroupedHardware;
+  hardware?: HardwareDescription[];
+  network_devices?: NetworkDevice[];
 }
 
 export interface Computer extends ComputerWithoutRelation {

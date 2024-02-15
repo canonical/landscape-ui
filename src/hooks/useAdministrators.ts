@@ -1,27 +1,56 @@
 import { QueryFnType } from "../types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../types/ApiError";
 import useFetchOld from "./useFetchOld";
 import { Administrator } from "../types/Administrator";
+import { Activity } from "../types/Activity";
 
-interface useAdministratorsResult {
-  getAdministratorsQuery: QueryFnType<AxiosResponse<Administrator[]>, {}>;
+interface InviteAdministratorParams {
+  email: string;
+  name: string;
+  roles?: string[];
 }
 
-export default function useAdministrators(): useAdministratorsResult {
+interface DisableAdministratorParams {
+  email: string;
+}
+
+export default function useAdministrators() {
+  const queryClient = useQueryClient();
   const authFetch = useFetchOld();
 
   const getAdministratorsQuery: QueryFnType<
     AxiosResponse<Administrator[]>,
-    {}
-  > = (queryParams = {}, config = {}) =>
+    undefined
+  > = (_, config = {}) =>
     useQuery<AxiosResponse<Administrator[]>, AxiosError<ApiError>>({
-      queryKey: ["administrator"],
-      queryFn: () =>
-        authFetch!.get("GetAdministrators", { params: queryParams }),
+      queryKey: ["administrators"],
+      queryFn: () => authFetch!.get("GetAdministrators"),
       ...config,
     });
 
-  return { getAdministratorsQuery };
+  const inviteAdministratorQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    InviteAdministratorParams
+  >({
+    mutationFn: (params) => authFetch!.get("InviteAdministrator", { params }),
+    onSuccess: () => queryClient.invalidateQueries(["administrators"]),
+  });
+
+  const disableAdministratorQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    DisableAdministratorParams
+  >({
+    mutationFn: (params) => authFetch!.get("DisableAdministrator", { params }),
+    onSuccess: () => queryClient.invalidateQueries(["administrators"]),
+  });
+
+  return {
+    getAdministratorsQuery,
+    inviteAdministratorQuery,
+    disableAdministratorQuery,
+  };
 }

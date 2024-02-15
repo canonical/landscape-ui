@@ -8,9 +8,9 @@ import { Activity } from "../types/Activity";
 import { Process } from "../types/Process";
 
 interface GetProcessesParams {
-  query?: string;
   limit?: number;
   offset?: number;
+  query?: string;
 }
 
 interface ProcessesSignalParams {

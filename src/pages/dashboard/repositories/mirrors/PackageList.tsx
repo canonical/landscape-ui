@@ -478,6 +478,7 @@ const PackageList: FC<PackageListProps> = ({
                   setSearch(inputText);
                   setCurrentPage(1);
                 }}
+                autocomplete="off"
               />
             </form>
           </Col>

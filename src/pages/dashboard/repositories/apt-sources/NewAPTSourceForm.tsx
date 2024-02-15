@@ -122,7 +122,11 @@ const NewAPTSourceForm: FC = () => {
         disabled={isGettingGPGKeys}
         options={[{ label: "Select GPG key", value: "" }, ...gpgKeysOptions]}
         {...formik.getFieldProps("gpg_key")}
-        error={formik.touched.gpg_key && formik.errors.gpg_key}
+        error={
+          formik.touched.gpg_key && formik.errors.gpg_key
+            ? formik.errors.gpg_key
+            : undefined
+        }
       />
 
       <Select
@@ -133,7 +137,11 @@ const NewAPTSourceForm: FC = () => {
           ...accessGroupsOptions,
         ]}
         {...formik.getFieldProps("access_group")}
-        error={formik.touched.access_group && formik.errors.access_group}
+        error={
+          formik.touched.access_group && formik.errors.access_group
+            ? formik.errors.access_group
+            : undefined
+        }
       />
       <SidePanelFormButtons
         disabled={isLoading}

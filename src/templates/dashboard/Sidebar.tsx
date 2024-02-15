@@ -5,10 +5,8 @@ import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";
 import classes from "./Sidebar.module.scss";
 import UserInfo from "./UserInfo";
-import betaClasses from "./BetaInfo.module.scss";
-import desktopHeaderClasses from "./DesktopHeader.module.scss";
-import organisationSwitchClasses from "./OrganisationSwitch.module.scss";
 import OrganisationSwitch from "./OrganisationSwitch";
+
 const Sidebar: FC = () => {
   const [menuClosed, setMenuClosed] = useState(true);
 
@@ -22,17 +20,7 @@ const Sidebar: FC = () => {
         </div>
       </div>
       <header
-        className={classNames(
-          "l-navigation",
-          desktopHeaderClasses.header,
-          betaClasses.navigation,
-          organisationSwitchClasses.navigation,
-          {
-            "is-collapsed": menuClosed,
-            [betaClasses.menuOpen]: !menuClosed,
-            [organisationSwitchClasses.menuOpen]: !menuClosed,
-          },
-        )}
+        className={classNames("l-navigation", { "is-collapsed": menuClosed })}
       >
         <div className="l-navigation__drawer">
           <div className="p-panel is-dark">

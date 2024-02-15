@@ -16,10 +16,10 @@ interface GetAPTSourcesParams {
 }
 
 interface CreateAPTSourceParams {
-  name: string;
   apt_line: string;
-  gpg_key?: string;
+  name: string;
   access_group?: string;
+  gpg_key?: string;
 }
 
 interface RemoveAPTSourceParams {

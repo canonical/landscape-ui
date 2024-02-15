@@ -1,22 +1,16 @@
 @import "../../../../../node_modules/vanilla-framework/scss/settings_colors";
 @import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
 
-.title,
-.actions,
-.name {
-  width: 100%;
-}
-
 .title {
-  max-width: 30%;
+  width: 30%;
 }
 
 .name {
-  max-width: 20%;
+  width: 20%;
 }
 
 .actions {
-  max-width: 15%;
+  width: 15%;
   overflow: initial;
   text-align: right;
 }

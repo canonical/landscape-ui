@@ -13,24 +13,27 @@ const useNotificationHelper = (): NotificationHelper => {
   return {
     notification,
 
-    error: (message, error, actions) =>
+    error: ({ message, error, actions, title }) =>
       setDeduplicated({
         actions,
         message: error ? `${message} ${error.toString()}` : message,
+        title,
         type: "negative",
       }),
 
-    info: (message, actions) =>
+    info: ({ message, actions, title }) =>
       setDeduplicated({
         actions,
         message,
+        title,
         type: "information",
       }),
 
-    success: (message, actions) =>
+    success: ({ message, actions, title }) =>
       setDeduplicated({
         actions,
         message,
+        title,
         type: "positive",
       }),
 

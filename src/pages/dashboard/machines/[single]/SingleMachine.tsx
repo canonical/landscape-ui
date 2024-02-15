@@ -21,6 +21,11 @@ const ActivityPanel = lazy(() => import("./tabs/activities"));
 const InstancesPanel = lazy(() => import("./tabs/instances"));
 const UserPanel = lazy(() => import("./tabs/users"));
 
+interface TabState {
+  filter: string;
+  selectAll: boolean;
+}
+
 const tabLinks = [
   {
     label: "Info",
@@ -66,6 +71,7 @@ const tabLinks = [
 
 const SingleMachine: FC = () => {
   const [currentTabLinkId, setCurrentTabLinkId] = useState("tab-link-info");
+  const [tabState, setTabState] = useState<TabState | null>(null);
 
   const { hostname, childHostname } = useParams();
   const { user } = useAuth();
@@ -92,12 +98,18 @@ const SingleMachine: FC = () => {
   }, [user?.current_account]);
 
   useEffect(() => {
-    if (state?.tab) {
-      setCurrentTabLinkId(`tab-link-${state.tab}`);
-    } else {
-      setCurrentTabLinkId(`tab-link-info`);
+    if (!state) {
+      return;
     }
-  }, [state, childHostname]);
+
+    const { tab, ...otherProps } = state;
+
+    if (tab) {
+      setCurrentTabLinkId(`tab-link-${tab}`);
+    }
+
+    setTabState(otherProps);
+  }, [state]);
 
   const { getComputersQuery } = useComputers();
 
@@ -188,7 +200,7 @@ const SingleMachine: FC = () => {
               listClassName="u-no-margin--bottom"
               links={tabLinks
                 .filter(({ id }) =>
-                  machine?.children.length > 0 && !childHostname
+                  machine.children.length > 0 && !childHostname
                     ? [
                         "tab-link-info",
                         "tab-link-instances",
@@ -202,7 +214,10 @@ const SingleMachine: FC = () => {
                   id,
                   role: "tab",
                   active: id === currentTabLinkId,
-                  onClick: () => setCurrentTabLinkId(id),
+                  onClick: () => {
+                    setCurrentTabLinkId(id);
+                    setTabState(null);
+                  },
                 }))}
             />
             <div
@@ -231,7 +246,7 @@ const SingleMachine: FC = () => {
                   <p>Security issues</p>
                 )}
                 {"tab-link-packages" === currentTabLinkId && (
-                  <PackagesPanel tabState={state} />
+                  <PackagesPanel tabState={tabState} />
                 )}
                 {"tab-link-processes" === currentTabLinkId && (
                   <ProcessesPanel />
