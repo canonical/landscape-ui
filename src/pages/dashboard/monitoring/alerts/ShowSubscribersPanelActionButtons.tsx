@@ -24,7 +24,7 @@ const ShowSubscribersPanelActionButtons: FC<
 
   const handleEditAlert = () => {
     setSidePanelContent(
-      `Edit ${alert.alert_type} alert`,
+      `Edit ${alert.label}`,
       <Suspense fallback={<LoadingState />}>
         <EditAlertForm alert={alert} />
       </Suspense>,
@@ -50,7 +50,7 @@ const ShowSubscribersPanelActionButtons: FC<
   const handleSubscribeConfirmation = async () => {
     confirmModal({
       title: "Subscribing to the selected alert",
-      body: `Are you sure you want to subscribe to ${alert.alert_type}?`,
+      body: `Are you sure you want to subscribe to ${alert.label}?`,
       buttons: [
         <Button
           key="subscribe"
@@ -66,7 +66,7 @@ const ShowSubscribersPanelActionButtons: FC<
   const handleUnsubscribeConfirmation = async () => {
     confirmModal({
       title: "Unsubscribing from the selected alert",
-      body: `Are you sure you want to unsubscribe from ${alert.alert_type}?`,
+      body: `Are you sure you want to unsubscribe from ${alert.label}?`,
       buttons: [
         <Button
           key="unsubscribe"
@@ -85,7 +85,7 @@ const ShowSubscribersPanelActionButtons: FC<
         <Button
           className="p-segmented-control__button"
           onClick={handleEditAlert}
-          aria-label={`Edit ${alert.alertType} alert`}
+          aria-label={`Edit ${alert.label}`}
         >
           Edit
         </Button>
@@ -93,7 +93,7 @@ const ShowSubscribersPanelActionButtons: FC<
           <Button
             className="p-segmented-control__button"
             onClick={handleUnsubscribeConfirmation}
-            aria-label={`Unsubscribe from ${alert.alertType} alert`}
+            aria-label={`Unsubscribe from ${alert.label}`}
           >
             Unsubscribe
           </Button>
@@ -101,7 +101,7 @@ const ShowSubscribersPanelActionButtons: FC<
           <Button
             className="p-segmented-control__button"
             onClick={handleSubscribeConfirmation}
-            aria-label={`Subscribe to ${alert.alertType} alert`}
+            aria-label={`Subscribe to ${alert.label}`}
           >
             Subscribe
           </Button>

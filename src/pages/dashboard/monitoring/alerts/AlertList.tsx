@@ -36,7 +36,7 @@ const AlertList: FC<AlertListProps> = ({
 
   const handleEditAlert = (alert: Alert) => {
     setSidePanelContent(
-      `Edit ${alert.alert_type} alert`,
+      `Edit ${alert.label}`,
       <Suspense fallback={<LoadingState />}>
         <EditAlertForm alert={alert} />
       </Suspense>,
@@ -45,7 +45,7 @@ const AlertList: FC<AlertListProps> = ({
 
   const handleShowSubscribers = (alert: Alert) => {
     setSidePanelContent(
-      alert.alert_type,
+      alert.label,
       <Suspense fallback={<LoadingState />}>
         <ShowSubscribersPanel alert={alert} />
       </Suspense>,
@@ -105,29 +105,23 @@ const AlertList: FC<AlertListProps> = ({
             <span>Name</span>
           </>
         ),
-        accessor: "alert_type",
+        accessor: "label",
         className: classes.name,
         Cell: ({ row }: CellProps<Alert>) => (
           <>
             <CheckboxInput
-              label={
-                <span className="u-off-screen">{row.original.alert_type}</span>
-              }
+              label={<span className="u-off-screen">{row.original.label}</span>}
               inline
               checked={selectedAlerts.includes(row.original.alert_type)}
-              onChange={() => {
-                handleSelectionChange(row);
-              }}
+              onChange={() => handleSelectionChange(row)}
             />
             <Button
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top"
-              onClick={() => {
-                handleShowSubscribers(row.original);
-              }}
-              aria-label={`List subscribers of alert ${row.original.alert_type}`}
+              onClick={() => handleShowSubscribers(row.original)}
+              aria-label={`List subscribers of alert ${row.original.label}`}
             >
-              {row.original.alert_type}
+              {row.original.label}
             </Button>
           </>
         ),
@@ -167,12 +161,12 @@ const AlertList: FC<AlertListProps> = ({
       },
       {
         Header: "Description",
-        className: classes.description,
         accessor: "description",
+        className: classes.description,
         Cell: ({ row }: CellProps<Alert>) => <>{row.original.description}</>,
       },
       {
-        accessor: "alert_type" + "subscribed",
+        accessor: "alert_type",
         className: classes.actions,
         Cell: ({ row }: CellProps<Alert>) => (
           <Button
@@ -180,10 +174,8 @@ const AlertList: FC<AlertListProps> = ({
             hasIcon
             appearance="base"
             className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
-            aria-label={`Edit ${row.original.alert_type} alert`}
-            onClick={() => {
-              handleEditAlert(row.original);
-            }}
+            aria-label={`Edit ${row.original.label}`}
+            onClick={() => handleEditAlert(row.original)}
           >
             <span className="p-tooltip__message">Edit</span>
             <i className="p-icon--edit u-no-margin--left" />
