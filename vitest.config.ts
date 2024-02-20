@@ -9,11 +9,16 @@ export default defineConfig({
       "**/dist/**",
       "**/cypress/**",
       "**/.{idea,git,cache,output,temp}/**",
-      "**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*",
+      "**/{karma,rollup,webpack,vite,tests,jest,ava,babel,nyc,cypress,tsup,build}.config.*",
     ],
     watchExclude: ["**/tests/**", "**/node_modules/**", "**/dist/**"],
     environment: "jsdom",
     globals: true,
-    setupFiles: [resolve(__dirname, "vitest/setup.ts")],
+    setupFiles: [resolve(__dirname, "src/tests/setup.ts")],
+  },
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "src"),
+    },
   },
 });
