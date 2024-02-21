@@ -11,6 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
+.dotrun.json
+.venv
+.vite-node
 
 # Cashe
 .eslintcache

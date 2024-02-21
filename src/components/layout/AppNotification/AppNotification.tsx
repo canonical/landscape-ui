@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Notification } from "@canonical/react-components";
 import { NotificationHelper } from "@/types/Notification";
 import classes from "./AppNotification.module.scss";
