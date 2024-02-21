@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
-import { ActivityStatus } from "../../types/Activity";
-import { SelectOption } from "../../types/SelectOption";
+import { ActivityStatus } from "@/types/Activity";
+import { SelectOption } from "@/types/SelectOption";
 import classes from "./Activities.module.scss";
 
 export const ACTIVITY_SEARCH_HELP_TERMS: {

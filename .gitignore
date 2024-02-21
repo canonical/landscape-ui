@@ -14,6 +14,7 @@ dist-ssr
 .dotrun.json
 .venv
 .vite-node
+coverage
 
 # Cashe
 .eslintcache
