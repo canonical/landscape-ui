@@ -2,7 +2,7 @@
   "name": "landscape-webapp-new",
   "private": true,
   "version": "0.0.0",
-  "type": "commonjs",
+  "type": "module",
   "engines": {
     "node": ">=v20.11.0"
   },
