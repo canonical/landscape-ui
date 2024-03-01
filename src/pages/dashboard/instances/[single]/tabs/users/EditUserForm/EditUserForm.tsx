@@ -2,12 +2,13 @@ import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { FC } from "react";
 import * as Yup from "yup";
-import SidePanelFormButtons from "../../../components/form/SidePanelFormButtons";
-import useDebug from "../../../hooks/useDebug";
-import useNotify from "../../../hooks/useNotify";
-import useSidePanel from "../../../hooks/useSidePanel";
-import useUsers from "../../../hooks/useUsers";
-import { User } from "../../../types/User";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import MultiSelectField from "@/components/form/MultiSelectField";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import useUsers from "@/hooks/useUsers";
+import { User } from "@/types/User";
 
 interface FormProps {
   name: string;
@@ -17,8 +18,8 @@ interface FormProps {
   location: string;
   homePhoneNumber: string;
   workPhoneNumber: string;
-  primaryGroupValue: number;
-  additionalGroupValue: number[];
+  primaryGroupValue: string;
+  additionalGroupValue: string[];
 }
 
 interface EditUserFormProps {
@@ -30,8 +31,18 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { editUserQuery, getGroupsQuery, addUserToGroupQuery } = useUsers();
+  const {
+    editUserQuery,
+    getGroupsQuery,
+    getUserGroupsQuery,
+    addUserToGroupQuery,
+    removeUserFromGroupQuery,
+  } = useUsers();
   const { data, isLoading: isLoadingGroups } = getGroupsQuery({
+    computer_id: instanceId,
+  });
+  const { data: userGroupsData } = getUserGroupsQuery({
+    username: user.username,
     computer_id: instanceId,
   });
   const { mutateAsync: editUserMutation, isLoading: isEditingUser } =
@@ -40,13 +51,18 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
     mutateAsync: addUserToGroupMutation,
     isLoading: isAddingUserToGroup,
   } = addUserToGroupQuery;
+  const {
+    mutateAsync: removeUserFromGroupMutation,
+    isLoading: isRemovingUserFromGroup,
+  } = removeUserFromGroupQuery;
 
   const groupsData = data?.data.groups ?? [];
-
   const groups = groupsData.map((group) => ({
     label: group.name,
-    value: group.gid,
+    value: String(group.gid),
   }));
+  const initialUserAdditionalGroups =
+    userGroupsData?.data.groups.map((group) => String(group.gid)) || [];
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -57,8 +73,8 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
       location: user.location ?? "",
       homePhoneNumber: user.home_phone ?? "",
       workPhoneNumber: user.work_phone ?? "",
-      primaryGroupValue: user.primary_gid,
-      additionalGroupValue: [],
+      primaryGroupValue: String(user.primary_gid),
+      additionalGroupValue: initialUserAdditionalGroups,
     },
     validationSchema: Yup.object().shape({
       username: Yup.string().required("This field is required"),
@@ -75,21 +91,35 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
       location: Yup.string(),
       homePhoneNumber: Yup.string(),
       workPhoneNumber: Yup.string(),
-      primaryGroupValue: Yup.number().min(0, "This field is required"),
+      primaryGroupValue: Yup.string().required("This field is required"),
+      additionalGroupValue: Yup.array().of(Yup.string()),
     }),
     onSubmit: async (values) => {
+      const groupsToBeAdded = values.additionalGroupValue.filter(
+        (group) => !initialUserAdditionalGroups.includes(group),
+      );
+      const groupsToBeRemoved = initialUserAdditionalGroups.filter(
+        (group) => !values.additionalGroupValue.includes(group),
+      );
       try {
         const promises = [];
-        if (values.additionalGroupValue.length > 0) {
+        if (groupsToBeAdded.length) {
           promises.push(
             addUserToGroupMutation({
               computer_id: instanceId,
-              groupnames: values.additionalGroupValue.map(
-                (gid) =>
-                  groups.find((group) => group.value === Number(gid))!.label,
-              ),
+              groupnames: groupsToBeAdded,
               usernames: [values.username],
               action: "add",
+            }),
+          );
+        }
+        if (groupsToBeRemoved.length) {
+          promises.push(
+            removeUserFromGroupMutation({
+              computer_id: instanceId,
+              groupnames: groupsToBeRemoved,
+              usernames: [values.username],
+              action: "remove",
             }),
           );
         }
@@ -102,20 +132,26 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
             location: values.location,
             home_phone: values.homePhoneNumber,
             work_phone: values.workPhoneNumber,
-            primary_groupname: values.primaryGroupValue.toString(),
+            primary_groupname: values.primaryGroupValue,
           }),
         );
-        await Promise.all(promises);
+        await Promise.all(
+          promises.map((promise) => promise.then((data) => console.log(data))),
+        );
         closeSidePanel();
         notify.success({ message: "User updated successfully" });
       } catch (error) {
         debug(error);
       }
+      closeSidePanel();
+      notify.success({
+        message: "User updated successfully",
+      });
     },
   });
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate>
+    <Form onSubmit={formik.handleSubmit} noValidate role="form">
       <Input
         type="text"
         label="Username"
@@ -161,6 +197,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
         {...formik.getFieldProps("confirmPassword")}
       />
       <Select
+        data-testid="primaryGroupValue"
         label="Primary Group"
         required
         disabled={isLoadingGroups}
@@ -172,17 +209,26 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
             : undefined
         }
       />
-      <Select
+      <MultiSelectField
+        variant="condensed"
+        placeholder="Select groups"
         label="Additional Groups"
-        disabled={isLoadingGroups}
-        multiple
-        options={groups}
-        {...formik.getFieldProps("additionalGroupValue")}
+        items={groups}
+        selectedItems={groups.filter(({ value }) =>
+          formik.values.additionalGroupValue.includes(value),
+        )}
+        onItemsUpdate={(items) => {
+          formik.setFieldValue(
+            "additionalGroupValue",
+            items.map(({ value }) => value),
+          );
+        }}
         error={
-          formik.touched.additionalGroupValue &&
-          formik.errors.additionalGroupValue
-            ? formik.errors.additionalGroupValue
-            : undefined
+          (formik.touched.additionalGroupValue &&
+            (Array.isArray(formik.errors.additionalGroupValue)
+              ? formik.errors.additionalGroupValue.join(", ")
+              : formik.errors.additionalGroupValue)) ||
+          undefined
         }
       />
       <Input
@@ -216,7 +262,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons
-        disabled={isEditingUser || isAddingUserToGroup}
+        disabled={
+          isEditingUser || isAddingUserToGroup || isRemovingUserFromGroup
+        }
         submitButtonText="Save changes"
         removeButtonMargin
       />

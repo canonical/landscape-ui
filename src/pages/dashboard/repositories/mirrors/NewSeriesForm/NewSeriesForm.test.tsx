@@ -1,5 +1,4 @@
 import { describe, it } from "vitest";
-import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
 import NewSeriesForm from "./NewSeriesForm";
 import { getStrippedUrl } from "./helpers";
@@ -23,6 +22,7 @@ describe("NewSeriesForm", () => {
       "Include .udeb packages (debian-installer)",
     ]);
   });
+
   it("strips token from url", () => {
     const url1 = "https://username:password@example.com";
     const url2 = "https://bearer:AJ8H8HghkhgeqpvjzHHAVZMhuv981@example.com";

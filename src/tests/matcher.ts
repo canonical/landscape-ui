@@ -43,4 +43,20 @@ expect.extend({
           : `expected ${this.utils.printReceived(received)} to contain texts ${this.utils.printExpected(notFoundTexts)}`,
     };
   },
+  toHaveInputValues(received: HTMLElement, values: string[]) {
+    const inputs = Array.from(received.querySelectorAll("input"));
+    const inputValues = inputs.map((input) => input.value);
+    const notFoundValues = values.filter(
+      (value) => !inputValues.includes(value),
+    );
+    const pass = notFoundValues.length === 0;
+
+    return {
+      pass,
+      message: () =>
+        pass
+          ? `expected ${this.utils.printReceived(received)} not to contain input values ${this.utils.printExpected(notFoundValues)}`
+          : `expected ${this.utils.printReceived(received)} to contain input values ${this.utils.printExpected(notFoundValues)}`,
+    };
+  },
 });

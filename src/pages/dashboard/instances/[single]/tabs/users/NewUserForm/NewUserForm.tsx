@@ -2,10 +2,10 @@ import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { FC } from "react";
 import * as Yup from "yup";
-import SidePanelFormButtons from "../../../components/form/SidePanelFormButtons";
-import useDebug from "../../../hooks/useDebug";
-import useSidePanel from "../../../hooks/useSidePanel";
-import useUsers from "../../../hooks/useUsers";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import useUsers from "@/hooks/useUsers";
 
 interface FormProps {
   name: string;
@@ -16,8 +16,7 @@ interface FormProps {
   location: string;
   homePhoneNumber: string;
   workPhoneNumber: string;
-  primaryGroupValue: number;
-  additionalGroupValue: number[];
+  primaryGroupValue: string;
 }
 
 interface NewUserFormProps {
@@ -37,7 +36,7 @@ const NewUserForm: FC<NewUserFormProps> = ({ instanceId }) => {
 
   const groupOptions = groupsData.map((group) => ({
     label: group.name,
-    value: group.gid,
+    value: group.name,
   }));
 
   const formik = useFormik<FormProps>({
@@ -50,8 +49,7 @@ const NewUserForm: FC<NewUserFormProps> = ({ instanceId }) => {
       location: "",
       homePhoneNumber: "",
       workPhoneNumber: "",
-      primaryGroupValue: -1,
-      additionalGroupValue: [],
+      primaryGroupValue: "",
     },
     validationSchema: Yup.object().shape({
       name: Yup.string().required("This field is required"),
@@ -63,7 +61,7 @@ const NewUserForm: FC<NewUserFormProps> = ({ instanceId }) => {
       location: Yup.string(),
       homePhoneNumber: Yup.string(),
       workPhoneNumber: Yup.string(),
-      primaryGroupValue: Yup.number().min(0, "This field is required"),
+      primaryGroupValue: Yup.string().required("This field is required"),
     }),
     onSubmit: async (values) => {
       try {
@@ -76,9 +74,7 @@ const NewUserForm: FC<NewUserFormProps> = ({ instanceId }) => {
           location: values.location,
           home_phone: values.homePhoneNumber,
           work_phone: values.workPhoneNumber,
-          primary_groupname: groupOptions.find(
-            (group) => group.value === values.primaryGroupValue,
-          )?.label,
+          primary_groupname: values.primaryGroupValue,
         });
         closeSidePanel();
       } catch (error) {
@@ -89,7 +85,7 @@ const NewUserForm: FC<NewUserFormProps> = ({ instanceId }) => {
 
   return (
     <>
-      <Form noValidate onSubmit={formik.handleSubmit}>
+      <Form noValidate onSubmit={formik.handleSubmit} role="form">
         <Input
           type="text"
           label="Username"
@@ -147,24 +143,11 @@ const NewUserForm: FC<NewUserFormProps> = ({ instanceId }) => {
         <Select
           label="Primary Group"
           disabled={isLoadingGroups}
-          options={[{ label: "Select", value: -1 }, ...groupOptions]}
+          options={[{ label: "Select", value: "" }, ...groupOptions]}
           {...formik.getFieldProps("primaryGroupValue")}
           error={
             formik.touched.primaryGroupValue && formik.errors.primaryGroupValue
               ? formik.errors.primaryGroupValue
-              : undefined
-          }
-        />
-        <Select
-          multiple
-          label="Additional Groups"
-          disabled={isLoadingGroups}
-          options={groupOptions}
-          {...formik.getFieldProps("additionalGroupValue")}
-          error={
-            formik.touched.additionalGroupValue &&
-            formik.errors.additionalGroupValue
-              ? formik.errors.additionalGroupValue
               : undefined
           }
         />
