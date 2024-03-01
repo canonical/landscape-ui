@@ -44,6 +44,10 @@ interface useUserResult {
     UnlockUserParams
   >;
   getGroupsQuery: QueryFnType<AxiosResponse<GroupsResponse>, GetGroupsParams>;
+  getUserGroupsQuery: QueryFnType<
+    AxiosResponse<GroupsResponse>,
+    GetUserGroupsParams
+  >;
   addUserToGroupQuery: UseMutationResult<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
@@ -104,6 +108,11 @@ interface UnlockUserParams {
 
 interface GetGroupsParams {
   computer_id: number;
+}
+
+interface GetUserGroupsParams {
+  computer_id: number;
+  username: string;
 }
 
 interface GroupMutationQueryParams {
@@ -193,9 +202,22 @@ export default function useUsers(): useUserResult {
     GetGroupsParams
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<GroupsResponse>, AxiosError<ApiError>>({
-      queryKey: ["groups"],
+      queryKey: ["groups", queryParams!.computer_id],
       queryFn: () =>
         authFetch!.get(`computers/${queryParams!.computer_id}/groups`),
+      ...config,
+    });
+
+  const getUserGroupsQuery: QueryFnType<
+    AxiosResponse<GroupsResponse>,
+    GetUserGroupsParams
+  > = (queryParams, config = {}) =>
+    useQuery<AxiosResponse<GroupsResponse>, AxiosError<ApiError>>({
+      queryKey: ["userGroups", queryParams!.computer_id, queryParams!.username],
+      queryFn: () =>
+        authFetch!.get(
+          `computers/${queryParams!.computer_id}/users/${queryParams!.username}/groups`,
+        ),
       ...config,
     });
 
@@ -235,12 +257,13 @@ export default function useUsers(): useUserResult {
 
   return {
     getUsersQuery,
+    getGroupsQuery,
+    getUserGroupsQuery,
     createUserQuery,
     removeUserQuery,
     editUserQuery,
     lockUserQuery,
     unlockUserQuery,
-    getGroupsQuery,
     addUserToGroupQuery,
     removeUserFromGroupQuery,
   };

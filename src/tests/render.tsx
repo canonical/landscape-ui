@@ -7,7 +7,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 interface WrapperProps {
   children: ReactNode;
 }
-const queryClient = new QueryClient({
+
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,

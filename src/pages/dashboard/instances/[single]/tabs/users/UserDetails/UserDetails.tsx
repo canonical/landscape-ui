@@ -1,9 +1,9 @@
 import { FC } from "react";
-import InfoItem from "../../../../../../components/layout/InfoItem";
-import { User } from "../../../../../../types/User";
-import UserPanelActionButtons from "./UserPanelActionButtons";
-import useUsers from "../../../../../../hooks/useUsers";
-import { NOT_AVAILABLE } from "../../../../../../constants";
+import InfoItem from "@/components/layout/InfoItem";
+import { User } from "@/types/User";
+import UserPanelActionButtons from "../UserPanelActionButtons";
+import useUsers from "@/hooks/useUsers";
+import { NOT_AVAILABLE } from "@/constants";
 
 interface UserDetailsProps {
   user: User;
@@ -16,14 +16,19 @@ const UserDetails: FC<UserDetailsProps> = ({
   instanceId,
   handleEditUser,
 }) => {
-  const { getGroupsQuery } = useUsers();
-  const { data } = getGroupsQuery({ computer_id: instanceId });
+  const { getGroupsQuery, getUserGroupsQuery } = useUsers();
+  const { data: allGroupsData } = getGroupsQuery({ computer_id: instanceId });
+  const { data: userGroupsData } = getUserGroupsQuery({
+    username: user.username,
+    computer_id: instanceId,
+  });
 
-  const groupsData = data?.data.groups ?? [];
-
+  const groupsData = allGroupsData?.data.groups ?? [];
   const primaryGroup = groupsData?.find(
     (group) => group.gid === user.primary_gid,
   )?.name;
+  const userGroups =
+    userGroupsData?.data.groups.map((group) => group.name).join(", ") || "-";
 
   return (
     <>
@@ -39,6 +44,7 @@ const UserDetails: FC<UserDetailsProps> = ({
       />
       <InfoItem label="passphrase" type="password" />
       <InfoItem label="primary group" value={primaryGroup ?? "-"} />
+      <InfoItem label="additional groups" type="truncated" value={userGroups} />
       <InfoItem label="location" value={user?.location ?? "-"} />
       <InfoItem label="home phone" value={user?.home_phone ?? "-"} />
       <InfoItem label="work phone" value={user?.work_phone ?? "-"} />

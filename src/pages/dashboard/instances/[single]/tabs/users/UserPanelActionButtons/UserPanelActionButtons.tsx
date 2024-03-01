@@ -1,21 +1,21 @@
 import { Button, Icon, Input } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC, useState } from "react";
-import useConfirm from "../../../../../../hooks/useConfirm";
-import useDebug from "../../../../../../hooks/useDebug";
-import useNotify from "../../../../../../hooks/useNotify";
-import useSidePanel from "../../../../../../hooks/useSidePanel";
-import useUsers from "../../../../../../hooks/useUsers";
-import { User } from "../../../../../../types/User";
-import NewUserForm from "../../../NewUserForm";
+import useConfirm from "@/hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import useUsers from "@/hooks/useUsers";
+import { User } from "@/types/User";
+import NewUserForm from "../NewUserForm";
+import classes from "./UserPanelActionButtons.module.scss";
+import { useMediaQuery } from "usehooks-ts";
 import {
+  UserAction,
   getSelectedUsernames,
   getUserLockStatusCounts,
   renderModalBody,
-  UserAction,
-} from "./_helpers";
-import classes from "./UserPanelActionButtons.module.scss";
-import { useMediaQuery } from "usehooks-ts";
+} from "./helpers";
 
 interface UserPanelActionButtonsProps {
   instanceId: number;
@@ -156,7 +156,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
 
   return (
     <div
-      className={classNames("p-panel__controls", {
+      className={classNames("p-panel__controls u-no-padding--top", {
         "u-no-margin--left": handleEditUser,
         [classes.cta]: setSelected && isLargeScreen,
       })}

@@ -1,25 +1,12 @@
-import {
-  Col,
-  Form,
-  MainTable,
-  Row,
-  SearchBox,
-} from "@canonical/react-components";
-import classNames from "classnames";
-import { FC, FormEvent, lazy, Suspense, useMemo, useState } from "react";
-import LoadingState from "../../../../../../components/layout/LoadingState";
-import TablePagination from "../../../../../../components/layout/TablePagination";
-import useSidePanel from "../../../../../../hooks/useSidePanel";
-import useUsers from "../../../../../../hooks/useUsers";
-import { User } from "../../../../../../types/User";
-import classes from "./UserPanel.module.scss";
-import UserPanelActionButtons from "./UserPanelActionButtons";
-import {
-  getFilteredUsers,
-  getHeaders,
-  getRows,
-  getSelectedUsers,
-} from "./_helpers";
+import { MainTable } from "@canonical/react-components";
+import { FC, Suspense, lazy, useMemo, useState } from "react";
+import LoadingState from "@/components/layout/LoadingState";
+import TablePagination from "@/components/layout/TablePagination";
+import useSidePanel from "@/hooks/useSidePanel";
+import useUsers from "@/hooks/useUsers";
+import { User } from "@/types/User";
+import UserPanelHeader from "./UserPanelHeader";
+import { getFilteredUsers, getHeaders, getRows } from "./helpers";
 
 const MAX_USERS_LIMIT = 1000;
 
@@ -27,7 +14,7 @@ interface UserPanelProps {
   instanceId: number;
 }
 
-const EditUserForm = lazy(() => import("../../../EditUserForm"));
+const EditUserForm = lazy(() => import("./EditUserForm"));
 const UserDetails = lazy(() => import("./UserDetails"));
 
 const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
@@ -35,7 +22,6 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
   const [usersPerPage, setUsersPerPage] = useState(20);
   const [selected, setSelected] = useState<number[]>([]);
   const [search, setSearch] = useState("");
-  const [confirmedSearchString, setConfirmedSearchString] = useState("");
 
   const { setSidePanelContent } = useSidePanel();
   const { getUsersQuery } = useUsers();
@@ -47,8 +33,8 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
   const allUsers = userResponse?.data.results ?? [];
 
   const filteredUsers: User[] = useMemo(
-    () => getFilteredUsers(confirmedSearchString, allUsers),
-    [confirmedSearchString, allUsers],
+    () => getFilteredUsers(search, allUsers),
+    [search, allUsers],
   );
 
   const getUsers = (limit: number, offset: number) => {
@@ -66,13 +52,6 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
   const handlePaginate = (page: number) => {
     setCurrentPage(page);
     setSelected([]);
-  };
-
-  const handleClearSearchBox = () => {
-    setSearch("");
-    setConfirmedSearchString("");
-    setSelected([]);
-    setCurrentPage(1);
   };
 
   const handleEditUser = (user: User) => {
@@ -97,12 +76,6 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
     );
   };
 
-  const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setConfirmedSearchString(search);
-    setCurrentPage(1);
-  };
-
   const headers = getHeaders(selected.length, users.length, toggleAll);
 
   const rows = getRows(
@@ -115,35 +88,14 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
 
   return (
     <>
-      <Row
-        className={classNames(
-          "u-no-padding u-no-margin u-no-max-width",
-          classes.row,
-        )}
-      >
-        <Col small={4} medium={2} size={3}>
-          <Form onSubmit={handleFormSubmit} noValidate>
-            <SearchBox
-              externallyControlled
-              shouldRefocusAfterReset
-              aria-label="User search"
-              value={search}
-              onChange={(inputValue) => {
-                setSearch(inputValue);
-              }}
-              className="u-no-margin--bottom"
-              onClear={handleClearSearchBox}
-            />
-          </Form>
-        </Col>
-        <Col small={4} medium={4} size={9}>
-          <UserPanelActionButtons
-            instanceId={instanceId}
-            setSelected={setSelected}
-            selectedUsers={getSelectedUsers(users, selected)}
-          />
-        </Col>
-      </Row>
+      <UserPanelHeader
+        instanceId={instanceId}
+        onPageChange={handlePaginate}
+        onSearch={(searchText) => setSearch(searchText)}
+        selected={selected}
+        setSelected={setSelected}
+        users={users}
+      />
       <MainTable
         headers={headers}
         rows={rows}
