@@ -5,5 +5,6 @@ declare namespace jest {
 
   interface Matchers<R> {
     toBeOffScreen(): R;
+    toHaveTexts: (texts: string[]) => R;
   }
 }

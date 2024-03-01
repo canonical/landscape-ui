@@ -22,7 +22,9 @@ const AppNotification: FC<AppNotificationProps> = ({
   return (
     <div className={classNames({ [classes.container]: !isSidePanelOpen })}>
       <Notification
-        className={classNames({ [classes.notification]: !isSidePanelOpen })}
+        className={classNames(classes.baseNotificationStyle, {
+          [classes.notification]: !isSidePanelOpen,
+        })}
         severity={type}
         onDismiss={notify.clear}
         actions={actions}
