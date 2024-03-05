@@ -249,7 +249,7 @@ const SingleInstance: FC = () => {
                   <PackagesPanel tabState={tabState} />
                 )}
                 {"tab-link-processes" === currentTabLinkId && (
-                  <ProcessesPanel />
+                  <ProcessesPanel instanceId={instance.id} />
                 )}
                 {"tab-link-ubuntu-pro" === currentTabLinkId && (
                   <p>Ubuntu Pro</p>

@@ -1,27 +1,30 @@
 import { FC, useState } from "react";
-import useDebug from "../../../../../../hooks/useDebug";
-import { useProcesses } from "../../../../../../hooks/useProcesses";
+import useDebug from "@/hooks/useDebug";
+import { useProcesses } from "@/hooks/useProcesses";
 import { Button, Form, SearchBox } from "@canonical/react-components";
-import classes from "./ProcessesPanelHeader.module.scss";
+import classes from "./ProcessesHeader.module.scss";
+import useNotify from "@/hooks/useNotify";
 
-interface ProcessesPanelHeaderProps {
+interface ProcessesHeaderProps {
   instanceId: number;
   onPageChange: (page: number) => void;
   onSearch: (searchText: string) => void;
   selectedPids: number[];
+  setSelectedPids: (pids: number[]) => void;
 }
 
-const ProcessesPanelHeader: FC<ProcessesPanelHeaderProps> = ({
+const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   instanceId,
   onPageChange,
   onSearch,
   selectedPids,
+  setSelectedPids,
 }) => {
   const [inputText, setInputText] = useState("");
 
+  const { notify } = useNotify();
   const debug = useDebug();
   const { killProcessQuery, terminateProcessQuery } = useProcesses();
-
   const { mutateAsync: terminateProcess } = terminateProcessQuery;
   const { mutateAsync: killProcess } = killProcessQuery;
 
@@ -41,6 +44,10 @@ const ProcessesPanelHeader: FC<ProcessesPanelHeaderProps> = ({
         pids: selectedPids,
         computer_id: instanceId,
       });
+      notify.success({
+        message: `Process${selectedPids.length > 1 ? "es" : ""} successfully ended`,
+      });
+      setSelectedPids([]);
     } catch (error) {
       debug(error);
     }
@@ -52,6 +59,10 @@ const ProcessesPanelHeader: FC<ProcessesPanelHeaderProps> = ({
         pids: selectedPids,
         computer_id: instanceId,
       });
+      notify.success({
+        message: `Process${selectedPids.length > 1 ? "es" : ""} successfully killed`,
+      });
+      setSelectedPids([]);
     } catch (error) {
       debug(error);
     }
@@ -77,7 +88,6 @@ const ProcessesPanelHeader: FC<ProcessesPanelHeaderProps> = ({
             value={inputText}
             onSearch={handleSearch}
             onClear={handleClearSearchBox}
-            className={classes.search}
             autocomplete="off"
           />
         </Form>
@@ -104,4 +114,4 @@ const ProcessesPanelHeader: FC<ProcessesPanelHeaderProps> = ({
   );
 };
 
-export default ProcessesPanelHeader;
+export default ProcessesHeader;

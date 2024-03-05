@@ -2,15 +2,16 @@ import useFetch from "./useFetch";
 import { QueryFnType } from "../types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../types/ApiError";
 import { Activity } from "../types/Activity";
 import { Process } from "../types/Process";
 
 interface GetProcessesParams {
+  computer_id: number;
   limit?: number;
   offset?: number;
-  query?: string;
+  search?: string;
 }
 
 interface ProcessesSignalParams {
@@ -19,21 +20,21 @@ interface ProcessesSignalParams {
 }
 
 export const useProcesses = () => {
-  const AuthFetch = useFetch();
+  const authFetch = useFetch();
+  const queryClient = useQueryClient();
 
   const getProcessesQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<Process>>,
     GetProcessesParams
-  > = (queryParams = {}, config = {}) => {
+  > = (queryParams, config = {}) => {
+    const { computer_id, ...params } = queryParams!;
     return useQuery<
       AxiosResponse<ApiPaginatedResponse<Process>>,
       AxiosError<ApiError>
     >({
       queryKey: ["processes", queryParams],
       queryFn: () =>
-        AuthFetch!.get("processes", {
-          params: queryParams,
-        }),
+        authFetch!.get(`/computers/${computer_id}/processes`, { params }),
       ...config,
     });
   };
@@ -43,7 +44,10 @@ export const useProcesses = () => {
     AxiosError<ApiError>,
     ProcessesSignalParams
   >({
-    mutationFn: (params) => AuthFetch!.post(`processes/terminate`, params),
+    mutationFn: (params) => authFetch!.post("processes/terminate", params),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["processes"]);
+    },
   });
 
   const killProcessQuery = useMutation<
@@ -51,7 +55,10 @@ export const useProcesses = () => {
     AxiosError<ApiError>,
     ProcessesSignalParams
   >({
-    mutationFn: (params) => AuthFetch!.post(`processes/kill`, params),
+    mutationFn: (params) => authFetch!.post("processes/kill", params),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["processes"]);
+    },
   });
 
   return { getProcessesQuery, killProcessQuery, terminateProcessQuery };
