@@ -1,8 +1,8 @@
 import { FC } from "react";
-import PageMain from "../../../components/layout/PageMain";
-import PageHeader from "../../../components/layout/PageHeader";
-import PageContent from "../../../components/layout/PageContent";
-import Activities from "../../../components/activities";
+import PageContent from "@/components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
+import PageMain from "@/components/layout/PageMain";
+import Activities from "@/features/activities";
 
 const ActivitiesPage: FC = () => {
   return (

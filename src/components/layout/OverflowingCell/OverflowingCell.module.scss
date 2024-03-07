@@ -1,0 +1,30 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  display: flex;
+}
+
+.truncated {
+  display: flex;
+  column-gap: $sph--x-small;
+  flex-wrap: wrap;
+  flex-shrink: 1;
+}
+
+.hidden {
+  max-height: $spv--x-large;
+  overflow: hidden;
+}
+
+.item {
+  &:not(:last-child) {
+    &::after {
+      content: ", ";
+    }
+  }
+}
+
+.count {
+  white-space: nowrap;
+}

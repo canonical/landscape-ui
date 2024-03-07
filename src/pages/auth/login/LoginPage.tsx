@@ -1,6 +1,6 @@
 import { FC } from "react";
 import AuthTemplate from "../../../templates/auth";
-import LoginForm from "./LoginForm";
+import LoginForm from "./LoginForm/LoginForm";
 
 const LoginPage: FC = () => {
   return (

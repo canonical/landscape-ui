@@ -40,6 +40,7 @@
 @include vf-p-icon-machines;
 @include vf-p-icon-switcher-environments;
 @include vf-p-icon-settings;
+@include vf-p-icon-inspector-debug;
 
 // Custom styles
 .p-panel {
@@ -178,5 +179,19 @@
 
   [class*="p-side-navigation--"].is-dark .p-side-navigation__link:hover & {
     @include vf-icon--bell($color-x-light);
+  }
+}
+
+a[target="_blank"] {
+  &::after {
+    content: "";
+    @extend %icon;
+    @include vf-icon-external-link($color-link);
+  }
+
+  .is-dark & {
+    &::after {
+      @include vf-icon-external-link($color-x-light);
+    }
   }
 }

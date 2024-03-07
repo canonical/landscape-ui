@@ -52,9 +52,13 @@ describe("EditUserForm", () => {
 
   it("can edit user data", async () => {
     const { container } = renderWithProviders(<EditUserForm {...mockProps} />);
+
     const username = container.querySelector('input[name="username"]');
+
     if (!username) throw new Error("username input not found");
+
     userEvent.clear(username);
+
     await userEvent.type(username, "newusername");
     expect(container).toHaveInputValues([
       "newusername",
