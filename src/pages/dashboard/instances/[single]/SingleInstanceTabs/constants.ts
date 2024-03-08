@@ -32,10 +32,6 @@ export const TAB_LINKS = [
     id: "tab-link-users",
   },
   {
-    label: "Reports",
-    id: "tab-link-reports",
-  },
-  {
     label: "Hardware",
     id: "tab-link-hardware",
   },

@@ -7,15 +7,15 @@ import React, {
 } from "react";
 import classNames from "classnames";
 import { useLocation } from "react-router-dom";
-import AppNotification from "../components/layout/AppNotification";
-import useNotify from "../hooks/useNotify";
+import AppNotification from "@/components/layout/AppNotification";
+import useNotify from "@/hooks/useNotify";
 import classes from "./SidePanelProvider.module.scss";
 
 interface SidePanelContextProps {
   setSidePanelContent: (
     title: string,
     newState: ReactNode | null,
-    isWidePanel?: boolean,
+    size?: "small" | "medium" | "large",
   ) => void;
   closeSidePanel: () => void;
 }
@@ -34,7 +34,7 @@ interface SidePanelProviderProps {
 
 const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
-  const [wide, setWide] = useState(false);
+  const [size, setSize] = useState<"small" | "medium" | "large">("small");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
 
@@ -49,7 +49,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     setOpen(false);
     setTitle("");
     setBody(null);
-    setWide(false);
+    setSize("small");
     sidePanel.setOpen(false);
     notify.clear();
   };
@@ -57,11 +57,11 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const handleContentChange = (
     newTitle: string,
     newBody: ReactNode,
-    isWidePanel = false,
+    newSize: "small" | "medium" | "large" = "small",
   ) => {
     setTitle(newTitle);
     setBody(newBody);
-    setWide(isWidePanel);
+    setSize(newSize);
     sidePanel.setOpen(true);
     notify.clear();
     setOpen(true);
@@ -78,7 +78,11 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
       <aside
         className={classNames(
           "l-aside",
-          { "is-collapsed": !open, "is-wide": wide },
+          {
+            "is-collapsed": !open,
+            "is-wide": ["medium", "large"].includes(size),
+            [classes.medium]: size === "medium",
+          },
           classes.container,
         )}
       >

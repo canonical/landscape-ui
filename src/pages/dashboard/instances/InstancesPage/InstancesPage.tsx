@@ -16,6 +16,7 @@ const RunScriptForm = lazy(
   () => import("@/pages/dashboard/instances/RunScriptForm"),
 );
 const Upgrades = lazy(() => import("@/pages/dashboard/instances/Upgrades"));
+const ReportView = lazy(() => import("@/pages/dashboard/instances/ReportView"));
 
 const InstancesPage: FC = () => {
   const [selected, setSelected] = useState<Instance[]>([]);
@@ -110,7 +111,17 @@ const InstancesPage: FC = () => {
       <Suspense fallback={<LoadingState />}>
         <Upgrades selectedInstances={selected} />
       </Suspense>,
-      true,
+      "large",
+    );
+  };
+
+  const handleReportView = () => {
+    setSidePanelContent(
+      `Report for ${selected.length > 1 ? `${selected.length} instances` : selected[0].title}`,
+      <Suspense fallback={<LoadingState />}>
+        <ReportView instanceIds={selected.map(({ id }) => id)} />
+      </Suspense>,
+      "medium",
     );
   };
 
@@ -125,6 +136,15 @@ const InstancesPage: FC = () => {
               <Button
                 className="p-segmented-control__button"
                 type="button"
+                onClick={handleShutdownInstanceDialog}
+                disabled={shutdownInstancesLoading || 0 === selected.length}
+              >
+                <Icon name="power-off" />
+                <span>Shutdown</span>
+              </Button>
+              <Button
+                className="p-segmented-control__button"
+                type="button"
                 onClick={handleRebootInstanceDialog}
                 disabled={rebootInstancesLoading || 0 === selected.length}
               >
@@ -134,11 +154,11 @@ const InstancesPage: FC = () => {
               <Button
                 className="p-segmented-control__button"
                 type="button"
-                onClick={handleShutdownInstanceDialog}
-                disabled={shutdownInstancesLoading || 0 === selected.length}
+                onClick={handleReportView}
+                disabled={0 === selected.length}
               >
-                <Icon name="power-off" />
-                <span>Shutdown</span>
+                <Icon name="status" />
+                <span>View report</span>
               </Button>
               <Button
                 className="p-segmented-control__button"
