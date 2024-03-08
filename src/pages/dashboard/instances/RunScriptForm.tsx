@@ -1,9 +1,9 @@
 import { ChangeEvent, FC, useMemo } from "react";
-import useDebug from "../../../hooks/useDebug";
+import useDebug from "@/hooks/useDebug";
 import useScripts, {
   CreateScriptParams,
   ExecuteScriptParams,
-} from "../../../hooks/useScripts";
+} from "@/hooks/useScripts";
 import {
   CheckboxInput,
   Form,
@@ -13,10 +13,10 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Buffer } from "buffer";
-import SidePanelFormButtons from "../../../components/form/SidePanelFormButtons";
-import { SelectOption } from "../../../types/SelectOption";
-import useAccessGroup from "../../../hooks/useAccessGroup";
-import CodeEditor from "../../../components/form/CodeEditor";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { SelectOption } from "@/types/SelectOption";
+import useRoles from "@/hooks/useRoles";
+import CodeEditor from "@/components/form/CodeEditor";
 
 interface FormProps
   extends CreateScriptParams,
@@ -100,7 +100,7 @@ interface RunScriptFormProps {
 
 const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
   const debug = useDebug();
-  const { getAccessGroupQuery } = useAccessGroup();
+  const { getAccessGroupQuery } = useRoles();
   const {
     createScriptAttachmentQuery,
     createScriptQuery,

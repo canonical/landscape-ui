@@ -1,6 +1,6 @@
 import { FC, lazy, Suspense, useMemo, useState } from "react";
-import useDebug from "../../../hooks/useDebug";
-import useScripts from "../../../hooks/useScripts";
+import useDebug from "@/hooks/useDebug";
+import useScripts from "@/hooks/useScripts";
 import {
   Button,
   Icon,
@@ -9,13 +9,13 @@ import {
   Spinner,
 } from "@canonical/react-components";
 import { CellProps, Column } from "react-table";
-import { Script } from "../../../types/Script";
-import TablePagination from "../../../components/layout/TablePagination";
-import useConfirm from "../../../hooks/useConfirm";
+import { Script } from "@/types/Script";
+import TablePagination from "@/components/layout/TablePagination";
+import useConfirm from "@/hooks/useConfirm";
 import classes from "./ScriptsContainer.module.scss";
-import useSidePanel from "../../../hooks/useSidePanel";
-import LoadingState from "../../../components/layout/LoadingState";
-import EmptyState from "../../../components/layout/EmptyState";
+import useSidePanel from "@/hooks/useSidePanel";
+import LoadingState from "@/components/layout/LoadingState";
+import EmptyState from "@/components/layout/EmptyState";
 
 const SingleScript = lazy(() => import("./SingleScript"));
 
@@ -117,8 +117,8 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
         accessor: "id",
         className: classes.actions,
         Cell: ({ row }: CellProps<Script>) => (
-          <div className={classes.dividedBlocks}>
-            <div className={classes.dividedBlock}>
+          <div className="divided-blocks">
+            <div className="divided-blocks__item">
               <Button
                 small
                 hasIcon
@@ -133,7 +133,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
                 <i className="p-icon--fork u-no-margin--left" />
               </Button>
             </div>
-            <div className={classes.dividedBlock}>
+            <div className="divided-blocks__item">
               <Button
                 small
                 hasIcon
@@ -148,7 +148,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
                 <i className="p-icon--edit u-no-margin--left" />
               </Button>
             </div>
-            <div className={classes.dividedBlock}>
+            <div className="divided-blocks__item">
               <Button
                 small
                 hasIcon
@@ -178,7 +178,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
           body={
             <>
               <p className="u-no-margin--bottom">
-                You haven’t added any script yet.
+                You haven’t added any scripts yet.
               </p>
               <a
                 href="https://ubuntu.com/landscape/docs/managing-computers"

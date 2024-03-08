@@ -1,15 +1,15 @@
 import { FC } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import useDebug from "../../../../hooks/useDebug";
-import useSidePanel from "../../../../hooks/useSidePanel";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
 import * as Yup from "yup";
-import useAPTSources from "../../../../hooks/useAPTSources";
-import useGPGKeys from "../../../../hooks/useGPGKeys";
-import { SelectOption } from "../../../../types/SelectOption";
-import useAccessGroup from "../../../../hooks/useAccessGroup";
-import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
-import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
+import useAPTSources from "@/hooks/useAPTSources";
+import useGPGKeys from "@/hooks/useGPGKeys";
+import { SelectOption } from "@/types/SelectOption";
+import useRoles from "@/hooks/useRoles";
+import { testLowercaseAlphaNumeric } from "@/utils/tests";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 
 interface FormProps {
   name: string;
@@ -26,7 +26,7 @@ const NewAPTSourceForm: FC = () => {
   const { getGPGKeysQuery } = useGPGKeys();
   const { data: gpgKeysData, isLoading: isGettingGPGKeys } = getGPGKeysQuery();
 
-  const { getAccessGroupQuery } = useAccessGroup();
+  const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =
     getAccessGroupQuery();
 

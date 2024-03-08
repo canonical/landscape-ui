@@ -10,16 +10,16 @@ import {
   Select,
   Tabs,
 } from "@canonical/react-components";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
-import useDebug from "../../../../hooks/useDebug";
-import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
-import useAccessGroup from "../../../../hooks/useAccessGroup";
-import useDistributions from "../../../../hooks/useDistributions";
-import useAPTSources from "../../../../hooks/useAPTSources";
+import useSidePanel from "@/hooks/useSidePanel";
+import useRepositoryProfiles from "@/hooks/useRepositoryProfiles";
+import useDebug from "@/hooks/useDebug";
+import { testLowercaseAlphaNumeric } from "@/utils/tests";
+import useRoles from "@/hooks/useRoles";
+import useDistributions from "@/hooks/useDistributions";
+import useAPTSources from "@/hooks/useAPTSources";
 import classNames from "classnames";
 import { AxiosResponse } from "axios";
-import { RepositoryProfile } from "../../../../types/RepositoryProfile";
+import { RepositoryProfile } from "@/types/RepositoryProfile";
 import classes from "./ProfileForm.module.scss";
 import {
   getAccessGroupsOptions,
@@ -27,7 +27,7 @@ import {
   getFilteredAptSources,
   getFilteredDistributionPocketOptions,
 } from "./_helpers";
-import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 
 interface FormProps {
   title: string;
@@ -72,7 +72,7 @@ const AddProfileForm: FC = () => {
   const { closeSidePanel } = useSidePanel();
 
   const { getDistributionsQuery } = useDistributions();
-  const { getAccessGroupQuery } = useAccessGroup();
+  const { getAccessGroupQuery } = useRoles();
   const { getAPTSourcesQuery } = useAPTSources();
   const {
     createRepositoryProfileQuery,

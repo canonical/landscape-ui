@@ -1,6 +1,6 @@
 import { FC, HTMLProps, lazy, Suspense, useMemo } from "react";
-import { RepositoryProfile } from "../../../../types/RepositoryProfile";
-import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
+import { RepositoryProfile } from "@/types/RepositoryProfile";
+import useRepositoryProfiles from "@/hooks/useRepositoryProfiles";
 import {
   Button,
   Icon,
@@ -8,14 +8,14 @@ import {
   ModularTable,
   Spinner,
 } from "@canonical/react-components";
-import useConfirm from "../../../../hooks/useConfirm";
-import useDebug from "../../../../hooks/useDebug";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import { SelectOption } from "../../../../types/SelectOption";
-import useAccessGroup from "../../../../hooks/useAccessGroup";
+import useConfirm from "@/hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import { SelectOption } from "@/types/SelectOption";
+import useRoles from "@/hooks/useRoles";
 import classes from "./ProfileList.module.scss";
 import { Cell, CellProps, Column, TableCellProps } from "react-table";
-import LoadingState from "../../../../components/layout/LoadingState";
+import LoadingState from "@/components/layout/LoadingState";
 
 const EditProfileForm = lazy(() => import("./EditProfileForm"));
 
@@ -32,7 +32,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
   const { removeRepositoryProfileQuery } = useRepositoryProfiles();
   const { mutateAsync: removeRepositoryProfile, isLoading: isRemoving } =
     removeRepositoryProfileQuery;
-  const { getAccessGroupQuery } = useAccessGroup();
+  const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
 
   const accessGroupsOptions: SelectOption[] = (
@@ -112,8 +112,8 @@ const ProfileList: FC<DistributionProfileListProps> = ({
         accessor: "id",
         className: classes.actions,
         Cell: ({ row }: CellProps<RepositoryProfile>) => (
-          <div className={classes.dividedBlocks}>
-            <div className={classes.dividedBlock}>
+          <div className="divided-blocks">
+            <div className="divided-blocks__item">
               <Button
                 small
                 hasIcon
@@ -128,7 +128,7 @@ const ProfileList: FC<DistributionProfileListProps> = ({
                 <i className="p-icon--edit u-no-margin--left" />
               </Button>
             </div>
-            <div className={classes.dividedBlock}>
+            <div className="divided-blocks__item">
               <Button
                 small
                 hasIcon

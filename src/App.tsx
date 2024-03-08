@@ -57,6 +57,7 @@ const AccessGroupsPage = lazy(
 const AdministratorsPage = lazy(
   () => import("./pages/dashboard/settings/administrators"),
 );
+const RolesPage = lazy(() => import("./pages/dashboard/settings/roles"));
 
 const MonitoringPage = lazy(() => import("./pages/dashboard/monitoring"));
 const EventLogsPage = lazy(
@@ -274,6 +275,14 @@ const App: FC = () => {
               element={
                 <AuthRoute>
                   <AccessGroupsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="settings/roles"
+              element={
+                <AuthRoute>
+                  <RolesPage />
                 </AuthRoute>
               }
             />

@@ -106,6 +106,10 @@ const MENU_ITEMS: MenuItem[] = [
         label: "Access groups",
         path: `${ROOT_PATH}settings/access-groups`,
       },
+      {
+        label: "Roles",
+        path: `${ROOT_PATH}settings/roles`,
+      },
     ],
   },
   {

@@ -1,4 +1,3 @@
-@import "vanilla-framework/scss/settings_breakpoints";
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
@@ -19,24 +18,4 @@
 
 .ctaRow {
   margin-top: $spv--medium;
-}
-
-.dividedBlocks {
-  display: flex;
-
-  @media (min-width: $breakpoint-small) {
-    justify-content: end;
-  }
-}
-
-.dividedBlock {
-  &:not(:last-child) {
-    padding-right: $sph--small;
-  }
-
-  &:not(:first-child)::before {
-    content: "\007c";
-    margin-right: $sph--small;
-    color: $color-mid-light;
-  }
 }

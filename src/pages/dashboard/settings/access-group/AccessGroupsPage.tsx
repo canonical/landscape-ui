@@ -1,19 +1,19 @@
 import { Button } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC } from "react";
-import EmptyState from "../../../../components/layout/EmptyState";
-import LoadingState from "../../../../components/layout/LoadingState";
-import PageHeader from "../../../../components/layout/PageHeader";
-import useAccessGroup from "../../../../hooks/useAccessGroup";
-import useSidePanel from "../../../../hooks/useSidePanel";
+import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
+import PageHeader from "@/components/layout/PageHeader";
+import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
 import AccessGroupList from "./AccessGroupList";
 import NewAccessGroupForm from "./NewAccessGroupForm";
-import PageMain from "../../../../components/layout/PageMain";
-import PageContent from "../../../../components/layout/PageContent";
+import PageMain from "@/components/layout/PageMain";
+import PageContent from "@/components/layout/PageContent";
 
 const AccessGroupsPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
-  const { getAccessGroupQuery } = useAccessGroup();
+  const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupResponse, isLoading } = getAccessGroupQuery();
 
   const accessGroupData = accessGroupResponse?.data ?? [];

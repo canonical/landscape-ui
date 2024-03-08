@@ -3,20 +3,20 @@ import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { string } from "yup";
-import useDebug from "../../../../hooks/useDebug";
-import useDistributions from "../../../../hooks/useDistributions";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import useAccessGroup from "../../../../hooks/useAccessGroup";
-import { SelectOption } from "../../../../types/SelectOption";
-import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
-import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
+import useDebug from "@/hooks/useDebug";
+import useDistributions from "@/hooks/useDistributions";
+import useSidePanel from "@/hooks/useSidePanel";
+import useRoles from "@/hooks/useRoles";
+import { SelectOption } from "@/types/SelectOption";
+import { testLowercaseAlphaNumeric } from "@/utils/tests";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 
 const NewDistributionForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
 
   const { createDistributionQuery, getDistributionsQuery } = useDistributions();
-  const { getAccessGroupQuery } = useAccessGroup();
+  const { getAccessGroupQuery } = useRoles();
   const { mutateAsync: createDistribution, isLoading: isCreatingDistribution } =
     createDistributionQuery;
   const { data: getAccessGroupResponse, error: getAccessGroupError } =

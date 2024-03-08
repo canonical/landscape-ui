@@ -1,19 +1,19 @@
-import { Series } from "../../../../types/Series";
+import { Series } from "@/types/Series";
 import { FC, lazy, Suspense } from "react";
 import { Button, Col, MainTable, Row } from "@canonical/react-components";
-import { Pocket } from "../../../../types/Pocket";
-import { Distribution } from "../../../../types/Distribution";
-import usePockets from "../../../../hooks/usePockets";
-import useDebug from "../../../../hooks/useDebug";
-import useConfirm from "../../../../hooks/useConfirm";
-import useSidePanel from "../../../../hooks/useSidePanel";
+import { Pocket } from "@/types/Pocket";
+import { Distribution } from "@/types/Distribution";
+import usePockets from "@/hooks/usePockets";
+import useDebug from "@/hooks/useDebug";
+import useConfirm from "@/hooks/useConfirm";
+import useSidePanel from "@/hooks/useSidePanel";
 import classNames from "classnames";
 import classes from "./SeriesPocketList.module.scss";
 import { useMediaQuery } from "usehooks-ts";
-import InfoItem from "../../../../components/layout/InfoItem";
+import InfoItem from "@/components/layout/InfoItem";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT, NOT_AVAILABLE } from "../../../../constants";
-import LoadingState from "../../../../components/layout/LoadingState";
+import { DISPLAY_DATE_TIME_FORMAT, NOT_AVAILABLE } from "@/constants";
+import LoadingState from "@/components/layout/LoadingState";
 
 const EditPocketForm = lazy(() => import("./EditPocketForm"));
 const PackageList = lazy(() => import("./PackageList"));
@@ -242,9 +242,9 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
         {
           "aria-label": "Actions",
           content: (
-            <div className={classes.dividedBlocks}>
+            <div className="divided-blocks">
               {("mirror" == pocket.mode || "pull" == pocket.mode) && (
-                <div className={classes.dividedBlock}>
+                <div className="divided-blocks__item">
                   <Button
                     small={isLargerScreen}
                     hasIcon
@@ -275,7 +275,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                   </Button>
                 </div>
               )}
-              <div className={classes.dividedBlock}>
+              <div className="divided-blocks__item">
                 <Button
                   small={isLargerScreen}
                   hasIcon
@@ -298,7 +298,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
                   )}
                 </Button>
               </div>
-              <div className={classes.dividedBlock}>
+              <div className="divided-blocks__item">
                 <Button
                   small={isLargerScreen}
                   hasIcon
