@@ -98,7 +98,7 @@ const TablePagination: FC<TablePaginationProps> = ({
               <Button
                 aria-label="Previous page"
                 appearance="link"
-                className="p-pagination__link--previous u-no-margin--right u-no-margin--bottom"
+                className="p-pagination__link--previous u-no-margin--right u-no-margin--bottom u-no-padding--top"
                 disabled={currentPage === 1}
                 onClick={() => {
                   setPageNumber((page) => Number(page) - 1);
@@ -106,7 +106,7 @@ const TablePagination: FC<TablePaginationProps> = ({
                 }}
                 type="button"
               >
-                <Icon name="chevron-down" />
+                <Icon name="chevron-down" className={classes.icon} />
               </Button>
               <strong>Page </strong>
               <div
@@ -162,7 +162,7 @@ const TablePagination: FC<TablePaginationProps> = ({
               <Button
                 aria-label="Next page"
                 appearance="link"
-                className="p-pagination__link--next u-no-margin--bottom"
+                className="p-pagination__link--next u-no-margin--bottom u-no-padding--top"
                 disabled={currentPage === totalPages || 0 === totalPages}
                 onClick={() => {
                   setPageNumber((page) => Number(page) + 1);
@@ -170,7 +170,7 @@ const TablePagination: FC<TablePaginationProps> = ({
                 }}
                 type="button"
               >
-                <Icon name="chevron-down" />
+                <Icon name="chevron-down" className={classes.icon} />
               </Button>
             </span>
           </nav>

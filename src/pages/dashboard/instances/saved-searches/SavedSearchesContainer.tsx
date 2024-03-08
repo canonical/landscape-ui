@@ -1,14 +1,14 @@
 import { FC, HTMLProps, lazy, Suspense, useMemo, useState } from "react";
-import useDebug from "../../../../hooks/useDebug";
-import { useSavedSearches } from "../../../../hooks/useSavedSearches";
+import useDebug from "@/hooks/useDebug";
+import { useSavedSearches } from "@/hooks/useSavedSearches";
 import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
 import { Cell, CellProps, Column, TableCellProps } from "react-table";
-import { SavedSearch } from "../../../../types/SavedSearch";
+import { SavedSearch } from "@/types/SavedSearch";
 import classes from "./SavedSearchesContainer.module.scss";
-import TablePagination from "../../../../components/layout/TablePagination";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import useConfirm from "../../../../hooks/useConfirm";
-import LoadingState from "../../../../components/layout/LoadingState";
+import TablePagination from "@/components/layout/TablePagination";
+import useSidePanel from "@/hooks/useSidePanel";
+import useConfirm from "@/hooks/useConfirm";
+import LoadingState from "@/components/layout/LoadingState";
 
 const SingleSavedSearch = lazy(() => import("./SingleSavedSearch"));
 
@@ -103,8 +103,8 @@ const SavedSearchesContainer: FC = () => {
         accessor: "id",
         className: classes.actions,
         Cell: ({ row }: CellProps<SavedSearch>) => (
-          <div className={classes.dividedBlocks}>
-            <div className={classes.dividedBlock}>
+          <div className="divided-blocks">
+            <div className="divided-blocks__item">
               <Button
                 small
                 hasIcon
@@ -117,7 +117,7 @@ const SavedSearchesContainer: FC = () => {
                 <i className="p-icon--edit u-no-margin--left" />
               </Button>
             </div>
-            <div className={classes.dividedBlock}>
+            <div className="divided-blocks__item">
               <Button
                 small
                 hasIcon

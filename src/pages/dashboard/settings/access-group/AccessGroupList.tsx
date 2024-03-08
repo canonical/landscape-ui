@@ -1,16 +1,16 @@
 import {
   Button,
-  ICONS,
   Icon,
+  ICONS,
   ModularTable,
   Spinner,
 } from "@canonical/react-components";
 import { FC, useMemo } from "react";
 import { Cell, CellProps, Column } from "react-table";
-import useAccessGroup from "../../../../hooks/useAccessGroup";
-import useConfirm from "../../../../hooks/useConfirm";
-import useDebug from "../../../../hooks/useDebug";
-import { AccessGroup } from "../../../../types/AccessGroup";
+import useRoles from "@/hooks/useRoles";
+import useConfirm from "@/hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
+import { AccessGroup } from "@/types/AccessGroup";
 import classes from "./AccessGroupsList.module.scss";
 
 interface AccessGroupListProps {
@@ -22,7 +22,7 @@ interface IndentedAccessGroup extends AccessGroup, Record<string, unknown> {
 
 const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroupData }) => {
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { removeAccessGroupQuery } = useAccessGroup();
+  const { removeAccessGroupQuery } = useRoles();
   const { mutateAsync: removeAccessGroup, isLoading: isRemoving } =
     removeAccessGroupQuery;
   const debug = useDebug();
@@ -60,8 +60,8 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroupData }) => {
         className: classes.actions,
         Cell: ({ row }: CellProps<IndentedAccessGroup>) => {
           return (
-            <div className={classes.dividedBlocks}>
-              <div className={classes.dividedBlock}>
+            <div className="divided-blocks">
+              <div className="divided-blocks__item">
                 <Button
                   small
                   hasIcon

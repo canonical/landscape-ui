@@ -1,28 +1,7 @@
-@import "vanilla-framework/scss/settings_colors";
-@import "vanilla-framework/scss/settings_spacing";
-
 .title {
   display: flex;
 }
 
 .actions {
-  text-align: right;
   overflow: initial;
-}
-
-.dividedBlocks {
-  display: flex;
-  justify-content: end;
-}
-
-.dividedBlock {
-  &:not(:last-child) {
-    padding-right: $sph--small;
-  }
-
-  &:not(:first-child)::before {
-    content: "\007c";
-    margin-right: $sph--small;
-    color: $color-mid-light;
-  }
 }

@@ -1,10 +1,10 @@
 import * as Yup from "yup";
-import useDebug from "../../../../hooks/useDebug";
+import useDebug from "@/hooks/useDebug";
 import { useFormik } from "formik";
 import { Form, Input, Select } from "@canonical/react-components";
-import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
-import useAccessGroup from "../../../../hooks/useAccessGroup";
-import useSidePanel from "../../../../hooks/useSidePanel";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
 
 interface FormProps {
   title: string;
@@ -12,7 +12,7 @@ interface FormProps {
 }
 
 const NewAccessGroupForm = () => {
-  const { createAccessGroupQuery, getAccessGroupQuery } = useAccessGroup();
+  const { createAccessGroupQuery, getAccessGroupQuery } = useRoles();
   const { mutateAsync, isLoading } = createAccessGroupQuery;
   const { closeSidePanel } = useSidePanel();
   const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =

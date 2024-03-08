@@ -1,15 +1,15 @@
 import { FC, useEffect, useMemo } from "react";
-import { Script } from "../../../types/Script";
-import useSidePanel from "../../../hooks/useSidePanel";
-import useDebug from "../../../hooks/useDebug";
-import useScripts, { CreateScriptParams } from "../../../hooks/useScripts";
+import { Script } from "@/types/Script";
+import useSidePanel from "@/hooks/useSidePanel";
+import useDebug from "@/hooks/useDebug";
+import useScripts, { CreateScriptParams } from "@/hooks/useScripts";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Button, Form, Input, Select } from "@canonical/react-components";
-import useAccessGroup from "../../../hooks/useAccessGroup";
-import { SelectOption } from "../../../types/SelectOption";
+import useRoles from "@/hooks/useRoles";
+import { SelectOption } from "@/types/SelectOption";
 import { Buffer } from "buffer";
-import CodeEditor from "../../../components/form/CodeEditor";
+import CodeEditor from "@/components/form/CodeEditor";
 
 interface FormProps extends CreateScriptParams {
   attachments: {
@@ -55,7 +55,7 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
 
-  const { getAccessGroupQuery } = useAccessGroup();
+  const { getAccessGroupQuery } = useRoles();
   const {
     createScriptQuery,
     editScriptQuery,

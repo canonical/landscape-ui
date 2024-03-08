@@ -2,13 +2,13 @@ import { FC } from "react";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import useDebug from "../../../../../../hooks/useDebug";
-import useAdministrators from "../../../../../../hooks/useAdministrators";
-import useAccessGroup from "../../../../../../hooks/useAccessGroup";
-import { SelectOption } from "../../../../../../types/SelectOption";
-import SidePanelFormButtons from "../../../../../../components/form/SidePanelFormButtons";
-import useNotify from "../../../../../../hooks/useNotify";
-import MultiSelectField from "../../../../../../components/form/MultiSelectField";
+import useDebug from "@/hooks/useDebug";
+import useAdministrators from "@/hooks/useAdministrators";
+import useRoles from "@/hooks/useRoles";
+import { SelectOption } from "@/types/SelectOption";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useNotify from "@/hooks/useNotify";
+import MultiSelectField from "@/components/form/MultiSelectField";
 
 interface FormProps {
   email: string;
@@ -34,7 +34,7 @@ const InviteAdministratorForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { inviteAdministratorQuery } = useAdministrators();
-  const { getRolesQuery } = useAccessGroup();
+  const { getRolesQuery } = useRoles();
 
   const { mutateAsync: inviteAdministrator } = inviteAdministratorQuery;
 

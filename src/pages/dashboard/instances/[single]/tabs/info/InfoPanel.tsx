@@ -1,8 +1,8 @@
 import { FC, Suspense, useEffect, useState } from "react";
-import { InstanceWithoutRelation } from "../../../../../../types/Instance";
-import useDebug from "../../../../../../hooks/useDebug";
-import useConfirm from "../../../../../../hooks/useConfirm";
-import useInstances from "../../../../../../hooks/useInstances";
+import { InstanceWithoutRelation } from "@/types/Instance";
+import useDebug from "@/hooks/useDebug";
+import useConfirm from "@/hooks/useConfirm";
+import useInstances from "@/hooks/useInstances";
 import {
   Button,
   Chip,
@@ -13,20 +13,18 @@ import {
   Select,
   Textarea,
 } from "@canonical/react-components";
-import useSidePanel from "../../../../../../hooks/useSidePanel";
-import LoadingState from "../../../../../../components/layout/LoadingState";
+import useSidePanel from "@/hooks/useSidePanel";
+import LoadingState from "@/components/layout/LoadingState";
 import EditInstance from "./EditInstance";
 import classes from "./InfoPanel.module.scss";
-import InfoItem, {
-  InfoItemProps,
-} from "../../../../../../components/layout/InfoItem";
+import InfoItem, { InfoItemProps } from "@/components/layout/InfoItem";
 import classNames from "classnames";
-import useAccessGroup from "../../../../../../hooks/useAccessGroup";
-import { SelectOption } from "../../../../../../types/SelectOption";
+import useRoles from "@/hooks/useRoles";
+import { SelectOption } from "@/types/SelectOption";
 import ActivityConfirmation, { ActivityProps } from "./ActivityConfirmation";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "../../../../../../constants";
-import { useWsl } from "../../../../../../hooks/useWsl";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { useWsl } from "@/hooks/useWsl";
 
 interface InfoPanelProps {
   instance: InstanceWithoutRelation;
@@ -65,7 +63,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     changeInstancesAccessGroupQuery,
   } = useInstances();
 
-  const { getAccessGroupQuery } = useAccessGroup();
+  const { getAccessGroupQuery } = useRoles();
 
   const { deleteChildInstancesQuery } = useWsl();
 

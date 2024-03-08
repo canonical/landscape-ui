@@ -2,16 +2,16 @@ import { FC, useEffect, useState } from "react";
 import { Button, Col, Form, Row, Spinner } from "@canonical/react-components";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { SelectOption } from "../../../../../../types/SelectOption";
-import { Administrator } from "../../../../../../types/Administrator";
-import useDebug from "../../../../../../hooks/useDebug";
-import useAdministrators from "../../../../../../hooks/useAdministrators";
-import useConfirm from "../../../../../../hooks/useConfirm";
-import SidePanelFormButtons from "../../../../../../components/form/SidePanelFormButtons";
-import InfoItem from "../../../../../../components/layout/InfoItem";
-import useAccessGroup from "../../../../../../hooks/useAccessGroup";
-import useNotify from "../../../../../../hooks/useNotify";
-import MultiSelectField from "../../../../../../components/form/MultiSelectField";
+import { SelectOption } from "@/types/SelectOption";
+import { Administrator } from "@/types/Administrator";
+import useDebug from "@/hooks/useDebug";
+import useAdministrators from "@/hooks/useAdministrators";
+import useConfirm from "@/hooks/useConfirm";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import InfoItem from "@/components/layout/InfoItem";
+import useRoles from "@/hooks/useRoles";
+import useNotify from "@/hooks/useNotify";
+import MultiSelectField from "@/components/form/MultiSelectField";
 
 interface EditAdministratorFormProps {
   administrator: Administrator;
@@ -32,7 +32,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { disableAdministratorQuery } = useAdministrators();
   const { getRolesQuery, addPersonsToRoleQuery, removePersonsFromRoleQuery } =
-    useAccessGroup();
+    useRoles();
 
   const { data: getRolesQueryResult, error: getRolesQueryError } =
     getRolesQuery();

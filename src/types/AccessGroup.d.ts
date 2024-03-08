@@ -1,5 +1,5 @@
 export interface AccessGroup {
-  children: unknown;
+  children: string;
   name: string;
   parent: string;
   title: string;

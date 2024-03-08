@@ -1,12 +1,12 @@
 import { FC, useState } from "react";
 import { Button } from "@canonical/react-components";
-import { SelectOption } from "../../../../../../types/SelectOption";
-import { Administrator } from "../../../../../../types/Administrator";
-import useAccessGroup from "../../../../../../hooks/useAccessGroup";
-import useDebug from "../../../../../../hooks/useDebug";
-import useNotify from "../../../../../../hooks/useNotify";
+import { SelectOption } from "@/types/SelectOption";
+import { Administrator } from "@/types/Administrator";
+import useRoles from "@/hooks/useRoles";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import classes from "./AdministratorRolesCell.module.scss";
-import MultiSelectField from "../../../../../../components/form/MultiSelectField";
+import MultiSelectField from "@/components/form/MultiSelectField";
 
 interface AdministratorRolesCellProps {
   administrator: Administrator;
@@ -21,8 +21,7 @@ const AdministratorRolesCell: FC<AdministratorRolesCellProps> = ({
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { addPersonsToRoleQuery, removePersonsFromRoleQuery } =
-    useAccessGroup();
+  const { addPersonsToRoleQuery, removePersonsFromRoleQuery } = useRoles();
 
   const { mutateAsync: addPersonsToRole } = addPersonsToRoleQuery;
   const { mutateAsync: removePersonsFromRole } = removePersonsFromRoleQuery;

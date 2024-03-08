@@ -1,9 +1,9 @@
 import { FC, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import useInstances from "../../../../../../hooks/useInstances";
-import useDebug from "../../../../../../hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
+import useDebug from "@/hooks/useDebug";
 import { CellProps, Column } from "react-table";
-import { InstanceWithoutRelation } from "../../../../../../types/Instance";
+import { InstanceWithoutRelation } from "@/types/Instance";
 import {
   Button,
   CheckboxInput,
@@ -11,10 +11,10 @@ import {
 } from "@canonical/react-components";
 import classes from "./InstancesPanel.module.scss";
 import InstancesPanelHeader from "./InstancesPanelHeader";
-import LoadingState from "../../../../../../components/layout/LoadingState";
-import { useWsl } from "../../../../../../hooks/useWsl";
-import useConfirm from "../../../../../../hooks/useConfirm";
-import { ROOT_PATH } from "../../../../../../constants";
+import LoadingState from "@/components/layout/LoadingState";
+import { useWsl } from "@/hooks/useWsl";
+import useConfirm from "@/hooks/useConfirm";
+import { ROOT_PATH } from "@/constants";
 
 const InstancesPanel: FC = () => {
   const [selectedInstances, setSelectedInstances] = useState<
@@ -201,8 +201,8 @@ const InstancesPanel: FC = () => {
         accessor: "actions",
         className: classes.actions,
         Cell: ({ row }: CellProps<InstanceWithoutRelation>) => (
-          <div className={classes.dividedBlocks}>
-            <div className={classes.dividedBlock}>
+          <div className="divided-blocks">
+            <div className="divided-blocks__item">
               <Button
                 small
                 hasIcon
@@ -218,7 +218,7 @@ const InstancesPanel: FC = () => {
                 <i className="p-icon--pin u-no-margin--left" />
               </Button>
             </div>
-            <div className={classes.dividedBlock}>
+            <div className="divided-blocks__item">
               <Button
                 small
                 hasIcon

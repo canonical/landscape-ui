@@ -13,18 +13,19 @@ export interface Notification {
   title?: string;
 }
 
-type NotificationMethodArgs<T = "default"> = T extends "error"
-  ? {
-      message: string;
-      actions?: NotificationAction[];
-      error?: unknown;
-      title?: string;
-    }
-  : {
-      message: string;
-      actions?: NotificationAction[];
-      title?: string;
-    };
+type NotificationMethodArgs<T extends "default" | "error" = "default"> =
+  T extends "error"
+    ? {
+        message: string;
+        actions?: NotificationAction[];
+        error?: unknown;
+        title?: string;
+      }
+    : {
+        message: string;
+        actions?: NotificationAction[];
+        title?: string;
+      };
 
 type NotificationMethod<T = "default"> = (
   args: NotificationMethodArgs<T>,

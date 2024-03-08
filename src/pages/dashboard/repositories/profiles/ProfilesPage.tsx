@@ -53,7 +53,7 @@ const ProfilesPage: FC = () => {
             body={
               <>
                 <p className="u-no-margin--bottom">
-                  You haven’t added any profile yet.
+                  You haven’t added any profiles yet.
                 </p>
                 <a
                   href="https://ubuntu.com/landscape/docs/repositories"

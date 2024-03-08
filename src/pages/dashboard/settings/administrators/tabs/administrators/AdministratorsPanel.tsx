@@ -1,10 +1,10 @@
 import { FC, useState } from "react";
 import AdministratorsPanelHeader from "./AdministratorsPanelHeader";
-import useDebug from "../../../../../../hooks/useDebug";
-import useAdministrators from "../../../../../../hooks/useAdministrators";
-import useAccessGroup from "../../../../../../hooks/useAccessGroup";
+import useDebug from "@/hooks/useDebug";
+import useAdministrators from "@/hooks/useAdministrators";
+import useRoles from "@/hooks/useRoles";
 import AdministratorList from "./AdministratorList";
-import TablePagination from "../../../../../../components/layout/TablePagination";
+import TablePagination from "@/components/layout/TablePagination";
 
 const AdministratorsPanel: FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -13,7 +13,7 @@ const AdministratorsPanel: FC = () => {
 
   const debug = useDebug();
   const { getAdministratorsQuery } = useAdministrators();
-  const { getRolesQuery } = useAccessGroup();
+  const { getRolesQuery } = useRoles();
 
   const { data: getRolesQueryResult, error: getRolesQueryError } =
     getRolesQuery();
