@@ -1,7 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
-import * as path from "path";
 
-export const STORAGE_STATE = path.join(__dirname, "playwright/.auth/user.json");
+export const STORAGE_STATE = "playwright/.auth/user.json";
 
 const PORT = process.env.CI ? 4173 : 5173;
 
@@ -11,7 +10,7 @@ const BASE_URL = `http://localhost:${PORT}`;
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: path.join(__dirname, "tests"),
+  testDir: "tests",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
