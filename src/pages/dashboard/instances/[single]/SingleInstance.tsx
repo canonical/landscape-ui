@@ -1,17 +1,17 @@
 import { FC, lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import useInstances from "../../../../hooks/useInstances";
-import PageMain from "../../../../components/layout/PageMain";
-import PageContent from "../../../../components/layout/PageContent";
+import useInstances from "@/hooks/useInstances";
+import PageMain from "@/components/layout/PageMain";
+import PageContent from "@/components/layout/PageContent";
 import { Button, Tabs } from "@canonical/react-components";
-import useDebug from "../../../../hooks/useDebug";
-import LoadingState from "../../../../components/layout/LoadingState";
-import PageHeader from "../../../../components/layout/PageHeader";
-import { Breadcrumb } from "../../../../types/Breadcrumb";
+import useDebug from "@/hooks/useDebug";
+import LoadingState from "@/components/layout/LoadingState";
+import PageHeader from "@/components/layout/PageHeader";
+import { Breadcrumb } from "@/types/Breadcrumb";
 import classes from "./SingleInstance.module.scss";
-import EmptyState from "../../../../components/layout/EmptyState";
-import { ROOT_PATH } from "../../../../constants";
-import useAuth from "../../../../hooks/useAuth";
+import EmptyState from "@/components/layout/EmptyState";
+import { ROOT_PATH } from "@/constants";
+import useAuth from "@/hooks/useAuth";
 
 const InfoPanel = lazy(() => import("./tabs/info"));
 const ProcessesPanel = lazy(() => import("./tabs/processes"));

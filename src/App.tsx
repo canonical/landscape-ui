@@ -28,7 +28,7 @@ const InstancesPage = lazy(
   () => import("./pages/dashboard/instances/InstancesPage"),
 );
 const SingleInstance = lazy(
-  () => import("./pages/dashboard/instances/[single]/SingleInstance"),
+  () => import("@/pages/dashboard/instances/[single]"),
 );
 const ActivitiesPage = lazy(() => import("./pages/dashboard/activities"));
 const ScriptsPage = lazy(() => import("./pages/dashboard/scripts"));

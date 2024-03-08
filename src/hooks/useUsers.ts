@@ -106,11 +106,11 @@ interface UnlockUserParams {
   usernames: string[];
 }
 
-interface GetGroupsParams {
+export interface GetGroupsParams {
   computer_id: number;
 }
 
-interface GetUserGroupsParams {
+export interface GetUserGroupsParams {
   computer_id: number;
   username: string;
 }

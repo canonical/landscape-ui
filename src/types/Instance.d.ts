@@ -170,20 +170,19 @@ interface UbuntuProContract {
 }
 
 interface UbuntuProService {
-  available: string;
-  blocked_by: [];
-  description: string;
-  description_override: null;
-  entitled: string;
   name: string;
-  status: string;
-  status_details: string;
-  warning: null;
+  available: string;
+  description: string;
+  blocked_by?: [];
+  description_override?: null;
+  entitled?: string;
+  status?: string;
+  status_details?: string;
+  warning?: null;
 }
 
 interface UbuntuProInfo {
   _doc: string;
-  _schema_version: string;
   account: UbuntuProAccount;
   attached: boolean;
   config: UbuntuProConfig;
@@ -203,6 +202,9 @@ interface UbuntuProInfo {
   simulated: boolean;
   version: string;
   warnings: [];
+  _schema_version?: string;
+  techSupportLevel?: string;
+  origin?: unknown | null;
 }
 
 export interface InstanceWithoutRelation extends Record<string, unknown> {

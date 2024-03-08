@@ -1,0 +1,15 @@
+@import "vanilla-framework/scss/base_icon-definitions";
+@import "vanilla-framework/scss/global_functions";
+@import "vanilla-framework/scss/settings_colors";
+
+.iconError {
+  @include vf-icon-error-grey($color-negative);
+}
+
+.iconWarning {
+  @include vf-icon-warning-grey($color-caution);
+}
+
+.iconWarningRed {
+  @include vf-icon-warning-grey($color-ubuntu);
+}

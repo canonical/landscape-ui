@@ -2,7 +2,7 @@ import { FC } from "react";
 import PageMain from "../../../../components/layout/PageMain";
 import PageHeader from "../../../../components/layout/PageHeader";
 import PageContent from "../../../../components/layout/PageContent";
-import AdministratorsContainer from "./AdministratorsContainer";
+import AdministratorsTabs from "./AdministratorsTabs";
 import { Button } from "@canonical/react-components";
 import useSidePanel from "../../../../hooks/useSidePanel";
 import InviteAdministratorForm from "./tabs/administrators/InviteAdministratorForm";
@@ -29,7 +29,7 @@ const AdministratorsPage: FC = () => {
         ]}
       />
       <PageContent>
-        <AdministratorsContainer />
+        <AdministratorsTabs />
       </PageContent>
     </PageMain>
   );

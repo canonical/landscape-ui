@@ -47,6 +47,10 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npx vitest --coverage.enabled true
+        env:
+          VITE_API_URL: http://207.154.219.68:9091/api/v2/
+          VITE_API_URL_OLD: http://207.154.219.68:9091/api/
+          VITE_OLD_DASHBOARD_URL: http://207.154.219.68:8080/
       - name: Report Coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2

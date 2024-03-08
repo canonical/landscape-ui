@@ -1,0 +1,24 @@
+@import "vanilla-framework/scss/base_placeholders";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.checkboxColumn {
+  width: $sp-x-large;
+}
+
+.expanded {
+  @include vf-highlight-bar($colors--light-theme--text-default, bottom, false);
+}
+
+.expandButton[aria-expanded="true"] {
+  background-color: inherit;
+  font-weight: 550;
+}
+
+.hidden {
+  display: none;
+}
+
+.innerTable {
+  background-color: $color-light;
+}
