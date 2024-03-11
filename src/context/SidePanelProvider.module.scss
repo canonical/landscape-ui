@@ -3,6 +3,10 @@
   flex-direction: column;
 }
 
+.medium {
+  max-width: 43rem !important;
+}
+
 .outerDiv {
   flex-grow: 1;
   overflow: visible !important;

@@ -63,7 +63,6 @@ const MonitoringPage = lazy(() => import("./pages/dashboard/monitoring"));
 const EventLogsPage = lazy(
   () => import("./pages/dashboard/monitoring/event-logs"),
 );
-const ReportsPage = lazy(() => import("./pages/dashboard/monitoring/reports"));
 const AlertsPage = lazy(() => import("./pages/dashboard/monitoring/alerts"));
 const UserPage = lazy(() => import("./pages/dashboard/user"));
 const NotificationsPage = lazy(() => import("./pages/dashboard/notifications"));
@@ -227,14 +226,6 @@ const App: FC = () => {
               element={
                 <AuthRoute>
                   <MonitoringPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="monitoring/reports"
-              element={
-                <AuthRoute>
-                  <ReportsPage />
                 </AuthRoute>
               }
             />

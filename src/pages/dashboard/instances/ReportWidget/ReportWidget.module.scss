@@ -1,0 +1,21 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.header {
+  display: flex;
+  font-weight: 550;
+  justify-content: space-between;
+  margin-bottom: $spv--medium;
+}
+
+.lineContainer {
+  background-color: #d6e4ec;
+  border: 1px solid $colors--light-theme--border-default;
+  border-radius: 5px;
+  margin-bottom: $spv--medium;
+}
+
+.line {
+  background-color: $color-link;
+  height: $spv--small;
+}

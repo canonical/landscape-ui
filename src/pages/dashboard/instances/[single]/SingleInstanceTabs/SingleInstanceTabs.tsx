@@ -116,7 +116,6 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({ instance }) => {
           {"tab-link-users" === currentTabLinkId && (
             <UserPanel instanceId={instance.id} />
           )}
-          {"tab-link-reports" === currentTabLinkId && <p>Reports</p>}
           {"tab-link-hardware" === currentTabLinkId && <HardwarePanel />}
         </Suspense>
       </div>
