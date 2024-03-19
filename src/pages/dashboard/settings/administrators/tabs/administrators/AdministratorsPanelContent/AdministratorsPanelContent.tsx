@@ -1,18 +1,23 @@
 import { FC, useState } from "react";
-import AdministratorsPanelHeader from "./AdministratorsPanelHeader";
-import useDebug from "@/hooks/useDebug";
-import useAdministrators from "@/hooks/useAdministrators";
-import useRoles from "@/hooks/useRoles";
-import AdministratorList from "./AdministratorList";
 import TablePagination from "@/components/layout/TablePagination";
+import useDebug from "@/hooks/useDebug";
+import useRoles from "@/hooks/useRoles";
+import { Administrator } from "@/types/Administrator";
+import AdministratorList from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorList";
+import AdministratorsPanelHeader from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelHeader";
 
-const AdministratorsPanel: FC = () => {
+interface AdministratorsPanelContentProps {
+  administrators: Administrator[];
+}
+
+const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
+  administrators,
+}) => {
   const [searchText, setSearchText] = useState("");
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
 
   const debug = useDebug();
-  const { getAdministratorsQuery } = useAdministrators();
   const { getRolesQuery } = useRoles();
 
   const { data: getRolesQueryResult, error: getRolesQueryError } =
@@ -22,17 +27,7 @@ const AdministratorsPanel: FC = () => {
     debug(getRolesQueryError);
   }
 
-  const {
-    data: getAdministratorsQueryResult,
-    error: getAdministratorsQueryError,
-  } = getAdministratorsQuery();
-
-  if (getAdministratorsQueryError) {
-    debug(getAdministratorsQueryError);
-  }
-
   const getSearchedAdministrators = () => {
-    const administrators = getAdministratorsQueryResult?.data ?? [];
     const search = searchText.trim().toLowerCase();
 
     if (!search) {
@@ -74,16 +69,18 @@ const AdministratorsPanel: FC = () => {
         }
         roles={getRolesQueryResult?.data ?? []}
       />
-      <TablePagination
-        currentPage={currentPage}
-        pageSize={pageSize}
-        paginate={(page) => setCurrentPage(page)}
-        setPageSize={(itemsNumber) => setPageSize(itemsNumber)}
-        totalItems={searchedAdministrators.length}
-        currentItemCount={filteredAdministrators.length}
-      />
+      {filteredAdministrators.length > 0 && (
+        <TablePagination
+          currentPage={currentPage}
+          pageSize={pageSize}
+          paginate={(page) => setCurrentPage(page)}
+          setPageSize={(itemsNumber) => setPageSize(itemsNumber)}
+          totalItems={searchedAdministrators.length}
+          currentItemCount={filteredAdministrators.length}
+        />
+      )}
     </>
   );
 };
 
-export default AdministratorsPanel;
+export default AdministratorsPanelContent;

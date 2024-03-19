@@ -1,10 +1,11 @@
-import { QueryFnType } from "../types/QueryFnType";
+import { QueryFnType } from "@/types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiError } from "../types/ApiError";
+import { ApiError } from "@/types/ApiError";
 import useFetchOld from "./useFetchOld";
-import { Administrator } from "../types/Administrator";
-import { Activity } from "../types/Activity";
+import { Administrator } from "@/types/Administrator";
+import { Activity } from "@/types/Activity";
+import useFetch from "./useFetch";
 
 interface InviteAdministratorParams {
   email: string;
@@ -16,9 +17,15 @@ interface DisableAdministratorParams {
   email: string;
 }
 
+interface EditAdministratorParams {
+  id: number;
+  roles: string[];
+}
+
 export default function useAdministrators() {
   const queryClient = useQueryClient();
-  const authFetch = useFetchOld();
+  const authFetchOld = useFetchOld();
+  const authFetch = useFetch();
 
   const getAdministratorsQuery: QueryFnType<
     AxiosResponse<Administrator[]>,
@@ -26,7 +33,7 @@ export default function useAdministrators() {
   > = (_, config = {}) =>
     useQuery<AxiosResponse<Administrator[]>, AxiosError<ApiError>>({
       queryKey: ["administrators"],
-      queryFn: () => authFetch!.get("GetAdministrators"),
+      queryFn: () => authFetchOld!.get("GetAdministrators"),
       ...config,
     });
 
@@ -35,7 +42,8 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     InviteAdministratorParams
   >({
-    mutationFn: (params) => authFetch!.get("InviteAdministrator", { params }),
+    mutationFn: (params) =>
+      authFetchOld!.get("InviteAdministrator", { params }),
     onSuccess: () => queryClient.invalidateQueries(["administrators"]),
   });
 
@@ -44,13 +52,29 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     DisableAdministratorParams
   >({
-    mutationFn: (params) => authFetch!.get("DisableAdministrator", { params }),
+    mutationFn: (params) =>
+      authFetchOld!.get("DisableAdministrator", { params }),
     onSuccess: () => queryClient.invalidateQueries(["administrators"]),
+  });
+
+  const editAdministratorQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    EditAdministratorParams
+  >({
+    mutationFn: ({ id, ...params }) =>
+      authFetch!.put(`administrators/${id}`, params),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["administrators"]),
+        queryClient.invalidateQueries(["roles"]),
+      ]),
   });
 
   return {
     getAdministratorsQuery,
     inviteAdministratorQuery,
     disableAdministratorQuery,
+    editAdministratorQuery,
   };
 }

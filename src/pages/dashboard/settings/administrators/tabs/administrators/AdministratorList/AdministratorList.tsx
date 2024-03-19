@@ -1,6 +1,5 @@
 import { FC, HTMLProps, useMemo } from "react";
-import { Administrator } from "../../../../../../types/Administrator";
-import { Role } from "../../../../../../types/Role";
+import { Cell, CellProps, Column, TableCellProps } from "react-table";
 import {
   Button,
   Icon,
@@ -8,15 +7,16 @@ import {
   ModularTable,
   Spinner,
 } from "@canonical/react-components";
-import { Cell, CellProps, Column, TableCellProps } from "react-table";
-import useDebug from "../../../../../../hooks/useDebug";
-import useConfirm from "../../../../../../hooks/useConfirm";
-import useAdministrators from "../../../../../../hooks/useAdministrators";
-import useSidePanel from "../../../../../../hooks/useSidePanel";
-import EditAdministratorForm from "./EditAdministratorForm";
+import useAdministrators from "@/hooks/useAdministrators";
+import useConfirm from "@/hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Administrator } from "@/types/Administrator";
+import { Role } from "@/types/Role";
+import { SelectOption } from "@/types/SelectOption";
+import EditAdministratorForm from "@/pages/dashboard/settings/administrators/tabs/administrators/EditAdministratorForm";
+import AdministratorRolesCell from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorRolesCell";
 import classes from "./AdministratorList.module.scss";
-import AdministratorRolesCell from "./AdministratorRolesCell";
-import { SelectOption } from "../../../../../../types/SelectOption";
 
 interface AdministratorListProps {
   administrators: Administrator[];

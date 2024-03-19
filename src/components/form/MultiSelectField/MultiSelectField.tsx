@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { MultiSelect, MultiSelectProps } from "@canonical/react-components";
 import classNames from "classnames";
+import classes from "./MultiSelectField.module.scss";
 
 interface MultiSelectFieldProps extends MultiSelectProps {
   className?: string;
@@ -9,6 +10,7 @@ interface MultiSelectFieldProps extends MultiSelectProps {
 }
 
 const MultiSelectField: FC<MultiSelectFieldProps> = ({
+  dropdownFooter,
   error,
   required,
   className,
@@ -16,11 +18,24 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
   labelClassName,
   ...otherProps
 }) => {
+  const footer = error ? (
+    <div>
+      <p className="p-form-validation__message">
+        <strong>Error: </strong>
+        <span>{error}</span>
+      </p>
+      {dropdownFooter}
+    </div>
+  ) : (
+    dropdownFooter
+  );
+
   return (
     <div
       className={classNames(
         "p-form-validation p-form__group",
         { "is-error": !!error },
+        classes.container,
         className,
       )}
     >
@@ -35,7 +50,12 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
           {label}
         </label>
       )}
-      <MultiSelect label={label} error={error} {...otherProps} />
+      <MultiSelect
+        label={label}
+        error={error}
+        dropdownFooter={footer}
+        {...otherProps}
+      />
       {error && (
         <p className="p-form-validation__message">
           <strong>Error: </strong>

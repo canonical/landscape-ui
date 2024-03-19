@@ -30,9 +30,9 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   const { notify } = useNotify();
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { disableAdministratorQuery } = useAdministrators();
-  const { getRolesQuery, addPersonsToRoleQuery, removePersonsFromRoleQuery } =
-    useRoles();
+  const { disableAdministratorQuery, editAdministratorQuery } =
+    useAdministrators();
+  const { getRolesQuery } = useRoles();
 
   const { data: getRolesQueryResult, error: getRolesQueryError } =
     getRolesQuery();
@@ -47,8 +47,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
       value: name,
     })) ?? [];
 
-  const { mutateAsync: addPersonsToRole } = addPersonsToRoleQuery;
-  const { mutateAsync: removePersonsFromRole } = removePersonsFromRoleQuery;
+  const { mutateAsync: editAdministrator } = editAdministratorQuery;
 
   const { mutateAsync: disableAdministrator, isLoading: isDisabling } =
     disableAdministratorQuery;
@@ -83,23 +82,8 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   };
 
   const handleSubmit = async (values: { roles: string[] }) => {
-    const addRolesPromises = values.roles
-      .filter((role) => !currentAdministrator.roles.includes(role))
-      .map((role) =>
-        addPersonsToRole({ name: role, persons: [currentAdministrator.email] }),
-      );
-
-    const removeRolesPromises = currentAdministrator.roles
-      .filter((role) => !values.roles.includes(role))
-      .map((role) =>
-        removePersonsFromRole({
-          name: role,
-          persons: [currentAdministrator.email],
-        }),
-      );
-
     try {
-      await Promise.all([...addRolesPromises, ...removeRolesPromises]);
+      await editAdministrator({ id: administrator.id, roles: values.roles });
 
       setCurrentAdministrator((prev) => ({ ...prev, roles: values.roles }));
 
@@ -113,9 +97,11 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   };
 
   const formik = useFormik({
-    initialValues: { roles: currentAdministrator.roles },
+    initialValues: { roles: [] as string[] },
     validationSchema: Yup.object().shape({
-      roles: Yup.array().of(Yup.string()),
+      roles: Yup.array()
+        .of(Yup.string())
+        .min(1, "At least one role is required"),
     }),
     onSubmit: handleSubmit,
   });
@@ -159,6 +145,11 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
             "roles",
             items.map(({ value }) => value as string),
           )
+        }
+        error={
+          formik.touched.roles && typeof formik.errors.roles === "string"
+            ? formik.errors.roles
+            : undefined
         }
       />
 
