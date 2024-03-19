@@ -1,0 +1,17 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.infoRow {
+  margin-bottom: $spv--large;
+  padding-bottom: $spv--large;
+  border-bottom: 1px solid $color-mid-light;
+}
+
+.helpIcon {
+  margin-right: $sp-small;
+  margin-left: $sp-small;
+}
+
+.header {
+  margin-bottom: $sp-small;
+}
