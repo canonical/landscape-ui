@@ -1,0 +1,37 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_breakpoints";
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.legendItem__circle {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  margin-right: $sp-small;
+}
+
+.legendItem__label {
+  display: flex;
+  align-items: center;
+}
+
+.container {
+  width: 100%;
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: none;
+  padding-right: 0;
+  @media (min-width: $breakpoint-large) {
+    border-right: 1px solid $color-mid-light;
+    padding-right: $sp-x-large;
+  }
+}

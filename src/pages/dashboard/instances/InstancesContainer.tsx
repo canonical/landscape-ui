@@ -13,7 +13,7 @@ import SearchHelpPopup from "../../../components/layout/SearchHelpPopup";
 import { INSTANCE_SEARCH_HELP_TERMS } from "./_data";
 import { useSavedSearches } from "../../../hooks/useSavedSearches";
 import useDebug from "../../../hooks/useDebug";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { Instance } from "../../../types/Instance";
 import { Select } from "@canonical/react-components";
 import { SelectOption } from "../../../types/SelectOption";
@@ -22,6 +22,54 @@ const osFilterOptions: SelectOption[] = [
   { label: "All", value: "" },
   { label: "Ubuntu", value: "NOT distribution:windows" },
   { label: "Windows", value: "distribution:windows" },
+];
+
+const statusOptions: SelectOption[] = [
+  { label: "All", value: "" },
+  {
+    label: "Up to date",
+    value: "NOT alert:package-upgrades",
+  },
+  {
+    label: "Package upgrades",
+    value: "alert:package-upgrades",
+  },
+  {
+    label: "Security upgrades",
+    value: "alert:security-upgrades",
+  },
+  {
+    label: "Package profiles",
+    value: "alert:package-profiles",
+  },
+  {
+    label: "Package reporter",
+    value: "alert:package-reporter",
+  },
+  {
+    label: "ESM disabled",
+    value: "alert:esm-disabled",
+  },
+  {
+    label: "Computer offline",
+    value: "alert:computer-offline",
+  },
+  {
+    label: "Computer online",
+    value: "NOT alert:computer-offline",
+  },
+  {
+    label: "Computer reboot",
+    value: "alert:computer-reboot",
+  },
+  {
+    label: "Computer duplicates",
+    value: "alert:computer-duplicates",
+  },
+  {
+    label: "Unapproved activities",
+    value: "alert:unapproved-activities",
+  },
 ];
 
 interface InstancesContainerProps {
@@ -44,6 +92,11 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
 
   const location = useLocation();
   const locationState = location.state as { chipData?: SearchAndFilterChip };
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [statusFilter, setStatusFilter] = useState(
+    searchParams.get("status") || "",
+  );
 
   const debug = useDebug();
 
@@ -77,7 +130,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
   } = getInstancesQuery({
     query: `${searchAndFilterChips
       .map(({ lead, value }) => (lead ? `${lead}:${value}` : value))
-      .join(" ")}${osFilter ?? ""}`.trim(),
+      .join(" ")}${osFilter ?? ""}${statusFilter ?? ""}`.trim(),
     root_only: groupBy === "parent",
     limit: pageLimit,
     offset: (currentPage - 1) * pageLimit,
@@ -135,6 +188,23 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
           onChange={(event) => {
             setSelectedInstances([]);
             setOsFilter(event.target.value);
+          }}
+        />
+        <Select
+          label="Status"
+          wrapperClassName={classes.select}
+          className="u-no-margin--bottom"
+          options={statusOptions}
+          value={statusFilter}
+          onChange={(event) => {
+            setSelectedInstances([]);
+            setStatusFilter(event.target.value);
+            if (event.target.value !== "") {
+              setSearchParams({ status: event.target.value });
+            } else {
+              searchParams.delete("status");
+              setSearchParams(searchParams);
+            }
           }}
         />
       </div>

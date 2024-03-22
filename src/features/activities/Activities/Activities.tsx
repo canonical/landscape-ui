@@ -1,5 +1,5 @@
 import moment from "moment/moment";
-import { FC, lazy, Suspense, useMemo, useState } from "react";
+import { FC, lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { CellProps, Column } from "react-table";
 import {
   Button,
@@ -16,6 +16,7 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Activity, ActivityCommon } from "@/types/Activity";
 import classes from "./Activities.module.scss";
+import { useLocation } from "react-router-dom";
 
 const ActivityDetails = lazy(
   () => import("@/features/activities/ActivityDetails"),
@@ -34,6 +35,20 @@ const Activities: FC<ActivitiesProps> = ({ query = "" }) => {
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getActivitiesQuery } = useActivities();
+  const location = useLocation();
+
+  useEffect(() => {
+    const activity = location.state?.activity as Activity;
+    if (activity) {
+      setSidePanelContent(
+        activity.summary,
+        <Suspense fallback={<LoadingState />}>
+          <ActivityDetails activity={location.state.activity} />
+        </Suspense>,
+      );
+      window.history.replaceState({}, "");
+    }
+  }, [location.state?.activity]);
 
   const handlePaginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);

@@ -1,6 +1,7 @@
 import { FC, ReactNode } from "react";
 import { Button } from "@canonical/react-components";
 import classes from "./ExpandableTableFooter.module.scss";
+import classNames from "classnames";
 
 interface ExpandableTableFooterProps {
   itemNames: {
@@ -11,6 +12,8 @@ interface ExpandableTableFooterProps {
   onLimitChange: () => void;
   totalCount: number;
   additionalCta?: ReactNode[];
+  viewAll?: boolean;
+  className?: string;
 }
 
 const ExpandableTableFooter: FC<ExpandableTableFooterProps> = ({
@@ -19,11 +22,13 @@ const ExpandableTableFooter: FC<ExpandableTableFooterProps> = ({
   limit,
   onLimitChange,
   totalCount,
+  viewAll,
+  className,
 }) => {
   const itemsToShowCount = Math.min(totalCount - limit, 5);
 
   return (
-    <div className={classes.container}>
+    <div className={classNames(classes.container, className)}>
       {additionalCta}
       <div className={classes.expandBlock}>
         <span className="p-text--small u-text--muted">{`Showing ${Math.min(
@@ -38,7 +43,7 @@ const ExpandableTableFooter: FC<ExpandableTableFooterProps> = ({
             className={classes.expandButton}
             onClick={onLimitChange}
           >
-            {`Show ${itemsToShowCount} more`}
+            {viewAll ? "View all" : `Show ${itemsToShowCount} more`}
           </Button>
         )}
       </div>

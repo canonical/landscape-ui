@@ -36,7 +36,6 @@ const SavedSearchesPage = lazy(
   () => import("./pages/dashboard/instances/saved-searches"),
 );
 const AccountPage = lazy(() => import("./pages/dashboard/account"));
-const OverviewPage = lazy(() => import("./pages/dashboard/account/overview"));
 const ProfilesPage = lazy(() => import("./pages/dashboard/profiles"));
 const PackageProfilesPage = lazy(
   () => import("./pages/dashboard/profiles/package-profiles"),
@@ -66,6 +65,7 @@ const EventLogsPage = lazy(
 const AlertsPage = lazy(() => import("./pages/dashboard/monitoring/alerts"));
 const UserPage = lazy(() => import("./pages/dashboard/user"));
 const NotificationsPage = lazy(() => import("./pages/dashboard/notifications"));
+const OverviewPage = lazy(() => import("./pages/dashboard/overview"));
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -214,14 +214,6 @@ const App: FC = () => {
               }
             />
             <Route
-              path="overview"
-              element={
-                <AuthRoute>
-                  <OverviewPage />
-                </AuthRoute>
-              }
-            />
-            <Route
               path="monitoring"
               element={
                 <AuthRoute>
@@ -330,6 +322,14 @@ const App: FC = () => {
               element={
                 <AuthRoute>
                   <NotificationsPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="overview"
+              element={
+                <AuthRoute>
+                  <OverviewPage />
                 </AuthRoute>
               }
             />

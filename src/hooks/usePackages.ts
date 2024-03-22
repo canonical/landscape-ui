@@ -38,8 +38,8 @@ interface GetInstancePackagesParams {
 }
 
 export interface CommonPackagesActionParams {
-  packages: string[];
   query: string;
+  packages?: string[];
   deliver_after?: string;
   deliver_delay_window?: number;
 }
