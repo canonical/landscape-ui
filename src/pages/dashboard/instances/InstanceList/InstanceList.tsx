@@ -1,16 +1,14 @@
 import { FC, useMemo } from "react";
-import { Instance } from "../../../types/Instance";
+import { Instance } from "@/types/Instance";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import { CellProps, Column, Row } from "react-table";
 import { Link } from "react-router-dom";
 import classes from "./InstanceList.module.scss";
 import moment from "moment";
-import {
-  DISPLAY_DATE_FORMAT,
-  INPUT_DATE_FORMAT,
-  ROOT_PATH,
-} from "../../../constants";
+import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT, ROOT_PATH } from "@/constants";
 import classNames from "classnames";
+import InstanceStatusCell from "@/pages/dashboard/instances/InstanceStatusCell/InstanceStatusCell";
+import InstanceUpgradesCell from "@/pages/dashboard/instances/InstanceUpgradesCell";
 
 interface InstanceListProps {
   instances: Instance[];
@@ -147,22 +145,15 @@ const InstanceList: FC<InstanceListProps> = ({
       {
         Header: "Status",
         accessor: "reboot_required_flag",
-        Cell: ({ row }: CellProps<Instance>) =>
-          row.original.reboot_required_flag ? (
-            <>Reboot required</>
-          ) : (
-            <>No action required</>
-          ),
-        getCellIcon: ({ value }: CellProps<Instance, boolean>) => {
-          if (value) {
-            return `restart ${classes.restartError}`;
-          }
-
-          return false;
-        },
+        Cell: ({ row }: CellProps<Instance>) => (
+          <InstanceStatusCell instance={row.original} />
+        ),
       },
       {
         Header: "Upgrades",
+        Cell: ({ row }: CellProps<Instance>) => (
+          <InstanceUpgradesCell instance={row.original} />
+        ),
       },
       {
         accessor: "distribution",

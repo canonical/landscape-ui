@@ -3,20 +3,20 @@ import {
   SearchAndFilterChip,
   SearchAndFilterData,
 } from "@canonical/react-components/dist/components/SearchAndFilter/types";
-import useInstances from "../../../hooks/useInstances";
+import useInstances from "@/hooks/useInstances";
 import InstanceList from "./InstanceList";
-import LoadingState from "../../../components/layout/LoadingState";
-import TablePagination from "../../../components/layout/TablePagination";
+import LoadingState from "@/components/layout/LoadingState";
+import TablePagination from "@/components/layout/TablePagination";
 import classes from "./InstancesContainer.module.scss";
-import SearchAndFilterWithDescription from "../../../components/form/SearchAndFilterWithDescription";
-import SearchHelpPopup from "../../../components/layout/SearchHelpPopup";
+import SearchAndFilterWithDescription from "@/components/form/SearchAndFilterWithDescription";
+import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import { INSTANCE_SEARCH_HELP_TERMS } from "./_data";
-import { useSavedSearches } from "../../../hooks/useSavedSearches";
-import useDebug from "../../../hooks/useDebug";
+import { useSavedSearches } from "@/hooks/useSavedSearches";
+import useDebug from "@/hooks/useDebug";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { Instance } from "../../../types/Instance";
+import { Instance } from "@/types/Instance";
 import { Select } from "@canonical/react-components";
-import { SelectOption } from "../../../types/SelectOption";
+import { SelectOption } from "@/types/SelectOption";
 
 const osFilterOptions: SelectOption[] = [
   { label: "All", value: "" },
@@ -132,6 +132,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
       .map(({ lead, value }) => (lead ? `${lead}:${value}` : value))
       .join(" ")}${osFilter ?? ""}${statusFilter ?? ""}`.trim(),
     root_only: groupBy === "parent",
+    with_alerts: true,
     limit: pageLimit,
     offset: (currentPage - 1) * pageLimit,
   });
