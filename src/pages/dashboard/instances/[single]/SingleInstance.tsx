@@ -20,6 +20,7 @@ const PackagesPanel = lazy(() => import("./tabs/packages"));
 const ActivityPanel = lazy(() => import("./tabs/activities"));
 const InstancesPanel = lazy(() => import("./tabs/instances"));
 const UserPanel = lazy(() => import("./tabs/users"));
+const UbuntuProPanel = lazy(() => import("./tabs/ubuntu-pro"));
 
 interface TabState {
   filter: string;
@@ -252,7 +253,7 @@ const SingleInstance: FC = () => {
                   <ProcessesPanel instanceId={instance.id} />
                 )}
                 {"tab-link-ubuntu-pro" === currentTabLinkId && (
-                  <p>Ubuntu Pro</p>
+                  <UbuntuProPanel instance={instance} />
                 )}
                 {"tab-link-users" === currentTabLinkId && (
                   <UserPanel instanceId={instance.id} />

@@ -169,7 +169,7 @@ interface UbuntuProContract {
   tech_support_level: string;
 }
 
-interface UbuntuProService {
+export interface UbuntuProService extends Record<string, unknown> {
   name: string;
   available: string;
   description: string;
