@@ -2,53 +2,41 @@ import { FC } from "react";
 import { Instance } from "@/types/Instance";
 import InstanceStatusLabel from "@/pages/dashboard/instances/InstanceStatusLabel";
 import { STATUSES } from "@/pages/dashboard/instances/InstanceStatusLabel/constants";
-import classes from "./InstanceStatusCell.module.scss";
 
-interface InstanceStatusCellProps {
+interface InstanceUpgradesCellProps {
   instance: Instance;
 }
 
-const InstanceStatusCell: FC<InstanceStatusCellProps> = ({ instance }) => {
-  if (instance.reboot_required_flag) {
+const InstanceUpgradesCell: FC<InstanceUpgradesCellProps> = ({ instance }) => {
+  const securityUpgradesAlert = (instance?.alerts ?? []).find(
+    ({ type }) => "SecurityUpgradesAlert" === type,
+  );
+
+  if (securityUpgradesAlert) {
     return (
       <InstanceStatusLabel
-        icon={STATUSES.RebootRequired.icon}
-        label="Reboot required"
+        icon={STATUSES.SecurityUpgradesAlert.icon}
+        label={securityUpgradesAlert.summary}
       />
     );
   }
 
-  const filteredAlerts = (instance?.alerts ?? []).filter(
-    ({ type }) =>
-      !["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(type),
+  const regularUpgradesAlert = (instance?.alerts ?? []).find(
+    ({ type }) => "PackageUpgradesAlert" === type,
   );
 
-  if (0 === filteredAlerts.length) {
-    return <InstanceStatusLabel icon={STATUSES.Online.icon} label="Online" />;
-  }
-
-  if (1 === filteredAlerts.length) {
+  if (regularUpgradesAlert) {
     return (
       <InstanceStatusLabel
-        icon={STATUSES[filteredAlerts[0].type].icon ?? STATUSES.Unknown.icon}
-        label={filteredAlerts[0].summary}
+        icon={STATUSES.PackageUpgradesAlert.icon}
+        label={regularUpgradesAlert.summary}
       />
     );
   }
 
   return (
-    <span>
-      {filteredAlerts.map(({ type, summary }) => (
-        <span className={classes.listItem} key={type}>
-          <InstanceStatusLabel
-            icon={STATUSES[type].icon ?? STATUSES.Unknown.icon}
-            label={summary}
-            onlyIcon
-          />
-        </span>
-      ))}
-    </span>
+    <InstanceStatusLabel icon={STATUSES.UpToDate.icon} label="Up to date" />
   );
 };
 
-export default InstanceStatusCell;
+export default InstanceUpgradesCell;

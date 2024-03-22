@@ -1,1 +1,1 @@
-export { default } from "./InstanceStatusCell";
+export { default } from "./InstanceUpgradesCell";

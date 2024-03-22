@@ -2,7 +2,7 @@ import { FC, lazy, Suspense, useState } from "react";
 import PageMain from "@/components/layout/PageMain";
 import PageHeader from "@/components/layout/PageHeader";
 import PageContent from "@/components/layout/PageContent";
-import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer";
+import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer/InstancesContainer";
 import { Button, Icon } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -13,7 +13,7 @@ import { Instance } from "@/types/Instance";
 import LoadingState from "@/components/layout/LoadingState";
 
 const RunScriptForm = lazy(
-  () => import("@/pages/dashboard/instances/RunScriptForm"),
+  () => import("@/pages/dashboard/instances/RunScriptForm/RunScriptForm"),
 );
 const Upgrades = lazy(() => import("@/pages/dashboard/instances/Upgrades"));
 const ReportView = lazy(() => import("@/pages/dashboard/instances/ReportView"));

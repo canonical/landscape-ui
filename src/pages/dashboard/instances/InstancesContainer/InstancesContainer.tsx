@@ -4,13 +4,13 @@ import {
   SearchAndFilterData,
 } from "@canonical/react-components/dist/components/SearchAndFilter/types";
 import useInstances from "@/hooks/useInstances";
-import InstanceList from "./InstanceList";
+import InstanceList from "../InstanceList/InstanceList";
 import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
 import classes from "./InstancesContainer.module.scss";
 import SearchAndFilterWithDescription from "@/components/form/SearchAndFilterWithDescription";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
-import { INSTANCE_SEARCH_HELP_TERMS } from "./_data";
+import { INSTANCE_SEARCH_HELP_TERMS } from "../_data";
 import { useSavedSearches } from "@/hooks/useSavedSearches";
 import useDebug from "@/hooks/useDebug";
 import { useLocation, useSearchParams } from "react-router-dom";

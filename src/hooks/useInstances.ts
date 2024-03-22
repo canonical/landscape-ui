@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useFetchOld from "./useFetchOld";
-import { QueryFnType } from "../types/QueryFnType";
+import { QueryFnType } from "@/types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
-import { Instance } from "../types/Instance";
-import { ApiError } from "../types/ApiError";
-import { Activity } from "../types/Activity";
+import { Instance } from "@/types/Instance";
+import { ApiError } from "@/types/ApiError";
+import { Activity } from "@/types/Activity";
 import useFetch from "./useFetch";
-import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 
 interface GetInstancesParams {
   query?: string;
@@ -18,6 +18,7 @@ interface GetInstancesParams {
   with_annotations?: boolean;
   root_only?: boolean;
   wsl_only?: boolean;
+  with_alerts?: boolean;
 }
 
 interface AddAnnotationToInstancesParams {

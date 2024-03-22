@@ -134,6 +134,12 @@ type HardwareDescription = [
   value: number | null,
 ];
 
+type InstanceAlert = {
+  type: string;
+  summary: string;
+  severity: "warning" | "danger" | "info";
+};
+
 interface UbuntuProAccount {
   created_at: string;
   external_account_ids: { IDs: string[]; origin: string }[];
@@ -232,6 +238,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   grouped_hardware?: GroupedHardware;
   hardware?: HardwareDescription[];
   network_devices?: NetworkDevice[];
+  alerts?: InstanceAlert[];
 }
 
 export interface Instance extends InstanceWithoutRelation {
