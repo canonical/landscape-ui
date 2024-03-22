@@ -13,11 +13,11 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ data }) => {
   const infoItems = [
     {
       label: "Account",
-      value: data.account.name,
+      value: data.account?.name ?? "-",
     },
     {
       label: "Subscription",
-      value: data.contract.name,
+      value: data.contract?.name ?? "-",
     },
     {
       label: "Valid Until",
@@ -33,7 +33,7 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ data }) => {
     },
     {
       label: "Technical Support Level",
-      value: data.contract.tech_support_level,
+      value: data.contract?.tech_support_level ?? "-",
     },
   ];
   return (
