@@ -19,6 +19,7 @@ import useSidePanel from "../../../../../../hooks/useSidePanel";
 import PackageDetails from "./PackageDetails";
 import { useNavigate } from "react-router-dom";
 import { ROOT_PATH } from "../../../../../../constants";
+import { Instance } from "@/types/Instance";
 
 const isUbuntuProRequired = (pkg: Package) => {
   return pkg.computers.upgrades.length > 0 && pkg.version.includes("1-2");
@@ -33,7 +34,7 @@ type PackageListProps = {
 } & (
   | {
       short?: false;
-      instanceHostname: string;
+      instance: Instance;
     }
   | {
       short: true;
@@ -115,7 +116,7 @@ const PackageList: FC<PackageListProps> = (props) => {
       "Package details",
       <PackageDetails
         singlePackage={singlePackage}
-        query={`hostname:${props.instanceHostname}`}
+        instanceId={props.instance.id}
       />,
     );
   };
@@ -281,9 +282,12 @@ const PackageList: FC<PackageListProps> = (props) => {
               type="button"
               appearance="link"
               onClick={() => {
-                navigate(`${ROOT_PATH}instances/${props.instanceHostname}`, {
-                  state: { tab: "ubuntu-pro" },
-                });
+                navigate(
+                  `${ROOT_PATH}instances/${props.instance.parent ? `${props.instance.parent.hostname}/${props.instance.hostname}` : props.instance.hostname}`,
+                  {
+                    state: { tab: "ubuntu-pro" },
+                  },
+                );
               }}
             >
               Learn more

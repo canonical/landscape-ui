@@ -1,5 +1,12 @@
 import { FC, useEffect, useState } from "react";
-import { Col, Form, Input, Row, Select } from "@canonical/react-components";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Row,
+  Select,
+} from "@canonical/react-components";
 import { useFormik } from "formik";
 import {
   CommonPackagesActionParams,
@@ -15,6 +22,12 @@ import classNames from "classnames";
 import { Package } from "../../../../../../types/Package";
 import InfoItem from "../../../../../../components/layout/InfoItem";
 
+const CTA_LABELS = {
+  remove: "Remove",
+  upgrade: "Upgrade",
+  downgrade: "Downgrade",
+};
+
 interface FormProps
   extends Pick<
     CommonPackagesActionParams,
@@ -22,6 +35,7 @@ interface FormProps
   > {
   deliver_immediately: boolean;
   randomize_delivery: boolean;
+  version: string;
 }
 
 const INITIAL_VALUES: FormProps = {
@@ -29,6 +43,7 @@ const INITIAL_VALUES: FormProps = {
   deliver_delay_window: 0,
   deliver_immediately: true,
   randomize_delivery: true,
+  version: "",
 };
 
 const VALIDATION_SCHEMA = Yup.object({
@@ -58,13 +73,13 @@ interface UpgradePackagesInfo {
 interface InstalledPackagesActionFormProps {
   action: "remove" | "upgrade" | "downgrade";
   packages: Package[];
-  query: string;
+  instanceId: number;
 }
 
 const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   action,
   packages,
-  query,
+  instanceId,
 }) => {
   const [upgradePackagesInfo, setUpgradePackagesInfo] =
     useState<UpgradePackagesInfo | null>(null);
@@ -102,30 +117,47 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
 
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { getPackagesQuery, removePackagesQuery, upgradePackagesQuery } =
-    usePackages();
+  const {
+    downgradePackageVersionQuery,
+    getDowngradePackageVersionsQuery,
+    removePackagesQuery,
+    upgradePackagesQuery,
+  } = usePackages();
 
-  const { data: getPackagesQueryResult, error: getPackagesQueryError } =
-    getPackagesQuery(
-      {
-        query,
-        names: packages.map(({ name }) => name),
-      },
-      {
-        enabled: action === "downgrade",
-      },
-    );
+  const {
+    data: getDowngradePackageVersionsQueryResult,
+    error: getDowngradePackageVersionsQueryError,
+  } = getDowngradePackageVersionsQuery(
+    {
+      instanceId,
+      packageName: packages[0].name,
+    },
+    {
+      enabled: action === "downgrade",
+    },
+  );
 
-  if (getPackagesQueryError) {
-    debug(getPackagesQueryError);
+  if (getDowngradePackageVersionsQueryError) {
+    debug(getDowngradePackageVersionsQueryError);
   }
 
+  const downgradeOptions =
+    getDowngradePackageVersionsQueryResult &&
+    getDowngradePackageVersionsQueryResult.data.results.length > 0
+      ? getDowngradePackageVersionsQueryResult.data.results.map(
+          ({ version }) => ({ label: version, value: version }),
+        )
+      : [];
+
+  downgradeOptions.unshift({ label: "Select version", value: "" });
+
+  const { mutateAsync: downgradePackageVersion } = downgradePackageVersionQuery;
   const { mutateAsync: removePackages } = removePackagesQuery;
   const { mutateAsync: upgradePackages } = upgradePackagesQuery;
 
   const handleSubmit = async (values: FormProps) => {
     const commonPackagesParams: Omit<CommonPackagesActionParams, "packages"> = {
-      query,
+      query: `id:${instanceId}`,
       deliver_after: values.deliver_immediately
         ? undefined
         : `${values.deliver_after}:00Z`,
@@ -150,7 +182,11 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
             packages.map(({ name }) => name),
         });
       } else if (action === "downgrade") {
-        console.log("downgrade"); // todo: replace with actual submit
+        await downgradePackageVersion({
+          instanceId,
+          package_name: packages[0].name,
+          package_version: values.version,
+        });
       }
 
       closeSidePanel();
@@ -173,21 +209,17 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
             <InfoItem label="Current version" value={packages[0].version} />
           </Col>
           <Col size={6}>
-            <Select
-              label="New version"
-              className=""
-              labelClassName="p-text--small u-text--muted u-no-margin--bottom p-text--small-caps"
-              {...formik.getFieldProps("version")}
-              options={getPackagesQueryResult?.data.results
-                .filter(
-                  ({ computers: { installed } }) => installed.length === 0,
-                )
-                .filter(
-                  ({ version }) =>
-                    version.localeCompare(packages[0].version) < 0,
-                )
-                .map(({ version }) => ({ label: version, value: version }))}
-            />
+            {downgradeOptions.length > 1 ? (
+              <Select
+                label="New version"
+                className=""
+                labelClassName="p-text--small u-text--muted u-no-margin--bottom p-text--small-caps"
+                {...formik.getFieldProps("version")}
+                options={downgradeOptions}
+              />
+            ) : (
+              <p>No downgrade versions</p>
+            )}
           </Col>
         </Row>
       )}
@@ -247,89 +279,106 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           )}
         </div>
       )}
-      <span className={classes.bold}>Delivery time</span>
-      <div className={classes.radioGroup}>
-        <Input
-          type="radio"
-          label="As soon as possible"
-          name="deliver_immediately"
-          checked={formik.values.deliver_immediately}
-          onChange={() => {
-            formik.setFieldValue("deliver_immediately", true);
-          }}
-        />
-        <Input
-          type="radio"
-          label="Scheduled"
-          name="deliver_immediately"
-          checked={!formik.values.deliver_immediately}
-          onChange={() => {
-            formik.setFieldValue("deliver_immediately", false);
-            formik.setFieldValue(
-              "deliver_after",
-              moment().toISOString().slice(0, 16),
-            );
-          }}
-        />
-      </div>
-      {!formik.values.deliver_immediately && (
-        <Input
-          type="datetime-local"
-          label="Deliver after"
-          labelClassName="u-off-screen"
-          {...formik.getFieldProps("deliver_after")}
-          error={
-            formik.touched.deliver_after && formik.errors.deliver_after
-              ? formik.errors.deliver_after
-              : undefined
-          }
-        />
-      )}
-      <span className={classNames(classes.bold, classes.marginTop)}>
-        Randomize delivery
-      </span>
-      <div className={classes.radioGroup}>
-        <Input
-          type="radio"
-          label="Yes"
-          name="randomize_delivery"
-          checked={formik.values.randomize_delivery}
-          onChange={() => {
-            formik.setFieldValue("randomize_delivery", true);
-          }}
-        />
-        <Input
-          type="radio"
-          label="No"
-          name="randomize_delivery"
-          checked={!formik.values.randomize_delivery}
-          onChange={() => {
-            formik.setFieldValue("randomize_delivery", false);
-            formik.setFieldValue("deliver_delay_window", 0);
-          }}
-        />
-      </div>
-      {!formik.values.randomize_delivery && (
-        <Input
-          type="number"
-          min={0}
-          label="Delivery delay window"
-          labelClassName="u-off-screen"
-          {...formik.getFieldProps("deliver_delay_window")}
-          error={
-            formik.touched.deliver_delay_window &&
-            formik.errors.deliver_delay_window
-              ? formik.errors.deliver_delay_window
-              : undefined
-          }
-        />
+      {["remove", "upgrade"].includes(action) && (
+        <>
+          <span className={classes.bold}>Delivery time</span>
+          <div className={classes.radioGroup}>
+            <Input
+              type="radio"
+              label="As soon as possible"
+              name="deliver_immediately"
+              checked={formik.values.deliver_immediately}
+              onChange={() => {
+                formik.setFieldValue("deliver_immediately", true);
+              }}
+            />
+            <Input
+              type="radio"
+              label="Scheduled"
+              name="deliver_immediately"
+              checked={!formik.values.deliver_immediately}
+              onChange={() => {
+                formik.setFieldValue("deliver_immediately", false);
+                formik.setFieldValue(
+                  "deliver_after",
+                  moment().toISOString().slice(0, 16),
+                );
+              }}
+            />
+          </div>
+          {!formik.values.deliver_immediately && (
+            <Input
+              type="datetime-local"
+              label="Deliver after"
+              labelClassName="u-off-screen"
+              {...formik.getFieldProps("deliver_after")}
+              error={
+                formik.touched.deliver_after && formik.errors.deliver_after
+                  ? formik.errors.deliver_after
+                  : undefined
+              }
+            />
+          )}
+          <span className={classNames(classes.bold, classes.marginTop)}>
+            Randomize delivery
+          </span>
+          ;
+          <div className={classes.radioGroup}>
+            <Input
+              type="radio"
+              label="Yes"
+              name="randomize_delivery"
+              checked={formik.values.randomize_delivery}
+              onChange={() => {
+                formik.setFieldValue("randomize_delivery", true);
+              }}
+            />
+            <Input
+              type="radio"
+              label="No"
+              name="randomize_delivery"
+              checked={!formik.values.randomize_delivery}
+              onChange={() => {
+                formik.setFieldValue("randomize_delivery", false);
+                formik.setFieldValue("deliver_delay_window", 0);
+              }}
+            />
+          </div>
+          ;
+          {!formik.values.randomize_delivery && (
+            <Input
+              type="number"
+              min={0}
+              label="Delivery delay window"
+              labelClassName="u-off-screen"
+              {...formik.getFieldProps("deliver_delay_window")}
+              error={
+                formik.touched.deliver_delay_window &&
+                formik.errors.deliver_delay_window
+                  ? formik.errors.deliver_delay_window
+                  : undefined
+              }
+            />
+          )}
+        </>
       )}
 
-      <SidePanelFormButtons
-        disabled={formik.isSubmitting}
-        submitButtonText={action === "remove" ? "Remove" : "Upgrade"}
-        submitButtonAppearance={action === "remove" ? "negative" : "positive"}
-      />
+      {action === "downgrade" && downgradeOptions.length === 1 && (
+        <div className="form-buttons">
+          <Button type="button" onClick={() => closeSidePanel()}>
+            Close
+          </Button>
+        </div>
+      )}
+
+      {(["remove", "upgrade"].includes(action) ||
+        downgradeOptions.length > 1) && (
+        <SidePanelFormButtons
+          disabled={formik.isSubmitting}
+          submitButtonText={CTA_LABELS[action]}
+          submitButtonAppearance={action === "remove" ? "negative" : "positive"}
+        />
+      )}
     </Form>
   );
 };

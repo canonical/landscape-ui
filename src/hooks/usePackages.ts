@@ -12,6 +12,7 @@ import { Package } from "../types/Package";
 import useDebug from "./useDebug";
 import useFetch from "./useFetch";
 import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
+import { Activity } from "@/types/Activity";
 
 interface GetPackagesParams {
   query: string;
@@ -46,6 +47,17 @@ export interface CommonPackagesActionParams {
 
 interface UpgradePackagesParams extends CommonPackagesActionParams {
   security_only?: boolean;
+}
+
+interface GetDowngradePackageVersionsParams {
+  instanceId: number;
+  packageName: string;
+}
+
+interface DowngradePackageVersionParams {
+  instanceId: number;
+  package_name: string;
+  package_version: string;
 }
 
 export const usePackages = () => {
@@ -130,11 +142,51 @@ export const usePackages = () => {
     },
   });
 
+  const getDowngradePackageVersionsQuery = (
+    { instanceId, packageName }: GetDowngradePackageVersionsParams,
+    config: Omit<
+      UseQueryOptions<
+        AxiosResponse<
+          ApiPaginatedResponse<Pick<Package, "name" | "summary" | "version">>
+        >,
+        AxiosError<ApiError>
+      >,
+      "queryKey" | "queryFn"
+    > = {},
+  ) =>
+    useQuery<
+      AxiosResponse<
+        ApiPaginatedResponse<Pick<Package, "name" | "summary" | "version">>
+      >,
+      AxiosError<ApiError>
+    >({
+      queryKey: ["packages", { instanceId, packageName }],
+      queryFn: () =>
+        authFetch!.get(
+          `computers/${instanceId}/packages/installed/${packageName}/downgrades`,
+        ),
+      ...config,
+    });
+
+  const downgradePackageVersionQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    DowngradePackageVersionParams
+  >({
+    mutationFn: ({ instanceId, ...params }) =>
+      authFetch!.post(`computers/${instanceId}/packages/installed`, params),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["packages"]).catch(debug);
+    },
+  });
+
   return {
     getPackagesQuery,
     getInstancePackagesQuery,
     installPackagesQuery,
     removePackagesQuery,
     upgradePackagesQuery,
+    getDowngradePackageVersionsQuery,
+    downgradePackageVersionQuery,
   };
 };

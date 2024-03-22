@@ -110,7 +110,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({ instance }) => {
             <SecurityIssuesPanel instance={instance} />
           )}
           {"tab-link-packages" === currentTabLinkId && (
-            <PackagesPanel tabState={tabState} />
+            <PackagesPanel instance={instance} tabState={tabState} />
           )}
           {"tab-link-processes" === currentTabLinkId && (
             <ProcessesPanel instanceId={instance.id} />

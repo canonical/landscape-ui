@@ -6,20 +6,19 @@ import LoadingState from "../../../../../../components/layout/LoadingState";
 import PackageList from "./PackageList";
 import PackagesPanelHeader from "./PackagesPanelHeader";
 import { Package } from "../../../../../../types/Package";
-import { useParams } from "react-router-dom";
+import { Instance } from "@/types/Instance";
 
 interface PackagesPanelProps {
+  instance: Instance;
   tabState: { filter: string; selectAll: boolean } | null;
 }
 
-const PackagesPanel: FC<PackagesPanelProps> = ({ tabState }) => {
+const PackagesPanel: FC<PackagesPanelProps> = ({ instance, tabState }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [selected, setSelected] = useState<Package[]>([]);
   const [packageSearch, setPackageSearch] = useState("");
   const [filter, setFilter] = useState("");
-
-  const { hostname, childHostname } = useParams();
 
   useEffect(() => {
     if (!tabState) {
@@ -55,7 +54,7 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ tabState }) => {
     error: getPackagesQueryError,
   } = getPackagesQuery(
     {
-      query: `hostname:${childHostname ?? hostname}`,
+      query: `id:${instance.id}`,
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
       installed: filter === "installed" || undefined,
@@ -64,7 +63,7 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ tabState }) => {
       search: packageSearch,
     },
     {
-      enabled: !!hostname,
+      enabled: !!instance,
     },
   );
 
@@ -93,7 +92,7 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ tabState }) => {
   return (
     <>
       <PackagesPanelHeader
-        query={`hostname:${hostname}`}
+        instance={instance}
         selectedPackages={selected}
         filter={filter}
         onFilterChange={handleFilterChange}
@@ -108,7 +107,7 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ tabState }) => {
           onPackagesSelect={(packageNames) => {
             setSelected(packageNames);
           }}
-          instanceHostname={hostname ?? ""}
+          instance={instance}
           emptyMsg={emptyMessage}
           selectAll={tabState?.selectAll ?? false}
         />

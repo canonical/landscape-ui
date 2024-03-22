@@ -6,15 +6,16 @@ import PackagesInstallForm from "./PackagesInstallForm";
 import classes from "./PackageActions.module.scss";
 import { Package } from "../../../../../../types/Package";
 import classNames from "classnames";
+import { Instance } from "@/types/Instance";
 
 interface PackageActionsProps {
+  instance: Instance;
   selectedPackages: Package[];
-  query: string;
 }
 
 const PackageActions: FC<PackageActionsProps> = ({
+  instance,
   selectedPackages,
-  query,
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
@@ -29,7 +30,7 @@ const PackageActions: FC<PackageActionsProps> = ({
       <InstalledPackagesActionForm
         action={action}
         packages={selectedPackages}
-        query={query}
+        instanceId={instance.id}
       />,
     );
   };
@@ -37,7 +38,7 @@ const PackageActions: FC<PackageActionsProps> = ({
   const handleInstallPackages = () => {
     setSidePanelContent(
       "Install packages",
-      <PackagesInstallForm query={query} />,
+      <PackagesInstallForm instance={instance} />,
     );
   };
 

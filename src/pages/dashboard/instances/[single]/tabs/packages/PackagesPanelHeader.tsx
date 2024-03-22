@@ -4,6 +4,7 @@ import classes from "./PackagesPanelHeader.module.scss";
 import PackageActions from "./PackageActions";
 import { SelectOption } from "../../../../../../types/SelectOption";
 import { Package } from "../../../../../../types/Package";
+import { Instance } from "@/types/Instance";
 
 const filterOptions: SelectOption[] = [
   {
@@ -26,17 +27,17 @@ const filterOptions: SelectOption[] = [
 
 interface PackagesPanelHeaderProps {
   filter: string;
+  instance: Instance;
   onFilterChange: (newFilter: string) => void;
   onPackageSearchChange: (searchText: string) => void;
-  query: string;
   selectedPackages: Package[];
 }
 
 const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
   filter,
+  instance,
   onFilterChange,
   onPackageSearchChange,
-  query,
   selectedPackages,
 }) => {
   const [searchText, setSearchText] = useState("");
@@ -78,7 +79,10 @@ const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
         }}
       />
       <div className={classes.cta}>
-        <PackageActions selectedPackages={selectedPackages} query={query} />
+        <PackageActions
+          selectedPackages={selectedPackages}
+          instance={instance}
+        />
       </div>
     </div>
   );

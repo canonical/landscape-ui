@@ -8,12 +8,13 @@ import TablePagination from "../../../../../../components/layout/TablePagination
 import classes from "./PackagesInstallForm.module.scss";
 import useSidePanel from "../../../../../../hooks/useSidePanel";
 import { Package } from "../../../../../../types/Package";
+import { Instance } from "@/types/Instance";
 
 interface PackagesInstallFormProps {
-  query: string;
+  instance: Instance;
 }
 
-const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ query }) => {
+const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instance }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [selected, setSelected] = useState<Package[]>([]);
@@ -44,7 +45,7 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ query }) => {
     isLoading: getPackagesQueryLoading,
     error: getPackagesQueryError,
   } = getPackagesQuery({
-    query,
+    query: `id:${instance.id}`,
     available: true,
     installed: false,
     upgrade: false,
@@ -69,7 +70,7 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ query }) => {
     try {
       await installPackages({
         packages: selected.map(({ name }) => name),
-        query,
+        query: `id:${instance.id}`,
       });
     } catch (error) {
       debug(error);

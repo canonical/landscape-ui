@@ -16,10 +16,13 @@ const isUbuntuProRequired = (pkg: Package) => {
 
 interface PackageDetailsProps {
   singlePackage: Package;
-  query: string;
+  instanceId: number;
 }
 
-const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage, query }) => {
+const PackageDetails: FC<PackageDetailsProps> = ({
+  instanceId,
+  singlePackage,
+}) => {
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { confirmModal, closeConfirmModal } = useConfirm();
@@ -28,7 +31,7 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage, query }) => {
   const { data: getPackagesQueryResult, error: getPackagesQueryError } =
     getPackagesQuery(
       {
-        query,
+        query: `id:${instanceId}`,
         installed: singlePackage.computers.upgrades.length > 0,
         names: [singlePackage.name],
       },
@@ -60,7 +63,7 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage, query }) => {
       <InstalledPackagesActionForm
         action={action}
         packages={[singlePackage]}
-        query={query}
+        instanceId={instanceId}
       />,
     );
   };
@@ -69,7 +72,7 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage, query }) => {
     try {
       await installPackages({
         packages: [singlePackage.name],
-        query,
+        query: `id:${instanceId}`,
       });
     } catch (error) {
       debug(error);
