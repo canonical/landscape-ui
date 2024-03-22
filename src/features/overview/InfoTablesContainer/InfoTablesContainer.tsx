@@ -24,6 +24,7 @@ import { CellProps, Column } from "react-table";
 import classes from "./InfoTablesContainer.module.scss";
 import { InstancesUpgradesTableItem, UpgradesTableItem } from "./helpers";
 import { Usn } from "@/types/Usn";
+import useNotify from "@/hooks/useNotify";
 
 interface InfoTablesContainerProps {}
 
@@ -33,6 +34,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
 
   const navigate = useNavigate();
   const debug = useDebug();
+  const { notify } = useNotify();
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { getInstancesQuery } = useInstances();
   const { getPackagesQuery, upgradePackagesQuery } = usePackages();
@@ -340,6 +342,10 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     try {
       await approveActivities({
         query: "status:unapproved",
+      });
+
+      notify.success({
+        message: "All activities have been approved successfully",
       });
     } catch (error) {
       debug(error);
