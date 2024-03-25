@@ -8,34 +8,40 @@ interface InstanceUpgradesCellProps {
 }
 
 const InstanceUpgradesCell: FC<InstanceUpgradesCellProps> = ({ instance }) => {
-  const securityUpgradesAlert = (instance?.alerts ?? []).find(
-    ({ type }) => "SecurityUpgradesAlert" === type,
-  );
-
-  if (securityUpgradesAlert) {
+  if (
+    !instance.upgrades ||
+    (!instance.upgrades.security && !instance.upgrades.regular)
+  ) {
     return (
-      <InstanceStatusLabel
-        icon={STATUSES.SecurityUpgradesAlert.icon}
-        label={securityUpgradesAlert.summary}
-      />
+      <InstanceStatusLabel icon={STATUSES.UpToDate.icon} label="Up to date" />
     );
   }
 
-  const regularUpgradesAlert = (instance?.alerts ?? []).find(
-    ({ type }) => "PackageUpgradesAlert" === type,
-  );
-
-  if (regularUpgradesAlert) {
+  if (!instance.upgrades.security) {
     return (
       <InstanceStatusLabel
         icon={STATUSES.PackageUpgradesAlert.icon}
-        label={regularUpgradesAlert.summary}
+        label={`${instance.upgrades.regular} regular ${instance.upgrades.regular > 1 ? "upgrades" : "upgrade"}`}
       />
     );
   }
 
+  if (!instance.upgrades.regular) {
+    return (
+      <InstanceStatusLabel
+        icon={STATUSES.SecurityUpgradesAlert.icon}
+        label={`${instance.upgrades.security} security ${instance.upgrades.security > 1 ? "upgrades" : "upgrade"}`}
+      />
+    );
+  }
+
+  const label = `${instance.upgrades.security} security ${instance.upgrades.security > 1 ? "upgrades" : "upgrade"}, ${instance.upgrades.regular} regular ${instance.upgrades.regular > 1 ? "upgrades" : "upgrade"}`;
+
   return (
-    <InstanceStatusLabel icon={STATUSES.UpToDate.icon} label="Up to date" />
+    <InstanceStatusLabel
+      icon={STATUSES.SecurityUpgradesAlert.icon}
+      label={label}
+    />
   );
 };
 

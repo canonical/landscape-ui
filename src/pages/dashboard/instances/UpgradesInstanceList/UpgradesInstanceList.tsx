@@ -35,10 +35,16 @@ const UpgradesInstanceList: FC<UpgradesInstanceListProps> = ({ instances }) => {
       {
         accessor: "security_upgrades",
         Header: "Security upgrades",
+        Cell: ({ row }: CellProps<Instance>) => (
+          <>{row.original.upgrades?.security}</>
+        ),
       },
       {
         accessor: "upgrades",
         Header: "Regular upgrades",
+        Cell: ({ row }: CellProps<Instance>) => (
+          <>{row.original.upgrades?.regular}</>
+        ),
       },
     ],
     [instances.length],

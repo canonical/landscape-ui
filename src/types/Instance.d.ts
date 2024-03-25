@@ -140,6 +140,11 @@ type InstanceAlert = {
   severity: "warning" | "danger" | "info";
 };
 
+type InstanceUpgrades = {
+  regular: number;
+  security: number;
+};
+
 interface UbuntuProAccount {
   created_at: string;
   external_account_ids: { IDs: string[]; origin: string }[];
@@ -239,6 +244,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   hardware?: HardwareDescription[];
   network_devices?: NetworkDevice[];
   alerts?: InstanceAlert[];
+  upgrades?: InstanceUpgrades;
 }
 
 export interface Instance extends InstanceWithoutRelation {

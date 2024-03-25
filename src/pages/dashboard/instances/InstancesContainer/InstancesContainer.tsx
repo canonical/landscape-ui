@@ -133,6 +133,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
       .join(" ")}${osFilter ?? ""}${statusFilter ?? ""}`.trim(),
     root_only: groupBy === "parent",
     with_alerts: true,
+    with_upgrades: true,
     limit: pageLimit,
     offset: (currentPage - 1) * pageLimit,
   });

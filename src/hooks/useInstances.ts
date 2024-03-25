@@ -19,6 +19,7 @@ interface GetInstancesParams {
   root_only?: boolean;
   wsl_only?: boolean;
   with_alerts?: boolean;
+  with_upgrades?: boolean;
 }
 
 interface AddAnnotationToInstancesParams {
