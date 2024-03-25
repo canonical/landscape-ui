@@ -1,22 +1,18 @@
-import { FC, useMemo } from "react";
-import { Package } from "../../../../../../types/Package";
-import InfoItem from "../../../../../../components/layout/InfoItem";
-import useSidePanel from "../../../../../../hooks/useSidePanel";
-import InstalledPackagesActionForm from "./InstalledPackagesActionForm";
-import useConfirm from "../../../../../../hooks/useConfirm";
+import { FC } from "react";
+import { Package } from "@/types/Package";
+import InfoItem from "@/components/layout/InfoItem";
+import useSidePanel from "@/hooks/useSidePanel";
+import useConfirm from "@/hooks/useConfirm";
 import { Button, Col, Row } from "@canonical/react-components";
-import { usePackages } from "../../../../../../hooks/usePackages";
-import useDebug from "../../../../../../hooks/useDebug";
+import { usePackages } from "@/hooks/usePackages";
+import useDebug from "@/hooks/useDebug";
 import classes from "./PackageDetails.module.scss";
 import classNames from "classnames";
-
-const isUbuntuProRequired = (pkg: Package) => {
-  return pkg.computers.upgrades.length > 0 && pkg.version.includes("1-2");
-};
+import InstalledPackagesActionForm from "@/pages/dashboard/instances/[single]/tabs/packages/InstalledPackagesActionForm";
 
 interface PackageDetailsProps {
-  singlePackage: Package;
   instanceId: number;
+  singlePackage: Package;
 }
 
 const PackageDetails: FC<PackageDetailsProps> = ({
@@ -26,25 +22,7 @@ const PackageDetails: FC<PackageDetailsProps> = ({
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { installPackagesQuery, getPackagesQuery } = usePackages();
-
-  const { data: getPackagesQueryResult, error: getPackagesQueryError } =
-    getPackagesQuery(
-      {
-        query: `id:${instanceId}`,
-        installed: singlePackage.computers.upgrades.length > 0,
-        names: [singlePackage.name],
-      },
-      {
-        enabled:
-          singlePackage.computers.upgrades.length > 0 ||
-          singlePackage.computers.installed.length > 0,
-      },
-    );
-
-  if (getPackagesQueryError) {
-    debug(getPackagesQueryError);
-  }
+  const { installPackagesQuery } = usePackages();
 
   const { mutateAsync: installPackages, isLoading: installPackagesLoading } =
     installPackagesQuery;
@@ -62,8 +40,8 @@ const PackageDetails: FC<PackageDetailsProps> = ({
       `${actionLabels[action]} ${singlePackage.name}`,
       <InstalledPackagesActionForm
         action={action}
-        packages={[singlePackage]}
         instanceId={instanceId}
+        packages={[singlePackage]}
       />,
     );
   };
@@ -98,31 +76,13 @@ const PackageDetails: FC<PackageDetailsProps> = ({
     });
   };
 
-  const upgradableVersion = useMemo(() => {
-    if (
-      singlePackage.computers.installed.length === 0 ||
-      !getPackagesQueryResult ||
-      getPackagesQueryResult.data.count === 0
-    ) {
-      return;
-    }
-
-    for (const pkg of getPackagesQueryResult.data.results.sort((a, b) =>
-      b.version.localeCompare(a.version),
-    )) {
-      if (!isUbuntuProRequired(pkg)) {
-        return pkg.version;
-      }
-    }
-  }, [getPackagesQueryResult, singlePackage.computers.installed.length]);
-
   return (
     <>
       <div
         key="buttons"
         className={classNames("p-segmented-control", classes.actions)}
       >
-        {singlePackage.computers.installed.length > 0 && (
+        {singlePackage.current_version && (
           <Button
             type="button"
             className="p-segmented-control__button has-icon"
@@ -134,7 +94,7 @@ const PackageDetails: FC<PackageDetailsProps> = ({
             <span>Uninstall</span>
           </Button>
         )}
-        {(singlePackage.computers.upgrades.length > 0 || upgradableVersion) && (
+        {singlePackage.available_version && (
           <Button
             type="button"
             className="p-segmented-control__button has-icon"
@@ -146,7 +106,7 @@ const PackageDetails: FC<PackageDetailsProps> = ({
             <span>Upgrade</span>
           </Button>
         )}
-        {singlePackage.computers.installed.length > 0 && (
+        {singlePackage.current_version && (
           <Button
             type="button"
             className="p-segmented-control__button has-icon"
@@ -158,17 +118,16 @@ const PackageDetails: FC<PackageDetailsProps> = ({
             <span>Downgrade</span>
           </Button>
         )}
-        {singlePackage.computers.installed.length === 0 &&
-          singlePackage.computers.upgrades.length === 0 && (
-            <Button
-              type="button"
-              className="p-segmented-control__button has-icon"
-              onClick={handleInstallPackage}
-            >
-              <i className="p-icon--plus" />
-              <span>Install</span>
-            </Button>
-          )}
+        {singlePackage.available_version && !singlePackage.current_version && (
+          <Button
+            type="button"
+            className="p-segmented-control__button has-icon"
+            onClick={handleInstallPackage}
+          >
+            <i className="p-icon--plus" />
+            <span>Install</span>
+          </Button>
+        )}
       </div>
 
       <div>
@@ -181,21 +140,14 @@ const PackageDetails: FC<PackageDetailsProps> = ({
         <Col size={6}>
           <InfoItem
             label="Current version"
-            value={
-              singlePackage.computers.installed.length > 0
-                ? singlePackage.version
-                : getPackagesQueryResult?.data.results[0].version
-            }
+            value={singlePackage.current_version}
           />
         </Col>
-        {(singlePackage.computers.upgrades.length > 0 ||
-          singlePackage.computers.available.length > 0 ||
-          (getPackagesQueryResult &&
-            getPackagesQueryResult.data.count > 0)) && (
+        {singlePackage.available_version && (
           <Col size={6}>
             <InfoItem
               label="Upgeradable to"
-              value={upgradableVersion ?? singlePackage.version}
+              value={singlePackage.available_version}
             />
           </Col>
         )}

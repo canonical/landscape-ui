@@ -8,7 +8,7 @@ import useInstances from "@/hooks/useInstances";
 import { usePackages } from "@/hooks/usePackages";
 import useUsns from "@/hooks/useUsns";
 import { Activity, ActivityCommon } from "@/types/Activity";
-import { Package } from "@/types/Package";
+import { OldPackage } from "@/types/Package";
 import {
   Button,
   Col,
@@ -89,7 +89,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     }
     return instancesData.map((instance) => {
       const affectedPackages = packageDataRes.data.results.reduce(
-        (acc: number, pkg: Package) => {
+        (acc: number, pkg: OldPackage) => {
           if (pkg.computers.upgrades.includes(instance.id)) {
             return acc + 1;
           }
@@ -213,7 +213,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
           {
             Header: "Affected Instances",
             accessor: "computers.upgrades",
-            Cell: ({ row }: CellProps<Package>) => (
+            Cell: ({ row }: CellProps<OldPackage>) => (
               <Link
                 to={`${ROOT_PATH}instances`}
                 className="u-no-margin--bottom"

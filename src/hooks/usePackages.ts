@@ -5,13 +5,13 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import useFetchOld from "./useFetchOld";
-import { QueryFnType } from "../types/QueryFnType";
+import { QueryFnType } from "@/types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "../types/ApiError";
-import { Package } from "../types/Package";
+import { ApiError } from "@/types/ApiError";
+import { OldPackage, Package } from "@/types/Package";
 import useDebug from "./useDebug";
 import useFetch from "./useFetch";
-import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { Activity } from "@/types/Activity";
 
 interface GetPackagesParams {
@@ -36,6 +36,7 @@ interface GetInstancePackagesParams {
   offset?: number;
   search?: string;
   upgrade?: boolean;
+  security?: boolean;
 }
 
 export interface CommonPackagesActionParams {
@@ -67,11 +68,11 @@ export const usePackages = () => {
   const debug = useDebug();
 
   const getPackagesQuery: QueryFnType<
-    AxiosResponse<ApiPaginatedResponse<Package>>,
+    AxiosResponse<ApiPaginatedResponse<OldPackage>>,
     GetPackagesParams
   > = (queryParams, config = {}) => {
     return useQuery<
-      AxiosResponse<ApiPaginatedResponse<Package>>,
+      AxiosResponse<ApiPaginatedResponse<OldPackage>>,
       AxiosError<ApiError>
     >({
       queryKey: ["packages", queryParams],
@@ -147,7 +148,7 @@ export const usePackages = () => {
     config: Omit<
       UseQueryOptions<
         AxiosResponse<
-          ApiPaginatedResponse<Pick<Package, "name" | "summary" | "version">>
+          ApiPaginatedResponse<Pick<OldPackage, "name" | "summary" | "version">>
         >,
         AxiosError<ApiError>
       >,
@@ -156,7 +157,7 @@ export const usePackages = () => {
   ) =>
     useQuery<
       AxiosResponse<
-        ApiPaginatedResponse<Pick<Package, "name" | "summary" | "version">>
+        ApiPaginatedResponse<Pick<OldPackage, "name" | "summary" | "version">>
       >,
       AxiosError<ApiError>
     >({

@@ -1,29 +1,10 @@
 import { FC, SyntheticEvent, useState } from "react";
 import { Form, SearchBox, Select } from "@canonical/react-components";
 import classes from "./PackagesPanelHeader.module.scss";
-import PackageActions from "./PackageActions";
-import { SelectOption } from "../../../../../../types/SelectOption";
-import { Package } from "../../../../../../types/Package";
+import PackageActions from "@/pages/dashboard/instances/[single]/tabs/packages/PackageActions";
+import { Package } from "@/types/Package";
 import { Instance } from "@/types/Instance";
-
-const filterOptions: SelectOption[] = [
-  {
-    label: "All",
-    value: "",
-  },
-  {
-    label: "Installed",
-    value: "installed",
-  },
-  {
-    label: "Upgrades",
-    value: "upgrade",
-  },
-  {
-    label: "Held",
-    value: "held",
-  },
-];
+import { filterOptions } from "./constants";
 
 interface PackagesPanelHeaderProps {
   filter: string;
@@ -54,18 +35,14 @@ const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
           <SearchBox
             shouldRefocusAfterReset
             externallyControlled
+            autocomplete="off"
             value={searchText}
-            onChange={(inputValue) => {
-              setSearchText(inputValue);
-            }}
-            onSearch={() => {
-              onPackageSearchChange(searchText);
-            }}
+            onChange={(inputValue) => setSearchText(inputValue)}
+            onSearch={() => onPackageSearchChange(searchText)}
             onClear={() => {
               setSearchText("");
               onPackageSearchChange("");
             }}
-            autocomplete="off"
           />
         </Form>
       </div>

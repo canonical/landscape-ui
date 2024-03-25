@@ -1,11 +1,11 @@
 import { FC } from "react";
-import InstalledPackagesActionForm from "./InstalledPackagesActionForm";
-import useSidePanel from "../../../../../../hooks/useSidePanel";
+import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-import PackagesInstallForm from "./PackagesInstallForm";
-import classes from "./PackageActions.module.scss";
-import { Package } from "../../../../../../types/Package";
+import { Package } from "@/types/Package";
 import classNames from "classnames";
+import InstalledPackagesActionForm from "@/pages/dashboard/instances/[single]/tabs/packages/InstalledPackagesActionForm";
+import PackagesInstallForm from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesInstallForm";
+import classes from "./PackageActions.module.scss";
 import { Instance } from "@/types/Instance";
 
 interface PackageActionsProps {
@@ -62,13 +62,9 @@ const PackageActions: FC<PackageActionsProps> = ({
           className="p-segmented-control__button has-icon"
           disabled={
             0 === selectedPackages.length ||
-            selectedPackages.every(
-              (pkg) => pkg.computers.installed.length === 0,
-            )
+            selectedPackages.every((pkg) => !pkg.current_version)
           }
-          onClick={() => {
-            handleExistingPackages("remove");
-          }}
+          onClick={() => handleExistingPackages("remove")}
         >
           <i className="p-icon--delete" />
           <span>Uninstall</span>
@@ -78,11 +74,9 @@ const PackageActions: FC<PackageActionsProps> = ({
           className="p-segmented-control__button has-icon"
           disabled={
             0 === selectedPackages.length ||
-            selectedPackages.every((pkg) => pkg.computers.upgrades.length === 0)
+            selectedPackages.every((pkg) => !pkg.available_version)
           }
-          onClick={() => {
-            handleExistingPackages("upgrade");
-          }}
+          onClick={() => handleExistingPackages("upgrade")}
         >
           <i className="p-icon--change-version" />
           <span>Upgrade</span>

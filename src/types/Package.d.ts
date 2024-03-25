@@ -16,7 +16,7 @@ export interface PocketPackagesList {
   [componentArchitecturePair: string]: PocketPackage[];
 }
 
-export interface Package extends Record<string, unknown> {
+export interface OldPackage extends Record<string, unknown> {
   computers: {
     available: number[];
     held: number[];
@@ -38,4 +38,17 @@ export interface PackageObject {
   name: string;
   udeb: boolean;
   version: string;
+}
+
+export interface Package extends Record<string, unknown> {
+  available_version: string | null;
+  current_version: string | null;
+  name: string;
+  status: "available" | "installed" | "held" | "security" | "upgrade";
+  summary: string;
+  usn?: {
+    info: string;
+    usn: string;
+    usn_link: string;
+  };
 }

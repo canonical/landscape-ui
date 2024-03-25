@@ -1,4 +1,4 @@
-import { Package } from "@/types/Package";
+import { OldPackage } from "@/types/Package";
 import { Usn } from "@/types/Usn";
 
 export interface InstancesUpgradesTableItem extends Record<string, unknown> {
@@ -6,4 +6,4 @@ export interface InstancesUpgradesTableItem extends Record<string, unknown> {
   affectedPackages: number;
 }
 
-export type UpgradesTableItem = InstancesUpgradesTableItem | Package | Usn;
+export type UpgradesTableItem = InstancesUpgradesTableItem | OldPackage | Usn;

@@ -1,13 +1,13 @@
 import { FC, SyntheticEvent, useState } from "react";
 import { Button, Form, SearchBox } from "@canonical/react-components";
-import useDebug from "../../../../../../hooks/useDebug";
-import { usePackages } from "../../../../../../hooks/usePackages";
-import LoadingState from "../../../../../../components/layout/LoadingState";
-import PackageList from "./PackageList";
-import TablePagination from "../../../../../../components/layout/TablePagination";
+import useDebug from "@/hooks/useDebug";
+import { usePackages } from "@/hooks/usePackages";
+import LoadingState from "@/components/layout/LoadingState";
+import PackageList from "@/pages/dashboard/instances/[single]/tabs/packages/PackageList";
+import TablePagination from "@/components/layout/TablePagination";
 import classes from "./PackagesInstallForm.module.scss";
-import useSidePanel from "../../../../../../hooks/useSidePanel";
-import { Package } from "../../../../../../types/Package";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Package } from "@/types/Package";
 import { Instance } from "@/types/Instance";
 
 interface PackagesInstallFormProps {
@@ -38,25 +38,28 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instance }) => {
 
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { getPackagesQuery, installPackagesQuery } = usePackages();
+  const { getInstancePackagesQuery, installPackagesQuery } = usePackages();
 
   const {
-    data: getPackagesQueryResult,
-    isLoading: getPackagesQueryLoading,
-    error: getPackagesQueryError,
-  } = getPackagesQuery({
-    query: `id:${instance.id}`,
-    available: true,
-    installed: false,
-    upgrade: false,
-    held: false,
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-    search: packageSearch,
-  });
+    data: getInstancePackagesQueryResult,
+    error: getInstancePackagesQueryError,
+    isLoading: getInstancePackagesQueryLoading,
+  } = getInstancePackagesQuery(
+    {
+      instance_id: instance.id,
+      available: false,
+      installed: true,
+      upgrade: true,
+      held: true,
+      limit: pageSize,
+      offset: (currentPage - 1) * pageSize,
+      search: packageSearch,
+    },
+    { enabled: !!instance },
+  );
 
-  if (getPackagesQueryError) {
-    debug(getPackagesQueryError);
+  if (getInstancePackagesQueryError) {
+    debug(getInstancePackagesQueryError);
   }
 
   const {
@@ -88,6 +91,8 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instance }) => {
         <SearchBox
           externallyControlled
           shouldRefocusAfterReset
+          autocomplete="off"
+          disabled={getInstancePackagesQueryLoading}
           value={searchText}
           onSearch={handleSearch}
           onChange={(inputValue) => {
@@ -98,15 +103,22 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instance }) => {
             setSearchText("");
             handleSearch("");
           }}
-          autocomplete="off"
         />
       </Form>
       <Form onSubmit={handleSubmit} noValidate>
-        {getPackagesQueryLoading ? (
-          <LoadingState />
-        ) : (
+        {!packageSearch &&
+          currentPage === 1 &&
+          pageSize === 20 &&
+          getInstancePackagesQueryLoading && <LoadingState />}
+
+        {(packageSearch ||
+          currentPage !== 1 ||
+          pageSize !== 20 ||
+          !getInstancePackagesQueryLoading) && (
           <PackageList
-            packages={getPackagesQueryResult?.data.results ?? []}
+            instance={instance}
+            packages={getInstancePackagesQueryResult?.data.results ?? []}
+            packagesLoading={getInstancePackagesQueryLoading}
             selectedPackages={selected}
             onPackagesSelect={(packageNames) => {
               setSelected(packageNames);
@@ -119,18 +131,19 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instance }) => {
         )}
         <TablePagination
           currentPage={currentPage}
-          totalItems={getPackagesQueryResult?.data.count}
+          totalItems={getInstancePackagesQueryResult?.data.count}
           paginate={handlePaginate}
           pageSize={pageSize}
           setPageSize={handlePageSize}
           className={classes.pagination}
         />
-
         <div className={classes.buttons}>
           <Button
             type="button"
             appearance="positive"
-            disabled={installPackagesQueryLoading}
+            disabled={
+              installPackagesQueryLoading || getInstancePackagesQueryLoading
+            }
             onClick={handleSubmit}
             className="u-no-margin--bottom"
           >

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import {
   Button,
   Col,
@@ -8,113 +8,31 @@ import {
   Select,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import {
-  CommonPackagesActionParams,
-  usePackages,
-} from "../../../../../../hooks/usePackages";
-import * as Yup from "yup";
-import useDebug from "../../../../../../hooks/useDebug";
-import useSidePanel from "../../../../../../hooks/useSidePanel";
+import { CommonPackagesActionParams, usePackages } from "@/hooks/usePackages";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
 import moment from "moment";
-import SidePanelFormButtons from "../../../../../../components/form/SidePanelFormButtons";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import classes from "./InstalledPackagesActionForm.module.scss";
 import classNames from "classnames";
-import { Package } from "../../../../../../types/Package";
-import InfoItem from "../../../../../../components/layout/InfoItem";
-
-const CTA_LABELS = {
-  remove: "Remove",
-  upgrade: "Upgrade",
-  downgrade: "Downgrade",
-};
-
-interface FormProps
-  extends Pick<
-    CommonPackagesActionParams,
-    "deliver_after" | "deliver_delay_window"
-  > {
-  deliver_immediately: boolean;
-  randomize_delivery: boolean;
-  version: string;
-}
-
-const INITIAL_VALUES: FormProps = {
-  deliver_after: "",
-  deliver_delay_window: 0,
-  deliver_immediately: true,
-  randomize_delivery: true,
-  version: "",
-};
-
-const VALIDATION_SCHEMA = Yup.object({
-  deliver_after: Yup.string().test({
-    test: (value) => {
-      if (!value) {
-        return true;
-      }
-
-      return moment(value).isValid();
-    },
-    message: "You have to enter a valid date and time",
-  }),
-  deliver_delay_window: Yup.number().min(
-    0,
-    "Delivery delay must be greater than or equal to 0",
-  ),
-  deliver_immediately: Yup.boolean(),
-  randomize_delivery: Yup.boolean(),
-});
-
-interface UpgradePackagesInfo {
-  securityUpdatesNumber: number;
-  packageNames: string[];
-}
+import { Package } from "@/types/Package";
+import InfoItem from "@/components/layout/InfoItem";
+import { CTA_LABELS, INITIAL_VALUES } from "./constants";
+import { FormProps } from "./types";
+import PackagesUpgradeInfo from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesUpgradeInfo";
+import * as Yup from "yup";
 
 interface InstalledPackagesActionFormProps {
   action: "remove" | "upgrade" | "downgrade";
-  packages: Package[];
   instanceId: number;
+  packages: Package[];
 }
 
 const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   action,
-  packages,
   instanceId,
+  packages,
 }) => {
-  const [upgradePackagesInfo, setUpgradePackagesInfo] =
-    useState<UpgradePackagesInfo | null>(null);
-
-  useEffect(() => {
-    if (action !== "upgrade") {
-      return;
-    }
-
-    const upgradePackagesObject = packages.reduce(
-      (acc, { name, usn, computers: { upgrades } }) => {
-        if (upgrades.length === 0) {
-          return acc;
-        }
-
-        return {
-          securityUpdatesNumber: usn
-            ? acc.securityUpdatesNumber + 1
-            : acc.securityUpdatesNumber,
-          packageNames: [...acc.packageNames, name],
-        };
-      },
-      { securityUpdatesNumber: 0, packageNames: [] } as UpgradePackagesInfo,
-    );
-
-    if (
-      upgradePackagesObject.packageNames.length === packages.length &&
-      upgradePackagesObject.securityUpdatesNumber === 0
-    ) {
-      return;
-    }
-
-    setUpgradePackagesInfo(upgradePackagesObject);
-  }, [action]);
-
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const {
@@ -151,9 +69,42 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
 
   downgradeOptions.unshift({ label: "Select version", value: "" });
 
+  const packagesToUpgrade = packages
+    .filter(({ status }) => ["upgrade", "security"].includes(status))
+    .map(({ name }) => name);
+
+  const securityUpgradeCount = packages.filter(
+    ({ status }) => status === "security",
+  ).length;
+
   const { mutateAsync: downgradePackageVersion } = downgradePackageVersionQuery;
   const { mutateAsync: removePackages } = removePackagesQuery;
   const { mutateAsync: upgradePackages } = upgradePackagesQuery;
+
+  const VALIDATION_SCHEMA = Yup.object({
+    deliver_after: Yup.string().test({
+      test: (value) => {
+        if (!value) {
+          return true;
+        }
+
+        return moment(value).isValid();
+      },
+      message: "You have to enter a valid date and time",
+    }),
+    deliver_delay_window: Yup.number().min(
+      0,
+      "Delivery delay must be greater than or equal to 0",
+    ),
+    deliver_immediately: Yup.boolean(),
+    randomize_delivery: Yup.boolean(),
+    version: Yup.string().test({
+      name: "required",
+      message: "This field is required",
+      params: { action },
+      test: (value) => action !== "downgrade" || !!value,
+    }),
+  });
 
   const handleSubmit = async (values: FormProps) => {
     const commonPackagesParams: Omit<CommonPackagesActionParams, "packages"> = {
@@ -171,15 +122,13 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
         await removePackages({
           ...commonPackagesParams,
           packages: packages
-            .filter((pkg) => pkg.computers.installed.length > 0)
+            .filter((pkg) => pkg.current_version)
             .map(({ name }) => name),
         });
       } else if (action === "upgrade") {
         await upgradePackages({
           ...commonPackagesParams,
-          packages:
-            upgradePackagesInfo?.packageNames ??
-            packages.map(({ name }) => name),
+          packages: packagesToUpgrade,
         });
       } else if (action === "downgrade") {
         await downgradePackageVersion({
@@ -206,7 +155,10 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
       {action === "downgrade" && (
         <Row className="u-no-padding--left u-no-padding--right">
           <Col size={6}>
-            <InfoItem label="Current version" value={packages[0].version} />
+            <InfoItem
+              label="Current version"
+              value={packages[0].current_version}
+            />
           </Col>
           <Col size={6}>
             {downgradeOptions.length > 1 ? (
@@ -223,62 +175,15 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           </Col>
         </Row>
       )}
-      {upgradePackagesInfo && (
-        <div>
-          <span>You selected </span>
-          <span className={classes.bold}>{packages.length}</span>
-          <span> packages. This will:</span>
-          <ul
-            className={classNames({
-              "u-no-margin--bottom":
-                packages.length - upgradePackagesInfo.packageNames.length > 0,
-            })}
-          >
-            {upgradePackagesInfo.securityUpdatesNumber > 0 && (
-              <li>
-                <span>apply </span>
-                <span className={classes.bold}>
-                  {upgradePackagesInfo.securityUpdatesNumber}
-                </span>
-                <span>{` security upgrade${
-                  upgradePackagesInfo.securityUpdatesNumber > 1 ? "s" : ""
-                }`}</span>
-              </li>
-            )}
-            {upgradePackagesInfo.packageNames.length -
-              upgradePackagesInfo.securityUpdatesNumber >
-              0 && (
-              <li>
-                <span>apply </span>
-                <span className={classes.bold}>
-                  {upgradePackagesInfo.packageNames.length -
-                    upgradePackagesInfo.securityUpdatesNumber}
-                </span>
-                <span>{` regular upgrade${
-                  upgradePackagesInfo.packageNames.length -
-                    upgradePackagesInfo.securityUpdatesNumber >
-                  1
-                    ? "s"
-                    : ""
-                }`}</span>
-              </li>
-            )}
-          </ul>
-          {packages.length - upgradePackagesInfo.packageNames.length > 0 && (
-            <p>
-              <span>No upgrades for </span>
-              <span className={classes.bold}>
-                {packages.length - upgradePackagesInfo.packageNames.length}
-              </span>
-              <span>{` package${
-                packages.length - upgradePackagesInfo.packageNames.length > 1
-                  ? "s"
-                  : ""
-              } needed.`}</span>
-            </p>
-          )}
-        </div>
-      )}
+      {action === "upgrade" &&
+        (packages.length !== packagesToUpgrade.length ||
+          securityUpgradeCount > 0) && (
+          <PackagesUpgradeInfo
+            packageCount={packages.length}
+            securityUpgradePackageCount={securityUpgradeCount}
+            totalUpgradePackageCount={packagesToUpgrade.length}
+          />
+        )}
       {["remove", "upgrade"].includes(action) && (
         <>
           <span className={classes.bold}>Delivery time</span>
@@ -322,7 +227,6 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           <span className={classNames(classes.bold, classes.marginTop)}>
             Randomize delivery
           </span>
-          ;
           <div className={classes.radioGroup}>
             <Input
               type="radio"
@@ -344,7 +248,6 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
               }}
             />
           </div>
-          ;
           {!formik.values.randomize_delivery && (
             <Input
               type="number"

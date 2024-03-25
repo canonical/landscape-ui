@@ -1,0 +1,23 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.checkbox {
+  width: $sp-x-large;
+}
+
+.details {
+  width: 35%;
+}
+
+.tooltipLink {
+  &,
+  &:hover,
+  &:focus,
+  &:visited {
+    color: $color-x-light;
+  }
+}
+
+.hidden {
+  display: none;
+}
