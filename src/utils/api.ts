@@ -15,12 +15,13 @@ export const generateRequestParams = ({
     ? config.params
     : config.data;
 
-  const paramsToPass: Omit<RequestSchema, "signature"> = isOld
-    ? {
-        action: config.url ?? "",
-        version: API_VERSION,
-      }
-    : {};
+  const paramsToPassOld: Omit<RequestSchema, "signature"> = {
+    action: config.url ?? "",
+    version: API_VERSION,
+  };
+  const paramsToPassNew: Record<string, unknown> = {};
+
+  const paramsToPass = isOld ? paramsToPassOld : paramsToPassNew;
 
   for (let i = 0; i < Object.keys(requestParams ?? []).length; i++) {
     const param = Object.keys(requestParams)[i];
@@ -38,10 +39,16 @@ export const generateRequestParams = ({
           }
         });
       } else {
-        paramsToPass[param] = value.toString();
+        if (
+          ["put", "post", "delete", "patch"].includes(config.method ?? "get")
+        ) {
+          paramsToPass[param] = value;
+        } else {
+          paramsToPass[param] = value.toString();
+        }
       }
     } else if (["number", "boolean"].includes(typeof value)) {
-      paramsToPass[param] = `${value}`;
+      paramsToPass[param] = isOld ? `${value}` : value;
     } else if (
       "" !== value &&
       undefined !== value &&

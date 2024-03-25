@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Notification, NotificationHelper } from "../types/Notification";
+import { Notification, NotificationHelper } from "@/types/Notification";
 
 const useNotificationHelper = (): NotificationHelper => {
   const [notification, setNotification] = useState<Notification | null>(null);
@@ -29,13 +29,16 @@ const useNotificationHelper = (): NotificationHelper => {
         type: "information",
       }),
 
-    success: ({ message, actions, title }) =>
+    success: ({ message, actions, title }) => {
       setDeduplicated({
         actions,
         message,
         title,
         type: "positive",
-      }),
+      });
+
+      setTimeout(() => setNotification(null), 5000);
+    },
 
     clear: () => setNotification(null),
   };

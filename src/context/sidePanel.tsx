@@ -12,17 +12,22 @@ import useNotify from "@/hooks/useNotify";
 import classes from "./SidePanelProvider.module.scss";
 
 interface SidePanelContextProps {
+  changeSidePanelSize: (size: "small" | "medium" | "large") => void;
+  changeSidePanelTitleLabel: (title: string) => void;
+  closeSidePanel: () => void;
   setSidePanelContent: (
     title: string,
     newState: ReactNode | null,
     size?: "small" | "medium" | "large",
+    titleLabel?: string,
   ) => void;
-  closeSidePanel: () => void;
 }
 
 const initialState: SidePanelContextProps = {
-  setSidePanelContent: () => undefined,
+  changeSidePanelSize: () => undefined,
+  changeSidePanelTitleLabel: () => undefined,
   closeSidePanel: () => undefined,
+  setSidePanelContent: () => undefined,
 };
 
 export const SidePanelContext =
@@ -36,6 +41,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState<"small" | "medium" | "large">("small");
   const [title, setTitle] = useState("");
+  const [titleLabel, setTitleLabel] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
 
   const { pathname } = useLocation();
@@ -48,6 +54,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const handleClose = () => {
     setOpen(false);
     setTitle("");
+    setTitleLabel("");
     setBody(null);
     setSize("small");
     sidePanel.setOpen(false);
@@ -70,8 +77,10 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   return (
     <SidePanelContext.Provider
       value={{
-        setSidePanelContent: handleContentChange,
+        changeSidePanelSize: (size) => setSize(size),
+        changeSidePanelTitleLabel: (title) => setTitleLabel(title),
         closeSidePanel: handleClose,
+        setSidePanelContent: handleContentChange,
       }}
     >
       {children}
@@ -86,8 +95,11 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
           classes.container,
         )}
       >
-        <div className="p-panel__header">
-          <h4 className="p-panel__title">{title}</h4>
+        <div className={classNames("p-panel__header", classes.header)}>
+          <h3 className="p-panel__title">{title}</h3>
+          <p className="u-text--muted">
+            <i>{titleLabel}</i>
+          </p>
           <div className="p-panel__controls">
             <button
               onClick={handleClose}

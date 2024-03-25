@@ -43,6 +43,8 @@
 @include vf-p-icon-disconnect;
 @include vf-p-icon-canvas;
 @include vf-p-icon-inspector-debug;
+@include vf-p-icon-applications;
+@include vf-p-icon-canvas;
 
 // Custom styles
 .p-panel {
@@ -215,4 +217,13 @@ a[target="_blank"] {
       }
     }
   }
+}
+
+@mixin vf-icon--contextual-menu($color) {
+  background-image: url("data:image/svg+xml,%3Csvg width='4' height='16' viewBox='0 0 4 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M3.5 2.00934C3.5 1.18091 2.82843 0.509338 2 0.509338C1.17157 0.509338 0.5 1.18091 0.5 2.00934C0.5 2.83777 1.17157 3.50934 2 3.50934C2.82843 3.50934 3.5 2.83777 3.5 2.00934ZM2 6.5C2.82843 6.5 3.5 7.17157 3.5 8C3.5 8.82842 2.82843 9.5 2 9.5C1.17157 9.5 0.5 8.82842 0.5 8C0.5 7.17157 1.17157 6.5 2 6.5ZM2 12.4907C2.82843 12.4907 3.5 13.1622 3.5 13.9907C3.5 14.8191 2.82843 15.4907 2 15.4907C1.17157 15.4907 0.5 14.8191 0.5 13.9907C0.5 13.1622 1.17157 12.4907 2 12.4907Z' fill='#{vf-url-friendly-color($color)}'/%3E%3C/svg%3E%0A");
+}
+
+.p-icon--contextual-menu {
+  @extend %icon;
+  @include vf-icon--contextual-menu($color-mid-dark);
 }

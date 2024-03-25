@@ -221,6 +221,18 @@ export default function useInstances() {
     onSuccess: () => queryClient.invalidateQueries(["instances"]),
   });
 
+  const getAllInstanceTagsQuery: QueryFnType<
+    AxiosResponse<ApiPaginatedResponse<string>>,
+    {}
+  > = (queryParams = {}, config = {}) =>
+    useQuery<AxiosResponse<ApiPaginatedResponse<string>>, AxiosError<ApiError>>(
+      {
+        queryKey: ["instanceTags"],
+        queryFn: () => authFetch!.get("tags", { params: queryParams }),
+        ...config,
+      },
+    );
+
   return {
     getInstancesQuery,
     addAnnotationToInstancesQuery,
@@ -236,5 +248,6 @@ export default function useInstances() {
     rebootInstancesQuery,
     shutdownInstancesQuery,
     renameInstancesQuery,
+    getAllInstanceTagsQuery,
   };
 }
