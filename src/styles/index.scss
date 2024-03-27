@@ -227,3 +227,11 @@ a[target="_blank"] {
   @extend %icon;
   @include vf-icon--contextual-menu($color-mid-dark);
 }
+
+.fade-in--down {
+  &[aria-hidden="true"] {
+    .multi-select__dropdown {
+      bottom: 0;
+    }
+  }
+}
