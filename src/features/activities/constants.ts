@@ -10,7 +10,7 @@ export const ACTIVITY_STATUSES: Record<
     label: "Succeeded",
   },
   scheduled: {
-    icon: "spinner u-animation--spin",
+    icon: "spinner",
     label: "Scheduled",
   },
   waiting: {

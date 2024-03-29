@@ -1,0 +1,23 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.truncated {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions {
+  width: 4.5rem;
+}
+
+.toggleButton {
+  padding: 0 $sph--x-small;
+  margin-bottom: 0;
+}
+
+.actionButton {
+  align-items: center;
+  display: flex;
+  justify-content: start;
+  width: 100%;
+}
