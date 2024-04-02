@@ -17,6 +17,14 @@
   overflow: hidden;
 }
 
+.expandedString {
+  max-height: 10rem;
+}
+
+.showScroll {
+  overflow-y: scroll;
+}
+
 .item {
   &:not(:last-child) {
     &::after {
