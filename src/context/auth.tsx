@@ -112,6 +112,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     localStorage.removeItem(AUTH_STORAGE_KEY);
     navigate(`${ROOT_PATH}login`, { replace: true });
+    queryClient.clear();
   };
 
   return (

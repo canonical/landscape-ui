@@ -1,5 +1,6 @@
 import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import FetchProvider from "./context/fetch";
 import FetchOldProvider from "./context/fetchOld";
 import useAuth from "./hooks/useAuth";
@@ -72,6 +73,7 @@ interface AuthRouteProps {
 const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
   const { authorized, authLoading } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (authorized || authLoading) {
@@ -79,6 +81,7 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
     }
 
     navigate(`${ROOT_PATH}login`, { replace: true });
+    queryClient.clear();
   }, [authorized, authLoading]);
 
   return <>{children}</>;
