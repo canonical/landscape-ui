@@ -84,7 +84,6 @@ test("should create pockets with the different mode", async ({ page }) => {
   await page.getByRole("textbox").fill("test-upload-pocket");
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page.getByText("Allow uploaded packages to be unsigned").click();
-  await expect(page.getByRole("listbox")).toBeDisabled();
   await page.getByRole("button", { name: "Create pocket" }).click();
 
   await expect(

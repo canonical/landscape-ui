@@ -13,10 +13,10 @@
     "prepare": "husky install",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:codegen": "playwright codegen 127.0.0.1:5173",
-    "test:report": "playwright show-report",
     "vitest": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "test:codegen": "playwright codegen localhost:5173",
+    "test:report": "playwright show-report"
   },
   "dependencies": {
     "@canonical/react-components": "0.49.0",
