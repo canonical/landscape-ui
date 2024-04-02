@@ -22,14 +22,14 @@ export interface SnapActionParams {
   deliver_after_window?: number;
 }
 
-interface GetSnapsParams {
+export interface GetSnapsParams {
   instance_id: number;
   limit?: number;
   offset?: number;
   search?: string;
 }
 
-interface GetAvailableSnapsParams {
+export interface GetAvailableSnapsParams {
   instance_id: number;
   query: string;
 }
