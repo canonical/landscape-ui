@@ -36,7 +36,7 @@ const getUsersWithSameStateMessage = (userAction: UserAction): string => {
 const capitalize = <T extends string>(s: T) =>
   (s[0].toUpperCase() + s.slice(1)) as Capitalize<typeof s>;
 
-const formatCountableNoun = ({
+export const formatCountableNoun = ({
   count,
   singular,
   plural = `${singular}s`,

@@ -1,0 +1,19 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  column-gap: $sph--large;
+  display: flex;
+}
+
+.searchContainer {
+  flex-basis: 30rem;
+}
+
+.selectContainer {
+  display: flex;
+  column-gap: $sph--large;
+}
+
+.cta {
+  margin-left: auto;
+}

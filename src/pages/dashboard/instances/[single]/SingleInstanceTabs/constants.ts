@@ -20,6 +20,10 @@ export const TAB_LINKS = [
     id: "tab-link-packages",
   },
   {
+    label: "Snaps",
+    id: "tab-link-snaps",
+  },
+  {
     label: "Processes",
     id: "tab-link-processes",
   },

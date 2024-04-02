@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/base_icon-definitions";
+@import "vanilla-framework/scss/global_functions";
+
+.details {
+  width: 40%;
+}
+
+.pause {
+  @include vf-icon-pause($color-mid-dark);
+}

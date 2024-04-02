@@ -1,0 +1,112 @@
+import { ApiError } from "@/types/ApiError";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { QueryFnType } from "@/types/QueryFnType";
+import { AvailableSnap, AvailableSnapInfo, InstalledSnap } from "@/types/Snap";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError, AxiosResponse } from "axios";
+import useDebug from "./useDebug";
+import useFetch from "./useFetch";
+
+interface AffectedSnap {
+  name: string;
+  channel?: string;
+  revision?: string;
+  time?: string;
+}
+
+export interface SnapActionParams {
+  action: string;
+  computer_ids: number[];
+  snaps: AffectedSnap[];
+  deliver_after?: string;
+  deliver_after_window?: number;
+}
+
+interface GetSnapsParams {
+  instance_id: number;
+  limit?: number;
+  offset?: number;
+  search?: string;
+}
+
+interface GetAvailableSnapsParams {
+  instance_id: number;
+  query: string;
+}
+
+interface GetAvailableSnapInfoParams {
+  instance_id: number;
+  name: string;
+}
+
+export const useSnaps = () => {
+  const authFetch = useFetch();
+  const queryClient = useQueryClient();
+  const debug = useDebug();
+
+  const getSnapsQuery: QueryFnType<
+    AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,
+    GetSnapsParams
+  > = (queryParams, config = {}) =>
+    useQuery<
+      AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,
+      AxiosError<ApiError>
+    >({
+      queryKey: ["snaps", { ...queryParams }],
+      queryFn: () =>
+        authFetch!.get(
+          `computers/${queryParams!.instance_id}/snaps/installed`,
+          { params: queryParams },
+        ),
+      ...config,
+    });
+
+  const getAvailableSnaps: QueryFnType<
+    AxiosResponse<ApiPaginatedResponse<AvailableSnap>>,
+    GetAvailableSnapsParams
+  > = (queryParams, config = {}) =>
+    useQuery<
+      AxiosResponse<ApiPaginatedResponse<AvailableSnap>>,
+      AxiosError<ApiError>
+    >({
+      queryKey: ["snaps", { ...queryParams }],
+      queryFn: () =>
+        authFetch!.get(
+          `computers/${queryParams!.instance_id}/snaps/available?name_startswith=${queryParams!.query}`,
+        ),
+      ...config,
+    });
+
+  const getAvailableSnapInfo: QueryFnType<
+    AxiosResponse<AvailableSnapInfo>,
+    GetAvailableSnapInfoParams
+  > = (queryParams, config = {}) =>
+    useQuery<AxiosResponse<AvailableSnapInfo>, AxiosError<ApiError>>({
+      queryKey: ["snaps", { ...queryParams }],
+      queryFn: () =>
+        authFetch!.get(
+          `computers/${queryParams!.instance_id}/snaps/${queryParams!.name}/info`,
+          { params: queryParams },
+        ),
+      ...config,
+    });
+
+  const snapsActionQuery = useMutation<
+    AxiosResponse<InstalledSnap>,
+    AxiosError<ApiError>,
+    SnapActionParams
+  >({
+    mutationKey: ["snaps", "action"],
+    mutationFn: (params) => authFetch!.post("snaps", params),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["snaps"]).catch(debug);
+    },
+  });
+
+  return {
+    getSnapsQuery,
+    getAvailableSnapInfo,
+    getAvailableSnaps,
+    snapsActionQuery,
+  };
+};

@@ -30,7 +30,6 @@ interface PackageListProps {
   packagesLoading: boolean;
   selectedPackages: Package[];
   selectAll?: boolean;
-  short?: boolean;
 }
 
 const PackageList: FC<PackageListProps> = ({
@@ -41,7 +40,6 @@ const PackageList: FC<PackageListProps> = ({
   packagesLoading,
   selectedPackages,
   selectAll,
-  short,
 }) => {
   const [selectedByTabState, setSelectedByTabState] = useState(false);
   const [hideUbuntuProInfo, setHideUbuntuProInfo] = useState(false);
@@ -89,60 +87,44 @@ const PackageList: FC<PackageListProps> = ({
   };
 
   const columns = useMemo<Column<Package>[]>(
-    () =>
-      [
-        {
-          accessor: "checkbox",
-          className: classes.checkbox,
-          Header: (
-            <CheckboxInput
-              inline
-              label={<span className="u-off-screen">Toggle all</span>}
-              checked={
-                selectedPackages.length === packages.length &&
-                packages.length > 0
+    () => [
+      {
+        accessor: "checkbox",
+        className: classes.checkbox,
+        Header: (
+          <CheckboxInput
+            inline
+            label={<span className="u-off-screen">Toggle all</span>}
+            checked={
+              selectedPackages.length === packages.length && packages.length > 0
+            }
+            indeterminate={
+              selectedPackages.length < packages.length &&
+              selectedPackages.length > 0
+            }
+            disabled={packages.length === 0}
+            onChange={handleToggleAllPackages}
+          />
+        ),
+        Cell: ({ row }: CellProps<Package>) =>
+          isUbuntuProRequired(row.original) ? (
+            <Tooltip
+              message={
+                <div>
+                  <p className="u-no-padding--top">Ubuntu Pro is required</p>
+                  <Link
+                    to={`${ROOT_PATH}instances/${instance.parent ? `${instance.parent.hostname}/${instance.hostname}` : instance.hostname}`}
+                    state={{ tab: "ubuntu-pro" }}
+                    className={classes.tooltipLink}
+                  >
+                    learn more
+                  </Link>
+                </div>
               }
-              indeterminate={
-                selectedPackages.length < packages.length &&
-                selectedPackages.length > 0
-              }
-              disabled={packages.length === 0}
-              onChange={handleToggleAllPackages}
-            />
-          ),
-          Cell: ({ row }: CellProps<Package>) =>
-            isUbuntuProRequired(row.original) ? (
-              <Tooltip
-                message={
-                  <div>
-                    <p className="u-no-padding--top">Ubuntu Pro is required</p>
-                    <Link
-                      to={`${ROOT_PATH}instances/${instance.parent ? `${instance.parent.hostname}/${instance.hostname}` : instance.hostname}`}
-                      state={{ tab: "ubuntu-pro" }}
-                      className={classes.tooltipLink}
-                    >
-                      learn more
-                    </Link>
-                  </div>
-                }
-              >
-                <CheckboxInput
-                  inline
-                  disabled
-                  label={
-                    <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
-                  }
-                  checked={selectedPackages.some(
-                    ({ name }) => name === row.original.name,
-                  )}
-                  onChange={() => {
-                    handleSelectPackage(row.original);
-                  }}
-                />
-              </Tooltip>
-            ) : (
+            >
               <CheckboxInput
                 inline
+                disabled
                 label={
                   <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
                 }
@@ -153,77 +135,78 @@ const PackageList: FC<PackageListProps> = ({
                   handleSelectPackage(row.original);
                 }}
               />
-            ),
-        },
-        {
-          accessor: "name",
-          Header: "Name",
-          Cell: ({ row }: CellProps<Package>) => {
-            if (row.original.name === "loading") {
-              return <LoadingState />;
-            }
+            </Tooltip>
+          ) : (
+            <CheckboxInput
+              inline
+              label={
+                <span className="u-off-screen">{`Toggle ${row.original.name}`}</span>
+              }
+              checked={selectedPackages.some(
+                ({ name }) => name === row.original.name,
+              )}
+              onChange={() => {
+                handleSelectPackage(row.original);
+              }}
+            />
+          ),
+      },
+      {
+        accessor: "name",
+        Header: "Name",
+        Cell: ({ row }: CellProps<Package>) => {
+          if (row.original.name === "loading") {
+            return <LoadingState />;
+          }
 
-            if (!short) {
-              return (
-                <Button
-                  type="button"
-                  appearance="link"
-                  className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-                  onClick={() => {
-                    handlePackageClick(row.original);
-                  }}
-                >
-                  {row.original.name}
-                </Button>
-              );
-            }
-
-            return (
-              <>
-                <span>{row.original.name}</span>
-                <br />
-                <span>{`v${row.original.available_version}`}</span>
-              </>
-            );
-          },
+          return (
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              onClick={() => {
+                handlePackageClick(row.original);
+              }}
+            >
+              {row.original.name}
+            </Button>
+          );
         },
-        {
-          accessor: "status",
-          Header: "Status",
-          Cell: ({ row: { original } }: CellProps<Package>) =>
-            getPackageStatusInfo(original).label,
-          getCellIcon: ({ row: { original } }: CellProps<Package>) =>
-            getPackageStatusInfo(original).icon,
-        },
-        {
-          accessor: "current_version",
-          Header: "Current version",
-        },
-        {
-          accessor: "summary",
-          className: short ? undefined : classes.details,
-          Header: "Details",
-          Cell: ({ row: { original } }: CellProps<Package>) =>
-            !short && original.available_version ? (
-              <>
-                <span>{original.summary}</span>
-                <br />
-                <span>{`available version: ${original.available_version}`}</span>
-              </>
-            ) : (
-              original.summary
-            ),
-        },
-      ].filter(
-        ({ accessor }) =>
-          !short || !["current_version", "status"].includes(accessor),
-      ),
-    [packages, selectedPackages.length, short],
+      },
+      {
+        accessor: "status",
+        Header: "Status",
+        Cell: ({ row: { original } }: CellProps<Package>) =>
+          getPackageStatusInfo(original).label,
+        getCellIcon: ({ row: { original } }: CellProps<Package>) =>
+          getPackageStatusInfo(original).icon,
+      },
+      {
+        accessor: "current_version",
+        Header: "Current version",
+      },
+      {
+        accessor: "summary",
+        className: classes.details,
+        Header: "Details",
+        Cell: ({ row: { original } }: CellProps<Package>) =>
+          original.available_version ? (
+            <>
+              <span>{original.summary}</span>
+              <br />
+              <span>{`available version: ${original.available_version}`}</span>
+            </>
+          ) : (
+            original.summary
+          ),
+      },
+    ],
+    [packages, selectedPackages.length],
   );
 
   return (
     <>
-      {!hideUbuntuProInfo && !short && packages.some(isUbuntuProRequired) && (
+      {!hideUbuntuProInfo && packages.some(isUbuntuProRequired) && (
         <UbuntuProNotification
           instance={instance}
           onDismiss={() => setHideUbuntuProInfo(true)}
