@@ -6,6 +6,7 @@ import useInstances from "@/hooks/useInstances";
 import { Link } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
 import useDebug from "@/hooks/useDebug";
+import { QUERY_STATUSES } from "@/pages/dashboard/instances/InstancesContainer/constants";
 
 interface AlertCardProps {
   alertQueryData: {
@@ -25,7 +26,7 @@ const AlertCard: FC<AlertCardProps> = ({ alertQueryData }) => {
     error,
     isError,
   } = getInstancesQuery({
-    query: alertQueryData.value,
+    query: QUERY_STATUSES[alertQueryData.value],
     limit: 1,
     root_only: false,
   });
