@@ -112,7 +112,9 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
         </div>
         <div className={classNames("p-panel__content", classes.outerDiv)}>
           <div className={classNames("p-panel__inner", classes.innerDiv)}>
-            <AppNotification notify={notify} isSidePanelOpen={true} />
+            {notify.notification?.type === "negative" && (
+              <AppNotification notify={notify} isSidePanelOpen={true} />
+            )}
             {body}
           </div>
         </div>

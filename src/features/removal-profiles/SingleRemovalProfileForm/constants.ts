@@ -1,15 +1,13 @@
 import { FormProps } from "./types";
 
 export const NOTIFICATION_ACTIONS = {
-  add: "added",
   create: "created",
   edit: "updated",
 };
 
 export const CTA_LABELS = {
-  add: "Add",
-  create: "Create",
-  edit: "Update",
+  create: "Create removal profile",
+  edit: "Save changes",
 };
 
 export const INITIAL_VALUES: FormProps = {

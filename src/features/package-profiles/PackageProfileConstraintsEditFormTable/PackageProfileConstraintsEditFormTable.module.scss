@@ -1,0 +1,53 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.actionsCell {
+  width: 3.5rem;
+  vertical-align: middle;
+  text-align: right;
+}
+
+.noPadding {
+  padding: 0;
+}
+
+.cell {
+  border: 1px solid $colors--light-theme--border-low-contrast;
+
+  &:first-child {
+    border-left: 0;
+  }
+
+  &:last-child {
+    border-right: 0;
+    padding-left: $sph--x-small;
+    padding-right: $sph--x-small;
+  }
+}
+
+.input {
+  margin-bottom: 0;
+
+  :global(.p-form-validation):not(:global(.is-error)) & {
+    &:not(:hover):not(:focus):not(:active) {
+      background-color: $color-x-light;
+      border-bottom-color: $color-x-light;
+    }
+  }
+}
+
+.inputWrapper {
+  :global(.p-form-validation__message) {
+    margin-bottom: $spv--x-small;
+    margin-left: $sph--x-small;
+    margin-top: $spv--x-small;
+  }
+}
+
+.checkboxContainer {
+  display: flex;
+}
+
+.hidden {
+  display: none;
+}

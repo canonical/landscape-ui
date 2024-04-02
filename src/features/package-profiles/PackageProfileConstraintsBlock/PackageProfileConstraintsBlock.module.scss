@@ -1,16 +1,5 @@
-@import "vanilla-framework/scss/base_icon-definitions";
-@import "vanilla-framework/scss/base_typography-definitions";
-//@import "vanilla-framework/scss/global_functions";
-@import "vanilla-framework/scss/patterns_form-validation";
-//@import "vanilla-framework/scss/settings";
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
-
-.cta {
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-}
 
 .action {
   width: $sp-x-large;
@@ -48,23 +37,4 @@
     margin-left: $sph--x-small;
     margin-top: $spv--x-small;
   }
-}
-
-.emptyError {
-  background-position: left, center;
-  background-repeat: no-repeat;
-  font-size: #{map-get($font-sizes, small)}rem;
-  line-height: map-get($line-heights, small);
-  margin-bottom: map-get($sp-after, small) - map-get($nudges, small);
-  margin-top: -$sp-unit;
-  padding-left: calc(map-get($icon-sizes, default) + $sph--small);
-  padding-top: 0;
-
-  @if ($increase-font-size-on-larger-screens) {
-    @media (min-width: $breakpoint-x-large) {
-      padding-top: map-get($nudges, small);
-    }
-  }
-
-  @include vf-form-validation-message-error-light-theme;
 }

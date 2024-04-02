@@ -1,29 +1,22 @@
 import classNames from "classnames";
-import { FC, Suspense, useMemo } from "react";
+import { FC, useMemo } from "react";
 import { CellProps, Column } from "react-table";
 import {
   Button,
-  ContextualMenu,
   Icon,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import { PackageProfile } from "@/features/package-profiles/types/PackageProfile";
-import LoadingState from "@/components/layout/LoadingState";
+import PackageProfileDetails from "@/features/package-profiles/PackageProfileDetails";
+import PackageProfileListContextualMenu from "@/features/package-profiles/PackageProfileListContextualMenu";
+import { PackageProfile } from "@/features/package-profiles/types";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
 import { SelectOption } from "@/types/SelectOption";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps } from "./helpers";
 import classes from "./PackageProfileList.module.scss";
-import usePackageProfiles from "@/features/package-profiles/hooks/usePackageProfiles";
-import useConfirm from "@/hooks/useConfirm";
-import useSidePanel from "@/hooks/useSidePanel";
-import PackageProfileDetails from "@/features/package-profiles/PackageProfileDetails";
-import PackageProfileConstraintsEditForm from "@/features/package-profiles/PackageProfileConstraintsEditForm";
-import PackageProfileEditForm from "@/features/package-profiles/PackageProfileEditForm";
-import PackageProfileDuplicateForm from "@/features/package-profiles/PackageProfileDuplicateForm";
-import useNotify from "@/hooks/useNotify";
 
 interface PackageProfileListProps {
   packageProfiles: PackageProfile[];
@@ -35,11 +28,8 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
   searchText,
 }) => {
   const debug = useDebug();
-  const { notify } = useNotify();
-  const { closeConfirmModal, confirmModal } = useConfirm();
-  const { setSidePanelContent, changeSidePanelTitleLabel } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
-  const { removePackageProfileQuery } = usePackageProfiles();
 
   const {
     data: getAccessGroupQueryResult,
@@ -56,76 +46,12 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       value: name,
     })) ?? [];
 
-  const { mutateAsync: removePackageProfile } = removePackageProfileQuery;
-
-  const handleRemovePackageProfile = async (name: string) => {
-    try {
-      await removePackageProfile({ name });
-
-      notify.success({
-        message: `Package profile "${name}" removed successfully`,
-        title: "Package profile removed",
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      closeConfirmModal();
-    }
-  };
-
-  const handleRemovePackageProfileDialog = (name: string) => {
-    confirmModal({
-      title: "Remove package profile",
-      body: `This will remove "${name}" profile.`,
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={() => handleRemovePackageProfile(name)}
-          aria-label="Remove ${name} profile"
-        >
-          Remove
-        </Button>,
-      ],
-    });
-  };
-
   const handlePackageProfileDetailsOpen = (profile: PackageProfile) => {
     setSidePanelContent(
       profile.title,
       <PackageProfileDetails profile={profile} />,
       "medium",
     );
-  };
-
-  const handleConstraintsChange = (profile: PackageProfile) => () => {
-    setSidePanelContent(
-      "Change package constraints",
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileConstraintsEditForm profile={profile} />
-      </Suspense>,
-      "medium",
-    );
-  };
-
-  const handlePackageProfileEdit = (profile: PackageProfile) => {
-    setSidePanelContent(
-      "Edit package profile",
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileEditForm profile={profile} />
-      </Suspense>,
-    );
-  };
-
-  const handlePackageProfileDuplicate = (profile: PackageProfile) => {
-    setSidePanelContent(
-      "Duplicate package profile",
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileDuplicateForm profile={profile} />
-      </Suspense>,
-    );
-    changeSidePanelTitleLabel("Step 1 of 2");
   };
 
   const profiles = useMemo(() => {
@@ -226,65 +152,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         className: classNames("u-align-text--right", classes.actions),
         Header: "Actions",
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
-          <ContextualMenu
-            position="left"
-            toggleClassName={classes.toggleButton}
-            toggleAppearance="base"
-            toggleLabel={<Icon name="contextual-menu" />}
-          >
-            <Button
-              type="button"
-              appearance="base"
-              hasIcon
-              className={classNames(
-                "u-no-margin--bottom u-no-margin--right",
-                classes.actionButton,
-              )}
-              onClick={() => handlePackageProfileEdit(original)}
-            >
-              <Icon name="edit" />
-              <span>Edit</span>
-            </Button>
-            <Button
-              type="button"
-              appearance="base"
-              hasIcon
-              className={classNames(
-                "u-no-margin--bottom u-no-margin--right",
-                classes.actionButton,
-              )}
-              onClick={handleConstraintsChange(original)}
-            >
-              <Icon name="applications" />
-              <span className={classes.noWrap}>Change package constraints</span>
-            </Button>
-            <Button
-              type="button"
-              appearance="base"
-              hasIcon
-              className={classNames(
-                "u-no-margin--bottom u-no-margin--right",
-                classes.actionButton,
-              )}
-              onClick={() => handlePackageProfileDuplicate(original)}
-            >
-              <Icon name="canvas" />
-              <span>Duplicate</span>
-            </Button>
-            <Button
-              type="button"
-              appearance="base"
-              hasIcon
-              className={classNames(
-                "u-no-margin--bottom u-no-margin--right",
-                classes.actionButton,
-              )}
-              onClick={() => handleRemovePackageProfileDialog(original.name)}
-            >
-              <Icon name="delete" />
-              <span>Remove</span>
-            </Button>
-          </ContextualMenu>
+          <PackageProfileListContextualMenu profile={original} />
         ),
       },
     ],

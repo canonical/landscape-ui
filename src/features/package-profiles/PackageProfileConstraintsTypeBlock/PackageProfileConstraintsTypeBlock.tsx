@@ -1,12 +1,13 @@
+import { FormikContextType } from "formik";
 import { FC } from "react";
 import { Select } from "@canonical/react-components";
-import { SelectOption } from "@/types/SelectOption";
-import { CONSTRAINTS_TYPE_OPTIONS } from "@/features/package-profiles/PackageProfileConstraintsTypeBlock/constants";
+import FileInput from "@/components/form/FileInput";
+import PackageProfileConstraintsBlock from "@/features/package-profiles/PackageProfileConstraintsBlock";
+import { AddFormProps } from "@/features/package-profiles/types";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import { FormikContextType } from "formik";
-import { AddFormProps } from "@/features/package-profiles/types";
-import { FileUpload } from "@canonical/maas-react-components";
+import { SelectOption } from "@/types/SelectOption";
+import { CONSTRAINTS_TYPE_OPTIONS } from "./constants";
 import classes from "./PackageProfileConstraintsTypeBlock.module.scss";
 
 interface PackageProfileConstraintsTypeBlockProps {
@@ -20,7 +21,7 @@ const PackageProfileConstraintsTypeBlock: FC<
   const { getInstancesQuery } = useInstances();
 
   const { data: getInstancesQueryResult, error: getInstancesQueryError } =
-    getInstancesQuery({}, { refetchOnMount: false });
+    getInstancesQuery();
 
   if (getInstancesQueryError) {
     debug(getInstancesQueryError);
@@ -65,34 +66,36 @@ const PackageProfileConstraintsTypeBlock: FC<
           label="Instance"
           required={formik.values.constraintsType === "instance"}
           options={instanceOptions}
-          {...formik.getFieldProps("instanceId")}
+          {...formik.getFieldProps("source_computer_id")}
           error={
-            formik.touched.instanceId && formik.errors.instanceId
-              ? formik.errors.instanceId
+            formik.touched.source_computer_id &&
+            formik.errors.source_computer_id
+              ? formik.errors.source_computer_id
               : undefined
           }
         />
       )}
 
       {formik.values.constraintsType === "material" && (
-        <FileUpload
+        <FileInput
           label="Upload constraints"
+          accept=".csv"
+          {...formik.getFieldProps("csvFile")}
+          onFileRemove={handleRemoveFile}
+          onFileUpload={handleFileUpload}
           help={
             'File should be formatted as either a package profile CSV file or the output of running "dpkg --get-selections" on a computer with desired packages installed.'
           }
-          maxFiles={1}
-          accept={{ "text/csv": [".csv"] }}
-          files={formik.values.csvFile ? [formik.values.csvFile] : []}
-          onFileUpload={handleFileUpload}
-          removeFile={handleRemoveFile}
           error={
             (formik.touched.csvFile && formik.errors.csvFile) ||
             (formik.touched.material && formik.errors.material) ||
             undefined
           }
-          rejectedFiles={[]}
-          removeRejectedFile={() => undefined}
         />
+      )}
+
+      {formik.values.constraintsType === "manual" && (
+        <PackageProfileConstraintsBlock formik={formik} />
       )}
     </div>
   );

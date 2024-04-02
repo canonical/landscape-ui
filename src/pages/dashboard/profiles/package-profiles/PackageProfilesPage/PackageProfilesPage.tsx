@@ -7,23 +7,23 @@ import PackageProfilesContainer from "@/pages/dashboard/profiles/package-profile
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 
-const PackageProfileAddForm = lazy(() =>
+const PackageProfileCreateForm = lazy(() =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileAddForm,
+    default: module.PackageProfileCreateForm,
   })),
 );
 
 const PackageProfilesPage: FC = () => {
-  const { setSidePanelContent, changeSidePanelTitleLabel } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
 
   const handleAddPackageProfile = () => {
     setSidePanelContent(
-      "Add package profile",
+      "Create package profile",
       <Suspense fallback={<LoadingState />}>
-        <PackageProfileAddForm />
+        <PackageProfileCreateForm />
       </Suspense>,
+      "medium",
     );
-    changeSidePanelTitleLabel("Step 1 of 2");
   };
 
   return (
@@ -33,11 +33,11 @@ const PackageProfilesPage: FC = () => {
         actions={[
           <Button
             type="button"
-            key="add-package-profile"
+            key="create-package-profile"
             appearance="positive"
             onClick={handleAddPackageProfile}
           >
-            Add package profile
+            Create package profile
           </Button>,
         ]}
       />

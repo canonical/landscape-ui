@@ -2,6 +2,7 @@ export type PackageProfileConstraintType = "depends" | "conflicts";
 
 export interface PackageProfileConstraint extends Record<string, unknown> {
   constraint: PackageProfileConstraintType;
+  id: number;
   package: string;
   rule: string;
   version: string;

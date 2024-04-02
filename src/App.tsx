@@ -107,7 +107,9 @@ const App: FC = () => {
   return (
     <FetchOldProvider>
       <FetchProvider>
-        {!sidePanel.open && <AppNotification notify={notify} />}
+        {(!sidePanel.open || notify.notification?.type !== "negative") && (
+          <AppNotification notify={notify} />
+        )}
         <Routes>
           <Route
             path={ROOT_PATH}

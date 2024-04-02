@@ -1,34 +1,33 @@
 import {
+  CopyPackageProfileParams,
   CreatePackageProfileParams,
   EditPackageProfileParams,
 } from "@/features/package-profiles/hooks/usePackageProfiles";
 import {
   PackageProfileConstraint,
   PackageProfileConstraintType,
-} from "@/features/package-profiles/types/PackageProfile";
+} from "./PackageProfile";
 
 interface Constraint extends PackageProfileConstraint {
   constraint: PackageProfileConstraintType | "";
   notAnyVersion: boolean;
 }
 
-export interface DuplicateFormProps
+export interface AddFormProps
   extends Omit<Required<CreatePackageProfileParams>, "constraints"> {
-  constraints: Constraint[];
-  step: number;
-}
-
-export interface AddFormProps extends DuplicateFormProps {
+  constraints: Omit<Constraint, "id">[];
   constraintsType: string;
   csvFile: File | null;
-  instanceId: number;
   isCsvFileParsed: boolean;
-  material: string;
 }
 
-export interface ConstraintsEditFormProps {
-  constraints: Constraint[];
+export interface ConstraintsFormProps {
+  constraints: Omit<Constraint, "id">[];
 }
+
+export type DuplicateFormProps = Required<
+  Omit<CopyPackageProfileParams, "copy_from">
+>;
 
 export type EditFormProps = Required<
   Omit<EditPackageProfileParams, "name" | "constraints">

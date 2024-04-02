@@ -3,57 +3,47 @@ import { Cell, TableCellProps } from "react-table";
 import {
   AddFormProps,
   Constraint,
-  ConstraintsEditFormProps,
-  DuplicateFormProps,
+  ConstraintsFormProps,
 } from "@/features/package-profiles/types";
 import classes from "./PackageProfileConstraintsBlock.module.scss";
 import { FormikContextType } from "formik";
 
-export const handleConstraintRuleChange = async (
+const handleConstraintPropChange = async (
   formik:
     | FormikContextType<AddFormProps>
-    | FormikContextType<ConstraintsEditFormProps>
-    | FormikContextType<DuplicateFormProps>,
+    | FormikContextType<ConstraintsFormProps>,
   index: number,
+  prop: keyof Constraint,
   value: string,
 ) => {
-  await formik.setFieldValue(`constraints[${index}].rule`, value);
+  await formik.setFieldValue(`constraints[${index}]${[prop]}`, value);
+
+  await formik.setFieldTouched(`constraints[${index}]${[prop]}`, true);
+
+  if (!(["rule", "version"] as (keyof Constraint)[]).includes(prop)) {
+    return;
+  }
 
   if (value !== "") {
     await formik.setFieldValue(`constraints[${index}].notAnyVersion`, true);
-  } else if (formik.values.constraints[index].version === "") {
+  } else if (
+    formik.values.constraints[index][prop === "rule" ? "version" : "rule"] ===
+    ""
+  ) {
     await formik.setFieldValue(`constraints[${index}].notAnyVersion`, false);
   }
 };
 
-export const handleConstraintVersionChange = async (
+const getConstraintsErrorByIndex = (
   formik:
     | FormikContextType<AddFormProps>
-    | FormikContextType<ConstraintsEditFormProps>
-    | FormikContextType<DuplicateFormProps>,
-  index: number,
-  value: string,
-) => {
-  await formik.setFieldValue(`constraints[${index}].version`, value);
-
-  if (value !== "") {
-    await formik.setFieldValue(`constraints[${index}].notAnyVersion`, true);
-  } else if (formik.values.constraints[index].rule === "") {
-    await formik.setFieldValue(`constraints[${index}].notAnyVersion`, false);
-  }
-};
-
-export const getConstraintsErrorByIndex = (
-  formik:
-    | FormikContextType<AddFormProps>
-    | FormikContextType<ConstraintsEditFormProps>
-    | FormikContextType<DuplicateFormProps>,
+    | FormikContextType<ConstraintsFormProps>,
   index: number,
   key: keyof Constraint,
 ) => {
   if (
     !formik.errors.constraints?.[index] ||
-    !formik.touched.constraints?.[index]
+    !formik.touched.constraints?.[index]?.[key]
   ) {
     return undefined;
   }
@@ -63,9 +53,52 @@ export const getConstraintsErrorByIndex = (
   return typeof rowErrors !== "string" ? rowErrors[key] : undefined;
 };
 
+const handleConstraintRowDelete = async (
+  formik:
+    | FormikContextType<AddFormProps>
+    | FormikContextType<ConstraintsFormProps>,
+  rowIndex: number,
+) => {
+  await formik.setFieldValue(
+    "constraints",
+    formik.values.constraints.filter((_, index) => index !== rowIndex),
+  );
+
+  if (formik.touched.constraints) {
+    formik.touched.constraints.splice(rowIndex, 1);
+
+    await formik.setTouched({
+      ...formik.touched,
+      constraints: formik.touched.constraints,
+    });
+  }
+};
+
+export const getConstraintPropHandlers = (
+  formik:
+    | FormikContextType<AddFormProps>
+    | FormikContextType<ConstraintsFormProps>,
+) => {
+  return {
+    handleConstraintPropChange: async (
+      index: number,
+      prop: keyof Constraint,
+      value: string,
+    ) => {
+      await handleConstraintPropChange(formik, index, prop, value);
+    },
+    handleConstraintRowDelete: async (rowIndex: number) => {
+      await handleConstraintRowDelete(formik, rowIndex);
+    },
+    getConstraintsErrorByIndex: (index: number, key: keyof Constraint) => {
+      return getConstraintsErrorByIndex(formik, index, key);
+    },
+  };
+};
+
 export const getCellProps = ({
   column,
-}: Cell<Constraint>): Partial<
+}: Cell<Omit<Constraint, "id">>): Partial<
   TableCellProps & HTMLProps<HTMLTableCellElement>
 > => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
@@ -77,7 +110,7 @@ export const getCellProps = ({
     cellProps.role = "rowheader";
   } else if (column.id === "action") {
     cellProps["aria-label"] = "Action";
-  } else if (column.id === "constraintsType") {
+  } else if (column.id === "constraint") {
     cellProps["aria-label"] = "Constraint";
   } else if (column.id === "version") {
     cellProps["aria-label"] = "Version";

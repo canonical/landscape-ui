@@ -39,9 +39,7 @@ export const generateRequestParams = ({
           }
         });
       } else {
-        if (
-          ["put", "post", "delete", "patch"].includes(config.method ?? "get")
-        ) {
+        if (["put", "post", "patch"].includes(config.method ?? "get")) {
           paramsToPass[param] = value;
         } else {
           paramsToPass[param] = value.toString();

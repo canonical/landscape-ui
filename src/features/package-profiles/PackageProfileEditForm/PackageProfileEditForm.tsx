@@ -1,15 +1,17 @@
 import { FC, useEffect } from "react";
-import { PackageProfile } from "@/features/package-profiles/types/PackageProfile";
+import {
+  EditFormProps,
+  PackageProfile,
+} from "@/features/package-profiles/types";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import usePackageProfiles from "@/features/package-profiles/hooks/usePackageProfiles";
+import { usePackageProfiles } from "@/features/package-profiles/hooks";
 import { useFormik } from "formik";
 import useRoles from "@/hooks/useRoles";
 import { Form, Input, Select } from "@canonical/react-components";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import AssociationBlock from "@/components/form/AssociationBlock";
-import { EditFormProps } from "@/features/package-profiles/types";
 import useNotify from "@/hooks/useNotify";
 
 interface PackageProfileEditFormProps {
@@ -22,8 +24,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { editPackageProfileQuery, disassociatePackageProfileQuery } =
-    usePackageProfiles();
+  const { editPackageProfileQuery } = usePackageProfiles();
   const { getAccessGroupQuery } = useRoles();
 
   const { data: getAccessGroupQueryResult, error: getAccessGroupQueryError } =
@@ -40,32 +41,14 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
     })) ?? [];
 
   const { mutateAsync: editPackageProfile } = editPackageProfileQuery;
-  const { mutateAsync: disassociatePackageProfile } =
-    disassociatePackageProfileQuery;
 
   const handleSubmit = async (values: EditFormProps) => {
     try {
-      const promises = [
-        editPackageProfile({
-          ...values,
-          name: profile.name,
-          tags:
-            !values.all_computers && values.tags.length
-              ? values.tags
-              : undefined,
-        }),
-      ];
-
-      if (!values.all_computers && !values.tags.length) {
-        promises.push(
-          disassociatePackageProfile({
-            name: profile.name,
-            tags: profile.tags,
-          }),
-        );
-      }
-
-      await Promise.all(promises);
+      await editPackageProfile({
+        ...values,
+        name: profile.name,
+        tags: values.all_computers ? [] : values.tags,
+      });
 
       closeSidePanel();
 

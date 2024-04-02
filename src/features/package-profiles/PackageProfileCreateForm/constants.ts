@@ -1,17 +1,17 @@
-import { AddFormProps } from "@/features/package-profiles/types";
 import * as Yup from "yup";
+import { EMPTY_CONSTRAINT } from "@/features/package-profiles/constants";
+import { AddFormProps } from "@/features/package-profiles/types";
 
 export const INITIAL_VALUES: AddFormProps = {
   access_group: "",
   all_computers: false,
-  constraints: [],
+  constraints: [EMPTY_CONSTRAINT],
   constraintsType: "",
   csvFile: null,
   description: "",
-  instanceId: 0,
   isCsvFileParsed: false,
   material: "",
-  step: 1,
+  source_computer_id: 0,
   tags: [],
   title: "",
 };
@@ -19,22 +19,27 @@ export const INITIAL_VALUES: AddFormProps = {
 export const VALIDATION_SCHEMA = Yup.object().shape({
   access_group: Yup.string(),
   all_computers: Yup.boolean(),
-  constraints: Yup.array()
-    .of(
-      Yup.object().shape({
-        constraint: Yup.string().required("Required."),
-        notAnyVersion: Yup.boolean(),
-        package: Yup.string().required("Required."),
-        rule: Yup.string().when("notAnyVersion", {
-          is: true,
-          then: (schema) => schema.required("Required."),
-        }),
-        version: Yup.string().when("notAnyVersion", (values, schema) =>
-          values[0] ? schema.required("Required.") : schema,
-        ),
-      }),
-    )
-    .min(1, "Package profiles must have at least one package constraint."),
+  constraints: Yup.array().when("constraintsType", {
+    is: "manual",
+    then: (schema) =>
+      schema
+        .of(
+          Yup.object().shape({
+            constraint: Yup.string().required("Required."),
+            notAnyVersion: Yup.boolean(),
+            package: Yup.string().required("Required."),
+            rule: Yup.string().when("notAnyVersion", {
+              is: true,
+              then: (schema) => schema.required("Required."),
+            }),
+            version: Yup.string().when("notAnyVersion", {
+              is: true,
+              then: (schema) => schema.required("Required."),
+            }),
+          }),
+        )
+        .min(1, "Package profiles must have at least one package constraint."),
+  }),
   constraintsType: Yup.string().required("This field is required."),
   csvFile: Yup.mixed<File>()
     .nullable()
@@ -48,21 +53,15 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
       then: (schema) => schema.required("This field is required."),
     }),
   description: Yup.string().required("This field is required."),
-  instanceId: Yup.number().when("constraintsType", {
-    is: "instance",
-    then: (schema) => schema.min(1, "This field is required."),
-  }),
   isCsvFileParsed: Yup.boolean(),
   material: Yup.string().when("constraintsType", {
     is: "material",
     then: (schema) => schema.required("The file cannot be empty."),
   }),
-  step: Yup.number(),
+  source_computer_id: Yup.number().when("constraintsType", {
+    is: "instance",
+    then: (schema) => schema.min(1, "This field is required."),
+  }),
   tags: Yup.array().of(Yup.string()),
   title: Yup.string().required("This field is required."),
 });
-
-export const CTA_LABELS = {
-  add: "Add",
-  create: "Create",
-};

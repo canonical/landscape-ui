@@ -1,103 +1,40 @@
-import { FC, Suspense, useMemo, useState } from "react";
-import { PackageProfile } from "@/features/package-profiles/types/PackageProfile";
-import {
-  Button,
-  Col,
-  Form,
-  Icon,
-  ModularTable,
-  Row,
-  SearchBox,
-} from "@canonical/react-components";
+import { FC, Suspense } from "react";
+import { PackageProfile } from "@/features/package-profiles/types";
+import { Button, Col, Icon, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
-import { CellProps, Column } from "react-table";
-import {
-  CONSTRAINT_OPTIONS,
-  CONSTRAINT_RULE_OPTIONS,
-} from "@/features/package-profiles/constants";
-import { Constraint } from "@/features/package-profiles/types";
-import classes from "./PackageProfileDetails.module.scss";
-import classNames from "classnames";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
-import PackageProfileConstraintsEditForm from "@/features/package-profiles/PackageProfileConstraintsEditForm";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
-import usePackageProfiles from "@/features/package-profiles/hooks/usePackageProfiles";
+import { usePackageProfiles } from "@/features/package-profiles/hooks";
 import PackageProfileEditForm from "@/features/package-profiles/PackageProfileEditForm";
 import PackageProfileDuplicateForm from "@/features/package-profiles/PackageProfileDuplicateForm";
+import useNotify from "@/hooks/useNotify";
+import PackageProfileDetailsConstraints from "@/features/package-profiles/PackageProfileDetailsConstraints";
 
 interface PackageProfileDetailsProps {
   profile: PackageProfile;
 }
 
 const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
-  const [inputText, setInputText] = useState("");
-  const [search, setSearch] = useState("");
-
   const debug = useDebug();
-  const { setSidePanelContent, changeSidePanelTitleLabel } = useSidePanel();
+  const { notify } = useNotify();
+  const { closeSidePanel, setSidePanelContent } = useSidePanel();
   const { closeConfirmModal, confirmModal } = useConfirm();
   const { removePackageProfileQuery } = usePackageProfiles();
-
-  const constraintsData = useMemo(() => {
-    const constraints = profile.constraints.map(
-      (constraint): Constraint => ({
-        ...constraint,
-        notAnyVersion: !!constraint.version,
-      }),
-    );
-
-    if (!search) {
-      return constraints;
-    }
-
-    return constraints.filter((constraint) =>
-      constraint.package.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [profile.constraints, search]);
-
-  const columns = useMemo<Column<Constraint>[]>(
-    () => [
-      {
-        accessor: "constraint",
-        className: classes.constraint,
-        Header: "Constraint",
-        Cell: ({ row: { original } }: CellProps<Constraint>) =>
-          CONSTRAINT_OPTIONS.find(({ value }) => value === original.constraint)
-            ?.label ?? original.constraint,
-      },
-      {
-        accessor: "package",
-        Header: "Package",
-      },
-      {
-        accessor: "version",
-        Header: "Version",
-        Cell: ({ row: { original } }: CellProps<Constraint>) =>
-          original.version
-            ? `${CONSTRAINT_RULE_OPTIONS.find(({ value }) => value === original.rule)?.label} ${original.version}`
-            : "Any",
-      },
-    ],
-    [constraintsData],
-  );
-
-  const handlePackageConstraintsChange = () => {
-    setSidePanelContent(
-      "Change package constraints",
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileConstraintsEditForm profile={profile} />
-      </Suspense>,
-      "medium",
-    );
-  };
 
   const { mutateAsync: removePackageProfile } = removePackageProfileQuery;
 
   const handleRemovePackageProfile = async (name: string) => {
     try {
       await removePackageProfile({ name });
+
+      closeSidePanel();
+
+      notify.success({
+        message: `Package profile "${name}" removed successfully.`,
+        title: "Package profile removed",
+      });
     } catch (error) {
       debug(error);
     } finally {
@@ -139,7 +76,6 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         <PackageProfileDuplicateForm profile={profile} />
       </Suspense>,
     );
-    changeSidePanelTitleLabel("Step 1 of 2");
   };
 
   return (
@@ -206,50 +142,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         </Col>
       </Row>
 
-      <Row
-        className={classNames(
-          "u-no-padding--left u-no-padding--right",
-          classes.actions,
-        )}
-      >
-        <Col size={6}>
-          <Form
-            onSubmit={(event) => {
-              event.preventDefault();
-              setSearch(inputText);
-            }}
-          >
-            <SearchBox
-              externallyControlled
-              shouldRefocusAfterReset
-              autoComplete="off"
-              onSearch={() => setSearch(inputText)}
-              onChange={(inputValue) => setInputText(inputValue)}
-              value={inputText}
-              onClear={() => {
-                setInputText("");
-                setSearch("");
-              }}
-            />
-          </Form>
-        </Col>
-
-        <Col size={6} className="u-align-text--right">
-          <Button type="button" onClick={handlePackageConstraintsChange}>
-            Change package constraints
-          </Button>
-        </Col>
-      </Row>
-
-      <ModularTable
-        columns={columns}
-        data={constraintsData}
-        emptyMsg={
-          search
-            ? `No constraints found with the search: "${search}"`
-            : "Package profile has no constraints"
-        }
-      />
+      <PackageProfileDetailsConstraints profile={profile} />
     </>
   );
 };

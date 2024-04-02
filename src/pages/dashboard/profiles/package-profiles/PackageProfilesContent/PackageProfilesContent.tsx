@@ -1,8 +1,8 @@
 import { FC, useState } from "react";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import {
   PackageProfile,
   PackageProfileList,
-  PackageProfilesHeader,
 } from "@/features/package-profiles";
 
 interface PackageProfilesContentProps {
@@ -16,7 +16,7 @@ const PackageProfilesContent: FC<PackageProfilesContentProps> = ({
 
   return (
     <>
-      <PackageProfilesHeader onSearch={(searchText) => setSearch(searchText)} />
+      <HeaderWithSearch onSearch={(searchText) => setSearch(searchText)} />
       <PackageProfileList
         packageProfiles={packageProfiles}
         searchText={search}

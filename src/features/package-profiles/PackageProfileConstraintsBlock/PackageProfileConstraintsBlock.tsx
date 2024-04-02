@@ -1,5 +1,5 @@
-import { FormikContextType } from "formik";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FormikContextType, FormikTouched } from "formik";
+import { FC, useEffect, useMemo } from "react";
 import { CellProps, Column } from "react-table";
 import {
   Button,
@@ -7,41 +7,30 @@ import {
   ModularTable,
   Select,
 } from "@canonical/react-components";
-import CellInput from "@/components/layout/CellInput";
+import CellInput from "@/components/form/CellInput";
 import {
   CONSTRAINT_OPTIONS,
   CONSTRAINT_RULE_OPTIONS,
+  EMPTY_CONSTRAINT,
+  TOUCHED_CONSTRAINT,
 } from "@/features/package-profiles/constants";
 import {
   AddFormProps,
   Constraint,
-  ConstraintsEditFormProps,
-  DuplicateFormProps,
+  ConstraintsFormProps,
 } from "@/features/package-profiles/types";
-import { EMPTY_CONSTRAINT, TOUCHED_CONSTRAINT } from "./constants";
-import {
-  getCellProps,
-  getConstraintsErrorByIndex,
-  handleConstraintRuleChange,
-  handleConstraintVersionChange,
-} from "./helpers";
+import { getCellProps, getConstraintPropHandlers } from "./helpers";
 import classes from "./PackageProfileConstraintsBlock.module.scss";
-import useNotify from "@/hooks/useNotify";
 
 interface PackageProfileConstraintsBlockProps {
   formik:
     | FormikContextType<AddFormProps>
-    | FormikContextType<ConstraintsEditFormProps>
-    | FormikContextType<DuplicateFormProps>;
+    | FormikContextType<ConstraintsFormProps>;
 }
 
 const PackageProfileConstraintsBlock: FC<
   PackageProfileConstraintsBlockProps
 > = ({ formik }) => {
-  const [isApiErrorCleaned, setIsApiErrorCleaned] = useState(false);
-
-  const { notify } = useNotify();
-
   useEffect(() => {
     if (formik.submitCount === 0) {
       return;
@@ -57,26 +46,23 @@ const PackageProfileConstraintsBlock: FC<
     })();
   }, [formik.submitCount]);
 
-  useEffect(() => {
-    if (isApiErrorCleaned || formik.values.constraints.length === 0) {
-      return;
-    }
-
-    notify.clear();
-    setIsApiErrorCleaned(true);
-  }, [formik.values.constraints]);
-
   const constraintsData = useMemo(
     () => formik.values.constraints,
     [formik.values.constraints],
   );
 
-  const columns = useMemo<Column<Constraint>[]>(
+  const {
+    handleConstraintPropChange,
+    handleConstraintRowDelete,
+    getConstraintsErrorByIndex,
+  } = getConstraintPropHandlers(formik);
+
+  const columns = useMemo<Column<Omit<Constraint, "id">>[]>(
     () => [
       {
         accessor: "constraint",
         Header: "Constraint",
-        Cell: ({ row: { original, index } }: CellProps<Constraint>) => {
+        Cell: ({ row: { index } }: CellProps<Omit<Constraint, "id">>) => {
           return (
             <Select
               label="Constraint"
@@ -85,8 +71,14 @@ const PackageProfileConstraintsBlock: FC<
               wrapperClassName={classes.inputWrapper}
               options={CONSTRAINT_OPTIONS}
               {...formik.getFieldProps(`constraints[${index}].constraint`)}
-              value={original.constraint}
-              error={getConstraintsErrorByIndex(formik, index, "constraint")}
+              onChange={(event) =>
+                handleConstraintPropChange(
+                  index,
+                  "constraint",
+                  event.target.value,
+                )
+              }
+              error={getConstraintsErrorByIndex(index, "constraint")}
             />
           );
         },
@@ -94,7 +86,7 @@ const PackageProfileConstraintsBlock: FC<
       {
         accessor: "package",
         Header: "Package",
-        Cell: ({ row: { original, index } }: CellProps<Constraint>) => (
+        Cell: ({ row: { index } }: CellProps<Omit<Constraint, "id">>) => (
           <CellInput
             placeholder="Package name"
             label="Package name"
@@ -102,18 +94,17 @@ const PackageProfileConstraintsBlock: FC<
             className={classes.input}
             wrapperClassName={classes.inputWrapper}
             {...formik.getFieldProps(`constraints[${index}].package`)}
-            initialValue={original.package}
             onChange={(value) =>
-              formik.setFieldValue(`constraints[${index}].package`, value)
+              handleConstraintPropChange(index, "package", value)
             }
-            error={getConstraintsErrorByIndex(formik, index, "package")}
+            error={getConstraintsErrorByIndex(index, "package")}
           />
         ),
       },
       {
         accessor: "rule",
         Header: "Rule",
-        Cell: ({ row: { original, index } }: CellProps<Constraint>) => (
+        Cell: ({ row: { index } }: CellProps<Omit<Constraint, "id">>) => (
           <Select
             label="Rule"
             labelClassName="u-off-screen"
@@ -121,18 +112,17 @@ const PackageProfileConstraintsBlock: FC<
             wrapperClassName={classes.inputWrapper}
             {...formik.getFieldProps(`constraints[${index}].rule`)}
             options={CONSTRAINT_RULE_OPTIONS}
-            value={original.rule}
             onChange={(event) =>
-              handleConstraintRuleChange(formik, index, event.target.value)
+              handleConstraintPropChange(index, "rule", event.target.value)
             }
-            error={getConstraintsErrorByIndex(formik, index, "rule")}
+            error={getConstraintsErrorByIndex(index, "rule")}
           />
         ),
       },
       {
         accessor: "version",
         Header: "Version",
-        Cell: ({ row: { original, index } }: CellProps<Constraint>) => (
+        Cell: ({ row: { index } }: CellProps<Omit<Constraint, "id">>) => (
           <CellInput
             placeholder="Version"
             label="Version"
@@ -140,41 +130,24 @@ const PackageProfileConstraintsBlock: FC<
             className={classes.input}
             wrapperClassName={classes.inputWrapper}
             {...formik.getFieldProps(`constraints[${index}].version`)}
-            initialValue={original.version}
             onChange={(value) =>
-              handleConstraintVersionChange(formik, index, value)
+              handleConstraintPropChange(index, "version", value)
             }
-            error={getConstraintsErrorByIndex(formik, index, "version")}
+            error={getConstraintsErrorByIndex(index, "version")}
           />
         ),
       },
       {
         accessor: "action",
         className: classes.action,
-        Cell: ({ row }: CellProps<Constraint>) => (
+        Cell: ({ row }: CellProps<Omit<Constraint, "id">>) => (
           <Button
             type="button"
             hasIcon
             appearance="base"
             className="u-no-margin--bottom u-no-padding"
             aria-label="Delete constraint row"
-            onClick={async () => {
-              await formik.setFieldValue(
-                "constraints",
-                formik.values.constraints.filter(
-                  (_, index) => index !== row.index,
-                ),
-              );
-
-              if (formik.touched.constraints) {
-                await formik.setTouched({
-                  ...formik.touched,
-                  constraints: formik.touched.constraints.filter(
-                    (_, index) => index !== row.index,
-                  ),
-                });
-              }
-            }}
+            onClick={() => handleConstraintRowDelete(row.index)}
           >
             <Icon
               name="delete"
@@ -192,18 +165,27 @@ const PackageProfileConstraintsBlock: FC<
       EMPTY_CONSTRAINT,
       ...formik.values.constraints,
     ]);
+
+    if (formik.touched.constraints) {
+      const touchedConstraints: FormikTouched<Omit<Constraint, "id">>[] = [];
+
+      for (let i = formik.values.constraints.length; i > 0; i--) {
+        if (formik.touched.constraints[i - 1]) {
+          touchedConstraints[i] = formik.touched.constraints[i - 1];
+        }
+      }
+
+      await formik.setTouched({
+        constraints: touchedConstraints,
+      });
+    }
   };
 
   return (
     <>
       <div className="u-align-text--right">
-        <Button
-          type="button"
-          hasIcon
-          className={classes.cta}
-          onClick={handleConstraintAdd}
-        >
-          <Icon name="plus" />
+        <Button type="button" hasIcon onClick={handleConstraintAdd}>
+          <Icon name="plus" className="u-no-margin--left" />
           <span>Add new constraint</span>
         </Button>
       </div>

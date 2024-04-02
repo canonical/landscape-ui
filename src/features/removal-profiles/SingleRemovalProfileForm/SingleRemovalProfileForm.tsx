@@ -19,7 +19,7 @@ import classes from "./SingleRemovalProfileForm.module.scss";
 
 type SingleRemovalProfileFormProps =
   | {
-      action: "add" | "create";
+      action: "create";
     }
   | {
       action: "edit";
@@ -108,7 +108,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
       <Input
         type="text"
         label="Name"
-        required={["add", "create"].includes(props.action)}
+        required={props.action === "create"}
         {...formik.getFieldProps("title")}
         error={
           formik.touched.title && formik.errors.title
@@ -122,7 +122,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
           type="number"
           inputMode="numeric"
           label="Removal timeframe"
-          required={["add", "create"].includes(props.action)}
+          required={props.action === "create"}
           autoComplete="off"
           className={classes.input}
           wrapperClassName={classes.inputWrapper}

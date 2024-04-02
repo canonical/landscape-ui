@@ -23,7 +23,7 @@ import { getValidationSchema } from "./helpers";
 
 type SingleUpgradeProfileFormProps =
   | {
-      action: "add" | "create";
+      action: "create";
     }
   | {
       action: "edit";
@@ -41,10 +41,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const {
     data: getAccessGroupQueryResult,
     error: getAccessGroupQueryResultError,
-  } = getAccessGroupQuery(
-    {},
-    { enabled: ["add", "create"].includes(props.action) },
-  );
+  } = getAccessGroupQuery({}, { enabled: props.action === "create" });
 
   if (getAccessGroupQueryResultError) {
     debug(getAccessGroupQueryResultError);
@@ -138,7 +135,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        required={["add", "create"].includes(props.action)}
+        required={props.action === "create"}
         label="Name"
         {...formik.getFieldProps("title")}
         error={

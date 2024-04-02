@@ -2,7 +2,7 @@ import { QueryFnType } from "@/types/QueryFnType";
 import {
   PackageProfile,
   PackageProfileConstraint,
-} from "@/features/package-profiles/types/PackageProfile";
+} from "@/features/package-profiles/types";
 import {
   useMutation,
   useQuery,
@@ -14,16 +14,18 @@ import { ApiError } from "@/types/ApiError";
 import useFetchOld from "@/hooks/useFetchOld";
 import { Activity } from "@/types/Activity";
 import useFetch from "@/hooks/useFetch";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 
 interface GetPackageProfilesParams {
   names?: string[];
 }
 
-interface CopyPackageProfileParams {
-  name: string;
+export interface CopyPackageProfileParams {
+  copy_from: string;
   access_group?: string;
+  all_computers?: boolean;
   description?: string;
-  destination_name?: string;
+  tags?: string[];
   title?: string;
 }
 
@@ -32,39 +34,49 @@ export interface CreatePackageProfileParams {
   title: string;
   access_group?: string;
   all_computers?: boolean;
-  constraints?: PackageProfileConstraint[];
+  constraints?: Omit<PackageProfileConstraint, "id">[];
+  material?: string;
+  source_computer_id?: number;
   tags?: string[];
 }
 
-export interface EditPackageProfileParams
-  extends Partial<CreatePackageProfileParams> {
+export interface EditPackageProfileParams {
   name: string;
+  access_group?: string;
+  all_computers?: boolean;
+  constraints?: PackageProfileConstraint[];
+  description?: string;
+  tags?: string[];
+  title?: string;
 }
 
 interface RemovePackageProfileParams {
   name: string;
 }
 
-interface AssociatePackageProfileParams {
-  name: string;
-  all_computers?: boolean;
-  tags?: string[];
-}
-
-interface GetParsedPackageProfileConstraintsParams {
-  material: string;
-}
-
-export interface ParsePackageProfileConstraintsParams {
-  material: string;
-}
-
 interface GetInstancePackageProfileParams {
   instanceId: number;
 }
 
-interface GetInstanceConstraintsParams {
-  instanceId: number;
+interface GetPackageProfileConstraintsParams {
+  name: string;
+  limit?: number;
+  offset?: number;
+  search?: string;
+}
+
+interface AddPackageProfileConstraintsParams {
+  name: string;
+  constraints: Omit<PackageProfileConstraint, "id">[];
+}
+
+interface EditPackageProfileConstraintParams extends PackageProfileConstraint {
+  name: string;
+}
+
+interface RemovePackageProfileConstraintsParams {
+  name: string;
+  constraint_ids: number[];
 }
 
 export default function usePackageProfiles() {
@@ -91,7 +103,7 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     CopyPackageProfileParams
   >({
-    mutationFn: (params) => authFetchOld!.get("CopyPackageProfile", { params }),
+    mutationFn: (params) => authFetch!.post("packageprofiles", params),
     onSuccess: () => queryClient.invalidateQueries(["packageProfiles"]),
   });
 
@@ -114,26 +126,6 @@ export default function usePackageProfiles() {
     onSuccess: () => queryClient.invalidateQueries(["packageProfiles"]),
   });
 
-  const associatePackageProfileQuery = useMutation<
-    AxiosResponse<PackageProfile>,
-    AxiosError<ApiError>,
-    AssociatePackageProfileParams
-  >({
-    mutationFn: (params) =>
-      authFetchOld!.get("AssociatePackageProfile", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["packageProfiles"]),
-  });
-
-  const disassociatePackageProfileQuery = useMutation<
-    AxiosResponse<PackageProfile>,
-    AxiosError<ApiError>,
-    AssociatePackageProfileParams
-  >({
-    mutationFn: (params) =>
-      authFetchOld!.get("DisassociatePackageProfile", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["packageProfiles"]),
-  });
-
   const editPackageProfileQuery = useMutation<
     AxiosResponse<PackageProfile>,
     AxiosError<ApiError>,
@@ -142,33 +134,6 @@ export default function usePackageProfiles() {
     mutationFn: ({ name, ...params }) =>
       authFetch!.put(`packageprofiles/${name}`, params),
     onSuccess: () => queryClient.invalidateQueries(["packageProfiles"]),
-  });
-
-  const getParsedPackageProfileConstraintsQuery = (
-    queryParams: GetParsedPackageProfileConstraintsParams,
-    config: Omit<
-      UseQueryOptions<
-        AxiosResponse<PackageProfileConstraint[]>,
-        AxiosError<ApiError>
-      >,
-      "queryKey" | "queryFn"
-    > = {},
-  ) =>
-    useQuery<AxiosResponse<PackageProfileConstraint[]>, AxiosError<ApiError>>({
-      queryKey: ["parsedConstraints", queryParams],
-      queryFn: () =>
-        authFetch!.get("/packages/profile/parser", {
-          params: queryParams,
-        }),
-      ...config,
-    });
-
-  const parsePackageProfileConstraintsQuery = useMutation<
-    AxiosResponse<{ result: PackageProfileConstraint[] }>,
-    AxiosError<ApiError>,
-    ParsePackageProfileConstraintsParams
-  >({
-    mutationFn: (params) => authFetch!.post("/packages/profile/parser", params),
   });
 
   const getInstancePackageProfileQuery = (
@@ -187,39 +152,80 @@ export default function usePackageProfiles() {
       ...config,
     });
 
-  const getInstanceConstraintsQuery = (
-    { instanceId, ...queryParams }: GetInstanceConstraintsParams,
+  const getPackageProfileConstraintsQuery = (
+    { name, ...queryParams }: GetPackageProfileConstraintsParams,
     config: Omit<
       UseQueryOptions<
-        AxiosResponse<{ result: PackageProfileConstraint[] }>,
+        AxiosResponse<ApiPaginatedResponse<PackageProfileConstraint>>,
         AxiosError<ApiError>
       >,
       "queryKey" | "queryFn"
     > = {},
   ) =>
     useQuery<
-      AxiosResponse<{ result: PackageProfileConstraint[] }>,
+      AxiosResponse<ApiPaginatedResponse<PackageProfileConstraint>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["instanceConstraints", { instanceId, ...queryParams }],
+      queryKey: ["packageProfileConstraints", { name, ...queryParams }],
       queryFn: () =>
-        authFetch!.get(`computers/${instanceId}/packages/profile`, {
+        authFetch!.get(`packageprofiles/${name}/constraints`, {
           params: queryParams,
         }),
       ...config,
     });
 
+  const addPackageProfileConstraintsQuery = useMutation<
+    AxiosResponse<ApiPaginatedResponse<PackageProfileConstraint>>,
+    AxiosError<ApiError>,
+    AddPackageProfileConstraintsParams
+  >({
+    mutationFn: ({ name, ...params }) =>
+      authFetch!.post(`packageprofiles/${name}/constraints`, params),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["packageProfiles"]),
+        queryClient.invalidateQueries(["packageProfileConstraints"]),
+      ]),
+  });
+
+  const editPackageProfileConstraintQuery = useMutation<
+    AxiosResponse<PackageProfileConstraint>,
+    AxiosError<ApiError>,
+    EditPackageProfileConstraintParams
+  >({
+    mutationFn: ({ id, name, ...params }) =>
+      authFetch!.put(`packageprofiles/${name}/constraints/${id}`, params),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["packageProfiles"]),
+        queryClient.invalidateQueries(["packageProfileConstraints"]),
+      ]),
+  });
+
+  const removePackageProfileConstraintsQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    RemovePackageProfileConstraintsParams
+  >({
+    mutationFn: ({ name, ...params }) =>
+      authFetch!.delete(`packageprofiles/${name}/constraints`, { params }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["packageProfiles"]),
+        queryClient.invalidateQueries(["packageProfileConstraints"]),
+      ]),
+  });
+
   return {
-    associatePackageProfileQuery,
+    addPackageProfileConstraintsQuery,
     copyPackageProfileQuery,
     createPackageProfileQuery,
-    disassociatePackageProfileQuery,
+    editPackageProfileConstraintQuery,
     editPackageProfileQuery,
-    getPackageProfilesQuery,
-    removePackageProfileQuery,
-    getParsedPackageProfileConstraintsQuery,
-    parsePackageProfileConstraintsQuery,
     getInstancePackageProfileQuery,
-    getInstanceConstraintsQuery,
+    getPackageProfileConstraintsQuery,
+    getPackageProfilesQuery,
+    removePackageProfileConstraintsQuery,
+    removePackageProfileQuery,
   };
 }

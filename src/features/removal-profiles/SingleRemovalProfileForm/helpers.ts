@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 
-export const getValidationSchema = (action: "add" | "create" | "edit") => {
+export const getValidationSchema = (action: "create" | "edit") => {
   return Yup.object().shape({
     access_group: Yup.string(),
     all_computers: Yup.boolean(),

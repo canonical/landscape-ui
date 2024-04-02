@@ -18,9 +18,9 @@ const RemovalProfilesPage: FC = () => {
 
   const handleCreate = () => {
     setSidePanelContent(
-      "Add removal profile",
+      "Create removal profile",
       <Suspense fallback={<LoadingState />}>
-        <SingleRemovalProfileForm action="add" />
+        <SingleRemovalProfileForm action="create" />
       </Suspense>,
     );
   };
@@ -36,7 +36,7 @@ const RemovalProfilesPage: FC = () => {
             appearance="positive"
             onClick={handleCreate}
           >
-            Add removal profile
+            Create removal profile
           </Button>,
         ]}
       />
