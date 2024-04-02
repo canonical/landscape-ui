@@ -1,27 +1,27 @@
 export const widgetFilterOptions = [
   {
     label: "Offline",
-    value: "alert:computer-offline",
+    value: "computer-offline",
     icon: "disconnect",
   },
   {
     label: "Online",
-    value: "NOT alert:computer-offline",
+    value: "computer-online",
     icon: "connected",
   },
   {
     label: "Reboot required",
-    value: "alert:computer-reboot",
+    value: "computer-reboot",
     icon: "power-off",
   },
   {
     label: "ESM updates are disabled",
-    value: "alert:esm-disabled",
+    value: "esm-disabled",
     icon: "restart",
   },
   {
     label: "Duplicate",
-    value: "alert:computer-duplicates",
+    value: "computer-duplicates",
     icon: "canvas",
   },
 ];

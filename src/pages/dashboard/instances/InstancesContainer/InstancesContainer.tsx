@@ -16,61 +16,12 @@ import useDebug from "@/hooks/useDebug";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { Instance } from "@/types/Instance";
 import { Select } from "@canonical/react-components";
-import { SelectOption } from "@/types/SelectOption";
-
-const osFilterOptions: SelectOption[] = [
-  { label: "All", value: "" },
-  { label: "Ubuntu", value: "NOT distribution:windows" },
-  { label: "Windows", value: "distribution:windows" },
-];
-
-const statusOptions: SelectOption[] = [
-  { label: "All", value: "" },
-  {
-    label: "Up to date",
-    value: "NOT alert:package-upgrades",
-  },
-  {
-    label: "Package upgrades",
-    value: "alert:package-upgrades",
-  },
-  {
-    label: "Security upgrades",
-    value: "alert:security-upgrades",
-  },
-  {
-    label: "Package profiles",
-    value: "alert:package-profiles",
-  },
-  {
-    label: "Package reporter",
-    value: "alert:package-reporter",
-  },
-  {
-    label: "ESM disabled",
-    value: "alert:esm-disabled",
-  },
-  {
-    label: "Computer offline",
-    value: "alert:computer-offline",
-  },
-  {
-    label: "Computer online",
-    value: "NOT alert:computer-offline",
-  },
-  {
-    label: "Computer reboot",
-    value: "alert:computer-reboot",
-  },
-  {
-    label: "Computer duplicates",
-    value: "alert:computer-duplicates",
-  },
-  {
-    label: "Unapproved activities",
-    value: "alert:unapproved-activities",
-  },
-];
+import {
+  GROUP_BY_FILTER,
+  OS_FILTER,
+  QUERY_STATUSES,
+  STATUS_FILTER,
+} from "./constants";
 
 interface InstancesContainerProps {
   selectedInstances: Instance[];
@@ -103,6 +54,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
   const { getInstancesQuery } = useInstances();
   const { getSavedSearchesQuery } = useSavedSearches();
 
+  const queryStatus = QUERY_STATUSES[statusFilter];
   const {
     data: getSavedSearchesQueryResult,
     error: getSavedSearchesQueryError,
@@ -130,7 +82,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
   } = getInstancesQuery({
     query: `${searchAndFilterChips
       .map(({ lead, value }) => (lead ? `${lead}:${value}` : value))
-      .join(" ")}${osFilter ?? ""}${statusFilter ?? ""}`.trim(),
+      .join(" ")}${osFilter ?? ""} ${queryStatus}`.trim(),
     root_only: groupBy === "parent",
     with_alerts: true,
     with_upgrades: true,
@@ -168,13 +120,12 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
           />
         </div>
         <Select
-          label="Group by"
+          label={GROUP_BY_FILTER.label}
           wrapperClassName={classes.select}
           className="u-no-margin--bottom"
-          options={[
-            { label: "None", value: "" },
-            { label: "Parent", value: "parent" },
-          ]}
+          options={
+            GROUP_BY_FILTER.type === "select" ? GROUP_BY_FILTER.options : []
+          }
           value={groupBy}
           onChange={(event) => {
             setSelectedInstances([]);
@@ -182,10 +133,10 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
           }}
         />
         <Select
-          label="OS"
+          label={OS_FILTER.label}
           wrapperClassName={classes.select}
           className="u-no-margin--bottom"
-          options={osFilterOptions}
+          options={OS_FILTER.type === "select" ? OS_FILTER.options : []}
           value={osFilter}
           onChange={(event) => {
             setSelectedInstances([]);
@@ -193,10 +144,10 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
           }}
         />
         <Select
-          label="Status"
+          label={STATUS_FILTER.label}
           wrapperClassName={classes.select}
           className="u-no-margin--bottom"
-          options={statusOptions}
+          options={STATUS_FILTER.type === "select" ? STATUS_FILTER.options : []}
           value={statusFilter}
           onChange={(event) => {
             setSelectedInstances([]);
