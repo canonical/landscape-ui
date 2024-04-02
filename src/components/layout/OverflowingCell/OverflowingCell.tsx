@@ -10,7 +10,9 @@ interface OverflowingCellProps {
 const OverflowingCell: FC<OverflowingCellProps> = ({ items }) => {
   const [overflowingItemsAmount, setOverflowingItemsAmount] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
 
+  const isString = items[0] && typeof items[0] === "string";
   const containerRef = useRef<HTMLDivElement>(null);
 
   const overflowingItemsCount = () => {
@@ -45,6 +47,11 @@ const OverflowingCell: FC<OverflowingCellProps> = ({ items }) => {
     if (!isExpanded) {
       return;
     }
+    if (containerRef.current) {
+      setIsOverflowing(
+        containerRef.current.scrollHeight > containerRef.current.clientHeight,
+      );
+    }
 
     window.removeEventListener("resize", overflowingItemsCount);
   }, [isExpanded]);
@@ -59,15 +66,30 @@ const OverflowingCell: FC<OverflowingCellProps> = ({ items }) => {
         ref={containerRef}
         className={classNames(classes.truncated, {
           [classes.hidden]: !isExpanded,
+          [classes.expandedString]: isString && isExpanded,
+          [classes.showScroll]: isOverflowing,
         })}
       >
-        {items.map((item, index) => (
-          <span key={index} className={classes.item}>
-            {item}
-          </span>
-        ))}
+        {isString ? (
+          <>
+            {(items[0] as string).slice(0, 120)}
+            <span
+              className={classNames({
+                [classes.hidden]: !isExpanded,
+              })}
+            >
+              {(items[0] as string).slice(120)}
+            </span>
+          </>
+        ) : (
+          items.map((item, index) => (
+            <span key={index} className={classes.item}>
+              {item}
+            </span>
+          ))
+        )}
       </div>
-      {overflowingItemsAmount > 0 && !isExpanded && (
+      {(overflowingItemsAmount > 0 || isString) && !isExpanded && (
         <Button
           type="button"
           appearance="base"
@@ -79,8 +101,14 @@ const OverflowingCell: FC<OverflowingCellProps> = ({ items }) => {
             classes.count,
           )}
         >
-          <span className="u-text--muted"> +</span>
-          <span className="u-text--muted">{overflowingItemsAmount}</span>
+          {isString ? (
+            <span className="p-text--small u-text--muted">show more</span>
+          ) : (
+            <>
+              <span className="u-text--muted"> +</span>
+              <span className="u-text--muted">{overflowingItemsAmount}</span>
+            </>
+          )}
         </Button>
       )}
     </div>
