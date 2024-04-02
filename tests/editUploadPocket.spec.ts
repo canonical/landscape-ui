@@ -31,10 +31,10 @@ test("should edit upload pocket", async ({ page }) => {
       .filter({ hasText: "Allow uploaded packages to be unsigned" })
       .getByRole("checkbox"),
   ).toBeChecked();
-  await expect(page.getByRole("listbox")).toBeDisabled();
   await page.getByText("Allow uploaded packages to be unsigned").click();
-  await expect(page.getByRole("listbox")).toBeEnabled();
-  await page.getByRole("listbox").selectOption(["test-e2e-gpg-key"]);
+  await page.getByLabel("Uploader GPG keys").click();
+  await page.getByText("test-e2e-gpg-key").click();
+  await page.getByLabel("Uploader GPG keys").click();
 
   const responsePromise = page.waitForResponse((response) =>
     response.request().url().includes("action=AddUploaderGPGKeysToPocket"),
