@@ -33,6 +33,9 @@ const SecurityIssuesPanel = lazy(
 const UbuntuProPanel = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/ubuntu-pro"),
 );
+const SnapsPanel = lazy(
+  () => import("@/pages/dashboard/instances/[single]/tabs/snaps"),
+);
 
 interface TabState {
   filter: string;
@@ -111,6 +114,9 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({ instance }) => {
           )}
           {"tab-link-packages" === currentTabLinkId && (
             <PackagesPanel instance={instance} tabState={tabState} />
+          )}
+          {"tab-link-snaps" === currentTabLinkId && (
+            <SnapsPanel instanceId={instance.id} />
           )}
           {"tab-link-processes" === currentTabLinkId && (
             <ProcessesPanel instanceId={instance.id} />

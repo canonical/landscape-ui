@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, SyntheticEvent } from "react";
 import { Button } from "@canonical/react-components";
 import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./SidePanelFormButtons.module.scss";
@@ -11,6 +11,7 @@ interface SidePanelFormButtonsProps {
   removeButtonMargin?: boolean;
   submitButtonAppearance?: "positive" | "negative" | "brand";
   submitButtonAriaLabel?: string;
+  onSubmit?: (event: SyntheticEvent) => Promise<void>;
 }
 
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
@@ -20,6 +21,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   bottomSticky = false,
   removeButtonMargin = true,
   submitButtonAppearance = "positive",
+  onSubmit,
 }) => {
   const { closeSidePanel } = useSidePanel();
   return (
@@ -31,7 +33,8 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
     >
       <Button
         className={classNames({ "u-no-margin--bottom": removeButtonMargin })}
-        type="submit"
+        type={onSubmit ? "button" : "submit"}
+        onClick={onSubmit}
         appearance={submitButtonAppearance}
         disabled={disabled}
         aria-label={submitButtonAriaLabel}

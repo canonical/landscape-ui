@@ -40,11 +40,13 @@
 @include vf-p-icon-machines;
 @include vf-p-icon-switcher-environments;
 @include vf-p-icon-settings;
+@include vf-p-icon-pause;
+@include vf-p-icon-play;
+@include vf-p-icon-change-version;
 @include vf-p-icon-disconnect;
 @include vf-p-icon-canvas;
 @include vf-p-icon-inspector-debug;
 @include vf-p-icon-applications;
-@include vf-p-icon-canvas;
 
 // Custom styles
 .p-panel {
@@ -147,6 +149,15 @@
   [class*="p-side-navigation--"].is-dark .p-side-navigation__link:hover & {
     @include vf-icon--account($color-x-light);
   }
+}
+
+@mixin vf-icon--snapcraft() {
+  background-image: url("data:image/svg+xml,%3Csvg width='65' height='64' viewBox='0 0 65 64' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_4725_192297)'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M36.6211 15.5605L50.4691 21.7145L36.6211 35.5625V15.5605Z' fill='%2382BFA1'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M10.1836 62.0002L34.6156 37.5682L27.1616 30.1602L10.1836 62.0002Z' fill='%2382BFA1'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M0.5 2L35.45 36.736V14.632L0.5 2Z' fill='%2382BFA1'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M57.5518 14.6309H37.4258L63.3018 26.1309L57.5518 14.6309Z' fill='%23FA6340'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_4725_192297'%3E%3Crect width='64' height='64' fill='white' transform='translate(0.5)'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E%0A");
+}
+
+.p-icon--snapcraft {
+  @extend %icon;
+  @include vf-icon--snapcraft();
 }
 
 .u-off-screen:not(:focus):not(:active) {

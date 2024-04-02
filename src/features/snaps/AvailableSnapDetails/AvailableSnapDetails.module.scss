@@ -1,0 +1,21 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.toBeConfirmedCard {
+  border-top: none;
+  padding-top: $spv--small !important;
+}
+
+.toBeConfirmedCard__buttons {
+  padding-top: $spv--medium;
+  border-top: 1px solid $colors--light-theme--border-default;
+}
+
+.toBeConfirmedCard__confirmButton {
+  padding-left: $spv--large !important;
+  padding-right: $spv--large !important;
+}
+
+.bold {
+  font-weight: 500;
+}

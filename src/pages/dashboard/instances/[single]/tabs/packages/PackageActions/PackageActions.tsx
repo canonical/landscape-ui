@@ -38,7 +38,7 @@ const PackageActions: FC<PackageActionsProps> = ({
   const handleInstallPackages = () => {
     setSidePanelContent(
       "Install packages",
-      <PackagesInstallForm instance={instance} />,
+      <PackagesInstallForm instanceId={instance.id} />,
     );
   };
 
