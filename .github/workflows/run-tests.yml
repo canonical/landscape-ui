@@ -26,6 +26,8 @@ jobs:
           VITE_API_URL: http://207.154.219.68:9091/api/v2/
           VITE_API_URL_OLD: http://207.154.219.68:9091/api/
           VITE_OLD_DASHBOARD_URL: http://207.154.219.68:8080/
+          VITE_APP_TITLE: Landscape
+          VITE_ROOT_PATH: /
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -51,6 +53,8 @@ jobs:
           VITE_API_URL: http://207.154.219.68:9091/api/v2/
           VITE_API_URL_OLD: http://207.154.219.68:9091/api/
           VITE_OLD_DASHBOARD_URL: http://207.154.219.68:8080/
+          VITE_APP_TITLE: Landscape
+          VITE_ROOT_PATH: /
       - name: Report Coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
