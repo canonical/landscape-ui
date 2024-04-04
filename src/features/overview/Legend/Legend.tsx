@@ -67,7 +67,10 @@ const Legend: FC<LegendProps> = ({
                 </div>
                 <Link
                   to={getNavigationLink(item.text)}
-                  className="u-no-margin u-no-padding"
+                  className={classNames(
+                    "u-no-margin u-no-padding",
+                    classes.link,
+                  )}
                 >
                   {numberOfInstances[index]} instances
                 </Link>

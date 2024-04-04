@@ -1,14 +1,12 @@
 import { FC } from "react";
 import AlertCard from "../AlertCard";
 import classes from "./AlertsContainer.module.scss";
-import { widgetFilterOptions } from "./constants";
+import { widgetAlerts } from "./constants";
 
-interface AlertsContainerProps {}
-
-const AlertsContainer: FC<AlertsContainerProps> = () => {
+const AlertsContainer: FC = () => {
   return (
     <div className={classes.container}>
-      {widgetFilterOptions.map((alert, index) => (
+      {widgetAlerts.map((alert, index) => (
         <AlertCard key={index} alertQueryData={alert} />
       ))}
     </div>

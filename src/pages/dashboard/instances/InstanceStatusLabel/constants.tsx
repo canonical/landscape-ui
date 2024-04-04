@@ -2,10 +2,16 @@ import { ReactNode } from "react";
 
 type Status = {
   icon: ReactNode;
+  filterValue: string;
+  label: string;
+  alertType: string;
 };
 
 export const STATUSES: { [keyof: string]: Status } = {
   Online: {
+    alertType: "ComputerOnlineAlert",
+    label: "Computers online",
+    filterValue: "computer-online",
     icon: (
       <svg
         width="16"
@@ -23,25 +29,10 @@ export const STATUSES: { [keyof: string]: Status } = {
       </svg>
     ),
   },
-  RebootRequired: {
-    icon: (
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M8.75 6.95323L8.74961 0.150024L7.24961 0.438024L7.25 6.95323H8.75ZM15 8.00002C15 5.20358 13.3602 2.79012 10.9897 1.66877L10.9898 3.38283C12.5006 4.36314 13.5 6.06487 13.5 8.00002C13.5 11.0376 11.0376 13.5 8 13.5C4.96243 13.5 2.5 11.0376 2.5 8.00002C2.5 6.09413 3.46942 4.41465 4.94207 3.42778L4.94223 1.70142C2.60847 2.8365 1 5.23042 1 8.00002C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8.00002Z"
-          fill="#C7162B"
-        />
-      </svg>
-    ),
-  },
   ComputerDuplicateAlert: {
+    alertType: "ComputerDuplicateAlert",
+    label: "Computer duplicates",
+    filterValue: "computer-duplicates",
     icon: (
       <svg
         width="16"
@@ -60,6 +51,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   ComputerOfflineAlert: {
+    alertType: "ComputerOfflineAlert",
+    label: "Computers offline",
+    filterValue: "computer-offline",
     icon: (
       <svg
         width="16"
@@ -78,6 +72,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   ComputerRebootAlert: {
+    alertType: "ComputerRebootAlert",
+    label: "Computer reboot",
+    filterValue: "computer-reboot",
     icon: (
       <svg
         width="16"
@@ -90,12 +87,15 @@ export const STATUSES: { [keyof: string]: Status } = {
           fillRule="evenodd"
           clipRule="evenodd"
           d="M8.75 6.95323L8.74961 0.150024L7.24961 0.438024L7.25 6.95323H8.75ZM15 8.00002C15 5.20358 13.3602 2.79012 10.9897 1.66877L10.9898 3.38283C12.5006 4.36314 13.5 6.06487 13.5 8.00002C13.5 11.0376 11.0376 13.5 8 13.5C4.96243 13.5 2.5 11.0376 2.5 8.00002C2.5 6.09413 3.46942 4.41465 4.94207 3.42778L4.94223 1.70142C2.60847 2.8365 1 5.23042 1 8.00002C1 11.866 4.13401 15 8 15C11.866 15 15 11.866 15 8.00002Z"
-          fill="#F99B11"
+          fill="#C7162B"
         />
       </svg>
     ),
   },
   EsmDisabledAlert: {
+    alertType: "EsmDisabledAlert",
+    label: "ESM disabled",
+    filterValue: "esm-disabled",
     icon: (
       <svg
         width="16"
@@ -114,6 +114,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   PackageProfilesAlert: {
+    alertType: "PackageProfilesAlert",
+    label: "Package profiles",
+    filterValue: "package-profiles",
     icon: (
       <svg
         width="16"
@@ -132,6 +135,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   PackageReporterAlert: {
+    alertType: "PackageReporterAlert",
+    label: "Package reporter",
+    filterValue: "package-reporter",
     icon: (
       <svg
         width="16"
@@ -150,6 +156,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   PackageUpgradesAlert: {
+    alertType: "PackageUpgradesAlert",
+    label: "Package upgrades",
+    filterValue: "package-upgrades",
     icon: (
       <svg
         width="17"
@@ -163,6 +172,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   PendingComputersAlert: {
+    alertType: "PendingComputersAlert",
+    label: "Pending computers",
+    filterValue: "pending-computers",
     icon: (
       <svg
         width="16"
@@ -181,6 +193,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   SecurityUpgradesAlert: {
+    alertType: "SecurityUpgradesAlert",
+    label: "Security upgrades",
+    filterValue: "security-upgrades",
     icon: (
       <svg
         width="17"
@@ -194,6 +209,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   UnapprovedActivitiesAlert: {
+    alertType: "UnapprovedActivitiesAlert",
+    label: "Unapproved activities",
+    filterValue: "unapproved-activities",
     icon: (
       <svg
         width="16"
@@ -216,6 +234,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   UpToDate: {
+    alertType: "UpToDate",
+    label: "Up to date",
+    filterValue: "up-to-date",
     icon: (
       <svg
         width="17"
@@ -232,6 +253,9 @@ export const STATUSES: { [keyof: string]: Status } = {
     ),
   },
   Unknown: {
+    alertType: "",
+    label: "",
+    filterValue: "",
     icon: (
       <svg
         width="16"
