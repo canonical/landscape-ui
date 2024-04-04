@@ -64,7 +64,9 @@ const EventLogsPage = lazy(
 );
 const AlertsPage = lazy(() => import("./pages/dashboard/monitoring/alerts"));
 const UserPage = lazy(() => import("./pages/dashboard/user"));
-const NotificationsPage = lazy(() => import("./pages/dashboard/notifications"));
+const AlertNotificationsPage = lazy(
+  () => import("./pages/dashboard/alert-notifications"),
+);
 const OverviewPage = lazy(() => import("./pages/dashboard/overview"));
 
 interface AuthRouteProps {
@@ -320,10 +322,10 @@ const App: FC = () => {
               }
             />
             <Route
-              path="notifications"
+              path="alerts"
               element={
                 <AuthRoute>
-                  <NotificationsPage />
+                  <AlertNotificationsPage />
                 </AuthRoute>
               }
             />

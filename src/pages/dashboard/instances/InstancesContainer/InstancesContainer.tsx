@@ -85,7 +85,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
       .join(" ")}${osFilter ?? ""} ${queryStatus}`.trim(),
     root_only: groupBy === "parent",
     with_alerts: true,
-    with_upgrades: true,
+    with_upgrades: statusFilter !== "pending-computers",
     limit: pageLimit,
     offset: (currentPage - 1) * pageLimit,
   });

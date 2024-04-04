@@ -14,3 +14,13 @@ export interface Subscriber extends Record<string, unknown> {
   id: number;
   name: string;
 }
+
+export interface AlertSummary {
+  alert_type: string;
+  summary: string;
+  activation_time: string;
+}
+
+export interface AlertSummaryResponse {
+  alerts_summary: AlertSummary[];
+}

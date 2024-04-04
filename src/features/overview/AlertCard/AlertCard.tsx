@@ -1,6 +1,6 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import classes from "./AlertCard.module.scss";
-import { Button, Spinner } from "@canonical/react-components";
+import { Spinner } from "@canonical/react-components";
 import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
 import { Link } from "react-router-dom";
@@ -11,8 +11,8 @@ import { QUERY_STATUSES } from "@/pages/dashboard/instances/InstancesContainer/c
 interface AlertCardProps {
   alertQueryData: {
     label: string;
-    value: string;
-    icon: string;
+    filterValue: string;
+    icon: ReactNode;
   };
 }
 
@@ -26,7 +26,7 @@ const AlertCard: FC<AlertCardProps> = ({ alertQueryData }) => {
     error,
     isError,
   } = getInstancesQuery({
-    query: QUERY_STATUSES[alertQueryData.value],
+    query: QUERY_STATUSES[alertQueryData.filterValue],
     limit: 1,
     root_only: false,
   });
@@ -38,7 +38,7 @@ const AlertCard: FC<AlertCardProps> = ({ alertQueryData }) => {
   return (
     <div className={classes.container}>
       <div className={classes.title}>
-        <i className={`p-icon--${alertQueryData.icon}`} />
+        {alertQueryData.icon}
         <p className="p-heading--5 u-no-padding u-no-margin">
           {alertQueryData.label}
         </p>
@@ -48,15 +48,13 @@ const AlertCard: FC<AlertCardProps> = ({ alertQueryData }) => {
         <p className="u-no-margin--bottom">Error loading data.</p>
       )}
       {!isLoading && !isError && (
-        <Button
-          appearance="link"
-          className={classNames("u-no-padding u-no-margin", classes.button)}
+        <Link
+          className={classNames("u-no-margin u-no-padding", classes.link)}
+          to={`${ROOT_PATH}instances?status=${alertQueryData.filterValue}`}
         >
-          <Link to={`${ROOT_PATH}instances?status=${alertQueryData.value}`}>
-            <span className={classes.text}>{alertsData?.data.count}</span>{" "}
-            instances
-          </Link>
-        </Button>
+          <span className={classes.text}>{alertsData.data.count}</span> instance
+          {alertsData.data.count === 1 ? "" : "s"}
+        </Link>
       )}
     </div>
   );
