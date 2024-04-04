@@ -18,9 +18,7 @@ test("should create pockets with the different mode", async ({ page }) => {
     .filter({ has: page.locator("> i") })
     .hover();
   await expect(
-    page.getByRole("tooltip", {
-      name: "The specific sub-directory under dists/ that should be mirrored. If the suite name ends with a ‘/’, the remote repository is flat (no dists/ structure, see wiki.debian.org/RepositoryFormat#Flat_Repository_Format); in this case a single value must be passed for the ‘components’ parameter. Packages from the remote repository will be mirrored in the specified component. This parameter is optional and defaults to the same name as local series and pocket.",
-    }),
+    page.getByRole("tooltip", { name: "The specific sub-directory" }),
   ).toBeVisible();
   await page.locator('input[name="mirror_suite"]').fill("trusty-security");
   await page

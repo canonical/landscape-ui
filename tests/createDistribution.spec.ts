@@ -14,7 +14,7 @@ test("should create distribution", async ({ page }) => {
 
   await page.getByRole("button", { name: "Create distribution" }).click();
   await page.getByRole("textbox").fill("test-e2e-distro");
-  await page.getByRole("combobox").selectOption("global");
+  await page.getByLabel("Access group").selectOption("global");
   await page
     .getByRole("complementary")
     .getByRole("button", { name: "Create distribution" })
