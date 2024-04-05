@@ -16,9 +16,12 @@
   gap: $sp-x-small;
 }
 
-.button {
+.link {
   align-self: flex-start;
   font-size: 22px;
+  &:visited {
+    color: $color-link;
+  }
 }
 
 .text {

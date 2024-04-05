@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: $spv--small;
+  margin-top: $spv--small;
+  margin-bottom: $spv--small;
+}
+
+.listItem__link {
+  &:visited {
+    color: $color-link;
+  }
+}

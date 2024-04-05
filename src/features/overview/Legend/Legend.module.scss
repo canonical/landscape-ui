@@ -22,6 +22,12 @@
   align-items: center;
 }
 
+.link {
+  &:visited {
+    color: $color-link;
+  }
+}
+
 .container {
   width: 100%;
   height: 60%;

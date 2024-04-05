@@ -5,7 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
-import { Alert, Subscriber } from "../types/Alert";
+import { Alert, AlertSummaryResponse, Subscriber } from "../types/Alert";
 import { ApiError } from "../types/ApiError";
 import { QueryFnType } from "../types/QueryFnType";
 import useDebug from "./useDebug";
@@ -38,6 +38,10 @@ interface DisassociateAlertParams {
 
 interface UseAlertsResult {
   getAlertsQuery: QueryFnType<AxiosResponse<Alert[]>, undefined>;
+  getAlertsSummaryQuery: QueryFnType<
+    AxiosResponse<AlertSummaryResponse>,
+    undefined
+  >;
   getAlertSubscribersQuery: QueryFnType<
     AxiosResponse<Subscriber[]>,
     GetAlertSubscribersParams
@@ -74,6 +78,15 @@ export default function useAlerts(): UseAlertsResult {
     useQuery<AxiosResponse<Alert[]>, AxiosError<ApiError>>({
       queryKey: ["alert"],
       queryFn: () => authFetch!.get("alerts"),
+    });
+
+  const getAlertsSummaryQuery: QueryFnType<
+    AxiosResponse<AlertSummaryResponse>,
+    undefined
+  > = () =>
+    useQuery<AxiosResponse<AlertSummaryResponse>, AxiosError<ApiError>>({
+      queryKey: ["alert", "summary"],
+      queryFn: () => authFetch!.get("alerts/summary"),
     });
 
   const getAlertSubscribersQuery: QueryFnType<
@@ -139,6 +152,7 @@ export default function useAlerts(): UseAlertsResult {
 
   return {
     getAlertsQuery,
+    getAlertsSummaryQuery,
     getAlertSubscribersQuery,
     subscribeQuery,
     unsubscribeQuery,

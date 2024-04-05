@@ -37,11 +37,11 @@ const UserInfo: FC = () => {
           classes.button,
         )}
         onClick={() => {
-          navigate("/notifications");
+          navigate("/alerts");
         }}
       >
         <i className="p-icon--bell" />
-        <span className="p-side-navigation__label">Notifications</span>
+        <span className="p-side-navigation__label">Alerts</span>
       </Button>
       <Button
         appearance="base"

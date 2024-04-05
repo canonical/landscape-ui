@@ -12,7 +12,7 @@ const InstanceStatusCell: FC<InstanceStatusCellProps> = ({ instance }) => {
   if (instance.reboot_required_flag) {
     return (
       <InstanceStatusLabel
-        icon={STATUSES.RebootRequired.icon}
+        icon={STATUSES.ComputerRebootAlert.icon}
         label="Reboot required"
       />
     );

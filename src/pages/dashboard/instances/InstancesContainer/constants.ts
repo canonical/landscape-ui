@@ -1,4 +1,5 @@
 import { ListFilter } from "@/types/Filters";
+import { STATUSES } from "../InstanceStatusLabel/constants";
 
 interface URLStatuses {
   [key: string]: string;
@@ -27,57 +28,39 @@ export const QUERY_STATUSES: URLStatuses = {
   "computer-reboot": "alert:computer-reboot",
   "computer-duplicates": "alert:computer-duplicates",
   "unapproved-activities": "alert:unapproved-activities",
+  "pending-computers": "alert:pending-computers",
 };
+
+const alertTypes = [
+  "UpToDate",
+  "PackageUpgradesAlert",
+  "SecurityUpgradesAlert",
+  "PackageProfilesAlert",
+  "PackageReporterAlert",
+  "EsmDisabledAlert",
+  "ComputerOfflineAlert",
+  "ComputerOnlineAlert",
+  "ComputerRebootAlert",
+  "ComputerDuplicateAlert",
+  "PendingComputersAlert",
+  "UnapprovedActivitiesAlert",
+];
 
 export const STATUS_FILTER: ListFilter = {
   label: "Status",
   type: "select",
   options: [
     { label: "All", value: "" },
-    {
-      label: "Up to date",
-      value: "up-to-date",
-    },
-    {
-      label: "Package upgrades",
-      value: "package-upgrades",
-    },
-    {
-      label: "Security upgrades",
-      value: "security-upgrades",
-    },
-    {
-      label: "Package profiles",
-      value: "package-profiles",
-    },
-    {
-      label: "Package reporter",
-      value: "package-reporter",
-    },
-    {
-      label: "ESM disabled",
-      value: "esm-disabled",
-    },
-    {
-      label: "Computer offline",
-      value: "computer-offline",
-    },
-    {
-      label: "Computer online",
-      value: "computer-online",
-    },
-    {
-      label: "Computer reboot",
-      value: "computer-reboot",
-    },
-    {
-      label: "Computer duplicates",
-      value: "computer-duplicates",
-    },
-    {
-      label: "Unapproved activities",
-      value: "unapproved-activities",
-    },
+    ...Object.values(STATUSES)
+      .filter(({ alertType }) => alertTypes.includes(alertType))
+      .sort(
+        (a, b) =>
+          alertTypes.indexOf(a.alertType) - alertTypes.indexOf(b.alertType),
+      )
+      .map(({ label, filterValue }) => ({
+        label,
+        value: filterValue,
+      })),
   ],
 };
 
