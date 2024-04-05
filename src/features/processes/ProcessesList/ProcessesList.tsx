@@ -7,7 +7,7 @@ interface ProcessesListProps {
   isLoading: boolean;
   processes: Process[];
   selectedPids: number[];
-  setSelectedPids: React.Dispatch<React.SetStateAction<number[]>>;
+  setSelectedPids: (pids: number[]) => void;
 }
 
 const ProcessesList: FC<ProcessesListProps> = ({
@@ -17,8 +17,8 @@ const ProcessesList: FC<ProcessesListProps> = ({
   setSelectedPids,
 }) => {
   const toggleAll = () => {
-    setSelectedPids((prevState) =>
-      0 === prevState.length ? processes.map(({ pid }) => pid) : [],
+    setSelectedPids(
+      0 === selectedPids.length ? processes.map(({ pid }) => pid) : [],
     );
   };
 
@@ -55,13 +55,13 @@ const ProcessesList: FC<ProcessesListProps> = ({
                 }
                 checked={selectedPids.includes(row.original.pid)}
                 onChange={() => {
-                  setSelectedPids((prevState) => {
-                    return prevState.includes(row.original.pid)
-                      ? prevState.filter(
+                  setSelectedPids(
+                    selectedPids.includes(row.original.pid)
+                      ? selectedPids.filter(
                           (prevStatePid) => prevStatePid !== row.original.pid,
                         )
-                      : [...prevState, row.original.pid];
-                  });
+                      : [...selectedPids, row.original.pid],
+                  );
                 }}
               />
               <span>{row.original.name}</span>

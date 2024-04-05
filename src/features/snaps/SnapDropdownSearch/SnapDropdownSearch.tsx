@@ -1,65 +1,75 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { Package } from "@/types/Package";
-import { AvailableSnap, AvailableSnapInfo, SelectedSnaps } from "@/types/Snap";
+import AvailableSnapDetails from "@/features/snaps/AvailableSnapDetails";
+import useDebug from "@/hooks/useDebug";
+import { useSnaps } from "@/hooks/useSnaps";
+import { AvailableSnap, SelectedSnaps } from "@/types/Snap";
 import { Button, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
-import React, { useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
-import useDebug from "@/hooks/useDebug";
-import classes from "./DropdownSearch.module.scss";
-import { UseQueryResult } from "@tanstack/react-query";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "@/types/ApiError";
-import { DEBOUNCE_DELAY, boldSubstring, getItemKey } from "./helpers";
-import AvailableSnapDetails from "@/features/snaps/AvailableSnapDetails";
+import classes from "./SnapDropdownSearch.module.scss";
+import { DEBOUNCE_DELAY, boldSubstring } from "./helpers";
 
-type Item = Package | AvailableSnap | SelectedSnaps;
+interface SnapDropdownSearchProps {
+  instanceId: number;
+  selectedItems: SelectedSnaps[];
+  setSelectedItems: (items: SelectedSnaps[]) => void;
+  setConfirming: (confirming: boolean) => void;
+}
 
-type Props<T extends Item> = {
-  itemType: string;
-  selectedItems: T[];
-  setSelectedItems: React.Dispatch<React.SetStateAction<T[]>>;
-  getDropdownInfo: (
-    search: string,
-  ) => UseQueryResult<
-    AxiosResponse<ApiPaginatedResponse<T>, any>,
-    AxiosError<ApiError, any>
-  >;
-  getItemInfo?: (
-    name: string,
-  ) => UseQueryResult<
-    AxiosResponse<AvailableSnapInfo, any>,
-    AxiosError<ApiError, any>
-  >;
-  addConfirmation?: boolean;
-  setConfirming?: React.Dispatch<React.SetStateAction<boolean>>;
-  instanceId?: number;
-};
-
-const DropdownSearch = <T extends Item>({
-  itemType,
-  getDropdownInfo,
+const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
+  instanceId,
   selectedItems,
   setSelectedItems,
-  addConfirmation = false,
   setConfirming,
-  instanceId,
-}: Props<T>) => {
+}) => {
   const [search, setSearch] = useState<string>("");
   const [open, setOpen] = useState(false);
-  const [toBeConfirmedItem, setToBeConfirmedItem] = useState<T | null>();
+  const [toBeConfirmedItem, setToBeConfirmedItem] =
+    useState<AvailableSnap | null>();
   const [inputValue, setInputValue] = useState<string>("");
   const searchBoxRef = useRef<HTMLInputElement>(null);
+
   const debug = useDebug();
+  const { getAvailableSnaps } = useSnaps();
 
-  const { data: dropdownInfo, isFetching } = getDropdownInfo(search);
+  const {
+    data: snapsDataRes,
+    isFetching,
+    error,
+  } = getAvailableSnaps(
+    {
+      instance_id: instanceId,
+      query: search,
+    },
+    {
+      enabled: search.length > 2,
+    },
+  );
 
-  const suggestionData: T[] = dropdownInfo?.data?.results ?? [];
+  if (error) {
+    debug(error);
+  }
+
+  const snapsData = snapsDataRes?.data?.results ?? [];
+
+  const getAvailableSnapSuggestions = (itemName: string): boolean => {
+    return !selectedItems.map((item) => item.name).includes(itemName);
+  };
+
+  const suggestions = snapsData.filter((snap) =>
+    getAvailableSnapSuggestions(snap.name),
+  );
+
+  useEffect(() => {
+    if (!toBeConfirmedItem) {
+      searchBoxRef.current?.focus();
+    }
+  }, [toBeConfirmedItem]);
 
   const handleDeleteSelectedItem = (name: string) => {
-    setSelectedItems((items) => items.filter((item) => item.name !== name));
+    setSelectedItems(selectedItems.filter((item) => item.name !== name));
   };
 
   const handleDeleteToBeConfirmedItem = () => {
@@ -68,18 +78,6 @@ const DropdownSearch = <T extends Item>({
       setConfirming(false);
     }
   };
-
-  const getAvailableSuggestions = (item: T): boolean => {
-    return !selectedItems.map((item) => item.name).includes(item.name);
-  };
-
-  const suggestions = suggestionData.filter(getAvailableSuggestions);
-
-  useEffect(() => {
-    if (!toBeConfirmedItem) {
-      searchBoxRef.current?.focus();
-    }
-  }, [toBeConfirmedItem]);
 
   const closeDropdown = () => {
     if (toBeConfirmedItem) {
@@ -116,40 +114,16 @@ const DropdownSearch = <T extends Item>({
     }
   }, DEBOUNCE_DELAY);
 
-  const handleAddToSelectedItems = (item: Item) => {
-    if ("computers" in item) {
-      setSelectedItems([
-        ...selectedItems,
-        {
-          name: item.name,
-          current_version: item.current_version,
-        } as T,
-      ]);
-    } else {
-      setSelectedItems([
-        ...selectedItems,
-        {
-          name: item.name,
-          snap: item.snap,
-          "snap-id": item["snap-id"],
-          channel: "channel" in item ? item.channel : undefined,
-          revision: "revision" in item ? item.revision : undefined,
-        } as T,
-      ]);
-    }
+  const handleAddToSelectedItems = (item: SelectedSnaps) => {
+    setSelectedItems([...selectedItems, item]);
     handleClearSearch();
-    if (addConfirmation) {
-      handleDeleteToBeConfirmedItem();
-    }
+    handleDeleteToBeConfirmedItem();
   };
 
-  const handleSelectSuggestedItem = (item: T | null) => {
-    if (addConfirmation && setConfirming && item) {
+  const handleSelectSuggestedItem = (item: AvailableSnap | null) => {
+    if (item) {
       setConfirming(true);
       setToBeConfirmedItem(item);
-    } else if (item) {
-      handleAddToSelectedItems(item);
-      setOpen(false);
     }
   };
 
@@ -165,8 +139,8 @@ const DropdownSearch = <T extends Item>({
     if (!open && inputValue.length < 3) {
       return "Min 3. characters";
     }
-    if (suggestionData.length === 0 && search && !isFetching) {
-      return `No ${itemType}s found by "${search}"`;
+    if (snapsData.length === 0 && search && !isFetching) {
+      return `No snaps found by "${search}"`;
     }
     return null;
   };
@@ -184,7 +158,7 @@ const DropdownSearch = <T extends Item>({
           <div className="p-autocomplete">
             <SearchBox
               {...getInputProps()}
-              placeholder={`Search for available ${itemType}s`}
+              placeholder="Search for available snaps"
               className="u-no-margin--bottom"
               shouldRefocusAfterReset
               externallyControlled
@@ -217,17 +191,17 @@ const DropdownSearch = <T extends Item>({
                     }
                     name={toBeConfirmedItem.name}
                     instanceId={instanceId}
-                    key={getItemKey(toBeConfirmedItem)}
+                    key={toBeConfirmedItem["snap-id"]}
                   />
                 ) : isFetching ? (
                   <LoadingState />
                 ) : (
-                  suggestions.map((item: T, index: number) => (
+                  suggestions.map((item: AvailableSnap, index: number) => (
                     <li
                       className={classNames("p-list__item", classes.pointer, {
                         [classes.highlighted]: highlightedIndex === index,
                       })}
-                      key={getItemKey(item)}
+                      key={item["snap-id"]}
                       {...getItemProps({
                         item,
                         index,
@@ -238,9 +212,7 @@ const DropdownSearch = <T extends Item>({
                       </div>
                       <div>
                         <small className="u-text-muted">
-                          {"current_version" in item
-                            ? item.current_version
-                            : item.snap.publisher["display-name"]}
+                          {item.snap.publisher["display-name"]}
                         </small>
                       </div>
                     </li>
@@ -260,15 +232,13 @@ const DropdownSearch = <T extends Item>({
                   "p-autocomplete__result p-list__item p-card u-no-margin--bottom",
                   classes.selectedContainer,
                 )}
-                key={getItemKey(item)}
+                key={item["snap-id"]}
               >
                 <div>
-                  <div className={classes.bold}>{item.name}</div>
+                  <div>{item.name}</div>
                   <span>
                     <small className="u-text--muted p-text--small">
-                      {"current_version" in item
-                        ? item.current_version
-                        : `${item.snap.publisher["display-name"]} | ${"channel" in item ? item.channel : ""}`}
+                      {`${item.snap.publisher["display-name"]} | ${item.channel}`}
                     </small>
                   </span>
                 </div>
@@ -287,4 +257,4 @@ const DropdownSearch = <T extends Item>({
   );
 };
 
-export default DropdownSearch;
+export default SnapDropdownSearch;
