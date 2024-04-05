@@ -135,9 +135,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
             primary_groupname: values.primaryGroupValue,
           }),
         );
-        await Promise.all(
-          promises.map((promise) => promise.then((data) => console.log(data))),
-        );
+        await Promise.all(promises);
         closeSidePanel();
         notify.success({ message: "User updated successfully" });
       } catch (error) {

@@ -65,19 +65,9 @@ export const MENU_ITEMS: MenuItem[] = [
     ],
   },
   {
-    label: "Monitoring",
-    path: `${ROOT_PATH}monitoring`,
+    label: "Event logs",
+    path: `${ROOT_PATH}event-logs`,
     icon: "status",
-    items: [
-      {
-        label: "Event logs",
-        path: `${ROOT_PATH}monitoring/event-logs`,
-      },
-      {
-        label: "Alerts",
-        path: `${ROOT_PATH}monitoring/alerts`,
-      },
-    ],
   },
   {
     label: "Org. settings",
@@ -95,6 +85,10 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "Roles",
         path: `${ROOT_PATH}settings/roles`,
+      },
+      {
+        label: "Alerts",
+        path: `${ROOT_PATH}settings/alerts`,
       },
     ],
   },

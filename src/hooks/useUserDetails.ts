@@ -29,6 +29,11 @@ interface SetPreferredAccountParams {
   preferred_account: string;
 }
 
+interface ChangePasswordParamms {
+  password: string;
+  new_password: string;
+}
+
 interface useUserDetailsResult {
   getUserDetails: QueryFnType<AxiosResponse<UserDetails>, {}>;
   getUserApiCredentials: QueryFnType<AxiosResponse<UserCredentials>, {}>;
@@ -46,6 +51,11 @@ interface useUserDetailsResult {
     AxiosResponse<void>,
     AxiosError<ApiError>,
     SetPreferredAccountParams
+  >;
+  changePassword: UseMutationResult<
+    AxiosResponse<void>,
+    AxiosError<ApiError>,
+    ChangePasswordParamms
   >;
 }
 
@@ -111,11 +121,22 @@ export default function useUserDetails(): useUserDetailsResult {
       queryClient.invalidateQueries(["userDetails", "get"]).catch(debug);
     },
   });
+
+  const changePassword = useMutation<
+    AxiosResponse<void>,
+    AxiosError<ApiError>,
+    ChangePasswordParamms
+  >({
+    mutationKey: ["userDetails", "changePassword"],
+    mutationFn: (params) => authFetch!.put("password", params),
+  });
+
   return {
     getUserDetails,
     generateApiCredentials,
     getUserApiCredentials,
     editUserDetails,
     setPreferredAccount,
+    changePassword,
   };
 }

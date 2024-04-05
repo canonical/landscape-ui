@@ -119,47 +119,51 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
             }}
           />
         </div>
-        <Select
-          label={GROUP_BY_FILTER.label}
-          wrapperClassName={classes.select}
-          className="u-no-margin--bottom"
-          options={
-            GROUP_BY_FILTER.type === "select" ? GROUP_BY_FILTER.options : []
-          }
-          value={groupBy}
-          onChange={(event) => {
-            setSelectedInstances([]);
-            setGroupBy(event.target.value);
-          }}
-        />
-        <Select
-          label={OS_FILTER.label}
-          wrapperClassName={classes.select}
-          className="u-no-margin--bottom"
-          options={OS_FILTER.type === "select" ? OS_FILTER.options : []}
-          value={osFilter}
-          onChange={(event) => {
-            setSelectedInstances([]);
-            setOsFilter(event.target.value);
-          }}
-        />
-        <Select
-          label={STATUS_FILTER.label}
-          wrapperClassName={classes.select}
-          className="u-no-margin--bottom"
-          options={STATUS_FILTER.type === "select" ? STATUS_FILTER.options : []}
-          value={statusFilter}
-          onChange={(event) => {
-            setSelectedInstances([]);
-            setStatusFilter(event.target.value);
-            if (event.target.value !== "") {
-              setSearchParams({ status: event.target.value });
-            } else {
-              searchParams.delete("status");
-              setSearchParams(searchParams);
-            }
-          }}
-        />
+        {GROUP_BY_FILTER.type === "select" && (
+          <Select
+            label={GROUP_BY_FILTER.label}
+            wrapperClassName={classes.select}
+            className="u-no-margin--bottom"
+            options={GROUP_BY_FILTER.options}
+            value={groupBy}
+            onChange={(event) => {
+              setSelectedInstances([]);
+              setGroupBy(event.target.value);
+            }}
+          />
+        )}
+        {OS_FILTER.type === "select" && (
+          <Select
+            label={OS_FILTER.label}
+            wrapperClassName={classes.select}
+            className="u-no-margin--bottom"
+            options={OS_FILTER.options}
+            value={osFilter}
+            onChange={(event) => {
+              setSelectedInstances([]);
+              setOsFilter(event.target.value);
+            }}
+          />
+        )}
+        {STATUS_FILTER.type === "select" && (
+          <Select
+            label={STATUS_FILTER.label}
+            wrapperClassName={classes.select}
+            className="u-no-margin--bottom"
+            options={STATUS_FILTER.options}
+            value={statusFilter}
+            onChange={(event) => {
+              setSelectedInstances([]);
+              setStatusFilter(event.target.value);
+              if (event.target.value !== "") {
+                setSearchParams({ status: event.target.value });
+              } else {
+                searchParams.delete("status");
+                setSearchParams(searchParams);
+              }
+            }}
+          />
+        )}
       </div>
       <SearchHelpPopup
         open={showSearchHelp}
