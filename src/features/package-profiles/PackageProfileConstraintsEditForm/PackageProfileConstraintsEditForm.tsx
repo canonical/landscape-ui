@@ -29,6 +29,9 @@ const PackageProfileConstraintsEditForm: FC<
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState("");
+  const [constraintType, setConstraintType] = useState<
+    PackageProfileConstraintType | ""
+  >("");
 
   const handlePageChange = (page: number) => {
     setSelectedIds([]);
@@ -86,8 +89,9 @@ const PackageProfileConstraintsEditForm: FC<
     error: getPackageProfileConstraintsQueryError,
     isLoading: getPackageProfileConstraintsQueryLoading,
   } = getPackageProfileConstraintsQuery({
-    name: profile.name,
+    constraint_type: constraintType || undefined,
     limit: pageSize,
+    name: profile.name,
     offset: (currentPage - 1) * pageSize,
     search,
   });
@@ -99,11 +103,13 @@ const PackageProfileConstraintsEditForm: FC<
   return (
     <>
       {!search &&
+        !constraintType &&
         currentPage === 1 &&
         pageSize === 20 &&
         getPackageProfileConstraintsQueryLoading && <LoadingState />}
 
       {(search ||
+        constraintType ||
         currentPage !== 1 ||
         pageSize !== 20 ||
         (!getPackageProfileConstraintsQueryLoading &&
@@ -113,7 +119,9 @@ const PackageProfileConstraintsEditForm: FC<
           <HeaderWithSearch
             actions={
               <PackageProfileConstraintsEditFormActions
+                filter={constraintType}
                 formik={formik}
+                onFilterChange={(value) => setConstraintType(value)}
                 profile={profile}
                 selectedIds={selectedIds}
                 setSelectedIds={(value) => setSelectedIds(value)}
@@ -124,6 +132,7 @@ const PackageProfileConstraintsEditForm: FC<
           />
 
           <PackageProfileConstraintsEditFormTable
+            filter={constraintType}
             formik={formik}
             isConstraintsLoading={getPackageProfileConstraintsQueryLoading}
             onSelectedIdsChange={(value) => setSelectedIds(value)}

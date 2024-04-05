@@ -31,7 +31,7 @@ const TablePagination: FC<TablePaginationProps> = ({
   }, [currentPage]);
 
   useEffect(() => {
-    if (!totalItems) {
+    if (totalItems === undefined) {
       return;
     }
 

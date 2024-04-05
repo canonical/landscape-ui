@@ -2,6 +2,7 @@ import { QueryFnType } from "@/types/QueryFnType";
 import {
   PackageProfile,
   PackageProfileConstraint,
+  PackageProfileConstraintType,
 } from "@/features/package-profiles/types";
 import {
   useMutation,
@@ -60,6 +61,7 @@ interface GetInstancePackageProfileParams {
 
 interface GetPackageProfileConstraintsParams {
   name: string;
+  constraint_type?: PackageProfileConstraintType;
   limit?: number;
   offset?: number;
   search?: string;

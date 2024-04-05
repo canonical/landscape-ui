@@ -1,6 +1,7 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .container {
+  align-items: flex-end;
   display: flex;
   column-gap: $sph--x-large;
 }

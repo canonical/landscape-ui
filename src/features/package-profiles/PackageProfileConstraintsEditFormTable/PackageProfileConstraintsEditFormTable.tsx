@@ -18,10 +18,15 @@ import {
   Constraint,
   PackageProfileConstraint,
 } from "@/features/package-profiles/types";
-import { getCellProps, getConstraintPropHandlers } from "./helpers";
+import {
+  getCellProps,
+  getConstraintPropHandlers,
+  getEmptyMessage,
+} from "./helpers";
 import classes from "./PackageProfileConstraintsEditFormTable.module.scss";
 
 interface PackageProfileConstraintsEditFormTableProps {
+  filter: string;
   formik: FormikContextType<Constraint>;
   isConstraintsLoading: boolean;
   onSelectedIdsChange: (value: number[]) => void;
@@ -34,6 +39,7 @@ interface PackageProfileConstraintsEditFormTableProps {
 const PackageProfileConstraintsEditFormTable: FC<
   PackageProfileConstraintsEditFormTableProps
 > = ({
+  filter,
   formik,
   isConstraintsLoading,
   onSelectedIdsChange,
@@ -228,7 +234,7 @@ const PackageProfileConstraintsEditFormTable: FC<
       data={constraints}
       getCellProps={(cell) => getCellProps(cell, formik.values.id)}
       className="u-no-margin--bottom"
-      emptyMsg={`No constraints found with the search: "${search}"`}
+      emptyMsg={getEmptyMessage(filter, search)}
     />
   );
 };

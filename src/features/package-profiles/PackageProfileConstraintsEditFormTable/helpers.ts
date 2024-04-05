@@ -79,3 +79,21 @@ export const getCellProps = (
 
   return cellProps;
 };
+
+export const getEmptyMessage = (filter: string, search: string) => {
+  let message = "No constraints found";
+
+  if (filter) {
+    message += ` with the constraint type: "${filter}"`;
+
+    if (search) {
+      message += " and";
+    }
+  }
+
+  if (search) {
+    message += ` with the search: "${search}"`;
+  }
+
+  return message;
+};

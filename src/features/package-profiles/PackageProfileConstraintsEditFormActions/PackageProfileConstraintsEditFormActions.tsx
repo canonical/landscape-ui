@@ -1,20 +1,28 @@
 import { FormikContextType } from "formik";
 import { FC, lazy, Suspense } from "react";
-import { Button, Icon } from "@canonical/react-components";
+import { Button, Icon, Select } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { usePackageProfiles } from "@/features/package-profiles/hooks";
-import { Constraint, PackageProfile } from "@/features/package-profiles/types";
+import {
+  Constraint,
+  PackageProfile,
+  PackageProfileConstraintType,
+} from "@/features/package-profiles/types";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import { CONSTRAINT_TYPE_OPTIONS } from "./constants";
+import classes from "./PackageProfileConstraintsEditFormActions.module.scss";
 
 const PackageProfileConstraintsAddForm = lazy(
   () => import("@/features/package-profiles/PackageProfileConstraintsAddForm"),
 );
 
 interface PackageProfileConstraintsEditFormActionsProps {
+  filter: PackageProfileConstraintType | "";
   formik: FormikContextType<Constraint>;
+  onFilterChange: (value: PackageProfileConstraintType | "") => void;
   profile: PackageProfile;
   selectedIds: number[];
   setSelectedIds: (value: number[]) => void;
@@ -22,7 +30,14 @@ interface PackageProfileConstraintsEditFormActionsProps {
 
 const PackageProfileConstraintsEditFormActions: FC<
   PackageProfileConstraintsEditFormActionsProps
-> = ({ formik, profile, selectedIds, setSelectedIds }) => {
+> = ({
+  filter,
+  formik,
+  onFilterChange,
+  profile,
+  selectedIds,
+  setSelectedIds,
+}) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
@@ -81,10 +96,23 @@ const PackageProfileConstraintsEditFormActions: FC<
   };
 
   return (
-    <div className="u-align-text--right">
+    <div className={classes.container}>
+      <Select
+        label="Constraint type"
+        labelClassName="u-no-padding--top"
+        options={CONSTRAINT_TYPE_OPTIONS}
+        value={filter}
+        onChange={(event) =>
+          onFilterChange(
+            event.target.value as PackageProfileConstraintType | "",
+          )
+        }
+      />
+
       <Button
         type="button"
         hasIcon
+        className="u-no-margin--right"
         onClick={handleConstraintsAdd}
         aria-label="Add new constraint"
       >
