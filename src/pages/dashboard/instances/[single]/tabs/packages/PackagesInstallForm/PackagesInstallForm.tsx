@@ -1,11 +1,11 @@
 import { FC, useState } from "react";
-import DropdownSearch from "@/components/form/DropdownSearch/DropdownSearch";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import { usePackages } from "@/hooks/usePackages";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Package } from "@/types/Package";
 import useNotify from "@/hooks/useNotify";
+import PackageDropdownSearch from "../PackageDropdownSearch";
 
 interface PackagesInstallFormProps {
   instanceId: number;
@@ -16,7 +16,7 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceId }) => {
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { getInstancePackagesQuery, installPackagesQuery } = usePackages();
+  const { installPackagesQuery } = usePackages();
   const { closeSidePanel } = useSidePanel();
 
   const {
@@ -40,26 +40,10 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceId }) => {
   };
   return (
     <>
-      <DropdownSearch
-        itemType="package"
+      <PackageDropdownSearch
+        instanceId={instanceId}
         selectedItems={selected}
         setSelectedItems={(items) => setSelected(items)}
-        getDropdownInfo={(search: string) =>
-          getInstancePackagesQuery(
-            {
-              instance_id: instanceId,
-              available: true,
-              installed: false,
-              upgrade: false,
-              held: false,
-              limit: 50,
-              search: search,
-            },
-            {
-              enabled: search.length > 2,
-            },
-          )
-        }
       />
       <SidePanelFormButtons
         disabled={installPackagesQueryLoading || selected.length === 0}

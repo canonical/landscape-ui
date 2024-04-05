@@ -1,7 +1,3 @@
-import { Package } from "@/types/Package";
-import { AvailableSnap, SelectedSnaps } from "@/types/Snap";
-import { Key } from "react";
-
 export const DEBOUNCE_DELAY = 200;
 
 export const boldSubstring = (text: string, substring: string) => {
@@ -18,13 +14,4 @@ export const boldSubstring = (text: string, substring: string) => {
     );
   }
   return text;
-};
-
-export const getItemKey = (
-  item: Package | SelectedSnaps | AvailableSnap,
-): Key => {
-  if ("snap-id" in item) {
-    return item["snap-id"] as string;
-  }
-  return `${item.name} ${item.version}`;
 };
