@@ -8,7 +8,7 @@ test("should log in", async ({ page }) => {
   await page.getByText("Remember this device").click();
   await page.getByRole("button", { name: "Login" }).click();
 
-  await expect(page).toHaveURL(/repositories\/mirrors/);
+  await expect(page).toHaveURL(/overview/);
   await expect(
     page.getByRole("heading", { name: "Repository Mirrors" }),
   ).toBeVisible();

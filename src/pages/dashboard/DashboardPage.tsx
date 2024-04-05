@@ -13,7 +13,7 @@ const DashboardPage: FC = () => {
       return;
     }
 
-    navigate(`${ROOT_PATH}repositories/mirrors`, { replace: true });
+    navigate(`${ROOT_PATH}overview`, { replace: true });
   }, [pathname]);
 
   return (
