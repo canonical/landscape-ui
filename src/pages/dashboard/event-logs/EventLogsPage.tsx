@@ -13,12 +13,12 @@ import moment from "moment";
 import { downloadCSV } from "./helpers";
 
 const EventLogsPage: FC = () => {
-  const { user } = useAuth() as { user: AuthUser };
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState("");
   const [dayFilter, setDayFilter] = useState<number>(7);
 
+  const { user } = useAuth() as { user: AuthUser };
   const { getEventLogs } = useEventLogs();
   const debug = useDebug();
   const { data: eventLogsData, error } = getEventLogs({

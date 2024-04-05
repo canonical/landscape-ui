@@ -57,12 +57,8 @@ const AdministratorsPage = lazy(
   () => import("./pages/dashboard/settings/administrators"),
 );
 const RolesPage = lazy(() => import("./pages/dashboard/settings/roles"));
-
-const MonitoringPage = lazy(() => import("./pages/dashboard/monitoring"));
-const EventLogsPage = lazy(
-  () => import("./pages/dashboard/monitoring/event-logs"),
-);
-const AlertsPage = lazy(() => import("./pages/dashboard/monitoring/alerts"));
+const EventLogsPage = lazy(() => import("./pages/dashboard/event-logs"));
+const AlertsPage = lazy(() => import("./pages/dashboard/settings/alerts"));
 const UserPage = lazy(() => import("./pages/dashboard/user"));
 const NotificationsPage = lazy(() => import("./pages/dashboard/notifications"));
 const OverviewPage = lazy(() => import("./pages/dashboard/overview"));
@@ -216,15 +212,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path="monitoring"
-              element={
-                <AuthRoute>
-                  <MonitoringPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="monitoring/event-logs"
+              path="event-logs"
               element={
                 <AuthRoute>
                   <EventLogsPage />
@@ -232,7 +220,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path="monitoring/alerts"
+              path="settings/alerts"
               element={
                 <AuthRoute>
                   <AlertsPage />
