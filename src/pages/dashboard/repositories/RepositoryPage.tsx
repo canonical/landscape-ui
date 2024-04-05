@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ROOT_PATH } from "../../../constants";
+import { ROOT_PATH } from "@/constants";
 
 const RepositoryPage: FC = () => {
   const navigate = useNavigate();

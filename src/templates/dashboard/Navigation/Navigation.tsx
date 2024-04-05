@@ -2,15 +2,10 @@ import { FC, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import classNames from "classnames";
 import classes from "./Navigation.module.scss";
-import { ROOT_PATH } from "@/constants";
 import { MENU_ITEMS } from "./constants";
 
 const Navigation: FC = () => {
   const [expanded, setExpanded] = useState("");
-
-  useEffect(() => {
-    setExpanded(`${ROOT_PATH}repositories`);
-  }, []);
 
   const { pathname } = useLocation();
 
