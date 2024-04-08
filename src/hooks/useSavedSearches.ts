@@ -11,9 +11,9 @@ interface GetSavedSearchesParams {
 }
 
 interface CreateSavedSearchParams {
-  name: string;
   search: string;
   title: string;
+  name?: string;
 }
 
 interface EditSavedSearchParams {

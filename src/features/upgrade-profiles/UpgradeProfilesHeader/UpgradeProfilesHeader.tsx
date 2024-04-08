@@ -17,7 +17,7 @@ const UpgradeProfilesHeader: FC<UpgradeProfilesHeaderProps> = ({
         onSearch(inputText);
       }}
     >
-      <Row className="u-no-padding--left u-no-padding--right">
+      <Row className="u-no-margin--left u-no-margin--right u-no-padding--left u-no-padding--right">
         <Col size={4}>
           <SearchBox
             externallyControlled

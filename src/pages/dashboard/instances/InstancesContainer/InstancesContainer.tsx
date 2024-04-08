@@ -1,17 +1,11 @@
 import { FC, useState } from "react";
-import {
-  SearchAndFilterChip,
-  SearchAndFilterData,
-} from "@canonical/react-components/dist/components/SearchAndFilter/types";
 import useInstances from "@/hooks/useInstances";
 import InstanceList from "../InstanceList/InstanceList";
 import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
 import classes from "./InstancesContainer.module.scss";
-import SearchAndFilterWithDescription from "@/components/form/SearchAndFilterWithDescription";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import { INSTANCE_SEARCH_HELP_TERMS } from "../_data";
-import { useSavedSearches } from "@/hooks/useSavedSearches";
 import useDebug from "@/hooks/useDebug";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { Instance } from "@/types/Instance";
@@ -22,6 +16,10 @@ import {
   QUERY_STATUSES,
   STATUS_FILTER,
 } from "./constants";
+import {
+  ExtendedSearchAndFilterChip,
+  SearchBoxWithSavedSearches,
+} from "@/features/saved-searches";
 
 interface InstancesContainerProps {
   selectedInstances: Instance[];
@@ -33,7 +31,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
   setSelectedInstances,
 }) => {
   const [searchAndFilterChips, setSearchAndFilterChips] = useState<
-    SearchAndFilterChip[]
+    ExtendedSearchAndFilterChip[]
   >([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageLimit, setPageLimit] = useState(50);
@@ -41,8 +39,10 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
   const [groupBy, setGroupBy] = useState("");
   const [osFilter, setOsFilter] = useState("");
 
-  const location = useLocation();
-  const locationState = location.state as { chipData?: SearchAndFilterChip };
+  const location: { state: { chipData?: ExtendedSearchAndFilterChip } | null } =
+    useLocation();
+
+  const chipData = location.state?.chipData;
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [statusFilter, setStatusFilter] = useState(
@@ -52,28 +52,8 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
   const debug = useDebug();
 
   const { getInstancesQuery } = useInstances();
-  const { getSavedSearchesQuery } = useSavedSearches();
 
   const queryStatus = QUERY_STATUSES[statusFilter];
-  const {
-    data: getSavedSearchesQueryResult,
-    error: getSavedSearchesQueryError,
-  } = getSavedSearchesQuery();
-
-  if (getSavedSearchesQueryError) {
-    debug(getSavedSearchesQueryError);
-  }
-
-  const searchAndFilterData: SearchAndFilterData[] = [
-    {
-      id: 0,
-      heading: "Saved searches",
-      chips: (getSavedSearchesQueryResult?.data ?? []).map(({ name }) => ({
-        value: name,
-        lead: "search",
-      })),
-    },
-  ];
 
   const {
     data: getInstancesQueryResult,
@@ -81,7 +61,9 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
     error: getInstancesQueryError,
   } = getInstancesQuery({
     query: `${searchAndFilterChips
-      .map(({ lead, value }) => (lead ? `${lead}:${value}` : value))
+      .map(({ lead, value, title }) =>
+        lead && title ? `${lead}:${title}` : value,
+      )
       .join(" ")}${osFilter ?? ""} ${queryStatus}`.trim(),
     root_only: groupBy === "parent",
     with_alerts: true,
@@ -106,17 +88,12 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
     <>
       <div className={classes.top}>
         <div className={classes.searchContainer}>
-          <SearchAndFilterWithDescription
-            existingSearchData={
-              locationState?.chipData ? [locationState.chipData] : undefined
+          <SearchBoxWithSavedSearches
+            existingSearchData={chipData ? [chipData] : undefined}
+            onHelpButtonClick={() => setShowSearchHelp(true)}
+            returnSearchData={(searchData) =>
+              setSearchAndFilterChips(searchData)
             }
-            filterPanelData={searchAndFilterData}
-            returnSearchData={(searchData) => {
-              setSearchAndFilterChips(searchData);
-            }}
-            onClick={() => {
-              setShowSearchHelp(true);
-            }}
           />
         </div>
         {GROUP_BY_FILTER.type === "select" && (

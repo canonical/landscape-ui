@@ -1,0 +1,48 @@
+@import "vanilla-framework/scss/settings_placeholders";
+@import "vanilla-framework/scss/settings_spacing";
+
+.infoContainer {
+  display: flex;
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.amount {
+  padding-right: $sph--small;
+  padding-top: calc(2 * $bar-thickness);
+}
+
+.helpButtonContainer {
+  border-left: 1px solid $color-mid-light;
+  display: flex;
+  margin-bottom: $bar-thickness;
+  margin-right: $bar-thickness;
+  margin-top: $bar-thickness;
+  padding-left: calc($bar-thickness - 1px);
+
+  :global(.p-search-and-filter__search-container)[aria-expanded="true"] & {
+    align-items: flex-end;
+  }
+}
+
+.helpButton {
+  display: block;
+  height: calc(
+    (2 * $spv-nudge + map-get($line-heights, default-text)) -
+      (2 * $bar-thickness)
+  );
+  margin-bottom: 0;
+
+  & [class*="p-icon"] {
+    vertical-align: 0;
+  }
+
+  &,
+  &:active,
+  &:focus,
+  &:hover {
+    border-width: 0;
+  }
+}
