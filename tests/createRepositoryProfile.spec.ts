@@ -18,7 +18,10 @@ test("should create repository profile", async ({ page }) => {
   await page
     .locator('input[name="description"]')
     .fill("Test profile description");
-  await page.getByRole("combobox").selectOption("global");
+  await page
+    .getByRole("complementary")
+    .getByText("Access group", { exact: true })
+    .selectOption("global");
   await expect(page.locator('input[name="tags"]')).toBeEnabled();
   await page.getByText("All instances").click();
   await expect(page.locator('input[name="tags"]')).toBeDisabled();
@@ -64,9 +67,7 @@ test("should create repository profile", async ({ page }) => {
   await page.getByText("test-e2e-apt-source").click();
   await page.getByRole("button", { name: "Reset search" }).click();
   expect(await rows.count()).toBeGreaterThanOrEqual(1);
-  await page
-    .getByRole("button", { name: "Create profile", exact: true })
-    .click();
+  await page.getByLabel("Create profile").click();
 
   await expect(
     page.getByText("test-e2e-profile", { exact: true }),
