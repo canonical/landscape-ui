@@ -1,5 +1,6 @@
 import moment from "moment/moment";
 import { FC, lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { CellProps, Column } from "react-table";
 import {
   Button,
@@ -9,6 +10,7 @@ import {
 import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import ActivitiesEmptyState from "@/features/activities/ActivitiesEmptyState";
 import ActivitiesHeader from "@/features/activities/ActivitiesHeader";
 import { ACTIVITY_STATUSES } from "@/features/activities/constants";
 import useActivities from "@/hooks/useActivities";
@@ -16,17 +18,16 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Activity, ActivityCommon } from "@/types/Activity";
 import classes from "./Activities.module.scss";
-import { useLocation } from "react-router-dom";
 
 const ActivityDetails = lazy(
   () => import("@/features/activities/ActivityDetails"),
 );
 
 interface ActivitiesProps {
-  query?: string;
+  instanceId?: number;
 }
 
-const Activities: FC<ActivitiesProps> = ({ query = "" }) => {
+const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(50);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -60,12 +61,16 @@ const Activities: FC<ActivitiesProps> = ({ query = "" }) => {
     handlePaginate(1);
   };
 
-  const { data: getActivitiesQueryResult, error: getActivitiesQueryError } =
-    getActivitiesQuery({
-      query: `${query} ${searchQuery ?? ""}`.trim(),
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
-    });
+  const {
+    data: getActivitiesQueryResult,
+    error: getActivitiesQueryError,
+    isLoading: getActivitiesQueryLoading,
+  } = getActivitiesQuery({
+    query:
+      `${instanceId ? `computer:id:${instanceId}` : ""} ${searchQuery ?? ""}`.trim(),
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+  });
 
   if (getActivitiesQueryError) {
     debug(getActivitiesQueryError);
@@ -180,23 +185,45 @@ const Activities: FC<ActivitiesProps> = ({ query = "" }) => {
 
   return (
     <>
-      <ActivitiesHeader
-        resetPage={() => setCurrentPage(1)}
-        resetSelectedIds={() => setSelectedIds([])}
-        selectedIds={selectedIds}
-        setSearchQuery={(newSearchQuery) => {
-          setSearchQuery(newSearchQuery);
-        }}
-      />
-      <ModularTable columns={columns} data={activities} />
-      <TablePagination
-        currentPage={currentPage}
-        totalItems={getActivitiesQueryResult?.data.count}
-        paginate={handlePaginate}
-        pageSize={pageSize}
-        setPageSize={handlePageSizeChange}
-        currentItemCount={activities.length}
-      />
+      {!searchQuery &&
+        currentPage === 1 &&
+        pageSize === 50 &&
+        getActivitiesQueryLoading && <LoadingState />}
+
+      {!searchQuery &&
+        currentPage === 1 &&
+        pageSize === 50 &&
+        !getActivitiesQueryLoading &&
+        (!getActivitiesQueryResult || !getActivitiesQueryResult.data.count) && (
+          <ActivitiesEmptyState />
+        )}
+
+      {(!!searchQuery ||
+        currentPage !== 1 ||
+        pageSize !== 50 ||
+        (!getActivitiesQueryLoading &&
+          getActivitiesQueryResult &&
+          getActivitiesQueryResult.data.count > 0)) && (
+        <>
+          <ActivitiesHeader
+            resetPage={() => setCurrentPage(1)}
+            resetSelectedIds={() => setSelectedIds([])}
+            selectedIds={selectedIds}
+            setSearchQuery={(newSearchQuery) => {
+              setSearchQuery(newSearchQuery);
+            }}
+          />
+          <ModularTable columns={columns} data={activities} />
+          <TablePagination
+            currentPage={currentPage}
+            totalItems={getActivitiesQueryResult?.data.count}
+            paginate={handlePaginate}
+            pageSize={pageSize}
+            setPageSize={handlePageSizeChange}
+            currentItemCount={activities.length}
+          />
+        </>
+      )}
     </>
   );
 };

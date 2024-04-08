@@ -108,7 +108,9 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({ instance }) => {
             />
           )}
           {"tab-link-instances" === currentTabLinkId && <InstancesPanel />}
-          {"tab-link-activities" === currentTabLinkId && <ActivityPanel />}
+          {"tab-link-activities" === currentTabLinkId && (
+            <ActivityPanel instanceId={instance.id} />
+          )}
           {"tab-link-security-issues" === currentTabLinkId && (
             <SecurityIssuesPanel instance={instance} />
           )}
