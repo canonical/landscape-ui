@@ -224,7 +224,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   cloud_instance_metadata: CloudInstanceMetadata;
   comment: string;
   container_info: string | null;
-  distribution: string;
+  distribution: string | null;
   hostname: string;
   id: number;
   is_wsl_instance: boolean;

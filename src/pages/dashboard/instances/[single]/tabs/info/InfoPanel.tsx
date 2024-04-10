@@ -180,7 +180,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     },
     {
       label: "Distribution",
-      value: instance.distribution,
+      value: instance.distribution ?? "-",
     },
     {
       label: "Serial number",
