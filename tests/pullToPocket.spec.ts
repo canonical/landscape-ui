@@ -13,7 +13,7 @@ test("should pull packages to test pocket", async ({ page }) => {
     });
   });
 
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
 
   await page
     .getByRole("button", {

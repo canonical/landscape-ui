@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("should create pockets with the different mode", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
 
   await page
     .getByRole("button", {

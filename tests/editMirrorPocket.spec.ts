@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("should edit mirror pocket", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
   await page
     .getByRole("button", {
       name: "Edit test-mirror-pocket pocket of test-e2e-distro/test-derived-series",

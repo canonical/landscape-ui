@@ -72,7 +72,7 @@ test("should remove packages from upload pocket", async ({ page }) => {
     });
   });
 
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
 
   await page
     .getByRole("button", {

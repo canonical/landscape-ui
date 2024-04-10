@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
 });
 
 test("should create mirror using distribution empty state button", async ({

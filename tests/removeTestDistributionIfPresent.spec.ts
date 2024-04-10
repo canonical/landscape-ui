@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("should remove test distribution if present", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
   await expect(
     page
       .getByRole("button", {

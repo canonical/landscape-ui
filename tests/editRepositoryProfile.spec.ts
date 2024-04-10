@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("should edit repository profile", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
 
   await page.getByRole("link", { name: "Profiles" }).click();
 

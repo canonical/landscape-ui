@@ -37,7 +37,7 @@ Wch3hvQk5/ueMSsJGOhOR89XIDEoXWeSRSuRadAeuIsGVN3P1HVSyAwl1BFbSpwz
 `;
 
 test("should handle GPG key", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
 
   await page.getByRole("link", { name: "GPG Keys" }).click();
   expect(page.url().includes("gpg-keys")).toBeTruthy();

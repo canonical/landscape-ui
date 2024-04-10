@@ -25,7 +25,7 @@ test("should remove test distribution pockets", async ({ page }) => {
     });
   });
 
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
   await expect(
     page.getByRole("button", {
       name: "List updates pocket of test-e2e-distro/test-mirror-jammy",

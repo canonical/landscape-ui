@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("should remove test GPG key if present", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/repositories/mirrors");
   await page.getByRole("link", { name: "GPG Keys" }).click();
 
   await expect(

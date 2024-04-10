@@ -9,9 +9,7 @@ test("should log in", async ({ page }) => {
   await page.getByRole("button", { name: "Login" }).click();
 
   await expect(page).toHaveURL(/overview/);
-  await expect(
-    page.getByRole("heading", { name: "Repository Mirrors" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
 
   await page.context().storageState({ path: STORAGE_STATE });
 });
