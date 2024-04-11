@@ -9,15 +9,15 @@ import {
   Row,
   Tabs,
 } from "@canonical/react-components";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
-import { RepositoryProfile } from "../../../../types/RepositoryProfile";
-import useDebug from "../../../../hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import useRepositoryProfiles from "@/hooks/useRepositoryProfiles";
+import { RepositoryProfile } from "@/types/RepositoryProfile";
+import useDebug from "@/hooks/useDebug";
 import { AxiosResponse } from "axios";
-import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
+import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import classNames from "classnames";
-import useAPTSources from "../../../../hooks/useAPTSources";
-import useDistributions from "../../../../hooks/useDistributions";
+import useAPTSources from "@/hooks/useAPTSources";
+import useDistributions from "@/hooks/useDistributions";
 import classes from "./ProfileForm.module.scss";
 import {
   getDistributionPocketOptions,
@@ -25,7 +25,7 @@ import {
   getFilteredDistributionPocketOptions,
   getFullProfilePocketNames,
 } from "./_helpers";
-import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 
 interface FormProps {
   name: string;
@@ -85,30 +85,19 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
     addPocketsToRepositoryProfileQuery,
     removePocketsFromRepositoryProfileQuery,
   } = useRepositoryProfiles();
-  const { mutateAsync: editRepositoryProfile, isLoading: isEditing } =
-    editRepositoryProfileQuery;
-  const { mutateAsync: associateRepositoryProfile, isLoading: isAssociating } =
+  const { mutateAsync: editRepositoryProfile } = editRepositoryProfileQuery;
+  const { mutateAsync: associateRepositoryProfile } =
     associateRepositoryProfileQuery;
-  const {
-    mutateAsync: disassociateRepositoryProfile,
-    isLoading: isDisassociating,
-  } = disassociateRepositoryProfileQuery;
-  const {
-    mutateAsync: addAPTSourcesToRepositoryProfile,
-    isLoading: isAddingAPTSourcesToRepositoryProfile,
-  } = addAPTSourcesToRepositoryProfileQuery;
-  const {
-    mutateAsync: removeAPTSourceFromRepositoryProfile,
-    isLoading: isRemovingAPTSourceFromRepositoryProfile,
-  } = removeAPTSourceFromRepositoryProfileQuery;
-  const {
-    mutateAsync: addPocketsToRepositoryProfile,
-    isLoading: isAddingPocketsToRepositoryProfile,
-  } = addPocketsToRepositoryProfileQuery;
-  const {
-    mutateAsync: removePocketsFromRepositoryProfile,
-    isLoading: isRemovingPocketsFromRepositoryProfile,
-  } = removePocketsFromRepositoryProfileQuery;
+  const { mutateAsync: disassociateRepositoryProfile } =
+    disassociateRepositoryProfileQuery;
+  const { mutateAsync: addAPTSourcesToRepositoryProfile } =
+    addAPTSourcesToRepositoryProfileQuery;
+  const { mutateAsync: removeAPTSourceFromRepositoryProfile } =
+    removeAPTSourceFromRepositoryProfileQuery;
+  const { mutateAsync: addPocketsToRepositoryProfile } =
+    addPocketsToRepositoryProfileQuery;
+  const { mutateAsync: removePocketsFromRepositoryProfile } =
+    removePocketsFromRepositoryProfileQuery;
 
   const { data: getDistributionsResponse } = getDistributionsQuery();
 
@@ -350,7 +339,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
             },
           },
           {
-            label: "Apt Sources",
+            label: "APT Sources",
             role: "tab",
             ["data-testid"]: "apt-sources-tab",
             active: 2 === currentTab,
@@ -649,16 +638,8 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           )}
 
           <SidePanelFormButtons
-            disabled={
-              isEditing ||
-              isAssociating ||
-              isDisassociating ||
-              isAddingAPTSourcesToRepositoryProfile ||
-              isRemovingAPTSourceFromRepositoryProfile ||
-              isAddingPocketsToRepositoryProfile ||
-              isRemovingPocketsFromRepositoryProfile
-            }
-            bottomSticky={true}
+            bottomSticky
+            disabled={formik.isSubmitting}
             submitButtonText="Save changes"
           />
         </div>

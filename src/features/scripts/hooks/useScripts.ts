@@ -1,12 +1,12 @@
-import { QueryFnType } from "../types/QueryFnType";
-import { Script } from "../types/Script";
 import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useFetchOld from "./useFetchOld";
-import { ApiError } from "../types/ApiError";
-import { Activity } from "../types/Activity";
-import useFetch from "./useFetch";
-import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
+import { Script } from "@/features/scripts";
+import useFetch from "@/hooks/useFetch";
+import useFetchOld from "@/hooks/useFetchOld";
+import { Activity } from "@/types/Activity";
+import { ApiError } from "@/types/ApiError";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { QueryFnType } from "@/types/QueryFnType";
 
 interface GetScriptsParams {
   limit?: number;

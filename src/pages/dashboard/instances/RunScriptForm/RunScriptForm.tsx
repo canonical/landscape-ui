@@ -1,9 +1,10 @@
 import { ChangeEvent, FC, useMemo } from "react";
 import useDebug from "@/hooks/useDebug";
-import useScripts, {
+import {
   CreateScriptParams,
   ExecuteScriptParams,
-} from "@/hooks/useScripts";
+  useScripts,
+} from "@/features/scripts";
 import {
   CheckboxInput,
   Form,

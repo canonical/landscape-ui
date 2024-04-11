@@ -1,15 +1,17 @@
-import { FC, useEffect, useMemo } from "react";
-import { Script } from "@/types/Script";
-import useSidePanel from "@/hooks/useSidePanel";
-import useDebug from "@/hooks/useDebug";
-import useScripts, { CreateScriptParams } from "@/hooks/useScripts";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Button, Form, Input, Select } from "@canonical/react-components";
-import useRoles from "@/hooks/useRoles";
-import { SelectOption } from "@/types/SelectOption";
 import { Buffer } from "buffer";
+import { useFormik } from "formik";
+import { FC, useEffect, useMemo } from "react";
+import * as Yup from "yup";
+import { Button, Form, Input, Select } from "@canonical/react-components";
 import CodeEditor from "@/components/form/CodeEditor";
+import { CreateScriptParams, useScripts } from "@/features/scripts/hooks";
+import { Script } from "@/features/scripts/types";
+import useDebug from "@/hooks/useDebug";
+import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
+import { SelectOption } from "@/types/SelectOption";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { CTA_LABELS } from "./constants";
 
 interface FormProps extends CreateScriptParams {
   attachments: {
@@ -40,14 +42,14 @@ const INITIAL_VALUES: FormProps = {
 
 type SingleScriptProps =
   | {
-      action: "create";
-    }
-  | {
-      action: "edit";
-      script: Script;
+      action: "add";
     }
   | {
       action: "copy";
+      script: Script;
+    }
+  | {
+      action: "edit";
       script: Script;
     };
 
@@ -128,7 +130,7 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
 
   const handleSubmit = async (values: FormProps) => {
     try {
-      if ("create" === props.action) {
+      if ("add" === props.action) {
         const newScript = await createScript({
           title: values.title,
           time_limit: values.time_limit,
@@ -220,7 +222,7 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
   };
 
   useEffect(() => {
-    if ("create" === props.action) {
+    if ("add" === props.action) {
       return;
     }
 
@@ -274,18 +276,6 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
       })),
     [getAccessGroupResult],
   );
-
-  const submitButtonText = useMemo(() => {
-    if (props.action === "create") {
-      return "Create";
-    }
-
-    if (props.action === "edit") {
-      return "Save changes";
-    }
-
-    return "Copy";
-  }, [props.action]);
 
   const FileInputs = [
     <Input
@@ -417,7 +407,7 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
         }
       />
 
-      {("create" === props.action || "edit" === props.action) && (
+      {("add" === props.action || "edit" === props.action) && (
         <>
           <Input
             type="number"
@@ -472,7 +462,7 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
         }
       />
 
-      {("create" === props.action || "edit" === props.action) && (
+      {("add" === props.action || "edit" === props.action) && (
         <>
           <h5>List of attachments</h5>
           <p className="u-text--muted">
@@ -486,21 +476,13 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
         </>
       )}
 
-      {("create" === props.action || "edit" === props.action) &&
+      {("add" === props.action || "edit" === props.action) &&
         getAttachmentInputs()}
 
-      <div className="form-buttons">
-        <Button
-          type="submit"
-          appearance="positive"
-          disabled={formik.isSubmitting}
-        >
-          {submitButtonText}
-        </Button>
-        <Button type="button" onClick={handleClose}>
-          Cancel
-        </Button>
-      </div>
+      <SidePanelFormButtons
+        disabled={formik.isSubmitting}
+        submitButtonText={CTA_LABELS[props.action]}
+      />
     </Form>
   );
 };

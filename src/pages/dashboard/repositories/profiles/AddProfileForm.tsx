@@ -81,18 +81,13 @@ const AddProfileForm: FC = () => {
     addPocketsToRepositoryProfileQuery,
   } = useRepositoryProfiles();
 
-  const { mutateAsync: createRepositoryProfile, isLoading: isCreating } =
-    createRepositoryProfileQuery;
-  const { mutateAsync: associateRepositoryProfile, isLoading: isAssociating } =
+  const { mutateAsync: createRepositoryProfile } = createRepositoryProfileQuery;
+  const { mutateAsync: associateRepositoryProfile } =
     associateRepositoryProfileQuery;
-  const {
-    mutateAsync: addAPTSourcesToRepositoryProfile,
-    isLoading: isAddingAPTSourcesToRepositoryProfile,
-  } = addAPTSourcesToRepositoryProfileQuery;
-  const {
-    mutateAsync: addPocketsToRepositoryProfile,
-    isLoading: isAddingPocketsToRepositoryProfile,
-  } = addPocketsToRepositoryProfileQuery;
+  const { mutateAsync: addAPTSourcesToRepositoryProfile } =
+    addAPTSourcesToRepositoryProfileQuery;
+  const { mutateAsync: addPocketsToRepositoryProfile } =
+    addPocketsToRepositoryProfileQuery;
 
   const { data: getDistributionsResponse } = getDistributionsQuery();
 
@@ -227,7 +222,7 @@ const AddProfileForm: FC = () => {
             },
           },
           {
-            label: "Apt Sources",
+            label: "APT Sources",
             role: "tab",
             ["data-testid"]: "apt-sources-tab",
             active: 2 === currentTab,
@@ -548,13 +543,8 @@ const AddProfileForm: FC = () => {
           )}
 
           <SidePanelFormButtons
-            disabled={
-              isCreating ||
-              isAssociating ||
-              isAddingAPTSourcesToRepositoryProfile ||
-              isAddingPocketsToRepositoryProfile
-            }
-            bottomSticky={true}
+            bottomSticky
+            disabled={formik.isSubmitting}
             submitButtonText="Create profile"
             submitButtonAriaLabel="Create profile"
           />
