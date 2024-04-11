@@ -160,7 +160,7 @@ const InstanceList: FC<InstanceListProps> = ({
         Header: "OS",
         Cell: ({ row }: CellProps<Instance>) => (
           <>
-            {row.original.distribution.match(/\d{1,2}\.\d{2}/)
+            {row.original.distribution?.match(/\d{1,2}\.\d{2}/)
               ? `${row.original.is_wsl_instance ? "WSL - " : ""}Ubuntu\xA0${
                   row.original.distribution
                 }`
