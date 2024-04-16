@@ -1,8 +1,8 @@
+import classNames from "classnames";
 import { FC } from "react";
 import { Col, Row } from "@canonical/react-components";
+import InfoItem from "@/components/layout/InfoItem";
 import classes from "./HardwareInfoRow.module.scss";
-import InfoItem from "../../../../../../components/layout/InfoItem";
-import classNames from "classnames";
 
 interface InfoBlock {
   label: string;

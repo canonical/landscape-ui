@@ -1,22 +1,27 @@
 import { FC, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import useInstances from "@/hooks/useInstances";
-import PageMain from "@/components/layout/PageMain";
+import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
-import { Button } from "@canonical/react-components";
-import useDebug from "@/hooks/useDebug";
 import PageHeader from "@/components/layout/PageHeader";
-import EmptyState from "@/components/layout/EmptyState";
+import PageMain from "@/components/layout/PageMain";
 import { ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
+import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
+import { usePackages } from "@/hooks/usePackages";
+import useUsns from "@/hooks/useUsns";
+import SingleInstanceEmptyState from "@/pages/dashboard/instances/[single]/SingleInstanceEmptyState";
 import SingleInstanceTabs from "@/pages/dashboard/instances/[single]/SingleInstanceTabs";
 import { getBreadcrumbs } from "./helpers";
 
 const SingleInstanceContainer: FC = () => {
-  const { hostname, childHostname } = useParams();
+  const { instanceId, childInstanceId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const debug = useDebug();
+  const { getSingleInstanceQuery } = useInstances();
+  const { getUsnsQuery } = useUsns();
+  const { getInstancePackagesQuery } = usePackages();
 
   const userAccountRef = useRef("");
 
@@ -36,62 +41,110 @@ const SingleInstanceContainer: FC = () => {
     navigate(`${ROOT_PATH}instances`, { replace: true });
   }, [user?.current_account]);
 
-  const { getInstancesQuery } = useInstances();
-
-  const { data: getInstancesQueryResult, error: getInstancesQueryError } =
-    getInstancesQuery({
-      query: `hostname:${hostname}`,
+  const {
+    data: getSingleInstanceQueryResult,
+    error: getSingleInstanceQueryError,
+    isLoading: getSingleInstanceQueryLoading,
+  } = getSingleInstanceQuery(
+    {
+      instanceId: childInstanceId
+        ? parseInt(childInstanceId)
+        : parseInt(instanceId ?? ""),
       with_annotations: true,
-    });
+      with_grouped_hardware: true,
+    },
+    { enabled: !!instanceId },
+  );
 
-  if (getInstancesQueryError) {
-    debug(getInstancesQueryError);
+  if (getSingleInstanceQueryError) {
+    debug(getSingleInstanceQueryError);
   }
 
-  const instance = getInstancesQueryResult?.data.results[0] ?? null;
+  const instance = getSingleInstanceQueryResult?.data ?? null;
+
+  const {
+    data: getUsnsQueryResult,
+    error: getUsnsQueryError,
+    isLoading: getUsnsQueryLoading,
+  } = getUsnsQuery(
+    {
+      computer_ids: instance ? [instance.id] : [],
+      limit: 1,
+    },
+    {
+      enabled:
+        !!instance?.distribution &&
+        /\d{1,2}\.\d{2}/.test(instance.distribution) &&
+        (!childInstanceId ||
+          instance.parent?.id === parseInt(instanceId ?? "")),
+    },
+  );
+
+  if (getUsnsQueryError) {
+    debug(getUsnsQueryError);
+  }
+
+  const {
+    data: getInstancePackagesQueryResult,
+    error: getInstancePackagesQueryError,
+    isLoading: getInstancePackagesQueryLoading,
+  } = getInstancePackagesQuery(
+    {
+      available: false,
+      upgrade: true,
+      instance_id: instance ? instance.id : 0,
+      limit: 1,
+    },
+    {
+      enabled:
+        !!instance?.distribution &&
+        /\d{1,2}\.\d{2}/.test(instance.distribution) &&
+        (!childInstanceId ||
+          instance.parent?.id === parseInt(instanceId ?? "")),
+    },
+  );
+
+  if (getInstancePackagesQueryError) {
+    debug(getInstancePackagesQueryError);
+  }
 
   return (
     <PageMain>
       <PageHeader
-        title={instance?.title ?? childHostname ?? hostname ?? ""}
+        title={instance?.title ?? ""}
         hideTitle
-        breadcrumbs={getBreadcrumbs(instance, hostname, childHostname)}
+        breadcrumbs={getBreadcrumbs(instance)}
       />
       <PageContent>
-        {!instance && getInstancesQueryResult && (
-          <EmptyState
-            title="Instance not found"
-            icon="connected"
-            body={
-              <p className="u-no-margin--bottom">
-                Seems like the instance <code>{hostname}</code> doesn&apos;t
-                exist
-              </p>
-            }
-            cta={[
-              <Button
-                appearance="positive"
-                key="go-back-to-instances-page"
-                onClick={() =>
-                  navigate(`${ROOT_PATH}instances`, { replace: true })
-                }
-                type="button"
-                aria-label="Go back"
-              >
-                Back to Instances page
-              </Button>,
-              <Button
-                key="go-back-to-home-page"
-                onClick={() => navigate(`${ROOT_PATH}`, { replace: true })}
-                type="button"
-                aria-label="Go back"
-              >
-                Home page
-              </Button>,
-            ]}
-          />
-        )}
-        {instance && <SingleInstanceTabs instance={instance} />}
+        {getSingleInstanceQueryLoading && <LoadingState />}
+        {!getSingleInstanceQueryLoading &&
+          (!instance ||
+            (childInstanceId &&
+              instance?.parent?.id !== parseInt(instanceId ?? ""))) && (
+            <SingleInstanceEmptyState
+              childInstanceId={childInstanceId}
+              instanceId={instanceId}
+            />
+          )}
+        {!getSingleInstanceQueryLoading &&
+          instance &&
+          (!childInstanceId ||
+            (instance.parent &&
+              instance.parent.id === parseInt(instanceId ?? ""))) && (
+            <SingleInstanceTabs
+              instance={instance}
+              packageCount={
+                !instance.distribution
+                  ? 0
+                  : getInstancePackagesQueryResult?.data.count
+              }
+              packagesLoading={getInstancePackagesQueryLoading}
+              usnCount={
+                !instance.distribution ? 0 : getUsnsQueryResult?.data.count
+              }
+              usnLoading={getUsnsQueryLoading}
+            />
+          )}
       </PageContent>
     </PageMain>
   );

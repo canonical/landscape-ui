@@ -1,14 +1,14 @@
-import { FC, useMemo } from "react";
-import { Instance } from "@/types/Instance";
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
-import { CellProps, Column, Row } from "react-table";
-import { Link } from "react-router-dom";
-import classes from "./InstanceList.module.scss";
-import moment from "moment";
-import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT, ROOT_PATH } from "@/constants";
 import classNames from "classnames";
-import InstanceStatusCell from "@/pages/dashboard/instances/InstanceStatusCell/InstanceStatusCell";
+import moment from "moment";
+import { FC, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { CellProps, Column, Row } from "react-table";
+import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT, ROOT_PATH } from "@/constants";
+import InstanceStatusCell from "@/pages/dashboard/instances/InstanceStatusCell";
 import InstanceUpgradesCell from "@/pages/dashboard/instances/InstanceUpgradesCell";
+import { Instance } from "@/types/Instance";
+import classes from "./InstanceList.module.scss";
 
 interface InstanceListProps {
   instances: Instance[];
@@ -133,8 +133,8 @@ const InstanceList: FC<InstanceListProps> = ({
             <Link
               to={
                 row.original.parent
-                  ? `${ROOT_PATH}instances/${row.original.parent.hostname}/${row.original.hostname}`
-                  : `${ROOT_PATH}instances/${row.original.hostname}`
+                  ? `${ROOT_PATH}instances/${row.original.parent.id}/${row.original.id}`
+                  : `${ROOT_PATH}instances/${row.original.id}`
               }
             >
               {row.original.title}
@@ -158,15 +158,17 @@ const InstanceList: FC<InstanceListProps> = ({
       {
         accessor: "distribution",
         Header: "OS",
-        Cell: ({ row }: CellProps<Instance>) => (
-          <>
-            {row.original.distribution?.match(/\d{1,2}\.\d{2}/)
-              ? `${row.original.is_wsl_instance ? "WSL - " : ""}Ubuntu\xA0${
-                  row.original.distribution
-                }`
-              : `Windows ${row.original.distribution}`}
-          </>
-        ),
+        Cell: ({ row: { original } }: CellProps<Instance>) => {
+          if (!original.distribution) {
+            return "---";
+          }
+
+          if (/\d{1,2}\.\d{2}/.test(original.distribution)) {
+            return `${original.is_wsl_instance ? "WSL - " : ""}Ubuntu\xA0${original.distribution}`;
+          }
+
+          return `Windows ${original.distribution}`;
+        },
       },
       {
         accessor: "ubuntu_pro_info",
@@ -189,7 +191,6 @@ const InstanceList: FC<InstanceListProps> = ({
       {
         Header: "Host name",
         accessor: "hostname",
-        Cell: ({ row }: CellProps<Instance>) => <>{row.original.hostname}</>,
       },
       {
         Header: "Last ping time",

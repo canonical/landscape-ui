@@ -5,16 +5,8 @@ import {
   Input,
   Modal,
 } from "@canonical/react-components";
+import { ActivityProps } from "@/pages/dashboard/instances/[single]/tabs/info/types";
 import classes from "./ActivityConfirmation.module.scss";
-
-export interface ActivityProps {
-  title: string;
-  description: string;
-  acceptButton: {
-    label: string;
-    onClick: () => void;
-  };
-}
 
 interface ActivityConfirmationProps {
   onClose: () => void;

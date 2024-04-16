@@ -1,25 +1,25 @@
 import { FC, useState } from "react";
-import useInstances from "@/hooks/useInstances";
-import InstanceList from "../InstanceList/InstanceList";
-import LoadingState from "@/components/layout/LoadingState";
-import TablePagination from "@/components/layout/TablePagination";
-import classes from "./InstancesContainer.module.scss";
-import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
-import { INSTANCE_SEARCH_HELP_TERMS } from "../_data";
-import useDebug from "@/hooks/useDebug";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { Instance } from "@/types/Instance";
 import { Select } from "@canonical/react-components";
-import {
-  GROUP_BY_FILTER,
-  OS_FILTER,
-  QUERY_STATUSES,
-  STATUS_FILTER,
-} from "./constants";
+import LoadingState from "@/components/layout/LoadingState";
+import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
+import TablePagination from "@/components/layout/TablePagination";
 import {
   ExtendedSearchAndFilterChip,
   SearchBoxWithSavedSearches,
 } from "@/features/saved-searches";
+import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
+import InstanceList from "@/pages/dashboard/instances/InstanceList";
+import { Instance } from "@/types/Instance";
+import {
+  GROUP_BY_FILTER,
+  INSTANCE_SEARCH_HELP_TERMS,
+  OS_FILTER,
+  QUERY_STATUSES,
+  STATUS_FILTER,
+} from "./constants";
+import classes from "./InstancesContainer.module.scss";
 
 interface InstancesContainerProps {
   selectedInstances: Instance[];

@@ -1,8 +1,8 @@
 import { FC, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { CellProps, Column } from "react-table";
-import { ROOT_PATH } from "@/constants";
 import ExpandableTable from "@/components/layout/ExpandableTable";
+import { ROOT_PATH } from "@/constants";
 import { Instance } from "@/types/Instance";
 
 interface UpgradesInstanceListProps {
@@ -25,7 +25,7 @@ const UpgradesInstanceList: FC<UpgradesInstanceListProps> = ({ instances }) => {
         Cell: ({ row }: CellProps<Instance>) => (
           <Link
             className="u-no-margin--bottom u-no-padding--top"
-            to={`${ROOT_PATH}instances/${row.original.hostname}`}
+            to={`${ROOT_PATH}instances/${row.original.parent ? `${row.original.parent.id}/${row.original.id}` : row.original.id}`}
             state={{ tab: "packages", filter: "upgrade", selectAll: true }}
           >
             {row.original.title}

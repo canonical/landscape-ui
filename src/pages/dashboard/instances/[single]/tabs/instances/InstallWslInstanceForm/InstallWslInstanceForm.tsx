@@ -1,11 +1,11 @@
-import { FC } from "react";
-import useDebug from "../../../../../../hooks/useDebug";
-import { useWsl } from "../../../../../../hooks/useWsl";
-import { Form, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
+import { FC } from "react";
 import * as Yup from "yup";
-import SidePanelFormButtons from "../../../../../../components/form/SidePanelFormButtons";
-import { SelectOption } from "../../../../../../types/SelectOption";
+import { Form, Select } from "@canonical/react-components";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useDebug from "@/hooks/useDebug";
+import { useWsl } from "@/hooks/useWsl";
+import { SelectOption } from "@/types/SelectOption";
 
 interface InstallWslInstanceFormProps {
   parentId: number;

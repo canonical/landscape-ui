@@ -1,12 +1,12 @@
 import { FC, SyntheticEvent, useState } from "react";
 import { Button, Form, SearchBox } from "@canonical/react-components";
-import useDebug from "../../../../../../hooks/useDebug";
-import { useWsl } from "../../../../../../hooks/useWsl";
+import useConfirm from "@/hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import { useWsl } from "@/hooks/useWsl";
+import InstallWslInstanceForm from "@/pages/dashboard/instances/[single]/tabs/instances/InstallWslInstanceForm";
+import { InstanceWithoutRelation } from "@/types/Instance";
 import classes from "./InstancesPanelHeader.module.scss";
-import useSidePanel from "../../../../../../hooks/useSidePanel";
-import useConfirm from "../../../../../../hooks/useConfirm";
-import InstallWslInstanceForm from "./InstallWslInstanceForm";
-import { InstanceWithoutRelation } from "../../../../../../types/Instance";
 
 interface InstancesPanelHeaderProps {
   parentId: number;

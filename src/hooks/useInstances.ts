@@ -1,12 +1,17 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useFetchOld from "./useFetchOld";
-import { QueryFnType } from "@/types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
-import { Instance } from "@/types/Instance";
-import { ApiError } from "@/types/ApiError";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { Activity } from "@/types/Activity";
-import useFetch from "./useFetch";
+import { ApiError } from "@/types/ApiError";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { Instance } from "@/types/Instance";
+import { QueryFnType } from "@/types/QueryFnType";
+import useFetch from "./useFetch";
+import useFetchOld from "./useFetchOld";
 
 interface GetInstancesParams {
   query?: string;
@@ -20,6 +25,22 @@ interface GetInstancesParams {
   wsl_only?: boolean;
   with_alerts?: boolean;
   with_upgrades?: boolean;
+}
+
+interface GetSingleInstanceParams {
+  instanceId: number;
+  with_annotations?: boolean;
+  with_grouped_hardware?: boolean;
+  with_hardware?: boolean;
+  with_network?: boolean;
+}
+
+interface EditInstanceParams {
+  instanceId: number;
+  access_group?: string;
+  comment?: string;
+  tags?: string[];
+  title?: string;
 }
 
 interface AddAnnotationToInstancesParams {
@@ -96,6 +117,32 @@ export default function useInstances() {
         }),
       ...config,
     });
+
+  const getSingleInstanceQuery = (
+    { instanceId, ...queryParams }: GetSingleInstanceParams,
+    config: Omit<
+      UseQueryOptions<AxiosResponse<Instance>, AxiosError<ApiError>>,
+      "queryKey" | "queryFn"
+    > = {},
+  ) =>
+    useQuery<AxiosResponse<Instance>, AxiosError<ApiError>>({
+      queryKey: ["instances", { instanceId, ...queryParams }],
+      queryFn: () =>
+        authFetch!.get(`computers/${instanceId}`, {
+          params: queryParams,
+        }),
+      ...config,
+    });
+
+  const editInstanceQuery = useMutation<
+    AxiosResponse<Instance>,
+    AxiosError<ApiError>,
+    EditInstanceParams
+  >({
+    mutationFn: ({ instanceId, ...params }) =>
+      authFetch!.put(`computers/${instanceId}`, params),
+    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+  });
 
   const addAnnotationToInstancesQuery = useMutation<
     AxiosResponse<Instance[]>,
@@ -235,6 +282,8 @@ export default function useInstances() {
 
   return {
     getInstancesQuery,
+    getSingleInstanceQuery,
+    editInstanceQuery,
     addAnnotationToInstancesQuery,
     removeAnnotationFromInstancesQuery,
     addTagsToInstancesQuery,

@@ -1,0 +1,20 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flexContainer {
+  column-gap: $sph--large;
+  display: flex;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.infoRow {
+  padding-top: $spv--large;
+  padding-bottom: $spv--large;
+}

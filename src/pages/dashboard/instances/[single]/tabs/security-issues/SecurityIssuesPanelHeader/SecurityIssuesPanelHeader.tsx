@@ -1,14 +1,14 @@
-import { FC, useState } from "react";
-import { Button, Form, Icon, SearchBox } from "@canonical/react-components";
-import classes from "./SecurityIssuesPanelHeader.module.scss";
 import classNames from "classnames";
-import useDebug from "@/hooks/useDebug";
-import useConfirm from "@/hooks/useConfirm";
-import useUsns from "@/hooks/useUsns";
-import useNotify from "@/hooks/useNotify";
+import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button, Form, Icon, SearchBox } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
+import useConfirm from "@/hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useUsns from "@/hooks/useUsns";
 import { Instance } from "@/types/Instance";
+import classes from "./SecurityIssuesPanelHeader.module.scss";
 
 interface SecurityIssuesPanelHeaderProps {
   instance: Instance;
@@ -36,7 +36,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 
   const handleActivityDetailsView = () => {
     navigate(
-      `${ROOT_PATH}instances/${instance.parent ? `${instance.parent.hostname}/${instance.hostname}` : instance.hostname}`,
+      `${ROOT_PATH}instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`,
       { state: { tab: "activities" } },
     );
 

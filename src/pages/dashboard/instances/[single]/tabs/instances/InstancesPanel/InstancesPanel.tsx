@@ -1,77 +1,53 @@
 import { FC, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import useInstances from "@/hooks/useInstances";
-import useDebug from "@/hooks/useDebug";
+import { Link } from "react-router-dom";
 import { CellProps, Column } from "react-table";
-import { InstanceWithoutRelation } from "@/types/Instance";
 import {
   Button,
   CheckboxInput,
   ModularTable,
 } from "@canonical/react-components";
-import classes from "./InstancesPanel.module.scss";
-import InstancesPanelHeader from "./InstancesPanelHeader";
-import LoadingState from "@/components/layout/LoadingState";
-import { useWsl } from "@/hooks/useWsl";
-import useConfirm from "@/hooks/useConfirm";
 import { ROOT_PATH } from "@/constants";
+import useConfirm from "@/hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
+import { useWsl } from "@/hooks/useWsl";
+import InstancesPanelHeader from "@/pages/dashboard/instances/[single]/tabs/instances/InstancesPanelHeader";
+import { Instance, InstanceWithoutRelation } from "@/types/Instance";
+import classes from "./InstancesPanel.module.scss";
 
-const InstancesPanel: FC = () => {
+interface InstancesPanelProps {
+  instance: Instance;
+}
+
+const InstancesPanel: FC<InstancesPanelProps> = ({ instance }) => {
   const [selectedInstances, setSelectedInstances] = useState<
     InstanceWithoutRelation[]
   >([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { hostname } = useParams();
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { getInstancesQuery } = useInstances();
   const { setDefaultChildInstanceQuery, deleteChildInstancesQuery } = useWsl();
-
-  const {
-    data: getInstancesQueryResult,
-    error: getInstancesQueryError,
-    isLoading: getInstancesQueryLoading,
-  } = getInstancesQuery({
-    query: `hostname:${hostname}`,
-  });
-
-  if (getInstancesQueryError) {
-    debug(getInstancesQueryError);
-  }
 
   const wslInstances = useMemo(() => {
     if (!searchQuery) {
-      return getInstancesQueryResult?.data.results[0].children ?? [];
+      return instance.children;
     }
 
-    return (
-      getInstancesQueryResult?.data.results[0].children.filter(
-        ({ title, hostname }) =>
-          title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          hostname.toLowerCase().includes(searchQuery.toLowerCase()),
-      ) ?? []
+    return instance.children.filter(
+      ({ title, hostname }) =>
+        title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        hostname.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [getInstancesQueryResult, searchQuery]);
+  }, [instance, searchQuery]);
 
-  const {
-    mutateAsync: setDefaultChildInstance,
-    isLoading: setDefaultChildInstanceQueryLoading,
-  } = setDefaultChildInstanceQuery;
-  const {
-    mutateAsync: deleteChildInstances,
-    isLoading: deleteChildInstancesQueryLoading,
-  } = deleteChildInstancesQuery;
+  const { mutateAsync: setDefaultChildInstance } = setDefaultChildInstanceQuery;
+  const { mutateAsync: deleteChildInstances } = deleteChildInstancesQuery;
 
   const handleSetDefaultChildInstance = async (child_id: number) => {
-    if (!getInstancesQueryResult) {
-      return;
-    }
-
     try {
       await setDefaultChildInstance({
         child_id,
-        parent_id: getInstancesQueryResult.data.results[0].id,
+        parent_id: instance.id,
       });
     } catch (error) {
       debug(error);
@@ -81,17 +57,16 @@ const InstancesPanel: FC = () => {
   };
 
   const handleSetDefaultChildInstanceDialog = (
-    instance: InstanceWithoutRelation,
+    childInstance: InstanceWithoutRelation,
   ) => {
     confirmModal({
       title: "Set default instance",
-      body: `Are you sure you want to set ${instance.title} as default instance?`,
+      body: `Are you sure you want to set ${childInstance.title} as default instance?`,
       buttons: [
         <Button
           key="set-default"
           appearance="positive"
-          disabled={setDefaultChildInstanceQueryLoading}
-          onClick={() => handleSetDefaultChildInstance(instance.id)}
+          onClick={() => handleSetDefaultChildInstance(childInstance.id)}
         >
           Set default
         </Button>,
@@ -112,17 +87,16 @@ const InstancesPanel: FC = () => {
   };
 
   const handleDeleteChildInstancesDialog = (
-    instance: InstanceWithoutRelation,
+    childInstance: InstanceWithoutRelation,
   ) => {
     confirmModal({
-      title: `Delete ${instance.title}`,
+      title: `Delete ${childInstance.title}`,
       body: "This will remove the WSL instance from the host and Landscape",
       buttons: [
         <Button
           key="delete"
           appearance="negative"
-          disabled={deleteChildInstancesQueryLoading}
-          onClick={() => handleDeleteChildInstances(instance.id)}
+          onClick={() => handleDeleteChildInstances(childInstance.id)}
         >
           Delete
         </Button>,
@@ -177,7 +151,7 @@ const InstancesPanel: FC = () => {
               onChange={() => handleInstanceCheck(row.original)}
             />
             <Link
-              to={`${ROOT_PATH}instances/${hostname}/${row.original.hostname}`}
+              to={`${ROOT_PATH}instances/${instance.id}/${row.original.id}`}
             >
               {row.original.title}
             </Link>
@@ -239,10 +213,10 @@ const InstancesPanel: FC = () => {
     [wslInstances, selectedInstances],
   );
 
-  return getInstancesQueryResult ? (
+  return (
     <>
       <InstancesPanelHeader
-        parentId={getInstancesQueryResult?.data.results[0].id}
+        parentId={instance.id}
         resetQuery={() => {
           setSearchQuery("");
         }}
@@ -253,8 +227,6 @@ const InstancesPanel: FC = () => {
       />
       <ModularTable columns={columns} data={wslInstances} />
     </>
-  ) : (
-    getInstancesQueryLoading && <LoadingState />
   );
 };
 

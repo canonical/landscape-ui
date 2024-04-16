@@ -9,7 +9,7 @@ interface UbuntuProPanelProps {
   instance: Instance;
 }
 
-const UbunuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
+const UbuntuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
   return instance.ubuntu_pro_info ? (
     <>
       <UbuntuProHeader data={instance.ubuntu_pro_info} />
@@ -51,4 +51,4 @@ const UbunuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
   );
 };
 
-export default UbunuProPanel;
+export default UbuntuProPanel;

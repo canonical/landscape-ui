@@ -1,10 +1,10 @@
 import { FC, lazy, Suspense, useEffect, useState } from "react";
-import { Instance } from "@/types/Instance";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
+import { Instance } from "@/types/Instance";
+import { getTabLinks } from "./helpers";
 import classes from "./SingleInstanceTabs.module.scss";
-import { TAB_LINKS } from "./constants";
 
 const InfoPanel = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info"),
@@ -44,13 +44,22 @@ interface TabState {
 
 interface SingleInstanceTabsProps {
   instance: Instance;
+  packageCount: number | undefined;
+  packagesLoading: boolean;
+  usnCount: number | undefined;
+  usnLoading: boolean;
 }
 
-const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({ instance }) => {
+const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
+  instance,
+  packageCount,
+  packagesLoading,
+  usnCount,
+  usnLoading,
+}) => {
   const [currentTabLinkId, setCurrentTabLinkId] = useState("tab-link-info");
   const [tabState, setTabState] = useState<TabState | null>(null);
 
-  const { childHostname } = useParams();
   const { state } = useLocation();
 
   useEffect(() => {
@@ -67,30 +76,22 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({ instance }) => {
     setTabState(otherProps);
   }, [state]);
 
+  const tabLinks = getTabLinks({
+    activeTabId: currentTabLinkId,
+    instance,
+    onActiveTabChange: (tabId) => {
+      setCurrentTabLinkId(tabId);
+      setTabState(null);
+    },
+    packageCount,
+    packagesLoading,
+    usnCount,
+    usnLoading,
+  });
+
   return (
     <>
-      <Tabs
-        listClassName="u-no-margin--bottom"
-        links={TAB_LINKS.filter(({ id }) =>
-          instance.children.length > 0 && !childHostname
-            ? [
-                "tab-link-info",
-                "tab-link-instances",
-                "tab-link-activities",
-                "tab-link-hardware",
-              ].includes(id)
-            : id !== "tab-link-instances",
-        ).map(({ label, id }) => ({
-          label,
-          id,
-          role: "tab",
-          active: id === currentTabLinkId,
-          onClick: () => {
-            setCurrentTabLinkId(id);
-            setTabState(null);
-          },
-        }))}
-      />
+      <Tabs listClassName="u-no-margin--bottom" links={tabLinks} />
       <div
         tabIndex={0}
         role="tabpanel"
@@ -99,15 +100,11 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({ instance }) => {
       >
         <Suspense fallback={<LoadingState />}>
           {"tab-link-info" === currentTabLinkId && (
-            <InfoPanel
-              instance={
-                instance.children.find(
-                  ({ hostname }) => hostname === childHostname,
-                ) ?? instance
-              }
-            />
+            <InfoPanel instance={instance} />
           )}
-          {"tab-link-instances" === currentTabLinkId && <InstancesPanel />}
+          {"tab-link-instances" === currentTabLinkId && (
+            <InstancesPanel instance={instance} />
+          )}
           {"tab-link-activities" === currentTabLinkId && (
             <ActivityPanel instanceId={instance.id} />
           )}
@@ -129,7 +126,9 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({ instance }) => {
           {"tab-link-users" === currentTabLinkId && (
             <UserPanel instanceId={instance.id} />
           )}
-          {"tab-link-hardware" === currentTabLinkId && <HardwarePanel />}
+          {"tab-link-hardware" === currentTabLinkId && (
+            <HardwarePanel instance={instance} />
+          )}
         </Suspense>
       </div>
     </>

@@ -1,11 +1,11 @@
 import { MainTable } from "@canonical/react-components";
-import { FC, Suspense, lazy, useMemo, useState } from "react";
+import { FC, lazy, Suspense, useMemo, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
 import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
 import { User } from "@/types/User";
-import UserPanelHeader from "./UserPanelHeader";
+import UserPanelHeader from "@/pages/dashboard/instances/[single]/tabs/users/UserPanelHeader";
 import { getFilteredUsers, getHeaders, getRows } from "./helpers";
 
 const MAX_USERS_LIMIT = 1000;
@@ -14,8 +14,12 @@ interface UserPanelProps {
   instanceId: number;
 }
 
-const EditUserForm = lazy(() => import("./EditUserForm"));
-const UserDetails = lazy(() => import("./UserDetails"));
+const EditUserForm = lazy(
+  () => import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
+);
+const UserDetails = lazy(
+  () => import("@/pages/dashboard/instances/[single]/tabs/users/UserDetails"),
+);
 
 const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
   const [currentPage, setCurrentPage] = useState(1);

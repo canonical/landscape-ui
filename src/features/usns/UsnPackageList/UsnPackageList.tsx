@@ -1,16 +1,16 @@
 import { FC, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Column } from "react-table";
 import { Button, Icon } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
+import { ROOT_PATH } from "@/constants";
+import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import useUsns from "@/hooks/useUsns";
 import { UsnPackage } from "@/types/Usn";
-import useConfirm from "@/hooks/useConfirm";
 import { Instance } from "@/types/Instance";
-import useNotify from "@/hooks/useNotify";
-import { useNavigate } from "react-router-dom";
-import { ROOT_PATH } from "@/constants";
 
 type UsnPackageListProps = {
   limit: number;
@@ -43,7 +43,7 @@ const UsnPackageList: FC<UsnPackageListProps> = ({
 
   const handleActivityDetailsView = (instance: Instance) => {
     navigate(
-      `${ROOT_PATH}instances/${instance.parent ? `${instance.parent.hostname}/${instance.hostname}` : instance.hostname}`,
+      `${ROOT_PATH}instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`,
       { state: { tab: "activities" } },
     );
 

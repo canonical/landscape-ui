@@ -1,16 +1,18 @@
-import { Breadcrumb } from "@/types/Breadcrumb";
 import { ROOT_PATH } from "@/constants";
+import { Breadcrumb } from "@/types/Breadcrumb";
 import { Instance } from "@/types/Instance";
 
 export const getBreadcrumbs = (
   instance: Instance | null,
-  hostname = "",
-  childHostname = "",
 ): Breadcrumb[] | undefined => {
-  if (!childHostname) {
+  if (!instance) {
+    return;
+  }
+
+  if (!instance.parent) {
     return [
       { label: "Instances", path: `${ROOT_PATH}instances` },
-      { label: instance?.title ?? hostname, current: true },
+      { label: instance.title, current: true },
     ];
   }
 
@@ -20,13 +22,11 @@ export const getBreadcrumbs = (
       path: `${ROOT_PATH}instances`,
     },
     {
-      label: instance?.title ?? hostname,
-      path: `${ROOT_PATH}instances/${instance?.hostname ?? hostname}`,
+      label: instance.parent.title,
+      path: `${ROOT_PATH}instances/${instance.parent.id}`,
     },
     {
-      label:
-        instance?.children.find(({ hostname }) => hostname === childHostname)
-          ?.title ?? childHostname,
+      label: instance.title,
       current: true,
     },
   ];

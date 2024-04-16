@@ -1,26 +1,26 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { Package } from "@/types/Package";
+import { Link } from "react-router-dom";
+import { CellProps, Column } from "react-table";
 import {
   Button,
   CheckboxInput,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import { CellProps, Column } from "react-table";
+import LoadingState from "@/components/layout/LoadingState";
+import { ROOT_PATH } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
 import PackageDetails from "@/pages/dashboard/instances/[single]/tabs/packages/PackageDetails";
 import UbuntuProNotification from "@/pages/dashboard/instances/[single]/tabs/packages/UbuntuProNotification";
 import { Instance } from "@/types/Instance";
+import { Package } from "@/types/Package";
+import { LOADING_PACKAGE } from "./constants";
 import {
   getPackageStatusInfo,
   handleCellProps,
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
-import { Link } from "react-router-dom";
-import { ROOT_PATH } from "@/constants";
-import LoadingState from "@/components/layout/LoadingState";
-import { LOADING_PACKAGE } from "./constants";
 
 interface PackageListProps {
   emptyMsg: string;
@@ -113,7 +113,7 @@ const PackageList: FC<PackageListProps> = ({
                 <div>
                   <p className="u-no-padding--top">Ubuntu Pro is required</p>
                   <Link
-                    to={`${ROOT_PATH}instances/${instance.parent ? `${instance.parent.hostname}/${instance.hostname}` : instance.hostname}`}
+                    to={`${ROOT_PATH}instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`}
                     state={{ tab: "ubuntu-pro" }}
                     className={classes.tooltipLink}
                   >

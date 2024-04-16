@@ -169,7 +169,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path="instances/:hostname"
+              path="instances/:instanceId"
               element={
                 <AuthRoute>
                   <SingleInstance />
@@ -177,7 +177,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path="instances/:hostname/:childHostname"
+              path="instances/:instanceId/:childInstanceId"
               element={
                 <AuthRoute>
                   <SingleInstance />
