@@ -26,19 +26,15 @@ export const getInstanceInfoItems = (
     },
     {
       label: "Serial number",
-      value: instance.grouped_hardware?.system.serial ?? "None",
+      value: instance.grouped_hardware?.system.serial ?? "---",
+    },
+    {
+      label: "Product identifier",
+      value: instance.grouped_hardware?.system.model ?? "---",
     },
     {
       label: "Distribution",
-      value: instance.distribution,
-    },
-    {
-      label: "Annotations",
-      value: instance.annotations
-        ? Object.entries(instance.annotations)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join("<br/>")
-        : "Not defined",
+      value: instance.distribution ?? "---",
     },
     {
       label: "Access group",
@@ -48,11 +44,24 @@ export const getInstanceInfoItems = (
     },
     {
       label: "Tags",
-      value: instance.tags?.join(", ") || "Not defined",
+      value: instance.tags?.join(", ") || "---",
+    },
+    {
+      label: "Annotations",
+      value: instance.annotations
+        ? Object.entries(instance.annotations).map(
+            ([key, value], index, array) => (
+              <>
+                <span>{`${key}: ${value}`}</span>
+                {index < array.length - 1 && <br />}
+              </>
+            ),
+          )
+        : "---",
     },
     {
       label: "Comment",
-      value: instance.comment || "Not defined",
+      value: instance.comment || "---",
     },
   ];
 };

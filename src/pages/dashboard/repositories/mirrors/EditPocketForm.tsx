@@ -1,15 +1,7 @@
-import { FC, useEffect } from "react";
-import { Series } from "../../../../types/Series";
-import { Distribution } from "../../../../types/Distribution";
-import useDebug from "../../../../hooks/useDebug";
-import useSidePanel from "../../../../hooks/useSidePanel";
+import { AxiosResponse } from "axios";
 import { useFormik } from "formik";
+import { FC, useEffect } from "react";
 import * as Yup from "yup";
-import usePockets, {
-  EditMirrorPocketParams,
-  EditPullPocketParams,
-  EditUploadPocketParams,
-} from "../../../../hooks/usePockets";
 import {
   CheckboxInput,
   Form,
@@ -17,27 +9,30 @@ import {
   Select,
   Textarea,
 } from "@canonical/react-components";
-import {
-  ARCHITECTURE_OPTIONS,
-  COMPONENT_OPTIONS,
-} from "../../../../data/series";
-import useGPGKeys from "../../../../hooks/useGPGKeys";
-import {
-  DEFAULT_MIRROR_URI,
-  DEFAULT_SNAPSHOT_URI,
-} from "../../../../constants";
-import { Pocket } from "../../../../types/Pocket";
-import { assertNever } from "../../../../utils/debug";
-import { AxiosResponse } from "axios";
-import CheckboxGroup from "../../../../components/form/CheckboxGroup";
-import FieldDescription from "../../../../components/form/FieldDescription";
-import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
-import MultiSelectField from "../../../../components/form/MultiSelectField";
+import CheckboxGroup from "@/components/form/CheckboxGroup";
+import FieldDescription from "@/components/form/FieldDescription";
+import MultiSelectField from "@/components/form/MultiSelectField";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
+import { DEFAULT_MIRROR_URI, DEFAULT_SNAPSHOT_URI } from "@/constants";
+import { ARCHITECTURE_OPTIONS, COMPONENT_OPTIONS } from "@/data/series";
+import useDebug from "@/hooks/useDebug";
+import useGPGKeys from "@/hooks/useGPGKeys";
+import usePockets, {
+  EditMirrorPocketParams,
+  EditPullPocketParams,
+  EditUploadPocketParams,
+} from "@/hooks/usePockets";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Distribution } from "@/types/Distribution";
+import { Pocket } from "@/types/Pocket";
+import { Series } from "@/types/Series";
+import { assertNever } from "@/utils/debug";
 
 interface FormProps
-  extends EditMirrorPocketParams,
-    EditPullPocketParams,
-    EditUploadPocketParams {
+  extends Required<EditMirrorPocketParams>,
+    Required<EditPullPocketParams>,
+    Required<EditUploadPocketParams> {
   filters: string[];
   upload_gpg_keys: string[];
 }
@@ -483,11 +478,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         />
       )}
 
-      <CheckboxInput
-        label="Include .udeb packages (debian-installer)"
-        {...formik.getFieldProps("include_udeb")}
-        checked={formik.values.include_udeb}
-      />
+      <UdebCheckboxInput formik={formik} />
 
       <SidePanelFormButtons
         disabled={

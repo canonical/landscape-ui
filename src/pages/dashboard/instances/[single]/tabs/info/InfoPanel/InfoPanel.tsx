@@ -283,7 +283,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         <Row className="u-no-padding--left u-no-padding--right u-no-max-width">
           {getInstanceInfoItems(instance, accessGroupOptions).map((item) => (
             <Col size={4} key={item.label}>
-              {!item.type && <InfoItem label={item.label} value={item.value} />}
+              <InfoItem {...item} />
             </Col>
           ))}
         </Row>

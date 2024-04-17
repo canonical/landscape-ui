@@ -1,15 +1,7 @@
-import { FC, useEffect } from "react";
-import { Series } from "../../../../types/Series";
-import { Distribution } from "../../../../types/Distribution";
-import useDebug from "../../../../hooks/useDebug";
-import useSidePanel from "../../../../hooks/useSidePanel";
+import classNames from "classnames";
 import { useFormik } from "formik";
+import { FC, useEffect } from "react";
 import * as Yup from "yup";
-import usePockets, {
-  CreateMirrorPocketParams,
-  CreatePullPocketParams,
-  CreateUploadPocketParams,
-} from "../../../../hooks/usePockets";
 import {
   CheckboxInput,
   Form,
@@ -17,28 +9,35 @@ import {
   Select,
   Textarea,
 } from "@canonical/react-components";
-import classNames from "classnames";
+import CheckboxGroup from "@/components/form/CheckboxGroup";
+import FieldDescription from "@/components/form/FieldDescription";
+import MultiSelectField from "@/components/form/MultiSelectField";
+import SelectGrouped, { groupedOption } from "@/components/form/SelectGrouped";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
+import { DEFAULT_MIRROR_URI } from "@/constants";
+import {
+  filterTypeOptions,
+  PRE_DEFINED_POCKET_MODE_OPTIONS,
+} from "@/data/pockets";
 import {
   ARCHITECTURE_OPTIONS,
   COMPONENT_OPTIONS,
   PRE_SELECTED_ARCHITECTURES,
   PRE_SELECTED_COMPONENTS,
-} from "../../../../data/series";
-import useGPGKeys from "../../../../hooks/useGPGKeys";
-import {
-  filterTypeOptions,
-  PRE_DEFINED_POCKET_MODE_OPTIONS,
-} from "../../../../data/pockets";
-import { DEFAULT_MIRROR_URI } from "../../../../constants";
-import { assertNever } from "../../../../utils/debug";
-import SelectGrouped, {
-  groupedOption,
-} from "../../../../components/form/SelectGrouped";
-import { testLowercaseAlphaNumeric } from "../../../../utils/tests";
-import CheckboxGroup from "../../../../components/form/CheckboxGroup";
-import FieldDescription from "../../../../components/form/FieldDescription";
-import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
-import MultiSelectField from "../../../../components/form/MultiSelectField";
+} from "@/data/series";
+import useDebug from "@/hooks/useDebug";
+import useGPGKeys from "@/hooks/useGPGKeys";
+import usePockets, {
+  CreateMirrorPocketParams,
+  CreatePullPocketParams,
+  CreateUploadPocketParams,
+} from "@/hooks/usePockets";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Distribution } from "@/types/Distribution";
+import { Series } from "@/types/Series";
+import { assertNever } from "@/utils/debug";
+import { testLowercaseAlphaNumeric } from "@/utils/tests";
 
 interface FormProps
   extends Omit<CreateMirrorPocketParams, "mode">,
@@ -591,11 +590,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         </>
       )}
 
-      <CheckboxInput
-        label="Include .udeb packages (debian-installer)"
-        {...formik.getFieldProps("include_udeb")}
-        checked={formik.values.include_udeb}
-      />
+      <UdebCheckboxInput formik={formik} />
 
       <SidePanelFormButtons
         disabled={createPocketLoading || addUploaderGPGKeysToPocketLoading}

@@ -246,3 +246,9 @@ a[target="_blank"] {
     }
   }
 }
+
+.is-detached {
+  .p-tooltip__message {
+    z-index: 1000;
+  }
+}

@@ -1,25 +1,11 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
-import {
-  CheckboxInput,
-  Col,
-  Form,
-  Input,
-  Row,
-  Select,
-} from "@canonical/react-components";
 import { useFormik } from "formik";
-import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import moment from "moment";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import * as Yup from "yup";
-import {
-  ARCHITECTURE_OPTIONS,
-  COMPONENT_OPTIONS,
-  POCKET_OPTIONS,
-  PRE_SELECTED_ARCHITECTURES,
-  PRE_SELECTED_COMPONENTS,
-  PRE_SELECTED_POCKETS,
-} from "@/data/series";
-import useSeries, { CreateSeriesParams } from "@/hooks/useSeries";
+import { Col, Form, Input, Row, Select } from "@canonical/react-components";
+import CheckboxGroup from "@/components/form/CheckboxGroup";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
 import {
   DEFAULT_MIRROR_URI,
   DEFAULT_SNAPSHOT_URI,
@@ -28,13 +14,21 @@ import {
   SNAPSHOT_START_DATE,
   SNAPSHOT_TIMESTAMP_FORMAT,
 } from "@/constants";
+import {
+  ARCHITECTURE_OPTIONS,
+  COMPONENT_OPTIONS,
+  POCKET_OPTIONS,
+  PRE_SELECTED_ARCHITECTURES,
+  PRE_SELECTED_COMPONENTS,
+  PRE_SELECTED_POCKETS,
+} from "@/data/series";
+import useDebug from "@/hooks/useDebug";
 import useGPGKeys from "@/hooks/useGPGKeys";
+import useSeries, { CreateSeriesParams } from "@/hooks/useSeries";
+import useSidePanel from "@/hooks/useSidePanel";
 import { Distribution } from "@/types/Distribution";
-import { testLowercaseAlphaNumeric } from "@/utils/tests";
-import CheckboxGroup from "@/components/form/CheckboxGroup";
 import { SelectOption } from "@/types/SelectOption";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import moment from "moment";
+import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import { getStrippedUrl } from "./helpers";
 
 interface FormProps extends CreateSeriesParams {
@@ -581,10 +575,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
         </>
       )}
 
-      <CheckboxInput
-        label="Include .udeb packages (debian-installer)"
-        {...formik.getFieldProps("include_udeb")}
-      />
+      <UdebCheckboxInput formik={formik} />
 
       <SidePanelFormButtons disabled={isCreating} submitButtonText={ctaText} />
     </Form>
