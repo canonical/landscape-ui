@@ -4,7 +4,7 @@ export const instances: Instance[] = [
   {
     id: 1,
     title: "Application Server 1",
-    comment: "",
+    comment: "my awesome instance comment",
     hostname: "appserv1",
     total_memory: 1024,
     total_swap: 1024,

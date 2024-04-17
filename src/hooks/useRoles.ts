@@ -7,31 +7,31 @@ import { AccessGroup } from "@/types/AccessGroup";
 import { Role } from "@/types/Role";
 import { Permission } from "@/types/Permission";
 
-interface CreateAccessGroupParams {
+export interface CreateAccessGroupParams {
   parent: string;
   title: string;
 }
 
-interface RemoveAccessGroupParams {
+export interface RemoveAccessGroupParams {
   name: string;
 }
 
-interface GetRolesParams {
+export interface GetRolesParams {
   names?: string[];
 }
 
-interface CreateRoleParams {
+export interface CreateRoleParams {
   name: string;
   description?: string;
 }
 
-interface CopyRoleParams {
+export interface CopyRoleParams {
   destination_name: string;
   name: string;
   description?: string;
 }
 
-interface RemoveRoleParams {
+export interface RemoveRoleParams {
   name: string;
 }
 
@@ -45,7 +45,7 @@ export interface ChangeRolePermissionsParams {
   permissions: string[];
 }
 
-interface ChangeRolePersonsParams {
+export interface ChangeRolePersonsParams {
   name: string;
   persons: string[];
 }
