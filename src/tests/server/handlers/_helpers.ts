@@ -8,6 +8,10 @@ interface GeneratePaginatedResponseProps<D> {
   offset?: number;
 }
 
+function getNestedProperty(obj: any, path: string) {
+  return path.split(".").reduce((obj, key) => obj && obj[key], obj);
+}
+
 export function generatePaginatedResponse<D>({
   data,
   offset,
@@ -18,16 +22,7 @@ export function generatePaginatedResponse<D>({
   let results = data;
 
   if (search && searchFields) {
-    results = results.filter((item) => {
-      for (const field of searchFields) {
-        // @ts-ignore
-        if (item[field].includes(search)) {
-          return true;
-        }
-      }
-
-      return false;
-    });
+    results = generateFilteredResponse(results, search, searchFields);
   }
 
   if (offset && limit) {
@@ -40,4 +35,21 @@ export function generatePaginatedResponse<D>({
     next: null,
     previous: null,
   };
+}
+
+export function generateFilteredResponse<D>(
+  data: D[],
+  search: string,
+  searchFields: string[],
+): D[] {
+  return data.filter((item) => {
+    for (const field of searchFields) {
+      const value = getNestedProperty(item, field);
+      if (value && value.toString().includes(search)) {
+        return true;
+      }
+    }
+
+    return false;
+  });
 }

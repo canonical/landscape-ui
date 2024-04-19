@@ -2,7 +2,7 @@ import { Form, Input, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { ChangeEvent, FC, useMemo } from "react";
+import { ChangeEvent, FC, useEffect, useMemo } from "react";
 import * as Yup from "yup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
@@ -36,7 +36,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
       name: installedSnaps[0].snap.name,
     },
     {
-      enabled: installedSnaps.length === 1,
+      enabled: type === EditSnapType.Switch,
     },
   );
 
@@ -65,10 +65,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
 
   const formik = useFormik<SnapFormProps>({
     initialValues: {
-      release:
-        type === EditSnapType.Switch && initialSnap
-          ? `${initialSnap.channel.name} - ${initialSnap.channel.architecture}`
-          : undefined,
+      release: undefined,
       hold: type === EditSnapType.Hold ? "forever" : undefined,
       hold_until: type === EditSnapType.Hold ? "" : undefined,
       deliver_immediately: true,
@@ -140,6 +137,15 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
     },
   });
 
+  useEffect(() => {
+    if (initialSnap && type === EditSnapType.Switch && !formik.values.release) {
+      formik.setFieldValue(
+        "release",
+        `${initialSnap.channel.name} - ${initialSnap.channel.architecture}`,
+      );
+    }
+  }, [initialSnap]);
+
   const handleHoldSelectionChange = (event: ChangeEvent<HTMLInputElement>) => {
     formik.setFieldValue("hold", event.currentTarget.value);
     if (event.currentTarget.value === "date") {
@@ -166,11 +172,6 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
           label="release"
           labelClassName="p-text--small p-text--small-caps"
           options={SNAP_CHANNEL_OPTIONS}
-          error={
-            formik.touched.release && formik.errors.release
-              ? formik.errors.release
-              : undefined
-          }
           disabled={SNAP_CHANNEL_OPTIONS.length === 0}
           {...formik.getFieldProps("release")}
         />

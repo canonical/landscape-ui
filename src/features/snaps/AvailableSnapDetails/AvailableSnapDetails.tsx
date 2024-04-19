@@ -67,6 +67,7 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
       {isLoading && <LoadingState />}
       {item && (
         <Form
+          name="add-snap"
           onSubmit={(e) => {
             e.preventDefault();
             handleAddToSelectedItems({
@@ -112,7 +113,9 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
               }
               help={
                 item["channel-map"].find(
-                  (channel) => channel.revision.toString() === selectedChannel,
+                  (channel) =>
+                    `${channel.channel.name} - ${channel.channel.architecture}` ===
+                    selectedChannel,
                 )?.confinement === "classic" ? (
                   <span>
                     <i className="p-icon--warning" />

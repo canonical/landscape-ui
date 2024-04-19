@@ -7,13 +7,13 @@ import {
 } from "@tanstack/react-query";
 import useDebug from "./useDebug";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "../types/ApiError";
-import { Pocket } from "../types/Pocket";
-import { QueryFnType } from "../types/QueryFnType";
-import { PackageDiff, PackageObject } from "../types/Package";
-import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
+import { ApiError } from "@/types/ApiError";
+import { Pocket } from "@/types/Pocket";
+import { QueryFnType } from "@/types/QueryFnType";
+import { PackageDiff, PackageObject } from "@/types/Package";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 
-interface CreateCommonPocketParams {
+export interface CreateCommonPocketParams {
   architectures: string[];
   components: string[];
   distribution: string;
@@ -43,7 +43,7 @@ export interface CreateUploadPocketParams extends CreateCommonPocketParams {
   upload_allow_unsigned: boolean;
 }
 
-interface EditCommonPocketParams {
+export interface EditCommonPocketParams {
   architectures: string[];
   components: string[];
   distribution: string;
@@ -65,31 +65,31 @@ export interface EditUploadPocketParams extends EditCommonPocketParams {
   upload_allow_unsigned: boolean;
 }
 
-interface RemovePocketParams {
+export interface RemovePocketParams {
   distribution: string;
   name: string;
   series: string;
 }
 
-interface SyncMirrorPocketParams {
+export interface SyncMirrorPocketParams {
   distribution: string;
   name: string;
   series: string;
 }
 
-interface PullPackagesToPocketParams {
+export interface PullPackagesToPocketParams {
   distribution: string;
   name: string;
   series: string;
 }
 
-interface DiffPullPocketParams {
+export interface DiffPullPocketParams {
   distribution: string;
   name: string;
   series: string;
 }
 
-interface ListPocketParams {
+export interface ListPocketParams {
   distribution: string;
   limit: number;
   name: string;
@@ -98,42 +98,42 @@ interface ListPocketParams {
   search?: string;
 }
 
-interface RemovePackagesFromPocketParams {
+export interface RemovePackagesFromPocketParams {
   distribution: string;
   name: string;
   packages: string[];
   series: string;
 }
 
-interface AddPackageFiltersToPocketParams {
+export interface AddPackageFiltersToPocketParams {
   distribution: string;
   name: string;
   packages: string[];
   series: string;
 }
 
-interface RemovePackageFiltersFromPocketParams {
+export interface RemovePackageFiltersFromPocketParams {
   distribution: string;
   name: string;
   packages: string[];
   series: string;
 }
 
-interface AddUploaderGPGKeysToPocketParams {
+export interface AddUploaderGPGKeysToPocketParams {
   distribution: string;
   gpg_keys: string[];
   name: string;
   series: string;
 }
 
-interface RemoveUploaderGPGKeysFromPocketParams {
+export interface RemoveUploaderGPGKeysFromPocketParams {
   distribution: string;
   gpg_keys: string[];
   name: string;
   series: string;
 }
 
-interface UsePocketsResult {
+export interface UsePocketsResult {
   createPocketQuery: UseMutationResult<
     AxiosResponse<Pocket>,
     AxiosError<ApiError>,

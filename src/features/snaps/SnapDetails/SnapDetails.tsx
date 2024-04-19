@@ -35,7 +35,7 @@ const SnapDetails: FC<SnapDetailsProps> = ({ instanceId, installedSnap }) => {
         </Col>
         <Col size={6}>
           <InfoItem
-            label="Held until"
+            label="held until"
             value={
               installedSnap.held_until
                 ? moment(installedSnap.held_until).format(
@@ -46,7 +46,7 @@ const SnapDetails: FC<SnapDetailsProps> = ({ instanceId, installedSnap }) => {
           />
         </Col>
         <Col size={12}>
-          <InfoItem label="summary" value={installedSnap.snap.summary} />
+          <InfoItem label="summary" value={installedSnap.snap.summary ?? "-"} />
         </Col>
         <Col size={12}>
           <InfoItem

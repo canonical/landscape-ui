@@ -47,19 +47,21 @@ export const useSnaps = () => {
   const getSnapsQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,
     GetSnapsParams
-  > = (queryParams, config = {}) =>
-    useQuery<
+  > = (queryParams, config = {}) => {
+    const { instance_id, ...params } = queryParams!;
+
+    return useQuery<
       AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,
       AxiosError<ApiError>
     >({
       queryKey: ["snaps", { ...queryParams }],
       queryFn: () =>
-        authFetch!.get(
-          `computers/${queryParams!.instance_id}/snaps/installed`,
-          { params: queryParams },
-        ),
+        authFetch!.get(`computers/${instance_id}/snaps/installed`, {
+          params: params,
+        }),
       ...config,
     });
+  };
 
   const getAvailableSnaps: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<AvailableSnap>>,
@@ -86,7 +88,6 @@ export const useSnaps = () => {
       queryFn: () =>
         authFetch!.get(
           `computers/${queryParams!.instance_id}/snaps/${queryParams!.name}/info`,
-          { params: queryParams },
         ),
       ...config,
     });
