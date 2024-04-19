@@ -68,6 +68,7 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
               <Input
                 type="number"
                 label="Time"
+                aria-label="at hour"
                 placeholder="HH"
                 className={classes.timeInput}
                 wrapperClassName={classNames({ "is-error": timeErrors[0] })}
@@ -85,8 +86,9 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
 
           <Input
             type="number"
-            label="At minutes"
+            label="At minute"
             labelClassName="u-off-screen"
+            aria-label="at minute"
             className={classes.timeInput}
             wrapperClassName={classNames({ "is-error": timeErrors[1] })}
             placeholder="MM"

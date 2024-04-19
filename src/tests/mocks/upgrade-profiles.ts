@@ -1,0 +1,35 @@
+import { UpgradeProfile } from "@/features/upgrade-profiles/types";
+
+export const upgradeProfiles: UpgradeProfile[] = [
+  {
+    id: 12,
+    title: "test",
+    name: "test",
+    access_group: "global",
+    upgrade_type: "security",
+    autoremove: true,
+    tags: [],
+    all_computers: true,
+    deliver_within: "1",
+    deliver_delay_window: "10",
+    next_run: "2024-04-01T00:30:04Z",
+    every: "hour",
+    on_days: ["mo", "th"],
+    at_minute: "30",
+  },
+  {
+    id: 1,
+    title: "web-daily",
+    name: "web-daily",
+    access_group: "global",
+    upgrade_type: "all",
+    autoremove: false,
+    tags: ["server"],
+    all_computers: false,
+    deliver_within: "1",
+    deliver_delay_window: "0",
+    next_run: "2023-11-29T19:30:00Z",
+    every: "hour",
+    at_minute: "30",
+  },
+];

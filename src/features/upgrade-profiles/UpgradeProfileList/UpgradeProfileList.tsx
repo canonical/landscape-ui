@@ -93,7 +93,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({
           type="button"
           appearance="negative"
           onClick={() => handleRemoveUpgradeProfile(name)}
-          aria-label="Remove ${name} profile"
+          aria-label={`Remove ${name} profile`}
         >
           Remove
         </Button>,
@@ -170,7 +170,8 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({
             position="left"
             toggleClassName={classes.toggleButton}
             toggleAppearance="base"
-            toggleLabel={<Icon name="contextual-menu" />}
+            toggleLabel={<Icon name="contextual-menu" aria-hidden />}
+            toggleProps={{ "aria-label": `${original.name} profile actions` }}
           >
             <Button
               type="button"
@@ -181,6 +182,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({
                 classes.actionButton,
               )}
               onClick={() => handleUpgradeProfileEdit(original)}
+              aria-label={`Edit ${original.name} profile`}
             >
               <Icon name="edit" />
               <span>Edit</span>
@@ -194,6 +196,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({
                 classes.actionButton,
               )}
               onClick={() => handleRemoveUpgradeProfileDialog(original.name)}
+              aria-label={`Remove ${original.name} profile`}
             >
               <Icon name="delete" />
               <span>Remove</span>

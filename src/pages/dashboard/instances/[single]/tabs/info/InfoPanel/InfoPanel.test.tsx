@@ -1,6 +1,6 @@
 import { describe, expect } from "vitest";
 import InfoPanel from "./InfoPanel";
-import { act, screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
 import { instances } from "@/tests/mocks/instance";
 import { Instance } from "@/types/Instance";
@@ -25,25 +25,25 @@ describe("InfoPanel", () => {
     }
   });
 
-  it("should edit instance", () => {
+  it("should edit instance", async () => {
     const editButton = screen.getByRole("button", {
       name: /edit/i,
     });
 
-    act(() => {
-      userEvent.click(editButton);
-    });
+    await userEvent.click(editButton);
 
     expect(
-      screen.findByRole("heading", {
+      await screen.findByRole("heading", {
         name: /edit instance/i,
       }),
     ).toBeVisible();
 
-    expect(
-      screen.findByRole("textbox", {
-        name: /title/i,
-      }),
-    ).toHaveValue(instances[0].title);
+    await waitFor(() =>
+      expect(
+        screen.getByRole("textbox", {
+          name: /title/i,
+        }),
+      ).toHaveValue(instances[0].title),
+    );
   });
 });

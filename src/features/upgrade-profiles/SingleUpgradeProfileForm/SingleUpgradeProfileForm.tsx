@@ -1,11 +1,6 @@
 import { useFormik } from "formik";
 import { FC, useEffect } from "react";
-import {
-  CheckboxInput,
-  Form,
-  Input,
-  Select,
-} from "@canonical/react-components";
+import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import {
@@ -95,7 +90,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       closeSidePanel();
 
       notify.success({
-        message: `Upgrade profile ${values.title} has been ${NOTIFICATION_ACTIONS[props.action]} `,
+        message: `Upgrade profile "${values.title}" has been ${NOTIFICATION_ACTIONS[props.action]} `,
         title: `Upgrade profile ${NOTIFICATION_ACTIONS[props.action]}`,
       });
     } catch (error) {
@@ -137,6 +132,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         type="text"
         required={props.action === "create"}
         label="Name"
+        aria-label="Name"
         {...formik.getFieldProps("title")}
         error={
           formik.touched.title && formik.errors.title
@@ -145,16 +141,10 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         }
       />
 
-      <CheckboxInput
-        label={
-          <>
-            <span>Only upgrade security issues</span>
-            <br />
-            <span className="u-text--muted">
-              Regular upgrades will not be applied
-            </span>
-          </>
-        }
+      <Input
+        type="checkbox"
+        label="Only upgrade security issues"
+        help="Regular upgrades will not be applied"
         {...formik.getFieldProps("upgrade_type")}
         checked={formik.values.upgrade_type === "security"}
         onChange={() =>
@@ -165,22 +155,17 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         }
       />
 
-      <CheckboxInput
-        label={
-          <>
-            <span>Remove packages that are no longer needed</span>
-            <br />
-            <span className="u-text--muted">
-              This will affect packages installed to satisfy dependencies that
-              are no longer required after upgrading
-            </span>
-          </>
-        }
+      <Input
+        type="checkbox"
+        label="Remove packages that are no longer needed"
+        help="This will affect packages installed to satisfy dependencies that are no longer required after upgrading"
         {...formik.getFieldProps("autoremove")}
+        checked={formik.values.autoremove}
       />
 
       <Select
         label="Access group"
+        aria-label="Access group"
         options={accessGroupOptions}
         {...formik.getFieldProps("access_group")}
         error={

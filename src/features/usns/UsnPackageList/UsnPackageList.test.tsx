@@ -1,7 +1,7 @@
 import { describe, expect, vi } from "vitest";
 import UsnPackageList from "./UsnPackageList";
 import { renderWithProviders } from "@/tests/render";
-import { act, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { expectLoadingState } from "@/tests/helpers";
 import { usnPackages, usns } from "@/tests/mocks/usn";
 import userEvent from "@testing-library/user-event";
@@ -41,16 +41,14 @@ describe("UsnPackageList", () => {
   it("should load more packages", async () => {
     renderWithProviders(<UsnPackageList {...props} />);
 
-    await waitFor(async () => {
-      const showMoreButton = screen.getByText(
-        `Show ${usnPackages.length - props.limit} more`,
-      );
+    const showMoreButton = await screen.findByText(
+      `Show ${usnPackages.length - props.limit} more`,
+    );
 
-      expect(showMoreButton).toBeInTheDocument();
+    expect(showMoreButton).toBeInTheDocument();
 
-      await act(async () => {
-        await userEvent.click(showMoreButton);
-      });
-    });
+    await userEvent.click(showMoreButton);
+
+    expect(props.onLimitChange).toBeCalled();
   });
 });

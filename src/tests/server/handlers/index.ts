@@ -6,6 +6,7 @@ import gpgKey from "./gpgKey";
 import repo from "./repo";
 import accessGroup from "./accessGroup";
 import tag from "./tag";
+import upgradeProfile from "./upgradeProfile";
 
 export default [
   ...auth,
@@ -16,4 +17,5 @@ export default [
   ...repo,
   ...accessGroup,
   ...tag,
+  ...upgradeProfile,
 ];
