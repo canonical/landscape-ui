@@ -4,7 +4,7 @@ export const TAB_LINKS = [
     id: "tab-link-general",
   },
   {
-    label: "Api credentials",
+    label: "API credentials",
     id: "tab-link-api",
   },
 ];

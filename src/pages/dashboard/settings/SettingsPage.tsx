@@ -6,7 +6,7 @@ const SettingsPage: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`${ROOT_PATH}settings/access-groups`, { replace: true });
+    navigate(`${ROOT_PATH}settings/general`, { replace: true });
   }, []);
 
   return null;
