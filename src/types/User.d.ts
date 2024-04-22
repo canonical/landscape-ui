@@ -1,8 +1,8 @@
 export interface User extends Record<string, any> {
   enabled: boolean;
-  name: string;
   primary_gid: number;
   uid: number;
+  name?: string;
   username: string;
   home_phone?: string;
   location?: string;

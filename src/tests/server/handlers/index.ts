@@ -1,6 +1,7 @@
 import auth from "./auth";
 import instance from "./instance";
 import usn from "./usn";
+import user from "./user";
 import snap from "./snap";
 import gpgKey from "./gpgKey";
 import repo from "./repo";
@@ -13,6 +14,7 @@ export default [
   ...instance,
   ...usn,
   ...snap,
+  ...user,
   ...gpgKey,
   ...repo,
   ...accessGroup,

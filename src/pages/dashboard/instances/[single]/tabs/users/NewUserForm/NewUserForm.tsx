@@ -84,110 +84,108 @@ const NewUserForm: FC<NewUserFormProps> = ({ instanceId }) => {
   });
 
   return (
-    <>
-      <Form noValidate onSubmit={formik.handleSubmit} role="form">
-        <Input
-          type="text"
-          label="Username"
-          autoComplete="new-username"
-          required
-          error={
-            formik.touched.username && formik.errors.username
-              ? formik.errors.username
-              : undefined
-          }
-          {...formik.getFieldProps("username")}
-        />
-        <Input
-          type="text"
-          label="Name"
-          required
-          error={
-            formik.touched.name && formik.errors.name
-              ? formik.errors.name
-              : undefined
-          }
-          {...formik.getFieldProps("name")}
-        />
-        <Input
-          type="password"
-          label="Passphrase"
-          autoComplete="new-password"
-          required
-          error={
-            formik.touched.password && formik.errors.password
-              ? formik.errors.password
-              : undefined
-          }
-          {...formik.getFieldProps("password")}
-        />
-        <Input
-          type="password"
-          label="Confirm passphrase"
-          autoComplete="new-password"
-          required
-          error={
-            formik.touched.confirmPassword && formik.errors.confirmPassword
-              ? formik.errors.confirmPassword
-              : undefined
-          }
-          {...formik.getFieldProps("confirmPassword")}
-        />
-        <Input
-          type="checkbox"
-          label="Require passphrase reset"
-          help="User must change password at first login"
-          {...formik.getFieldProps("requirePasswordReset")}
-          checked={formik.values.requirePasswordReset}
-        />
-        <Select
-          label="Primary Group"
-          disabled={isLoadingGroups}
-          options={[{ label: "Select", value: "" }, ...groupOptions]}
-          {...formik.getFieldProps("primaryGroupValue")}
-          error={
-            formik.touched.primaryGroupValue && formik.errors.primaryGroupValue
-              ? formik.errors.primaryGroupValue
-              : undefined
-          }
-        />
-        <Input
-          type="text"
-          label="Location"
-          error={
-            formik.touched.location && formik.errors.location
-              ? formik.errors.location
-              : undefined
-          }
-          {...formik.getFieldProps("location")}
-        />
-        <Input
-          type="text"
-          label="Home phone"
-          error={
-            formik.touched.homePhoneNumber && formik.errors.homePhoneNumber
-              ? formik.errors.homePhoneNumber
-              : undefined
-          }
-          {...formik.getFieldProps("homePhoneNumber")}
-        />
-        <Input
-          type="text"
-          label="Work phone"
-          error={
-            formik.touched.workPhoneNumber && formik.errors.workPhoneNumber
-              ? formik.errors.workPhoneNumber
-              : undefined
-          }
-          {...formik.getFieldProps("workPhoneNumber")}
-        />
-        <SidePanelFormButtons
-          disabled={isLoading}
-          submitButtonText="Add user"
-          removeButtonMargin
-        />
-      </Form>
-    </>
+    <Form noValidate onSubmit={formik.handleSubmit} name="add-new-user">
+      <Input
+        type="text"
+        label="Username"
+        autoComplete="new-username"
+        required
+        error={
+          formik.touched.username && formik.errors.username
+            ? formik.errors.username
+            : undefined
+        }
+        {...formik.getFieldProps("username")}
+      />
+      <Input
+        type="text"
+        label="Name"
+        required
+        error={
+          formik.touched.name && formik.errors.name
+            ? formik.errors.name
+            : undefined
+        }
+        {...formik.getFieldProps("name")}
+      />
+      <Input
+        type="password"
+        label="Passphrase"
+        autoComplete="new-password"
+        required
+        error={
+          formik.touched.password && formik.errors.password
+            ? formik.errors.password
+            : undefined
+        }
+        {...formik.getFieldProps("password")}
+      />
+      <Input
+        type="password"
+        label="Confirm passphrase"
+        autoComplete="new-password"
+        required
+        error={
+          formik.touched.confirmPassword && formik.errors.confirmPassword
+            ? formik.errors.confirmPassword
+            : undefined
+        }
+        {...formik.getFieldProps("confirmPassword")}
+      />
+      <Input
+        type="checkbox"
+        label="Require passphrase reset"
+        help="User must change password at first login"
+        {...formik.getFieldProps("requirePasswordReset")}
+        checked={formik.values.requirePasswordReset}
+      />
+      <Select
+        label="Primary Group"
+        disabled={isLoadingGroups}
+        options={[{ label: "Select", value: "" }, ...groupOptions]}
+        {...formik.getFieldProps("primaryGroupValue")}
+        error={
+          formik.touched.primaryGroupValue && formik.errors.primaryGroupValue
+            ? formik.errors.primaryGroupValue
+            : undefined
+        }
+      />
+      <Input
+        type="text"
+        label="Location"
+        error={
+          formik.touched.location && formik.errors.location
+            ? formik.errors.location
+            : undefined
+        }
+        {...formik.getFieldProps("location")}
+      />
+      <Input
+        type="text"
+        label="Home phone"
+        error={
+          formik.touched.homePhoneNumber && formik.errors.homePhoneNumber
+            ? formik.errors.homePhoneNumber
+            : undefined
+        }
+        {...formik.getFieldProps("homePhoneNumber")}
+      />
+      <Input
+        type="text"
+        label="Work phone"
+        error={
+          formik.touched.workPhoneNumber && formik.errors.workPhoneNumber
+            ? formik.errors.workPhoneNumber
+            : undefined
+        }
+        {...formik.getFieldProps("workPhoneNumber")}
+      />
+      <SidePanelFormButtons
+        disabled={isLoading}
+        submitButtonText="Add user"
+        removeButtonMargin
+      />
+    </Form>
   );
 };
 

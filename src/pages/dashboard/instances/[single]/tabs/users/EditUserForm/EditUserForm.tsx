@@ -66,7 +66,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      name: user.name,
+      name: user.name ?? "",
       username: user.username,
       password: "",
       confirmPassword: "",
@@ -141,15 +141,11 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
       } catch (error) {
         debug(error);
       }
-      closeSidePanel();
-      notify.success({
-        message: "User updated successfully",
-      });
     },
   });
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate role="form">
+    <Form onSubmit={formik.handleSubmit} noValidate name="edit-user">
       <Input
         type="text"
         label="Username"
