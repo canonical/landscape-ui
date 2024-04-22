@@ -19,7 +19,7 @@ describe("NewSeriesForm", () => {
       "Pockets",
       "Components",
       "Architectures",
-      "Include .udeb packages (debian-installer)",
+      "Include .udeb packages",
     ]);
   });
 

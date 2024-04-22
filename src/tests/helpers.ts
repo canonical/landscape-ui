@@ -8,6 +8,6 @@ export const expectLoadingState = async () => {
 };
 
 export const expectErrorNotification = async () => {
-  const notification = await screen.findByText(/error/i);
-  expect(notification).toBeInTheDocument();
+  const errorNotificationCount = (await screen.findAllByText(/error/i)).length;
+  expect(errorNotificationCount).toBeGreaterThanOrEqual(1);
 };
