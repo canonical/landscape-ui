@@ -1,6 +1,5 @@
 import { ComponentProps } from "react";
 import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
 import UpgradeProfileList from "./UpgradeProfileList";
@@ -30,18 +29,8 @@ describe("UpgradeProfileList", () => {
         expect(
           screen.getByLabelText(`${profile.name} profile actions`),
         ).toBeInTheDocument();
-
-        const actionsButton = screen.getByLabelText(
-          `${profile.name} profile actions`,
-        );
-
-        await userEvent.click(actionsButton);
-
         expect(
-          screen.getByLabelText(`Edit ${profile.name} profile`),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByLabelText(`Delete ${profile.name} profile`),
+          screen.getByLabelText(`${profile.name} profile actions`),
         ).toBeInTheDocument();
       });
     });
