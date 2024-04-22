@@ -47,20 +47,32 @@ const ApiCredentials: FC<ApiCredentialsProps> = ({ user, credentials }) => {
     }
   };
 
-  const handleGenerateKeys = (accountName: string) => {
+  const handleGenerateKeys = ({
+    accountName,
+    accountTitle,
+    action,
+  }: {
+    accountName: string;
+    accountTitle: string;
+    action: string;
+  }) => {
     confirmModal({
-      body: "Are you sure you want to perform this action?",
-      title: "Generate new API credentials",
+      title: `${action} API credentials for ${accountTitle}`,
+      body: `${
+        action === "Regenerate"
+          ? `${action.slice(0, -1)}ing your API credentials will make your previously used credentials obsolete and deauthenticate any clients using them. `
+          : ``
+      }This action will create new credentials for integrating with the ${accountTitle} organisation`,
       buttons: [
         <Button
           key="confirm-generate-credentials"
-          appearance="positive"
+          appearance="negative"
           hasIcon={true}
           onClick={() => handleGenerateKeysMutation(accountName)}
-          aria-label={`Confirm key generation for ${accountName}`}
+          aria-label={`${action} API credentials confirmation for ${accountTitle}`}
         >
           {isLoadingCredentials && <Spinner />}
-          Generate
+          {action} API credentials
         </Button>,
       ],
     });
@@ -110,11 +122,10 @@ const ApiCredentials: FC<ApiCredentialsProps> = ({ user, credentials }) => {
               ],
             };
           });
-
-          const buttonTitle =
+          const action =
             accountCredentials?.secret_key || accountCredentials?.access_key
-              ? "Regenerate API credentials"
-              : "Generate API credentials";
+              ? "Regenerate"
+              : "Generate";
 
           return (
             <Col
@@ -129,9 +140,15 @@ const ApiCredentials: FC<ApiCredentialsProps> = ({ user, credentials }) => {
                     className={classNames("u-no-margin--bottom", {
                       "is-small": isLargeScreen,
                     })}
-                    onClick={() => handleGenerateKeys(account.name)}
+                    onClick={() =>
+                      handleGenerateKeys({
+                        accountName: account.name,
+                        accountTitle: account.title,
+                        action,
+                      })
+                    }
                   >
-                    <span>{buttonTitle}</span>
+                    <span>{action} API credentials</span>
                   </Button>
                 </div>
                 <div className={seriesCardClasses.content}>

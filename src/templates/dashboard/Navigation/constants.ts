@@ -75,6 +75,10 @@ export const MENU_ITEMS: MenuItem[] = [
     icon: "settings",
     items: [
       {
+        label: "General",
+        path: `${ROOT_PATH}settings/general`,
+      },
+      {
         label: "Administrators",
         path: `${ROOT_PATH}settings/administrators`,
       },

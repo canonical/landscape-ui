@@ -65,6 +65,9 @@ const AlertNotificationsPage = lazy(
   () => import("./pages/dashboard/alert-notifications"),
 );
 const OverviewPage = lazy(() => import("./pages/dashboard/overview"));
+const GeneralOrganisationSettings = lazy(
+  () => import("./pages/dashboard/settings/general"),
+);
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -261,6 +264,14 @@ const App: FC = () => {
               element={
                 <AuthRoute>
                   <RolesPage />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="settings/general"
+              element={
+                <AuthRoute>
+                  <GeneralOrganisationSettings />
                 </AuthRoute>
               }
             />
