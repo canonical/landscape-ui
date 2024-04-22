@@ -51,12 +51,12 @@ describe("UsnList", () => {
     expect(screen.getByText(/hide packages/i)).toBeInTheDocument();
   });
 
-  it("should render expandable list", async () => {
+  it("should render expandable list", () => {
     render(<UsnList {...expandableProps} />);
 
     expect(screen.getByText("Security issues")).toBeInTheDocument();
 
-    await act(() => {
+    act(() => {
       fireEvent.click(screen.getByText(/show 5 more/i));
     });
   });

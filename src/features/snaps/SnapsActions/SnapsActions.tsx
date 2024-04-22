@@ -98,7 +98,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
           <i className="p-icon--delete" />
           <span>Uninstall</span>
         </Button>
-        {(singleSnap?.upgrades !== "held" || !sidePanel) && (
+        {(singleSnap?.held_until === null || !sidePanel) && (
           <Button
             type="button"
             className="p-segmented-control__button has-icon"
@@ -111,7 +111,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             <span>Hold</span>
           </Button>
         )}
-        {(singleSnap?.upgrades === "held" || !sidePanel) && (
+        {(singleSnap?.held_until !== null || !sidePanel) && (
           <Button
             type="button"
             className="p-segmented-control__button has-icon"

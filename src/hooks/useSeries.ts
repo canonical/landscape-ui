@@ -35,7 +35,7 @@ export interface RemoveSeriesParams {
   name: string;
 }
 
-interface Repo {
+export interface Repo {
   architectures: string;
   codename: string;
   description: string;
@@ -46,17 +46,17 @@ interface Repo {
   version: string;
 }
 
-interface RepoInfo {
+export interface RepoInfo {
   flat: boolean;
   repos: Repo[];
   ubuntu: boolean;
 }
 
-interface GetRepoInfoParams {
+export interface GetRepoInfoParams {
   mirror_uri: string;
 }
 
-interface UseSeriesResult {
+export interface UseSeriesResult {
   createSeriesQuery: UseMutationResult<
     AxiosResponse<Series>,
     AxiosError<ApiError>,

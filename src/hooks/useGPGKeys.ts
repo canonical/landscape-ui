@@ -5,26 +5,26 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { GPGKey } from "../types/GPGKey";
+import { GPGKey } from "@/types/GPGKey";
 import useDebug from "./useDebug";
 import { AxiosError, AxiosResponse } from "axios";
-import { QueryFnType } from "../types/QueryFnType";
-import { ApiError } from "../types/ApiError";
+import { QueryFnType } from "@/types/QueryFnType";
+import { ApiError } from "@/types/ApiError";
 
-interface GetGPGKeysParams {
+export interface GetGPGKeysParams {
   names?: string[];
 }
 
-interface ImportGPGKeyParams {
+export interface ImportGPGKeyParams {
   material: string;
   name: string;
 }
 
-interface RemoveGPGKeyParams {
+export interface RemoveGPGKeyParams {
   name: string;
 }
 
-interface UseGPGKeysResult {
+export interface UseGPGKeysResult {
   getGPGKeysQuery: QueryFnType<AxiosResponse<GPGKey[]>, GetGPGKeysParams>;
   importGPGKeyQuery: UseMutationResult<
     AxiosResponse<GPGKey>,

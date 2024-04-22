@@ -14,7 +14,7 @@ describe("SecurityIssuesPanel", () => {
   it("should render list", async () => {
     renderWithProviders(<SecurityIssuesPanel {...props} />);
 
-    expectLoadingState();
+    await expectLoadingState();
 
     await waitFor(() => {
       usns.forEach((item) => {

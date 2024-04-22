@@ -2,7 +2,7 @@ export interface InstalledSnap extends Record<string, unknown> {
   version: string;
   revision: string;
   tracking_channel: string;
-  held_until: any;
+  held_until: string | null;
   confinement: string;
   snap: Snap;
 }

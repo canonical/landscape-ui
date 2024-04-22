@@ -1,3 +1,4 @@
+import { within } from "@testing-library/react";
 import { expect } from "vitest";
 
 expect.extend({
@@ -58,5 +59,26 @@ expect.extend({
           ? `expected ${this.utils.printReceived(received)} not to contain input values ${this.utils.printExpected(notFoundValues)}`
           : `expected ${this.utils.printReceived(received)} to contain input values ${this.utils.printExpected(notFoundValues)}`,
     };
+  },
+  toHaveInfoItem(received: HTMLElement, label: string, value: string) {
+    const infoItem = within(received).getByText(label);
+    const pass =
+      infoItem &&
+      infoItem.nextSibling &&
+      infoItem.nextSibling.textContent === value;
+
+    if (pass) {
+      return {
+        message: () =>
+          `expected ${this.utils.printReceived(received)} not to contain an item with label "${this.utils.printReceived(label)}" and value "${this.utils.printReceived(value)}"`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () =>
+          `expected ${this.utils.printReceived(received)} to contain an item with label "${this.utils.printReceived(label)}" and value "${this.utils.printReceived(value)}"`,
+        pass: false,
+      };
+    }
   },
 });

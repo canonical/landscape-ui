@@ -18,7 +18,7 @@ describe("UsnPackageList", () => {
   it("should render list", async () => {
     renderWithProviders(<UsnPackageList {...props} />);
 
-    expectLoadingState();
+    await expectLoadingState();
 
     await waitFor(() => {
       usnPackages.forEach((usnPackage, index) => {
