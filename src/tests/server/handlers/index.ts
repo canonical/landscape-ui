@@ -8,6 +8,8 @@ import repo from "./repo";
 import accessGroup from "./accessGroup";
 import tag from "./tag";
 import upgradeProfile from "./upgradeProfile";
+import activity from "./activity";
+import packages from "./packages";
 
 export default [
   ...auth,
@@ -15,6 +17,8 @@ export default [
   ...usn,
   ...snap,
   ...user,
+  ...activity,
+  ...packages,
   ...gpgKey,
   ...repo,
   ...accessGroup,

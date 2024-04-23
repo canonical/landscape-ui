@@ -4,9 +4,7 @@ import { Colors } from "../helpers";
 import { getChartData } from "./helpers";
 import PieChart from "../PieChart";
 
-interface ChartContainerProps {}
-
-const ChartContainer: FC<ChartContainerProps> = () => {
+const ChartContainer: FC = () => {
   const { getInstancesQuery } = useInstances();
 
   const { data: securityUpgrades } = getInstancesQuery({

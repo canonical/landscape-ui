@@ -1,12 +1,12 @@
 import { FC, ReactNode } from "react";
 import classes from "./AlertCard.module.scss";
-import { Spinner } from "@canonical/react-components";
 import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
 import { Link } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import { QUERY_STATUSES } from "@/pages/dashboard/instances/InstancesContainer/constants";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface AlertCardProps {
   alertQueryData: {
@@ -43,7 +43,7 @@ const AlertCard: FC<AlertCardProps> = ({ alertQueryData }) => {
           {alertQueryData.label}
         </p>
       </div>
-      {isLoading && <Spinner />}
+      {isLoading && <LoadingState />}
       {!isLoading && isError && (
         <p className="u-no-margin--bottom">Error loading data.</p>
       )}
@@ -52,7 +52,10 @@ const AlertCard: FC<AlertCardProps> = ({ alertQueryData }) => {
           className={classNames("u-no-margin u-no-padding", classes.link)}
           to={`${ROOT_PATH}instances?status=${alertQueryData.filterValue}`}
         >
-          <span className={classes.text}>{alertsData.data.count}</span> instance
+          <span className={classes.instancesNumber}>
+            {alertsData.data.count}
+          </span>{" "}
+          instance
           {alertsData.data.count === 1 ? "" : "s"}
         </Link>
       )}
