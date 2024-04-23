@@ -13,7 +13,7 @@ import { QueryFnType } from "@/types/QueryFnType";
 import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
 
-interface GetInstancesParams {
+export interface GetInstancesParams {
   query?: string;
   limit?: number;
   offset?: number;

@@ -14,7 +14,7 @@ import useFetch from "./useFetch";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { Activity } from "@/features/activities";
 
-interface GetPackagesParams {
+export interface GetPackagesParams {
   query: string;
   available?: boolean;
   held?: boolean;

@@ -24,6 +24,7 @@ import classes from "./InfoTablesContainer.module.scss";
 import { InstancesUpgradesTableItem, UpgradesTableItem } from "./helpers";
 import { Usn } from "@/types/Usn";
 import useNotify from "@/hooks/useNotify";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface InfoTablesContainerProps {}
 
@@ -45,6 +46,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
   const {
     data: unapprovedActivitiesRes,
     refetch: refetchUnapprovedActivities,
+    isLoading: isLoadingUnapprovedActivitiesData,
   } = getActivitiesQuery({
     query: "status:unapproved",
     limit: 10,
@@ -52,18 +54,26 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
   const {
     data: inProgressActivitiesRes,
     refetch: refetchInProgressActivities,
+    isLoading: isLoadingInProgressActivitiesData,
   } = getActivitiesQuery({
     query: "status:delivered",
     limit: 10,
   });
-  const { data: instancesUpgradesRes, refetch: refetchInstanceUpgrades } =
-    getInstancesQuery({
-      query: "alert:security-upgrades OR alert:package-upgrades",
-      limit: 10,
-    });
+  const {
+    data: instancesUpgradesRes,
+    refetch: refetchInstanceUpgrades,
+    isLoading: isLoadingInstanceUpgrades,
+  } = getInstancesQuery({
+    query: "alert:security-upgrades OR alert:package-upgrades",
+    limit: 10,
+  });
 
   const instancesData = instancesUpgradesRes?.data.results ?? [];
-  const { data: usnsData, refetch: refetchUsns } = getUsnsQuery(
+  const {
+    data: usnsData,
+    refetch: refetchUsns,
+    isLoading: isLoadingUsns,
+  } = getUsnsQuery(
     {
       computer_ids: instancesData.map((instance) => instance.id),
       limit: 11,
@@ -72,7 +82,11 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
       enabled: instancesData.length > 0,
     },
   );
-  const { data: packageDataRes, refetch: refetchPackages } = getPackagesQuery(
+  const {
+    data: packageDataRes,
+    refetch: refetchPackages,
+    isLoading: isLoadingPackages,
+  } = getPackagesQuery(
     {
       query: instancesData.map((instance) => `id:${instance.id}`).join(" OR "),
       upgrade: true,
@@ -163,7 +177,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
   const handleClickActivitiesTab = (tabIndex: number) => {
     setCurrentActivitiesTab(tabIndex);
   };
-  //instances
+
   const getUpgradesTableData = (): UpgradesTableItem[] => {
     switch (currentUpgradesTab) {
       case 0:
@@ -174,6 +188,16 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
         return usnsUpgradesData;
       default:
         return [];
+    }
+  };
+
+  const getIsLoadingUpgrades = () => {
+    if (currentUpgradesTab === 0) {
+      return isLoadingInstanceUpgrades || isLoadingPackages;
+    } else if (currentUpgradesTab === 1) {
+      return isLoadingPackages;
+    } else {
+      return isLoadingUsns;
     }
   };
 
@@ -264,6 +288,15 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     () => getActivitiesTableData(),
     [currentActivitiesTab, unapprovedActivitiesData, inProgressActivitiesData],
   );
+
+  const getIsLoadingActivities = () => {
+    if (currentActivitiesTab === 0) {
+      return isLoadingUnapprovedActivitiesData;
+    } else {
+      return isLoadingInProgressActivitiesData;
+    }
+  };
+
   const activitiesTableColumns = useMemo<Column<ActivityCommon>[]>(
     () => [
       {
@@ -427,8 +460,8 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
               },
             ]}
           />
-
-          {upgradesTableData.length === 0 ? (
+          {getIsLoadingUpgrades() && <LoadingState />}
+          {!getIsLoadingUpgrades() && upgradesTableData.length === 0 && (
             <EmptyState
               title="All instances are up to date"
               body="Your instances are up to date. Check back later for any new upgrades."
@@ -438,7 +471,8 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
                 </Button>,
               ]}
             />
-          ) : (
+          )}
+          {!getIsLoadingUpgrades() && upgradesTableData.length > 0 && (
             <>
               <ModularTable
                 data={upgradesTableData}
@@ -497,8 +531,8 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
             },
           ]}
         />
-
-        {activitiesTableData.length === 0 ? (
+        {getIsLoadingActivities() && <LoadingState />}
+        {!getIsLoadingActivities() && activitiesTableData.length === 0 && (
           <EmptyState
             title={
               currentActivitiesTab === 0
@@ -516,7 +550,8 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
               </Button>,
             ]}
           />
-        ) : (
+        )}
+        {!getIsLoadingActivities() && activitiesTableData.length > 0 && (
           <>
             <ModularTable
               data={activitiesTableData}
