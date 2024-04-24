@@ -1,25 +1,21 @@
-import { MainTable } from "@canonical/react-components";
-import { FC, lazy, Suspense, useMemo, useState } from "react";
+import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
-import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
-import { User } from "@/types/User";
 import UserPanelHeader from "@/pages/dashboard/instances/[single]/tabs/users/UserPanelHeader";
-import { getFilteredUsers, getHeaders, getRows } from "./helpers";
+import { User } from "@/types/User";
+import { FC, useMemo, useState } from "react";
+import UserList from "../UserList";
+import { getFilteredUsers } from "./helpers";
+import useSidePanel from "@/hooks/useSidePanel";
+import NewUserForm from "../NewUserForm";
+import { Button } from "@canonical/react-components";
 
 const MAX_USERS_LIMIT = 1000;
 
 interface UserPanelProps {
   instanceId: number;
 }
-
-const EditUserForm = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
-);
-const UserDetails = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/users/UserDetails"),
-);
 
 const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,7 +25,7 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
 
   const { setSidePanelContent } = useSidePanel();
   const { getUsersQuery } = useUsers();
-  const { data: userResponse } = getUsersQuery({
+  const { data: userResponse, isLoading } = getUsersQuery({
     computer_id: instanceId,
     limit: MAX_USERS_LIMIT,
   });
@@ -47,65 +43,56 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
 
   const users = getUsers(usersPerPage, (currentPage - 1) * usersPerPage);
 
-  const toggleAll = () => {
-    setSelected((prevState) =>
-      0 === prevState.length ? users.map(({ uid }) => uid) : [],
-    );
-  };
-
   const handlePaginate = (page: number) => {
     setCurrentPage(page);
     setSelected([]);
   };
 
-  const handleEditUser = (user: User) => {
+  const handleEmptyStateAddUser = () => {
     setSidePanelContent(
-      "Edit user",
-      <Suspense fallback={<LoadingState />}>
-        <EditUserForm instanceId={instanceId} user={user} />
-      </Suspense>,
+      "Add new user",
+      <NewUserForm instanceId={instanceId} />,
     );
   };
-
-  const handleShowUserDetails = (user: User) => {
-    setSidePanelContent(
-      "User details",
-      <Suspense fallback={<LoadingState />}>
-        <UserDetails
-          user={user}
-          instanceId={instanceId}
-          handleEditUser={handleEditUser}
-        />
-      </Suspense>,
-    );
-  };
-
-  const headers = getHeaders(selected.length, users.length, toggleAll);
-
-  const rows = getRows(
-    users,
-    selected,
-    setSelected,
-    handleEditUser,
-    handleShowUserDetails,
-  );
 
   return (
     <>
-      <UserPanelHeader
-        instanceId={instanceId}
-        onPageChange={handlePaginate}
-        onSearch={(searchText) => setSearch(searchText)}
-        selected={selected}
-        setSelected={setSelected}
-        users={users}
-      />
-      <MainTable
-        headers={headers}
-        rows={rows}
-        emptyStateMsg="No users found."
-        sortable
-      />
+      {isLoading && <LoadingState />}
+      {!isLoading &&
+        (!userResponse || userResponse.data.results.length === 0) && (
+          <EmptyState
+            title="No users found"
+            body="Add new users by clicking the button below"
+            icon="connected"
+            cta={[
+              <Button
+                key="empty-state-add-new-user"
+                appearance="positive"
+                onClick={handleEmptyStateAddUser}
+              >
+                Add user
+              </Button>,
+            ]}
+          />
+        )}
+      {!isLoading && filteredUsers.length && (
+        <>
+          <UserPanelHeader
+            instanceId={instanceId}
+            onPageChange={handlePaginate}
+            onSearch={(searchText) => setSearch(searchText)}
+            selected={selected}
+            setSelected={setSelected}
+            users={users}
+          />
+          <UserList
+            instanceId={instanceId}
+            selected={selected}
+            setSelected={setSelected}
+            users={users}
+          />
+        </>
+      )}
       <TablePagination
         currentPage={currentPage}
         totalItems={filteredUsers.length}
@@ -114,7 +101,7 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
         setPageSize={(usersNumber) => {
           setUsersPerPage(usersNumber);
         }}
-        currentItemCount={rows.length}
+        currentItemCount={users.length}
       />
     </>
   );

@@ -1,32 +1,26 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import EditUserForm from "./EditUserForm";
 import userEvent from "@testing-library/user-event";
+import { users } from "@/tests/mocks/user";
 
-const mockProps = {
+const props = {
   instanceId: 1,
-  user: {
-    uid: 1,
-    username: "testuser",
-    name: "Test User",
-    primary_gid: 1,
-    location: "Test Location",
-    home_phone: "1234567890",
-    work_phone: "0987654321",
-    enabled: true,
-  },
+  user: users[0],
 };
 
 describe("EditUserForm", () => {
+  beforeEach(() => {
+    renderWithProviders(<EditUserForm {...props} />);
+  });
   it("renders the form", () => {
-    renderWithProviders(<EditUserForm {...mockProps} />);
-    const formElement = screen.getByRole("form");
-    expect(formElement).toBeInTheDocument();
+    const form = screen.getByRole("form");
+    expect(form).toBeInTheDocument();
   });
 
   it("renders form fields", () => {
-    const { container } = renderWithProviders(<EditUserForm {...mockProps} />);
-    expect(container).toHaveTexts([
+    const form = screen.getByRole("form");
+    expect(form).toHaveTexts([
       "Username",
       "Name",
       "Passphrase",
@@ -40,32 +34,31 @@ describe("EditUserForm", () => {
   });
 
   it("renders form fields with user data", () => {
-    const { container } = renderWithProviders(<EditUserForm {...mockProps} />);
-    expect(container).toHaveInputValues([
-      mockProps.user.username,
-      mockProps.user.name,
-      mockProps.user.location,
-      mockProps.user.home_phone,
-      mockProps.user.work_phone,
+    const form = screen.getByRole("form");
+    expect(form).toHaveInputValues([
+      props.user.username,
+      props.user.name ?? "-",
+      props.user.location ?? "-",
+      props.user.home_phone ?? "-",
+      props.user.work_phone ?? "-",
     ]);
   });
 
   it("can edit user data", async () => {
-    const { container } = renderWithProviders(<EditUserForm {...mockProps} />);
-
-    const username = container.querySelector('input[name="username"]');
-
-    if (!username) throw new Error("username input not found");
+    const form = screen.getByRole("form");
+    let username;
+    if (props.user.name === props.user.username) {
+      const inputs = await within(form).findAllByDisplayValue(
+        props.user.username,
+      );
+      username = inputs[0];
+    } else {
+      username = await within(form).findByDisplayValue(props.user.username);
+    }
 
     await userEvent.clear(username);
-
     await userEvent.type(username, "newusername");
-    expect(container).toHaveInputValues([
-      "newusername",
-      mockProps.user.name,
-      mockProps.user.location,
-      mockProps.user.home_phone,
-      mockProps.user.work_phone,
-    ]);
+
+    expect(form).toHaveInputValues(["newusername"]);
   });
 });

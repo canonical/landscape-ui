@@ -1,0 +1,69 @@
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe } from "vitest";
+import UserPanel from "./UserPanel";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { users } from "@/tests/mocks/user";
+import { expectLoadingState } from "@/tests/helpers";
+
+const props = {
+  instanceId: 1,
+};
+
+describe("UserPanel", () => {
+  it("renders UserPanel", async () => {
+    renderWithProviders(<UserPanel {...props} />);
+    await expectLoadingState();
+
+    const user = users[0];
+    const username = await screen.findByRole("button", {
+      name: `Show details of user ${user.username}`,
+    });
+    expect(username).toBeInTheDocument();
+  });
+
+  it("renders empty state", async () => {
+    setEndpointStatus("empty");
+    renderWithProviders(<UserPanel {...props} />);
+
+    const emptyTableState = await screen.findByText(/no users found/i);
+    expect(emptyTableState).toBeInTheDocument();
+  });
+
+  it("opens form from empty state", async () => {
+    setEndpointStatus("empty");
+    renderWithProviders(<UserPanel {...props} />);
+    await expectLoadingState();
+
+    const addNewUserButton = await screen.findByRole("button", {
+      name: /add user/i,
+    });
+    expect(addNewUserButton).toBeInTheDocument();
+
+    await userEvent.click(addNewUserButton);
+    const form = await screen.findByRole("complementary");
+    expect(form).toBeInTheDocument();
+  });
+
+  it("renders filtered list of users", async () => {
+    renderWithProviders(<UserPanel {...props} />);
+
+    for (let i = 0; i < users.length; i++) {
+      const user = await screen.findByRole("button", {
+        name: `Show details of user ${users[i].username}`,
+      });
+      expect(user).toBeInTheDocument();
+    }
+    const searchBox = await screen.findByRole("searchbox");
+    await userEvent.type(searchBox, `user1{enter}`);
+    const userFound = await screen.findByRole("button", {
+      name: `Show details of user ${users[0].username}`,
+    });
+    const removedUser = screen.queryByRole("button", {
+      name: `Show details of user ${users[1].username}`,
+    });
+    expect(userFound).toBeInTheDocument();
+    expect(removedUser).not.toBeInTheDocument();
+  });
+});

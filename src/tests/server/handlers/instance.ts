@@ -9,7 +9,7 @@ export default [
   http.get<GetGroupsParams, never, GroupsResponse>(
     `${API_URL}computers/:computerId/groups`,
     () => {
-      return HttpResponse.json(userGroups);
+      return HttpResponse.json({ groups: userGroups });
     },
   ),
 

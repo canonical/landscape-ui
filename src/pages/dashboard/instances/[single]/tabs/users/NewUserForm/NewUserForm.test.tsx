@@ -7,15 +7,17 @@ const mockProps = {
 };
 
 describe("NewUserForm", () => {
-  it("renders the form", () => {
+  beforeEach(() => {
     renderWithProviders(<NewUserForm {...mockProps} />);
-    const formElement = screen.getByRole("form");
-    expect(formElement).toBeInTheDocument();
+  });
+  it("renders the form", () => {
+    const form = screen.getByRole("form");
+    expect(form).toBeInTheDocument();
   });
 
   it("renders form fields", () => {
-    const { container } = renderWithProviders(<NewUserForm {...mockProps} />);
-    expect(container).toHaveTexts([
+    const form = screen.getByRole("form");
+    expect(form).toHaveTexts([
       "Username",
       "Name",
       "Passphrase",
@@ -25,5 +27,8 @@ describe("NewUserForm", () => {
       "Home phone",
       "Work phone",
     ]);
+
+    const addUserButton = screen.getByRole("button", { name: /add user/i });
+    expect(addUserButton).toBeInTheDocument();
   });
 });

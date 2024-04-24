@@ -82,7 +82,6 @@ export default [
         },
       );
     }
-    // console.log("successfulSnapInstallResponse", successfulSnapInstallResponse);
     return HttpResponse.json(successfulSnapInstallResponse);
   }),
 

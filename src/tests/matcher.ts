@@ -61,6 +61,9 @@ expect.extend({
     };
   },
   toHaveInfoItem(received: HTMLElement, label: string, value: string) {
+    if (value.length > 120) {
+      value = value.slice(0, 120) + "...";
+    }
     const infoItem = within(received).getByText(label);
     const pass =
       infoItem &&
