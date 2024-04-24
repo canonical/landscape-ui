@@ -12,8 +12,8 @@ interface UbuntuProPanelProps {
 const UbuntuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
   return instance.ubuntu_pro_info ? (
     <>
-      <UbuntuProHeader data={instance.ubuntu_pro_info} />
-      <UbuntuProList items={instance.ubuntu_pro_info.services} />
+      <UbuntuProHeader ubuntuProData={instance.ubuntu_pro_info} />
+      <UbuntuProList services={instance.ubuntu_pro_info.services} />
     </>
   ) : (
     <EmptyState
@@ -30,7 +30,8 @@ const UbuntuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
             target="_blank"
             rel="nofollow noopener noreferrer"
           >
-            Learn more
+            Learn more about Ubuntu Pro
+            <i className="p-icon--external-link" />
           </Link>
         </>
       }

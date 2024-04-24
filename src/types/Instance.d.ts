@@ -152,26 +152,6 @@ interface UbuntuProAccount {
   name: string;
 }
 
-interface UbuntuProConfig {
-  contract_url: string;
-  data_dir: string;
-  log_file: string;
-  log_level: string;
-  security_url: string;
-  ua_config: {
-    apt_news: boolean;
-    apt_news_url: string;
-    global_apt_http_proxy: string | null;
-    global_apt_https_proxy: string | null;
-    http_proxy: string | null;
-    https_proxy: string | null;
-    metering_timer: number;
-    ua_apt_http_proxy: string | null;
-    ua_apt_https_proxy: string | null;
-    update_messaging_timer: number;
-  };
-}
-
 interface UbuntuProContract {
   created_at: string;
   id: string;
@@ -184,38 +164,19 @@ export interface UbuntuProService extends Record<string, unknown> {
   name: string;
   available: string;
   description: string;
-  blocked_by?: [];
-  description_override?: null;
   entitled?: string;
   status?: string;
   status_details?: string;
-  warning?: null;
 }
 
 interface UbuntuProInfo {
-  _doc: string;
-  account: UbuntuProAccount;
   attached: boolean;
-  config: UbuntuProConfig;
-  config_path: string;
-  contract: UbuntuProContract;
-  effective: string;
-  environment_vars: [];
-  errors: [];
-  execution_details: string;
-  execution_status: string;
   expires: string;
-  features: {};
-  machine_id: string;
-  notices: [];
-  result: string;
   services: UbuntuProService[];
-  simulated: boolean;
-  version: string;
-  warnings: [];
-  _schema_version?: string;
   techSupportLevel?: string;
-  origin?: unknown | null;
+  effective?: string;
+  contract?: UbuntuProContract;
+  account?: UbuntuProAccount;
 }
 
 export interface InstanceWithoutRelation extends Record<string, unknown> {
