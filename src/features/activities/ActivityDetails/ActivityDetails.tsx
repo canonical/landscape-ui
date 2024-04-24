@@ -1,6 +1,6 @@
 import moment from "moment";
 import { FC } from "react";
-import { Button, Col, Row } from "@canonical/react-components";
+import { Button, Col, Icon, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
@@ -11,6 +11,7 @@ import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useSidePanel from "@/hooks/useSidePanel";
+import classes from "./ActivityDetails.module.scss";
 
 interface ActivityDetailsProps {
   activityId: number;
@@ -230,7 +231,17 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
             <Col size={6}>
               <InfoItem
                 label="Status"
-                value={ACTIVITY_STATUSES[activity.activity_status].label}
+                value={
+                  <>
+                    <Icon
+                      name={ACTIVITY_STATUSES[activity.activity_status].icon}
+                      className={classes.statusIcon}
+                    />
+                    <span>
+                      {ACTIVITY_STATUSES[activity.activity_status].label}
+                    </span>
+                  </>
+                }
               />
             </Col>
             <Col size={6}>
@@ -263,7 +274,11 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
             )}
             {activity.result_text && (
               <Col size={12}>
-                <InfoItem label="Output" value={activity.result_text} />
+                <InfoItem
+                  label="Output"
+                  value={activity.result_text}
+                  className={classes.output}
+                />
               </Col>
             )}
           </Row>
