@@ -1,13 +1,12 @@
 import EmptyState from "@/components/layout/EmptyState";
 import ExpandableTableFooter from "@/components/layout/ExpandableTableFooter";
 import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
-import useActivities from "@/hooks/useActivities";
+import { Activity, ActivityCommon, useActivities } from "@/features/activities";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import { usePackages } from "@/hooks/usePackages";
 import useUsns from "@/hooks/useUsns";
-import { Activity, ActivityCommon } from "@/types/Activity";
 import { OldPackage } from "@/types/Package";
 import {
   Button,

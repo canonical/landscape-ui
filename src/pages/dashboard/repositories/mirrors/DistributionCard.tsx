@@ -1,24 +1,31 @@
 import { FC, lazy, Suspense, useState } from "react";
 import SeriesCard from "./SeriesCard";
 import { Button, Spinner } from "@canonical/react-components";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import useDistributions from "../../../../hooks/useDistributions";
+import useSidePanel from "@/hooks/useSidePanel";
+import useDistributions from "@/hooks/useDistributions";
 import classes from "./DistributionCard.module.scss";
-import useDebug from "../../../../hooks/useDebug";
-import { Distribution } from "../../../../types/Distribution";
-import useConfirm from "../../../../hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
+import { Distribution } from "@/types/Distribution";
+import useConfirm from "@/hooks/useConfirm";
 import EmptyDistribution from "./EmptyDistribution";
 import classNames from "classnames";
 import { useMediaQuery } from "usehooks-ts";
-import LoadingState from "../../../../components/layout/LoadingState";
+import LoadingState from "@/components/layout/LoadingState";
+import { SyncPocketRef } from "@/pages/dashboard/repositories/mirrors/types";
 
 const NewSeriesForm = lazy(() => import("./NewSeriesForm"));
 
 interface DistributionCardProps {
   distribution: Distribution;
+  syncPocketRefAdd: (ref: SyncPocketRef) => void;
+  syncPocketRefs: SyncPocketRef[];
 }
 
-const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
+const DistributionCard: FC<DistributionCardProps> = ({
+  distribution,
+  syncPocketRefAdd,
+  syncPocketRefs,
+}) => {
   const [openDropdown, setOpenDropdown] = useState(false);
 
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
@@ -64,10 +71,7 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
         setSidePanelContent(
           `Add series to ${distribution.name}`,
           <Suspense fallback={<LoadingState />}>
-            <NewSeriesForm
-              distributionData={distribution}
-              ctaText="Add series"
-            />
+            <NewSeriesForm distribution={distribution} ctaText="Add series" />
           </Suspense>,
         );
       }}
@@ -147,6 +151,8 @@ const DistributionCard: FC<DistributionCardProps> = ({ distribution }) => {
             key={series.name}
             distribution={distribution}
             series={series}
+            syncPocketRefAdd={syncPocketRefAdd}
+            syncPocketRefs={syncPocketRefs}
           />
         ))}
     </div>

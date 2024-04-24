@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@/types/ApiError";
 import useFetchOld from "./useFetchOld";
 import { Administrator } from "@/types/Administrator";
-import { Activity } from "@/types/Activity";
+import { Activity } from "@/features/activities";
 import useFetch from "./useFetch";
 
 interface InviteAdministratorParams {

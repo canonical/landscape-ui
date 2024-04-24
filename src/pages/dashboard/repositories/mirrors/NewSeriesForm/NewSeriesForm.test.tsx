@@ -5,10 +5,7 @@ import { getStrippedUrl } from "./helpers";
 
 describe("NewSeriesForm", () => {
   it("renders form", () => {
-    const props = {
-      distributionData: [],
-    };
-    const { container } = renderWithProviders(<NewSeriesForm {...props} />);
+    const { container } = renderWithProviders(<NewSeriesForm />);
     expect(container).toHaveTexts([
       "Type",
       "Mirror URI",

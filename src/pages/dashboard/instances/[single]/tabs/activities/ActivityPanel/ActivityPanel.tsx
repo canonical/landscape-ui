@@ -1,5 +1,5 @@
 import { FC } from "react";
-import Activities from "@/features/activities";
+import { Activities } from "@/features/activities";
 
 interface ActivityPanelProps {
   instanceId?: number;

@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { ApiError } from "@/types/ApiError";
 import { Usn, UsnPackage } from "@/types/Usn";
-import { Activity } from "@/types/Activity";
+import { Activity } from "@/features/activities";
 
 export interface GetUsnsParams {
   computer_ids: number[];

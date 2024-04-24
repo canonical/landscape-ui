@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useFetch from "./useFetch";
-import { QueryFnType } from "../types/QueryFnType";
+import { QueryFnType } from "@/types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "../types/ApiError";
-import { Activity } from "../types/Activity";
-import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
-import { Invitation } from "../types/Invitation";
+import { ApiError } from "@/types/ApiError";
+import { Activity } from "@/features/activities";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { Invitation } from "@/types/Invitation";
 
 interface GetInvitationsParams {
   id: number;

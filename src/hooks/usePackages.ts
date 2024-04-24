@@ -12,7 +12,7 @@ import { OldPackage, Package } from "@/types/Package";
 import useDebug from "./useDebug";
 import useFetch from "./useFetch";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { Activity } from "@/types/Activity";
+import { Activity } from "@/features/activities";
 
 interface GetPackagesParams {
   query: string;

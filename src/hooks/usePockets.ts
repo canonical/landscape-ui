@@ -1,17 +1,13 @@
-import useFetchOld from "./useFetchOld";
-import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import useDebug from "./useDebug";
 import { AxiosError, AxiosResponse } from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Activity } from "@/features/activities";
 import { ApiError } from "@/types/ApiError";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { PackageDiff, PackageObject } from "@/types/Package";
 import { Pocket } from "@/types/Pocket";
 import { QueryFnType } from "@/types/QueryFnType";
-import { PackageDiff, PackageObject } from "@/types/Package";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import useDebug from "./useDebug";
+import useFetchOld from "./useFetchOld";
 
 export interface CreateCommonPocketParams {
   architectures: string[];
@@ -133,68 +129,7 @@ export interface RemoveUploaderGPGKeysFromPocketParams {
   series: string;
 }
 
-export interface UsePocketsResult {
-  createPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    CreateMirrorPocketParams | CreatePullPocketParams | CreateUploadPocketParams
-  >;
-  editPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    EditMirrorPocketParams | EditPullPocketParams | EditUploadPocketParams
-  >;
-  removePocketQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    RemovePocketParams
-  >;
-  syncMirrorPocketQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    SyncMirrorPocketParams
-  >;
-  pullPackagesToPocketQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    PullPackagesToPocketParams
-  >;
-  diffPullPocketQuery: QueryFnType<
-    AxiosResponse<PackageDiff>,
-    DiffPullPocketParams
-  >;
-  listPocketQuery: QueryFnType<
-    AxiosResponse<ApiPaginatedResponse<PackageObject>>,
-    ListPocketParams
-  >;
-  removePackagesFromPocketQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    RemovePackagesFromPocketParams
-  >;
-  addPackageFiltersToPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    AddPackageFiltersToPocketParams
-  >;
-  removePackageFiltersFromPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    RemovePackageFiltersFromPocketParams
-  >;
-  addUploaderGPGKeysToPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    AddUploaderGPGKeysToPocketParams
-  >;
-  removeUploaderGPGKeysFromPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    RemoveUploaderGPGKeysFromPocketParams
-  >;
-}
-
-export default function usePockets(): UsePocketsResult {
+export default function usePockets() {
   const queryClient = useQueryClient();
   const authFetch = useFetchOld();
   const debug = useDebug();
@@ -236,31 +171,31 @@ export default function usePockets(): UsePocketsResult {
   });
 
   const syncMirrorPocketQuery = useMutation<
-    AxiosResponse<void>,
+    AxiosResponse<Activity>,
     AxiosError<ApiError>,
     SyncMirrorPocketParams
   >({
     mutationKey: ["pocketPackages", "sync"],
     mutationFn: (params) => authFetch!.get("SyncMirrorPocket", { params }),
-    onSuccess: (data, variables) => {
-      queryClient
-        .invalidateQueries(["pocketPackages", { ...variables }])
-        .catch(debug);
-    },
+    onSuccess: (_, variables) =>
+      Promise.all([
+        queryClient.invalidateQueries(["pocketPackages", { ...variables }]),
+        queryClient.invalidateQueries(["distributions"]),
+      ]),
   });
 
   const pullPackagesToPocketQuery = useMutation<
-    AxiosResponse<void>,
+    AxiosResponse<Activity>,
     AxiosError<ApiError>,
     PullPackagesToPocketParams
   >({
     mutationKey: ["pocketPackages", "pull"],
     mutationFn: (params) => authFetch!.get("PullPackagesToPocket", { params }),
-    onSuccess: (data, variables) => {
-      queryClient
-        .invalidateQueries(["pocketPackages", { ...variables }])
-        .catch(debug);
-    },
+    onSuccess: (_, variables) =>
+      Promise.all([
+        queryClient.invalidateQueries(["pocketPackages", { ...variables }]),
+        queryClient.invalidateQueries(["distributions"]),
+      ]),
   });
 
   const removePackagesFromPocketQuery = useMutation<

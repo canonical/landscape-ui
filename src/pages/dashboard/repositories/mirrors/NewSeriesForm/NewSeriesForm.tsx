@@ -23,6 +23,7 @@ import {
   PRE_SELECTED_POCKETS,
 } from "@/data/series";
 import useDebug from "@/hooks/useDebug";
+import useDistributions from "@/hooks/useDistributions";
 import useGPGKeys from "@/hooks/useGPGKeys";
 import useSeries, { CreateSeriesParams } from "@/hooks/useSeries";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -41,12 +42,12 @@ interface FormProps extends CreateSeriesParams {
 }
 
 interface NewSeriesFormProps {
-  distributionData: Distribution | Distribution[];
+  distribution?: Distribution;
   ctaText?: string;
 }
 
 const NewSeriesForm: FC<NewSeriesFormProps> = ({
-  distributionData,
+  distribution,
   ctaText = "Create mirror",
 }) => {
   const [mirrorUri, setMirrorUri] = useState(DEFAULT_MIRROR_URI);
@@ -57,19 +58,34 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
 
   const { getGPGKeysQuery } = useGPGKeys();
   const { createSeriesQuery, getRepoInfo } = useSeries();
+  const { getDistributionsQuery } = useDistributions();
 
-  const { data: gpgKeysData } = getGPGKeysQuery();
+  const {
+    data: getDistributionsQueryResult,
+    error: getDistributionsQueryError,
+  } = getDistributionsQuery({}, { enabled: !distribution });
+
+  if (getDistributionsQueryError) {
+    debug(getDistributionsQueryError);
+  }
+
+  const distributions = getDistributionsQueryResult?.data ?? [];
+
+  const { data: gpgKeysData, error: getGPGKeysQueryError } = getGPGKeysQuery();
+
+  if (getGPGKeysQueryError) {
+    debug(getGPGKeysQueryError);
+  }
+
   const { mutateAsync: createSeries, isLoading: isCreating } =
     createSeriesQuery;
 
   const gpgKeys = gpgKeysData?.data ?? [];
 
-  const distributionOptions: SelectOption[] = Array.isArray(distributionData)
-    ? distributionData.map(({ name }) => ({
-        label: name,
-        value: name,
-      }))
-    : [];
+  const distributionOptions: SelectOption[] = distributions.map(({ name }) => ({
+    label: name,
+    value: name,
+  }));
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -102,17 +118,17 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
           message: "First select the distribution.",
         })
         .test({
-          params: { distributionData },
+          params: { distribution, distributions },
           test: (value, context) => {
             if (!context.parent.distribution) {
               return true;
             }
 
-            const seriesNames = Array.isArray(distributionData)
-              ? distributionData
+            const seriesNames = distribution
+              ? distribution.series.map(({ name }) => name)
+              : distributions
                   .filter(({ name }) => name === context.parent.distribution)[0]
-                  .series.map(({ name }) => name)
-              : distributionData.series.map(({ name }) => name);
+                  .series.map(({ name }) => name);
 
             return !seriesNames.includes(value);
           },
@@ -194,12 +210,12 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
   };
 
   useEffect(() => {
-    if (!distributionData || Array.isArray(distributionData)) {
+    if (!distribution) {
       return;
     }
 
-    formik.setFieldValue("distribution", distributionData.name);
-  }, [distributionData]);
+    formik.setFieldValue("distribution", distribution.name);
+  }, [distribution]);
 
   useEffect(() => {
     if ("third-party" === formik.values.type) {
@@ -370,7 +386,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
         />
       )}
 
-      {Array.isArray(distributionData) && (
+      {!distribution && (
         <Select
           label="Distribution"
           required

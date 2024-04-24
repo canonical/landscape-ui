@@ -1,16 +1,25 @@
-import { QueryFnType } from "../types/QueryFnType";
-import { Activity } from "../types/Activity";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "../types/ApiError";
-import useFetchOld from "./useFetchOld";
-import useFetch from "./useFetch";
-import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
+import { Activity } from "@/features/activities/types";
+import useFetch from "@/hooks/useFetch";
+import useFetchOld from "@/hooks/useFetchOld";
+import { ApiError } from "@/types/ApiError";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { QueryFnType } from "@/types/QueryFnType";
 
 interface GetActivitiesParams {
   limit?: number;
   offset?: number;
   query?: string;
+}
+
+interface GetSingleActivityParams {
+  activityId: number;
 }
 
 interface CancelActivitiesParams {
@@ -43,6 +52,21 @@ export default function useActivities() {
         authFetch!.get("activities", {
           params: queryParams,
         }),
+      ...config,
+    });
+  };
+
+  const getSingleActivityQuery = (
+    { activityId, ...queryParams }: GetSingleActivityParams,
+    config: Omit<
+      UseQueryOptions<AxiosResponse<Activity>, AxiosError<ApiError>>,
+      "queryKey" | "queryFn"
+    > = {},
+  ) => {
+    return useQuery<AxiosResponse<Activity>, AxiosError<ApiError>>({
+      queryKey: ["activities", { activityId, ...queryParams }],
+      queryFn: () =>
+        authFetch!.get(`activities/${activityId}`, { params: queryParams }),
       ...config,
     });
   };
@@ -99,6 +123,7 @@ export default function useActivities() {
 
   return {
     getActivitiesQuery,
+    getSingleActivityQuery,
     getActivityTypesQuery,
     cancelActivitiesQuery,
     approveActivitiesQuery,

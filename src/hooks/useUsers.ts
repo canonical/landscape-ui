@@ -1,4 +1,4 @@
-import { QueryFnType } from "../types/QueryFnType";
+import { QueryFnType } from "@/types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
 import {
   useMutation,
@@ -6,12 +6,12 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { ApiError } from "../types/ApiError";
+import { ApiError } from "@/types/ApiError";
 import useFetch from "./useFetch";
-import { GroupsResponse, User } from "../types/User";
+import { GroupsResponse, User } from "@/types/User";
 import useDebug from "./useDebug";
-import { Activity } from "../types/Activity";
-import { ApiPaginatedResponse } from "../types/ApiPaginatedResponse";
+import { Activity } from "@/features/activities";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 
 interface useUserResult {
   getUsersQuery: QueryFnType<

@@ -1,4 +1,4 @@
-import { AccessGroup } from "./accessGroup";
+import { AccessGroup } from "@/types/AccessGroup";
 
 interface CloudInstanceMetadata {
   "ami-id"?: string;

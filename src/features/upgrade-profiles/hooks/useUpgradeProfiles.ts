@@ -7,7 +7,7 @@ import type {
   UpgradeProfileType,
 } from "@/features/upgrade-profiles/types";
 import useFetchOld from "@/hooks/useFetchOld";
-import { Activity } from "@/types/Activity";
+import { Activity } from "@/features/activities";
 import { ApiError } from "@/types/ApiError";
 import { QueryFnType } from "@/types/QueryFnType";
 

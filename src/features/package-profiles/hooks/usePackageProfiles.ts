@@ -13,7 +13,7 @@ import {
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiError } from "@/types/ApiError";
 import useFetchOld from "@/hooks/useFetchOld";
-import { Activity } from "@/types/Activity";
+import { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 

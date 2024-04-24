@@ -39,7 +39,7 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
             setSidePanelContent(
               `Create mirror for ${distribution.name}`,
               <Suspense fallback={<LoadingState />}>
-                <NewSeriesForm distributionData={distribution} />
+                <NewSeriesForm distribution={distribution} />
               </Suspense>,
             );
           }}

@@ -5,7 +5,7 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { Activity } from "@/types/Activity";
+import { Activity } from "@/features/activities";
 import { ApiError } from "@/types/ApiError";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { Instance } from "@/types/Instance";

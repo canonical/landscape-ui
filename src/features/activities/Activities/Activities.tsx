@@ -13,10 +13,10 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import ActivitiesEmptyState from "@/features/activities/ActivitiesEmptyState";
 import ActivitiesHeader from "@/features/activities/ActivitiesHeader";
 import { ACTIVITY_STATUSES } from "@/features/activities/constants";
-import useActivities from "@/hooks/useActivities";
+import { useActivities } from "@/features/activities/hooks";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Activity, ActivityCommon } from "@/types/Activity";
+import { Activity, ActivityCommon } from "@/features/activities/types";
 import classes from "./Activities.module.scss";
 
 const ActivityDetails = lazy(
@@ -36,20 +36,21 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getActivitiesQuery } = useActivities();
-  const location = useLocation();
+  const { state }: { state: { activity?: Activity } } = useLocation();
 
   useEffect(() => {
-    const activity = location.state?.activity as Activity;
-    if (activity) {
-      setSidePanelContent(
-        activity.summary,
-        <Suspense fallback={<LoadingState />}>
-          <ActivityDetails activity={location.state.activity} />
-        </Suspense>,
-      );
-      window.history.replaceState({}, "");
+    if (!state?.activity) {
+      return;
     }
-  }, [location.state?.activity]);
+
+    setSidePanelContent(
+      state.activity.summary,
+      <Suspense fallback={<LoadingState />}>
+        <ActivityDetails activityId={state.activity.id} />
+      </Suspense>,
+    );
+    window.history.replaceState({}, "");
+  }, [state?.activity]);
 
   const handlePaginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -99,7 +100,7 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
     setSidePanelContent(
       activity.summary,
       <Suspense fallback={<LoadingState />}>
-        <ActivityDetails activity={activity as Activity} />
+        <ActivityDetails activityId={activity.id} />
       </Suspense>,
     );
   };

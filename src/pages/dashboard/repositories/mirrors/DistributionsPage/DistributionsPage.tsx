@@ -1,37 +1,28 @@
-import { FC, lazy, Suspense, useState } from "react";
-import PageHeader from "../../../../components/layout/PageHeader";
-import PageMain from "../../../../components/layout/PageMain";
-import PageContent from "../../../../components/layout/PageContent";
-import { Button } from "@canonical/react-components";
-import LoadingState from "../../../../components/layout/LoadingState";
-import EmptyState from "../../../../components/layout/EmptyState";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import useDistributions from "../../../../hooks/useDistributions";
-import DistributionCard from "./DistributionCard";
-import useDebug from "../../../../hooks/useDebug";
-import { useMediaQuery } from "usehooks-ts";
 import classNames from "classnames";
+import { FC, lazy, Suspense, useState } from "react";
+import { useMediaQuery } from "usehooks-ts";
+import { Button } from "@canonical/react-components";
+import LoadingState from "@/components/layout/LoadingState";
+import PageContent from "@/components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
+import PageMain from "@/components/layout/PageMain";
+import useSidePanel from "@/hooks/useSidePanel";
+import DistributionContainer from "@/pages/dashboard/repositories/mirrors/DistributionContainer";
 
-const NewDistributionForm = lazy(() => import("./NewDistributionForm"));
-const NewSeriesForm = lazy(() => import("./NewSeriesForm"));
+const NewDistributionForm = lazy(
+  () => import("@/pages/dashboard/repositories/mirrors/NewDistributionForm"),
+);
+const NewSeriesForm = lazy(
+  () => import("@/pages/dashboard/repositories/mirrors/NewSeriesForm"),
+);
 
 const DistributionsPage: FC = () => {
+  const [distributionsLength, setDistributionsLength] = useState(0);
   const [openDropdown, setOpenDropdown] = useState(false);
 
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
 
   const { setSidePanelContent } = useSidePanel();
-  const { getDistributionsQuery } = useDistributions();
-  const { data, isLoading, error } = getDistributionsQuery({
-    include_latest_sync: true,
-  });
-  const debug = useDebug();
-
-  if (error) {
-    debug(error);
-  }
-
-  const distributions = data?.data ?? [];
 
   const AddDistributionButton = ({ className }: { className?: string }) => (
     <Button
@@ -60,7 +51,7 @@ const DistributionsPage: FC = () => {
         setSidePanelContent(
           "Create new mirror",
           <Suspense fallback={<LoadingState />}>
-            <NewSeriesForm distributionData={distributions} />
+            <NewSeriesForm />
           </Suspense>,
         );
       }}
@@ -69,7 +60,7 @@ const DistributionsPage: FC = () => {
       }}
       type="button"
       className={classNames("u-no-margin--right", className)}
-      disabled={0 === distributions.length}
+      disabled={0 === distributionsLength}
     >
       Create mirror
     </Button>
@@ -114,51 +105,11 @@ const DistributionsPage: FC = () => {
         }
       />
       <PageContent>
-        {isLoading && <LoadingState />}
-        {!isLoading && distributions.length === 0 && (
-          <EmptyState
-            title="No mirrors have been created yet"
-            icon="containers"
-            body={
-              <>
-                <p className="u-no-margin--bottom">
-                  To create a new mirror you must first create a distribution
-                </p>
-                <a
-                  href="https://ubuntu.com/landscape/docs/repositories"
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                >
-                  How to manage repositories in Landscape
-                </a>
-              </>
-            }
-            cta={[
-              <Button
-                key="create-distribution"
-                onClick={() => {
-                  setSidePanelContent(
-                    "Create distribution",
-                    <Suspense fallback={<LoadingState />}>
-                      <NewDistributionForm />
-                    </Suspense>,
-                  );
-                }}
-                type="button"
-              >
-                Create distribution
-              </Button>,
-            ]}
-          />
-        )}
-        {!isLoading &&
-          distributions.length > 0 &&
-          distributions.map((distribution) => (
-            <DistributionCard
-              key={distribution.name}
-              distribution={distribution}
-            />
-          ))}
+        <DistributionContainer
+          onDistributionsLengthChange={(length) =>
+            setDistributionsLength(length)
+          }
+        />
       </PageContent>
     </PageMain>
   );

@@ -1,4 +1,4 @@
-import { AccessGroup } from "./AccessGroup";
+import { AccessGroup } from "@/types/AccessGroup";
 import { GPGKey } from "./GPGKey";
 
 export interface APTSource extends Record<string, unknown> {

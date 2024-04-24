@@ -1,21 +1,19 @@
 import { FC, lazy, Suspense, useEffect, useState } from "react";
-import SeriesPocketList from "./SeriesPocketList";
+import SeriesPocketList from "@/pages/dashboard/repositories/mirrors/SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
 import { Button, Spinner } from "@canonical/react-components";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import { Series } from "../../../../types/Series";
-import useSeries from "../../../../hooks/useSeries";
-import useDebug from "../../../../hooks/useDebug";
-import { Distribution } from "../../../../types/Distribution";
-import useConfirm from "../../../../hooks/useConfirm";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Series } from "@/types/Series";
+import useSeries from "@/hooks/useSeries";
+import useDebug from "@/hooks/useDebug";
+import { Distribution } from "@/types/Distribution";
+import useConfirm from "@/hooks/useConfirm";
 import { useMediaQuery } from "usehooks-ts";
-import {
-  DEFAULT_SNAPSHOT_URI,
-  DISPLAY_DATE_FORMAT,
-} from "../../../../constants";
+import { DEFAULT_SNAPSHOT_URI, DISPLAY_DATE_FORMAT } from "@/constants";
 import moment from "moment";
 import classNames from "classnames";
-import LoadingState from "../../../../components/layout/LoadingState";
+import LoadingState from "@/components/layout/LoadingState";
+import { SyncPocketRef } from "@/pages/dashboard/repositories/mirrors/types";
 
 const NewPocketForm = lazy(() => import("./NewPocketForm"));
 
@@ -24,9 +22,16 @@ const DeriveSeriesForm = lazy(() => import("./DeriveSeriesForm"));
 interface SeriesCardProps {
   distribution: Distribution;
   series: Series;
+  syncPocketRefAdd: (ref: SyncPocketRef) => void;
+  syncPocketRefs: SyncPocketRef[];
 }
 
-const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
+const SeriesCard: FC<SeriesCardProps> = ({
+  distribution,
+  series,
+  syncPocketRefAdd,
+  syncPocketRefs,
+}) => {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [snapshotDate, setSnapshotDate] = useState("");
 
@@ -199,6 +204,8 @@ const SeriesCard: FC<SeriesCardProps> = ({ distribution, series }) => {
         <SeriesPocketList
           distributionName={distribution.name}
           series={series}
+          syncPocketRefAdd={syncPocketRefAdd}
+          syncPocketRefs={syncPocketRefs}
         />
       </div>
     </div>

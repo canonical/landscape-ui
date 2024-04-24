@@ -3,7 +3,6 @@ import classNames from "classnames";
 import { FC } from "react";
 import distributionCardClasses from "@/pages/dashboard/repositories/mirrors/DistributionCard.module.scss";
 import seriesCardClasses from "@/pages/dashboard/repositories/mirrors/SeriesCard.module.scss";
-import tableClasses from "@/pages/dashboard/repositories/mirrors/SeriesPocketList.module.scss";
 import {
   Button,
   Col,
@@ -154,7 +153,6 @@ const ApiCredentials: FC<ApiCredentialsProps> = ({ user, credentials }) => {
                 <div className={seriesCardClasses.content}>
                   {isLargeScreen ? (
                     <MainTable
-                      className={classNames(tableClasses.content)}
                       rows={tableRows}
                       emptyStateMsg="No data available"
                     />
@@ -164,7 +162,6 @@ const ApiCredentials: FC<ApiCredentialsProps> = ({ user, credentials }) => {
                         key={index}
                         className={classNames(
                           "u-no-padding--left u-no-padding--right",
-                          tableClasses.pocketWrapper,
                           classes.apiCredentials,
                         )}
                       >
