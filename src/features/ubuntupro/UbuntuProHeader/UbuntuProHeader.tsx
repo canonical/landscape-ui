@@ -1,39 +1,41 @@
 import { FC } from "react";
 import classes from "./UbuntuProHeader.module.scss";
-import classNames from "classnames";
 import { Col, Link, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import { UbuntuProInfo } from "@/types/Instance";
 
 interface UbuntuProHeaderProps {
-  data: UbuntuProInfo;
+  ubuntuProData: UbuntuProInfo;
 }
 
-const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ data }) => {
+const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => {
   const infoItems = [
     {
       label: "Account",
-      value: data.account?.name ?? "-",
+      value: ubuntuProData.account?.name ?? "-",
     },
     {
       label: "Subscription",
-      value: data.contract?.name ?? "-",
+      value: ubuntuProData.contract?.name ?? "-",
     },
     {
       label: "Valid Until",
-      value: new Date(data.expires).toLocaleString("en-GB", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        timeZoneName: "short",
-        timeZone: "UTC",
-      }),
+      value:
+        ubuntuProData.expires !== "n/a"
+          ? new Date(ubuntuProData.expires).toLocaleString("en-GB", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              timeZoneName: "short",
+              timeZone: "UTC",
+            })
+          : "-",
     },
     {
       label: "Technical Support Level",
-      value: data.contract?.tech_support_level ?? "-",
+      value: ubuntuProData.contract?.tech_support_level ?? "-",
     },
   ];
   return (
@@ -45,7 +47,6 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ data }) => {
             display: "inline",
           }}
         >
-          <i className={classNames("p-icon--information", classes.helpIcon)} />
           <span className="u-text--muted">listed from </span>
           <Link
             href="https://ubuntu.com/pro/dashboard"

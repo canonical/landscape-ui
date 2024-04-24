@@ -5,12 +5,11 @@ import classes from "./UbuntuProList.module.scss";
 import { UbuntuProService } from "@/types/Instance";
 
 interface UbuntuProServicesListProps {
-  items?: UbuntuProService[];
+  services: UbuntuProService[];
 }
 
-const UbuntuProList: FC<UbuntuProServicesListProps> = ({ items }) => {
-  const servicesData = useMemo(() => items, [items?.length]) ?? [];
-
+const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {
+  const servicesData = useMemo(() => services, [services.length]) ?? [];
   const columns = useMemo<Column<UbuntuProService>[]>(
     () => [
       {
@@ -20,14 +19,24 @@ const UbuntuProList: FC<UbuntuProServicesListProps> = ({ items }) => {
       {
         accessor: "entitled",
         Header: "Entitled",
+        Cell: ({ row }: CellProps<UbuntuProService>) => (
+          <>{row.original.entitled ?? "-"}</>
+        ),
       },
       {
         accessor: "status",
         Header: "Status",
-        getCellIcon: ({ row }: CellProps<UbuntuProService>) =>
-          row.original.status === "enabled"
+        Cell: ({ row }: CellProps<UbuntuProService>) => (
+          <>{row.original.status ?? "-"}</>
+        ),
+        getCellIcon: ({ row: { original } }: CellProps<UbuntuProService>) => {
+          if (!original.status) {
+            return null;
+          }
+          return original.status === "enabled"
             ? "status-succeeded-small"
-            : "status-failed-small",
+            : "status-failed-small";
+        },
       },
       {
         accessor: "description",

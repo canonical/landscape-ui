@@ -333,8 +333,6 @@ export const instances: Instance[] = [
     vm_info: "",
     container_info: "lxc",
     ubuntu_pro_info: {
-      _doc: "Content provided in json response is currently considered Experimental and may change",
-      _schema_version: "0.1",
       account: {
         created_at: "2019-10-11T13:55:56+00:00",
         external_account_ids: [
@@ -351,26 +349,7 @@ export const instances: Instance[] = [
         name: "Canonical - staff",
       },
       attached: true,
-      config: {
-        contract_url: "https://contracts.canonical.com",
-        data_dir: "/var/lib/ubuntu-advantage",
-        log_file: "/var/log/ubuntu-advantage.log",
-        log_level: "debug",
-        security_url: "https://ubuntu.com/security",
-        ua_config: {
-          apt_news: true,
-          apt_news_url: "https://motd.ubuntu.com/aptnews.json",
-          global_apt_http_proxy: null,
-          global_apt_https_proxy: null,
-          http_proxy: null,
-          https_proxy: null,
-          metering_timer: 14400,
-          ua_apt_http_proxy: null,
-          ua_apt_https_proxy: null,
-          update_messaging_timer: 21600,
-        },
-      },
-      config_path: "/etc/ubuntu-advantage/uaclient.conf",
+
       contract: {
         created_at: "2020-09-29T15:52:51+00:00",
         id: "cAJMR-Wu2xaAS6tCkJ_vAIxedbbcXMnNRIvJ_AdKQcNo",
@@ -379,15 +358,7 @@ export const instances: Instance[] = [
         tech_support_level: "essential",
       },
       effective: "2020-09-29T00:00:00+00:00",
-      environment_vars: [],
-      errors: [],
-      execution_details: "No Ubuntu Pro operations are running",
-      execution_status: "inactive",
       expires: "3999-12-31T23:59:59+00:00",
-      features: {},
-      machine_id: "3258c4ed830c4c8ba11607dc7f9b35c4",
-      notices: [],
-      result: "success",
       services: [
         {
           available: "yes",
@@ -458,9 +429,6 @@ export const instances: Instance[] = [
           warning: null,
         },
       ],
-      simulated: false,
-      version: "30~22.04",
-      warnings: [],
     },
     is_wsl_instance: false,
     children: [],
@@ -485,12 +453,9 @@ export const instances: Instance[] = [
     cloud_instance_metadata: {},
     vm_info: "",
     container_info: "lxc",
-    // @ts-ignore
     ubuntu_pro_info: {
-      _doc: "Content provided in json response is currently considered Experimental and may change",
       attached: false,
       expires: "n/a",
-      origin: null,
       services: [
         {
           name: "cc-eal",
