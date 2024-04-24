@@ -4,7 +4,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse } from "./_helpers";
-import { Activity } from "@/types/Activity";
+import { Activity } from "@/features/activities/types/Activity";
 import { activities } from "@/tests/mocks/activity";
 
 export default [
