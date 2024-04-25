@@ -2,7 +2,6 @@ import { FC } from "react";
 import useDebug from "@/hooks/useDebug";
 import useUsns from "@/hooks/useUsns";
 import LoadingState from "@/components/layout/LoadingState";
-import EmptyState from "@/components/layout/EmptyState";
 import { UsnList } from "@/features/usns";
 
 interface UpgradesUsnContainerProps {
@@ -32,10 +31,8 @@ const UpgradesUsnContainer: FC<UpgradesUsnContainerProps> = ({
     <>
       {getUsnsQueryLoading && <LoadingState />}
       {!getUsnsQueryLoading &&
-        (!getUsnsQueryResult ||
-          getUsnsQueryResult.data.results.length === 0) && (
-          <EmptyState body="No security issues found" icon="inspector-debug" />
-        )}
+        (!getUsnsQueryResult || getUsnsQueryResult.data.results.length === 0) &&
+        null}
       {!getUsnsQueryLoading &&
         getUsnsQueryResult &&
         getUsnsQueryResult.data.results.length > 0 && (

@@ -1,1 +1,0 @@
-export { ActivityProps } from "./ActivityProps";

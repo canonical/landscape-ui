@@ -141,7 +141,11 @@ export default function useInstances() {
   >({
     mutationFn: ({ instanceId, ...params }) =>
       authFetch!.put(`computers/${instanceId}`, params),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["instances"]),
+        queryClient.invalidateQueries(["instanceTags"]),
+      ]),
   });
 
   const addAnnotationToInstancesQuery = useMutation<

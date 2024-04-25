@@ -43,10 +43,6 @@ export const getInstanceInfoItems = (
           ?.label || instance.access_group,
     },
     {
-      label: "Tags",
-      value: instance.tags?.join(", ") || "---",
-    },
-    {
       label: "Annotations",
       value: instance.annotations
         ? Object.entries(instance.annotations).map(

@@ -1,57 +1,81 @@
+import { useFormik } from "formik";
 import { FC } from "react";
 import {
   Button,
   CheckboxInput,
+  Form,
   Input,
   Modal,
 } from "@canonical/react-components";
-import { ActivityProps } from "@/pages/dashboard/instances/[single]/tabs/info/types";
+import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
+import { Instance } from "@/types/Instance";
+import { ACTIVITY_INFO, INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import { ActivityConfirmationFormProps } from "./types";
 import classes from "./ActivityConfirmation.module.scss";
 
 interface ActivityConfirmationProps {
+  action: "reboot" | "shutdown";
+  instance: Instance;
   onClose: () => void;
-  checkboxValue: boolean;
-  onCheckboxChange: () => void;
-  inputValue: string;
-  onInputChange: (value: string) => void;
-  activityProps: ActivityProps | null;
 }
 
 const ActivityConfirmation: FC<ActivityConfirmationProps> = ({
+  action,
+  instance,
   onClose,
-  checkboxValue,
-  onCheckboxChange,
-  inputValue,
-  onInputChange,
-  activityProps,
 }) => {
+  const debug = useDebug();
+  const { rebootInstancesQuery, shutdownInstancesQuery } = useInstances();
+
+  const { mutateAsync: rebootInstances } = rebootInstancesQuery;
+  const { mutateAsync: shutdownInstances } = shutdownInstancesQuery;
+
+  const handleSubmit = async (values: ActivityConfirmationFormProps) => {
+    const valuesToSubmit = {
+      computer_ids: [instance.id],
+      deliver_after: values.deliverImmediately
+        ? undefined
+        : `${values.deliver_after}:00Z`,
+    };
+
+    try {
+      action === "reboot"
+        ? await rebootInstances(valuesToSubmit)
+        : await shutdownInstances(valuesToSubmit);
+    } catch (error) {
+      debug(error);
+    } finally {
+      onClose();
+    }
+  };
+
+  const formik = useFormik({
+    initialValues: INITIAL_VALUES,
+    onSubmit: handleSubmit,
+    validationSchema: VALIDATION_SCHEMA,
+  });
+
   return (
-    null !== activityProps && (
+    <Form onSubmit={formik.handleSubmit} noValidate>
       <Modal
-        title={activityProps.title}
+        title={ACTIVITY_INFO[action].title}
         close={onClose}
         buttonRow={
-          <>
-            <Button aria-controls="modal" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button
-              appearance="negative"
-              onClick={activityProps.acceptButton.onClick}
-              disabled={
-                !checkboxValue && new Date(inputValue).getTime() < Date.now()
-              }
-            >
-              {activityProps.acceptButton.label}
-            </Button>
-          </>
+          <Button
+            type="submit"
+            appearance="negative"
+            disabled={formik.isSubmitting}
+          >
+            {ACTIVITY_INFO[action].ctaLabel}
+          </Button>
         }
       >
         <div className={classes.wrapper}>
           <CheckboxInput
             label="Deliver as soon as possible"
-            checked={checkboxValue}
-            onChange={onCheckboxChange}
+            {...formik.getFieldProps("deliverImmediately")}
+            checked={formik.values.deliverImmediately}
           />
           <Input
             type="datetime-local"
@@ -59,20 +83,18 @@ const ActivityConfirmation: FC<ActivityConfirmationProps> = ({
             labelClassName="u-off-screen"
             className={classes.input}
             placeholder="Scheduled time"
-            value={inputValue}
-            onChange={(event) => {
-              onInputChange(event.target.value);
-            }}
-            disabled={checkboxValue}
+            {...formik.getFieldProps("deliver_after")}
+            disabled={formik.values.deliverImmediately}
             error={
-              new Date(inputValue).getTime() < Date.now() &&
-              "Schedule time must be in the future"
+              formik.touched.deliver_after && formik.errors.deliver_after
+                ? formik.errors.deliver_after
+                : undefined
             }
           />
-          <p>{activityProps.description}</p>
+          <p>{ACTIVITY_INFO[action].getDescription(instance.title)}</p>
         </div>
       </Modal>
-    )
+    </Form>
   );
 };
 

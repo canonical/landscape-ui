@@ -10,7 +10,6 @@ import { Activity } from "@/features/activities/types";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./ActivityDetails.module.scss";
 
 interface ActivityDetailsProps {
@@ -20,7 +19,6 @@ interface ActivityDetailsProps {
 const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { closeSidePanel } = useSidePanel();
 
   const {
     approveActivitiesQuery,
@@ -284,16 +282,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           </Row>
         </>
       )}
-
-      <div className="form-buttons">
-        <Button
-          type="button"
-          onClick={closeSidePanel}
-          className="u-no-margin--bottom"
-        >
-          Close
-        </Button>
-      </div>
     </>
   );
 };

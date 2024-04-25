@@ -10,7 +10,6 @@ import { FormProps } from "./types";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useRoles from "@/hooks/useRoles";
 import { SelectOption } from "@/types/SelectOption";
-import MultiSelectField from "@/components/form/MultiSelectField";
 
 interface EditInstanceProps {
   instance: InstanceWithoutRelation;
@@ -20,7 +19,7 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
   const { getAccessGroupQuery } = useRoles();
-  const { editInstanceQuery, getAllInstanceTagsQuery } = useInstances();
+  const { editInstanceQuery } = useInstances();
 
   const { mutateAsync: editInstance } = editInstanceQuery;
 
@@ -51,7 +50,6 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
     formik.setValues({
       access_group: instance.access_group,
       comment: instance.comment,
-      tags: instance.tags,
       title: instance.title,
     });
   }, [instance]);
@@ -67,21 +65,6 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({
       label: title,
       value: name,
-    })) ?? [];
-
-  const {
-    data: getAllInstanceTagsQueryResult,
-    error: getAllInstanceTagsQueryError,
-  } = getAllInstanceTagsQuery();
-
-  if (getAllInstanceTagsQueryError) {
-    debug(getAllInstanceTagsQueryError);
-  }
-
-  const tagOptions: SelectOption[] =
-    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
-      label: tag,
-      value: tag,
     })) ?? [];
 
   return (
@@ -107,27 +90,6 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
         error={
           formik.touched.access_group && formik.errors.access_group
             ? formik.errors.access_group
-            : undefined
-        }
-      />
-
-      <MultiSelectField
-        variant="condensed"
-        label="Tags"
-        items={tagOptions}
-        {...formik.getFieldProps("tags")}
-        selectedItems={tagOptions.filter((tag) =>
-          formik.values.tags.includes(tag.value),
-        )}
-        onItemsUpdate={(items) =>
-          formik.setFieldValue(
-            "tags",
-            items.map((item) => item.value),
-          )
-        }
-        error={
-          formik.touched.tags && typeof formik.errors.tags === "string"
-            ? formik.errors.tags
             : undefined
         }
       />

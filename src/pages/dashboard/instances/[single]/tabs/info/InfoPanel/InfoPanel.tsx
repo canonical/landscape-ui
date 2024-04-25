@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { FC, lazy, Suspense, useState } from "react";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
+import TagMultiSelect from "@/components/form/TagMultiSelect";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import useConfirm from "@/hooks/useConfirm";
@@ -10,11 +11,11 @@ import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { useWsl } from "@/hooks/useWsl";
 import ActivityConfirmation from "@/pages/dashboard/instances/[single]/tabs/info/ActivityConfirmation";
-import { ActivityProps } from "@/pages/dashboard/instances/[single]/tabs/info/types";
 import { Instance } from "@/types/Instance";
 import { SelectOption } from "@/types/SelectOption";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
+import useNotify from "@/hooks/useNotify";
 
 const EditInstance = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
@@ -28,19 +29,37 @@ interface InfoPanelProps {
 }
 
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
-  const [scheduleTime, setScheduleTime] = useState("");
-  const [deliverImmediately, setDeliverImmediately] = useState(true);
-  const [activityProps, setActivityProps] = useState<ActivityProps | null>(
-    null,
-  );
+  const [instanceAction, setInstanceAction] = useState<
+    "reboot" | "shutdown" | null
+  >(null);
+  const [instanceTags, setInstanceTags] = useState(instance.tags);
 
   const debug = useDebug();
+  const { notify } = useNotify();
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelContent } = useSidePanel();
-  const { rebootInstancesQuery, removeInstancesQuery, shutdownInstancesQuery } =
-    useInstances();
+  const { removeInstancesQuery } = useInstances();
   const { getAccessGroupQuery } = useRoles();
   const { deleteChildInstancesQuery } = useWsl();
+  const { editInstanceQuery } = useInstances();
+
+  const { mutateAsync: editInstance } = editInstanceQuery;
+
+  const handleTagsUpdate = async () => {
+    try {
+      await editInstance({
+        instanceId: instance.id,
+        tags: instanceTags,
+      });
+
+      notify.success({
+        title: "Tags updated",
+        message: `"${instance.title}" instance tags have been updated successfully`,
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
 
   const { data: getAccessGroupQueryResult, error: getAccessGroupQueryError } =
     getAccessGroupQuery();
@@ -55,70 +74,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       value: name,
     })) ?? [];
 
-  const { mutateAsync: rebootInstances, isLoading: rebootInstancesLoading } =
-    rebootInstancesQuery;
   const { mutateAsync: removeInstances, isLoading: removeInstancesLoading } =
     removeInstancesQuery;
-  const {
-    mutateAsync: shutdownInstances,
-    isLoading: shutdownInstancesLoading,
-  } = shutdownInstancesQuery;
-
-  const getDeliverDelay = () => {
-    if (deliverImmediately) {
-      return;
-    }
-
-    return new Date(scheduleTime).toISOString().replace(/\.\d*(?=Z$)/, "");
-  };
-
-  const handleShutdownInstance = async () => {
-    try {
-      await shutdownInstances({
-        computer_ids: [instance.id],
-        deliver_after: getDeliverDelay(),
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      setActivityProps(null);
-    }
-  };
-
-  const handleShutdownInstanceDialog = () => {
-    setActivityProps({
-      title: `Shut down ${instance.title}`,
-      description: "Are you sure you want to shut down this instance?",
-      acceptButton: {
-        label: "Shutdown",
-        onClick: handleShutdownInstance,
-      },
-    });
-  };
-
-  const handleRebootInstance = async () => {
-    try {
-      await rebootInstances({
-        computer_ids: [instance.id],
-        deliver_after: getDeliverDelay(),
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      setActivityProps(null);
-    }
-  };
-
-  const handleRebootInstanceDialog = () => {
-    setActivityProps({
-      title: `Restart ${instance.title}`,
-      description: "Are you sure you want to restart this instance?",
-      acceptButton: {
-        label: "Restart",
-        onClick: handleRebootInstance,
-      },
-    });
-  };
 
   const handleRemoveInstance = async () => {
     try {
@@ -164,12 +121,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         <RunScriptForm query={`id:${instance.id}`} />
       </Suspense>,
     );
-  };
-
-  const handleCloseActivityConfirmation = () => {
-    setScheduleTime("");
-    setDeliverImmediately(true);
-    setActivityProps(null);
   };
 
   const { mutateAsync: deleteChildInstances } = deleteChildInstancesQuery;
@@ -260,8 +211,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               <Button
                 className="p-segmented-control__button u-no-margin--bottom"
                 type="button"
-                onClick={handleRebootInstanceDialog}
-                disabled={rebootInstancesLoading}
+                onClick={() => setInstanceAction("reboot")}
               >
                 <Icon name="restart" />
                 <span>Restart</span>
@@ -269,8 +219,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               <Button
                 className="p-segmented-control__button u-no-margin--bottom"
                 type="button"
-                onClick={handleShutdownInstanceDialog}
-                disabled={shutdownInstancesLoading}
+                onClick={() => setInstanceAction("shutdown")}
               >
                 <Icon name="power-off" />
                 <span>Shutdown</span>
@@ -289,18 +238,34 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </Row>
       </div>
 
-      <ActivityConfirmation
-        onClose={handleCloseActivityConfirmation}
-        checkboxValue={deliverImmediately}
-        onCheckboxChange={() => {
-          setDeliverImmediately((prevState) => !prevState);
-        }}
-        inputValue={scheduleTime}
-        onInputChange={(value) => {
-          setScheduleTime(value);
-        }}
-        activityProps={activityProps}
-      />
+      <div className={classes.tagSection}>
+        <Row className={classes.tagsRow}>
+          <Col size={4}>
+            <TagMultiSelect
+              labelClassName="p-text--small p-text--small-caps u-text--muted"
+              onTagsChange={(value) => setInstanceTags(value)}
+              tags={instanceTags}
+            />
+          </Col>
+          <Col size={2} className={classes.tagsButton}>
+            <Button
+              type="button"
+              className="u-no-margin--bottom"
+              onClick={handleTagsUpdate}
+            >
+              Update
+            </Button>
+          </Col>
+        </Row>
+      </div>
+
+      {instanceAction && (
+        <ActivityConfirmation
+          action={instanceAction}
+          instance={instance}
+          onClose={() => setInstanceAction(null)}
+        />
+      )}
     </>
   );
 };
