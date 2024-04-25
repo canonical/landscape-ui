@@ -481,7 +481,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
       <UdebCheckboxInput formik={formik} />
 
       <SidePanelFormButtons
-        disabled={
+        submitButtonDisabled={
           isEditing ||
           isAddingPackageFiltersToPocket ||
           isRemovingPackageFiltersFromPocket ||

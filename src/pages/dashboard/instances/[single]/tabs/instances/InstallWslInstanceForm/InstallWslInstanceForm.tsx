@@ -66,7 +66,7 @@ const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
       />
 
       <SidePanelFormButtons
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Install"
         submitButtonAriaLabel="Install new WSL instance"
       />

@@ -144,9 +144,8 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         }
       />
       <SidePanelFormButtons
-        disabled={isEditingUser || isChangingPreferredAccount}
+        submitButtonDisabled={isEditingUser || isChangingPreferredAccount}
         submitButtonText="Save changes"
-        removeButtonMargin
       />
     </Form>
   );

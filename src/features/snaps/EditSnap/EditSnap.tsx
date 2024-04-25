@@ -29,7 +29,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { snapsActionQuery, getAvailableSnapInfo } = useSnaps();
-  const { mutateAsync: snapsActionMutation } = snapsActionQuery;
+  const { mutateAsync: snapsActionMutation, isLoading } = snapsActionQuery;
   const { data: snapInfoData, error: snapInfoError } = getAvailableSnapInfo(
     {
       instance_id: instanceId,
@@ -285,8 +285,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
         submitButtonAppearance={
           type === EditSnapType.Uninstall ? "negative" : "positive"
         }
-        removeButtonMargin
-        disabled={false}
+        submitButtonDisabled={isLoading}
       />
     </Form>
   );

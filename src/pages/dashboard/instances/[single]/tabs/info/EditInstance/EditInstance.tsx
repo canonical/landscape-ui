@@ -144,8 +144,7 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
       />
 
       <SidePanelFormButtons
-        bottomSticky
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

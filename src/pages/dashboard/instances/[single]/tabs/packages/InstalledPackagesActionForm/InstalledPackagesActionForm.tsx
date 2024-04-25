@@ -277,7 +277,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
       {(["remove", "upgrade"].includes(action) ||
         downgradeOptions.length > 1) && (
         <SidePanelFormButtons
-          disabled={formik.isSubmitting}
+          submitButtonDisabled={formik.isSubmitting}
           submitButtonText={CTA_LABELS[action]}
           submitButtonAppearance={action === "remove" ? "negative" : "positive"}
         />

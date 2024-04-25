@@ -77,9 +77,8 @@ const ChangePasswordForm: FC = () => {
         {...formik.getFieldProps("newPassword")}
       />
       <SidePanelFormButtons
-        disabled={isLoading}
+        submitButtonDisabled={isLoading}
         submitButtonText="Save changes"
-        removeButtonMargin
       />
     </Form>
   );

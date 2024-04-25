@@ -67,6 +67,7 @@
 
 .form-buttons {
   margin-top: 1.5rem;
+  text-align: right;
 }
 
 .checkbox-group {
@@ -115,10 +116,6 @@
 .p-icon--logout {
   @extend %icon;
   @include vf-icon-logout(#ffffff);
-}
-
-.p-modal__footer {
-  text-align: left;
 }
 
 @mixin vf-icon--account($color) {

@@ -256,11 +256,10 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons
-        disabled={
+        submitButtonDisabled={
           isEditingUser || isAddingUserToGroup || isRemovingUserFromGroup
         }
         submitButtonText="Save changes"
-        removeButtonMargin
       />
     </Form>
   );

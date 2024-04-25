@@ -67,9 +67,8 @@ const NewAccessGroupForm = () => {
         {...formik.getFieldProps("parent")}
       />
       <SidePanelFormButtons
-        disabled={isLoading}
+        submitButtonDisabled={isLoading}
         submitButtonText="Create"
-        removeButtonMargin
       />
     </Form>
   );

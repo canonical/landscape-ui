@@ -146,7 +146,7 @@ const AddRoleForm: FC<AddRoleFormProps> = ({ ctaLabel = "Add" }) => {
       />
 
       <SidePanelFormButtons
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText={ctaLabel}
       />
     </Form>

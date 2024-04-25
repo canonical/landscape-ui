@@ -74,9 +74,8 @@ const EditAccountForm: FC<EditAccountFormProps> = ({ user }) => {
         {...formik.getFieldProps("registration_key")}
       />
       <SidePanelFormButtons
-        disabled={isLoading}
+        submitButtonDisabled={isLoading}
         submitButtonText="Save changes"
-        removeButtonMargin
       />
     </Form>
   );

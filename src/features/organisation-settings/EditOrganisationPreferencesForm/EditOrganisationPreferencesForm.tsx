@@ -111,9 +111,8 @@ const EditOrganisationPreferencesForm: FC<
         {...formik.getFieldProps("auto_register_new_computers")}
       />
       <SidePanelFormButtons
-        disabled={isLoading}
+        submitButtonDisabled={isLoading}
         submitButtonText="Save changes"
-        removeButtonMargin
       />
     </Form>
   );

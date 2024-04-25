@@ -197,7 +197,7 @@ const ScriptRunForm: FC<ScriptRunFormProps> = ({ script }) => {
       />
 
       <SidePanelFormButtons
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Run script"
       />
     </Form>

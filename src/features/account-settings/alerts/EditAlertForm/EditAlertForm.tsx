@@ -108,9 +108,8 @@ const EditAlertForm: FC<EditAlertFormProps> = ({ alert }) => {
         <p>No tags applied to this alert</p>
       )}
       <SidePanelFormButtons
-        disabled={associateLoading || disassociateLoading}
+        submitButtonDisabled={associateLoading || disassociateLoading}
         submitButtonText="Save changes"
-        removeButtonMargin
       />
     </Form>
   );

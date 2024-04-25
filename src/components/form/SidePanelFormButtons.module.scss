@@ -3,10 +3,11 @@
 .buttons {
   position: sticky;
   margin-bottom: -3 * $sp-unit;
-  margin-top: auto;
-  padding-bottom: $spv--large;
+  margin-top: $spv--x-large;
+  padding-bottom: $spv--x-large;
   bottom: 0;
-  padding-top: $spv--large;
+  padding-top: $spv--x-large;
   background-color: $color-x-light;
   border-top: 1px solid $colors--light-theme--border-default;
+  text-align: right;
 }

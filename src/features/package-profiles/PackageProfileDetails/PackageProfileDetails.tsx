@@ -80,7 +80,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
 
   return (
     <>
-      <div className="p-segmented-control u-align-text--right">
+      <div className="p-segmented-control">
         <Button
           type="button"
           hasIcon

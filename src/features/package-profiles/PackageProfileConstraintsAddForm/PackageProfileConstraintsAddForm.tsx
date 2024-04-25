@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import { FC, Suspense } from "react";
-import { Button, Form } from "@canonical/react-components";
+import { Form } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import PackageProfileConstraintsBlock from "@/features/package-profiles/PackageProfileConstraintsBlock";
 import PackageProfileConstraintsEditForm from "@/features/package-profiles/PackageProfileConstraintsEditForm";
@@ -14,6 +14,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { VALIDATION_SCHEMA } from "./constants";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 
 interface PackageProfileConstraintsAddFormProps {
   profile: PackageProfile;
@@ -75,24 +76,12 @@ const PackageProfileConstraintsAddForm: FC<
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <PackageProfileConstraintsBlock formik={formik} />
-
-      <div className="form-buttons">
-        <Button
-          type="submit"
-          appearance="positive"
-          disabled={formik.isSubmitting}
-          aria-label={`Add ${formik.values.constraints.length > 1 ? "constraints" : "constraint"} to "${profile.name}" profile`}
-        >
-          {`Add ${formik.values.constraints.length > 1 ? "constraints" : "constraint"}`}
-        </Button>
-        <Button
-          type="button"
-          onClick={handleConstraintsEdit}
-          disabled={formik.isSubmitting}
-        >
-          Cancel
-        </Button>
-      </div>
+      <SidePanelFormButtons
+        submitButtonDisabled={formik.isSubmitting}
+        submitButtonText={`Add ${formik.values.constraints.length > 1 ? "constraints" : "constraint"}`}
+        submitButtonAriaLabel={`Add ${formik.values.constraints.length > 1 ? "constraints" : "constraint"} to "${profile.name}" profile`}
+        cancelButtonDisabled={formik.isSubmitting}
+      />
     </Form>
   );
 };

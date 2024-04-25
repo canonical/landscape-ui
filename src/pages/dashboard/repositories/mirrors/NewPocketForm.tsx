@@ -593,7 +593,9 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       <UdebCheckboxInput formik={formik} />
 
       <SidePanelFormButtons
-        disabled={createPocketLoading || addUploaderGPGKeysToPocketLoading}
+        submitButtonDisabled={
+          createPocketLoading || addUploaderGPGKeysToPocketLoading
+        }
         submitButtonText="Create"
         submitButtonAriaLabel="Create pocket"
       />

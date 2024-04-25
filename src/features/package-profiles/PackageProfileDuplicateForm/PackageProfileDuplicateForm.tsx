@@ -136,7 +136,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Duplicate"
       />
     </Form>

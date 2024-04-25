@@ -63,8 +63,8 @@ const ConfirmProvider: FC<ConfirmProviderProps> = ({ children }) => {
           title={title}
           buttonRow={
             <>
-              {buttons.length && <>{buttons.map((button) => button)}</>}
               <Button onClick={handleClose}>{cancelButtonLabel}</Button>
+              {buttons.length && <>{buttons.map((button) => button)}</>}
             </>
           }
         >
