@@ -32,6 +32,9 @@ const ActivityConfirmation: FC<ActivityConfirmationProps> = ({
         close={onClose}
         buttonRow={
           <>
+            <Button aria-controls="modal" onClick={onClose}>
+              Cancel
+            </Button>
             <Button
               appearance="negative"
               onClick={activityProps.acceptButton.onClick}
@@ -40,9 +43,6 @@ const ActivityConfirmation: FC<ActivityConfirmationProps> = ({
               }
             >
               {activityProps.acceptButton.label}
-            </Button>
-            <Button aria-controls="modal" onClick={onClose}>
-              Cancel
             </Button>
           </>
         }

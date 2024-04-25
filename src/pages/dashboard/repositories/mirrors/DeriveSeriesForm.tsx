@@ -86,7 +86,7 @@ const DeriveSeriesForm: FC<DeriveSeriesProps> = ({ distribution, origin }) => {
       <p className="u-text--muted">{`You are deriving ${distribution.name}/${origin}.`}</p>
 
       <SidePanelFormButtons
-        disabled={isLoading}
+        submitButtonDisabled={isLoading}
         submitButtonText="Derive series"
       />
     </form>

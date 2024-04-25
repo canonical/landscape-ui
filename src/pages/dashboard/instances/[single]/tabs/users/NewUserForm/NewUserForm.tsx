@@ -181,9 +181,8 @@ const NewUserForm: FC<NewUserFormProps> = ({ instanceId }) => {
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons
-        disabled={isLoading}
+        submitButtonDisabled={isLoading}
         submitButtonText="Add user"
-        removeButtonMargin
       />
     </Form>
   );

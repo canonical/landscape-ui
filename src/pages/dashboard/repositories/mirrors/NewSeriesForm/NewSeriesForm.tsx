@@ -593,7 +593,10 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
 
       <UdebCheckboxInput formik={formik} />
 
-      <SidePanelFormButtons disabled={isCreating} submitButtonText={ctaText} />
+      <SidePanelFormButtons
+        submitButtonDisabled={isCreating}
+        submitButtonText={ctaText}
+      />
     </Form>
   );
 };

@@ -160,7 +160,7 @@ const EditRoleForm: FC<EditRoleFormProps> = ({ role }) => {
       />
 
       <SidePanelFormButtons
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

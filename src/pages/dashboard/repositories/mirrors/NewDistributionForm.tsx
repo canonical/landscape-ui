@@ -103,7 +103,7 @@ const NewDistributionForm: FC = () => {
       />
 
       <SidePanelFormButtons
-        disabled={isCreatingDistribution}
+        submitButtonDisabled={isCreatingDistribution}
         submitButtonText="Create distribution"
       />
     </Form>

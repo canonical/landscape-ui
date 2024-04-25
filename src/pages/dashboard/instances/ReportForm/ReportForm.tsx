@@ -5,6 +5,7 @@ import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import classes from "./ReportForm.module.scss";
 
 const downloadCSV = (csvString: string, filename: string) => {
   // Create blob from string
@@ -64,12 +65,11 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
         {...formik.getFieldProps("reportByCve")}
         checked={formik.values.reportByCve}
       />
-      <div style={{ display: "flex", alignItems: "end", columnGap: "1rem" }}>
+      <div className={classes.rangeContainer}>
         <Input
           type="number"
           label="Range"
           className="u-no-margin--bottom"
-          wrapperClassName=""
           style={{ maxWidth: "min-content" }}
           {...formik.getFieldProps("range")}
           error={
@@ -81,7 +81,10 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
         <span>Days</span>
       </div>
 
-      <SidePanelFormButtons disabled={false} submitButtonText="Download" />
+      <SidePanelFormButtons
+        submitButtonDisabled={false}
+        submitButtonText="Download"
+      />
     </Form>
   );
 };

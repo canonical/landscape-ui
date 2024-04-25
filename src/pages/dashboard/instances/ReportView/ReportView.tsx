@@ -2,11 +2,12 @@ import { FC } from "react";
 import useDebug from "@/hooks/useDebug";
 import useReports from "@/hooks/useReports";
 import ReportWidget from "@/pages/dashboard/instances/ReportWidget";
-import { Button, Col, Row } from "@canonical/react-components";
+import { Col, Row } from "@canonical/react-components";
 import classes from "./ReportView.module.scss";
 import classNames from "classnames";
 import useSidePanel from "@/hooks/useSidePanel";
 import ReportForm from "@/pages/dashboard/instances/ReportForm";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 
 interface ReportViewProps {
   instanceIds: number[];
@@ -14,7 +15,7 @@ interface ReportViewProps {
 
 const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
   const debug = useDebug();
-  const { setSidePanelContent, closeSidePanel } = useSidePanel();
+  const { setSidePanelContent } = useSidePanel();
   const { getNotPingingInstances, getInstancesNotUpgraded, getUsnTimeToFix } =
     useReports();
 
@@ -178,19 +179,11 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
           </Row>
         </div>
       )}
-
-      <div className="form-buttons">
-        <Button
-          type="button"
-          appearance="positive"
-          onClick={handleDownloadDialog}
-        >
-          Download as CSV
-        </Button>
-        <Button type="button" onClick={closeSidePanel}>
-          Close
-        </Button>
-      </div>
+      <SidePanelFormButtons
+        submitButtonDisabled={false}
+        submitButtonText="Download as CSV"
+        onSubmit={handleDownloadDialog}
+      />
     </>
   );
 };

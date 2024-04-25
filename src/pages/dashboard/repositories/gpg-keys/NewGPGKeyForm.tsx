@@ -84,7 +84,7 @@ const NewGPGKeyForm: FC = () => {
         {...formik.getFieldProps("material")}
       />
       <SidePanelFormButtons
-        disabled={isLoading}
+        submitButtonDisabled={isLoading}
         submitButtonText="Import key"
       />
     </Form>

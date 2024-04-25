@@ -154,7 +154,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
       />
 
       <SidePanelFormButtons
-        disabled={
+        submitButtonDisabled={
           formik.isSubmitting ||
           (formik.values.roles.length === currentAdministrator.roles.length &&
             formik.values.roles.every((role) =>

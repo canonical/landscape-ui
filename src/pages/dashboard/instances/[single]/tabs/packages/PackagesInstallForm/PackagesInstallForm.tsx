@@ -46,10 +46,10 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceId }) => {
         setSelectedItems={(items) => setSelected(items)}
       />
       <SidePanelFormButtons
-        disabled={installPackagesQueryLoading || selected.length === 0}
+        submitButtonDisabled={
+          installPackagesQueryLoading || selected.length === 0
+        }
         submitButtonText="Install packages"
-        bottomSticky
-        removeButtonMargin
         submitButtonAppearance="positive"
         onSubmit={handleSubmit}
       />

@@ -459,7 +459,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
       />
 
       <SidePanelFormButtons
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Run script"
       />
     </Form>

@@ -638,8 +638,7 @@ const EditProfileForm: FC<EditProfileFormProps> = ({ profile }) => {
           )}
 
           <SidePanelFormButtons
-            bottomSticky
-            disabled={formik.isSubmitting}
+            submitButtonDisabled={formik.isSubmitting}
             submitButtonText="Save changes"
           />
         </div>

@@ -52,12 +52,11 @@ const InstallSnaps: FC<InstallSnapsProps> = ({ instanceId }) => {
         setConfirming={(item) => setConfirming(item)}
       />
       <SidePanelFormButtons
-        disabled={
+        submitButtonDisabled={
           selectedSnaps.length === 0 || confirming || installSnapsLoading
         }
+        cancelButtonDisabled={installSnapsLoading}
         submitButtonText="Install snaps"
-        bottomSticky
-        removeButtonMargin
         submitButtonAppearance="positive"
         onSubmit={handleSubmit}
       />

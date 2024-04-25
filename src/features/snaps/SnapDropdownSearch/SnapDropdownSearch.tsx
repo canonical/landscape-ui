@@ -224,7 +224,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
         )}
       </Downshift>
 
-      <ul className="p-list p-autocomplete__result-list">
+      <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
         {selectedItems.length
           ? selectedItems.map((item) => (
               <li

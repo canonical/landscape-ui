@@ -136,9 +136,8 @@ const PackageProfileCreateForm: FC = () => {
         <PackageProfileConstraintsTypeBlock formik={formik} />
 
         <SidePanelFormButtons
-          disabled={formik.isSubmitting}
+          submitButtonDisabled={formik.isSubmitting}
           submitButtonText="Create package profile"
-          bottomSticky
         />
       </div>
     </Form>

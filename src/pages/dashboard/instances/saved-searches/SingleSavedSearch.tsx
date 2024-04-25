@@ -104,7 +104,7 @@ const SingleSavedSearch: FC<SingleSavedSearchProps> = ({ savedSearch }) => {
       )}
 
       <SidePanelFormButtons
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText={savedSearch ? "Save changes" : "Create"}
       />
     </Form>

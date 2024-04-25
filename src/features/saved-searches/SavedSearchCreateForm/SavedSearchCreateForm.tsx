@@ -67,8 +67,10 @@ const SavedSearchCreateForm: FC<SavedSearchCreateFormProps> = ({
             : undefined
         }
       />
-
       <div className="form-buttons">
+        <Button type="button" disabled={formik.isSubmitting} onClick={onClose}>
+          Cancel
+        </Button>
         <Button
           type="submit"
           disabled={formik.isSubmitting}
@@ -76,9 +78,6 @@ const SavedSearchCreateForm: FC<SavedSearchCreateFormProps> = ({
           aria-label={`Saved search as ${formik.values.name}`}
         >
           Save search
-        </Button>
-        <Button type="button" disabled={formik.isSubmitting} onClick={onClose}>
-          Cancel
         </Button>
       </div>
     </Form>

@@ -63,7 +63,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
       <UpgradesInstanceList instances={selectedInstances} />
 
       <SidePanelFormButtons
-        disabled={upgradePackagesLoading}
+        submitButtonDisabled={upgradePackagesLoading}
         submitButtonText="Request all upgrades"
       />
     </Form>

@@ -2,51 +2,44 @@ import { FC, SyntheticEvent } from "react";
 import { Button } from "@canonical/react-components";
 import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./SidePanelFormButtons.module.scss";
-import classNames from "classnames";
 
 interface SidePanelFormButtonsProps {
-  disabled: boolean;
+  submitButtonDisabled: boolean;
   submitButtonText: string;
-  bottomSticky?: boolean;
-  removeButtonMargin?: boolean;
-  submitButtonAppearance?: "positive" | "negative" | "brand";
+  submitButtonAppearance?: "positive" | "negative";
   submitButtonAriaLabel?: string;
-  onSubmit?: (event: SyntheticEvent) => Promise<void>;
+  cancelButtonDisabled?: boolean;
+  onSubmit?: (event: SyntheticEvent) => Promise<void> | void;
 }
 
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
-  disabled,
+  submitButtonDisabled,
   submitButtonText,
   submitButtonAriaLabel,
-  bottomSticky = false,
-  removeButtonMargin = true,
-  submitButtonAppearance = "positive",
   onSubmit,
+  submitButtonAppearance = "positive",
+  cancelButtonDisabled = false,
 }) => {
   const { closeSidePanel } = useSidePanel();
   return (
-    <div
-      className={classNames({
-        [classes.buttons]: bottomSticky,
-        "form-buttons": !bottomSticky,
-      })}
-    >
+    <div className={classes.buttons}>
       <Button
-        className={classNames({ "u-no-margin--bottom": removeButtonMargin })}
+        className="u-no-margin--bottom"
+        type="button"
+        onClick={closeSidePanel}
+        disabled={cancelButtonDisabled}
+      >
+        Cancel
+      </Button>
+      <Button
+        className="u-no-margin--bottom"
         type={onSubmit ? "button" : "submit"}
         onClick={onSubmit}
         appearance={submitButtonAppearance}
-        disabled={disabled}
+        disabled={submitButtonDisabled}
         aria-label={submitButtonAriaLabel}
       >
         {submitButtonText}
-      </Button>
-      <Button
-        className={classNames({ "u-no-margin--bottom": removeButtonMargin })}
-        type="button"
-        onClick={closeSidePanel}
-      >
-        Cancel
       </Button>
     </div>
   );

@@ -117,7 +117,7 @@ const InviteAdministratorForm: FC = () => {
       />
 
       <SidePanelFormButtons
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Send invite"
       />
     </Form>
