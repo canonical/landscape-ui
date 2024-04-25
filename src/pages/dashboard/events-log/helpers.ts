@@ -1,6 +1,6 @@
 import { EventLog } from "@/types/EventLogs";
 
-export const downloadCSV = (eventLogs: EventLog[], filename: string) => {
+export const downloadCSV = (eventsLog: EventLog[], filename: string) => {
   const header = [
     "creation_time",
     "person_id",
@@ -23,7 +23,7 @@ export const downloadCSV = (eventLogs: EventLog[], filename: string) => {
 
   const csv = [
     csvHeader.join(","),
-    ...eventLogs.map((row) =>
+    ...eventsLog.map((row) =>
       header.map((fieldName) => row[fieldName]).join(","),
     ),
   ].join("\r\n");

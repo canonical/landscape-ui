@@ -4,13 +4,13 @@ import { ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import { FC, useMemo } from "react";
 import { CellProps, Column } from "react-table";
-import classes from "./EventLogsList.module.scss";
+import classes from "./EventsLogList.module.scss";
 import OverflowingCell from "@/components/layout/OverflowingCell";
-interface EventLogsListProps {
-  eventLogs: EventLog[];
+interface EventsLogListProps {
+  eventsLog: EventLog[];
 }
 
-const EventLogsList: FC<EventLogsListProps> = ({ eventLogs }) => {
+const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
   const columns = useMemo<Column<EventLog>[]>(
     () => [
       {
@@ -52,10 +52,17 @@ const EventLogsList: FC<EventLogsListProps> = ({ eventLogs }) => {
         },
       },
     ],
-    [eventLogs],
+    [eventsLog],
   );
 
-  return <ModularTable columns={columns} data={eventLogs} sortable={true} />;
+  return (
+    <ModularTable
+      columns={columns}
+      data={eventsLog}
+      sortable={true}
+      emptyMsg="No events found"
+    />
+  );
 };
 
-export default EventLogsList;
+export default EventsLogList;

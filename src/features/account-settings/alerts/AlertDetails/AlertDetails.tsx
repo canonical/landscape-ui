@@ -1,16 +1,16 @@
 import { ModularTable } from "@canonical/react-components";
 import { FC, useState } from "react";
 import { CellProps } from "react-table";
-import TablePagination from "../../../../components/layout/TablePagination";
-import useAlerts from "../../../../hooks/useAlerts";
-import { Alert, Subscriber } from "../../../../types/Alert";
-import ShowSubscribersPanelActionButtons from "./ShowSubscribersPanelActionButtons";
+import TablePagination from "@/components/layout/TablePagination";
+import useAlerts from "@/hooks/useAlerts";
+import { Alert, Subscriber } from "@/types/Alert";
+import AlertButtons from "../AlertButtons";
 
-interface ShowSubscribersPanelProps {
+interface AlertDetailsProps {
   alert: Alert;
 }
 
-const ShowSubscribersPanel: FC<ShowSubscribersPanelProps> = ({ alert }) => {
+const AlertDetails: FC<AlertDetailsProps> = ({ alert }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const { getAlertSubscribersQuery } = useAlerts();
@@ -29,7 +29,7 @@ const ShowSubscribersPanel: FC<ShowSubscribersPanelProps> = ({ alert }) => {
 
   return (
     <>
-      <ShowSubscribersPanelActionButtons alert={alert} />
+      <AlertButtons sidePanel alerts={[alert]} />
       <ModularTable
         columns={columns}
         data={subscriberData}
@@ -58,4 +58,4 @@ const ShowSubscribersPanel: FC<ShowSubscribersPanelProps> = ({ alert }) => {
   );
 };
 
-export default ShowSubscribersPanel;
+export default AlertDetails;

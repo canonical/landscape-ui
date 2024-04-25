@@ -2,8 +2,8 @@ import { FC, useMemo, useState } from "react";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { EventLogsHeader, EventLogsList } from "@/features/event-logs";
-import useEventLogs from "@/hooks/useEventLogs";
+import { EventsLogHeader, EventsLogList } from "@/features/events-log";
+import useEventsLog from "@/hooks/useEventLogs";
 import useDebug from "@/hooks/useDebug";
 import { Button } from "@canonical/react-components";
 import TablePagination from "@/components/layout/TablePagination";
@@ -11,17 +11,22 @@ import useAuth from "@/hooks/useAuth";
 import { AuthUser } from "@/context/auth";
 import moment from "moment";
 import { downloadCSV } from "./helpers";
+import LoadingState from "@/components/layout/LoadingState";
 
-const EventLogsPage: FC = () => {
+const EventsLogPage: FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState("");
   const [dayFilter, setDayFilter] = useState<number>(7);
 
   const { user } = useAuth() as { user: AuthUser };
-  const { getEventLogs } = useEventLogs();
+  const { getEventsLog } = useEventsLog();
   const debug = useDebug();
-  const { data: eventLogsData, error } = getEventLogs({
+  const {
+    data: eventsLogData,
+    isLoading,
+    error,
+  } = getEventsLog({
     days: dayFilter,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
@@ -32,12 +37,12 @@ const EventLogsPage: FC = () => {
     debug(error);
   }
 
-  const eventLogs = useMemo(
+  const eventsLog = useMemo(
     () =>
-      eventLogsData?.data.results.filter((event) =>
+      eventsLogData?.data.results.filter((event) =>
         event.message.includes(search),
       ) ?? [],
-    [eventLogsData, search],
+    [eventsLogData, search],
   );
 
   const handlePaginate = (pageNumber: number) => {
@@ -57,13 +62,13 @@ const EventLogsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        title="Event logs"
+        title="Events log"
         actions={[
           <Button
             key="download-as-cv"
             onClick={() =>
               downloadCSV(
-                eventLogs,
+                eventsLog,
                 `Event Log - ${user.current_account}-${moment().format("YYYY-MM-DDTHH mm ss[Z]")}.csv`,
               )
             }
@@ -73,24 +78,24 @@ const EventLogsPage: FC = () => {
         ]}
       />
       <PageContent>
-        <EventLogsHeader
+        <EventsLogHeader
           setSearch={(newSearch) => setSearch(newSearch)}
           handleResetPage={() => setCurrentPage(1)}
           dayFilter={dayFilter}
           handleDayChange={handleDayChange}
         />
-        <EventLogsList eventLogs={eventLogs} />
+        {isLoading ? <LoadingState /> : <EventsLogList eventsLog={eventsLog} />}
         <TablePagination
           currentPage={currentPage}
-          totalItems={eventLogsData?.data.count}
+          totalItems={eventsLogData?.data.count}
           paginate={handlePaginate}
           pageSize={pageSize}
           setPageSize={handlePageSizeChange}
-          currentItemCount={eventLogs.length}
+          currentItemCount={eventsLog.length}
         />
       </PageContent>
     </PageMain>
   );
 };
 
-export default EventLogsPage;
+export default EventsLogPage;

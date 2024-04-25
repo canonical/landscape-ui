@@ -18,7 +18,7 @@ const UserInfo: FC = () => {
       <Button
         appearance="base"
         className={classNames(
-          "p-side-navigation__link is-dark u-no-margin--bottom",
+          "p-side-navigation__link is-dark u-no-margin--bottom u-no-margin--right",
           classes.button,
         )}
         onClick={() => {
@@ -26,14 +26,14 @@ const UserInfo: FC = () => {
         }}
       >
         <i className="p-icon--account" />
-        <span className="p-side-navigation__label">
+        <span className={classNames("p-side-navigation__label", classes.label)}>
           {user?.name ?? "Unknown user"}
         </span>
       </Button>
       <Button
         appearance="base"
         className={classNames(
-          "p-side-navigation__link is-dark u-no-margin--bottom",
+          "p-side-navigation__link is-dark u-no-margin--bottom u-no-margin--right",
           classes.button,
         )}
         onClick={() => {
@@ -41,18 +41,22 @@ const UserInfo: FC = () => {
         }}
       >
         <i className="p-icon--bell" />
-        <span className="p-side-navigation__label">Alerts</span>
+        <span className={classNames("p-side-navigation__label", classes.label)}>
+          Alerts
+        </span>
       </Button>
       <Button
         appearance="base"
         className={classNames(
-          "p-side-navigation__link is-dark u-no-margin--bottom",
+          "p-side-navigation__link is-dark u-no-margin--bottom u-no-margin--right",
           classes.button,
         )}
         onClick={logout}
       >
         <i className="p-icon--logout" />
-        <span className="p-side-navigation__label">Log out</span>
+        <span className={classNames("p-side-navigation__label", classes.label)}>
+          Log out
+        </span>
       </Button>
     </div>
   );

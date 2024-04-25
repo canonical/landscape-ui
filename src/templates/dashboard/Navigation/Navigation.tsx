@@ -55,7 +55,7 @@ const Navigation: FC = () => {
                   <span
                     className={classNames(
                       "p-side-navigation__label",
-                      classes.topLevelItem,
+                      classes.label,
                     )}
                   >
                     {item.label}
@@ -81,7 +81,7 @@ const Navigation: FC = () => {
                   <span
                     className={classNames(
                       "p-side-navigation__label",
-                      classes.topLevelItem,
+                      classes.label,
                     )}
                   >
                     {item.label}
@@ -105,7 +105,12 @@ const Navigation: FC = () => {
                           target="_blank"
                           rel="nofollow noopener noreferrer"
                         >
-                          <span className="p-side-navigation__label">
+                          <span
+                            className={classNames(
+                              "p-side-navigation__label",
+                              classes.label,
+                            )}
+                          >
                             {subItem.label}
                           </span>
                         </a>
@@ -128,7 +133,12 @@ const Navigation: FC = () => {
                               )}
                             />
                           )}
-                          <span className="p-side-navigation__label">
+                          <span
+                            className={classNames(
+                              "p-side-navigation__label",
+                              classes.label,
+                            )}
+                          >
                             {subItem.label}
                           </span>
                         </Link>

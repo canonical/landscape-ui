@@ -1,16 +1,16 @@
 import { Form, SearchBox, Select } from "@canonical/react-components";
 import { FC, SyntheticEvent, useState } from "react";
-import classes from "./EventLogsHeader.module.scss";
+import classes from "./EventsLogHeader.module.scss";
 import { DAY_OPTIONS } from "./constants";
 
-interface EventLogsHeaderProps {
+interface EventsLogHeaderProps {
   setSearch: (newSearchQuery: string) => void;
   handleResetPage: () => void;
   dayFilter: number;
   handleDayChange: (newDay: number) => void;
 }
 
-const EventLogsHeader: FC<EventLogsHeaderProps> = ({
+const EventsLogHeader: FC<EventsLogHeaderProps> = ({
   setSearch,
   handleResetPage,
   dayFilter,
@@ -56,4 +56,4 @@ const EventLogsHeader: FC<EventLogsHeaderProps> = ({
   );
 };
 
-export default EventLogsHeader;
+export default EventsLogHeader;

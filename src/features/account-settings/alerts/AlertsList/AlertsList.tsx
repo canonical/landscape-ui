@@ -6,16 +6,16 @@ import {
   ModularTable,
   Switch,
 } from "@canonical/react-components";
-import LoadingState from "../../../../components/layout/LoadingState";
-import useAlerts from "../../../../hooks/useAlerts";
-import useDebug from "../../../../hooks/useDebug";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import { Alert } from "../../../../types/Alert";
-import classes from "./AlertList.module.scss";
-import { boolToLabel } from "../../../../utils/output";
+import LoadingState from "@/components/layout/LoadingState";
+import useAlerts from "@/hooks/useAlerts";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Alert } from "@/types/Alert";
+import classes from "./AlertsList.module.scss";
+import { boolToLabel } from "@/utils/output";
 
-const EditAlertForm = lazy(() => import("./EditAlertForm"));
-const ShowSubscribersPanel = lazy(() => import("./ShowSubscribersPanel"));
+const EditAlertForm = lazy(() => import("../EditAlertForm"));
+const AlertDetails = lazy(() => import("../AlertDetails"));
 
 interface AlertListProps {
   alerts: Alert[];
@@ -47,7 +47,7 @@ const AlertList: FC<AlertListProps> = ({
     setSidePanelContent(
       alert.label,
       <Suspense fallback={<LoadingState />}>
-        <ShowSubscribersPanel alert={alert} />
+        <AlertDetails alert={alert} />
       </Suspense>,
     );
   };

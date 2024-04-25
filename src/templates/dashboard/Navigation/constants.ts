@@ -23,10 +23,19 @@ export const MENU_ITEMS: MenuItem[] = [
     icon: "code",
   },
   {
+    label: "Events log",
+    path: `${ROOT_PATH}events-log`,
+    icon: "status",
+  },
+  {
     label: "Profiles",
     path: `${ROOT_PATH}profile`,
     icon: "cluster",
     items: [
+      {
+        label: "Repository profiles",
+        path: `${ROOT_PATH}profiles/repositories`,
+      },
       {
         label: "Package profiles",
         path: `${ROOT_PATH}profiles/package`,
@@ -51,10 +60,6 @@ export const MENU_ITEMS: MenuItem[] = [
         path: `${ROOT_PATH}repositories/mirrors`,
       },
       {
-        label: "Repository profiles",
-        path: `${ROOT_PATH}repositories/profiles`,
-      },
-      {
         label: "GPG Keys",
         path: `${ROOT_PATH}repositories/gpg-keys`,
       },
@@ -63,11 +68,6 @@ export const MENU_ITEMS: MenuItem[] = [
         path: `${ROOT_PATH}repositories/apt-sources`,
       },
     ],
-  },
-  {
-    label: "Event logs",
-    path: `${ROOT_PATH}event-logs`,
-    icon: "status",
   },
   {
     label: "Org. settings",
@@ -83,16 +83,12 @@ export const MENU_ITEMS: MenuItem[] = [
         path: `${ROOT_PATH}settings/administrators`,
       },
       {
-        label: "Access groups",
-        path: `${ROOT_PATH}settings/access-groups`,
-      },
-      {
         label: "Roles",
         path: `${ROOT_PATH}settings/roles`,
       },
       {
-        label: "Alerts",
-        path: `${ROOT_PATH}settings/alerts`,
+        label: "Access groups",
+        path: `${ROOT_PATH}settings/access-groups`,
       },
     ],
   },
