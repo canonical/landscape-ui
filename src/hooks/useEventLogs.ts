@@ -6,19 +6,19 @@ import useFetch from "./useFetch";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { QueryFnType } from "@/types/QueryFnType";
 
-interface GetEventLogsParams {
+interface GetEventsLogParams {
   days: number;
   limit: number;
   offset: number;
   search?: string;
 }
 
-export default function useEventLogs() {
+export default function useEventsLog() {
   const authFetch = useFetch();
 
-  const getEventLogs: QueryFnType<
+  const getEventsLog: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<EventLog>>,
-    GetEventLogsParams
+    GetEventsLogParams
   > = (queryParams, config = {}) =>
     useQuery<
       AxiosResponse<ApiPaginatedResponse<EventLog>>,
@@ -33,6 +33,6 @@ export default function useEventLogs() {
     });
 
   return {
-    getEventLogs,
+    getEventsLog,
   };
 }

@@ -8,6 +8,10 @@
   padding-top: $spv--small;
 }
 
+.label {
+  color: $color-x-light;
+}
+
 .button {
   padding-bottom: 0.7 * $sp-unit !important;
   padding-left: $sph--small !important;
@@ -15,4 +19,9 @@
   justify-content: flex-start !important;
   align-items: center;
   column-gap: $sph--small;
+
+  &:focus,
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
 }

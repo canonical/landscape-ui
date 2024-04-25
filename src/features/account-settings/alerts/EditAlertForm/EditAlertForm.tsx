@@ -3,12 +3,12 @@ import { AxiosResponse } from "axios";
 import { useFormik } from "formik";
 import { FC } from "react";
 import * as Yup from "yup";
-import SidePanelFormButtons from "../../../../components/form/SidePanelFormButtons";
-import useAlerts from "../../../../hooks/useAlerts";
-import useDebug from "../../../../hooks/useDebug";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import { Alert } from "../../../../types/Alert";
-import CheckboxGroup from "../../../../components/form/CheckboxGroup";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useAlerts from "@/hooks/useAlerts";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Alert } from "@/types/Alert";
+import CheckboxGroup from "@/components/form/CheckboxGroup";
 
 function findExclusiveTags(sourceTags: string[], tagsToExclude: string[]) {
   const exclustionSet = new Set(tagsToExclude);

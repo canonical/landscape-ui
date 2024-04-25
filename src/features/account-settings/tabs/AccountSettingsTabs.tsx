@@ -7,6 +7,7 @@ import { Credential, UserDetails } from "@/types/UserDetails";
 
 const GeneralSettings = lazy(() => import("../general"));
 const ApiCredentials = lazy(() => import("../api-credentials"));
+const Alerts = lazy(() => import("../alerts"));
 
 interface AccountSettingsTabsProps {
   user: UserDetails;
@@ -43,6 +44,7 @@ const AccountSettingsTabs: FC<AccountSettingsTabsProps> = ({
           {"tab-link-general" === currentTabLinkId && (
             <GeneralSettings user={user} />
           )}
+          {"tab-link-alerts" === currentTabLinkId && <Alerts />}
           {"tab-link-api" === currentTabLinkId && (
             <ApiCredentials user={user} credentials={credentials} />
           )}
