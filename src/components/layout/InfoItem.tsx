@@ -15,7 +15,7 @@ const getTruncatedText = (text: string): string => {
 };
 
 const getContentDisplayed = (
-  props: InfoItemMode,
+  props: InfoItemProps,
   showMore: boolean,
 ): ReactNode => {
   switch (props.type) {
@@ -26,6 +26,27 @@ const getContentDisplayed = (
       return showMore ? props.value : getTruncatedText(props.value);
     case "password":
       return "****************";
+    case "snippet":
+      return (
+        <div className="p-code-snippet">
+          <div className="p-code-snippet__header">
+            <h5 className="p-code-snippet__title">{props.label}</h5>
+          </div>
+          <pre className="p-code-snippet__block">
+            <code>
+              {props.value
+                .replace(/\\r/g, "")
+                .split("\\n")
+                .map((str) => (
+                  <>
+                    {str}
+                    <br />
+                  </>
+                ))}
+            </code>
+          </pre>
+        </div>
+      );
     default:
       return null;
   }
@@ -56,27 +77,35 @@ type PasswordInfoItemProps = {
   type: "password";
 };
 
+type SnippetInfoItemProps = {
+  type: "snippet";
+  value: string;
+};
+
 type InfoItemMode =
   | TruncatedInfoItemProps
   | RegularInfoItemProps
-  | PasswordInfoItemProps;
+  | PasswordInfoItemProps
+  | SnippetInfoItemProps;
 
 export type InfoItemProps = InfoItemBaseProps & InfoItemMode;
 
-const InfoItem: FC<InfoItemProps> = ({ label, className, ...props }) => {
+const InfoItem: FC<InfoItemProps> = (props) => {
   const [showMore, setShowMore] = useState<boolean>(false);
   const displayedContent = getContentDisplayed(props, showMore);
   const needsTruncation = shouldDisplayTruncation(props);
 
-  return (
+  return props.type === "snippet" ? (
+    <div className={classes.snippetRoot}>{displayedContent}</div>
+  ) : (
     <>
       <div
-        className={classNames(classes.wrapper, className, {
+        className={classNames(classes.wrapper, props.className, {
           [classes.truncated]: needsTruncation,
         })}
       >
         <p className="p-text--small p-text--small-caps u-text--muted u-no-margin--bottom">
-          {label}
+          {props.label}
         </p>
         <span>{displayedContent}</span>
       </div>

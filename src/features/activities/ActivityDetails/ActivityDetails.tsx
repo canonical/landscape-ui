@@ -286,6 +286,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
               <Col size={12}>
                 <InfoItem
                   label="Output"
+                  type="snippet"
                   value={activity.result_text}
                   className={classes.output}
                 />
