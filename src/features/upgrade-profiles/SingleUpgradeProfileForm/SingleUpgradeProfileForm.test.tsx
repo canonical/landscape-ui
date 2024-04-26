@@ -22,7 +22,7 @@ describe("SingleUpgradeProfileForm", () => {
       "Time",
       "Expires after",
       "hours",
-      "Randomize delivery over a time window",
+      "Randomise delivery over a time window",
       "No",
       "Yes",
       "Association",

@@ -110,7 +110,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
             aria-label={`Copy ${script.title} script`}
             onClick={() => handleScript({ action: "copy", script: script })}
           >
-            <Icon name="fork" className="u-no-margin--left" />
+            <Icon name="canvas" className="u-no-margin--left" />
           </Button>
         </Tooltip>
       </div>

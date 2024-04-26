@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { Instance } from "@/types/Instance";
+import useSidePanel from "@/hooks/useSidePanel";
 import { getTabLinks } from "./helpers";
 import classes from "./SingleInstanceTabs.module.scss";
 
@@ -59,6 +60,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
 }) => {
   const [currentTabLinkId, setCurrentTabLinkId] = useState("tab-link-info");
   const [tabState, setTabState] = useState<TabState | null>(null);
+  const { closeSidePanel } = useSidePanel();
 
   const { state } = useLocation();
 
@@ -82,6 +84,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
     onActiveTabChange: (tabId) => {
       setCurrentTabLinkId(tabId);
       setTabState(null);
+      closeSidePanel();
     },
     packageCount,
     packagesLoading,

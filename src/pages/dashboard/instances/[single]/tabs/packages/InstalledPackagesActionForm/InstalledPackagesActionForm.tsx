@@ -209,6 +209,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
               type="datetime-local"
               label="Deliver after"
               labelClassName="u-off-screen"
+              help="Format MM-DD-YYYY HH:mm"
               {...formik.getFieldProps("deliver_after")}
               error={
                 formik.touched.deliver_after && formik.errors.deliver_after
@@ -218,7 +219,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
             />
           )}
           <span className={classNames(classes.bold, classes.marginTop)}>
-            Randomize delivery
+            Randomise delivery
           </span>
           <div className={classes.radioGroup}>
             <Input
@@ -247,6 +248,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
               min={0}
               label="Delivery delay window"
               labelClassName="u-off-screen"
+              help="Time in minutes"
               {...formik.getFieldProps("deliver_delay_window")}
               error={
                 formik.touched.deliver_delay_window &&

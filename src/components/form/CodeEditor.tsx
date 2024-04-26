@@ -44,6 +44,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
           language="shell"
           height="16rem"
           loading={<LoadingState />}
+          defaultValue="#!/bin/bash"
           className={classNames(
             classes.highlighter,
             {
