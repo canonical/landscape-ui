@@ -6,8 +6,6 @@ import useConfirm from "@/hooks/useConfirm";
 import { Button, Col, Row } from "@canonical/react-components";
 import { usePackages } from "@/hooks/usePackages";
 import useDebug from "@/hooks/useDebug";
-import classes from "./PackageDetails.module.scss";
-import classNames from "classnames";
 import InstalledPackagesActionForm from "@/pages/dashboard/instances/[single]/tabs/packages/InstalledPackagesActionForm";
 
 interface PackageDetailsProps {
@@ -78,10 +76,7 @@ const PackageDetails: FC<PackageDetailsProps> = ({
 
   return (
     <>
-      <div
-        key="buttons"
-        className={classNames("p-segmented-control", classes.actions)}
-      >
+      <div key="buttons" className="p-segmented-control">
         {singlePackage.current_version && (
           <Button
             type="button"

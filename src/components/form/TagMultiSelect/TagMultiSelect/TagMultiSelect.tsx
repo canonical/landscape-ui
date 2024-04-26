@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import {
   ChangeEvent,
+  CSSProperties,
   FC,
   KeyboardEvent,
   useEffect,
@@ -8,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useOnClickOutside } from "usehooks-ts";
+import { useOnClickOutside, useWindowSize } from "usehooks-ts";
 import { Input } from "@canonical/react-components";
 import InfoBox from "@/components/form/TagMultiSelect/InfoBox";
 import TagChips from "@/components/form/TagMultiSelect/TagChips";
@@ -41,6 +42,11 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
   const [inputId, setInputId] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [overflowingChipsAmount, setOverflowingChipsAmount] = useState(0);
+  const { height: windowHeight } = useWindowSize();
+  const [dropdownStyles, setDropdownStyles] = useState<CSSProperties>({
+    top: "100%",
+    bottom: "auto",
+  });
 
   const debug = useDebug();
   const { getAllInstanceTagsQuery } = useInstances();
@@ -61,6 +67,40 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
 
     setInputId(input.id);
   }, [chipsContainerRef.current]);
+
+  useEffect(() => {
+    if (!showDropdown || !chipsContainerRef.current) {
+      return;
+    }
+
+    handleDropdownPosition();
+  }, [
+    windowHeight,
+    showDropdown,
+    chipsContainerRef.current,
+    chipsContainerRef.current?.clientHeight,
+  ]);
+
+  const handleDropdownPosition = () => {
+    if (!chipsContainerRef.current) {
+      return;
+    }
+
+    const { top, height } = chipsContainerRef.current.getBoundingClientRect();
+    const dropdownHeight = 379;
+
+    if (top + height + dropdownHeight < windowHeight) {
+      setDropdownStyles({
+        top: "100%",
+        bottom: "auto",
+      });
+    } else {
+      setDropdownStyles({
+        top: "auto",
+        bottom: "100%",
+      });
+    }
+  };
 
   const handleDropdownClose = () => {
     setShowDropdown(false);
@@ -108,7 +148,7 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
     }
 
     try {
-      const validValue = validationSchema.validateSync(inputText.trim());
+      const validValue = validationSchema.validateSync(inputText.trim()) ?? "";
 
       handleTagAdd(validValue);
       setInputText("");
@@ -223,7 +263,7 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
         </div>
         {showDropdown && getAllInstanceTagsQueryLoading && <LoadingState />}
         {showDropdown && !getAllInstanceTagsQueryLoading && (
-          <div className="p-search-and-filter__panel">
+          <div className="p-search-and-filter__panel" style={dropdownStyles}>
             <TagPrompt onTagAdd={handleTagCreate} search={inputText} />
 
             <TagList onTagClick={handleTagAdd} tags={filteredTags} />

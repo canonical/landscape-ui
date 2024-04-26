@@ -24,7 +24,7 @@ const TagPrompt: FC<TagPromptProps> = ({ onTagAdd, search }) => {
             onClick={onTagAdd}
             className={classes.saveButton}
           >
-            Save tag
+            Add tag
           </Button>
         </div>
       )}

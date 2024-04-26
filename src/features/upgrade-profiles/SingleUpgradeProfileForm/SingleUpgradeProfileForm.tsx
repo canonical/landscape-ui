@@ -180,7 +180,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
-        disabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_LABELS[props.action]}
       />
     </Form>
