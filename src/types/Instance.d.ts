@@ -212,3 +212,14 @@ export interface Instance extends InstanceWithoutRelation {
   children: InstanceWithoutRelation[];
   parent: InstanceWithoutRelation | null;
 }
+
+export interface PendingInstance extends Record<string, unknown> {
+  access_group: string | null;
+  client_tags: string[];
+  container_info: string | null;
+  creation_time: string;
+  hostname: string;
+  id: number;
+  title: string;
+  vm_info: VmInfo | null;
+}

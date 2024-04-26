@@ -8,7 +8,7 @@ import {
 import { Activity } from "@/features/activities";
 import { ApiError } from "@/types/ApiError";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { Instance } from "@/types/Instance";
+import { Instance, PendingInstance } from "@/types/Instance";
 import { QueryFnType } from "@/types/QueryFnType";
 import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
@@ -207,33 +207,34 @@ export default function useInstances() {
   });
 
   const getPendingInstancesQuery: QueryFnType<
-    AxiosResponse<Instance[]>,
-    undefined
-  > = (_, config = {}) =>
-    useQuery<AxiosResponse<Instance[]>, AxiosError<ApiError>>({
-      queryKey: ["instances", "pending"],
-      queryFn: () => authFetchOld!.get("GetPendingComputers"),
+    AxiosResponse<PendingInstance[]>,
+    {}
+  > = (queryParams = {}, config = {}) =>
+    useQuery<AxiosResponse<PendingInstance[]>, AxiosError<ApiError>>({
+      queryKey: ["pendingInstances"],
+      queryFn: () =>
+        authFetchOld!.get("GetPendingComputers", { params: queryParams }),
       ...config,
     });
 
   const acceptPendingInstancesQuery = useMutation<
-    AxiosResponse<Instance[]>,
+    AxiosResponse<PendingInstance[]>,
     AxiosError<ApiError>,
     AcceptPendingInstancesParams
   >({
     mutationFn: (params) =>
       authFetchOld!.get("AcceptPendingComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries(["pendingInstances"]),
   });
 
   const rejectPendingInstancesQuery = useMutation<
-    AxiosResponse<Instance[]>,
+    AxiosResponse<PendingInstance[]>,
     AxiosError<ApiError>,
     RejectPendingInstancesParams
   >({
     mutationFn: (params) =>
       authFetchOld!.get("RejectPendingComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries(["pendingInstances"]),
   });
 
   const createCloudOtpsQuery = useMutation<

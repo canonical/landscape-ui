@@ -216,6 +216,9 @@ a[target="_blank"] {
 
 .is-detached {
   .p-tooltip__message {
+    max-width: 20rem;
+    white-space: normal;
+    width: max-content;
     z-index: 1000;
   }
 }

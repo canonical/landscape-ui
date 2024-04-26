@@ -20,6 +20,7 @@ import {
   STATUS_FILTER,
 } from "./constants";
 import classes from "./InstancesContainer.module.scss";
+import PendingInstancesNotification from "@/pages/dashboard/instances/PendingInstancesNotification";
 
 interface InstancesContainerProps {
   selectedInstances: Instance[];
@@ -149,6 +150,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
           setShowSearchHelp(false);
         }}
       />
+      <PendingInstancesNotification />
       {getInstancesQueryLoading ? (
         <LoadingState />
       ) : (
