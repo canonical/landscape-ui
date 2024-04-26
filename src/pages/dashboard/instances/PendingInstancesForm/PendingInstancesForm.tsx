@@ -1,8 +1,8 @@
-import { useFormik } from "formik";
 import { FC, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, Form, Select } from "@canonical/react-components";
+import { Button, Select } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
+import useAuth from "@/hooks/useAuth";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -12,10 +12,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import PendingInstanceList from "@/pages/dashboard/instances/PendingInstanceList";
 import { PendingInstance } from "@/types/Instance";
 import { SelectOption } from "@/types/SelectOption";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import { PendingInstancesFormProps } from "./types";
 import classes from "./PendingInstancesForm.module.scss";
-import useAuth from "@/hooks/useAuth";
 
 interface PendingInstanceListProps {
   instances: PendingInstance[];
@@ -23,6 +20,8 @@ interface PendingInstanceListProps {
 
 const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const [isApproving, setIsApproving] = useState(false);
+  const [accessGroup, setAccessGroup] = useState("");
+  const [instanceIds, setInstanceIds] = useState<number[]>([]);
 
   const debug = useDebug();
   const { user } = useAuth();
@@ -32,6 +31,10 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const { getAccessGroupQuery } = useRoles();
   const { acceptPendingInstancesQuery, rejectPendingInstancesQuery } =
     useInstances();
+
+  const userOrganisation = user?.accounts.find(
+    (account) => account.name === user?.current_account,
+  )?.title;
 
   const handleApproving = () => {
     setIsApproving(true);
@@ -46,33 +49,33 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const { mutateAsync: acceptPendingInstances } = acceptPendingInstancesQuery;
   const { mutateAsync: rejectPendingInstances } = rejectPendingInstancesQuery;
 
-  const handleRejectPendingInstances = async (computer_ids: number[]) => {
+  const handlePendingInstancesReject = async () => {
     try {
-      await rejectPendingInstances({ computer_ids });
+      await rejectPendingInstances({ computer_ids: instanceIds });
 
       closeConfirmModal();
       closeSidePanel();
 
       notify.success({
-        message: `${computer_ids.length} pending ${computer_ids.length > 1 ? "instances" : "instance"} have been rejected to add to your ${user?.current_account} organisation.`,
-        title: `You have rejected ${computer_ids.length} pending ${computer_ids.length > 1 ? "instances" : "instance"}`,
+        message: `${instanceIds.length} pending ${instanceIds.length > 1 ? "instances" : "instance"} have been rejected to add to your ${userOrganisation} organisation.`,
+        title: `You have rejected ${instanceIds.length} pending ${instanceIds.length > 1 ? "instances" : "instance"}`,
       });
     } catch (error) {
       debug(error);
     }
   };
 
-  const handleRejectPendingInstancesDialog = (computer_ids: number[]) => {
+  const handlePendingInstancesDialogReject = () => {
     confirmModal({
       title: "Reject pending instances",
-      body: `This will reject ${computer_ids.length} selected ${computer_ids.length > 1 ? "instances" : "instance"} to add to your ${user?.current_account} organisation.`,
+      body: `This will reject ${instanceIds.length} selected ${instanceIds.length > 1 ? "instances" : "instance"} to add to your ${userOrganisation} organisation.`,
       buttons: [
         <Button
           key="reject"
           type="button"
           appearance="negative"
-          onClick={() => handleRejectPendingInstances(computer_ids)}
-          aria-label={`Reject selected ${computer_ids.length > 1 ? "instances" : "instance"}`}
+          onClick={handlePendingInstancesReject}
+          aria-label={`Reject selected ${instanceIds.length > 1 ? "instances" : "instance"}`}
         >
           Reject
         </Button>,
@@ -80,26 +83,42 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
     });
   };
 
-  const handleSubmit = async (values: PendingInstancesFormProps) => {
+  const handlePendingInstancesApprove = async () => {
     try {
-      await acceptPendingInstances(values);
-
-      notify.success({
-        message: `${values.computer_ids.length} pending ${values.computer_ids.length > 1 ? "instances" : "instance"} have been successfully added to your ${user?.current_account} organisation.`,
-        title: `You have approved ${values.computer_ids.length} pending ${values.computer_ids.length > 1 ? "instances" : "instance"}`,
+      await acceptPendingInstances({
+        access_group: accessGroup,
+        computer_ids: instanceIds,
       });
 
+      closeConfirmModal();
       closeSidePanel();
+
+      notify.success({
+        message: `${instanceIds.length} pending ${instanceIds.length > 1 ? "instances" : "instance"} have been successfully added to your ${userOrganisation} organisation.`,
+        title: `You have approved ${instanceIds.length} pending ${instanceIds.length > 1 ? "instances" : "instance"}`,
+      });
     } catch (error) {
       debug(error);
     }
   };
 
-  const formik = useFormik({
-    initialValues: INITIAL_VALUES,
-    onSubmit: handleSubmit,
-    validationSchema: VALIDATION_SCHEMA,
-  });
+  const handlePendingInstancesApproveDialog = () => {
+    confirmModal({
+      title: "Approve pending instances",
+      body: `This will approve ${instanceIds.length} selected ${instanceIds.length > 1 ? "instances" : "instance"} to add to your ${userOrganisation} organisation.`,
+      buttons: [
+        <Button
+          key="approve"
+          type="button"
+          appearance="positive"
+          onClick={handlePendingInstancesApprove}
+          aria-label={`Approve selected ${instanceIds.length > 1 ? "instances" : "instance"}`}
+        >
+          Approve
+        </Button>,
+      ],
+    });
+  };
 
   const { data: getAccessGroupQueryResult, error: getAccessGroupQueryError } =
     getAccessGroupQuery();
@@ -115,7 +134,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
     })) ?? [];
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate>
+    <>
       <p className={classes.help}>
         <span>
           You can automatically register new Landscape Client Instances when
@@ -138,12 +157,9 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
         <Select
           label="Access group"
           options={accessGroupOptions}
-          {...formik.getFieldProps("access_group")}
-          error={
-            formik.touched.access_group && formik.errors.access_group
-              ? formik.errors.access_group
-              : undefined
-          }
+          name="access_group"
+          value={accessGroup}
+          onChange={(event) => setAccessGroup(event.target.value)}
         />
       )}
 
@@ -151,10 +167,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
         <PendingInstanceList
           accessGroupOptions={accessGroupOptions}
           instances={instances}
-          onSelectedIdsChange={(value) =>
-            formik.setFieldValue("computer_ids", value)
-          }
-          selectedIds={formik.values.computer_ids}
+          onSelectedIdsChange={(value) => setInstanceIds(value)}
+          selectedIds={instanceIds}
         />
       )}
 
@@ -170,10 +184,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
           <Button
             type="button"
             appearance="negative"
-            disabled={formik.values.computer_ids.length === 0}
-            onClick={() =>
-              handleRejectPendingInstancesDialog(formik.values.computer_ids)
-            }
+            disabled={instanceIds.length === 0}
+            onClick={handlePendingInstancesDialogReject}
           >
             Reject
           </Button>
@@ -181,13 +193,15 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
         <Button
           type="button"
           appearance="positive"
-          disabled={formik.values.computer_ids.length === 0}
-          onClick={isApproving ? formik.submitForm : handleApproving}
+          disabled={instanceIds.length === 0}
+          onClick={
+            isApproving ? handlePendingInstancesApproveDialog : handleApproving
+          }
         >
           Approve
         </Button>
       </div>
-    </Form>
+    </>
   );
 };
 
