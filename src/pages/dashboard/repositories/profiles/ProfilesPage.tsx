@@ -22,7 +22,7 @@ const ProfilesPage: FC = () => {
 
   const handleAddProfile = () => {
     setSidePanelContent(
-      "Create repository profile",
+      "Add repository profile",
       <Suspense fallback={<LoadingState />}>
         <AddProfileForm />
       </Suspense>,
@@ -40,7 +40,7 @@ const ProfilesPage: FC = () => {
             onClick={handleAddProfile}
             type="button"
           >
-            Create profile
+            Add profile
           </Button>,
         ]}
       />
@@ -67,7 +67,7 @@ const ProfilesPage: FC = () => {
             cta={[
               <Button
                 appearance="positive"
-                key="table-create-new-profile"
+                key="table-add-new-profile"
                 onClick={handleAddProfile}
                 type="button"
               >

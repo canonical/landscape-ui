@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("should create APT source", async ({ page }) => {
+test("should add APT source", async ({ page }) => {
   await page.goto("/repositories/mirrors");
 
   await page.getByRole("link", { name: "APT Sources" }).click();
@@ -8,9 +8,9 @@ test("should create APT source", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "APT Sources" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Create APT source" }).click();
+  await page.getByRole("button", { name: "Add APT source" }).click();
   await expect(
-    page.getByRole("heading", { name: "Create APT source" }),
+    page.getByRole("heading", { name: "Add APT source" }),
   ).toBeVisible();
   await page.locator('input[name="name"]').fill("test-e2e-apt-source");
   await page
@@ -19,7 +19,7 @@ test("should create APT source", async ({ page }) => {
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page.locator('select[name="access_group"]').selectOption("global");
   await page
-    .getByRole("button", { name: "Create APT Source", exact: true })
+    .getByRole("button", { name: "Add APT Source", exact: true })
     .click();
 
   await expect(page.getByText("test-e2e-apt-source")).toBeVisible();

@@ -13,7 +13,7 @@ const DistributionsEmptyState: FC = () => {
 
   const handleCreateDistribution = () => {
     setSidePanelContent(
-      "Create distribution",
+      "Add distribution",
       <Suspense fallback={<LoadingState />}>
         <NewDistributionForm />
       </Suspense>,
@@ -22,12 +22,12 @@ const DistributionsEmptyState: FC = () => {
 
   return (
     <EmptyState
-      title="No mirrors have been created yet"
+      title="No mirrors have been added yet"
       icon="containers"
       body={
         <>
           <p className="u-no-margin--bottom">
-            To create a new mirror you must first create a distribution
+            To add a new mirror you must first add a distribution
           </p>
           <a
             href="https://ubuntu.com/landscape/docs/repositories"
@@ -40,11 +40,11 @@ const DistributionsEmptyState: FC = () => {
       }
       cta={[
         <Button
-          key="create-distribution"
+          key="add-distribution"
           onClick={handleCreateDistribution}
           type="button"
         >
-          Create distribution
+          Add distribution
         </Button>,
       ]}
     />

@@ -17,11 +17,11 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
   return (
     <div className={classes.card}>
       <div className={classes.header}>
-        <h3 className={classes.title}>No series have been created yet</h3>
+        <h3 className={classes.title}>No series have been added yet</h3>
       </div>
       <div className={classes.content}>
         <p className="u-no-margin--bottom">
-          Create a new mirror or series to get started
+          Add a new mirror or series to get started
         </p>
         <p className="u-no-margin--top">
           <a
@@ -37,15 +37,15 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
           className="u-no-margin--bottom"
           onClick={() => {
             setSidePanelContent(
-              `Create mirror for ${distribution.name}`,
+              `Add mirror for ${distribution.name}`,
               <Suspense fallback={<LoadingState />}>
                 <NewSeriesForm distribution={distribution} />
               </Suspense>,
             );
           }}
-          aria-label={`Create mirror for ${distribution.name}`}
+          aria-label={`Add mirror for ${distribution.name}`}
         >
-          Create mirror
+          Add mirror
         </Button>
       </div>
     </div>

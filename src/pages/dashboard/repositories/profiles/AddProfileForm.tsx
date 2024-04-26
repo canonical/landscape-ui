@@ -544,8 +544,8 @@ const AddProfileForm: FC = () => {
 
           <SidePanelFormButtons
             submitButtonDisabled={formik.isSubmitting}
-            submitButtonText="Create profile"
-            submitButtonAriaLabel="Create profile"
+            submitButtonText="Add profile"
+            submitButtonAriaLabel="Add profile"
           />
         </div>
       </Form>

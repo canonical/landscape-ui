@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test("should create pockets with the different mode", async ({ page }) => {
+test("should add pockets with the different mode", async ({ page }) => {
   await page.goto("/repositories/mirrors");
 
   await page
     .getByRole("button", {
-      name: "Create new pocket for test-e2e-distro/test-derived-series",
+      name: "Add new pocket for test-e2e-distro/test-derived-series",
     })
     .click();
   await expect(page.locator('select[name="mode"]')).toHaveValue("mirror");
@@ -25,7 +25,7 @@ test("should create pockets with the different mode", async ({ page }) => {
     .locator('select[name="mirror_gpg_key"]')
     .selectOption("test-e2e-gpg-key");
   await page.getByText("Include .udeb packages (debian-installer)").click();
-  await page.getByRole("button", { name: "Create pocket" }).click();
+  await page.getByRole("button", { name: "Add pocket" }).click();
 
   await expect(
     page.getByRole("button", {
@@ -45,7 +45,7 @@ test("should create pockets with the different mode", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Create new pocket for test-e2e-distro/test-derived-series",
+      name: "Add new pocket for test-e2e-distro/test-derived-series",
     })
     .click();
   await page.locator('select[name="mode"]').selectOption("pull");
@@ -55,7 +55,7 @@ test("should create pockets with the different mode", async ({ page }) => {
   await page.getByRole("textbox").fill("test-pull-pocket");
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page.locator('select[name="filter_type"]').selectOption("whitelist");
-  await page.getByRole("button", { name: "Create pocket" }).click();
+  await page.getByRole("button", { name: "Add pocket" }).click();
 
   await expect(
     page.getByRole("button", {
@@ -75,14 +75,14 @@ test("should create pockets with the different mode", async ({ page }) => {
 
   await page
     .getByRole("button", {
-      name: "Create new pocket for test-e2e-distro/test-derived-series",
+      name: "Add new pocket for test-e2e-distro/test-derived-series",
     })
     .click();
   await page.locator('select[name="mode"]').selectOption("upload");
   await page.getByRole("textbox").fill("test-upload-pocket");
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page.getByText("Allow uploaded packages to be unsigned").click();
-  await page.getByRole("button", { name: "Create pocket" }).click();
+  await page.getByRole("button", { name: "Add pocket" }).click();
 
   await expect(
     page.getByRole("button", {

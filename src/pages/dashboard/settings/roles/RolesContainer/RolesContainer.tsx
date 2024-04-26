@@ -49,18 +49,18 @@ const RolesContainer: FC = () => {
             }
             cta={[
               <Button
-                key="create"
+                key="add"
                 appearance="positive"
                 onClick={() =>
                   setSidePanelContent(
-                    "Create role",
+                    "Add role",
                     <Suspense fallback={<LoadingState />}>
-                      <AddRoleForm ctaLabel="Create" />
+                      <AddRoleForm />
                     </Suspense>,
                   )
                 }
               >
-                Create role
+                Add role
               </Button>,
             ]}
           />

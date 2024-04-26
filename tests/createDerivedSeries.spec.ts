@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("should create test derived series", async ({ page }) => {
+test("should add test derived series", async ({ page }) => {
   await page.goto("/repositories/mirrors");
   await page
     .locator("div")

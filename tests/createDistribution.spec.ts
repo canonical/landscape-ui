@@ -4,20 +4,20 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/repositories/mirrors");
 });
 
-test("should create distribution", async ({ page }) => {
+test("should add distribution", async ({ page }) => {
   await expect(
-    page.getByRole("button", { name: "Create mirror", exact: true }),
+    page.getByRole("button", { name: "Add mirror", exact: true }),
   ).toHaveCount(1);
   await expect(
-    page.getByRole("button", { name: "Create distribution" }),
+    page.getByRole("button", { name: "Add distribution" }),
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Create distribution" }).click();
+  await page.getByRole("button", { name: "Add distribution" }).click();
   await page.getByRole("textbox").fill("test-e2e-distro");
   await page.getByLabel("Access group").selectOption("global");
   await page
     .getByRole("complementary")
-    .getByRole("button", { name: "Create distribution" })
+    .getByRole("button", { name: "Add distribution" })
     .click();
 
   await expect(
@@ -25,15 +25,13 @@ test("should create distribution", async ({ page }) => {
   ).toBeVisible();
   expect(
     await page
-      .getByRole("heading", { name: "No series have been created yet" })
+      .getByRole("heading", { name: "No series have been added yet" })
       .count(),
   ).toBeGreaterThanOrEqual(1);
   expect(
-    await page
-      .getByText("Create a new mirror or series to get started")
-      .count(),
+    await page.getByText("Add a new mirror or series to get started").count(),
   ).toBeGreaterThanOrEqual(1);
   await expect(
-    page.getByRole("button", { name: "Create mirror for test-e2e-distro" }),
+    page.getByRole("button", { name: "Add mirror for test-e2e-distro" }),
   ).toBeVisible();
 });

@@ -13,7 +13,7 @@ const PackageProfilesEmptyState: FC = () => {
 
   const handleCreatePackageProfile = () => {
     setSidePanelContent(
-      "Create package profile",
+      "Add package profile",
       <Suspense fallback={<LoadingState />}>
         <PackageProfileAddForm />
       </Suspense>,
@@ -37,11 +37,11 @@ const PackageProfilesEmptyState: FC = () => {
       }
       cta={[
         <Button
-          key="create"
+          key="add"
           appearance="positive"
           onClick={handleCreatePackageProfile}
         >
-          Create package profile
+          Add package profile
         </Button>,
       ]}
       icon="package-profiles"

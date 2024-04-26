@@ -1,12 +1,12 @@
 import { FormProps } from "./types";
 
 export const NOTIFICATION_ACTIONS = {
-  create: "created",
+  add: "Add",
   edit: "updated",
 };
 
 export const CTA_LABELS = {
-  create: "Create removal profile",
+  add: "Add removal profile",
   edit: "Save changes",
 };
 

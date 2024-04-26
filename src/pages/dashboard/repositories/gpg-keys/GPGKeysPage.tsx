@@ -67,7 +67,7 @@ const GPGKeysPage: FC = () => {
             cta={[
               <Button
                 appearance="positive"
-                key="table-create-new-mirror"
+                key="table-add-new-mirror"
                 onClick={handleOpen}
                 type="button"
                 aria-label="Import GPG key"

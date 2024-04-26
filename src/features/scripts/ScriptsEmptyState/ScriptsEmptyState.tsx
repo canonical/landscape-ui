@@ -39,7 +39,7 @@ const ScriptsEmptyState: FC = () => {
       cta={[
         <Button
           appearance="positive"
-          key="table-create-new-mirror"
+          key="table-add-new-mirror"
           onClick={handleScriptCreate}
           type="button"
         >

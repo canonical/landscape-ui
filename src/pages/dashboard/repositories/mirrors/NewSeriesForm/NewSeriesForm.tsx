@@ -48,7 +48,7 @@ interface NewSeriesFormProps {
 
 const NewSeriesForm: FC<NewSeriesFormProps> = ({
   distribution,
-  ctaText = "Create mirror",
+  ctaText = "Add mirror",
 }) => {
   const [mirrorUri, setMirrorUri] = useState(DEFAULT_MIRROR_URI);
   const [seriesOptions, setSeriesOptions] = useState<SelectOption[]>([]);

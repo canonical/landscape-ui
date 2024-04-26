@@ -17,11 +17,7 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getPromisesToAddRole } from "./helpers";
 import { FormProps } from "./types";
 
-interface AddRoleFormProps {
-  ctaLabel?: "Add" | "Create";
-}
-
-const AddRoleForm: FC<AddRoleFormProps> = ({ ctaLabel = "Add" }) => {
+const AddRoleForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
@@ -77,7 +73,7 @@ const AddRoleForm: FC<AddRoleFormProps> = ({ ctaLabel = "Add" }) => {
 
       notify.success({
         title: "New role has been added",
-        message: `You created the role '${values.name}'`,
+        message: `You added the role '${values.name}'`,
       });
     } catch (error) {
       debug(error);
@@ -147,7 +143,7 @@ const AddRoleForm: FC<AddRoleFormProps> = ({ ctaLabel = "Add" }) => {
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText={ctaLabel}
+        submitButtonText="Add"
       />
     </Form>
   );

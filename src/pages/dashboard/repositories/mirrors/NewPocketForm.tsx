@@ -596,8 +596,8 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         submitButtonDisabled={
           createPocketLoading || addUploaderGPGKeysToPocketLoading
         }
-        submitButtonText="Create"
-        submitButtonAriaLabel="Create pocket"
+        submitButtonText="Add"
+        submitButtonAriaLabel="Add pocket"
       />
     </Form>
   );

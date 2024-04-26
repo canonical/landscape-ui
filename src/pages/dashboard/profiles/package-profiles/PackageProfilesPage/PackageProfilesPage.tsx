@@ -18,7 +18,7 @@ const PackageProfilesPage: FC = () => {
 
   const handleAddPackageProfile = () => {
     setSidePanelContent(
-      "Create package profile",
+      "Add package profile",
       <Suspense fallback={<LoadingState />}>
         <PackageProfileCreateForm />
       </Suspense>,
@@ -33,11 +33,11 @@ const PackageProfilesPage: FC = () => {
         actions={[
           <Button
             type="button"
-            key="create-package-profile"
+            key="add-package-profile"
             appearance="positive"
             onClick={handleAddPackageProfile}
           >
-            Create package profile
+            Add package profile
           </Button>,
         ]}
       />

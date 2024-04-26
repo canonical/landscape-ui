@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("should create repository profile", async ({ page }) => {
+test("should add repository profile", async ({ page }) => {
   await page.goto("/repositories/mirrors");
 
   await page.getByRole("link", { name: "Profiles" }).click();
@@ -9,9 +9,9 @@ test("should create repository profile", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Repository Profiles" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Create Profile" }).click();
+  await page.getByRole("button", { name: "Add Profile" }).click();
   await expect(
-    page.getByRole("heading", { name: "Create repository profile" }),
+    page.getByRole("heading", { name: "Add repository profile" }),
   ).toBeVisible();
 
   await page.locator('input[name="title"]').fill("test-e2e-profile");
@@ -67,7 +67,7 @@ test("should create repository profile", async ({ page }) => {
   await page.getByText("test-e2e-apt-source").click();
   await page.getByRole("button", { name: "Reset search" }).click();
   expect(await rows.count()).toBeGreaterThanOrEqual(1);
-  await page.getByLabel("Create profile").click();
+  await page.getByLabel("Add profile").click();
 
   await expect(
     page.getByText("test-e2e-profile", { exact: true }),

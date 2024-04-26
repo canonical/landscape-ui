@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 
-export const getValidationSchema = (action: "create" | "edit") => {
+export const getValidationSchema = (action: "add" | "edit") => {
   return Yup.object().shape({
     access_group: Yup.string(),
     all_computers: Yup.boolean(),
@@ -9,7 +9,7 @@ export const getValidationSchema = (action: "create" | "edit") => {
         name: "required",
         message: "This field is required.",
         params: { action },
-        test: (value) => !!value || !["add", "create"].includes(action),
+        test: (value) => !!value || !["add", "add"].includes(action),
       })
       .integer("Timeframe must be an integer value.")
       .min(1, "Timeframe must be at least 1.")
@@ -19,7 +19,7 @@ export const getValidationSchema = (action: "create" | "edit") => {
       name: "required",
       message: "This field is required.",
       params: { action },
-      test: (value) => !!value || !["add", "create"].includes(action),
+      test: (value) => !!value || !["add", "add"].includes(action),
     }),
   });
 };

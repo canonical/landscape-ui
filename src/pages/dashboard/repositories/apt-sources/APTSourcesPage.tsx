@@ -21,7 +21,7 @@ const APTSourcesPage: FC = () => {
 
   const handleOpen = () => {
     setSidePanelContent(
-      "Create APT source",
+      "Add APT source",
       <Suspense fallback={<LoadingState />}>
         <NewAPTSourceForm />
       </Suspense>,
@@ -39,7 +39,7 @@ const APTSourcesPage: FC = () => {
             onClick={handleOpen}
             type="button"
           >
-            Create APT source
+            Add APT source
           </Button>,
         ]}
       />
@@ -66,11 +66,11 @@ const APTSourcesPage: FC = () => {
             cta={[
               <Button
                 appearance="positive"
-                key="table-create-new-mirror"
+                key="table-add-new-mirror"
                 onClick={handleOpen}
                 type="button"
               >
-                Create APT source
+                Add APT source
               </Button>,
             ]}
           />

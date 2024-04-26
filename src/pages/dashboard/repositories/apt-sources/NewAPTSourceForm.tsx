@@ -145,7 +145,7 @@ const NewAPTSourceForm: FC = () => {
       />
       <SidePanelFormButtons
         submitButtonDisabled={isLoading}
-        submitButtonText="Create APT Source"
+        submitButtonText="Add APT Source"
       />
     </Form>
   );

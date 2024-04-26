@@ -19,19 +19,19 @@ const SavedSearchesPage: FC = () => {
         sticky
         actions={[
           <Button
-            key="create-search"
+            key="add-search"
             appearance="positive"
             onClick={() => {
               setSidePanelContent(
-                "Create search",
+                "Add search",
                 <Suspense fallback={<LoadingState />}>
                   <SingleSavedSearch />
                 </Suspense>,
               );
             }}
-            aria-label="Create search"
+            aria-label="Add search"
           >
-            <span>Create search</span>
+            <span>Add search</span>
           </Button>,
         ]}
       />
