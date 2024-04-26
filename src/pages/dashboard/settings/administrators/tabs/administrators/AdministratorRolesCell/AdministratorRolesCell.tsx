@@ -76,21 +76,6 @@ const AdministratorRolesCell: FC<AdministratorRolesCellProps> = ({
         dropdownFooter={
           <div className={classes.footer}>
             <Button
-              type="submit"
-              dense
-              small
-              appearance="positive"
-              className="u-no-margin--bottom"
-              disabled={
-                formik.values.roles.length === administrator.roles.length &&
-                administrator.roles.every((role) =>
-                  formik.values.roles.includes(role),
-                )
-              }
-            >
-              Save changes
-            </Button>
-            <Button
               type="button"
               dense
               small
@@ -104,6 +89,21 @@ const AdministratorRolesCell: FC<AdministratorRolesCellProps> = ({
               onClick={() => formik.setFieldValue("roles", administrator.roles)}
             >
               Revert
+            </Button>
+            <Button
+              type="submit"
+              dense
+              small
+              appearance="positive"
+              className="u-no-margin--bottom"
+              disabled={
+                formik.values.roles.length === administrator.roles.length &&
+                administrator.roles.every((role) =>
+                  formik.values.roles.includes(role),
+                )
+              }
+            >
+              Save changes
             </Button>
           </div>
         }

@@ -174,6 +174,9 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
       {
         accessor: "creator.name",
         Header: "Creator",
+        Cell: ({ row }: CellProps<ActivityCommon>) => (
+          <>{row.original.creator?.name ?? "-"}</>
+        ),
       },
     ],
     [activities, selectedIds],

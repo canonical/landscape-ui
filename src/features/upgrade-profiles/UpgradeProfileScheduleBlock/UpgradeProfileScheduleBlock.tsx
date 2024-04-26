@@ -153,7 +153,7 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
         )}
       </div>
 
-      <p>Randomize delivery over a time window</p>
+      <p>Randomise delivery over a time window</p>
 
       <div className={classes.radioGroup}>
         <RadioInput

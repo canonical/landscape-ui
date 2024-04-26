@@ -9,6 +9,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import { SelectOption } from "@/types/SelectOption";
+import useSidePanel from "@/hooks/useSidePanel";
 
 interface FormProps {
   email: string;
@@ -35,6 +36,7 @@ const InviteAdministratorForm: FC = () => {
   const { notify } = useNotify();
   const { inviteAdministratorQuery } = useAdministrators();
   const { getRolesQuery } = useRoles();
+  const { closeSidePanel } = useSidePanel();
 
   const { mutateAsync: inviteAdministrator } = inviteAdministratorQuery;
 
@@ -45,6 +47,7 @@ const InviteAdministratorForm: FC = () => {
       try {
         await inviteAdministrator(values);
 
+        closeSidePanel();
         notify.success({
           title: "You sent an administrator invite",
           message: `${values.name} will receive an invitation email`,

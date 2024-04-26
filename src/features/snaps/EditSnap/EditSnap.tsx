@@ -243,7 +243,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
         />
       )}
       <span className={classNames(classes.bold, classes.marginTop)}>
-        Randomize delivery over a time window
+        Randomise delivery over a time window
       </span>
       <div className={classes.radioGroup}>
         <Input
