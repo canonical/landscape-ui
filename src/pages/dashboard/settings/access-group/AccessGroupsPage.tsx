@@ -19,7 +19,7 @@ const AccessGroupsPage: FC = () => {
   const accessGroupData = accessGroupResponse?.data ?? [];
 
   const handleAddAccessGroup = () => {
-    setSidePanelContent("Create access group", <NewAccessGroupForm />);
+    setSidePanelContent("Add access group", <NewAccessGroupForm />);
   };
 
   const AddNewAccessGroupButton = ({ className }: { className?: string }) => (
@@ -32,7 +32,7 @@ const AccessGroupsPage: FC = () => {
       type="button"
       className={classNames("u-no-margin--right", className)}
     >
-      Create access group
+      Add access group
     </Button>
   );
 
@@ -41,7 +41,7 @@ const AccessGroupsPage: FC = () => {
       <PageHeader
         title="Access groups"
         actions={[
-          <AddNewAccessGroupButton key="create-new-access-group-button" />,
+          <AddNewAccessGroupButton key="add-new-access-group-button" />,
         ]}
       />
       <PageContent>

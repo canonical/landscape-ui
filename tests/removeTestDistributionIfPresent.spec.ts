@@ -9,9 +9,7 @@ test("should remove test distribution if present", async ({ page }) => {
       })
       .first()
       .or(
-        page.getByText(
-          "To create a new mirror you must first create a distribution",
-        ),
+        page.getByText("To add a new mirror you must first add a distribution"),
       ),
   ).toBeVisible();
 

@@ -13,9 +13,9 @@ const UpgradeProfilesEmptyState: FC = () => {
 
   const handleCreateUpgradeProfile = () => {
     setSidePanelContent(
-      "Create upgrade profile",
+      "Add upgrade profile",
       <Suspense fallback={<LoadingState />}>
-        <SingleUpgradeProfileForm action="create" />
+        <SingleUpgradeProfileForm action="add" />
       </Suspense>,
     );
   };
@@ -39,11 +39,11 @@ const UpgradeProfilesEmptyState: FC = () => {
       cta={[
         <Button
           appearance="positive"
-          key="table-create-new-mirror"
+          key="table-add-new-mirror"
           onClick={handleCreateUpgradeProfile}
           type="button"
         >
-          Create upgrade profile
+          Add upgrade profile
         </Button>,
       ]}
       icon="change-version"

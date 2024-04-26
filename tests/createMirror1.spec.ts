@@ -4,21 +4,21 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/repositories/mirrors");
 });
 
-test("should create mirror using distribution empty state button", async ({
+test("should add mirror using distribution empty state button", async ({
   page,
 }) => {
   await page
-    .getByRole("button", { name: "Create mirror for test-e2e-distro" })
+    .getByRole("button", { name: "Add mirror for test-e2e-distro" })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Create mirror for test-e2e-distro" }),
+    page.getByRole("heading", { name: "Add mirror for test-e2e-distro" }),
   ).toBeVisible();
   await page.locator('select[name="mirror_series"]').selectOption("jammy");
   await page.locator('input[name="name"]').fill("test-mirror-jammy");
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page
     .getByRole("complementary")
-    .getByRole("button", { name: "Create mirror" })
+    .getByRole("button", { name: "Add mirror" })
     .click();
 
   await expect(

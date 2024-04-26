@@ -4,13 +4,11 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/repositories/mirrors");
 });
 
-test("should create ubuntu snapshot", async ({ page }) => {
-  await page
-    .getByRole("button", { name: "Create mirror", exact: true })
-    .click();
+test("should add ubuntu snapshot", async ({ page }) => {
+  await page.getByRole("button", { name: "Add mirror", exact: true }).click();
 
   await expect(
-    page.getByRole("heading", { name: "Create new mirror" }),
+    page.getByRole("heading", { name: "Add new mirror" }),
   ).toBeVisible();
 
   await page.locator('select[name="type"]').selectOption("ubuntu-snapshot");
@@ -31,7 +29,7 @@ test("should create ubuntu snapshot", async ({ page }) => {
   await page.locator('select[name="gpg_key"]').selectOption("sign-key");
   await page
     .getByRole("complementary")
-    .getByRole("button", { name: "Create mirror" })
+    .getByRole("button", { name: "Add mirror" })
     .click();
 
   await expect(

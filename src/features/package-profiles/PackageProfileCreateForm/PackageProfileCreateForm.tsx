@@ -78,8 +78,8 @@ const PackageProfileCreateForm: FC = () => {
       closeSidePanel();
 
       notify.success({
-        message: `Profile "${values.title}" created successfully`,
-        title: "Profile created",
+        message: `Profile "${values.title}" added successfully`,
+        title: "Profile added",
       });
     } catch (error) {
       debug(error);
@@ -137,7 +137,7 @@ const PackageProfileCreateForm: FC = () => {
 
         <SidePanelFormButtons
           submitButtonDisabled={formik.isSubmitting}
-          submitButtonText="Create package profile"
+          submitButtonText="Add package profile"
         />
       </div>
     </Form>

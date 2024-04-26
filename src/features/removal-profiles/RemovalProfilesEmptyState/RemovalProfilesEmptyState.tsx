@@ -13,9 +13,9 @@ const RemovalProfilesEmptyState: FC = () => {
 
   const handleCreateRemovalProfile = () => {
     setSidePanelContent(
-      "Create removal profile",
+      "Add removal profile",
       <Suspense fallback={<LoadingState />}>
-        <SingleRemovalProfileForm action="create" />
+        <SingleRemovalProfileForm action="add" />
       </Suspense>,
     );
   };
@@ -39,11 +39,11 @@ const RemovalProfilesEmptyState: FC = () => {
       cta={[
         <Button
           appearance="positive"
-          key="table-create-new-mirror"
+          key="table-add-new-mirror"
           onClick={handleCreateRemovalProfile}
           type="button"
         >
-          Create removal profile
+          Add removal profile
         </Button>,
       ]}
       icon="delete"

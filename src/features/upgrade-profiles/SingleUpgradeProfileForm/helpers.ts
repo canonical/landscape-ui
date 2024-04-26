@@ -5,7 +5,7 @@ import {
   UpgradeProfileType,
 } from "@/features/upgrade-profiles/types";
 
-export const getValidationSchema = (action: "create" | "edit") => {
+export const getValidationSchema = (action: "add" | "edit") => {
   return Yup.object().shape({
     access_group: Yup.string(),
     all_computers: Yup.boolean(),
@@ -60,7 +60,7 @@ export const getValidationSchema = (action: "create" | "edit") => {
       name: "required",
       message: "This field is required.",
       params: { action },
-      test: (value) => !!value || action !== "create",
+      test: (value) => !!value || action !== "add",
     }),
     upgrade_type: Yup.string<UpgradeProfileType>().required(
       "This field is required.",

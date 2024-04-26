@@ -7,7 +7,7 @@ import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 describe("SingleUpgradeProfileForm", () => {
   it("should correct validate an empty form", async () => {
     const { container } = renderWithProviders(
-      <SingleUpgradeProfileForm action="create" />,
+      <SingleUpgradeProfileForm action="add" />,
     );
 
     expect(container).toHaveTexts([
@@ -29,7 +29,7 @@ describe("SingleUpgradeProfileForm", () => {
       "Associate to all instances",
     ]);
 
-    const submitButton = screen.getByText("Create upgrade profile");
+    const submitButton = screen.getByText("Add upgrade profile");
 
     await userEvent.click(submitButton);
 
@@ -39,7 +39,7 @@ describe("SingleUpgradeProfileForm", () => {
   it("should submit form with correct values", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(<SingleUpgradeProfileForm action="create" />);
+    renderWithProviders(<SingleUpgradeProfileForm action="add" />);
 
     const nameInput = screen.getByLabelText(/name/i);
     const securityIssuesOnlyCheckbox = screen.getByLabelText(
@@ -55,7 +55,7 @@ describe("SingleUpgradeProfileForm", () => {
     const associationCheckbox = screen.getByLabelText(
       "Associate to all instances",
     );
-    const submitButton = screen.getByText("Create upgrade profile");
+    const submitButton = screen.getByText("Add upgrade profile");
 
     await user.type(nameInput, "Test profile");
     await user.click(securityIssuesOnlyCheckbox);
@@ -69,7 +69,7 @@ describe("SingleUpgradeProfileForm", () => {
     await userEvent.click(submitButton);
 
     expect(
-      await screen.findByText(/upgrade profile created/i),
+      await screen.findByText(/upgrade profile added/i),
     ).toBeInTheDocument();
   });
 

@@ -31,11 +31,11 @@ const ScriptsPage: FC = () => {
         title="Scripts"
         actions={[
           <Button
-            key="create-script"
+            key="add-script"
             appearance="positive"
             onClick={handleScriptCreate}
           >
-            Create script
+            Add script
           </Button>,
         ]}
       />

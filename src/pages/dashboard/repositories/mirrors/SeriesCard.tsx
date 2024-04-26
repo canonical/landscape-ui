@@ -126,7 +126,7 @@ const SeriesCard: FC<SeriesCardProps> = ({
       onMouseDown={(event) => {
         event.preventDefault();
       }}
-      aria-label={`Create new pocket for ${distribution.name}/${series.name}`}
+      aria-label={`Add new pocket for ${distribution.name}/${series.name}`}
       className={className ?? "is-small"}
     >
       New pocket

@@ -4,13 +4,11 @@ test.beforeEach(async ({ page }) => {
   await page.goto("/repositories/mirrors");
 });
 
-test("should create mirror using page header button", async ({ page }) => {
-  await page
-    .getByRole("button", { name: "Create mirror", exact: true })
-    .click();
+test("should add mirror using page header button", async ({ page }) => {
+  await page.getByRole("button", { name: "Add mirror", exact: true }).click();
 
   await expect(
-    page.getByRole("heading", { name: "Create new mirror" }),
+    page.getByRole("heading", { name: "Add new mirror" }),
   ).toBeVisible();
 
   await page
@@ -26,7 +24,7 @@ test("should create mirror using page header button", async ({ page }) => {
   await page.getByText("Include .udeb packages (debian-installer)").click();
   await page
     .getByRole("complementary")
-    .getByRole("button", { name: "Create mirror" })
+    .getByRole("button", { name: "Add mirror" })
     .click();
 
   await expect(

@@ -27,8 +27,8 @@ const SavedSearchCreateForm: FC<SavedSearchCreateFormProps> = ({
     try {
       await createSavedSearch({ search, name, title: name });
       notify.success({
-        message: `Saved search ${name} successfully created`,
-        title: "Saved search created",
+        message: `Saved search ${name} successfully added`,
+        title: "Saved search added",
       });
       onSearchSave();
       onClose();

@@ -1,7 +1,7 @@
 import { FormProps } from "@/features/upgrade-profiles/types";
 
 export const CTA_LABELS = {
-  create: "Create upgrade profile",
+  add: "Add upgrade profile",
   edit: "Save changes",
 };
 
@@ -22,6 +22,6 @@ export const INITIAL_VALUES: FormProps = {
 };
 
 export const NOTIFICATION_ACTIONS = {
-  create: "created",
+  add: "added",
   edit: "updated",
 };

@@ -18,9 +18,9 @@ const UpgradeProfilesPage: FC = () => {
 
   const handleAddUpgradeProfile = () => {
     setSidePanelContent(
-      "Create upgrade profile",
+      "Add upgrade profile",
       <Suspense fallback={<LoadingState />}>
-        <SingleUpgradeProfileForm action="create" />
+        <SingleUpgradeProfileForm action="add" />
       </Suspense>,
     );
   };
@@ -36,7 +36,7 @@ const UpgradeProfilesPage: FC = () => {
             appearance="positive"
             onClick={handleAddUpgradeProfile}
           >
-            Create upgrade profile
+            Add upgrade profile
           </Button>,
         ]}
       />

@@ -28,7 +28,7 @@ const DistributionsPage: FC = () => {
     <Button
       onClick={() => {
         setSidePanelContent(
-          "Create distribution",
+          "Add distribution",
           <Suspense fallback={<LoadingState />}>
             <NewDistributionForm />
           </Suspense>,
@@ -40,7 +40,7 @@ const DistributionsPage: FC = () => {
       type="button"
       className={classNames("u-no-margin--right", className)}
     >
-      Create distribution
+      Add distribution
     </Button>
   );
 
@@ -49,7 +49,7 @@ const DistributionsPage: FC = () => {
       appearance="positive"
       onClick={() => {
         setSidePanelContent(
-          "Create new mirror",
+          "Add new mirror",
           <Suspense fallback={<LoadingState />}>
             <NewSeriesForm />
           </Suspense>,
@@ -62,7 +62,7 @@ const DistributionsPage: FC = () => {
       className={classNames("u-no-margin--right", className)}
       disabled={0 === distributionsLength}
     >
-      Create mirror
+      Add mirror
     </Button>
   );
 
@@ -73,8 +73,8 @@ const DistributionsPage: FC = () => {
         actions={
           isLargeScreen
             ? [
-                <AddDistributionButton key="create-distribution-button" />,
-                <CreateMirrorButton key="create-mirror-button" />,
+                <AddDistributionButton key="add-distribution-button" />,
+                <CreateMirrorButton key="add-mirror-button" />,
               ]
             : [
                 <span className="p-contextual-menu" key="menu">
