@@ -1,6 +1,5 @@
 import { FormikHelpers, useFormik } from "formik";
 import { FC, useState } from "react";
-import { Button } from "@canonical/react-components";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
@@ -14,7 +13,6 @@ import {
 } from "@/features/package-profiles/types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./PackageProfileConstraintsEditForm.module.scss";
 
@@ -45,7 +43,6 @@ const PackageProfileConstraintsEditForm: FC<
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
   const {
     editPackageProfileConstraintQuery,
     getPackageProfileConstraintsQuery,
@@ -154,16 +151,6 @@ const PackageProfileConstraintsEditForm: FC<
           />
         </>
       )}
-
-      <div className="form-buttons">
-        <Button
-          type="button"
-          className="u-no-margin--bottom"
-          onClick={() => closeSidePanel()}
-        >
-          <span>Close</span>
-        </Button>
-      </div>
     </>
   );
 };

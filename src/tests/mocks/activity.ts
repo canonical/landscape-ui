@@ -3,6 +3,12 @@ import { Activity } from "@/features/activities/types/Activity";
 export const activities: Activity[] = [
   {
     id: 1010,
+    actions: {
+      approvable: true,
+      cancelable: true,
+      reappliable: true,
+      revertable: true,
+    },
     creation_time: "2024-04-15T15:47:07Z",
     creator: {
       name: "John Smith",
@@ -28,6 +34,12 @@ export const activities: Activity[] = [
   },
   {
     id: 1006,
+    actions: {
+      approvable: true,
+      cancelable: true,
+      reappliable: true,
+      revertable: true,
+    },
     creation_time: "2024-04-15T15:46:50Z",
     creator: {
       name: "John Smith",
@@ -53,6 +65,12 @@ export const activities: Activity[] = [
   },
   {
     id: 990,
+    actions: {
+      approvable: true,
+      cancelable: true,
+      reappliable: true,
+      revertable: true,
+    },
     creation_time: "2024-04-15T14:42:34Z",
     creator: {
       name: "John Smith",
@@ -78,6 +96,12 @@ export const activities: Activity[] = [
   },
   {
     id: 782,
+    actions: {
+      approvable: true,
+      cancelable: true,
+      reappliable: true,
+      revertable: true,
+    },
     creation_time: "2024-03-22T12:23:39Z",
     creator: {
       name: "John Smith",
@@ -103,6 +127,12 @@ export const activities: Activity[] = [
   },
   {
     id: 766,
+    actions: {
+      approvable: true,
+      cancelable: true,
+      reappliable: true,
+      revertable: true,
+    },
     creation_time: "2024-03-22T12:16:24Z",
     creator: {
       name: "John Smith",
@@ -128,6 +158,12 @@ export const activities: Activity[] = [
   },
   {
     id: 746,
+    actions: {
+      approvable: true,
+      cancelable: true,
+      reappliable: true,
+      revertable: true,
+    },
     creation_time: "2024-03-22T08:47:54Z",
     creator: {
       name: "John Smith",
@@ -153,6 +189,12 @@ export const activities: Activity[] = [
   },
   {
     id: 731,
+    actions: {
+      approvable: true,
+      cancelable: true,
+      reappliable: true,
+      revertable: true,
+    },
     creation_time: "2024-03-22T08:47:22Z",
     creator: {
       name: "John Smith",

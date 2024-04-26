@@ -183,38 +183,50 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         <>
           <div key="buttons" className="p-segmented-control">
             <div className="p-segmented-control__list">
-              <Button
-                className="p-segmented-control__button"
-                type="button"
-                onClick={() => handleApproveActivitiesDialog(activity)}
-                disabled={approveActivitiesLoading}
-              >
-                Approve
-              </Button>
-              <Button
-                className="p-segmented-control__button"
-                type="button"
-                onClick={() => handleCancelActivitiesDialog(activity)}
-                disabled={cancelActivitiesLoading}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="p-segmented-control__button"
-                type="button"
-                onClick={() => handleUndoActivitiesDialog(activity)}
-                disabled={undoActivitiesLoading}
-              >
-                Undo
-              </Button>
-              <Button
-                className="p-segmented-control__button"
-                type="button"
-                onClick={() => handleRedoActivitiesDialog(activity)}
-                disabled={redoActivitiesLoading}
-              >
-                Redo
-              </Button>
+              {activity.actions?.approvable && (
+                <Button
+                  className="p-segmented-control__button"
+                  type="button"
+                  onClick={() => handleApproveActivitiesDialog(activity)}
+                  disabled={approveActivitiesLoading}
+                >
+                  Approve
+                </Button>
+              )}
+              {activity.actions?.cancelable && (
+                <Button
+                  className="p-segmented-control__button"
+                  type="button"
+                  onClick={() => handleCancelActivitiesDialog(activity)}
+                  disabled={cancelActivitiesLoading}
+                >
+                  {!activity.actions?.approvable &&
+                  !activity.actions?.reappliable &&
+                  !activity.actions?.revertable
+                    ? "Cancel activity"
+                    : "Cancel"}
+                </Button>
+              )}
+              {activity.actions?.revertable && (
+                <Button
+                  className="p-segmented-control__button"
+                  type="button"
+                  onClick={() => handleUndoActivitiesDialog(activity)}
+                  disabled={undoActivitiesLoading}
+                >
+                  Undo
+                </Button>
+              )}
+              {activity.actions?.reappliable && (
+                <Button
+                  className="p-segmented-control__button"
+                  type="button"
+                  onClick={() => handleRedoActivitiesDialog(activity)}
+                  disabled={redoActivitiesLoading}
+                >
+                  Redo
+                </Button>
+              )}
             </div>
           </div>
           <Row className="u-no-padding--left u-no-padding--right">

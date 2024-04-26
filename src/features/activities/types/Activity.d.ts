@@ -11,6 +11,13 @@ export type ActivityStatus =
   | "canceled"
   | "failed";
 
+interface ActivityActions {
+  approvable: boolean;
+  cancelable: boolean;
+  reappliable: boolean;
+  revertable: boolean;
+}
+
 export interface ActivityCommon extends Record<string, unknown> {
   activity_status: ActivityStatus;
   completion_time: string | null;
@@ -22,6 +29,7 @@ export interface ActivityCommon extends Record<string, unknown> {
   result_text: string | null;
   summary: string;
   type: string;
+  actions?: ActivityActions;
 }
 
 interface ScheduleWindow extends Record<string, unknown> {

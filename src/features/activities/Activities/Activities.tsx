@@ -38,17 +38,21 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
   const { getActivitiesQuery } = useActivities();
   const { state }: { state: { activity?: Activity } } = useLocation();
 
+  const handleActivityDetailsOpen = (activity: ActivityCommon) => {
+    setSidePanelContent(
+      activity.summary,
+      <Suspense fallback={<LoadingState />}>
+        <ActivityDetails activityId={activity.id} />
+      </Suspense>,
+    );
+  };
+
   useEffect(() => {
     if (!state?.activity) {
       return;
     }
 
-    setSidePanelContent(
-      state.activity.summary,
-      <Suspense fallback={<LoadingState />}>
-        <ActivityDetails activityId={state.activity.id} />
-      </Suspense>,
-    );
+    handleActivityDetailsOpen(state.activity);
     window.history.replaceState({}, "");
   }, [state?.activity]);
 
@@ -96,15 +100,6 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
     );
   };
 
-  const handleActivityClick = (activity: ActivityCommon) => {
-    setSidePanelContent(
-      activity.summary,
-      <Suspense fallback={<LoadingState />}>
-        <ActivityDetails activityId={activity.id} />
-      </Suspense>,
-    );
-  };
-
   const columns = useMemo<Column<ActivityCommon>[]>(
     () => [
       {
@@ -143,7 +138,7 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
           <Button
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => handleActivityClick(row.original)}
+            onClick={() => handleActivityDetailsOpen(row.original)}
           >
             {row.original.summary}
           </Button>

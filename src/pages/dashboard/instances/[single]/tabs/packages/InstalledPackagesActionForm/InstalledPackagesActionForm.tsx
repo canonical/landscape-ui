@@ -1,12 +1,5 @@
 import { FC } from "react";
-import {
-  Button,
-  Col,
-  Form,
-  Input,
-  Row,
-  Select,
-} from "@canonical/react-components";
+import { Col, Form, Input, Row, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { CommonPackagesActionParams, usePackages } from "@/hooks/usePackages";
 import useDebug from "@/hooks/useDebug";
@@ -264,14 +257,6 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
             />
           )}
         </>
-      )}
-
-      {action === "downgrade" && downgradeOptions.length === 1 && (
-        <div className="form-buttons">
-          <Button type="button" onClick={() => closeSidePanel()}>
-            Close
-          </Button>
-        </div>
       )}
 
       {(["remove", "upgrade"].includes(action) ||
