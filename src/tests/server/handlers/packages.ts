@@ -27,7 +27,6 @@ export default [
       }
 
       const url = new URL(request.url);
-      console.log(request, "request");
       const offset = Number(url.searchParams.get("offset")) ?? 0;
       const limit = Number(url.searchParams.get("limit"));
 

@@ -1,4 +1,4 @@
-import { Instance } from "@/types/Instance";
+import { Instance, PendingInstance } from "@/types/Instance";
 
 export const instances: Instance[] = [
   {
@@ -493,5 +493,18 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+  },
+];
+
+export const pendingInstances: PendingInstance[] = [
+  {
+    id: 28,
+    title: "eee",
+    hostname: "ptest.lxd",
+    creation_time: "2024-04-26T16:39:36Z",
+    vm_info: "",
+    container_info: "lxc",
+    client_tags: [],
+    access_group: null,
   },
 ];

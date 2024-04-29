@@ -4,14 +4,12 @@ import React, { FC, useMemo } from "react";
 import { CellProps, Column } from "react-table";
 
 interface ProcessesListProps {
-  isLoading: boolean;
   processes: Process[];
   selectedPids: number[];
   setSelectedPids: (pids: number[]) => void;
 }
 
 const ProcessesList: FC<ProcessesListProps> = ({
-  isLoading,
   processes,
   selectedPids,
   setSelectedPids,
@@ -104,7 +102,7 @@ const ProcessesList: FC<ProcessesListProps> = ({
     <ModularTable
       columns={columns}
       data={processes}
-      emptyMsg={!isLoading ? "No processes" : undefined}
+      emptyMsg="No processes found"
     />
   );
 };
