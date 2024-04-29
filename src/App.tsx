@@ -1,71 +1,71 @@
 import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import FetchProvider from "./context/fetch";
-import FetchOldProvider from "./context/fetchOld";
-import useAuth from "./hooks/useAuth";
-import DashboardPage from "./pages/dashboard";
-import RepositoryPage from "./pages/dashboard/repositories";
-import LoadingState from "./components/layout/LoadingState";
-import { ROOT_PATH } from "./constants";
-import AppNotification from "./components/layout/AppNotification";
-import useNotify from "./hooks/useNotify";
+import FetchProvider from "@/context/fetch";
+import FetchOldProvider from "@/context/fetchOld";
+import useAuth from "@/hooks/useAuth";
+import DashboardPage from "@/pages/dashboard";
+import RepositoryPage from "@/pages/dashboard/repositories";
+import LoadingState from "@/components/layout/LoadingState";
+import { ROOT_PATH } from "@/constants";
+import AppNotification from "@/components/layout/AppNotification";
+import useNotify from "@/hooks/useNotify";
 
-const PageNotFound = lazy(() => import("./pages/PageNotFound"));
-const LoginPage = lazy(() => import("./pages/auth/login"));
+const PageNotFound = lazy(() => import("@/pages/PageNotFound"));
+const LoginPage = lazy(() => import("@/pages/auth/login"));
 const DistributionsPage = lazy(
-  () => import("./pages/dashboard/repositories/mirrors"),
+  () => import("@/pages/dashboard/repositories/mirrors"),
 );
 const RepositoryProfilesPage = lazy(
-  () => import("./pages/dashboard/repositories/profiles"),
+  () => import("@/pages/dashboard/profiles/repository-profiles"),
 );
 const GPGKeysPage = lazy(
-  () => import("./pages/dashboard/repositories/gpg-keys"),
+  () => import("@/pages/dashboard/repositories/gpg-keys"),
 );
 const APTSourcesPage = lazy(
-  () => import("./pages/dashboard/repositories/apt-sources"),
+  () => import("@/pages/dashboard/repositories/apt-sources"),
 );
 const InstancesPage = lazy(
-  () => import("./pages/dashboard/instances/InstancesPage"),
+  () => import("@/pages/dashboard/instances/InstancesPage"),
 );
 const SingleInstance = lazy(
   () => import("@/pages/dashboard/instances/[single]"),
 );
-const ActivitiesPage = lazy(() => import("./pages/dashboard/activities"));
-const ScriptsPage = lazy(() => import("./pages/dashboard/scripts"));
+const ActivitiesPage = lazy(() => import("@/pages/dashboard/activities"));
+const ScriptsPage = lazy(() => import("@/pages/dashboard/scripts"));
 const SavedSearchesPage = lazy(
-  () => import("./pages/dashboard/instances/saved-searches"),
+  () => import("@/pages/dashboard/instances/saved-searches"),
 );
-const AccountPage = lazy(() => import("./pages/dashboard/account"));
-const ProfilesPage = lazy(() => import("./pages/dashboard/profiles"));
+const AccountPage = lazy(() => import("@/pages/dashboard/account"));
+const ProfilesPage = lazy(() => import("@/pages/dashboard/profiles"));
 const PackageProfilesPage = lazy(
-  () => import("./pages/dashboard/profiles/package-profiles"),
+  () => import("@/pages/dashboard/profiles/package-profiles"),
 );
 const RemovalProfilesPage = lazy(
-  () => import("./pages/dashboard/profiles/removal-profiles"),
+  () => import("@/pages/dashboard/profiles/removal-profiles"),
 );
 const UpgradeProfilesPage = lazy(
-  () => import("./pages/dashboard/profiles/upgrade-profiles"),
+  () => import("@/pages/dashboard/profiles/upgrade-profiles"),
 );
 const WSLProfilesPage = lazy(
-  () => import("./pages/dashboard/profiles/wsl-profiles"),
+  () => import("@/pages/dashboard/profiles/wsl-profiles"),
 );
-const SettingsPage = lazy(() => import("./pages/dashboard/settings"));
+const SettingsPage = lazy(() => import("@/pages/dashboard/settings"));
 const AccessGroupsPage = lazy(
-  () => import("./pages/dashboard/settings/access-group"),
+  () => import("@/pages/dashboard/settings/access-group"),
 );
 const AdministratorsPage = lazy(
-  () => import("./pages/dashboard/settings/administrators"),
+  () => import("@/pages/dashboard/settings/administrators"),
 );
-const RolesPage = lazy(() => import("./pages/dashboard/settings/roles"));
-const EventsLogPage = lazy(() => import("./pages/dashboard/events-log"));
-const UserPage = lazy(() => import("./pages/dashboard/user"));
+const RolesPage = lazy(() => import("@/pages/dashboard/settings/roles"));
+const EventsLogPage = lazy(() => import("@/pages/dashboard/events-log"));
+const UserPage = lazy(() => import("@/pages/dashboard/user"));
 const AlertNotificationsPage = lazy(
-  () => import("./pages/dashboard/alert-notifications"),
+  () => import("@/pages/dashboard/alert-notifications"),
 );
-const OverviewPage = lazy(() => import("./pages/dashboard/overview"));
+const OverviewPage = lazy(() => import("@/pages/dashboard/overview"));
 const GeneralOrganisationSettings = lazy(
-  () => import("./pages/dashboard/settings/general"),
+  () => import("@/pages/dashboard/settings/general"),
 );
 
 interface AuthRouteProps {

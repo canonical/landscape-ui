@@ -1,30 +1,36 @@
 import { FC, lazy, Suspense } from "react";
-import PageHeader from "../../../../components/layout/PageHeader";
-import PageMain from "../../../../components/layout/PageMain";
-import PageContent from "../../../../components/layout/PageContent";
 import { Button } from "@canonical/react-components";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import LoadingState from "../../../../components/layout/LoadingState";
-import EmptyState from "../../../../components/layout/EmptyState";
-import useRepositoryProfiles from "../../../../hooks/useRepositoryProfiles";
-import ProfileList from "./ProfileList";
+import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
+import PageContent from "@/components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
+import PageMain from "@/components/layout/PageMain";
+import {
+  RepositoryProfileList,
+  useRepositoryProfiles,
+} from "@/features/repository-profiles";
+import useSidePanel from "@/hooks/useSidePanel";
 
-const AddProfileForm = lazy(() => import("./AddProfileForm"));
+const RepositoryProfileForm = lazy(() =>
+  import("@/features/repository-profiles").then((module) => ({
+    default: module.RepositoryProfileForm,
+  })),
+);
 
-const ProfilesPage: FC = () => {
+const RepositoryProfilesPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
 
   const { data: repositoryProfilesResponse, isLoading } =
     getRepositoryProfilesQuery();
 
-  const repositoryProfiles = repositoryProfilesResponse?.data ?? [];
+  const repositoryProfiles = repositoryProfilesResponse?.data.results ?? [];
 
   const handleAddProfile = () => {
     setSidePanelContent(
       "Add repository profile",
       <Suspense fallback={<LoadingState />}>
-        <AddProfileForm />
+        <RepositoryProfileForm action="add" />
       </Suspense>,
     );
   };
@@ -77,11 +83,11 @@ const ProfilesPage: FC = () => {
           />
         )}
         {!isLoading && repositoryProfiles.length > 0 && (
-          <ProfileList repositoryProfiles={repositoryProfiles} />
+          <RepositoryProfileList repositoryProfiles={repositoryProfiles} />
         )}
       </PageContent>
     </PageMain>
   );
 };
 
-export default ProfilesPage;
+export default RepositoryProfilesPage;

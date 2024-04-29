@@ -11,6 +11,7 @@ export interface PocketCommonProps {
     name: string;
   };
   gpg_key: GPGKey;
+  id: number;
   include_udeb: boolean;
   name: string;
   package_count: number;

@@ -1,6 +1,6 @@
-import { Pocket } from "./Pocket";
-import { Distribution } from "./Distribution";
-import { Series } from "./Series";
+import { Pocket } from "@/types/Pocket";
+import { Distribution } from "@/types/Distribution";
+import { Series } from "@/types/Series";
 
 type RepositoryProfilePocket = Pocket & {
   distribution: Pick<Distribution, "access_group" | "creation_time" | "name">;
