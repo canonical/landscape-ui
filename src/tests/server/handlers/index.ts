@@ -10,6 +10,7 @@ import tag from "./tag";
 import upgradeProfile from "./upgradeProfile";
 import activity from "./activity";
 import packages from "./packages";
+import process from "./process";
 
 export default [
   ...auth,
@@ -18,6 +19,7 @@ export default [
   ...snap,
   ...user,
   ...activity,
+  ...process,
   ...packages,
   ...gpgKey,
   ...repo,

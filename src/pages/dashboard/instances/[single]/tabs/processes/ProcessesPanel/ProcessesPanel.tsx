@@ -1,3 +1,5 @@
+import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
 import { ProcessesHeader, ProcessesList } from "@/features/processes";
 import useDebug from "@/hooks/useDebug";
@@ -45,21 +47,38 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ instanceId }) => {
 
   return (
     <>
-      <ProcessesHeader
-        instanceId={instanceId}
-        onPageChange={handlePaginate}
-        onSearch={(searchText) => {
-          setSearch(searchText);
-        }}
-        selectedPids={selectedPids}
-        setSelectedPids={(pids) => setSelectedPids(pids)}
-      />
-      <ProcessesList
-        isLoading={isLoading}
-        processes={processes}
-        setSelectedPids={(pids) => setSelectedPids(pids)}
-        selectedPids={selectedPids}
-      />
+      {!search && isLoading && currentPage === 1 && pageSize === 20 && (
+        <LoadingState />
+      )}
+      {!isLoading &&
+        !search &&
+        (!getProcessesQueryResult ||
+          getProcessesQueryResult.data.results.length === 0) && (
+          <EmptyState icon="connected" title="No processes running" />
+        )}
+
+      {(search ||
+        currentPage !== 1 ||
+        pageSize !== 20 ||
+        (getProcessesQueryResult &&
+          getProcessesQueryResult?.data.results.length > 0)) && (
+        <>
+          <ProcessesHeader
+            instanceId={instanceId}
+            onPageChange={handlePaginate}
+            onSearch={(searchText) => {
+              setSearch(searchText);
+            }}
+            selectedPids={selectedPids}
+            setSelectedPids={(pids) => setSelectedPids(pids)}
+          />
+          <ProcessesList
+            processes={processes}
+            setSelectedPids={(pids) => setSelectedPids(pids)}
+            selectedPids={selectedPids}
+          />
+        </>
+      )}
       <TablePagination
         currentPage={currentPage}
         totalItems={totalProcesses}

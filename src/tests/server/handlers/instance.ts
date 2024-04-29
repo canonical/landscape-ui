@@ -1,13 +1,13 @@
 import { http, HttpResponse } from "msw";
-import { API_URL } from "@/constants";
+import { API_URL, API_URL_OLD } from "@/constants";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { GroupsResponse } from "@/types/User";
 import { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
 import { GetInstancesParams } from "@/hooks/useInstances";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { Instance } from "@/types/Instance";
+import { Instance, PendingInstance } from "@/types/Instance";
 import { generatePaginatedResponse } from "./_helpers";
-import { instances } from "@/tests/mocks/instance";
+import { instances, pendingInstances } from "@/tests/mocks/instance";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
@@ -56,6 +56,13 @@ export default [
     `${API_URL}computers/:computerId/users/:username/groups`,
     () => {
       return HttpResponse.json({ groups: userGroups });
+    },
+  ),
+  // @ts-ignore-next-line
+  http.get<never, never, PendingInstance[]>(
+    `${API_URL_OLD}GetPendingComputers`,
+    () => {
+      return HttpResponse.json(pendingInstances);
     },
   ),
 ];

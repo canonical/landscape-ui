@@ -7,7 +7,7 @@ import { ApiError } from "@/types/ApiError";
 import { Activity } from "@/features/activities";
 import { Process } from "@/types/Process";
 
-interface GetProcessesParams {
+export interface GetProcessesParams {
   computer_id: number;
   limit?: number;
   offset?: number;

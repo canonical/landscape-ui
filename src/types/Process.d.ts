@@ -6,7 +6,6 @@ export interface Process extends Record<string, unknown> {
   name: string;
   pid: number;
   start_time: string;
-  state: number;
-  uid: number;
+  state: string;
   vm_size: number;
 }
