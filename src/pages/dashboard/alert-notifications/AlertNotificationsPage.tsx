@@ -9,12 +9,57 @@ import EmptyState from "@/components/layout/EmptyState";
 import { Button } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
 import { useNavigate } from "react-router-dom";
+import useInstances from "@/hooks/useInstances";
+import useDebug from "@/hooks/useDebug";
 
 const AlertNotificationsPage: FC = () => {
   const navigate = useNavigate();
+  const debug = useDebug();
   const { getAlertsSummaryQuery } = useAlerts();
-  const { data: alertsSummaryData, isLoading } = getAlertsSummaryQuery();
-  const alerts = alertsSummaryData?.data.alerts_summary || [];
+  const { getPendingInstancesQuery } = useInstances();
+
+  const {
+    data: alertsSummaryData,
+    isLoading,
+    error: getAlertsSummaryQueryError,
+  } = getAlertsSummaryQuery();
+  const {
+    data: getPendingInstancesQueryResult,
+    error: getPendingInstancesQueryError,
+    isLoading: getPendingInstancesQueryLoading,
+  } = getPendingInstancesQuery(
+    {},
+    {
+      enabled: !!alertsSummaryData?.data.alerts_summary.find(
+        (alert) => alert.alert_type === "PendingComputersAlert",
+      ),
+    },
+  );
+
+  if (getAlertsSummaryQueryError) {
+    debug(getAlertsSummaryQueryError);
+  }
+  if (getPendingInstancesQueryError) {
+    debug(getPendingInstancesQueryError);
+  }
+
+  const alerts =
+    alertsSummaryData?.data.alerts_summary.filter(
+      (alert) => alert.alert_type !== "PendingComputersAlert",
+    ) || [];
+  const pendingInstances = getPendingInstancesQueryResult?.data || [];
+
+  const getLoadingPending = () => {
+    const hasPending = alertsSummaryData?.data.alerts_summary.find(
+      (alert) => alert.alert_type === "PendingComputersAlert",
+    );
+    if (hasPending) {
+      return getPendingInstancesQueryLoading;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <PageMain>
       <PageHeader title="Alerts" />
@@ -40,8 +85,11 @@ const AlertNotificationsPage: FC = () => {
             ]}
           />
         )}
-        {!isLoading && alerts.length > 0 && (
-          <AlertNotificationsList alerts={alerts} />
+        {!isLoading && !getLoadingPending() && alerts.length > 0 && (
+          <AlertNotificationsList
+            alerts={alerts}
+            pendingInstances={pendingInstances}
+          />
         )}
       </PageContent>
     </PageMain>
