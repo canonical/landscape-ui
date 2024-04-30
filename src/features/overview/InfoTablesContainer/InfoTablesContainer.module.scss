@@ -21,6 +21,12 @@
   text-align: right;
 }
 
+.link {
+  &:visited {
+    color: $color-link;
+  }
+}
+
 .description {
   width: 50%;
 }
