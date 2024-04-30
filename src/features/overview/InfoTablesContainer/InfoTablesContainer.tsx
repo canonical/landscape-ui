@@ -111,6 +111,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
         0,
       );
       return {
+        id: instance.id,
         instanceName: instance.hostname,
         affectedPackages: affectedPackages,
       };
@@ -214,8 +215,8 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
             accessor: "instanceName",
             Cell: ({ row }: CellProps<InstancesUpgradesTableItem>) => (
               <Link
-                to={`${ROOT_PATH}instances/${row.original.instanceName}`}
-                className="u-no-margin--bottom"
+                to={`${ROOT_PATH}instances/${row.original.id}`}
+                className={classNames("u-no-margin--bottom", classes.link)}
               >
                 {row.original.instanceName}
               </Link>
@@ -239,7 +240,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
             Cell: ({ row }: CellProps<OldPackage>) => (
               <Link
                 to={`${ROOT_PATH}instances`}
-                className="u-no-margin--bottom"
+                className={classNames("u-no-margin--bottom", classes.link)}
               >
                 {row.original.computers.upgrades.length}
               </Link>
@@ -259,7 +260,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
             Cell: ({ row }: CellProps<Usn>) => (
               <Link
                 to={`${ROOT_PATH}instances`}
-                className="u-no-margin--bottom"
+                className={classNames("u-no-margin--bottom", classes.link)}
               >
                 {row.original.computers_count}
               </Link>
@@ -307,7 +308,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
           <Link
             to={`${ROOT_PATH}activities`}
             state={{ activity: row.original as Activity }}
-            className="u-no-margin--bottom"
+            className={classNames("u-no-margin--bottom", classes.link)}
           >
             {row.original.summary}
           </Link>
@@ -316,6 +317,9 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
       {
         Header: "Creator",
         accessor: "creator.name",
+        Cell: ({ row }: CellProps<ActivityCommon>) => (
+          <>{row.original.creator?.name ?? "-"}</>
+        ),
       },
       {
         Header: "Created at",

@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from "react";
+import { FC, Fragment, ReactNode, useState } from "react";
 import classes from "./InfoItem.module.scss";
 import classNames from "classnames";
 import { Button } from "@canonical/react-components";
@@ -37,11 +37,11 @@ const getContentDisplayed = (
               {props.value
                 .replace(/\\r/g, "")
                 .split("\\n")
-                .map((str) => (
-                  <>
+                .map((str, index) => (
+                  <Fragment key={index}>
                     {str}
                     <br />
-                  </>
+                  </Fragment>
                 ))}
             </code>
           </pre>

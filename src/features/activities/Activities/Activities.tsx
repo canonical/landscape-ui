@@ -1,6 +1,5 @@
 import moment from "moment/moment";
-import { FC, lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { FC, lazy, Suspense, useMemo, useState } from "react";
 import { CellProps, Column } from "react-table";
 import {
   Button,
@@ -13,10 +12,13 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import ActivitiesEmptyState from "@/features/activities/ActivitiesEmptyState";
 import ActivitiesHeader from "@/features/activities/ActivitiesHeader";
 import { ACTIVITY_STATUSES } from "@/features/activities/constants";
-import { useActivities } from "@/features/activities/hooks";
+import {
+  useActivities,
+  useOpenActivityDetails,
+} from "@/features/activities/hooks";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Activity, ActivityCommon } from "@/features/activities/types";
+import { ActivityCommon } from "@/features/activities/types";
 import classes from "./Activities.module.scss";
 
 const ActivityDetails = lazy(
@@ -36,7 +38,6 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getActivitiesQuery } = useActivities();
-  const { state }: { state: { activity?: Activity } } = useLocation();
 
   const handleActivityDetailsOpen = (activity: ActivityCommon) => {
     setSidePanelContent(
@@ -47,14 +48,7 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
     );
   };
 
-  useEffect(() => {
-    if (!state?.activity) {
-      return;
-    }
-
-    handleActivityDetailsOpen(state.activity);
-    window.history.replaceState({}, "");
-  }, [state?.activity]);
+  useOpenActivityDetails(handleActivityDetailsOpen);
 
   const handlePaginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
