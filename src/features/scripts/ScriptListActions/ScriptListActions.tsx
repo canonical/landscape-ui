@@ -1,4 +1,10 @@
-import { ComponentProps, FC, lazy, Suspense } from "react";
+import {
+  ComponentProps,
+  FC,
+  lazy,
+  MouseEvent as ReactMouseEvent,
+  Suspense,
+} from "react";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
@@ -24,7 +30,12 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
 
   const { mutateAsync: removeScript } = removeScriptQuery;
 
-  const handleScriptRun = (script: Script) => {
+  const handleScriptRun = (
+    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
+    script: Script,
+  ) => {
+    event.currentTarget.blur();
+
     setSidePanelContent(
       `Run "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
@@ -33,10 +44,15 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
     );
   };
 
-  const handleScript = (scriptProps: ComponentProps<typeof SingleScript>) => {
+  const handleScript = (
+    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
+    scriptProps: ComponentProps<typeof SingleScript>,
+  ) => {
     if (scriptProps.action === "add") {
       return;
     }
+
+    event.currentTarget.blur();
 
     const title =
       "copy" === scriptProps.action
@@ -94,7 +110,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
             appearance="base"
             className="u-no-margin--bottom u-no-padding--left"
             aria-label={`Copy ${script.title} script`}
-            onClick={() => handleScriptRun(script)}
+            onClick={(event) => handleScriptRun(event, script)}
           >
             <Icon name="unit-running" className="u-no-margin--left" />
           </Button>
@@ -108,7 +124,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
             appearance="base"
             className="u-no-margin--bottom u-no-padding--left"
             aria-label={`Copy ${script.title} script`}
-            onClick={() => handleScript({ action: "copy", script: script })}
+            onClick={(event) => handleScript(event, { action: "copy", script })}
           >
             <Icon name="canvas" className="u-no-margin--left" />
           </Button>
@@ -122,7 +138,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
             appearance="base"
             className="u-no-margin--bottom u-no-padding--left"
             aria-label={`Edit ${script.title} script`}
-            onClick={() => handleScript({ action: "edit", script: script })}
+            onClick={(event) => handleScript(event, { action: "edit", script })}
           >
             <Icon name="edit" className="u-no-margin--left" />
           </Button>

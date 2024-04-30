@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { FC, lazy, Suspense } from "react";
+import { FC, lazy, MouseEvent as ReactMouseEvent, Suspense } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { Button, Tooltip } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
@@ -142,7 +142,12 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     }
   };
 
-  const handleEditPocket = (pocket: Pocket) => {
+  const handleEditPocket = (
+    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
+    pocket: Pocket,
+  ) => {
+    event.currentTarget.blur();
+
     setSidePanelContent(
       `Edit ${pocket.name} pocket`,
       <Suspense fallback={<LoadingState />}>
@@ -199,7 +204,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
               "u-no-padding--right": isLargerScreen,
             })}
             aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-            onClick={() => handleEditPocket(pocket)}
+            onClick={(event) => handleEditPocket(event, pocket)}
             disabled={syncPocketRefs.some(
               (ref) => ref.distributionName === distributionName,
             )}

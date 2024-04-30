@@ -1,4 +1,10 @@
-import { FC, lazy, Suspense, useMemo } from "react";
+import {
+  FC,
+  lazy,
+  MouseEvent as ReactMouseEvent,
+  Suspense,
+  useMemo,
+} from "react";
 import { CellProps, Column } from "react-table";
 import {
   Button,
@@ -46,7 +52,12 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
     value: name,
   }));
 
-  const handleEditProfile = (profile: RepositoryProfile) => {
+  const handleEditProfile = (
+    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
+    profile: RepositoryProfile,
+  ) => {
+    event.currentTarget.blur();
+
     setSidePanelContent(
       `Edit ${profile.title}`,
       <Suspense fallback={<LoadingState />}>
@@ -120,9 +131,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
                   appearance="base"
                   className="u-no-margin--bottom u-no-padding--left"
                   aria-label={`Edit ${row.original.name} repository profile`}
-                  onClick={() => {
-                    handleEditProfile(row.original);
-                  }}
+                  onClick={(event) => handleEditProfile(event, row.original)}
                 >
                   <i className="p-icon--edit u-no-margin--left" />
                 </Button>
