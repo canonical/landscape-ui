@@ -100,10 +100,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     formik.setValues({
       access_group: props.profile.access_group,
       all_computers: props.profile.all_computers,
-      apt_sources:
-        getAPTSourcesResult?.data
-          .filter(({ name }) => props.profile.apt_sources.includes(name))
-          .map(({ id }) => id) ?? [],
+      apt_sources: props.profile.apt_sources,
       description: props.profile.description,
       pockets: props.profile.pockets.map(({ id }) => id),
       tags: props.profile.tags,
