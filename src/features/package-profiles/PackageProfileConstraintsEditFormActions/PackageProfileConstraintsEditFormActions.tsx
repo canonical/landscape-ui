@@ -113,21 +113,21 @@ const PackageProfileConstraintsEditFormActions: FC<
         type="button"
         hasIcon
         className="u-no-margin--right"
-        onClick={handleConstraintsAdd}
-        aria-label="Add new constraint"
-      >
-        <Icon name="plus" />
-        <span>Add constraints</span>
-      </Button>
-      <Button
-        type="button"
-        hasIcon
         disabled={selectedIds.length === 0 || formik.values.id !== 0}
         onClick={handleConstraintsRemoveDialog}
         aria-label={`Remove selected ${selectedIds.length > 1 ? "constraints" : "constraint"}`}
       >
         <Icon name="delete" />
         <span>Remove</span>
+      </Button>
+      <Button
+        type="button"
+        hasIcon
+        onClick={handleConstraintsAdd}
+        aria-label="Add new constraint"
+      >
+        <Icon name="plus" />
+        <span>Add constraints</span>
       </Button>
     </div>
   );

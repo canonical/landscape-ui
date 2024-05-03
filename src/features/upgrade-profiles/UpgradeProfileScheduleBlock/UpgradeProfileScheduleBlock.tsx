@@ -177,6 +177,8 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
         <div className={classes.windowInputContainer}>
           <Input
             type="number"
+            inputMode="numeric"
+            min={0}
             label="Deliver delay window"
             labelClassName="u-off-screen"
             className={classes.windowInput}

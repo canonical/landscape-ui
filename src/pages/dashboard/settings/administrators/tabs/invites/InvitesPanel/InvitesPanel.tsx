@@ -3,9 +3,9 @@ import { FC, HTMLProps, useMemo } from "react";
 import { Cell, CellProps, Column, TableCellProps } from "react-table";
 import { Button, ModularTable } from "@canonical/react-components";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useInvitations from "@/hooks/useAdministrators";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
-import useInvitations from "@/hooks/useInvitations";
 import useNotify from "@/hooks/useNotify";
 import { Invitation } from "@/types/Invitation";
 
@@ -19,7 +19,10 @@ const InvitesPanel: FC = () => {
   const { data: getInvitationsQueryResult } = getInvitationsQuery();
 
   const invitations = useMemo(
-    () => getInvitationsQueryResult?.data.results ?? [],
+    () =>
+      getInvitationsQueryResult?.data.results.sort((a, b) =>
+        moment(b.creation_time).diff(moment(a.creation_time)),
+      ) ?? [],
     [getInvitationsQueryResult],
   );
 
@@ -100,7 +103,7 @@ const InvitesPanel: FC = () => {
       },
       {
         accessor: "creation_time",
-        Header: "Created",
+        Header: "Invited",
         Cell: ({ row }: CellProps<Invitation>) =>
           moment(row.original.creation_time).format(DISPLAY_DATE_TIME_FORMAT),
       },
@@ -148,7 +151,7 @@ const InvitesPanel: FC = () => {
     } else if (cell.column.id === "email") {
       cellProps["aria-label"] = "Email";
     } else if (cell.column.id === "creation_time") {
-      cellProps["aria-label"] = "Created";
+      cellProps["aria-label"] = "Invited";
     } else if (cell.column.id === "expiration_time") {
       cellProps["aria-label"] = "Expires";
     } else if (cell.column.id === "actions") {

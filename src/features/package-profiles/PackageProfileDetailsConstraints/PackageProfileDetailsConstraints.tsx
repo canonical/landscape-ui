@@ -40,7 +40,7 @@ const PackageProfileDetailsConstraints: FC<
 
   const handlePackageConstraintsChange = () => {
     setSidePanelContent(
-      "Change package constraints",
+      `Change "${profile.name}" profile's constraints`,
       <Suspense fallback={<LoadingState />}>
         <PackageProfileConstraintsEditForm profile={profile} />
       </Suspense>,

@@ -472,7 +472,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
               ? formik.errors.deliver_after
               : undefined
           }
-          help="Format MM-DD-YYYY HH:mm"
         />
       )}
 

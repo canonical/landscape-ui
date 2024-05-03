@@ -161,14 +161,18 @@ const InstancesPanel: FC<InstancesPanelProps> = ({ instance }) => {
       {
         accessor: "distribution",
         Header: "OS",
-        Cell: ({ row }: CellProps<InstanceWithoutRelation>) =>
-          `Ubuntu\xA0${row.original.distribution}`,
+        Cell: ({ row: { original } }: CellProps<InstanceWithoutRelation>) =>
+          original.distribution
+            ? `Ubuntu\xA0${original.distribution}`
+            : "Unknown",
       },
       {
         accessor: "default",
         Header: "Default",
         Cell: ({ row }: CellProps<InstanceWithoutRelation>) => (
-          <span>{row.original.default ? "Yes" : "No"}</span>
+          <span>
+            {row.original.title === instance.default_child ? "Yes" : "No"}
+          </span>
         ),
       },
       {

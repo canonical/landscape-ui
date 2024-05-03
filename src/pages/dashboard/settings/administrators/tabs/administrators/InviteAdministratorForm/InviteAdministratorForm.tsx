@@ -1,6 +1,5 @@
 import { useFormik } from "formik";
 import { FC } from "react";
-import * as Yup from "yup";
 import { Form, Input } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
@@ -8,8 +7,9 @@ import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
-import { SelectOption } from "@/types/SelectOption";
 import useSidePanel from "@/hooks/useSidePanel";
+import { SelectOption } from "@/types/SelectOption";
+import { getValidationSchema } from "./helpers";
 
 interface FormProps {
   email: string;
@@ -23,39 +23,37 @@ const INITIAL_VALUES: FormProps = {
   roles: [],
 };
 
-const VALIDATION_SCHEMA = Yup.object().shape({
-  email: Yup.string()
-    .email("Please provide a valid email address")
-    .required("This field is required."),
-  name: Yup.string().required("This field is required."),
-  roles: Yup.array().of(Yup.string()),
-});
-
 const InviteAdministratorForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { inviteAdministratorQuery } = useAdministrators();
+  const { getInvitationsQuery, inviteAdministratorQuery } = useAdministrators();
   const { getRolesQuery } = useRoles();
   const { closeSidePanel } = useSidePanel();
 
+  const { data: getInvitationsQueryResult } = getInvitationsQuery();
+
   const { mutateAsync: inviteAdministrator } = inviteAdministratorQuery;
+
+  const handleSubmit = async (values: FormProps) => {
+    try {
+      await inviteAdministrator(values);
+
+      closeSidePanel();
+      notify.success({
+        title: "You sent an administrator invite",
+        message: `${values.name} will receive an invitation email`,
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
 
   const formik = useFormik({
     initialValues: INITIAL_VALUES,
-    validationSchema: VALIDATION_SCHEMA,
-    onSubmit: async (values) => {
-      try {
-        await inviteAdministrator(values);
-
-        closeSidePanel();
-        notify.success({
-          title: "You sent an administrator invite",
-          message: `${values.name} will receive an invitation email`,
-        });
-      } catch (error) {
-        debug(error);
-      }
-    },
+    validationSchema: getValidationSchema(
+      getInvitationsQueryResult?.data.results ?? [],
+    ),
+    onSubmit: handleSubmit,
   });
 
   const { data: getRolesQueryResult } = getRolesQuery();

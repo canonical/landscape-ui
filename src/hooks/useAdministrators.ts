@@ -6,6 +6,8 @@ import useFetchOld from "./useFetchOld";
 import { Administrator } from "@/types/Administrator";
 import { Activity } from "@/features/activities";
 import useFetch from "./useFetch";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { Invitation } from "@/types/Invitation";
 
 interface InviteAdministratorParams {
   email: string;
@@ -20,6 +22,14 @@ interface DisableAdministratorParams {
 interface EditAdministratorParams {
   id: number;
   roles: string[];
+}
+
+interface GetInvitationsParams {
+  id?: number;
+}
+
+interface InvitationActionParams {
+  id: number;
 }
 
 export default function useAdministrators() {
@@ -44,7 +54,7 @@ export default function useAdministrators() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("InviteAdministrator", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["administrators"]),
+    onSuccess: () => queryClient.invalidateQueries(["invitations"]),
   });
 
   const disableAdministratorQuery = useMutation<
@@ -71,10 +81,44 @@ export default function useAdministrators() {
       ]),
   });
 
+  const getInvitationsQuery: QueryFnType<
+    AxiosResponse<ApiPaginatedResponse<Invitation>>,
+    GetInvitationsParams
+  > = (queryParams, config = {}) =>
+    useQuery<
+      AxiosResponse<ApiPaginatedResponse<Invitation>>,
+      AxiosError<ApiError>
+    >({
+      queryKey: ["invitations", queryParams],
+      queryFn: () => authFetch!.get("/invitations", { params: queryParams }),
+      ...config,
+    });
+
+  const revokeInvitationQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    InvitationActionParams
+  >({
+    mutationFn: (params) => authFetch!.delete(`/invitations/${params.id}`),
+    onSuccess: () => queryClient.invalidateQueries(["invitations"]),
+  });
+
+  const resendInvitationQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    InvitationActionParams
+  >({
+    mutationFn: (params) => authFetch!.post(`/invitations/${params.id}`),
+    onSuccess: () => queryClient.invalidateQueries(["invitations"]),
+  });
+
   return {
     getAdministratorsQuery,
     inviteAdministratorQuery,
     disableAdministratorQuery,
     editAdministratorQuery,
+    getInvitationsQuery,
+    revokeInvitationQuery,
+    resendInvitationQuery,
   };
 }

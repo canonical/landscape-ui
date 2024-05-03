@@ -50,7 +50,12 @@ const SingleInstanceContainer: FC = () => {
       with_annotations: true,
       with_grouped_hardware: true,
     },
-    { enabled: !!instanceId },
+    {
+      enabled:
+        !!instanceId &&
+        (!userAccountRef.current ||
+          userAccountRef.current === user?.current_account),
+    },
   );
 
   const instance = getSingleInstanceQueryResult?.data ?? null;

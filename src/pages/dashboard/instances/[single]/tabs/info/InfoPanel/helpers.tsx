@@ -34,7 +34,7 @@ export const getInstanceInfoItems = (
     },
     {
       label: "Distribution",
-      value: instance.distribution ?? "---",
+      value: instance.distribution ?? "Unknown",
     },
     {
       label: "Access group",

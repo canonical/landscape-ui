@@ -202,7 +202,6 @@ const ScriptRunForm: FC<ScriptRunFormProps> = ({ script }) => {
               ? formik.errors.deliver_after
               : undefined
           }
-          help="Format MM-DD-YYYY HH:mm"
         />
       )}
 

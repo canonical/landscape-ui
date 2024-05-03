@@ -149,7 +149,7 @@ const InstancesPage: FC = () => {
                 disabled={rebootInstancesLoading || 0 === selected.length}
               >
                 <Icon name="restart" />
-                <span>Restart</span>
+                <span>Reboot</span>
               </Button>
               <Button
                 className="p-segmented-control__button"
@@ -173,10 +173,16 @@ const InstancesPage: FC = () => {
                 className="p-segmented-control__button"
                 type="button"
                 onClick={handleUpgradesRequest}
-                disabled={0 === selected.length}
+                disabled={
+                  0 === selected.length ||
+                  selected.every(
+                    ({ upgrades }) =>
+                      !upgrades || (!upgrades.regular && !upgrades.security),
+                  )
+                }
               >
-                <Icon name="begin-downloading" />
-                <span>Request upgrades</span>
+                <Icon name="change-version" />
+                <span>Upgrade</span>
               </Button>
             </div>
           </div>,

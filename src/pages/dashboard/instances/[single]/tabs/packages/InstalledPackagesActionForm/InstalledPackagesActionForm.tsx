@@ -203,7 +203,6 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
               type="datetime-local"
               label="Deliver after"
               labelClassName="u-off-screen"
-              help="Format MM-DD-YYYY HH:mm"
               {...formik.getFieldProps("deliver_after")}
               error={
                 formik.touched.deliver_after && formik.errors.deliver_after
@@ -218,27 +217,26 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           <div className={classes.radioGroup}>
             <Input
               type="radio"
-              label="Yes"
+              label="No"
               name="randomize_delivery"
-              checked={formik.values.randomize_delivery}
-              onChange={() => {
-                formik.setFieldValue("randomize_delivery", true);
+              checked={!formik.values.randomize_delivery}
+              onChange={async () => {
+                await formik.setFieldValue("randomize_delivery", false);
+                await formik.setFieldValue("deliver_delay_window", 0);
               }}
             />
             <Input
               type="radio"
-              label="No"
+              label="Yes"
               name="randomize_delivery"
-              checked={!formik.values.randomize_delivery}
-              onChange={() => {
-                formik.setFieldValue("randomize_delivery", false);
-                formik.setFieldValue("deliver_delay_window", 0);
-              }}
+              checked={formik.values.randomize_delivery}
+              onChange={() => formik.setFieldValue("randomize_delivery", true)}
             />
           </div>
-          {!formik.values.randomize_delivery && (
+          {formik.values.randomize_delivery && (
             <Input
               type="number"
+              inputMode="numeric"
               min={0}
               label="Delivery delay window"
               labelClassName="u-off-screen"

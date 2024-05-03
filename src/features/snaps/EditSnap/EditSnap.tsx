@@ -9,9 +9,9 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import classes from "./EditSnap.module.scss";
 import {
-  SnapFormProps,
   getEditSnapValidationSchema,
   getSnapMessage,
+  SnapFormProps,
 } from "./helpers";
 import { useSnaps } from "@/hooks/useSnaps";
 import { InstalledSnap } from "@/types/Snap";
@@ -196,7 +196,6 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
           {formik.values.hold === "date" && (
             <Input
               type="datetime-local"
-              help="Format MM-DD-YYYY HH:mm"
               error={
                 formik.touched.hold_until && formik.errors.hold_until
                   ? formik.errors.hold_until
@@ -235,7 +234,6 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
           labelClassName="u-off-screen"
           {...formik.getFieldProps("deliver_after")}
           error={formik.touched.deliver_after && formik.errors.deliver_after}
-          help="Format MM-DD-YYYY HH:mm"
         />
       )}
       <span className={classNames(classes.bold, classes.marginTop)}>
@@ -246,9 +244,9 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
           type="radio"
           label="No"
           {...formik.getFieldProps("randomize_delivery")}
-          onChange={() => {
-            formik.setFieldValue("randomize_delivery", false);
-            formik.setFieldValue("deliver_delay_window", 0);
+          onChange={async () => {
+            await formik.setFieldValue("randomize_delivery", false);
+            await formik.setFieldValue("deliver_delay_window", 0);
           }}
           checked={!formik.values.randomize_delivery}
         />
@@ -260,9 +258,10 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
           checked={formik.values.randomize_delivery}
         />
       </div>
-      {!formik.values.randomize_delivery && (
+      {formik.values.randomize_delivery && (
         <Input
           type="number"
+          inputMode="numeric"
           min={0}
           label="Delivery delay window"
           labelClassName="u-off-screen"
