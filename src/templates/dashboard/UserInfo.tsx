@@ -4,6 +4,7 @@ import { Button } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
+import { ROOT_PATH } from "@/constants";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
@@ -22,7 +23,7 @@ const UserInfo: FC = () => {
           classes.button,
         )}
         onClick={() => {
-          navigate("/user");
+          navigate(`${ROOT_PATH}user`);
         }}
       >
         <i className="p-icon--account" />
@@ -37,7 +38,7 @@ const UserInfo: FC = () => {
           classes.button,
         )}
         onClick={() => {
-          navigate("/alerts");
+          navigate(`${ROOT_PATH}alerts`);
         }}
       >
         <i className="p-icon--bell" />
