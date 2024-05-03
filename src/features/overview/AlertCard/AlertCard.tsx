@@ -4,7 +4,6 @@ import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
 import { useNavigate } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
-import useDebug from "@/hooks/useDebug";
 import { QUERY_STATUSES } from "@/pages/dashboard/instances/InstancesContainer/constants";
 import LoadingState from "@/components/layout/LoadingState";
 import { Button } from "@canonical/react-components";
@@ -20,22 +19,16 @@ interface AlertCardProps {
 const AlertCard: FC<AlertCardProps> = ({ alertQueryData }) => {
   const { getInstancesQuery } = useInstances();
   const navigate = useNavigate();
-  const debug = useDebug();
 
   const {
     data: alertsData,
     isLoading,
-    error,
     isError,
   } = getInstancesQuery({
     query: QUERY_STATUSES[alertQueryData.filterValue],
     limit: 1,
     root_only: false,
   });
-
-  if (error) {
-    debug(error);
-  }
 
   const handleAlertClick = () => {
     navigate(`${ROOT_PATH}instances?status=${alertQueryData.filterValue}`);

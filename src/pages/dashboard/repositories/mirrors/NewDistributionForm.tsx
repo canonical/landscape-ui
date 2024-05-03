@@ -19,12 +19,7 @@ const NewDistributionForm: FC = () => {
   const { getAccessGroupQuery } = useRoles();
   const { mutateAsync: createDistribution, isLoading: isCreatingDistribution } =
     createDistributionQuery;
-  const { data: getAccessGroupResponse, error: getAccessGroupError } =
-    getAccessGroupQuery();
-
-  if (getAccessGroupError) {
-    debug(getAccessGroupError);
-  }
+  const { data: getAccessGroupResponse } = getAccessGroupQuery();
 
   const accessGroupsOptions: SelectOption[] = (
     getAccessGroupResponse?.data ?? []
@@ -33,12 +28,7 @@ const NewDistributionForm: FC = () => {
     value: accessGroup.name,
   }));
 
-  const { data: getDistributionsResponse, error: getDistributionsError } =
-    getDistributionsQuery();
-
-  if (getDistributionsError) {
-    debug(getDistributionsError);
-  }
+  const { data: getDistributionsResponse } = getDistributionsQuery();
 
   const formik = useFormik({
     validationSchema: Yup.object().shape({

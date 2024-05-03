@@ -1,5 +1,4 @@
 import { FC, useState } from "react";
-import useDebug from "@/hooks/useDebug";
 import {
   UpgradeProfileList,
   UpgradeProfilesEmptyState,
@@ -11,18 +10,12 @@ import LoadingState from "@/components/layout/LoadingState";
 const UpgradeProfilesContainer: FC = () => {
   const [search, setSearch] = useState("");
 
-  const debug = useDebug();
   const { getUpgradeProfilesQuery } = useUpgradeProfiles();
 
   const {
     data: getUpgradeProfilesResult,
     isLoading: getUpgradeProfilesLoading,
-    error: getUpgradeProfilesError,
   } = getUpgradeProfilesQuery();
-
-  if (getUpgradeProfilesError) {
-    debug(getUpgradeProfilesError);
-  }
 
   return (
     <>

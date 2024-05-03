@@ -4,12 +4,11 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { OrganisationPreferences } from "@/features/organisation-settings";
-import useDebug from "@/hooks/useDebug";
 import { useOrgSettings } from "@/hooks/useOrgSettings";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Preferences } from "@/types/Preferences";
 import { Button } from "@canonical/react-components";
-import { FC, Suspense, lazy } from "react";
+import { FC, lazy, Suspense } from "react";
 
 const EditOrganisationForm = lazy(
   () =>
@@ -18,19 +17,13 @@ const EditOrganisationForm = lazy(
 
 const GeneralOrganisationSettings: FC = () => {
   const { setSidePanelContent } = useSidePanel();
-  const debug = useDebug();
   const { getOrganisationPreferences } = useOrgSettings();
   const {
     data: orgPreferencesData,
     isLoading,
-    error,
     refetch,
   } = getOrganisationPreferences();
   const organisationPreferences = orgPreferencesData?.data;
-
-  if (error) {
-    debug(error);
-  }
 
   const handleRefetch = () => {
     refetch();

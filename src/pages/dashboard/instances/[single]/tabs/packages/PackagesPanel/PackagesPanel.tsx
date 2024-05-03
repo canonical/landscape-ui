@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import TablePagination from "@/components/layout/TablePagination";
 import { usePackages } from "@/hooks/usePackages";
-import useDebug from "@/hooks/useDebug";
 import LoadingState from "@/components/layout/LoadingState";
 import PackageList from "@/pages/dashboard/instances/[single]/tabs/packages/PackageList";
 import PackagesPanelHeader from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesPanelHeader";
@@ -46,13 +45,11 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ instance, tabState }) => {
     setCurrentPage(1);
   };
 
-  const debug = useDebug();
   const { getInstancePackagesQuery } = usePackages();
 
   const {
     data: getInstancePackagesQueryResult,
     isLoading: getInstancePackagesQueryLoading,
-    error: getInstancePackagesQueryError,
   } = getInstancePackagesQuery(
     {
       instance_id: instance.id,
@@ -69,10 +66,6 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ instance, tabState }) => {
       enabled: !!instance,
     },
   );
-
-  if (getInstancePackagesQueryError) {
-    debug(getInstancePackagesQueryError);
-  }
 
   return (
     <>

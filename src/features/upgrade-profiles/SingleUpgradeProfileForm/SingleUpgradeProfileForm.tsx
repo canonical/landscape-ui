@@ -33,14 +33,10 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
     useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
 
-  const {
-    data: getAccessGroupQueryResult,
-    error: getAccessGroupQueryResultError,
-  } = getAccessGroupQuery({}, { enabled: props.action === "add" });
-
-  if (getAccessGroupQueryResultError) {
-    debug(getAccessGroupQueryResultError);
-  }
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery(
+    {},
+    { enabled: props.action === "add" },
+  );
 
   const accessGroupOptions =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({

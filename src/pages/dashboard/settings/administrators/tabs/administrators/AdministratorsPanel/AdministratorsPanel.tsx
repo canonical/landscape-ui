@@ -3,7 +3,6 @@ import { Button } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import EmptyState from "@/components/layout/EmptyState";
 import useAdministrators from "@/hooks/useAdministrators";
-import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import AdministratorsPanelContent from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelContent";
 
@@ -15,19 +14,13 @@ const InviteAdministratorForm = lazy(
 );
 
 const AdministratorsPanel: FC = () => {
-  const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getAdministratorsQuery } = useAdministrators();
 
   const {
     data: getAdministratorsQueryResult,
     isLoading: getAdministratorsQueryIsLoading,
-    error: getAdministratorsQueryError,
   } = getAdministratorsQuery();
-
-  if (getAdministratorsQueryError) {
-    debug(getAdministratorsQueryError);
-  }
 
   const handleInviteAdministrator = () => {
     setSidePanelContent(

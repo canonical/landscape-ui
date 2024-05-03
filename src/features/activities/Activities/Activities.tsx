@@ -16,7 +16,6 @@ import {
   useActivities,
   useOpenActivityDetails,
 } from "@/features/activities/hooks";
-import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ActivityCommon } from "@/features/activities/types";
 import classes from "./Activities.module.scss";
@@ -35,7 +34,6 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getActivitiesQuery } = useActivities();
 
@@ -62,7 +60,6 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
 
   const {
     data: getActivitiesQueryResult,
-    error: getActivitiesQueryError,
     isLoading: getActivitiesQueryLoading,
   } = getActivitiesQuery({
     query:
@@ -70,10 +67,6 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
   });
-
-  if (getActivitiesQueryError) {
-    debug(getActivitiesQueryError);
-  }
 
   const activities = useMemo(
     () => getActivitiesQueryResult?.data.results ?? [],

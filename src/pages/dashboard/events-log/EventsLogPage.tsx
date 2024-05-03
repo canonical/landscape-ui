@@ -4,7 +4,6 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { EventsLogHeader, EventsLogList } from "@/features/events-log";
 import useEventsLog from "@/hooks/useEventLogs";
-import useDebug from "@/hooks/useDebug";
 import { Button } from "@canonical/react-components";
 import TablePagination from "@/components/layout/TablePagination";
 import useAuth from "@/hooks/useAuth";
@@ -21,21 +20,12 @@ const EventsLogPage: FC = () => {
 
   const { user } = useAuth() as { user: AuthUser };
   const { getEventsLog } = useEventsLog();
-  const debug = useDebug();
-  const {
-    data: eventsLogData,
-    isLoading,
-    error,
-  } = getEventsLog({
+  const { data: eventsLogData, isLoading } = getEventsLog({
     days: dayFilter,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
     search: search,
   });
-
-  if (error) {
-    debug(error);
-  }
 
   const eventsLog = useMemo(
     () =>

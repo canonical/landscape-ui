@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import useDistributions from "@/hooks/useDistributions";
-import useDebug from "@/hooks/useDebug";
 import LoadingState from "@/components/layout/LoadingState";
 import DistributionCard from "@/pages/dashboard/repositories/mirrors/DistributionCard";
 import DistributionsEmptyState from "@/pages/dashboard/repositories/mirrors/DistributionsEmptyState";
@@ -15,10 +14,9 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
 }) => {
   const [syncPocketRefs, setSyncPocketRefs] = useState<SyncPocketRef[]>([]);
 
-  const debug = useDebug();
   const { getDistributionsQuery } = useDistributions();
 
-  const { data, isLoading, error } = getDistributionsQuery(
+  const { data, isLoading } = getDistributionsQuery(
     {
       include_latest_sync: true,
     },
@@ -26,10 +24,6 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
       refetchInterval: !syncPocketRefs.length ? undefined : 1000,
     },
   );
-
-  if (error) {
-    debug(error);
-  }
 
   const distributions = data?.data ?? [];
 

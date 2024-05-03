@@ -58,12 +58,7 @@ const InviteAdministratorForm: FC = () => {
     },
   });
 
-  const { data: getRolesQueryResult, error: getRolesQueryError } =
-    getRolesQuery();
-
-  if (getRolesQueryError) {
-    debug(getRolesQueryError);
-  }
+  const { data: getRolesQueryResult } = getRolesQuery();
 
   const roleOptions: SelectOption[] =
     getRolesQueryResult?.data.map(({ name }) => ({

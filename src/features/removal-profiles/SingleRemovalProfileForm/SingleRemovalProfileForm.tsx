@@ -34,12 +34,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
     useRemovalProfiles();
   const { getAccessGroupQuery } = useRoles();
 
-  const { data: getAccessGroupQueryResult, error: getAccessGroupQueryError } =
-    getAccessGroupQuery();
-
-  if (getAccessGroupQueryError) {
-    debug(getAccessGroupQueryError);
-  }
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
   const accessGroupOptions =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({

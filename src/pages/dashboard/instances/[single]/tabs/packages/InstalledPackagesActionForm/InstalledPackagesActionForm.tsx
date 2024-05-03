@@ -35,22 +35,16 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
     upgradePackagesQuery,
   } = usePackages();
 
-  const {
-    data: getDowngradePackageVersionsQueryResult,
-    error: getDowngradePackageVersionsQueryError,
-  } = getDowngradePackageVersionsQuery(
-    {
-      instanceId,
-      packageName: packages[0].name,
-    },
-    {
-      enabled: action === "downgrade",
-    },
-  );
-
-  if (getDowngradePackageVersionsQueryError) {
-    debug(getDowngradePackageVersionsQueryError);
-  }
+  const { data: getDowngradePackageVersionsQueryResult } =
+    getDowngradePackageVersionsQuery(
+      {
+        instanceId,
+        packageName: packages[0].name,
+      },
+      {
+        enabled: action === "downgrade",
+      },
+    );
 
   const downgradeOptions =
     getDowngradePackageVersionsQueryResult &&

@@ -1,5 +1,4 @@
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
 import { useSnaps } from "@/hooks/useSnaps";
 import { SelectedSnaps } from "@/types/Snap";
 import { Button, Form, Select } from "@canonical/react-components";
@@ -23,19 +22,10 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
   const [selectedChannel, setSelectedChannel] = useState<string>("");
 
   const { getAvailableSnapInfo } = useSnaps();
-  const debug = useDebug();
-  const {
-    data: availableSnapInfo,
-    isLoading,
-    error,
-  } = getAvailableSnapInfo({
+  const { data: availableSnapInfo, isLoading } = getAvailableSnapInfo({
     instance_id: instanceId,
     name: name,
   });
-
-  if (error) {
-    debug(error);
-  }
 
   const item = availableSnapInfo?.data;
 

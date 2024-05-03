@@ -19,15 +19,10 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
   const { closeSidePanel } = useSidePanel();
   const { getPackagesQuery, upgradePackagesQuery } = usePackages();
 
-  const { data: getPackagesQueryResult, error: getPackagesQueryError } =
-    getPackagesQuery({
-      query: `id:${selectedInstances.map(({ id }) => id).join(" OR id:")}`,
-      upgrade: true,
-    });
-
-  if (getPackagesQueryError) {
-    debug(getPackagesQueryError);
-  }
+  const { data: getPackagesQueryResult } = getPackagesQuery({
+    query: `id:${selectedInstances.map(({ id }) => id).join(" OR id:")}`,
+    upgrade: true,
+  });
 
   const { mutateAsync: upgradePackages, isLoading: upgradePackagesLoading } =
     upgradePackagesQuery;

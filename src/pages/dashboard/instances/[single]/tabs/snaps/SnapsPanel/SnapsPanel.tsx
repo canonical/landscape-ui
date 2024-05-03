@@ -4,7 +4,6 @@ import { FC, useMemo, useState } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
-import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { InstallSnaps, SnapsHeader, SnapsList } from "@/features/snaps";
 
@@ -20,21 +19,12 @@ const SnapsPanel: FC<SnapsProps> = ({ instanceId }) => {
 
   const { getSnapsQuery } = useSnaps();
   const { setSidePanelContent } = useSidePanel();
-  const debug = useDebug();
-  const {
-    data: getSnapsQueryResult,
-    isLoading,
-    error,
-  } = getSnapsQuery({
+  const { data: getSnapsQueryResult, isLoading } = getSnapsQuery({
     instance_id: instanceId,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
     search: snapsSearch,
   });
-
-  if (error) {
-    debug(error);
-  }
 
   const handleSnapsSearchChange = (searchText: string) => {
     setSnapsSearch(searchText);

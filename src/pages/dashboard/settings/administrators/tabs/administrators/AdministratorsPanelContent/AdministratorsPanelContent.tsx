@@ -1,6 +1,5 @@
 import { FC, useState } from "react";
 import TablePagination from "@/components/layout/TablePagination";
-import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import { Administrator } from "@/types/Administrator";
 import AdministratorList from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorList";
@@ -17,15 +16,9 @@ const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const debug = useDebug();
   const { getRolesQuery } = useRoles();
 
-  const { data: getRolesQueryResult, error: getRolesQueryError } =
-    getRolesQuery();
-
-  if (getRolesQueryError) {
-    debug(getRolesQueryError);
-  }
+  const { data: getRolesQueryResult } = getRolesQuery();
 
   const getSearchedAdministrators = () => {
     const search = searchText.trim().toLowerCase();

@@ -45,23 +45,13 @@ const EditRoleForm: FC<EditRoleFormProps> = ({ role }) => {
     removePermissionsFromRoleQuery,
   } = useRoles();
 
-  const { data: getPermissionsQueryResult, error: getPermissionsQueryError } =
-    getPermissionsQuery();
-
-  if (getPermissionsQueryError) {
-    debug(getPermissionsQueryError);
-  }
+  const { data: getPermissionsQueryResult } = getPermissionsQuery();
 
   const permissionOptions = getPermissionsQueryResult
     ? getPermissionOptions(getPermissionsQueryResult.data)
     : [];
 
-  const { data: getAccessGroupQueryResult, error: getAccessGroupQueryError } =
-    getAccessGroupQuery();
-
-  if (getAccessGroupQueryError) {
-    debug(getAccessGroupQueryError);
-  }
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
   const accessGroupOptions = getAccessGroupQueryResult
     ? getSortedOptions(getAccessGroupOptions(getAccessGroupQueryResult.data))

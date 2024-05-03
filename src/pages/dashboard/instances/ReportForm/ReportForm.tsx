@@ -1,5 +1,4 @@
 import { FC } from "react";
-import useDebug from "@/hooks/useDebug";
 import useReports from "@/hooks/useReports";
 import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -34,17 +33,11 @@ interface ReportFormProps {
 }
 
 const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
-  const debug = useDebug();
   const { getCsvComplianceData } = useReports();
 
-  const { data: getCsvComplianceDataResult, error: getCsvComplianceDataError } =
-    getCsvComplianceData({
-      query: `id:${instanceIds.join(" OR id:")}`,
-    });
-
-  if (getCsvComplianceDataError) {
-    debug(getCsvComplianceDataError);
-  }
+  const { data: getCsvComplianceDataResult } = getCsvComplianceData({
+    query: `id:${instanceIds.join(" OR id:")}`,
+  });
 
   const formik = useFormik({
     initialValues: { range: 0, reportByCve: true },

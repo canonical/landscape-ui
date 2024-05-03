@@ -182,12 +182,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
     },
   });
 
-  const { data: getScriptsQueryResult, error: getScriptsQueryError } =
-    getScriptsQuery();
-
-  if (getScriptsQueryError) {
-    debug(getScriptsQueryError);
-  }
+  const { data: getScriptsQueryResult } = getScriptsQuery();
 
   const scriptOptions = useMemo<SelectOption[]>(
     () =>
@@ -211,12 +206,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ query }) => {
     }
   };
 
-  const { data: getAccessGroupResult, error: getAccessGroupError } =
-    getAccessGroupQuery();
-
-  if (getAccessGroupError) {
-    debug(getAccessGroupError);
-  }
+  const { data: getAccessGroupResult } = getAccessGroupQuery();
 
   const accessGroupsOptions = useMemo<SelectOption[]>(
     () =>

@@ -61,12 +61,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     }
   };
 
-  const { data: getAccessGroupQueryResult, error: getAccessGroupQueryError } =
-    getAccessGroupQuery();
-
-  if (getAccessGroupQueryError) {
-    debug(getAccessGroupQueryError);
-  }
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
   const accessGroupOptions: SelectOption[] =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({

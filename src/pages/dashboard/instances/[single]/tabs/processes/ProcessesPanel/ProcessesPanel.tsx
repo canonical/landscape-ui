@@ -2,7 +2,6 @@ import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
 import { ProcessesHeader, ProcessesList } from "@/features/processes";
-import useDebug from "@/hooks/useDebug";
 import { useProcesses } from "@/hooks/useProcesses";
 import { FC, useMemo, useState } from "react";
 
@@ -17,21 +16,12 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ instanceId }) => {
   const [search, setSearch] = useState("");
 
   const { getProcessesQuery } = useProcesses();
-  const debug = useDebug();
-  const {
-    data: getProcessesQueryResult,
-    error: getProcessesQueryError,
-    isLoading,
-  } = getProcessesQuery({
+  const { data: getProcessesQueryResult, isLoading } = getProcessesQuery({
     computer_id: instanceId,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
     search: search,
   });
-
-  if (getProcessesQueryError) {
-    debug(getProcessesQueryError);
-  }
 
   const totalProcesses = getProcessesQueryResult?.data.count ?? 0;
 

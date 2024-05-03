@@ -46,12 +46,7 @@ const NewAPTSourceForm: FC = () => {
 
   const { mutateAsync, isLoading } = createAPTSourceQuery;
 
-  const { data: getAPTSourcesResponse, error: getAPTSourcesError } =
-    getAPTSourcesQuery();
-
-  if (getAPTSourcesError) {
-    debug(getAPTSourcesError);
-  }
+  const { data: getAPTSourcesResponse } = getAPTSourcesQuery();
 
   const formik = useFormik<FormProps>({
     initialValues: {

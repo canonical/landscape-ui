@@ -63,14 +63,7 @@ const ScriptRunForm: FC<ScriptRunFormProps> = ({ script }) => {
     validationSchema: VALIDATION_SCHEMA,
   });
 
-  const {
-    data: getAllInstanceTagsQueryResult,
-    error: getAllInstanceTagsQueryError,
-  } = getAllInstanceTagsQuery();
-
-  if (getAllInstanceTagsQueryError) {
-    debug(getAllInstanceTagsQueryError);
-  }
+  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
 
   const tagOptions: MultiSelectItem[] =
     getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
@@ -78,12 +71,7 @@ const ScriptRunForm: FC<ScriptRunFormProps> = ({ script }) => {
       value: tag,
     })) ?? [];
 
-  const { data: getInstancesQueryResult, error: getInstancesQueryError } =
-    getInstancesQuery();
-
-  if (getInstancesQueryError) {
-    debug(getInstancesQueryError);
-  }
+  const { data: getInstancesQueryResult } = getInstancesQuery();
 
   const instanceOptions: MultiSelectItem[] =
     getInstancesQueryResult?.data.results.map(({ title, id }) => ({

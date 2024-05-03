@@ -6,7 +6,6 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
-import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import { usePackages } from "@/hooks/usePackages";
 import useUsns from "@/hooks/useUsns";
@@ -18,7 +17,6 @@ const SingleInstanceContainer: FC = () => {
   const { instanceId, childInstanceId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const debug = useDebug();
   const { getSingleInstanceQuery } = useInstances();
   const { getUsnsQuery } = useUsns();
   const { getInstancePackagesQuery } = usePackages();
@@ -43,7 +41,6 @@ const SingleInstanceContainer: FC = () => {
 
   const {
     data: getSingleInstanceQueryResult,
-    error: getSingleInstanceQueryError,
     isLoading: getSingleInstanceQueryLoading,
   } = getSingleInstanceQuery(
     {
@@ -56,37 +53,25 @@ const SingleInstanceContainer: FC = () => {
     { enabled: !!instanceId },
   );
 
-  if (getSingleInstanceQueryError) {
-    debug(getSingleInstanceQueryError);
-  }
-
   const instance = getSingleInstanceQueryResult?.data ?? null;
 
-  const {
-    data: getUsnsQueryResult,
-    error: getUsnsQueryError,
-    isLoading: getUsnsQueryLoading,
-  } = getUsnsQuery(
-    {
-      computer_ids: instance ? [instance.id] : [],
-      limit: 1,
-    },
-    {
-      enabled:
-        !!instance?.distribution &&
-        /\d{1,2}\.\d{2}/.test(instance.distribution) &&
-        (!childInstanceId ||
-          instance.parent?.id === parseInt(instanceId ?? "")),
-    },
-  );
-
-  if (getUsnsQueryError) {
-    debug(getUsnsQueryError);
-  }
+  const { data: getUsnsQueryResult, isLoading: getUsnsQueryLoading } =
+    getUsnsQuery(
+      {
+        computer_ids: instance ? [instance.id] : [],
+        limit: 1,
+      },
+      {
+        enabled:
+          !!instance?.distribution &&
+          /\d{1,2}\.\d{2}/.test(instance.distribution) &&
+          (!childInstanceId ||
+            instance.parent?.id === parseInt(instanceId ?? "")),
+      },
+    );
 
   const {
     data: getInstancePackagesQueryResult,
-    error: getInstancePackagesQueryError,
     isLoading: getInstancePackagesQueryLoading,
   } = getInstancePackagesQuery(
     {
@@ -103,10 +88,6 @@ const SingleInstanceContainer: FC = () => {
           instance.parent?.id === parseInt(instanceId ?? "")),
     },
   );
-
-  if (getInstancePackagesQueryError) {
-    debug(getInstancePackagesQueryError);
-  }
 
   return (
     <PageMain>

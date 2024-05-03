@@ -27,11 +27,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   const debug = useDebug();
   const { getInstancePackagesQuery } = usePackages();
 
-  const {
-    data: packageDataRes,
-    isFetching,
-    error,
-  } = getInstancePackagesQuery(
+  const { data: packageDataRes, isFetching } = getInstancePackagesQuery(
     {
       instance_id: instanceId,
       available: true,
@@ -45,10 +41,6 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
       enabled: search.length > 2,
     },
   );
-
-  if (error) {
-    debug(error);
-  }
 
   const packageData = packageDataRes?.data?.results ?? [];
 

@@ -66,24 +66,10 @@ const PackageList: FC<PackageListProps> = ({
     removePocketQuery,
   } = usePockets();
 
-  const {
-    mutate: syncMirrorPocket,
-    isLoading: isSynchronizingMirrorPocket,
-    error: synchronizingMirrorPocketError,
-  } = syncMirrorPocketQuery;
-  const {
-    mutate: pullPackagesToPocket,
-    isLoading: isPullingPackagesToPocket,
-    error: pullingPackagesToPocketError,
-  } = pullPackagesToPocketQuery;
-
-  if (synchronizingMirrorPocketError) {
-    debug(synchronizingMirrorPocketError);
-  }
-
-  if (pullingPackagesToPocketError) {
-    debug(pullingPackagesToPocketError);
-  }
+  const { mutate: syncMirrorPocket, isLoading: isSynchronizingMirrorPocket } =
+    syncMirrorPocketQuery;
+  const { mutate: pullPackagesToPocket, isLoading: isPullingPackagesToPocket } =
+    pullPackagesToPocketQuery;
 
   const handleSync = () => {
     if ("mirror" === pocket.mode) {
@@ -191,31 +177,24 @@ const PackageList: FC<PackageListProps> = ({
     });
   };
 
-  const {
-    data: listPocketData,
-    error: listPocketError,
-    isLoading: listPocketLoading,
-  } = listPocketQuery(
-    {
-      name: pocket.name,
-      series: seriesName,
-      distribution: distributionName,
-      search,
-      limit: itemsPerPage,
-      offset: (currentPage - 1) * itemsPerPage,
-    },
-    {
-      enabled:
-        !isSynchronizingMirrorPocket &&
-        !isPullingPackagesToPocket &&
-        !isRemovingPackagesFromPocket &&
-        !isRemovingPocket,
-    },
-  );
-
-  if (listPocketError) {
-    debug(listPocketError);
-  }
+  const { data: listPocketData, isLoading: listPocketLoading } =
+    listPocketQuery(
+      {
+        name: pocket.name,
+        series: seriesName,
+        distribution: distributionName,
+        search,
+        limit: itemsPerPage,
+        offset: (currentPage - 1) * itemsPerPage,
+      },
+      {
+        enabled:
+          !isSynchronizingMirrorPocket &&
+          !isPullingPackagesToPocket &&
+          !isRemovingPackagesFromPocket &&
+          !isRemovingPocket,
+      },
+    );
 
   const pocketPackages: FormattedPackage[] = [];
 
@@ -228,27 +207,22 @@ const PackageList: FC<PackageListProps> = ({
     }
   }
 
-  const { data: diffPullPocketData, error: diffPullPocketError } =
-    diffPullPocketQuery(
-      {
-        name: pocket.name,
-        series: seriesName,
-        distribution: distributionName,
-      },
-      {
-        enabled:
-          "pull" === pocket.mode &&
-          !listPocketLoading &&
-          !isSynchronizingMirrorPocket &&
-          !isPullingPackagesToPocket &&
-          !isRemovingPackagesFromPocket &&
-          !isRemovingPocket,
-      },
-    );
-
-  if (diffPullPocketError) {
-    debug(diffPullPocketError);
-  }
+  const { data: diffPullPocketData } = diffPullPocketQuery(
+    {
+      name: pocket.name,
+      series: seriesName,
+      distribution: distributionName,
+    },
+    {
+      enabled:
+        "pull" === pocket.mode &&
+        !listPocketLoading &&
+        !isSynchronizingMirrorPocket &&
+        !isPullingPackagesToPocket &&
+        !isRemovingPackagesFromPocket &&
+        !isRemovingPocket,
+    },
+  );
 
   const diffPullPocket: {
     packageName: string;

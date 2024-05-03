@@ -83,7 +83,6 @@ const PackageProfileConstraintsEditForm: FC<
 
   const {
     data: getPackageProfileConstraintsQueryResult,
-    error: getPackageProfileConstraintsQueryError,
     isLoading: getPackageProfileConstraintsQueryLoading,
   } = getPackageProfileConstraintsQuery({
     constraint_type: constraintType || undefined,
@@ -92,10 +91,6 @@ const PackageProfileConstraintsEditForm: FC<
     offset: (currentPage - 1) * pageSize,
     search,
   });
-
-  if (getPackageProfileConstraintsQueryError) {
-    debug(getPackageProfileConstraintsQueryError);
-  }
 
   return (
     <>

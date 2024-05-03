@@ -1,5 +1,4 @@
 import { FC } from "react";
-import useDebug from "@/hooks/useDebug";
 import useReports from "@/hooks/useReports";
 import ReportWidget from "@/pages/dashboard/instances/ReportWidget";
 import { Col, Row } from "@canonical/react-components";
@@ -14,7 +13,6 @@ interface ReportViewProps {
 }
 
 const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
-  const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getNotPingingInstances, getInstancesNotUpgraded, getUsnTimeToFix } =
     useReports();
@@ -22,15 +20,10 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
   const {
     data: getNotPingingInstancesResult,
     isLoading: getNotPingingInstancesLoading,
-    error: getNotPingingInstancesError,
   } = getNotPingingInstances({
     since_minutes: 5,
     query: `id:${instanceIds.join(" OR id:")}`,
   });
-
-  if (getNotPingingInstancesError) {
-    debug(getNotPingingInstancesError);
-  }
 
   const pingingInstancesCount = getNotPingingInstancesResult
     ? instanceIds.length - getNotPingingInstancesResult.data.length
@@ -39,31 +32,19 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
   const {
     data: getInstancesNotUpgradedResult,
     isLoading: getInstancesNotUpgradedLoading,
-    error: getInstancesNotUpgradedError,
   } = getInstancesNotUpgraded({
     query: `id:${instanceIds.join(" OR id:")}`,
   });
-
-  if (getInstancesNotUpgradedError) {
-    debug(getInstancesNotUpgradedError);
-  }
 
   const upgradedInstanceCount = getInstancesNotUpgradedResult
     ? instanceIds.length - getInstancesNotUpgradedResult.data.length
     : 0;
 
-  const {
-    data: getUsnTimeToFixResult,
-    isLoading: getUsnTimeToFixLoading,
-    error: getUsnTimeToFixError,
-  } = getUsnTimeToFix({
-    query: `id:${instanceIds.join(" OR id:")}`,
-    fixed_in_days: [2, 14, 30, 60],
-  });
-
-  if (getUsnTimeToFixError) {
-    debug(getUsnTimeToFixError);
-  }
+  const { data: getUsnTimeToFixResult, isLoading: getUsnTimeToFixLoading } =
+    getUsnTimeToFix({
+      query: `id:${instanceIds.join(" OR id:")}`,
+      fixed_in_days: [2, 14, 30, 60],
+    });
 
   const securityUpgradesInstanceCount = {
     month: getUsnTimeToFixResult?.data["30"].length || 0,

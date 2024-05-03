@@ -30,7 +30,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
   const { closeSidePanel } = useSidePanel();
   const { snapsActionQuery, getAvailableSnapInfo } = useSnaps();
   const { mutateAsync: snapsActionMutation, isLoading } = snapsActionQuery;
-  const { data: snapInfoData, error: snapInfoError } = getAvailableSnapInfo(
+  const { data: snapInfoData } = getAvailableSnapInfo(
     {
       instance_id: instanceId,
       name: installedSnaps[0].snap.name,
@@ -39,10 +39,6 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
       enabled: type === EditSnapType.Switch,
     },
   );
-
-  if (snapInfoError) {
-    debug(snapInfoError);
-  }
 
   const SNAP_CHANNEL_OPTIONS = useMemo(() => {
     return (

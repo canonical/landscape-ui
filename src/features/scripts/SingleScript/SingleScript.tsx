@@ -236,22 +236,15 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
     }
   }, [props.action]);
 
-  const {
-    data: getScriptCodeResult,
-    isFetching: getScriptCodeFetching,
-    error: getScriptCodeError,
-  } = getScriptCodeQuery(
-    {
-      script_id: "edit" === props.action ? props.script.id : 0,
-    },
-    {
-      enabled: "edit" === props.action,
-    },
-  );
-
-  if (getScriptCodeError) {
-    debug(getScriptCodeError);
-  }
+  const { data: getScriptCodeResult, isFetching: getScriptCodeFetching } =
+    getScriptCodeQuery(
+      {
+        script_id: "edit" === props.action ? props.script.id : 0,
+      },
+      {
+        enabled: "edit" === props.action,
+      },
+    );
 
   useEffect(() => {
     if (getScriptCodeFetching) {
@@ -261,12 +254,7 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
     formik.setFieldValue("code", getScriptCodeResult?.data ?? "");
   }, [getScriptCodeFetching]);
 
-  const { data: getAccessGroupResult, error: getAccessGroupError } =
-    getAccessGroupQuery();
-
-  if (getAccessGroupError) {
-    debug(getAccessGroupError);
-  }
+  const { data: getAccessGroupResult } = getAccessGroupQuery();
 
   const accessGroupsOptions = useMemo<SelectOption[]>(
     () =>

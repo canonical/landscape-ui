@@ -8,7 +8,6 @@ import {
   ExtendedSearchAndFilterChip,
   SearchBoxWithSavedSearches,
 } from "@/features/saved-searches";
-import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import InstanceList from "@/pages/dashboard/instances/InstanceList";
 import { Instance } from "@/types/Instance";
@@ -50,32 +49,23 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
     searchParams.get("status") || "",
   );
 
-  const debug = useDebug();
-
   const { getInstancesQuery } = useInstances();
 
   const queryStatus = QUERY_STATUSES[statusFilter];
 
-  const {
-    data: getInstancesQueryResult,
-    isLoading: getInstancesQueryLoading,
-    error: getInstancesQueryError,
-  } = getInstancesQuery({
-    query: `${searchAndFilterChips
-      .map(({ lead, value, title }) =>
-        lead && title ? `${lead}:${title}` : value,
-      )
-      .join(" ")}${osFilter ?? ""} ${queryStatus}`.trim(),
-    root_only: groupBy === "parent",
-    with_alerts: true,
-    with_upgrades: statusFilter !== "pending-computers",
-    limit: pageLimit,
-    offset: (currentPage - 1) * pageLimit,
-  });
-
-  if (getInstancesQueryError) {
-    debug(getInstancesQueryError);
-  }
+  const { data: getInstancesQueryResult, isLoading: getInstancesQueryLoading } =
+    getInstancesQuery({
+      query: `${searchAndFilterChips
+        .map(({ lead, value, title }) =>
+          lead && title ? `${lead}:${title}` : value,
+        )
+        .join(" ")}${osFilter ?? ""} ${queryStatus}`.trim(),
+      root_only: groupBy === "parent",
+      with_alerts: true,
+      with_upgrades: statusFilter !== "pending-computers",
+      limit: pageLimit,
+      offset: (currentPage - 1) * pageLimit,
+    });
 
   const instances = getInstancesQueryResult?.data.results ?? [];
   const instancesCount = getInstancesQueryResult?.data.count ?? 0;

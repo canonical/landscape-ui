@@ -42,30 +42,20 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const {
     data: getSingleActivityQueryResult,
-    error: getSingleActivityQueryError,
     isLoading: getSingleActivityQueryLoading,
   } = getSingleActivityQuery({ activityId });
 
-  if (getSingleActivityQueryError) {
-    debug(getSingleActivityQueryError);
-  }
-
   const activity = getSingleActivityQueryResult?.data;
 
-  const { data: getInstancesQueryResult, error: getInstancesQueryError } =
-    getInstancesQuery(
-      {
-        query: `id:${activity?.computer_id}`,
-        root_only: false,
-      },
-      {
-        enabled: !!activity?.computer_id,
-      },
-    );
-
-  if (getInstancesQueryError) {
-    debug(getInstancesQueryError);
-  }
+  const { data: getInstancesQueryResult } = getInstancesQuery(
+    {
+      query: `id:${activity?.computer_id}`,
+      root_only: false,
+    },
+    {
+      enabled: !!activity?.computer_id,
+    },
+  );
 
   const instanceTitle =
     getInstancesQueryResult && getInstancesQueryResult.data.results.length > 0

@@ -2,7 +2,6 @@ import { FC, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import TablePagination from "@/components/layout/TablePagination";
 import { ScriptList, ScriptsEmptyState, useScripts } from "@/features/scripts";
-import useDebug from "@/hooks/useDebug";
 
 interface ScriptsContainerProps {}
 
@@ -10,22 +9,13 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const debug = useDebug();
-
   const { getScriptsQuery } = useScripts();
 
-  const {
-    data: getScriptsQueryResult,
-    isLoading: getScriptsQueryLoading,
-    error: getScriptsQueryError,
-  } = getScriptsQuery({
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-  });
-
-  if (getScriptsQueryError) {
-    debug(getScriptsQueryError);
-  }
+  const { data: getScriptsQueryResult, isLoading: getScriptsQueryLoading } =
+    getScriptsQuery({
+      limit: pageSize,
+      offset: (currentPage - 1) * pageSize,
+    });
 
   return (
     <>

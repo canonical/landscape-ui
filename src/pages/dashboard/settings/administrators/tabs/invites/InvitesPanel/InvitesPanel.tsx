@@ -16,12 +16,7 @@ const InvitesPanel: FC = () => {
   const { getInvitationsQuery, revokeInvitationQuery, resendInvitationQuery } =
     useInvitations();
 
-  const { data: getInvitationsQueryResult, error: getInvitationsQueryError } =
-    getInvitationsQuery();
-
-  if (getInvitationsQueryError) {
-    debug(getInvitationsQueryError);
-  }
+  const { data: getInvitationsQueryResult } = getInvitationsQuery();
 
   const invitations = useMemo(
     () => getInvitationsQueryResult?.data.results ?? [],

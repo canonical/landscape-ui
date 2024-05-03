@@ -2,7 +2,6 @@ import classNames from "classnames";
 import { FC, lazy, Suspense } from "react";
 import { Button } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./PendingInstancesWidget.module.scss";
@@ -12,7 +11,6 @@ const PendingInstancesForm = lazy(
 );
 
 const PendingInstancesWidget: FC = () => {
-  const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getPendingInstancesQuery } = useInstances();
 
@@ -21,10 +19,6 @@ const PendingInstancesWidget: FC = () => {
     error: getPendingInstancesQueryError,
     isLoading: getPendingInstancesQueryLoading,
   } = getPendingInstancesQuery();
-
-  if (getPendingInstancesQueryError) {
-    debug(getPendingInstancesQueryError);
-  }
 
   const handlePendingInstancesReview = () => {
     setSidePanelContent(

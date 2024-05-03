@@ -3,7 +3,6 @@ import { FC, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { Form, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
 import { useSavedSearches } from "@/hooks/useSavedSearches";
 import SavedSearchList from "@/features/saved-searches/SavedSearchList";
 import SearchChips from "@/features/saved-searches/SearchChips";
@@ -31,7 +30,6 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   );
   const [overflowingChipsAmount, setOverflowingChipsAmount] = useState(0);
 
-  const debug = useDebug();
   const { getSavedSearchesQuery } = useSavedSearches();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,13 +57,8 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
 
   const {
     data: getSavedSearchesQueryResult,
-    error: getSavedSearchesQueryError,
     isLoading: getSavedSearchesQueryLoading,
   } = getSavedSearchesQuery();
-
-  if (getSavedSearchesQueryError) {
-    debug(getSavedSearchesQueryError);
-  }
 
   const filteredSearches = useMemo(() => {
     if (!getSavedSearchesQueryResult) {

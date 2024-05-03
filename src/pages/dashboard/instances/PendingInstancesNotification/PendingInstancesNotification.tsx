@@ -1,5 +1,4 @@
 import { FC, lazy, Suspense } from "react";
-import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import { Button, Notification } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -10,18 +9,10 @@ const PendingInstanceList = lazy(
 );
 
 const PendingInstancesNotification: FC = () => {
-  const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getPendingInstancesQuery } = useInstances();
 
-  const {
-    data: getPendingInstancesQueryResult,
-    error: getPendingInstancesQueryError,
-  } = getPendingInstancesQuery();
-
-  if (getPendingInstancesQueryError) {
-    debug(getPendingInstancesQueryError);
-  }
+  const { data: getPendingInstancesQueryResult } = getPendingInstancesQuery();
 
   if (
     !getPendingInstancesQueryResult ||

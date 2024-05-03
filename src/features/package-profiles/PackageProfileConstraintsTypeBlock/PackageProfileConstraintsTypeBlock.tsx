@@ -4,7 +4,6 @@ import { Select } from "@canonical/react-components";
 import FileInput from "@/components/form/FileInput";
 import PackageProfileConstraintsBlock from "@/features/package-profiles/PackageProfileConstraintsBlock";
 import { AddFormProps } from "@/features/package-profiles/types";
-import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import { SelectOption } from "@/types/SelectOption";
 import { CONSTRAINTS_TYPE_OPTIONS } from "./constants";
@@ -17,15 +16,9 @@ interface PackageProfileConstraintsTypeBlockProps {
 const PackageProfileConstraintsTypeBlock: FC<
   PackageProfileConstraintsTypeBlockProps
 > = ({ formik }) => {
-  const debug = useDebug();
   const { getInstancesQuery } = useInstances();
 
-  const { data: getInstancesQueryResult, error: getInstancesQueryError } =
-    getInstancesQuery();
-
-  if (getInstancesQueryError) {
-    debug(getInstancesQueryError);
-  }
+  const { data: getInstancesQueryResult } = getInstancesQuery();
 
   const instanceOptions: SelectOption[] =
     getInstancesQueryResult?.data.results.map(({ id, title }) => ({

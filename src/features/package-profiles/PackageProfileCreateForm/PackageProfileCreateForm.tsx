@@ -27,12 +27,7 @@ const PackageProfileCreateForm: FC = () => {
   const { getAccessGroupQuery } = useRoles();
   const { createPackageProfileQuery } = usePackageProfiles();
 
-  const { data: getAccessGroupQueryResult, error: getAccessGroupQueryError } =
-    getAccessGroupQuery();
-
-  if (getAccessGroupQueryError) {
-    debug(getAccessGroupQueryError);
-  }
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
   const accessGroupOptions: SelectOption[] =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({

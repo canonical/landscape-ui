@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
 import useUsns from "@/hooks/useUsns";
 import SecurityIssueList from "@/pages/dashboard/instances/[single]/tabs/security-issues/SecurityIssueList";
 import { Instance } from "@/types/Instance";
@@ -15,27 +14,19 @@ const SecurityIssuesPanel: FC<SecurityIssuesPanelProps> = ({ instance }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const debug = useDebug();
   const { getUsnsQuery } = useUsns();
 
-  const {
-    data: getUsnsQueryResult,
-    isLoading: getUsnsQueryLoading,
-    error: getUsnsQueryError,
-  } = getUsnsQuery(
-    {
-      computer_ids: [instance.id],
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
-      search: search,
-      show_packages: false,
-    },
-    { enabled: !!instance },
-  );
-
-  if (getUsnsQueryError) {
-    debug(getUsnsQueryError);
-  }
+  const { data: getUsnsQueryResult, isLoading: getUsnsQueryLoading } =
+    getUsnsQuery(
+      {
+        computer_ids: [instance.id],
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize,
+        search: search,
+        show_packages: false,
+      },
+      { enabled: !!instance },
+    );
 
   return (
     <>

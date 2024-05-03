@@ -1,5 +1,4 @@
 import { FC } from "react";
-import useDebug from "@/hooks/useDebug";
 import {
   PackageProfilesEmptyState,
   usePackageProfiles,
@@ -8,18 +7,12 @@ import LoadingState from "@/components/layout/LoadingState";
 import PackageProfilesContent from "@/pages/dashboard/profiles/package-profiles/PackageProfilesContent";
 
 const PackageProfilesContainer: FC = () => {
-  const debug = useDebug();
   const { getPackageProfilesQuery } = usePackageProfiles();
 
   const {
     data: getPackageProfilesQueryResult,
-    error: getPackageProfilesQueryError,
     isLoading: getPackageProfilesQueryLoading,
   } = getPackageProfilesQuery();
-
-  if (getPackageProfilesQueryError) {
-    debug(getPackageProfilesQueryError);
-  }
 
   return (
     <>

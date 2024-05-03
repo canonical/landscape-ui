@@ -60,22 +60,14 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
   const { createSeriesQuery, getRepoInfo } = useSeries();
   const { getDistributionsQuery } = useDistributions();
 
-  const {
-    data: getDistributionsQueryResult,
-    error: getDistributionsQueryError,
-  } = getDistributionsQuery({}, { enabled: !distribution });
-
-  if (getDistributionsQueryError) {
-    debug(getDistributionsQueryError);
-  }
+  const { data: getDistributionsQueryResult } = getDistributionsQuery(
+    {},
+    { enabled: !distribution },
+  );
 
   const distributions = getDistributionsQueryResult?.data ?? [];
 
-  const { data: gpgKeysData, error: getGPGKeysQueryError } = getGPGKeysQuery();
-
-  if (getGPGKeysQueryError) {
-    debug(getGPGKeysQueryError);
-  }
+  const { data: gpgKeysData } = getGPGKeysQuery();
 
   const { mutateAsync: createSeries, isLoading: isCreating } =
     createSeriesQuery;
@@ -289,7 +281,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
     formik.setFieldValue("hasPockets", true);
   }, [formik.values.pockets.length, formik.values.pockets[0]]);
 
-  const { data: getRepoInfoResult, error: getRepoInfoError } = getRepoInfo(
+  const { data: getRepoInfoResult } = getRepoInfo(
     {
       mirror_uri: getStrippedUrl(mirrorUri),
     },
@@ -297,10 +289,6 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
       enabled: !!mirrorUri,
     },
   );
-
-  if (getRepoInfoError) {
-    debug(getRepoInfoError);
-  }
 
   const repoInfo = getRepoInfoResult?.data;
 

@@ -1,5 +1,4 @@
 import { FC, lazy, Suspense } from "react";
-import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import { Button } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -12,19 +11,11 @@ const AddRoleForm = lazy(
 );
 
 const RolesContainer: FC = () => {
-  const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getRolesQuery } = useRoles();
 
-  const {
-    data: getRolesQueryResult,
-    isLoading: getRolesQueryLoading,
-    error: getRolesQueryError,
-  } = getRolesQuery();
-
-  if (getRolesQueryError) {
-    debug(getRolesQueryError);
-  }
+  const { data: getRolesQueryResult, isLoading: getRolesQueryLoading } =
+    getRolesQuery();
 
   return (
     <>

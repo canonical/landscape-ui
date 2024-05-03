@@ -17,14 +17,7 @@ const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
   const debug = useDebug();
   const { createChildInstanceQuery, getWslInstanceNamesQuery } = useWsl();
 
-  const {
-    data: getWslInstanceNamesQueryResult,
-    error: getWslInstanceNamesQueryError,
-  } = getWslInstanceNamesQuery();
-
-  if (getWslInstanceNamesQueryError) {
-    debug(getWslInstanceNamesQueryError);
-  }
+  const { data: getWslInstanceNamesQueryResult } = getWslInstanceNamesQuery();
 
   const instanceTypeOptions: SelectOption[] =
     getWslInstanceNamesQueryResult?.data.map(({ label, name }) => ({

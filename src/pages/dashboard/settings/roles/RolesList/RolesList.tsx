@@ -26,12 +26,7 @@ const RolesList: FC<RolesListProps> = ({ roleList }) => {
   const { closeConfirmModal, confirmModal } = useConfirm();
   const { getPermissionsQuery, removeRoleQuery } = useRoles();
 
-  const { data: getPermissionsQueryResult, error: getPermissionsQueryError } =
-    getPermissionsQuery();
-
-  if (getPermissionsQueryError) {
-    debug(getPermissionsQueryError);
-  }
+  const { data: getPermissionsQueryResult } = getPermissionsQuery();
 
   const permissionOptions = getPermissionsQueryResult
     ? getPermissionOptions(getPermissionsQueryResult.data)

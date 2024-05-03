@@ -25,15 +25,10 @@ const SavedSearchesContainer: FC = () => {
   const {
     data: getSavedSearchesQueryResult,
     isLoading: getSavedSearchesQueryLoading,
-    error: getSavedSearchesQueryError,
   } = getSavedSearchesQuery({
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
   });
-
-  if (getSavedSearchesQueryError) {
-    debug(getSavedSearchesQueryError);
-  }
 
   const {
     mutateAsync: removeSavedSearch,

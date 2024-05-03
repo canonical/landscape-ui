@@ -3,7 +3,6 @@ import { CheckboxInput, Chip } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import { SelectOption } from "@/types/SelectOption";
 import useInstances from "@/hooks/useInstances";
-import useDebug from "@/hooks/useDebug";
 import { AssociationBlockFormProps } from "./types";
 import classes from "./AssociationBlock.module.scss";
 
@@ -14,17 +13,9 @@ interface AssociationBlockProps<T extends AssociationBlockFormProps> {
 const AssociationBlock = <T extends AssociationBlockFormProps>({
   formik,
 }: AssociationBlockProps<T>) => {
-  const debug = useDebug();
   const { getAllInstanceTagsQuery } = useInstances();
 
-  const {
-    data: getAllInstanceTagsQueryResult,
-    error: getAllInstanceTagsQueryError,
-  } = getAllInstanceTagsQuery();
-
-  if (getAllInstanceTagsQueryError) {
-    debug(getAllInstanceTagsQueryError);
-  }
+  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
 
   const tagOptions: SelectOption[] =
     getAllInstanceTagsQueryResult?.data.results.map((tag) => ({

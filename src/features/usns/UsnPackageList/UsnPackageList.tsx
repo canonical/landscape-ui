@@ -109,7 +109,6 @@ const UsnPackageList: FC<UsnPackageListProps> = ({
 
   const {
     data: getAffectedPackagesQueryResult,
-    error: getAffectedPackagesQueryError,
     isLoading: getAffectedPackagesQueryLoading,
   } = getAffectedPackagesQuery({
     usn,
@@ -117,10 +116,6 @@ const UsnPackageList: FC<UsnPackageListProps> = ({
       ? [otherProps.instance.id]
       : otherProps.instanceIds,
   });
-
-  if (getAffectedPackagesQueryError) {
-    debug(getAffectedPackagesQueryError);
-  }
 
   const packageSlice = useMemo(
     () => getAffectedPackagesQueryResult?.data.slice(0, limit) || [],

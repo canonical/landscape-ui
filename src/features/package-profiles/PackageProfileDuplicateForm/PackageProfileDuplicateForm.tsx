@@ -33,12 +33,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
 
   const { mutateAsync: copyPackageProfile } = copyPackageProfileQuery;
 
-  const { data: getAccessGroupQueryResult, error: getAccessGroupQueryError } =
-    getAccessGroupQuery();
-
-  if (getAccessGroupQueryError) {
-    debug(getAccessGroupQueryError);
-  }
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
   const accessGroupOptions: SelectOption[] =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({

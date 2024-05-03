@@ -41,14 +41,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({
   const { removeUpgradeProfileQuery } = useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
 
-  const {
-    data: getAccessGroupQueryResult,
-    error: getAccessGroupQueryResultError,
-  } = getAccessGroupQuery();
-
-  if (getAccessGroupQueryResultError) {
-    debug(getAccessGroupQueryResultError);
-  }
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
   const accessGroupOptions: SelectOption[] =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({

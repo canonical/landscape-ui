@@ -34,11 +34,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
   const debug = useDebug();
   const { getAvailableSnaps } = useSnaps();
 
-  const {
-    data: snapsDataRes,
-    isFetching,
-    error,
-  } = getAvailableSnaps(
+  const { data: snapsDataRes, isFetching } = getAvailableSnaps(
     {
       instance_id: instanceId,
       query: search,
@@ -47,10 +43,6 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
       enabled: search.length > 2,
     },
   );
-
-  if (error) {
-    debug(error);
-  }
 
   const snapsData = snapsDataRes?.data?.results ?? [];
 

@@ -6,23 +6,16 @@ import {
   RemovalProfilesHeader,
   useRemovalProfiles,
 } from "@/features/removal-profiles";
-import useDebug from "@/hooks/useDebug";
 
 const RemovalProfileContainer: FC = () => {
   const [search, setSearch] = useState("");
 
-  const debug = useDebug();
   const { getRemovalProfilesQuery } = useRemovalProfiles();
 
   const {
     data: getRemovalProfilesQueryResult,
-    error: getRemovalProfilesQueryError,
     isLoading: getRemovalProfilesQueryLoading,
   } = getRemovalProfilesQuery();
-
-  if (getRemovalProfilesQueryError) {
-    debug(getRemovalProfilesQueryError);
-  }
 
   return (
     <>

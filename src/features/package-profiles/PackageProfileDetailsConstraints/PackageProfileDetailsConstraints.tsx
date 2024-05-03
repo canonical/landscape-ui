@@ -7,7 +7,6 @@ import TablePagination from "@/components/layout/TablePagination";
 import PackageProfileDetailsConstraintsInfo from "@/features/package-profiles/PackageProfileDetailsConstraintsInfo";
 import { usePackageProfiles } from "@/features/package-profiles/hooks";
 import { PackageProfile } from "@/features/package-profiles/types";
-import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./PackageProfileDetailsConstraints.module.scss";
 
@@ -25,13 +24,12 @@ const PackageProfileDetailsConstraints: FC<
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState("");
-  const debug = useDebug();
+
   const { setSidePanelContent } = useSidePanel();
   const { getPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const {
     data: getPackageProfileConstraintsQueryResult,
-    error: getPackageProfileConstraintsQueryError,
     isLoading: getPackageProfileConstraintsQueryLoading,
   } = getPackageProfileConstraintsQuery({
     name: profile.name,
@@ -39,10 +37,6 @@ const PackageProfileDetailsConstraints: FC<
     offset: (currentPage - 1) * pageSize,
     search,
   });
-
-  if (getPackageProfileConstraintsQueryError) {
-    debug(getPackageProfileConstraintsQueryError);
-  }
 
   const handlePackageConstraintsChange = () => {
     setSidePanelContent(

@@ -1,5 +1,4 @@
 import { FC } from "react";
-import useDebug from "@/hooks/useDebug";
 import useUsns from "@/hooks/useUsns";
 import LoadingState from "@/components/layout/LoadingState";
 import { UsnList } from "@/features/usns";
@@ -11,21 +10,13 @@ interface UpgradesUsnContainerProps {
 const UpgradesUsnContainer: FC<UpgradesUsnContainerProps> = ({
   instanceIds,
 }) => {
-  const debug = useDebug();
   const { getUsnsQuery } = useUsns();
 
-  const {
-    data: getUsnsQueryResult,
-    isLoading: getUsnsQueryLoading,
-    error: getUsnsQueryError,
-  } = getUsnsQuery(
-    { computer_ids: instanceIds, show_packages: false },
-    { enabled: instanceIds.length > 0 },
-  );
-
-  if (getUsnsQueryError) {
-    debug(getUsnsQueryError);
-  }
+  const { data: getUsnsQueryResult, isLoading: getUsnsQueryLoading } =
+    getUsnsQuery(
+      { computer_ids: instanceIds, show_packages: false },
+      { enabled: instanceIds.length > 0 },
+    );
 
   return (
     <>

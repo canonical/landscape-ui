@@ -10,7 +10,6 @@ import {
 import PackageProfileDetails from "@/features/package-profiles/PackageProfileDetails";
 import PackageProfileListContextualMenu from "@/features/package-profiles/PackageProfileListContextualMenu";
 import { PackageProfile } from "@/features/package-profiles/types";
-import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { SelectOption } from "@/types/SelectOption";
@@ -27,18 +26,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
   packageProfiles,
   searchText,
 }) => {
-  const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
 
-  const {
-    data: getAccessGroupQueryResult,
-    error: getAccessGroupQueryResultError,
-  } = getAccessGroupQuery();
-
-  if (getAccessGroupQueryResultError) {
-    debug(getAccessGroupQueryResultError);
-  }
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
   const accessGroupOptions: SelectOption[] =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({

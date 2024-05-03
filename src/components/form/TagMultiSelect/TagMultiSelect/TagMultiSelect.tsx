@@ -16,7 +16,6 @@ import TagChips from "@/components/form/TagMultiSelect/TagChips";
 import TagList from "@/components/form/TagMultiSelect/TagList";
 import TagPrompt from "@/components/form/TagMultiSelect/TagPrompt";
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import { validationSchema } from "./constants";
 import classes from "./TagMultiSelect.module.scss";
@@ -48,7 +47,6 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
     bottom: "auto",
   });
 
-  const debug = useDebug();
   const { getAllInstanceTagsQuery } = useInstances();
 
   const clickContainerRef = useRef<HTMLDivElement>(null);
@@ -114,13 +112,8 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
 
   const {
     data: getAllInstanceTagsQueryResult,
-    error: getAllInstanceTagsQueryError,
     isLoading: getAllInstanceTagsQueryLoading,
   } = getAllInstanceTagsQuery();
-
-  if (getAllInstanceTagsQueryError) {
-    debug(getAllInstanceTagsQueryError);
-  }
 
   const filteredTags = useMemo(() => {
     if (!getAllInstanceTagsQueryResult) {

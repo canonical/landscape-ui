@@ -10,22 +10,15 @@ import { Button } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
 import { useNavigate } from "react-router-dom";
 import useInstances from "@/hooks/useInstances";
-import useDebug from "@/hooks/useDebug";
 
 const AlertNotificationsPage: FC = () => {
   const navigate = useNavigate();
-  const debug = useDebug();
   const { getAlertsSummaryQuery } = useAlerts();
   const { getPendingInstancesQuery } = useInstances();
 
-  const {
-    data: alertsSummaryData,
-    isLoading,
-    error: getAlertsSummaryQueryError,
-  } = getAlertsSummaryQuery();
+  const { data: alertsSummaryData, isLoading } = getAlertsSummaryQuery();
   const {
     data: getPendingInstancesQueryResult,
-    error: getPendingInstancesQueryError,
     isLoading: getPendingInstancesQueryLoading,
   } = getPendingInstancesQuery(
     {},
@@ -35,13 +28,6 @@ const AlertNotificationsPage: FC = () => {
       ),
     },
   );
-
-  if (getAlertsSummaryQueryError) {
-    debug(getAlertsSummaryQueryError);
-  }
-  if (getPendingInstancesQueryError) {
-    debug(getPendingInstancesQueryError);
-  }
 
   const alerts =
     alertsSummaryData?.data.alerts_summary.filter(
