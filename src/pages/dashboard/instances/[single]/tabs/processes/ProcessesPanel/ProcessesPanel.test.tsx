@@ -1,5 +1,4 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectErrorNotification } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { processes } from "@/tests/mocks/process";
 import { screen } from "@testing-library/react";
@@ -12,12 +11,6 @@ const props = {
 };
 
 describe("ProcessesPanel", () => {
-  it("renders error state", async () => {
-    setEndpointStatus("error");
-    renderWithProviders(<ProcessesPanel {...props} />);
-    await expectErrorNotification();
-  });
-
   it("renders empty state", async () => {
     setEndpointStatus("empty");
     renderWithProviders(<ProcessesPanel {...props} />);

@@ -66,7 +66,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
       hold_until: type === EditSnapType.Hold ? "" : undefined,
       deliver_immediately: true,
       randomize_delivery: false,
-      deliver_delay_window: EditSnapType.Hold ? 0 : undefined,
+      deliver_delay_window: 0,
       deliver_after: "",
     },
     validationSchema: Yup.object().shape(validationSchema),
@@ -77,7 +77,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
           action:
             type === EditSnapType.Uninstall
               ? "remove"
-              : EditSnapType.Switch
+              : type === EditSnapType.Switch
                 ? "refresh"
                 : type.toLowerCase(),
           snaps: installedSnaps.map((installedSnap) => ({
@@ -108,11 +108,9 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
             : values.deliver_after
               ? moment(values.deliver_after).format()
               : undefined,
-          deliver_after_window: values.randomize_delivery
+          deliver_after_window: !values.randomize_delivery
             ? undefined
-            : values.deliver_delay_window
-              ? values.deliver_delay_window
-              : undefined,
+            : values.deliver_delay_window,
         });
 
         closeSidePanel();

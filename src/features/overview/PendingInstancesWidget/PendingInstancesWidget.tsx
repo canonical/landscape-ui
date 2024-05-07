@@ -58,20 +58,35 @@ const PendingInstancesWidget: FC = () => {
         <p className="u-no-margin--bottom">Error loading data.</p>
       )}
       {!getPendingInstancesQueryLoading && !getPendingInstancesQueryError && (
-        <Button
-          type="button"
-          appearance="link"
-          className={classNames("u-no-margin u-no-padding", classes.link)}
-          onClick={handlePendingInstancesReview}
-          disabled={!getPendingInstancesQueryResult?.data.length}
-        >
-          <span className={classes.instancesNumber}>
-            {getPendingInstancesQueryResult?.data.length}
-          </span>{" "}
-          {getPendingInstancesQueryResult?.data.length !== 1
-            ? "instances"
-            : "instance"}
-        </Button>
+        <>
+          {getPendingInstancesQueryResult?.data.length > 0 ? (
+            <Button
+              type="button"
+              appearance="link"
+              className={classNames("u-no-margin u-no-padding", classes.link)}
+              onClick={handlePendingInstancesReview}
+            >
+              <span className={classes.instancesNumber}>
+                {getPendingInstancesQueryResult?.data.length}
+              </span>{" "}
+              {getPendingInstancesQueryResult?.data.length !== 1
+                ? "instances"
+                : "instance"}
+            </Button>
+          ) : (
+            <span
+              className={classNames(
+                "u-no-margin u-no-padding u-text--muted",
+                classes.link,
+              )}
+            >
+              <span className={classes.instancesNumber}>
+                {getPendingInstancesQueryResult?.data.length}
+              </span>{" "}
+              instances
+            </span>
+          )}
+        </>
       )}
     </div>
   );
