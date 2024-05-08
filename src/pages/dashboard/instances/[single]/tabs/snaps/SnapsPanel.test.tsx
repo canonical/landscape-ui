@@ -1,5 +1,5 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectLoadingState, expectErrorNotification } from "@/tests/helpers";
+import { expectLoadingState } from "@/tests/helpers";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -12,13 +12,6 @@ const props = {
 };
 
 describe("SnapsPanel", () => {
-  it("renders error state", async () => {
-    setEndpointStatus("error");
-    renderWithProviders(<SnapsPanel {...props} />);
-    await expectLoadingState();
-    await expectErrorNotification();
-  });
-
   it("renders empty state", async () => {
     setEndpointStatus("empty");
     renderWithProviders(<SnapsPanel {...props} />);

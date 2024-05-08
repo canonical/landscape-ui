@@ -4,6 +4,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import AlertsContainer from "./AlertsContainer";
 import { widgetAlerts } from "./constants";
+import { expectErrorNotification } from "@/tests/helpers";
 
 describe("AlertsContainer", () => {
   it("renders AlertsContainer", async () => {
@@ -21,7 +22,6 @@ describe("AlertsContainer", () => {
       const alertLabel = screen.getByText(widgetAlert.label);
       expect(alertLabel).toBeInTheDocument();
     }
-    const errors = await screen.findAllByText("Error loading data.");
-    expect(errors).toHaveLength(widgetAlerts.length);
+    await expectErrorNotification();
   });
 });

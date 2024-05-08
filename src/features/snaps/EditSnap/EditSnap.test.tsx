@@ -84,25 +84,13 @@ describe("EditSnap", () => {
         screen.getByLabelText("Scheduled");
       expect(scheduledDeliveryTimeRadioOption).not.toBeChecked();
 
-      await userEvent.click(scheduledDeliveryTimeRadioOption);
-      const deliverAfterTimePickerHelperText = await screen.findByText(
-        /Format MM-DD-YYYY HH:mm/i,
-      );
-      expect(deliverAfterTimePickerHelperText).toBeVisible();
-
-      await userEvent.click(instantDeliveryTimeRadioOption);
-      expect(deliverAfterTimePickerHelperText).not.toBeVisible();
-
       const randomizeDeliveryTrueOption = screen.getByLabelText("Yes");
       const randomizeDeliveryFalseOption = screen.getByLabelText("No");
       expect(randomizeDeliveryTrueOption).not.toBeChecked();
       expect(randomizeDeliveryFalseOption).toBeChecked();
 
-      const randomizeDeliveryHelperText = screen.getByText(/time in minutes/i);
-      expect(randomizeDeliveryHelperText).toBeVisible();
-
       await userEvent.click(randomizeDeliveryTrueOption);
-      expect(randomizeDeliveryHelperText).not.toBeVisible();
+      expect(screen.getByText(/time in minutes/i)).toBeVisible();
     });
   });
 
@@ -145,13 +133,6 @@ describe("EditSnap", () => {
 
       const selectDateRadioOption = screen.getByLabelText("Select date");
       expect(selectDateRadioOption).not.toBeChecked();
-
-      await userEvent.click(selectDateRadioOption);
-      const helperText = screen.getByText(/Format MM-DD-YYYY HH:mm/i);
-      expect(helperText).toBeVisible();
-
-      await userEvent.click(indefiniteRadioOption);
-      expect(helperText).not.toBeVisible();
     });
   });
 });

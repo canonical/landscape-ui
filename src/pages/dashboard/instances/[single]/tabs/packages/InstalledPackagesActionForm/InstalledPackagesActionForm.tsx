@@ -99,7 +99,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
       deliver_after: values.deliver_immediately
         ? undefined
         : `${values.deliver_after}:00Z`,
-      deliver_delay_window: values.randomize_delivery
+      deliver_delay_window: !values.randomize_delivery
         ? undefined
         : values.deliver_delay_window,
     };
@@ -212,7 +212,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
             />
           )}
           <span className={classNames(classes.bold, classes.marginTop)}>
-            Randomise delivery
+            Randomise delivery over a time window
           </span>
           <div className={classes.radioGroup}>
             <Input

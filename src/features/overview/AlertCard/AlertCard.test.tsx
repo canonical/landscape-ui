@@ -1,6 +1,6 @@
 import { STATUSES } from "@/pages/dashboard/instances/InstanceStatusLabel/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectLoadingState } from "@/tests/helpers";
+import { expectErrorNotification, expectLoadingState } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
@@ -30,8 +30,6 @@ describe("AlertCard", () => {
     expect(alertLabel).toBeInTheDocument();
 
     await expectLoadingState();
-
-    const error = screen.getByText(/error loading data./i);
-    expect(error).toBeInTheDocument();
+    await expectErrorNotification();
   });
 });

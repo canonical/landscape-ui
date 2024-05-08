@@ -37,9 +37,7 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ instanceId }) => {
 
   return (
     <>
-      {!search && isLoading && currentPage === 1 && pageSize === 20 && (
-        <LoadingState />
-      )}
+      {!search && isLoading && <LoadingState />}
       {!isLoading &&
         !search &&
         (!getProcessesQueryResult ||
@@ -48,10 +46,9 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ instanceId }) => {
         )}
 
       {(search ||
-        currentPage !== 1 ||
-        pageSize !== 20 ||
-        (getProcessesQueryResult &&
-          getProcessesQueryResult?.data.results.length > 0)) && (
+        (!isLoading &&
+          getProcessesQueryResult &&
+          getProcessesQueryResult.data.results.length > 0)) && (
         <>
           <ProcessesHeader
             instanceId={instanceId}

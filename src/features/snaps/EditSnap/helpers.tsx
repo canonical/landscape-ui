@@ -21,9 +21,10 @@ type FormValidationSchemaShape = {
 const commonValidationSchema = {
   deliver_immediately: Yup.string(),
   randomize_delivery: Yup.string(),
-  deliver_delay_window: Yup.number()
-    .min(0, "Delivery delay must be greater than or equal to 0")
-    .required("Delivery delay is required"),
+  deliver_delay_window: Yup.number().min(
+    0,
+    "Delivery delay must be greater than or equal to 0",
+  ),
   deliver_after: Yup.string().test({
     test: (value) => {
       if (!value) {
