@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "@canonical/react-components";
 import classes from "./OverflowingCell.module.scss";
+const STRING_TUNCATION_LIMIT = 120;
 
 interface OverflowingCellProps {
   items: ReactNode[];
@@ -11,8 +12,7 @@ const OverflowingCell: FC<OverflowingCellProps> = ({ items }) => {
   const [overflowingItemsAmount, setOverflowingItemsAmount] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
-
-  const isString = items[0] && typeof items[0] === "string";
+  const isSingleStringItem = items.length === 1 && typeof items[0] === "string";
   const containerRef = useRef<HTMLDivElement>(null);
 
   const overflowingItemsCount = () => {
@@ -66,19 +66,19 @@ const OverflowingCell: FC<OverflowingCellProps> = ({ items }) => {
         ref={containerRef}
         className={classNames(classes.truncated, {
           [classes.hidden]: !isExpanded,
-          [classes.expandedString]: isString && isExpanded,
+          [classes.expandedString]: isSingleStringItem && isExpanded,
           [classes.showScroll]: isOverflowing,
         })}
       >
-        {isString ? (
+        {isSingleStringItem ? (
           <>
-            {(items[0] as string).slice(0, 120)}
+            {(items[0] as string).slice(0, STRING_TUNCATION_LIMIT)}
             <span
               className={classNames({
                 [classes.hidden]: !isExpanded,
               })}
             >
-              {(items[0] as string).slice(120)}
+              {(items[0] as string).slice(STRING_TUNCATION_LIMIT)}
             </span>
           </>
         ) : (
@@ -89,28 +89,31 @@ const OverflowingCell: FC<OverflowingCellProps> = ({ items }) => {
           ))
         )}
       </div>
-      {(overflowingItemsAmount > 0 || isString) && !isExpanded && (
-        <Button
-          type="button"
-          appearance="base"
-          onClick={() => {
-            setIsExpanded(true);
-          }}
-          className={classNames(
-            "u-no-margin--bottom u-no-padding",
-            classes.count,
-          )}
-        >
-          {isString ? (
-            <span className="p-text--small u-text--muted">show more</span>
-          ) : (
-            <>
-              <span className="u-text--muted"> +</span>
-              <span className="u-text--muted">{overflowingItemsAmount}</span>
-            </>
-          )}
-        </Button>
-      )}
+      {(overflowingItemsAmount > 0 ||
+        (isSingleStringItem &&
+          (items[0] as string).length > STRING_TUNCATION_LIMIT)) &&
+        !isExpanded && (
+          <Button
+            type="button"
+            appearance="base"
+            onClick={() => {
+              setIsExpanded(true);
+            }}
+            className={classNames(
+              "u-no-margin--bottom u-no-padding",
+              classes.count,
+            )}
+          >
+            {isSingleStringItem ? (
+              <span className="p-text--small u-text--muted">show more</span>
+            ) : (
+              <>
+                <span className="u-text--muted"> +</span>
+                <span className="u-text--muted">{overflowingItemsAmount}</span>
+              </>
+            )}
+          </Button>
+        )}
     </div>
   );
 };

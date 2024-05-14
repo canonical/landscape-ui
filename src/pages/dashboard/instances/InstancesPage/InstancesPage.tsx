@@ -149,7 +149,7 @@ const InstancesPage: FC = () => {
                 disabled={rebootInstancesLoading || 0 === selected.length}
               >
                 <Icon name="restart" />
-                <span>Reboot</span>
+                <span>Restart</span>
               </Button>
               <Button
                 className="p-segmented-control__button"
