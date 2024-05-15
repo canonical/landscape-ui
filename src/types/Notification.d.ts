@@ -10,6 +10,7 @@ export interface Notification {
   message: string;
   type: ValueOf<typeof NotificationSeverity>;
   actions?: NotificationAction[];
+  error?: unknown;
   title?: string;
 }
 

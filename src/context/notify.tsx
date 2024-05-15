@@ -6,8 +6,9 @@ import React, {
   useState,
 } from "react";
 import { useLocation } from "react-router-dom";
-import useNotificationHelper from "../hooks/useNotificationHelper";
-import { NotificationHelper } from "../types/Notification";
+import { ROOT_PATH } from "@/constants";
+import useNotificationHelper from "@/hooks/useNotificationHelper";
+import { NotificationHelper } from "@/types/Notification";
 
 interface NotifyContextProps {
   notify: NotificationHelper;
@@ -43,12 +44,12 @@ const NotifyProvider: FC<NotifyProviderProps> = ({ children }) => {
   const notify = useNotificationHelper();
   const { pathname } = useLocation();
 
-  if (!notify) {
-    return null;
-  }
-
   useEffect(() => {
-    return () => notify.clear();
+    if (pathname === `${ROOT_PATH}login`) {
+      return;
+    }
+
+    notify.clear();
   }, [pathname]);
 
   return (

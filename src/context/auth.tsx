@@ -1,7 +1,9 @@
-import React, { FC, ReactNode, useEffect, useState } from "react";
+import { AxiosError } from "axios";
+import React, { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ROOT_PATH } from "../constants";
 import { useQueryClient } from "@tanstack/react-query";
+import { ROOT_PATH } from "@/constants";
+import useNotify from "@/hooks/useNotify";
 
 const AUTH_STORAGE_KEY = "_landscape_auth";
 
@@ -70,6 +72,15 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { notify } = useNotify();
+
+  const isAuthError = useMemo(
+    () =>
+      notify.notification?.error &&
+      notify.notification.error instanceof AxiosError &&
+      notify.notification.error.response?.status === 401,
+    [notify.notification],
+  );
 
   useEffect(() => {
     const maybeSavedState = getFromLocalStorage(AUTH_STORAGE_KEY);
@@ -114,6 +125,10 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     navigate(`${ROOT_PATH}login`, { replace: true });
     queryClient.clear();
   };
+
+  if (isAuthError) {
+    handleLogout();
+  }
 
   return (
     <AuthContext.Provider

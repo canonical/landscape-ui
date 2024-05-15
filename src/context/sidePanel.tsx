@@ -58,6 +58,10 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     setBody(null);
     setSize("small");
     sidePanel.setOpen(false);
+  };
+
+  const handleSidePanelClose = () => {
+    handleClose();
     notify.clear();
   };
 
@@ -79,7 +83,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
       value={{
         changeSidePanelSize: (size) => setSize(size),
         changeSidePanelTitleLabel: (title) => setTitleLabel(title),
-        closeSidePanel: handleClose,
+        closeSidePanel: handleSidePanelClose,
         setSidePanelContent: handleContentChange,
       }}
     >
@@ -102,7 +106,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
           </p>
           <div className="p-panel__controls">
             <button
-              onClick={handleClose}
+              onClick={handleSidePanelClose}
               className="p-button--base u-no-margin--bottom has-icon"
               aria-label="Close side panel"
             >

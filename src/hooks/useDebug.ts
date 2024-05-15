@@ -1,8 +1,7 @@
-import { IS_DEV_ENV } from "../constants";
-import useNotify from "./useNotify";
 import { AxiosError } from "axios";
-import { ApiError } from "../types/ApiError";
-import useAuth from "./useAuth";
+import { IS_DEV_ENV } from "@/constants";
+import { ApiError } from "@/types/ApiError";
+import useNotify from "./useNotify";
 
 const isApiError = (error: unknown): error is ApiError => {
   return (
@@ -17,7 +16,6 @@ const isApiError = (error: unknown): error is ApiError => {
 
 export default function useDebug() {
   const { notify } = useNotify();
-  const { logout } = useAuth();
 
   return (error: unknown) => {
     let message: string;
@@ -29,10 +27,6 @@ export default function useDebug() {
     ) {
       message = error.response.data.message;
 
-      if (401 === error.response.status) {
-        logout();
-      }
-
       if (IS_DEV_ENV) {
         console.error(error.response);
       }
@@ -42,7 +36,7 @@ export default function useDebug() {
       message = "Unknown error";
     }
 
-    notify.error({ message });
+    notify.error({ message, error });
 
     if (IS_DEV_ENV) {
       console.error(message, error);

@@ -16,7 +16,8 @@ const useNotificationHelper = (): NotificationHelper => {
     error: ({ message, error, actions, title }) =>
       setDeduplicated({
         actions,
-        message: error ? `${message} ${error.toString()}` : message,
+        error,
+        message,
         title,
         type: "negative",
       }),
