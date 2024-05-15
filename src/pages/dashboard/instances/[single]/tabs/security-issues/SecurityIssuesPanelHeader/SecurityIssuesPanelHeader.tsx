@@ -52,7 +52,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 
       notify.success({
         title: `You queued packages to be upgraded`,
-        message: `Affected packages for ${usns.length > 1 ? `${usns.length} selected security issues` : `"${usns[0]}" security issue`} will be upgraded and are queued in Activities`,
+        message: `Affected packages for ${usns.length === 1 ? `"${usns[0]}" security issue` : `${usns.length} selected security issues`} will be upgraded and are queued in Activities`,
         actions: [
           {
             label: "View details",
@@ -70,7 +70,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
   const handleUpgradePackagesDialog = () => {
     confirmModal({
       title: "Upgrade affected packages",
-      body: `This will upgrade affected packages for ${usns.length > 1 ? `${usns.length} selected security issues` : `"${usns[0]}" security issue`}.`,
+      body: `This will upgrade affected packages for ${usns.length === 1 ? `"${usns[0]}" security issue` : `${usns.length} selected security issues`}.`,
       buttons: [
         <Button
           key="upgrade"

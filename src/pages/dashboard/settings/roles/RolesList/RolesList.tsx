@@ -57,7 +57,7 @@ const RolesList: FC<RolesListProps> = ({ roleList }) => {
             <>
               <br />
               <span className={classes.bold}>
-                {`This will affect ${role.persons.length} administrator${role.persons.length > 1 ? "s" : ""}`}
+                {`This will affect ${role.persons.length} administrator${role.persons.length === 1 ? "" : "s"}`}
               </span>
             </>
           )}

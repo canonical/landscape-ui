@@ -3,12 +3,11 @@ import useAuth from "../../hooks/useAuth";
 import { Button } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   return (
     <div
       className={classNames(
@@ -16,45 +15,49 @@ const UserInfo: FC = () => {
         classes.container,
       )}
     >
-      <Button
-        appearance="base"
-        className={classNames(
-          "p-side-navigation__link is-dark u-no-margin--bottom u-no-margin--right",
-          classes.button,
-        )}
-        onClick={() => {
-          navigate(`${ROOT_PATH}user`);
-        }}
+      <Link
+        to={`${ROOT_PATH}user`}
+        className={classNames("p-side-navigation__link", classes.link)}
       >
-        <i className="p-icon--account" />
+        <i
+          className={classNames(
+            `p-icon--account is-light p-side-navigation__icon`,
+            classes.icon,
+          )}
+        />
         <span className={classNames("p-side-navigation__label", classes.label)}>
           {user?.name ?? "Unknown user"}
         </span>
-      </Button>
-      <Button
-        appearance="base"
-        className={classNames(
-          "p-side-navigation__link is-dark u-no-margin--bottom u-no-margin--right",
-          classes.button,
-        )}
-        onClick={() => {
-          navigate(`${ROOT_PATH}alerts`);
-        }}
+      </Link>
+      <Link
+        className={classNames("p-side-navigation__link", classes.link)}
+        to={`${ROOT_PATH}alerts`}
       >
-        <i className="p-icon--bell" />
+        <i
+          className={classNames(
+            `p-icon--bell is-light p-side-navigation__icon`,
+            classes.icon,
+          )}
+        />
         <span className={classNames("p-side-navigation__label", classes.label)}>
           Alerts
         </span>
-      </Button>
+      </Link>
       <Button
         appearance="base"
         className={classNames(
-          "p-side-navigation__link is-dark u-no-margin--bottom u-no-margin--right",
-          classes.button,
+          "p-side-navigation__link",
+          classes.link,
+          classes.logoutButton,
         )}
         onClick={logout}
       >
-        <i className="p-icon--logout" />
+        <i
+          className={classNames(
+            `p-icon--logout is-light p-side-navigation__icon`,
+            classes.icon,
+          )}
+        />
         <span className={classNames("p-side-navigation__label", classes.label)}>
           Log out
         </span>

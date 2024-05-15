@@ -45,7 +45,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
         computer_id: instanceId,
       });
       notify.success({
-        message: `Process${selectedPids.length > 1 ? "es" : ""} successfully ended`,
+        message: `${selectedPids.length === 1 ? "Process" : "Processes"} successfully ended`,
       });
       setSelectedPids([]);
     } catch (error) {
@@ -60,7 +60,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
         computer_id: instanceId,
       });
       notify.success({
-        message: `Process${selectedPids.length > 1 ? "es" : ""} successfully killed`,
+        message: `${selectedPids.length === 1 ? "Process" : "Processes"} successfully killed`,
       });
       setSelectedPids([]);
     } catch (error) {

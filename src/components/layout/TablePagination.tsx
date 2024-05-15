@@ -67,7 +67,7 @@ const TablePagination: FC<TablePaginationProps> = ({
           )}
         >
           {`Showing ${currentItemCount} of ${totalItems} ${
-            totalItems > 1 ? "results" : "result"
+            totalItems === 1 ? "result" : "results"
           }`}
         </p>
       )}

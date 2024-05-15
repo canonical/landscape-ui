@@ -104,8 +104,8 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   const handleApproveActivitiesDialog = () => {
     confirmModal({
-      title: "Approve activities",
-      body: "Are you sure you want to approve selected activities?",
+      title: `Approve ${selectedIds.length === 1 ? "activity" : "activities"}`,
+      body: `Are you sure you want to approve selected ${selectedIds.length === 1 ? "activity" : "activities"}?`,
       buttons: [
         <Button
           key="approve"
@@ -130,8 +130,8 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   const handleCancelActivitiesDialog = () => {
     confirmModal({
-      title: "Cancel activities",
-      body: "Are you sure you want to cancel selected activities?",
+      title: `Cancel ${selectedIds.length === 1 ? "activity" : "activities"}`,
+      body: `Are you sure you want to cancel selected ${selectedIds.length === 1 ? "activity" : "activities"}?`,
       buttons: [
         <Button
           key="cancel"
@@ -156,8 +156,8 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   const handleRedoActivitiesDialog = () => {
     confirmModal({
-      title: "Redo activities",
-      body: "Are you sure you want to redo selected activities?",
+      title: `Redo ${selectedIds.length === 1 ? "activity" : "activities"}`,
+      body: `Are you sure you want to redo selected ${selectedIds.length === 1 ? "activity" : "activities"}?`,
       buttons: [
         <Button key="redo" appearance="positive" onClick={handleRedoActivities}>
           Redo
@@ -178,8 +178,8 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   const handleUndoActivitiesDialog = () => {
     confirmModal({
-      title: "Undo activities",
-      body: "Are you sure you want to undo selected activities?",
+      title: `Undo ${selectedIds.length === 1 ? "activity" : "activities"}`,
+      body: `Are you sure you want to undo selected ${selectedIds.length === 1 ? "activity" : "activities"}?`,
       buttons: [
         <Button key="undo" appearance="positive" onClick={handleUndoActivities}>
           Undo

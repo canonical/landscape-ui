@@ -45,12 +45,12 @@ const InstancesPanelHeader: FC<InstancesPanelHeaderProps> = ({
   const handleDeleteChildInstancesDialog = () => {
     confirmModal({
       title: `Delete ${
-        selectedInstances.length > 1
-          ? "selected instances"
-          : selectedInstances[0].title
+        selectedInstances.length === 1
+          ? selectedInstances[0].title
+          : "selected instances"
       }`,
-      body: `This will remove selected WSL instance${
-        selectedInstances.length > 1 ? "s" : ""
+      body: `This will remove selected WSL ${
+        selectedInstances.length === 1 ? "instance" : "instances"
       } from the host and Landscape`,
       buttons: [
         <Button

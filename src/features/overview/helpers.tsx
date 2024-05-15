@@ -1,4 +1,5 @@
 import { ActiveElement, Chart } from "chart.js";
+
 export interface IColors {
   security: {
     default: string;
@@ -15,8 +16,8 @@ export interface IColors {
 }
 
 export enum Colors {
-  BLUE = "#335280",
-  DISABLED_BLUE = "#abb7ca",
+  GREEN = "#0e8420",
+  DISABLED_GREEN = "#b7dabc",
   ORANGE = "#f99b11",
   DISABLED_ORANGE = "#fad59d",
   RED = "#da0b0b",
@@ -45,8 +46,8 @@ export const chartLabelToColorLabel = (label: string): keyof IColors => {
 
 export const labelColors: IColors = {
   upToDate: {
-    default: Colors.BLUE,
-    disabled: Colors.DISABLED_BLUE,
+    default: Colors.GREEN,
+    disabled: Colors.DISABLED_GREEN,
   },
   regular: {
     default: Colors.ORANGE,

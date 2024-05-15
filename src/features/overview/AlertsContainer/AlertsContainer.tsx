@@ -8,7 +8,7 @@ const AlertsContainer: FC = () => {
   return (
     <div className={classes.container}>
       {widgetAlerts.map((alert, index) => (
-        <AlertCard key={index} alertQueryData={alert} />
+        <AlertCard key={index} {...alert} />
       ))}
       <PendingInstancesWidget />
     </div>

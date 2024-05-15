@@ -1,5 +1,5 @@
 import { ROOT_PATH } from "@/constants";
-import { STATUSES } from "@/pages/dashboard/instances/InstanceStatusLabel/constants";
+import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
 import { AlertSummary } from "@/types/Alert";
 import { Button, Link, List } from "@canonical/react-components";
 import { FC, Suspense } from "react";
@@ -30,7 +30,7 @@ const AlertsList: FC<AlertsListProps> = ({ alerts, pendingInstances }) => {
 
   const listItems = alerts.map((alert) => (
     <div key={alert.alert_type} className={classes.listItem}>
-      {STATUSES[alert.alert_type].icon}
+      <i className={`p-icon--${STATUSES[alert.alert_type].icon.color}`} />
       <Link
         href={`${ROOT_PATH}instances?status=${STATUSES[alert.alert_type].filterValue}`}
         className={classNames(
@@ -45,20 +45,7 @@ const AlertsList: FC<AlertsListProps> = ({ alerts, pendingInstances }) => {
   if (pendingInstances.length > 0) {
     listItems.push(
       <div className={classes.listItem}>
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M5.5 3.02393H4V12.9917H5.5V3.02393ZM11.5 3.02393H10V12.9917H11.5V3.02393Z"
-            fill="#24598F"
-          />
-        </svg>
+        <i className={`p-icon--${STATUSES.PendingComputers.icon.color}`} />
         <Button
           type="button"
           appearance="link"

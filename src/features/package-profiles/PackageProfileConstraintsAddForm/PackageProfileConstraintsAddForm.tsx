@@ -57,7 +57,7 @@ const PackageProfileConstraintsAddForm: FC<
       handleConstraintsEdit();
 
       notify.success({
-        message: `${constraints.length} package profile ${constraints.length > 1 ? "constraints" : "constraint"}  added successfully`,
+        message: `${constraints.length} package profile ${constraints.length === 1 ? "constraint" : "constraints"}  added successfully`,
         title: "Package profile constraints added",
       });
     } catch (error) {
@@ -78,8 +78,8 @@ const PackageProfileConstraintsAddForm: FC<
       <PackageProfileConstraintsBlock formik={formik} />
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText={`Add ${formik.values.constraints.length > 1 ? "constraints" : "constraint"}`}
-        submitButtonAriaLabel={`Add ${formik.values.constraints.length > 1 ? "constraints" : "constraint"} to "${profile.name}" profile`}
+        submitButtonText={`Add ${formik.values.constraints.length === 1 ? "constraint" : "constraints"}`}
+        submitButtonAriaLabel={`Add ${formik.values.constraints.length === 1 ? "constraint" : "constraints"} to "${profile.name}" profile`}
         cancelButtonDisabled={formik.isSubmitting}
       />
     </Form>

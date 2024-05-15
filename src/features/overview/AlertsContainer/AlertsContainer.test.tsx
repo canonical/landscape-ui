@@ -10,7 +10,7 @@ describe("AlertsContainer", () => {
   it("renders AlertsContainer", async () => {
     renderWithProviders(<AlertsContainer />);
     for (const widgetAlert of widgetAlerts) {
-      const alertLabel = screen.getByText(widgetAlert.label);
+      const alertLabel = screen.getByText(widgetAlert.alternateLabel!);
       expect(alertLabel).toBeInTheDocument();
     }
   });
@@ -19,7 +19,7 @@ describe("AlertsContainer", () => {
     setEndpointStatus("error");
     renderWithProviders(<AlertsContainer />);
     for (const widgetAlert of widgetAlerts) {
-      const alertLabel = screen.getByText(widgetAlert.label);
+      const alertLabel = screen.getByText(widgetAlert.alternateLabel!);
       expect(alertLabel).toBeInTheDocument();
     }
     await expectErrorNotification();
