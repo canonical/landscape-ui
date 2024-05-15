@@ -68,7 +68,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
         Header: "Content",
         Cell: ({ row: { original } }: CellProps<CommonPocket>) => (
           <>{`${original.package_count} ${
-            original.package_count !== 1 ? "packages" : "package"
+            original.package_count === 1 ? "package" : "packages"
           }`}</>
         ),
       },
@@ -135,7 +135,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
             label="Content"
             value={
               <>{`${pocket.package_count} ${
-                pocket.package_count !== 1 ? "packages" : "package"
+                pocket.package_count === 1 ? "package" : "packages"
               }`}</>
             }
           />

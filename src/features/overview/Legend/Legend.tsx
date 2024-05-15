@@ -2,14 +2,10 @@ import { Chart, ChartData, LegendItem } from "chart.js";
 import classNames from "classnames";
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import {
-  chartLabelToColorLabel,
-  handleChartMouseLeave,
-  handleChartMouseOver,
-  labelColors,
-} from "../helpers";
+import { handleChartMouseLeave, handleChartMouseOver } from "../helpers";
 import classes from "./Legend.module.scss";
-import { getNavigationLink } from "./helpers";
+import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
+import { ROOT_PATH } from "@/constants";
 
 interface LegendProps {
   data: ChartData<"pie">;
@@ -40,6 +36,10 @@ const Legend: FC<LegendProps> = ({
       >
         {chartInstance.legend?.legendItems?.map(
           (item: LegendItem, index: number) => {
+            const statusItem =
+              Object.values(STATUSES).find(
+                (status) => status?.alternateLabel === item.text,
+              ) ?? STATUSES["Unknown"];
             return (
               <div
                 key={index}
@@ -56,17 +56,16 @@ const Legend: FC<LegendProps> = ({
                 }}
               >
                 <div className={classes.legendItem__label}>
-                  <div
-                    className={classes.legendItem__circle}
-                    style={{
-                      backgroundColor:
-                        labelColors[chartLabelToColorLabel(item.text)].default,
-                    }}
+                  <i
+                    className={classNames(
+                      `p-icon--${statusItem.icon.color}`,
+                      classes.legendItem__icon,
+                    )}
                   />
                   <span>{item.text}</span>
                 </div>
                 <Link
-                  to={getNavigationLink(item.text)}
+                  to={`${ROOT_PATH}instances?status=${statusItem.filterValue}`}
                   className={classNames(
                     "u-no-margin u-no-padding",
                     classes.link,

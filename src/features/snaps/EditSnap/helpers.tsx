@@ -154,5 +154,5 @@ export const getSuccessMessage = (snapCount: number, action: EditSnapType) => {
       break;
   }
 
-  return `You queued ${snapCount} snap${snapCount === 1 ? "" : "s"} to be ${verb}.`;
+  return `You queued ${snapCount} ${snapCount === 1 ? "snap" : "snaps"} to be ${verb}.`;
 };

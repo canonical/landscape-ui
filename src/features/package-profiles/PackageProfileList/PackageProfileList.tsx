@@ -109,7 +109,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${original.computers["non-compliant"].length} instance${original.computers["non-compliant"].length === 1 ? " " : "s"}`}
+            {`${original.computers["non-compliant"].length} ${original.computers["non-compliant"].length === 1 ? "instance" : "instances"}`}
           </>
         ),
       },
@@ -125,7 +125,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${original.computers["pending"]?.length ?? 0} instance${original.computers["pending"]?.length === 1 ? " " : "s"}`}
+            {`${original.computers["pending"]?.length ?? 0} ${original.computers["pending"]?.length === 1 ? "instance" : "instances"}`}
           </>
         ),
       },
@@ -134,7 +134,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         Header: "Associated",
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${original.computers["constrained"].length} instance${original.computers["constrained"].length === 1 ? " " : "s"}`}
+            {`${original.computers["constrained"].length} ${original.computers["constrained"].length === 1 ? "instance" : "instances"}`}
           </>
         ),
       },

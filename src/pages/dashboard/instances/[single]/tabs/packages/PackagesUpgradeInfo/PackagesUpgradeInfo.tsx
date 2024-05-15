@@ -32,9 +32,9 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
             <span>apply </span>
             <span className={classes.bold}>{securityUpgradePackageCount}</span>
             <span>
-              {securityUpgradePackageCount > 1
-                ? " security upgrades"
-                : " security upgrade"}
+              {securityUpgradePackageCount === 1
+                ? " security upgrade"
+                : " security upgrades"}
             </span>
           </li>
         )}
@@ -43,9 +43,9 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
             <span>apply </span>
             <span className={classes.bold}>{regularUpgradePackageCount}</span>
             <span>
-              {regularUpgradePackageCount > 1
-                ? " regular upgrades"
-                : " regular upgrade"}
+              {regularUpgradePackageCount === 1
+                ? " regular upgrade"
+                : " regular upgrades"}
             </span>
           </li>
         )}
@@ -55,9 +55,9 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
           <span>No upgrades for </span>
           <span className={classes.bold}>{noUpgradePackageCount}</span>
           <span>
-            {noUpgradePackageCount > 1
-              ? " packages needed."
-              : " package needed."}
+            {noUpgradePackageCount === 1
+              ? " package needed."
+              : " packages needed."}
           </span>
         </p>
       )}

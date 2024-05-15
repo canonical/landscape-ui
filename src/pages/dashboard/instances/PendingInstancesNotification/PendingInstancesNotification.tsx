@@ -35,7 +35,7 @@ const PendingInstancesNotification: FC = () => {
     <Notification severity="information" title="Pending instances">
       <span>
         {`You currently have ${getPendingInstancesQueryResult.data.length} pending
-          	${getPendingInstancesQueryResult.data.length > 1 ? "instances" : "instance"}
+          	${getPendingInstancesQueryResult.data.length === 1 ? "instance" : "instances"}
           	awaiting your review and approval. `}
       </span>
       <Button

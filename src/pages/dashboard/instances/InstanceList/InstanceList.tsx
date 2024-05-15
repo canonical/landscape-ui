@@ -1,14 +1,18 @@
 import classNames from "classnames";
 import moment from "moment";
-import { FC, useMemo } from "react";
+import { FC, ReactNode, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { CellProps, Column, Row } from "react-table";
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import {
+  CheckboxInput,
+  Icon,
+  ModularTable,
+  Tooltip,
+} from "@canonical/react-components";
 import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT, ROOT_PATH } from "@/constants";
-import InstanceStatusCell from "@/pages/dashboard/instances/InstanceStatusCell";
-import InstanceUpgradesCell from "@/pages/dashboard/instances/InstanceUpgradesCell";
 import { Instance } from "@/types/Instance";
 import classes from "./InstanceList.module.scss";
+import { STATUSES } from "./constants";
 
 interface InstanceListProps {
   instances: Instance[];
@@ -89,6 +93,91 @@ const InstanceList: FC<InstanceListProps> = ({
     return selectedInstancesIds.includes(instance.id) ? "checked" : "unchecked";
   };
 
+  const getUpgradesRowIconAndLabel = (instance: Instance) => {
+    if (
+      !instance.upgrades ||
+      (!instance.upgrades.security && !instance.upgrades.regular)
+    ) {
+      return {
+        icon: STATUSES.UpToDate.icon.color,
+        label: STATUSES.UpToDate.label,
+      };
+    } else if (!instance.upgrades.security) {
+      return {
+        icon: STATUSES.PackageUpgradesAlert.icon.color,
+        label: (
+          <>
+            {instance.upgrades.regular} regular{" "}
+            {instance.upgrades.regular === 1 ? "upgrade" : "upgrades"}
+          </>
+        ),
+      };
+    } else if (!instance.upgrades.regular) {
+      return {
+        icon: STATUSES.SecurityUpgradesAlert.icon.color,
+        label: (
+          <>
+            {instance.upgrades.security} security{" "}
+            {instance.upgrades.security === 1 ? "upgrade" : "upgrades"}
+          </>
+        ),
+      };
+    } else {
+      const label = `${instance.upgrades.security} security, ${instance.upgrades.regular} regular ${instance.upgrades.regular === 1 ? "upgrade" : "upgrades"}`;
+      return {
+        icon: STATUSES.SecurityUpgradesAlert.icon.color,
+        label: <>{label}</>,
+      };
+    }
+  };
+
+  const getStatusRowIconAndLabel = (
+    instance: Instance,
+  ): { label: ReactNode; icon?: string } => {
+    const filteredAlerts = (instance?.alerts ?? []).filter(
+      ({ type }) =>
+        !["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(type),
+    );
+    if (instance.reboot_required_flag) {
+      return {
+        icon: `${STATUSES.ComputerRebootAlert.icon.color}`,
+        label:
+          STATUSES.ComputerRebootAlert.alternateLabel ??
+          STATUSES.ComputerRebootAlert.label,
+      };
+    }
+    if (0 === filteredAlerts.length) {
+      return {
+        icon: `${STATUSES.Online.icon.color}`,
+        label: STATUSES.Online.alternateLabel ?? STATUSES.Online.label,
+      };
+    }
+
+    if (1 === filteredAlerts.length) {
+      return {
+        icon: `${STATUSES[filteredAlerts[0].type].icon.color ?? STATUSES.Unknown.icon.color}`,
+        label: <>{filteredAlerts[0].summary}</>,
+      };
+    }
+
+    return {
+      label: (
+        <span className={classes.statusContainer}>
+          {filteredAlerts.map(({ type, summary }) => (
+            <span className={classes.statusListItem} key={type}>
+              <Tooltip message={summary}>
+                <Icon
+                  className="u-no-margin--left"
+                  name={`${STATUSES[type].icon.color ?? STATUSES.Unknown.icon.color}`}
+                />
+              </Tooltip>
+            </span>
+          ))}
+        </span>
+      ),
+    };
+  };
+
   const columns = useMemo<Column<Instance>[]>(
     () => [
       {
@@ -145,15 +234,25 @@ const InstanceList: FC<InstanceListProps> = ({
       {
         Header: "Status",
         accessor: "reboot_required_flag",
-        Cell: ({ row }: CellProps<Instance>) => (
-          <InstanceStatusCell instance={row.original} />
-        ),
+        Cell: ({ row: { original } }: CellProps<Instance>) => {
+          const { label } = getStatusRowIconAndLabel(original);
+          return label;
+        },
+        getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
+          const { icon } = getStatusRowIconAndLabel(original);
+          return icon;
+        },
       },
       {
         Header: "Upgrades",
-        Cell: ({ row }: CellProps<Instance>) => (
-          <InstanceUpgradesCell instance={row.original} />
-        ),
+        Cell: ({ row: { original } }: CellProps<Instance>) => {
+          const { label } = getUpgradesRowIconAndLabel(original);
+          return label;
+        },
+        getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
+          const { icon } = getUpgradesRowIconAndLabel(original);
+          return icon;
+        },
       },
       {
         accessor: "distribution",

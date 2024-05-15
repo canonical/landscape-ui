@@ -57,8 +57,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       closeSidePanel();
 
       notify.success({
-        message: `${instanceIds.length} pending ${instanceIds.length > 1 ? "instances" : "instance"} have been rejected to add to your ${userOrganisation} organisation.`,
-        title: `You have rejected ${instanceIds.length} pending ${instanceIds.length > 1 ? "instances" : "instance"}`,
+        message: `${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"} have been rejected to add to your ${userOrganisation} organisation.`,
+        title: `You have rejected ${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"}`,
       });
     } catch (error) {
       debug(error);
@@ -68,14 +68,14 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const handlePendingInstancesDialogReject = () => {
     confirmModal({
       title: "Reject pending instances",
-      body: `This will reject ${instanceIds.length} selected ${instanceIds.length > 1 ? "instances" : "instance"} to add to your ${userOrganisation} organisation.`,
+      body: `This will reject ${instanceIds.length} selected ${instanceIds.length === 1 ? "instance" : "instances"} to add to your ${userOrganisation} organisation.`,
       buttons: [
         <Button
           key="reject"
           type="button"
           appearance="negative"
           onClick={handlePendingInstancesReject}
-          aria-label={`Reject selected ${instanceIds.length > 1 ? "instances" : "instance"}`}
+          aria-label={`Reject selected ${instanceIds.length === 1 ? "instance" : "instances"}`}
         >
           Reject
         </Button>,
@@ -94,8 +94,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       closeSidePanel();
 
       notify.success({
-        message: `${instanceIds.length} pending ${instanceIds.length > 1 ? "instances" : "instance"} have been successfully added to your ${userOrganisation} organisation.`,
-        title: `You have approved ${instanceIds.length} pending ${instanceIds.length > 1 ? "instances" : "instance"}`,
+        message: `${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"} have been successfully added to your ${userOrganisation} organisation.`,
+        title: `You have approved ${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"}`,
       });
     } catch (error) {
       debug(error);
@@ -105,14 +105,14 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const handlePendingInstancesApproveDialog = () => {
     confirmModal({
       title: "Approve pending instances",
-      body: `This will approve ${instanceIds.length} selected ${instanceIds.length > 1 ? "instances" : "instance"} to add to your ${userOrganisation} organisation.`,
+      body: `This will approve ${instanceIds.length} selected ${instanceIds.length === 1 ? "instance" : "instances"} to add to your ${userOrganisation} organisation.`,
       buttons: [
         <Button
           key="approve"
           type="button"
           appearance="positive"
           onClick={handlePendingInstancesApprove}
-          aria-label={`Approve selected ${instanceIds.length > 1 ? "instances" : "instance"}`}
+          aria-label={`Approve selected ${instanceIds.length === 1 ? "instance" : "instances"}`}
         >
           Approve
         </Button>,

@@ -161,7 +161,7 @@ const PackageList: FC<PackageListProps> = ({
 
   const handleRemovePackagesDialog = () => {
     confirmModal({
-      body: `This will delete ${selectedPackages.length} selected ${selectedPackages.length > 1 ? "packages" : "package"} from ${pocket.name} pocket ${seriesName} series of ${distributionName} distribution`,
+      body: `This will delete ${selectedPackages.length} selected ${selectedPackages.length === 1 ? "package" : "packages"} from ${pocket.name} pocket ${seriesName} series of ${distributionName} distribution`,
       title: "Deleting packages from pocket",
       buttons: [
         <Button

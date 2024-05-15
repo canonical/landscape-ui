@@ -57,8 +57,8 @@ const PackageProfileConstraintsEditFormActions: FC<
       setSelectedIds([]);
 
       notify.success({
-        message: `${selectedIds.length} "${profile.name}" profile's ${selectedIds.length > 1 ? "constraints" : "constraint"} removed successfully`,
-        title: `Package profile ${selectedIds.length > 1 ? "constraints" : "constraint"} removed`,
+        message: `${selectedIds.length} "${profile.name}" profile's ${selectedIds.length === 1 ? "constraint" : "constraints"} removed successfully`,
+        title: `Package profile ${selectedIds.length === 1 ? "constraint" : "constraints"} removed`,
       });
     } catch (error) {
       debug(error);
@@ -69,15 +69,15 @@ const PackageProfileConstraintsEditFormActions: FC<
 
   const handleConstraintsRemoveDialog = () => {
     confirmModal({
-      title: `Remove ${selectedIds.length > 1 ? "constraints" : "constraint"}`,
-      body: `This will remove ${selectedIds.length} ${selectedIds.length > 1 ? "constraints" : "constraint"}`,
+      title: `Remove ${selectedIds.length === 1 ? "constraint" : "constraints"}`,
+      body: `This will remove ${selectedIds.length} ${selectedIds.length === 1 ? "constraint" : "constraints"}`,
       buttons: [
         <Button
           key="remove"
           type="button"
           appearance="negative"
           onClick={() => handleConstraintsRemove()}
-          aria-label={`Remove ${selectedIds.length > 1 ? "constraints" : "constraint"}`}
+          aria-label={`Remove ${selectedIds.length === 1 ? "constraint" : "constraints"}`}
         >
           Remove
         </Button>,
@@ -115,7 +115,7 @@ const PackageProfileConstraintsEditFormActions: FC<
         className="u-no-margin--right"
         disabled={selectedIds.length === 0 || formik.values.id !== 0}
         onClick={handleConstraintsRemoveDialog}
-        aria-label={`Remove selected ${selectedIds.length > 1 ? "constraints" : "constraint"}`}
+        aria-label={`Remove selected ${selectedIds.length === 1 ? "constraint" : "constraints"}`}
       >
         <Icon name="delete" />
         <span>Remove</span>

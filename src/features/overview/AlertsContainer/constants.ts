@@ -1,6 +1,6 @@
-import { STATUSES } from "@/pages/dashboard/instances/InstanceStatusLabel/constants";
+import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
 
-const alerts = [
+const overviewAlerts = [
   "ComputerOfflineAlert",
   "ComputerOnlineAlert",
   "ComputerRebootAlert",
@@ -9,5 +9,8 @@ const alerts = [
 ];
 
 export const widgetAlerts = Object.values(STATUSES)
-  .filter(({ alertType }) => alerts.includes(alertType))
-  .sort((a, b) => alerts.indexOf(a.alertType) - alerts.indexOf(b.alertType));
+  .filter(({ alertType }) => overviewAlerts.includes(alertType))
+  .sort(
+    (a, b) =>
+      overviewAlerts.indexOf(a.alertType) - overviewAlerts.indexOf(b.alertType),
+  );

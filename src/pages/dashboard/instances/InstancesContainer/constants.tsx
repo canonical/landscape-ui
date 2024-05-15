@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { ListFilter } from "@/types/Filters";
-import { STATUSES } from "../InstanceStatusLabel/constants";
+import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
 
 export const INSTANCE_SEARCH_HELP_TERMS: {
   term: string;

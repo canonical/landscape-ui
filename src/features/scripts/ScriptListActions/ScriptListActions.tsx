@@ -84,7 +84,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
 
   const handleScriptRemoveDialog = (script: Script) => {
     confirmModal({
-      title: "Removing script",
+      title: "Remove script",
       body: `This will remove "${script.title}" script.`,
       buttons: [
         <Button

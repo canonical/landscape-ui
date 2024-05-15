@@ -61,7 +61,7 @@ const InstancesPage: FC = () => {
     confirmModal({
       title: "Shutting down selected instances",
       body: `Are you sure you want to shutdown ${selected.length} instance${
-        selected.length > 1 ? "s" : ""
+        selected.length === 1 ? "" : "s"
       }?`,
       buttons: [
         <Button
@@ -91,7 +91,7 @@ const InstancesPage: FC = () => {
     confirmModal({
       title: "Restarting selected instances",
       body: `Are you sure you want to restart ${selected.length} instance${
-        selected.length > 1 ? "s" : ""
+        selected.length === 1 ? "" : "s"
       }?`,
       buttons: [
         <Button
@@ -117,7 +117,7 @@ const InstancesPage: FC = () => {
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${selected.length > 1 ? `${selected.length} instances` : selected[0].title}`,
+      `Report for ${selected.length === 1 ? selected[0].title : `${selected.length} instances`}`,
       <Suspense fallback={<LoadingState />}>
         <ReportView instanceIds={selected.map(({ id }) => id)} />
       </Suspense>,
