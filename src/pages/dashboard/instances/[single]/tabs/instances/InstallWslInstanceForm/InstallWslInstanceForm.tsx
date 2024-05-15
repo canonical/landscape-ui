@@ -6,6 +6,9 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import { useWsl } from "@/hooks/useWsl";
 import { SelectOption } from "@/types/SelectOption";
+import useSidePanel from "@/hooks/useSidePanel";
+import useNotify from "@/hooks/useNotify";
+import { useActivities } from "@/features/activities";
 
 interface InstallWslInstanceFormProps {
   parentId: number;
@@ -15,7 +18,10 @@ const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
   parentId,
 }) => {
   const debug = useDebug();
+  const { closeSidePanel } = useSidePanel();
+  const { notify } = useNotify();
   const { createChildInstanceQuery, getWslInstanceNamesQuery } = useWsl();
+  const { openActivityDetails } = useActivities();
 
   const { data: getWslInstanceNamesQueryResult } = getWslInstanceNamesQuery();
 
@@ -34,9 +40,21 @@ const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
     }),
     onSubmit: async (values) => {
       try {
-        await createChildInstance({
+        const { data: activity } = await createChildInstance({
           parent_id: parentId,
           computer_name: values.instanceType,
+        });
+
+        closeSidePanel();
+
+        notify.success({
+          message: "You queued a new WSL instance to be installed",
+          actions: [
+            {
+              label: "View details",
+              onClick: () => openActivityDetails(activity),
+            },
+          ],
         });
       } catch (error) {
         debug(error);

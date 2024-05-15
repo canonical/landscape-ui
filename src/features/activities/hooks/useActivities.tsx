@@ -5,12 +5,16 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { Activity } from "@/features/activities/types";
+import { Activity, ActivityCommon } from "@/features/activities/types";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
 import { ApiError } from "@/types/ApiError";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { QueryFnType } from "@/types/QueryFnType";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Suspense } from "react";
+import LoadingState from "@/components/layout/LoadingState";
+import ActivityDetails from "@/features/activities/ActivityDetails";
 
 interface GetActivitiesParams {
   limit?: number;
@@ -38,6 +42,7 @@ export default function useActivities() {
   const authFetchOld = useFetchOld();
   const authFetch = useFetch();
   const queryClient = useQueryClient();
+  const { setSidePanelContent } = useSidePanel();
 
   const getActivitiesQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<Activity>>,
@@ -121,6 +126,15 @@ export default function useActivities() {
     onSuccess: () => queryClient.invalidateQueries(["activities"]),
   });
 
+  const openActivityDetails = (activity: ActivityCommon) => {
+    setSidePanelContent(
+      activity.summary,
+      <Suspense fallback={<LoadingState />}>
+        <ActivityDetails activityId={activity.id} />
+      </Suspense>,
+    );
+  };
+
   return {
     getActivitiesQuery,
     getSingleActivityQuery,
@@ -129,5 +143,6 @@ export default function useActivities() {
     approveActivitiesQuery,
     redoActivitiesQuery,
     undoActivitiesQuery,
+    openActivityDetails,
   };
 }

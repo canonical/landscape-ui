@@ -15,17 +15,6 @@ export const ACTIVITY_SEARCH_HELP_TERMS: {
     description: "Search for children activities of a specific ID.",
   },
   {
-    term: "status:<status_name>",
-    description: (
-      <span>
-        Search for activities by status. The available values are{" "}
-        <code>undelivered</code>, <code>unapproved</code>,{" "}
-        <code>delivered</code>, <code>canceled</code>, <code>failed</code>,{" "}
-        <code>succeeded</code>, and <code>scheduled</code>.
-      </span>
-    ),
-  },
-  {
     term: "created-after:<date>",
     description: (
       <span>
