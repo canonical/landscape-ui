@@ -15,7 +15,6 @@ dist-ssr
 .venv
 .vite-node
 coverage
-.coverage
 
 # Cashe
 .eslintcache
