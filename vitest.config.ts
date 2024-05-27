@@ -23,10 +23,12 @@ export default defineConfig({
       },
     },
     pool: "vmThreads",
+    testTimeout: 30000,
     coverage: {
       provider: "v8",
-      reporter: ["text", "json-summary", "json"],
+      reporter: ["cobertura"],
       reportOnFailure: true,
+      reportsDirectory: ".coverage",
       exclude: [
         "**/tests/**",
         "**/*.config.*",
