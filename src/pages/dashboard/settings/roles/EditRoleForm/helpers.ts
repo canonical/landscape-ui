@@ -45,7 +45,7 @@ export const getValuesToEditRole = (
   }
 
   const accessGroups = getAccessGroupsToSubmit(
-    values.access_groups,
+    values.accessGroups,
     accessGroupOptions,
   );
 
@@ -126,18 +126,29 @@ export const getPromisesToEditRole: GetPromisesToEditRoleFn = (
 export const getRoleFormProps = (
   role: Role,
   accessGroupOptions: AccessGroupOption[],
+  permissionOptions: PermissionOption[],
 ): FormProps => {
-  return {
-    access_groups: [
-      ...role.access_groups,
-      ...role.access_groups.flatMap(
-        (accessGroup) =>
-          accessGroupOptions.find(({ value }) => value === accessGroup)
-            ?.children || [],
-      ),
-    ],
-    permissions: role.global_permissions
-      ? [...role.permissions, ...role.global_permissions]
-      : role.permissions,
-  };
+  const accessGroups = [
+    ...role.access_groups,
+    ...role.access_groups.flatMap(
+      (accessGroup) =>
+        accessGroupOptions.find(({ value }) => value === accessGroup)
+          ?.children || [],
+    ),
+  ];
+
+  const initialPermissions = role.global_permissions
+    ? [...role.permissions, ...role.global_permissions]
+    : role.permissions;
+
+  const permissions = [
+    ...new Set([
+      ...initialPermissions,
+      ...permissionOptions
+        .filter(({ values }) => initialPermissions.includes(values.manage))
+        .map(({ values }) => values.view),
+    ]),
+  ];
+
+  return { accessGroups, permissions };
 };

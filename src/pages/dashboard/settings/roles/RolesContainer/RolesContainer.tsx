@@ -4,7 +4,7 @@ import { Button } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import EmptyState from "@/components/layout/EmptyState";
-import RolesList from "@/pages/dashboard/settings/roles/RolesList";
+import RoleList from "@/pages/dashboard/settings/roles/RoleList";
 
 const AddRoleForm = lazy(
   () => import("@/pages/dashboard/settings/roles/AddRoleForm"),
@@ -59,7 +59,7 @@ const RolesContainer: FC = () => {
       {!getRolesQueryLoading &&
         getRolesQueryResult &&
         getRolesQueryResult.data.length > 0 && (
-          <RolesList roleList={getRolesQueryResult.data} />
+          <RoleList roleList={getRolesQueryResult.data} />
         )}
     </>
   );

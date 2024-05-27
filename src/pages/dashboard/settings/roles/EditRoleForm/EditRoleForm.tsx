@@ -19,12 +19,12 @@ import { getPromisesToEditRole, getRoleFormProps } from "./helpers";
 import { FormProps } from "./types";
 
 const INITIAL_VALUES: FormProps = {
-  access_groups: [],
+  accessGroups: [],
   permissions: [],
 };
 
 const VALIDATION_SCHEMA = Yup.object().shape({
-  access_groups: Yup.array().of(Yup.string()),
+  accessGroups: Yup.array().of(Yup.string()),
   permissions: Yup.array().of(Yup.string()),
 });
 
@@ -116,7 +116,9 @@ const EditRoleForm: FC<EditRoleFormProps> = ({ role }) => {
   });
 
   useEffect(() => {
-    formik.setValues(getRoleFormProps(role, accessGroupOptions));
+    formik.setValues(
+      getRoleFormProps(role, accessGroupOptions, permissionOptions),
+    );
   }, [role, accessGroupOptions.length]);
 
   return (
@@ -143,9 +145,9 @@ const EditRoleForm: FC<EditRoleFormProps> = ({ role }) => {
 
       <AccessGroupBlock
         accessGroupOptions={accessGroupOptions}
-        accessGroups={formik.values.access_groups}
+        accessGroups={formik.values.accessGroups}
         onAccessGroupChange={(newAccessGroups) => {
-          formik.setFieldValue("access_groups", newAccessGroups);
+          formik.setFieldValue("accessGroups", newAccessGroups);
         }}
       />
 

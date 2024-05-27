@@ -7,7 +7,7 @@ import {
 } from "@/pages/dashboard/settings/roles/types";
 
 export interface FormProps {
-  access_groups: string[];
+  accessGroups: string[];
   permissions: string[];
 }
 

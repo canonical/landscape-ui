@@ -1,0 +1,97 @@
+import { HTMLProps } from "react";
+import { Cell, Row, TableCellProps, TableRowProps } from "react-table";
+import { PermissionOption } from "@/pages/dashboard/settings/roles/types";
+import { Role } from "@/types/Role";
+import { CellCoordinates } from "./types";
+import classes from "./RoleList.module.scss";
+
+export const getPermissionListByType = (
+  role: Role,
+  permissionOptions: PermissionOption[],
+  type: "view" | "manage",
+) => {
+  const permissions = role.global_permissions
+    ? [...role.permissions, ...role.global_permissions]
+    : role.permissions;
+
+  const permissionsOfType = [
+    ...new Set(
+      permissions
+        .filter((permission) =>
+          type === "manage"
+            ? !/(view|remove)/i.test(permission)
+            : !/(remove)/i.test(permission) &&
+              !permissionOptions.find(
+                ({ values }) => values.manage === permission && !values.view,
+              ),
+        )
+        .map(
+          (permission) =>
+            permissionOptions.find(({ values }) =>
+              type === "manage"
+                ? values.manage === permission
+                : values.view === permission || values.manage === permission,
+            )?.label ?? "",
+        ),
+    ),
+  ];
+
+  if (permissionsOfType.length === 0) {
+    return "";
+  }
+
+  return permissionsOfType.length !==
+    permissionOptions.filter(({ values }) => !!values[type]).length
+    ? permissionsOfType
+        .map((permission, index) =>
+          index > 0
+            ? permission
+            : permission.replace(/^\w/, (character) => character.toUpperCase()),
+        )
+        .join(", ")
+    : "All properties";
+};
+
+export const handleCellProps =
+  (expandedCell: CellCoordinates | null) =>
+  ({ column, row: { index } }: Cell<Role>) => {
+    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
+      {};
+
+    if (
+      expandedCell?.rowIndex === index &&
+      expandedCell.columnId === column.id
+    ) {
+      cellProps.style = {
+        overflow: "visible",
+        padding: 0,
+      };
+    }
+
+    if (column.id === "name") {
+      cellProps.role = "rowheader";
+    } else if (column.id === "persons") {
+      cellProps["aria-label"] = "Administrators";
+    } else if (column.id === "view") {
+      cellProps["aria-label"] = "View permissions";
+    } else if (column.id === "manage") {
+      cellProps["aria-label"] = "Manage permissions";
+    } else if (column.id === "actions") {
+      cellProps["aria-label"] = "Actions";
+    }
+
+    return cellProps;
+  };
+
+export const handleRowProps =
+  (rowIndex?: number) =>
+  ({ index }: Row<Role>) => {
+    const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
+      {};
+
+    if (rowIndex === index) {
+      rowProps.className = classes.expandedRow;
+    }
+
+    return rowProps;
+  };

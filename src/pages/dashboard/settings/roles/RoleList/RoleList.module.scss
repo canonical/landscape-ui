@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.actions {
+  overflow: initial;
+  width: 15%;
+}
+
+.expandedRow {
+  background-color: $color-x-light;
+  filter: drop-shadow(0 4px 8px $color-mid-light);
+}

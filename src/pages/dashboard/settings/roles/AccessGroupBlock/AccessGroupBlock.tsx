@@ -25,7 +25,7 @@ const AccessGroupBlock: FC<AccessGroupBlockProps> = ({
       onAccessGroupChange(
         accessGroups.filter(
           (accessGroup) =>
-            ![option.value, ...option.children, option.parents].includes(
+            ![option.value, ...option.children, ...option.parents].includes(
               accessGroup,
             ),
         ),
