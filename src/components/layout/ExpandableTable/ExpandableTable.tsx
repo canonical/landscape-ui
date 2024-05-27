@@ -1,5 +1,5 @@
 import { HTMLProps, ReactNode } from "react";
-import { Cell, Column, TableCellProps } from "react-table";
+import { Cell, Column, Row, TableCellProps, TableRowProps } from "react-table";
 import { ModularTable } from "@canonical/react-components";
 import ExpandableTableFooter from "@/components/layout/ExpandableTableFooter";
 
@@ -14,12 +14,13 @@ interface ExpandableTableProps<T extends Record<string, unknown>> {
   onLimitChange: () => void;
   totalCount: number;
   additionalCta?: ReactNode[];
+  getCellProps?: (
+    cell: Cell<T>,
+  ) => Partial<TableCellProps & HTMLProps<HTMLTableCellElement>>;
+  getRowProps?: (
+    row: Row<T>,
+  ) => Partial<TableRowProps & HTMLProps<HTMLTableRowElement>>;
   title?: string;
-  getCellProps?:
-    | ((
-        cell: Cell<T>,
-      ) => Partial<TableCellProps & HTMLProps<HTMLTableCellElement>>)
-    | undefined;
 }
 
 const ExpandableTable = <T extends Record<string, unknown>>({
@@ -31,6 +32,7 @@ const ExpandableTable = <T extends Record<string, unknown>>({
   itemNames,
   totalCount,
   getCellProps,
+  getRowProps,
   title,
 }: ExpandableTableProps<T>) => {
   return (
@@ -41,6 +43,7 @@ const ExpandableTable = <T extends Record<string, unknown>>({
         data={data}
         className="u-no-margin--bottom"
         getCellProps={getCellProps}
+        getRowProps={getRowProps}
       />
       <ExpandableTableFooter
         additionalCta={additionalCta}

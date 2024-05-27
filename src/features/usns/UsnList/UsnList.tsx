@@ -1,22 +1,28 @@
 import classNames from "classnames";
 import moment from "moment/moment";
-import { FC, useMemo, useState } from "react";
+import { FC, useMemo, useRef, useState } from "react";
 import { CellProps, Column } from "react-table";
+import { useOnClickOutside } from "usehooks-ts";
 import {
   Button,
   CheckboxInput,
   ModularTable,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
+import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import OverflowingCell from "@/components/layout/OverflowingCell";
 import UsnPackageList from "@/features/usns/UsnPackageList";
+import { Instance } from "@/types/Instance";
 import { Usn } from "@/types/Usn";
 import { USN_LOADING } from "./constants";
-import { getUsnsWithExpanded, handleSecurityIssuesCellProps } from "./helpers";
+import {
+  getTableRows,
+  getUsnsWithExpanded,
+  handleRowProps,
+  handleSecurityIssuesCellProps,
+} from "./helpers";
 import classes from "./UsnList.module.scss";
-import { Instance } from "@/types/Instance";
 
 type UsnListProps = {
   isUsnsLoading: boolean;
@@ -38,7 +44,18 @@ type UsnListProps = {
 const UsnList: FC<UsnListProps> = ({ isUsnsLoading, usns, ...otherProps }) => {
   const [usnLimit, setUsnLimit] = useState(5);
   const [expandedUsn, setExpandedUsn] = useState<string>("");
+  const [expandedRowIndex, setExpandedRowIndex] = useState(-1);
   const [innerTableLimit, setInnerTableLimit] = useState(5);
+
+  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
+
+  useOnClickOutside(
+    {
+      current:
+        expandedRowIndex !== -1 ? tableRowsRef.current[expandedRowIndex] : null,
+    },
+    () => setExpandedRowIndex(-1),
+  );
 
   const securityIssues = useMemo<Usn[]>(
     (): Usn[] =>
@@ -165,18 +182,25 @@ const UsnList: FC<UsnListProps> = ({ isUsnsLoading, usns, ...otherProps }) => {
         {
           accessor: "cves",
           Header: "CVE(s)",
-          Cell: ({ row }: CellProps<Usn>) => (
-            <OverflowingCell
-              items={row.original.cves.map(({ cve, cve_link }) => (
-                <a
-                  key={cve}
-                  href={cve_link}
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                >
-                  {cve}
-                </a>
+          Cell: ({ row: { original, index } }: CellProps<Usn>) => (
+            <TruncatedCell
+              content={original.cves.map(({ cve, cve_link }) => (
+                <span key={cve} className={classes.cve}>
+                  <a
+                    href={cve_link}
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                    className={classes.cveLink}
+                  >
+                    {cve}
+                  </a>
+                </span>
               ))}
+              isExpanded={expandedRowIndex === index}
+              onExpand={() => {
+                setExpandedUsn("");
+                setExpandedRowIndex(expandedUsn ? index - 1 : index);
+              }}
             />
           ),
         },
@@ -201,6 +225,7 @@ const UsnList: FC<UsnListProps> = ({ isUsnsLoading, usns, ...otherProps }) => {
                 className={classNames("p-accordion__tab", classes.expandButton)}
                 aria-expanded={row.original.usn === expandedUsn}
                 onClick={() => {
+                  setExpandedRowIndex(-1);
                   setExpandedUsn((prevState) =>
                     prevState === row.original.usn ? "" : row.original.usn,
                   );
@@ -221,33 +246,42 @@ const UsnList: FC<UsnListProps> = ({ isUsnsLoading, usns, ...otherProps }) => {
       innerTableLimit,
       selectedUsns.length,
       otherProps.tableType,
+      expandedRowIndex,
     ],
   );
 
-  return otherProps.tableType === "expandable" ? (
-    <ExpandableTable
-      columns={securityIssueColumns}
-      data={securityIssues}
-      getCellProps={handleSecurityIssuesCellProps(
-        otherProps.tableType,
-        expandedUsn,
+  return (
+    <div ref={getTableRows(tableRowsRef)}>
+      {otherProps.tableType === "expandable" ? (
+        <ExpandableTable
+          columns={securityIssueColumns}
+          data={securityIssues}
+          getCellProps={handleSecurityIssuesCellProps(
+            otherProps.tableType,
+            expandedRowIndex,
+            expandedUsn,
+          )}
+          getRowProps={handleRowProps(expandedRowIndex)}
+          itemNames={{ plural: "security issues", singular: "security issue" }}
+          limit={usnLimit}
+          onLimitChange={() => setUsnLimit((prevState) => prevState + 5)}
+          title="Security issues"
+          totalCount={usns.length}
+        />
+      ) : (
+        <ModularTable
+          columns={securityIssueColumns}
+          data={securityIssues}
+          getCellProps={handleSecurityIssuesCellProps(
+            otherProps.tableType,
+            expandedRowIndex,
+            expandedUsn,
+          )}
+          getRowProps={handleRowProps(expandedRowIndex)}
+          emptyMsg={`No security issues found with the search "${otherProps.search}"`}
+        />
       )}
-      itemNames={{ plural: "security issues", singular: "security issue" }}
-      limit={usnLimit}
-      onLimitChange={() => setUsnLimit((prevState) => prevState + 5)}
-      title="Security issues"
-      totalCount={usns.length}
-    />
-  ) : (
-    <ModularTable
-      columns={securityIssueColumns}
-      data={securityIssues}
-      getCellProps={handleSecurityIssuesCellProps(
-        otherProps.tableType,
-        expandedUsn,
-      )}
-      emptyMsg={`No security issues found with the search "${otherProps.search}"`}
-    />
+    </div>
   );
 };
 

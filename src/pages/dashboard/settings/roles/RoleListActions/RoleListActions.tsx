@@ -1,5 +1,5 @@
 import { FC, lazy, Suspense } from "react";
-import { Button, Icon } from "@canonical/react-components";
+import { Button, Icon, Tooltip } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
@@ -77,32 +77,34 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
   return (
     <div className="divided-blocks">
       <div className="divided-blocks__item">
-        <Button
-          small
-          hasIcon
-          type="button"
-          appearance="base"
-          className="u-no-margin--bottom u-no-padding--left p-tooltip--top-center"
-          aria-label={`Edit ${role.name} role`}
-          onClick={() => handleEditRole(role)}
-        >
-          <span className="p-tooltip__message">Edit</span>
-          <Icon name="edit" className="u-no-margin--left" />
-        </Button>
+        <Tooltip message="Edit" position="top-center">
+          <Button
+            small
+            hasIcon
+            type="button"
+            appearance="base"
+            className="u-no-margin--bottom u-no-padding--left"
+            aria-label={`Edit ${role.name} role`}
+            onClick={() => handleEditRole(role)}
+          >
+            <Icon name="edit" className="u-no-margin--left" />
+          </Button>
+        </Tooltip>
       </div>
       <div className="divided-blocks__item">
-        <Button
-          small
-          hasIcon
-          type="button"
-          appearance="base"
-          className="u-no-margin--bottom u-no-padding--left p-tooltip--top-center"
-          aria-label={`Delete ${role.name} role`}
-          onClick={() => handleRemoveRoleDialog(role)}
-        >
-          <span className="p-tooltip__message">Delete</span>
-          <Icon name="delete" className="u-no-margin--left" />
-        </Button>
+        <Tooltip message="Delete" position="top-center">
+          <Button
+            small
+            hasIcon
+            type="button"
+            appearance="base"
+            className="u-no-margin--bottom u-no-padding--left"
+            aria-label={`Delete ${role.name} role`}
+            onClick={() => handleRemoveRoleDialog(role)}
+          >
+            <Icon name="delete" className="u-no-margin--left" />
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );

@@ -10,9 +10,13 @@
   @include vf-highlight-bar($colors--light-theme--text-default, bottom, false);
 }
 
-.expandButton[aria-expanded="true"] {
-  background-color: inherit;
-  font-weight: 550;
+.expandButton {
+  background-color: $color-transparent;
+
+  &[aria-expanded="true"] {
+    background-color: inherit;
+    font-weight: 550;
+  }
 }
 
 .hidden {
@@ -21,4 +25,24 @@
 
 .innerTable {
   background-color: $color-light;
+}
+
+.expandedRow {
+  background-color: $color-x-light;
+  filter: drop-shadow(0 4px 8px $color-mid-light);
+}
+
+.expandedCell {
+  overflow: visible;
+  padding: 0;
+}
+
+.cve {
+  &:not(:last-child)::after {
+    content: ", ";
+  }
+}
+
+.cveLink {
+  text-wrap: nowrap;
 }

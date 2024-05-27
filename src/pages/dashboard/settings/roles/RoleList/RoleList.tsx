@@ -9,6 +9,7 @@ import { getPermissionOptions } from "@/pages/dashboard/settings/roles/helpers";
 import { Role } from "@/types/Role";
 import {
   getPermissionListByType,
+  getTableRows,
   handleCellProps,
   handleRowProps,
 } from "./helpers";
@@ -27,16 +28,6 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
   const { getPermissionsQuery } = useRoles();
 
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
-
-  const getTableRows = (instance: HTMLDivElement | null) => {
-    if (!instance) {
-      return;
-    }
-
-    tableRowsRef.current = [
-      ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
-    ];
-  };
 
   useOnClickOutside(
     {
@@ -118,7 +109,7 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
   );
 
   return (
-    <div ref={getTableRows}>
+    <div ref={getTableRows(tableRowsRef)}>
       <ModularTable
         columns={columns}
         data={roles}

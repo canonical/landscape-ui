@@ -262,6 +262,7 @@ a[target="_blank"] {
     content: "";
     @extend %icon;
     @include vf-icon-external-link($color-link);
+    position: initial;
   }
 
   .is-dark & {

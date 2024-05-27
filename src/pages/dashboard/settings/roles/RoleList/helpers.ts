@@ -1,4 +1,4 @@
-import { HTMLProps } from "react";
+import { HTMLProps, MutableRefObject } from "react";
 import { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import { PermissionOption } from "@/pages/dashboard/settings/roles/types";
 import { Role } from "@/types/Role";
@@ -62,10 +62,7 @@ export const handleCellProps =
       expandedCell?.rowIndex === index &&
       expandedCell.columnId === column.id
     ) {
-      cellProps.style = {
-        overflow: "visible",
-        padding: 0,
-      };
+      cellProps.className = classes.expandedCell;
     }
 
     if (column.id === "name") {
@@ -94,4 +91,16 @@ export const handleRowProps =
     }
 
     return rowProps;
+  };
+
+export const getTableRows =
+  (ref: MutableRefObject<HTMLTableRowElement[]>) =>
+  (instance: HTMLDivElement | null) => {
+    if (!instance) {
+      return;
+    }
+
+    ref.current = [
+      ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
+    ];
   };

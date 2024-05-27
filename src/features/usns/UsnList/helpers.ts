@@ -1,8 +1,8 @@
-import { Cell, TableCellProps } from "react-table";
-import { Usn } from "@/types/Usn";
-import { HTMLProps } from "react";
-import classes from "./UsnList.module.scss";
+import { HTMLProps, MutableRefObject } from "react";
+import { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import { USN_EXPANDED } from "@/features/usns/UsnList/constants";
+import { Usn } from "@/types/Usn";
+import classes from "./UsnList.module.scss";
 
 export const getUsnsWithExpanded = (
   usns: Usn[],
@@ -27,14 +27,17 @@ export const getUsnsWithExpanded = (
   ];
 };
 
-export const handleSecurityIssuesCellProps = (
-  tableType: "expandable" | "paginated",
-  expandedUsn: string,
-) => {
-  return ({
+export const handleSecurityIssuesCellProps =
+  (
+    tableType: "expandable" | "paginated",
+    expandedRowIndex: number,
+    expandedUsn: string,
+  ) =>
+  ({
     column,
     row: {
       original: { usn },
+      index,
     },
   }: Cell<Usn>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
@@ -58,6 +61,10 @@ export const handleSecurityIssuesCellProps = (
       cellProps.role = "rowheader";
     } else if (column.id === "cves") {
       cellProps["aria-label"] = "CVE(s)";
+
+      if (expandedRowIndex === index) {
+        cellProps.className = classes.expandedCell;
+      }
     } else if (column.id === "date") {
       cellProps["aria-label"] = "Date published";
     } else if (column.id === "release_packages") {
@@ -66,4 +73,28 @@ export const handleSecurityIssuesCellProps = (
 
     return cellProps;
   };
-};
+
+export const handleRowProps =
+  (rowIndex?: number) =>
+  ({ index }: Row<Usn>) => {
+    const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
+      {};
+
+    if (rowIndex === index) {
+      rowProps.className = classes.expandedRow;
+    }
+
+    return rowProps;
+  };
+
+export const getTableRows =
+  (ref: MutableRefObject<HTMLTableRowElement[]>) =>
+  (instance: HTMLDivElement | null) => {
+    if (!instance) {
+      return;
+    }
+
+    ref.current = [
+      ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
+    ];
+  };
