@@ -1,8 +1,0 @@
-@import "vanilla-framework/scss/settings_colors";
-@import "vanilla-framework/scss/settings_spacing";
-
-@for $i from 1 through 10 {
-  .depth-#{$i} {
-    margin-left: $spv--x-large * $i;
-  }
-}
