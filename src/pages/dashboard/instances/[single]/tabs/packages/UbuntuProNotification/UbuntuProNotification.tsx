@@ -1,20 +1,17 @@
 import { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button, Notification } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
-import { Instance } from "@/types/Instance";
 
 interface UbuntuProNotificationProps {
-  instance: Instance;
   onDismiss: () => void;
 }
 
 const UbuntuProNotification: FC<UbuntuProNotificationProps> = ({
-  instance,
   onDismiss,
 }) => {
   const navigate = useNavigate();
-
+  const { instanceId, childInstanceId } = useParams();
   return (
     <Notification severity="caution" onDismiss={onDismiss}>
       <strong>Some upgrades require Ubuntu Pro: </strong>
@@ -27,7 +24,7 @@ const UbuntuProNotification: FC<UbuntuProNotificationProps> = ({
         appearance="link"
         onClick={() => {
           navigate(
-            `${ROOT_PATH}instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`,
+            `${ROOT_PATH}instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : instanceId}`,
             {
               state: { tab: "ubuntu-pro" },
             },

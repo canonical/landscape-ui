@@ -16,6 +16,7 @@ const props: Required<Status> = {
   label: alert.label,
   filterValue: alert.filterValue,
   icon: alert.icon,
+  query: alert.query,
   alternateLabel: alert.alternateLabel!,
 };
 

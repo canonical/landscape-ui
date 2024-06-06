@@ -11,7 +11,6 @@ import {
   SearchBox,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import TablePagination from "@/components/layout/TablePagination";
 import useDebug from "@/hooks/useDebug";
 import useConfirm from "@/hooks/useConfirm";
 import usePockets from "@/hooks/usePockets";
@@ -20,6 +19,7 @@ import { Distribution } from "@/types/Distribution";
 import { Pocket } from "@/types/Pocket";
 import { Series } from "@/types/Series";
 import classes from "./PackageList.module.scss";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 
 const EditPocketForm = lazy(
   () => import("@/pages/dashboard/repositories/mirrors/EditPocketForm"),
@@ -507,7 +507,11 @@ const PackageList: FC<PackageListProps> = ({
             <ModularTable
               columns={columns}
               data={packagesToShow}
-              emptyMsg={`No packages found with the search: "${search}".`}
+              emptyMsg={
+                search
+                  ? `No packages found with the search: "${search}".`
+                  : undefined
+              }
               className={classes.content}
               getRowProps={({ original }) => ({
                 className: original.difference ? "p-tooltip--top-center" : "",
@@ -524,7 +528,7 @@ const PackageList: FC<PackageListProps> = ({
               }}
             />
           )}
-          <TablePagination
+          <SidePanelTablePagination
             currentPage={currentPage}
             totalItems={listPocketData?.data.count}
             paginate={(page) => {

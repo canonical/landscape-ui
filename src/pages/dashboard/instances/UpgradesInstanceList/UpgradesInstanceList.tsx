@@ -25,8 +25,11 @@ const UpgradesInstanceList: FC<UpgradesInstanceListProps> = ({ instances }) => {
         Cell: ({ row }: CellProps<Instance>) => (
           <Link
             className="u-no-margin--bottom u-no-padding--top"
-            to={`${ROOT_PATH}instances/${row.original.parent ? `${row.original.parent.id}/${row.original.id}` : row.original.id}`}
-            state={{ tab: "packages", filter: "upgrade", selectAll: true }}
+            to={{
+              pathname: `${ROOT_PATH}instances/${row.original.parent ? `${row.original.parent.id}/${row.original.id}` : row.original.id}`,
+              search: `?tab=packages&filter=upgrade`,
+            }}
+            state={{ selectAll: true }}
           >
             {row.original.title}
           </Link>

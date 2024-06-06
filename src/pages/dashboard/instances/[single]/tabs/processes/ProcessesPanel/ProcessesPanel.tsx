@@ -1,21 +1,21 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
-import TablePagination from "@/components/layout/TablePagination";
+import { TablePagination } from "@/components/layout/TablePagination";
 import { ProcessesHeader, ProcessesList } from "@/features/processes";
+import { usePageParams } from "@/hooks/usePageParams";
 import { useProcesses } from "@/hooks/useProcesses";
 import { FC, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 
-interface ProcessesPanelProps {
-  instanceId: number;
-}
-
-const ProcessesPanel: FC<ProcessesPanelProps> = ({ instanceId }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(50);
+const ProcessesPanel: FC = () => {
   const [selectedPids, setSelectedPids] = useState<number[]>([]);
-  const [search, setSearch] = useState("");
 
+  const { instanceId: urlInstanceId } = useParams();
+  const { search, currentPage, pageSize } = usePageParams();
   const { getProcessesQuery } = useProcesses();
+
+  const instanceId = Number(urlInstanceId);
+
   const { data: getProcessesQueryResult, isLoading } = getProcessesQuery({
     computer_id: instanceId,
     limit: pageSize,
@@ -25,15 +25,14 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ instanceId }) => {
 
   const totalProcesses = getProcessesQueryResult?.data.count ?? 0;
 
-  const handlePaginate = (page: number) => {
-    setCurrentPage(page);
-    setSelectedPids([]);
-  };
-
   const processes = useMemo(
     () => getProcessesQueryResult?.data.results ?? [],
     [getProcessesQueryResult],
   );
+
+  const handleClearSelection = () => {
+    setSelectedPids([]);
+  };
 
   return (
     <>
@@ -51,13 +50,8 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ instanceId }) => {
           getProcessesQueryResult.data.results.length > 0)) && (
         <>
           <ProcessesHeader
-            instanceId={instanceId}
-            onPageChange={handlePaginate}
-            onSearch={(searchText) => {
-              setSearch(searchText);
-            }}
+            handleClearSelection={handleClearSelection}
             selectedPids={selectedPids}
-            setSelectedPids={(pids) => setSelectedPids(pids)}
           />
           <ProcessesList
             processes={processes}
@@ -67,11 +61,8 @@ const ProcessesPanel: FC<ProcessesPanelProps> = ({ instanceId }) => {
         </>
       )}
       <TablePagination
-        currentPage={currentPage}
+        handleClearSelection={handleClearSelection}
         totalItems={totalProcesses}
-        paginate={handlePaginate}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
         currentItemCount={processes.length}
       />
     </>

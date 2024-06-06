@@ -1,7 +1,7 @@
 import { ModularTable } from "@canonical/react-components";
 import { FC, useState } from "react";
 import { CellProps } from "react-table";
-import TablePagination from "@/components/layout/TablePagination";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useAlerts from "@/hooks/useAlerts";
 import { Alert, Subscriber } from "@/types/Alert";
 import AlertButtons from "../AlertButtons";
@@ -12,12 +12,20 @@ interface AlertDetailsProps {
 
 const AlertDetails: FC<AlertDetailsProps> = ({ alert }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [pageSize, setPageSize] = useState(20);
+
   const { getAlertSubscribersQuery } = useAlerts();
+
   const { data, isLoading } = getAlertSubscribersQuery({
     alert_type: alert.alert_type,
   });
   const subscriberData = data?.data ?? [];
+
+  const getSubscribers = (limit: number, offset: number) => {
+    return subscriberData.slice(offset, offset + limit);
+  };
+
+  const subscribers = getSubscribers(pageSize, (currentPage - 1) * pageSize);
 
   const columns = [
     {
@@ -32,7 +40,7 @@ const AlertDetails: FC<AlertDetailsProps> = ({ alert }) => {
       <AlertButtons sidePanel alerts={[alert]} />
       <ModularTable
         columns={columns}
-        data={subscriberData}
+        data={subscribers}
         emptyMsg={isLoading ? "Loading..." : "No subscribers found."}
         getCellProps={({ column }) => {
           switch (column.id) {
@@ -43,15 +51,16 @@ const AlertDetails: FC<AlertDetailsProps> = ({ alert }) => {
           }
         }}
       />
-      <TablePagination
+      <SidePanelTablePagination
         currentPage={currentPage}
         totalItems={subscriberData.length}
+        currentItemCount={subscribers.length}
         paginate={(page) => {
           setCurrentPage(page);
         }}
-        pageSize={itemsPerPage}
+        pageSize={pageSize}
         setPageSize={(itemsNumber) => {
-          setItemsPerPage(itemsNumber);
+          setPageSize(itemsNumber);
         }}
       />
     </>

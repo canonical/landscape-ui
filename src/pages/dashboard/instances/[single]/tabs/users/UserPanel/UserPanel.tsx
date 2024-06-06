@@ -1,6 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
-import TablePagination from "@/components/layout/TablePagination";
+import { TablePagination } from "@/components/layout/TablePagination";
 import useUsers from "@/hooks/useUsers";
 import UserPanelHeader from "@/pages/dashboard/instances/[single]/tabs/users/UserPanelHeader";
 import { User } from "@/types/User";
@@ -10,21 +10,21 @@ import { getFilteredUsers } from "./helpers";
 import useSidePanel from "@/hooks/useSidePanel";
 import NewUserForm from "../NewUserForm";
 import { Button } from "@canonical/react-components";
+import { usePageParams } from "@/hooks/usePageParams";
+import { useParams } from "react-router-dom";
 
 const MAX_USERS_LIMIT = 1000;
 
-interface UserPanelProps {
-  instanceId: number;
-}
-
-const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage, setUsersPerPage] = useState(20);
+const UserPanel: FC = () => {
   const [selected, setSelected] = useState<number[]>([]);
-  const [search, setSearch] = useState("");
 
+  const { instanceId: urlInstanceId } = useParams();
+  const { search, currentPage, pageSize } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getUsersQuery } = useUsers();
+
+  const instanceId = Number(urlInstanceId);
+
   const { data: userResponse, isLoading } = getUsersQuery({
     computer_id: instanceId,
     limit: MAX_USERS_LIMIT,
@@ -41,18 +41,14 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
     return filteredUsers.slice(offset, offset + limit);
   };
 
-  const users = getUsers(usersPerPage, (currentPage - 1) * usersPerPage);
+  const users = getUsers(pageSize, (currentPage - 1) * pageSize);
 
-  const handlePaginate = (page: number) => {
-    setCurrentPage(page);
+  const handleClearSelection = () => {
     setSelected([]);
   };
 
   const handleEmptyStateAddUser = () => {
-    setSidePanelContent(
-      "Add new user",
-      <NewUserForm instanceId={instanceId} />,
-    );
+    setSidePanelContent("Add new user", <NewUserForm />);
   };
 
   return (
@@ -78,29 +74,20 @@ const UserPanel: FC<UserPanelProps> = ({ instanceId }) => {
       {!isLoading && filteredUsers.length && (
         <>
           <UserPanelHeader
-            instanceId={instanceId}
-            onPageChange={handlePaginate}
-            onSearch={(searchText) => setSearch(searchText)}
             selected={selected}
-            setSelected={setSelected}
+            handleClearSelection={handleClearSelection}
             users={users}
           />
           <UserList
-            instanceId={instanceId}
             selected={selected}
-            setSelected={setSelected}
+            setSelected={(userIds) => setSelected(userIds)}
             users={users}
           />
         </>
       )}
       <TablePagination
-        currentPage={currentPage}
+        handleClearSelection={handleClearSelection}
         totalItems={filteredUsers.length}
-        paginate={handlePaginate}
-        pageSize={usersPerPage}
-        setPageSize={(usersNumber) => {
-          setUsersPerPage(usersNumber);
-        }}
         currentItemCount={users.length}
       />
     </>

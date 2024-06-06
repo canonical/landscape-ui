@@ -1,5 +1,5 @@
 import { FC, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Column } from "react-table";
 import { Button, Icon } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
@@ -10,7 +10,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useUsns from "@/hooks/useUsns";
 import { UsnPackage } from "@/types/Usn";
-import { Instance } from "@/types/Instance";
+import { usePageParams } from "@/hooks/usePageParams";
 
 type UsnPackageListProps = {
   limit: number;
@@ -19,7 +19,7 @@ type UsnPackageListProps = {
 } & (
   | {
       isRemovable: true;
-      instance: Instance;
+      instanceTitle: string;
     }
   | {
       isRemovable: false;
@@ -38,23 +38,25 @@ const UsnPackageList: FC<UsnPackageListProps> = ({
   const { notify } = useNotify();
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { getAffectedPackagesQuery, removeUsnPackagesQuery } = useUsns();
+  const { setPageParams } = usePageParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams();
 
+  const instanceId = Number(urlInstanceId);
   const { mutateAsync: removeUsnPackages } = removeUsnPackagesQuery;
 
-  const handleActivityDetailsView = (instance: Instance) => {
+  const handleActivityDetailsView = () => {
     navigate(
-      `${ROOT_PATH}instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`,
-      { state: { tab: "activities" } },
+      `${ROOT_PATH}instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`,
     );
-
+    setPageParams({ tab: "activities" });
     notify.clear();
   };
 
-  const handleRemoveUsnPackages = async (instance: Instance) => {
+  const handleRemoveUsnPackages = async () => {
     try {
       await removeUsnPackages({
         usns: usn,
-        instanceId: instance.id,
+        instanceId: instanceId,
       });
 
       notify.success({
@@ -63,7 +65,7 @@ const UsnPackageList: FC<UsnPackageListProps> = ({
         actions: [
           {
             label: "View details",
-            onClick: () => handleActivityDetailsView(instance),
+            onClick: () => handleActivityDetailsView(),
           },
         ],
       });
@@ -74,16 +76,16 @@ const UsnPackageList: FC<UsnPackageListProps> = ({
     }
   };
 
-  const handleRemoveUsnPackagesDialog = (instance: Instance) => {
+  const handleRemoveUsnPackagesDialog = (instanceTitle: string) => {
     confirmModal({
       title: "Uninstall USN packages",
-      body: `This will uninstall packages affected by "${usn}" security issue from the "${instance.title}" instance.`,
+      body: `This will uninstall packages affected by "${usn}" security issue from the "${instanceTitle}" instance.`,
       buttons: [
         <Button
           key="remove"
           type="button"
           appearance="negative"
-          onClick={() => handleRemoveUsnPackages(instance)}
+          onClick={() => handleRemoveUsnPackages()}
         >
           Uninstall
         </Button>,
@@ -99,7 +101,9 @@ const UsnPackageList: FC<UsnPackageListProps> = ({
           small
           dense
           hasIcon
-          onClick={() => handleRemoveUsnPackagesDialog(otherProps.instance)}
+          onClick={() =>
+            handleRemoveUsnPackagesDialog(otherProps.instanceTitle)
+          }
         >
           <Icon name="delete" className="u-no-margin--left" />
           <span>Uninstall packages</span>
@@ -113,7 +117,7 @@ const UsnPackageList: FC<UsnPackageListProps> = ({
   } = getAffectedPackagesQuery({
     usn,
     computer_ids: otherProps.isRemovable
-      ? [otherProps.instance.id]
+      ? [instanceId]
       : otherProps.instanceIds,
   });
 

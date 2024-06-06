@@ -6,17 +6,12 @@ import classNames from "classnames";
 import InstalledPackagesActionForm from "@/pages/dashboard/instances/[single]/tabs/packages/InstalledPackagesActionForm";
 import PackagesInstallForm from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesInstallForm";
 import classes from "./PackageActions.module.scss";
-import { Instance } from "@/types/Instance";
 
 interface PackageActionsProps {
-  instance: Instance;
   selectedPackages: Package[];
 }
 
-const PackageActions: FC<PackageActionsProps> = ({
-  instance,
-  selectedPackages,
-}) => {
+const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
   const { setSidePanelContent } = useSidePanel();
 
   const handleExistingPackages = (action: "remove" | "upgrade") => {
@@ -30,16 +25,12 @@ const PackageActions: FC<PackageActionsProps> = ({
       <InstalledPackagesActionForm
         action={action}
         packages={selectedPackages}
-        instanceId={instance.id}
       />,
     );
   };
 
   const handleInstallPackages = () => {
-    setSidePanelContent(
-      "Install packages",
-      <PackagesInstallForm instanceId={instance.id} />,
-    );
+    setSidePanelContent("Install packages", <PackagesInstallForm />);
   };
 
   return (

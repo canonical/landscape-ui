@@ -2,7 +2,7 @@ import "@/tests/matcher";
 import { users } from "@/tests/mocks/user";
 import { renderWithProviders } from "@/tests/render";
 import { User } from "@/types/User";
-import { describe, vi } from "vitest";
+import { describe } from "vitest";
 import UserDetails from "./UserDetails";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { screen } from "@testing-library/react";
@@ -12,9 +12,7 @@ const unlockedUser = users.find((user) => user.enabled)!;
 describe("user details", () => {
   it("should show correct side panel details for a user", async () => {
     const user = unlockedUser;
-    const { container } = renderWithProviders(
-      <UserDetails instanceId={21} user={user} handleEditUser={vi.fn()} />,
-    );
+    const { container } = renderWithProviders(<UserDetails user={user} />);
 
     const primaryGroup = userGroups.find(
       (group) => group.gid === user.primary_gid,

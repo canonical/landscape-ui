@@ -10,20 +10,23 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import classes from "./SnapDropdownSearch.module.scss";
 import { DEBOUNCE_DELAY, boldSubstring } from "./helpers";
+import { useParams } from "react-router-dom";
 
 interface SnapDropdownSearchProps {
-  instanceId: number;
   selectedItems: SelectedSnaps[];
   setSelectedItems: (items: SelectedSnaps[]) => void;
   setConfirming: (confirming: boolean) => void;
 }
 
 const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
-  instanceId,
   selectedItems,
   setSelectedItems,
   setConfirming,
 }) => {
+  const { instanceId: urlInstanceId } = useParams();
+  const debug = useDebug();
+  const { getAvailableSnaps } = useSnaps();
+
   const [search, setSearch] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [toBeConfirmedItem, setToBeConfirmedItem] =
@@ -31,8 +34,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
   const [inputValue, setInputValue] = useState<string>("");
   const searchBoxRef = useRef<HTMLInputElement>(null);
 
-  const debug = useDebug();
-  const { getAvailableSnaps } = useSnaps();
+  const instanceId = Number(urlInstanceId);
 
   const { data: snapsDataRes, isFetching } = getAvailableSnaps(
     {

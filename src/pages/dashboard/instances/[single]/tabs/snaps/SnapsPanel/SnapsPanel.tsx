@@ -3,45 +3,31 @@ import { Button } from "@canonical/react-components";
 import { FC, useMemo, useState } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
-import TablePagination from "@/components/layout/TablePagination";
+import { TablePagination } from "@/components/layout/TablePagination";
 import useSidePanel from "@/hooks/useSidePanel";
 import { InstallSnaps, SnapsHeader, SnapsList } from "@/features/snaps";
+import { usePageParams } from "@/hooks/usePageParams";
+import { useParams } from "react-router-dom";
 
-interface SnapsProps {
-  instanceId: number;
-}
-
-const SnapsPanel: FC<SnapsProps> = ({ instanceId }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+const SnapsPanel: FC = () => {
   const [selectedSnapIds, setSelectedSnapIds] = useState<string[]>([]);
-  const [snapsSearch, setSnapsSearch] = useState("");
 
+  const { instanceId: urlInstanceId } = useParams();
+  const { search, currentPage, pageSize } = usePageParams();
   const { getSnapsQuery } = useSnaps();
   const { setSidePanelContent } = useSidePanel();
+
+  const instanceId = Number(urlInstanceId);
+
   const { data: getSnapsQueryResult, isLoading } = getSnapsQuery({
     instance_id: instanceId,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
-    search: snapsSearch,
+    search: search,
   });
 
-  const handleSnapsSearchChange = (searchText: string) => {
-    setSnapsSearch(searchText);
-    setCurrentPage(1);
-    setSelectedSnapIds([]);
-  };
-
-  const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
-    setCurrentPage(1);
-  };
-
   const handleEmptyStateInstall = () => {
-    setSidePanelContent(
-      "Install snap",
-      <InstallSnaps instanceId={instanceId} />,
-    );
+    setSidePanelContent("Install snap", <InstallSnaps />);
   };
 
   const installedSnaps = useMemo(
@@ -49,13 +35,17 @@ const SnapsPanel: FC<SnapsProps> = ({ instanceId }) => {
     [getSnapsQueryResult],
   );
 
+  const handleClearSelection = () => {
+    setSelectedSnapIds([]);
+  };
+
   return (
     <>
-      {!snapsSearch && isLoading && currentPage === 1 && pageSize === 20 && (
+      {!search && isLoading && currentPage === 1 && pageSize === 20 && (
         <LoadingState />
       )}
       {!isLoading &&
-        !snapsSearch &&
+        !search &&
         (!getSnapsQueryResult ||
           getSnapsQueryResult.data.results.length === 0) && (
           <EmptyState
@@ -76,20 +66,18 @@ const SnapsPanel: FC<SnapsProps> = ({ instanceId }) => {
             ]}
           />
         )}
-      {(snapsSearch ||
+      {(search ||
         currentPage !== 1 ||
         pageSize !== 20 ||
         (getSnapsQueryResult &&
           getSnapsQueryResult?.data.results.length > 0)) && (
         <>
           <SnapsHeader
-            instanceId={instanceId}
             selectedSnapIds={selectedSnapIds}
-            onSnapsSearchChange={handleSnapsSearchChange}
             installedSnaps={installedSnaps}
+            handleClearSelection={handleClearSelection}
           />
           <SnapsList
-            instanceId={instanceId}
             selectedSnapIds={selectedSnapIds}
             setSelectedSnapIds={(items) => setSelectedSnapIds(items)}
             installedSnaps={installedSnaps}
@@ -98,13 +86,8 @@ const SnapsPanel: FC<SnapsProps> = ({ instanceId }) => {
         </>
       )}
       <TablePagination
-        currentPage={currentPage}
+        handleClearSelection={handleClearSelection}
         totalItems={getSnapsQueryResult?.data?.count}
-        paginate={(page) => {
-          setCurrentPage(page);
-        }}
-        pageSize={pageSize}
-        setPageSize={handlePageSizeChange}
         currentItemCount={getSnapsQueryResult?.data?.results.length}
       />
     </>

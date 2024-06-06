@@ -4,19 +4,18 @@ import { User } from "@/types/User";
 import UserPanelActionButtons from "../UserPanelActionButtons";
 import useUsers from "@/hooks/useUsers";
 import { NOT_AVAILABLE } from "@/constants";
+import { useParams } from "react-router-dom";
 
 interface UserDetailsProps {
   user: User;
-  instanceId: number;
-  handleEditUser: (user: User) => void;
 }
 
-const UserDetails: FC<UserDetailsProps> = ({
-  user,
-  instanceId,
-  handleEditUser,
-}) => {
+const UserDetails: FC<UserDetailsProps> = ({ user }) => {
+  const { instanceId: urlInstanceId } = useParams();
   const { getGroupsQuery, getUserGroupsQuery } = useUsers();
+
+  const instanceId = Number(urlInstanceId);
+
   const { data: allGroupsData } = getGroupsQuery({ computer_id: instanceId });
   const { data: userGroupsData } = getUserGroupsQuery({
     username: user.username,
@@ -32,11 +31,7 @@ const UserDetails: FC<UserDetailsProps> = ({
 
   return (
     <>
-      <UserPanelActionButtons
-        selectedUsers={[user]}
-        instanceId={instanceId}
-        handleEditUser={handleEditUser}
-      />
+      <UserPanelActionButtons selectedUsers={[user]} sidePanel />
       <InfoItem label="username" value={user.username} />
       <InfoItem
         label="name"

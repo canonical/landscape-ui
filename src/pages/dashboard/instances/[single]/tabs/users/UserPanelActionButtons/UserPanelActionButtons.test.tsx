@@ -33,9 +33,8 @@ describe("UserPanelActionButtons", () => {
     it.each(tableUserButtons)("renders %s button", async (button) => {
       renderWithProviders(
         <UserPanelActionButtons
-          instanceId={1}
           selectedUsers={getSelectedUsers(users, userData.empty)}
-          setSelected={vi.fn()}
+          handleClearSelection={vi.fn()}
         />,
       );
       const actionButton = await screen.findByRole("button", {
@@ -50,9 +49,8 @@ describe("UserPanelActionButtons", () => {
         async (button) => {
           renderWithProviders(
             <UserPanelActionButtons
-              instanceId={1}
               selectedUsers={getSelectedUsers(users, userData.empty)}
-              setSelected={vi.fn()}
+              handleClearSelection={vi.fn()}
             />,
           );
           const actionButton = await screen.findByRole("button", {
@@ -69,12 +67,11 @@ describe("UserPanelActionButtons", () => {
       it("Unlocked button disabled when only unlocked users are selected", () => {
         renderWithProviders(
           <UserPanelActionButtons
-            instanceId={1}
             selectedUsers={getSelectedUsers(
               users,
               userData.multiple.unlockedUsers,
             )}
-            setSelected={vi.fn()}
+            handleClearSelection={vi.fn()}
           />,
         );
         const unlockButton = screen.getByRole("button", { name: "Unlock" });
@@ -84,12 +81,11 @@ describe("UserPanelActionButtons", () => {
       it("Lock button disabled when only locked users are selected", () => {
         renderWithProviders(
           <UserPanelActionButtons
-            instanceId={1}
             selectedUsers={getSelectedUsers(
               users,
               userData.multiple.lockedUsers,
             )}
-            setSelected={vi.fn()}
+            handleClearSelection={vi.fn()}
           />,
         );
         const lockButton = screen.getByRole("button", { name: "Lock" });
@@ -99,9 +95,8 @@ describe("UserPanelActionButtons", () => {
       it("Lock and Unlock enabled when only locked and unlocked users are selected", () => {
         renderWithProviders(
           <UserPanelActionButtons
-            instanceId={1}
             selectedUsers={getSelectedUsers(users, mixedSelectedUsers)}
-            setSelected={vi.fn()}
+            handleClearSelection={vi.fn()}
           />,
         );
         const lockButton = screen.getByRole("button", { name: "Lock" });
@@ -118,12 +113,11 @@ describe("UserPanelActionButtons", () => {
       async (button) => {
         renderWithProviders(
           <UserPanelActionButtons
-            instanceId={1}
             selectedUsers={getSelectedUsers(users, [
               userData.single.lockedUser,
             ])}
-            setSelected={vi.fn()}
-            handleEditUser={vi.fn()}
+            handleClearSelection={vi.fn()}
+            sidePanel
           />,
         );
         const actionButton = await screen.findByRole("button", {
@@ -138,12 +132,11 @@ describe("UserPanelActionButtons", () => {
       async (button) => {
         renderWithProviders(
           <UserPanelActionButtons
-            instanceId={1}
             selectedUsers={getSelectedUsers(users, [
               userData.single.unlockedUser,
             ])}
-            setSelected={vi.fn()}
-            handleEditUser={vi.fn()}
+            handleClearSelection={vi.fn()}
+            sidePanel
           />,
         );
         const actionButton = await screen.findByRole("button", {

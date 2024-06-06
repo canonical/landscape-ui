@@ -3,12 +3,12 @@ import { FC, lazy, Suspense, useState } from "react";
 import { Button, Col, Row } from "@canonical/react-components";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
-import TablePagination from "@/components/layout/TablePagination";
 import PackageProfileDetailsConstraintsInfo from "@/features/package-profiles/PackageProfileDetailsConstraintsInfo";
 import { usePackageProfiles } from "@/features/package-profiles/hooks";
 import { PackageProfile } from "@/features/package-profiles/types";
 import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./PackageProfileDetailsConstraints.module.scss";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 
 const PackageProfileConstraintsEditForm = lazy(
   () => import("@/features/package-profiles/PackageProfileConstraintsEditForm"),
@@ -89,7 +89,7 @@ const PackageProfileDetailsConstraints: FC<
             search={search}
           />
 
-          <TablePagination
+          <SidePanelTablePagination
             currentPage={currentPage}
             pageSize={pageSize}
             paginate={(page) => setCurrentPage(page)}

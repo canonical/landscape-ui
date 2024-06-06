@@ -13,7 +13,6 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import UsnPackageList from "@/features/usns/UsnPackageList";
-import { Instance } from "@/types/Instance";
 import { Usn } from "@/types/Usn";
 import { USN_LOADING } from "./constants";
 import {
@@ -29,7 +28,7 @@ type UsnListProps = {
   usns: Usn[];
 } & (
   | {
-      instance: Instance;
+      instanceTitle: string;
       onSelectedUsnsChange: (usns: Usn[]) => void;
       search: string;
       selectedUsns: Usn[];
@@ -154,7 +153,7 @@ const UsnList: FC<UsnListProps> = ({ isUsnsLoading, usns, ...otherProps }) => {
               ) : (
                 <UsnPackageList
                   isRemovable={true}
-                  instance={otherProps.instance}
+                  instanceTitle={otherProps.instanceTitle}
                   limit={innerTableLimit}
                   onLimitChange={() =>
                     setInnerTableLimit((prevState) => prevState + 5)

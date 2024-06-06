@@ -7,13 +7,9 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { users } from "@/tests/mocks/user";
 import { expectLoadingState } from "@/tests/helpers";
 
-const props = {
-  instanceId: 1,
-};
-
 describe("UserPanel", () => {
   it("renders UserPanel", async () => {
-    renderWithProviders(<UserPanel {...props} />);
+    renderWithProviders(<UserPanel />);
     await expectLoadingState();
 
     const user = users[0];
@@ -25,7 +21,7 @@ describe("UserPanel", () => {
 
   it("renders empty state", async () => {
     setEndpointStatus("empty");
-    renderWithProviders(<UserPanel {...props} />);
+    renderWithProviders(<UserPanel />);
 
     const emptyTableState = await screen.findByText(/no users found/i);
     expect(emptyTableState).toBeInTheDocument();
@@ -33,7 +29,7 @@ describe("UserPanel", () => {
 
   it("opens form from empty state", async () => {
     setEndpointStatus("empty");
-    renderWithProviders(<UserPanel {...props} />);
+    renderWithProviders(<UserPanel />);
     await expectLoadingState();
 
     const addNewUserButton = await screen.findByRole("button", {
@@ -47,7 +43,7 @@ describe("UserPanel", () => {
   });
 
   it("renders filtered list of users", async () => {
-    renderWithProviders(<UserPanel {...props} />);
+    renderWithProviders(<UserPanel />);
 
     for (let i = 0; i < users.length; i++) {
       const user = await screen.findByRole("button", {

@@ -7,14 +7,10 @@ import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
 import SnapsPanel from "./SnapsPanel";
 
-const props = {
-  instanceId: 1,
-};
-
 describe("SnapsPanel", () => {
   it("renders empty state", async () => {
     setEndpointStatus("empty");
-    renderWithProviders(<SnapsPanel {...props} />);
+    renderWithProviders(<SnapsPanel />);
     await expectLoadingState();
 
     const emptyStateTitle = await screen.findByText(
@@ -25,7 +21,7 @@ describe("SnapsPanel", () => {
 
   it("opens form from empty state", async () => {
     setEndpointStatus("empty");
-    renderWithProviders(<SnapsPanel {...props} />);
+    renderWithProviders(<SnapsPanel />);
     await expectLoadingState();
 
     const installSnapButton = await screen.findByRole("button", {
@@ -39,7 +35,7 @@ describe("SnapsPanel", () => {
   });
 
   it("renders filtered list of installed snaps", async () => {
-    renderWithProviders(<SnapsPanel {...props} />);
+    renderWithProviders(<SnapsPanel />);
     await expectLoadingState();
 
     for (let i = 0; i < installedSnaps.length; i++) {

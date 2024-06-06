@@ -1,6 +1,6 @@
 import { Button, Icon, Input } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC, useState } from "react";
+import { FC, Suspense, lazy, useState } from "react";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -16,35 +16,44 @@ import {
   getUserLockStatusCounts,
   renderModalBody,
 } from "./helpers";
+import LoadingState from "@/components/layout/LoadingState";
+import { useParams } from "react-router-dom";
+
+const EditUserForm = lazy(
+  () => import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
+);
 
 interface UserPanelActionButtonsProps {
-  instanceId: number;
   selectedUsers: User[];
-  setSelected?: (items: number[]) => void;
-  handleEditUser?: (user: User) => void;
+  handleClearSelection?: () => void;
+  sidePanel?: boolean;
 }
 
 const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
-  instanceId,
   selectedUsers,
-  setSelected,
-  handleEditUser,
+  handleClearSelection,
+  sidePanel = false,
 }) => {
   const [confirmDeleteHomeFolders, setConfirmDeleteHomeFolders] =
     useState(false);
-  const user = selectedUsers.length === 1 ? selectedUsers[0] : undefined;
-  const { locked: lockedUsersCount, unlocked: unlockedUsersCount } =
-    getUserLockStatusCounts(selectedUsers);
 
+  const { instanceId: urlInstanceId } = useParams();
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent, closeSidePanel } = useSidePanel();
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { removeUserQuery, lockUserQuery, unlockUserQuery } = useUsers();
+
   const { mutateAsync: removeUserMutation } = removeUserQuery;
   const { mutateAsync: lockUserMutation } = lockUserQuery;
   const { mutateAsync: unlockUserMutation } = unlockUserQuery;
+
+  const instanceId = Number(urlInstanceId);
+  const user = selectedUsers.length === 1 ? selectedUsers[0] : undefined;
+
+  const { locked: lockedUsersCount, unlocked: unlockedUsersCount } =
+    getUserLockStatusCounts(selectedUsers);
 
   const performUserAction = async (
     mutation:
@@ -60,8 +69,8 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
         delete_home:
           actionType === "removed" ? confirmDeleteHomeFolders : undefined,
       });
-      if (setSelected) {
-        setSelected([]);
+      if (handleClearSelection) {
+        handleClearSelection();
       }
       closeSidePanel();
       notify.success({ message: `Successfully requested to be ${actionType}` });
@@ -85,9 +94,15 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   };
 
   const handleAddUser = () => {
+    setSidePanelContent("Add new user", <NewUserForm />);
+  };
+
+  const handleEditUser = (user: User) => {
     setSidePanelContent(
-      "Add new user",
-      <NewUserForm instanceId={instanceId} />,
+      "Edit user",
+      <Suspense fallback={<LoadingState />}>
+        <EditUserForm user={user} />
+      </Suspense>,
     );
   };
 
@@ -157,11 +172,11 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   return (
     <div
       className={classNames("p-panel__controls u-no-padding--top", {
-        "u-no-margin--left": handleEditUser,
-        [classes.cta]: setSelected && isLargeScreen,
+        "u-no-margin--left": sidePanel,
+        [classes.cta]: !sidePanel && isLargeScreen,
       })}
     >
-      {setSelected && (
+      {!sidePanel && (
         <Button hasIcon onClick={handleAddUser} className="u-no-margin--right">
           <Icon name="plus" />
           <span>Add user</span>
@@ -169,7 +184,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
       )}
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
-          {(user?.enabled || setSelected) && (
+          {(user?.enabled || !sidePanel) && (
             <Button
               disabled={unlockedUsersCount === 0}
               onClick={handleLockUser}
@@ -179,7 +194,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
               <span>Lock</span>
             </Button>
           )}
-          {(!user?.enabled || setSelected) && (
+          {(!user?.enabled || !sidePanel) && (
             <Button
               disabled={lockedUsersCount === 0}
               onClick={handleUnlockUser}
@@ -189,7 +204,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
               <span>Unlock</span>
             </Button>
           )}
-          {handleEditUser && user && (
+          {sidePanel && user && (
             <Button
               onClick={() => handleEditUser(user)}
               className="p-segmented-control__button"

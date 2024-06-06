@@ -4,13 +4,14 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect } from "vitest";
 import InstallSnaps from "./InstallSnaps";
 
-const props = {
-  instanceId: 1,
-};
-
 describe("InstallSnaps", () => {
   beforeEach(async () => {
-    renderWithProviders(<InstallSnaps {...props} />);
+    renderWithProviders(
+      <InstallSnaps />,
+      {},
+      `/instances/1`,
+      "/instances/:instanceId",
+    );
   });
 
   it("renders form correctly", () => {
@@ -35,9 +36,8 @@ describe("InstallSnaps", () => {
 
       const snap = await screen.findByText("Snap 2");
       expect(snap).toBeInTheDocument();
-
       await userEvent.click(snap);
-      const addButton = screen.getByRole("button", {
+      const addButton = await screen.findByRole("button", {
         name: /add/i,
       });
       expect(addButton).toBeInTheDocument();

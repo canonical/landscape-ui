@@ -6,12 +6,9 @@ import { SelectedSnaps } from "@/types/Snap";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import SnapDropdownSearch from "../SnapDropdownSearch";
+import { useParams } from "react-router-dom";
 
-interface InstallSnapsProps {
-  instanceId: number;
-}
-
-const InstallSnaps: FC<InstallSnapsProps> = ({ instanceId }) => {
+const InstallSnaps: FC = () => {
   const [selectedSnaps, setSelectedSnaps] = useState<SelectedSnaps[]>([]);
   const [confirming, setConfirming] = useState(false);
 
@@ -19,6 +16,9 @@ const InstallSnaps: FC<InstallSnapsProps> = ({ instanceId }) => {
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { snapsActionQuery } = useSnaps();
+  const { instanceId: urlInstanceId } = useParams();
+
+  const instanceId = Number(urlInstanceId);
   const { mutateAsync: installSnaps, isLoading: installSnapsLoading } =
     snapsActionQuery;
 
@@ -46,7 +46,6 @@ const InstallSnaps: FC<InstallSnapsProps> = ({ instanceId }) => {
   return (
     <>
       <SnapDropdownSearch
-        instanceId={instanceId}
         selectedItems={selectedSnaps}
         setSelectedItems={(items) => setSelectedSnaps(items)}
         setConfirming={(item) => setConfirming(item)}

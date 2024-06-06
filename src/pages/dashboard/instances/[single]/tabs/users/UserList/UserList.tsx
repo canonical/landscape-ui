@@ -13,25 +13,19 @@ const UserDetails = lazy(
 );
 
 interface UserListProps {
-  instanceId: number;
   users: User[];
   selected: number[];
-  setSelected: (value: number[]) => void;
+  setSelected: (userIds: number[]) => void;
 }
 
-const UserList: FC<UserListProps> = ({
-  instanceId,
-  users,
-  selected,
-  setSelected,
-}) => {
+const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
   const { setSidePanelContent } = useSidePanel();
 
   const handleEditUser = (user: User) => {
     setSidePanelContent(
       "Edit user",
       <Suspense fallback={<LoadingState />}>
-        <EditUserForm instanceId={instanceId} user={user} />
+        <EditUserForm user={user} />
       </Suspense>,
     );
   };
@@ -40,11 +34,7 @@ const UserList: FC<UserListProps> = ({
     setSidePanelContent(
       "User details",
       <Suspense fallback={<LoadingState />}>
-        <UserDetails
-          user={user}
-          instanceId={instanceId}
-          handleEditUser={handleEditUser}
-        />
+        <UserDetails user={user} />
       </Suspense>,
     );
   };
@@ -142,9 +132,7 @@ const UserList: FC<UserListProps> = ({
               appearance="base"
               className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
               aria-label={`Edit ${user.name} profile`}
-              onClick={() => {
-                handleEditUser(user);
-              }}
+              onClick={() => handleEditUser(user)}
             >
               <span className="p-tooltip__message">Edit</span>
               <i className="p-icon--edit u-no-margin--left" />

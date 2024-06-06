@@ -1,9 +1,8 @@
 import { FC, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
 import { Select } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
-import TablePagination from "@/components/layout/TablePagination";
+import { TablePagination } from "@/components/layout/TablePagination";
 import {
   ExtendedSearchAndFilterChip,
   SearchBoxWithSavedSearches,
@@ -11,15 +10,11 @@ import {
 import useInstances from "@/hooks/useInstances";
 import InstanceList from "@/pages/dashboard/instances/InstanceList";
 import { Instance } from "@/types/Instance";
-import {
-  GROUP_BY_FILTER,
-  INSTANCE_SEARCH_HELP_TERMS,
-  OS_FILTER,
-  QUERY_STATUSES,
-  STATUS_FILTER,
-} from "./constants";
+import { FILTERS, INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesContainer.module.scss";
 import PendingInstancesNotification from "@/pages/dashboard/instances/PendingInstancesNotification";
+import { usePageParams } from "@/hooks/usePageParams";
+import { getOptionQuery } from "./helpers";
 
 interface InstancesContainerProps {
   selectedInstances: Instance[];
@@ -33,25 +28,22 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
   const [searchAndFilterChips, setSearchAndFilterChips] = useState<
     ExtendedSearchAndFilterChip[]
   >([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageLimit, setPageLimit] = useState(50);
   const [showSearchHelp, setShowSearchHelp] = useState(false);
-  const [groupBy, setGroupBy] = useState("");
-  const [osFilter, setOsFilter] = useState("");
 
-  const location: { state: { chipData?: ExtendedSearchAndFilterChip } | null } =
-    useLocation();
-
-  const chipData = location.state?.chipData;
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [statusFilter, setStatusFilter] = useState(
-    searchParams.get("status") || "",
-  );
+  const {
+    os: osFilter,
+    groupBy: groupBy,
+    status: status,
+    currentPage,
+    pageSize,
+    setPageParams,
+  } = usePageParams();
 
   const { getInstancesQuery } = useInstances();
 
-  const queryStatus = QUERY_STATUSES[statusFilter];
+  const queryStatus = getOptionQuery(FILTERS.status, status);
+  const queryOsFilter = getOptionQuery(FILTERS.os, osFilter);
+  const queryGroupBy = getOptionQuery(FILTERS.groupBy, groupBy);
 
   const { data: getInstancesQueryResult, isLoading: getInstancesQueryLoading } =
     getInstancesQuery({
@@ -59,19 +51,22 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
         .map(({ lead, value, title }) =>
           lead && title ? `${lead}:${title}` : value,
         )
-        .join(" ")}${osFilter ?? ""} ${queryStatus}`.trim(),
-      root_only: groupBy === "parent",
+        .join(" ")}${queryOsFilter ?? ""} ${queryStatus}`.trim(),
+      root_only: queryGroupBy === "parent",
       with_alerts: true,
-      with_upgrades: statusFilter !== "pending-computers",
-      limit: pageLimit,
-      offset: (currentPage - 1) * pageLimit,
+      with_upgrades: status !== "pending-computers",
+      limit: pageSize,
+      offset: (currentPage - 1) * pageSize,
     });
 
   const instances = getInstancesQueryResult?.data.results ?? [];
   const instancesCount = getInstancesQueryResult?.data.count ?? 0;
 
-  const handlePaginate = (page: number) => {
-    setCurrentPage(page);
+  const handleFilterChange = (filterType: string, filterValue: string) => {
+    setPageParams({ [filterType]: filterValue });
+  };
+
+  const handleClearSelection = () => {
     setSelectedInstances([]);
   };
 
@@ -80,56 +75,45 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
       <div className={classes.top}>
         <div className={classes.searchContainer}>
           <SearchBoxWithSavedSearches
-            existingSearchData={chipData ? [chipData] : undefined}
+            existingSearchData={searchAndFilterChips}
             onHelpButtonClick={() => setShowSearchHelp(true)}
             returnSearchData={(searchData) =>
               setSearchAndFilterChips(searchData)
             }
           />
         </div>
-        {GROUP_BY_FILTER.type === "select" && (
+        {FILTERS.groupBy.type === "select" && (
           <Select
-            label={GROUP_BY_FILTER.label}
+            label={FILTERS.groupBy.label}
             wrapperClassName={classes.select}
             className="u-no-margin--bottom"
-            options={GROUP_BY_FILTER.options}
+            options={FILTERS.groupBy.options}
             value={groupBy}
-            onChange={(event) => {
-              setSelectedInstances([]);
-              setGroupBy(event.target.value);
-            }}
+            onChange={(event) =>
+              handleFilterChange("groupBy", event.target.value)
+            }
           />
         )}
-        {OS_FILTER.type === "select" && (
+        {FILTERS.os.type === "select" && (
           <Select
-            label={OS_FILTER.label}
+            label={FILTERS.os.label}
             wrapperClassName={classes.select}
             className="u-no-margin--bottom"
-            options={OS_FILTER.options}
+            options={FILTERS.os.options}
             value={osFilter}
-            onChange={(event) => {
-              setSelectedInstances([]);
-              setOsFilter(event.target.value);
-            }}
+            onChange={(event) => handleFilterChange("os", event.target.value)}
           />
         )}
-        {STATUS_FILTER.type === "select" && (
+        {FILTERS.status.type === "select" && (
           <Select
-            label={STATUS_FILTER.label}
+            label={FILTERS.status.label}
             wrapperClassName={classes.select}
             className="u-no-margin--bottom"
-            options={STATUS_FILTER.options}
-            value={statusFilter}
-            onChange={(event) => {
-              setSelectedInstances([]);
-              setStatusFilter(event.target.value);
-              if (event.target.value !== "") {
-                setSearchParams({ status: event.target.value });
-              } else {
-                searchParams.delete("status");
-                setSearchParams(searchParams);
-              }
-            }}
+            options={FILTERS.status.options}
+            value={status}
+            onChange={(event) =>
+              handleFilterChange("status", event.target.value)
+            }
           />
         )}
       </div>
@@ -154,13 +138,8 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
         />
       )}
       <TablePagination
-        currentPage={currentPage}
         totalItems={instancesCount}
-        paginate={handlePaginate}
-        pageSize={pageLimit}
-        setPageSize={(itemsNumber) => {
-          setPageLimit(itemsNumber);
-        }}
+        handleClearSelection={handleClearSelection}
         currentItemCount={instances.length}
       />
     </>

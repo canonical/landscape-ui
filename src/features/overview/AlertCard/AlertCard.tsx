@@ -4,7 +4,6 @@ import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
 import { Link } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
-import { QUERY_STATUSES } from "@/pages/dashboard/instances/InstancesContainer/constants";
 import LoadingState from "@/components/layout/LoadingState";
 import { Status } from "@/pages/dashboard/instances/InstanceList/constants";
 
@@ -13,6 +12,7 @@ const AlertCard: FC<Status> = ({
   icon,
   alternateLabel,
   label,
+  query,
 }) => {
   const { getInstancesQuery } = useInstances();
 
@@ -21,7 +21,7 @@ const AlertCard: FC<Status> = ({
     isLoading,
     isError,
   } = getInstancesQuery({
-    query: QUERY_STATUSES[filterValue],
+    query: query,
     limit: 1,
     root_only: false,
   });

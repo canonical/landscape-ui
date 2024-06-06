@@ -2,7 +2,6 @@ import { FormikHelpers, useFormik } from "formik";
 import { FC, useState } from "react";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
-import TablePagination from "@/components/layout/TablePagination";
 import PackageProfileConstraintsEditFormActions from "@/features/package-profiles/PackageProfileConstraintsEditFormActions";
 import PackageProfileConstraintsEditFormTable from "@/features/package-profiles/PackageProfileConstraintsEditFormTable";
 import { usePackageProfiles } from "@/features/package-profiles/hooks";
@@ -15,6 +14,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./PackageProfileConstraintsEditForm.module.scss";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 
 interface PackageProfileConstraintsEditFormProps {
   profile: PackageProfile;
@@ -136,7 +136,7 @@ const PackageProfileConstraintsEditForm: FC<
             selectedIds={selectedIds}
           />
 
-          <TablePagination
+          <SidePanelTablePagination
             currentPage={currentPage}
             pageSize={pageSize}
             paginate={handlePageChange}

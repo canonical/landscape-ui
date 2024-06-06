@@ -4,40 +4,41 @@ import classes from "./UserPanelHeader.module.scss";
 import UserPanelActionButtons from "../UserPanelActionButtons";
 import { User } from "@/types/User";
 import { getSelectedUsers } from "./helpers";
+import { usePageParams } from "@/hooks/usePageParams";
 
 interface UserPanelHeaderProps {
-  instanceId: number;
-  onPageChange: (page: number) => void;
-  onSearch: (searchText: string) => void;
   selected: number[];
-  setSelected: (selected: number[]) => void;
+  handleClearSelection: () => void;
   users: User[];
 }
 
 const UserPanelHeader: FC<UserPanelHeaderProps> = ({
-  instanceId,
-  onPageChange,
-  onSearch,
   selected,
-  setSelected,
+  handleClearSelection,
   users,
 }) => {
-  const [inputText, setInputText] = useState("");
+  const { search, setPageParams } = usePageParams();
 
-  const handleSearch = (searchText = inputText) => {
-    onSearch(searchText);
-    onPageChange(1);
+  const [searchText, setSearchText] = useState(search);
+
+  const handleSearch = () => {
+    setPageParams({
+      search: searchText,
+    });
+    handleClearSelection();
   };
 
-  const handleClearSearchBox = () => {
-    setInputText("");
-    handleSearch("");
+  const handleClear = () => {
+    setPageParams({
+      search: "",
+    });
   };
 
   const handleSearchSubmit = (event: FormEvent) => {
     event.preventDefault();
     handleSearch();
   };
+
   return (
     <div className={classes.headerContainer}>
       <div className={classes.searchContainer}>
@@ -45,19 +46,14 @@ const UserPanelHeader: FC<UserPanelHeaderProps> = ({
           <SearchBox
             externallyControlled
             shouldRefocusAfterReset
-            aria-label="User search"
-            value={inputText}
-            onChange={(inputValue) => {
-              setInputText(inputValue);
-            }}
-            className="u-no-margin--bottom"
-            onClear={handleClearSearchBox}
+            value={searchText}
+            onChange={(inputValue) => setSearchText(inputValue)}
+            onClear={handleClear}
           />
         </Form>
       </div>
       <UserPanelActionButtons
-        instanceId={instanceId}
-        setSelected={setSelected}
+        handleClearSelection={handleClearSelection}
         selectedUsers={getSelectedUsers(users, selected)}
       />
     </div>

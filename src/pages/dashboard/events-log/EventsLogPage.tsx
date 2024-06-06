@@ -1,27 +1,25 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useMemo } from "react";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { EventsLogHeader, EventsLogList } from "@/features/events-log";
 import useEventsLog from "@/hooks/useEventLogs";
 import { Button } from "@canonical/react-components";
-import TablePagination from "@/components/layout/TablePagination";
+import { TablePagination } from "@/components/layout/TablePagination";
 import useAuth from "@/hooks/useAuth";
 import { AuthUser } from "@/context/auth";
 import moment from "moment";
 import { downloadCSV } from "./helpers";
 import LoadingState from "@/components/layout/LoadingState";
+import { usePageParams } from "@/hooks/usePageParams";
 
 const EventsLogPage: FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [search, setSearch] = useState("");
-  const [dayFilter, setDayFilter] = useState<number>(7);
-
+  const { days, search, currentPage, pageSize } = usePageParams();
   const { user } = useAuth() as { user: AuthUser };
   const { getEventsLog } = useEventsLog();
+
   const { data: eventsLogData, isLoading } = getEventsLog({
-    days: dayFilter,
+    days: Number(days),
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
     search: search,
@@ -34,20 +32,6 @@ const EventsLogPage: FC = () => {
       ) ?? [],
     [eventsLogData, search],
   );
-
-  const handlePaginate = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const handlePageSizeChange = (itemsNumber: number) => {
-    setPageSize(itemsNumber);
-    handlePaginate(1);
-  };
-
-  const handleDayChange = (newDay: number) => {
-    setDayFilter(newDay);
-    setCurrentPage(1);
-  };
 
   return (
     <PageMain>
@@ -68,19 +52,10 @@ const EventsLogPage: FC = () => {
         ]}
       />
       <PageContent>
-        <EventsLogHeader
-          setSearch={(newSearch) => setSearch(newSearch)}
-          handleResetPage={() => setCurrentPage(1)}
-          dayFilter={dayFilter}
-          handleDayChange={handleDayChange}
-        />
+        <EventsLogHeader />
         {isLoading ? <LoadingState /> : <EventsLogList eventsLog={eventsLog} />}
         <TablePagination
-          currentPage={currentPage}
           totalItems={eventsLogData?.data.count}
-          paginate={handlePaginate}
-          pageSize={pageSize}
-          setPageSize={handlePageSizeChange}
           currentItemCount={eventsLog.length}
         />
       </PageContent>

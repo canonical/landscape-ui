@@ -9,23 +9,26 @@ import React, { FC, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import classes from "./PackageDropdownSearch.module.scss";
 import { DEBOUNCE_DELAY, boldSubstring } from "./helpers";
+import { useParams } from "react-router-dom";
 
 interface PackageDropdownSearchProps {
-  instanceId: number;
   selectedItems: Package[];
   setSelectedItems: (items: Package[]) => void;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
-  instanceId,
   selectedItems,
   setSelectedItems,
 }) => {
   const [search, setSearch] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState<string>("");
+
+  const { instanceId: urlInstanceId } = useParams();
   const debug = useDebug();
   const { getInstancePackagesQuery } = usePackages();
+
+  const instanceId = Number(urlInstanceId);
 
   const { data: packageDataRes, isFetching } = getInstancePackagesQuery(
     {

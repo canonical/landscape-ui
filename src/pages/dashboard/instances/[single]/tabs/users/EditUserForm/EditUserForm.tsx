@@ -9,6 +9,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
 import { User } from "@/types/User";
+import { useParams } from "react-router-dom";
 
 interface FormProps {
   name: string;
@@ -23,11 +24,11 @@ interface FormProps {
 }
 
 interface EditUserFormProps {
-  instanceId: number;
   user: User;
 }
 
-const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
+const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
+  const { instanceId: urlInstanceId } = useParams();
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
@@ -38,6 +39,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ instanceId, user }) => {
     addUserToGroupQuery,
     removeUserFromGroupQuery,
   } = useUsers();
+
+  const instanceId = Number(urlInstanceId);
+
   const { data, isLoading: isLoadingGroups } = getGroupsQuery({
     computer_id: instanceId,
   });

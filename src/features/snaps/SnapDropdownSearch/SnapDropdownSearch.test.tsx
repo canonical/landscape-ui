@@ -6,7 +6,6 @@ import { describe, expect, vi } from "vitest";
 import SnapDropdownSearch from "./SnapDropdownSearch";
 
 const props = {
-  instanceId: 1,
   selectedItems: [],
   setSelectedItems: vi.fn(),
   setConfirming: vi.fn(),
@@ -14,7 +13,12 @@ const props = {
 
 describe("SnapDropdownSearch", () => {
   beforeEach(async () => {
-    renderWithProviders(<SnapDropdownSearch {...props} />);
+    renderWithProviders(
+      <SnapDropdownSearch {...props} />,
+      {},
+      "/instances/1",
+      "instances/:instanceId",
+    );
   });
 
   it("renders snap dropdown search component", () => {

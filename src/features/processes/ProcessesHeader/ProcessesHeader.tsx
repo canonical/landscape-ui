@@ -1,41 +1,49 @@
-import { FC, useState } from "react";
+import { FC, SyntheticEvent, useState } from "react";
 import useDebug from "@/hooks/useDebug";
 import { useProcesses } from "@/hooks/useProcesses";
 import { Button, Form, SearchBox } from "@canonical/react-components";
 import classes from "./ProcessesHeader.module.scss";
 import useNotify from "@/hooks/useNotify";
+import { usePageParams } from "@/hooks/usePageParams";
+import { useParams } from "react-router-dom";
 
 interface ProcessesHeaderProps {
-  instanceId: number;
-  onPageChange: (page: number) => void;
-  onSearch: (searchText: string) => void;
+  handleClearSelection: () => void;
   selectedPids: number[];
-  setSelectedPids: (pids: number[]) => void;
 }
 
 const ProcessesHeader: FC<ProcessesHeaderProps> = ({
-  instanceId,
-  onPageChange,
-  onSearch,
   selectedPids,
-  setSelectedPids,
+  handleClearSelection,
 }) => {
-  const [inputText, setInputText] = useState("");
-
+  const { instanceId: urlInstanceId } = useParams();
+  const { search, setPageParams } = usePageParams();
   const { notify } = useNotify();
   const debug = useDebug();
   const { killProcessQuery, terminateProcessQuery } = useProcesses();
+
+  const [searchText, setSearchText] = useState(search);
+
+  const instanceId = Number(urlInstanceId);
   const { mutateAsync: terminateProcess } = terminateProcessQuery;
   const { mutateAsync: killProcess } = killProcessQuery;
 
-  const handleSearch = (searchText = inputText) => {
-    onSearch(searchText);
-    onPageChange(1);
+  const handleSearch = () => {
+    setPageParams({
+      search: searchText,
+    });
+    handleClearSelection();
   };
 
-  const handleClearSearchBox = () => {
-    setInputText("");
-    handleSearch("");
+  const handleClear = () => {
+    setPageParams({
+      search: "",
+    });
+  };
+
+  const handleSubmit = (event: SyntheticEvent) => {
+    event.preventDefault();
+    handleSearch();
   };
 
   const handleEndProcess = async () => {
@@ -47,7 +55,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
       notify.success({
         message: `${selectedPids.length === 1 ? "Process" : "Processes"} successfully ended`,
       });
-      setSelectedPids([]);
+      handleClearSelection();
     } catch (error) {
       debug(error);
     }
@@ -62,7 +70,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
       notify.success({
         message: `${selectedPids.length === 1 ? "Process" : "Processes"} successfully killed`,
       });
-      setSelectedPids([]);
+      handleClearSelection();
     } catch (error) {
       debug(error);
     }
@@ -71,24 +79,16 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   return (
     <div className={classes.container}>
       <div className={classes.searchContainer}>
-        <Form
-          onSubmit={(event) => {
-            event.preventDefault();
-            handleSearch();
-          }}
-          noValidate
-        >
+        <Form onSubmit={handleSubmit} noValidate>
           <SearchBox
-            externallyControlled
             shouldRefocusAfterReset
-            aria-label="Process search"
-            onChange={(inputValue) => {
-              setInputText(inputValue);
-            }}
-            value={inputText}
-            onSearch={handleSearch}
-            onClear={handleClearSearchBox}
+            externallyControlled
             autocomplete="off"
+            aria-label="Process search"
+            value={searchText}
+            onChange={(inputValue) => setSearchText(inputValue)}
+            onSearch={handleSearch}
+            onClear={handleClear}
           />
         </Form>
       </div>

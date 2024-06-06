@@ -6,6 +6,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
+import { useParams } from "react-router-dom";
 
 interface FormProps {
   name: string;
@@ -19,14 +20,14 @@ interface FormProps {
   primaryGroupValue: string;
 }
 
-interface NewUserFormProps {
-  instanceId: number;
-}
-
-const NewUserForm: FC<NewUserFormProps> = ({ instanceId }) => {
+const NewUserForm: FC = () => {
+  const { instanceId: urlInstanceId } = useParams();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { createUserQuery, getGroupsQuery } = useUsers();
+
+  const instanceId = Number(urlInstanceId);
+
   const { mutateAsync, isLoading } = createUserQuery;
   const { data, isLoading: isLoadingGroups } = getGroupsQuery({
     computer_id: instanceId,
