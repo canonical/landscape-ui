@@ -7,16 +7,14 @@ import { Button, Col, Row } from "@canonical/react-components";
 import { usePackages } from "@/hooks/usePackages";
 import useDebug from "@/hooks/useDebug";
 import InstalledPackagesActionForm from "@/pages/dashboard/instances/[single]/tabs/packages/InstalledPackagesActionForm";
+import { useParams } from "react-router-dom";
 
 interface PackageDetailsProps {
-  instanceId: number;
   singlePackage: Package;
 }
 
-const PackageDetails: FC<PackageDetailsProps> = ({
-  instanceId,
-  singlePackage,
-}) => {
+const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
+  const { instanceId } = useParams();
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { confirmModal, closeConfirmModal } = useConfirm();
@@ -38,7 +36,6 @@ const PackageDetails: FC<PackageDetailsProps> = ({
       `${actionLabels[action]} ${singlePackage.name}`,
       <InstalledPackagesActionForm
         action={action}
-        instanceId={instanceId}
         packages={[singlePackage]}
       />,
     );

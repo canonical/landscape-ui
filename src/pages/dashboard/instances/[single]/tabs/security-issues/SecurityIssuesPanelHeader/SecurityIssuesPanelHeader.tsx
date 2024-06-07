@@ -1,33 +1,35 @@
 import classNames from "classnames";
 import { FC, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button, Form, Icon, SearchBox } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useUsns from "@/hooks/useUsns";
-import { Instance } from "@/types/Instance";
 import classes from "./SecurityIssuesPanelHeader.module.scss";
+import { usePageParams } from "@/hooks/usePageParams";
 
 interface SecurityIssuesPanelHeaderProps {
-  instance: Instance;
   onSearch: (searchText: string) => void;
   usns: string[];
 }
 
 const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
-  instance,
   onSearch,
   usns,
 }) => {
   const [inputText, setInputText] = useState("");
 
+  const { instanceId: urlInstanceId, childInstanceId } = useParams();
+  const { setPageParams } = usePageParams();
   const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { upgradeUsnPackagesQuery } = useUsns();
+
+  const instanceId = Number(urlInstanceId);
 
   const {
     mutateAsync: upgradeUsnPackages,
@@ -36,17 +38,16 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 
   const handleActivityDetailsView = () => {
     navigate(
-      `${ROOT_PATH}instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`,
-      { state: { tab: "activities" } },
+      `${ROOT_PATH}instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`,
     );
-
+    setPageParams({ tab: "activities" });
     notify.clear();
   };
 
   const handleUpgradePackages = async () => {
     try {
       await upgradeUsnPackages({
-        instanceId: instance.id,
+        instanceId: instanceId,
         usns,
       });
 

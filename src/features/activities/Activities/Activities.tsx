@@ -7,7 +7,7 @@ import {
   ModularTable,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import TablePagination from "@/components/layout/TablePagination";
+import { TablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import ActivitiesEmptyState from "@/features/activities/ActivitiesEmptyState";
 import ActivitiesHeader from "@/features/activities/ActivitiesHeader";
@@ -19,6 +19,7 @@ import {
 import useSidePanel from "@/hooks/useSidePanel";
 import { ActivityCommon } from "@/features/activities/types";
 import classes from "./Activities.module.scss";
+import { usePageParams } from "@/hooks/usePageParams";
 
 const ActivityDetails = lazy(
   () => import("@/features/activities/ActivityDetails"),
@@ -29,13 +30,13 @@ interface ActivitiesProps {
 }
 
 const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(50);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
 
+  const { search, status, currentPage, pageSize } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getActivitiesQuery } = useActivities();
+
+  const searchQuery = `${search}${status ? ` status:${status}` : ""}`;
 
   const handleActivityDetailsOpen = (activity: ActivityCommon) => {
     setSidePanelContent(
@@ -48,14 +49,8 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
 
   useOpenActivityDetails(handleActivityDetailsOpen);
 
-  const handlePaginate = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
+  const handleClearSelection = () => {
     setSelectedIds([]);
-  };
-
-  const handlePageSizeChange = (itemsNumber: number) => {
-    setPageSize(itemsNumber);
-    handlePaginate(1);
   };
 
   const {
@@ -192,21 +187,18 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
           getActivitiesQueryResult.data.count > 0)) && (
         <>
           <ActivitiesHeader
-            resetPage={() => setCurrentPage(1)}
-            resetSelectedIds={() => setSelectedIds([])}
+            resetSelectedIds={handleClearSelection}
             selectedIds={selectedIds}
-            setSearchQuery={(newSearchQuery) => {
-              setSearchQuery(newSearchQuery);
-            }}
           />
-          <ModularTable columns={columns} data={activities} />
+          <ModularTable
+            emptyMsg={`No activities found with the search ${searchQuery}`}
+            columns={columns}
+            data={activities}
+          />
           <TablePagination
-            currentPage={currentPage}
             totalItems={getActivitiesQueryResult?.data.count}
-            paginate={handlePaginate}
-            pageSize={pageSize}
-            setPageSize={handlePageSizeChange}
             currentItemCount={activities.length}
+            handleClearSelection={handleClearSelection}
           />
         </>
       )}

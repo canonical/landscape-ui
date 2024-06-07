@@ -1,9 +1,9 @@
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Button, Icon, Select } from "@canonical/react-components";
-import classes from "./TablePagination.module.scss";
+import classes from "../TablePagination.module.scss";
 import classNames from "classnames";
 
-interface TablePaginationProps {
+interface SidePanelTablePaginationProps {
   currentPage: number;
   pageSize: number;
   paginate: (page: number) => void;
@@ -13,7 +13,7 @@ interface TablePaginationProps {
   currentItemCount?: number;
 }
 
-const TablePagination: FC<TablePaginationProps> = ({
+const SidePanelTablePagination: FC<SidePanelTablePaginationProps> = ({
   currentPage,
   pageSize,
   paginate,
@@ -180,4 +180,4 @@ const TablePagination: FC<TablePaginationProps> = ({
   );
 };
 
-export default TablePagination;
+export default SidePanelTablePagination;

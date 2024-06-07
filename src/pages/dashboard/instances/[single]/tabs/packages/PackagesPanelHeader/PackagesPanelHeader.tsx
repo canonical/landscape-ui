@@ -3,29 +3,44 @@ import { Form, SearchBox, Select } from "@canonical/react-components";
 import classes from "./PackagesPanelHeader.module.scss";
 import PackageActions from "@/pages/dashboard/instances/[single]/tabs/packages/PackageActions";
 import { Package } from "@/types/Package";
-import { Instance } from "@/types/Instance";
 import { filterOptions } from "./constants";
+import { usePageParams } from "@/hooks/usePageParams";
 
 interface PackagesPanelHeaderProps {
-  filter: string;
-  instance: Instance;
-  onFilterChange: (newFilter: string) => void;
-  onPackageSearchChange: (searchText: string) => void;
+  handleClearSelection: () => void;
   selectedPackages: Package[];
 }
 
 const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
-  filter,
-  instance,
-  onFilterChange,
-  onPackageSearchChange,
+  handleClearSelection,
   selectedPackages,
 }) => {
-  const [searchText, setSearchText] = useState("");
+  const { search, setPageParams, status } = usePageParams();
+
+  const [searchText, setSearchText] = useState(search);
+
+  const handleSearch = () => {
+    setPageParams({
+      search: searchText,
+    });
+    handleClearSelection();
+  };
+
+  const handleClear = () => {
+    setPageParams({
+      search: "",
+    });
+  };
+
+  const handleFilterChange = (newStatus: string) => {
+    setPageParams({
+      status: newStatus,
+    });
+  };
 
   const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
-    onPackageSearchChange(searchText);
+    handleSearch();
   };
 
   return (
@@ -38,11 +53,8 @@ const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
             autocomplete="off"
             value={searchText}
             onChange={(inputValue) => setSearchText(inputValue)}
-            onSearch={() => onPackageSearchChange(searchText)}
-            onClear={() => {
-              setSearchText("");
-              onPackageSearchChange("");
-            }}
+            onSearch={handleSearch}
+            onClear={handleClear}
           />
         </Form>
       </div>
@@ -50,16 +62,11 @@ const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
         label="Status"
         wrapperClassName={classes.selectContainer}
         options={filterOptions}
-        value={filter}
-        onChange={(event) => {
-          onFilterChange(event.target.value);
-        }}
+        value={status}
+        onChange={(event) => handleFilterChange(event.target.value)}
       />
       <div className={classes.cta}>
-        <PackageActions
-          selectedPackages={selectedPackages}
-          instance={instance}
-        />
+        <PackageActions selectedPackages={selectedPackages} />
       </div>
     </div>
   );

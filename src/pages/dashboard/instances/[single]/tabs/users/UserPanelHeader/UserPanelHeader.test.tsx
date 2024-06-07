@@ -5,12 +5,9 @@ import UserPanelHeader from "./UserPanelHeader";
 import { renderWithProviders } from "@/tests/render";
 
 const props = {
-  instanceId: 1,
   users: [],
   selected: [],
-  setSelected: vi.fn(),
-  onPageChange: vi.fn(),
-  onSearch: vi.fn(),
+  handleClearSelection: vi.fn(),
 };
 
 describe("UserPanelHeader", () => {
@@ -26,7 +23,6 @@ describe("UserPanelHeader", () => {
     const searchBox = screen.getByRole("searchbox");
     await userEvent.type(searchBox, "test{enter}");
     expect(searchBox).toHaveValue("test");
-    expect(props.onSearch).toHaveBeenCalledWith("test");
   });
 
   it("should clear search box", async () => {

@@ -1,11 +1,11 @@
-import { FC, lazy, Suspense, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { FC, lazy, Suspense } from "react";
 import { Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { Instance } from "@/types/Instance";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getTabLinks } from "./helpers";
 import classes from "./SingleInstanceTabs.module.scss";
+import { usePageParams } from "@/hooks/usePageParams";
 
 const InfoPanel = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info"),
@@ -38,11 +38,6 @@ const SnapsPanel = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/snaps"),
 );
 
-interface TabState {
-  filter: string;
-  selectAll: boolean;
-}
-
 interface SingleInstanceTabsProps {
   instance: Instance;
   packageCount: number | undefined;
@@ -58,32 +53,16 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
   usnCount,
   usnLoading,
 }) => {
-  const [currentTabLinkId, setCurrentTabLinkId] = useState("tab-link-info");
-  const [tabState, setTabState] = useState<TabState | null>(null);
   const { closeSidePanel } = useSidePanel();
+  const { tab, setPageParams } = usePageParams();
 
-  const { state } = useLocation();
-
-  useEffect(() => {
-    if (!state) {
-      return;
-    }
-
-    const { tab, ...otherProps } = state;
-
-    if (tab) {
-      setCurrentTabLinkId(`tab-link-${tab}`);
-    }
-
-    setTabState(otherProps);
-  }, [state]);
+  const currentTabLinkId = tab ? `tab-link-${tab}` : "tab-link-info";
 
   const tabLinks = getTabLinks({
     activeTabId: currentTabLinkId,
     instance,
     onActiveTabChange: (tabId) => {
-      setCurrentTabLinkId(tabId);
-      setTabState(null);
+      setPageParams({ tab: tabId.replace("tab-link-", "") });
       closeSidePanel();
     },
     packageCount,
@@ -112,23 +91,15 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
             <ActivityPanel instanceId={instance.id} />
           )}
           {"tab-link-security-issues" === currentTabLinkId && (
-            <SecurityIssuesPanel instance={instance} />
+            <SecurityIssuesPanel instanceTitle={instance.title} />
           )}
-          {"tab-link-packages" === currentTabLinkId && (
-            <PackagesPanel instance={instance} tabState={tabState} />
-          )}
-          {"tab-link-snaps" === currentTabLinkId && (
-            <SnapsPanel instanceId={instance.id} />
-          )}
-          {"tab-link-processes" === currentTabLinkId && (
-            <ProcessesPanel instanceId={instance.id} />
-          )}
+          {"tab-link-packages" === currentTabLinkId && <PackagesPanel />}
+          {"tab-link-snaps" === currentTabLinkId && <SnapsPanel />}
+          {"tab-link-processes" === currentTabLinkId && <ProcessesPanel />}
           {"tab-link-ubuntu-pro" === currentTabLinkId && (
             <UbuntuProPanel instance={instance} />
           )}
-          {"tab-link-users" === currentTabLinkId && (
-            <UserPanel instanceId={instance.id} />
-          )}
+          {"tab-link-users" === currentTabLinkId && <UserPanel />}
           {"tab-link-hardware" === currentTabLinkId && (
             <HardwarePanel instance={instance} />
           )}

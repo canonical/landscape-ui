@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { ChangeEvent, FC, SyntheticEvent, useState } from "react";
+import { FC, SyntheticEvent, useState } from "react";
 import { Button, Form, Select } from "@canonical/react-components";
 import SearchBoxWithDescriptionButton from "@/components/form/SearchBoxWithDescriptionButton";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
@@ -11,24 +11,18 @@ import {
   ACTIVITY_SEARCH_HELP_TERMS,
   ACTIVITY_STATUS_OPTIONS,
 } from "./constants";
+import { usePageParams } from "@/hooks/usePageParams";
 
 interface ActivitiesHeaderProps {
-  resetPage: () => void;
   resetSelectedIds: () => void;
   selectedIds: number[];
-  setSearchQuery: (newSearchQuery: string) => void;
 }
 
 const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
-  resetPage,
   resetSelectedIds,
   selectedIds,
-  setSearchQuery,
 }) => {
-  const [showSearchHelp, setShowSearchHelp] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-
+  const { search, status, setPageParams } = usePageParams();
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
   const {
@@ -37,6 +31,9 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
     redoActivitiesQuery,
     undoActivitiesQuery,
   } = useActivities();
+
+  const [searchText, setSearchText] = useState(search);
+  const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const {
     mutateAsync: approveActivities,
@@ -49,42 +46,24 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   const { mutateAsync: undoActivities, isLoading: undoActivitiesLoading } =
     undoActivitiesQuery;
 
-  const handleResetPage = () => {
-    resetPage();
+  const handleSearch = () => {
+    setPageParams({
+      search: searchText,
+      status: status,
+    });
     resetSelectedIds();
   };
 
-  const handleSearch = () => {
-    if (searchText) {
-      setSearchQuery(
-        `${searchText}${statusFilter ? ` status:${statusFilter}` : ""}`,
-      );
-    } else {
-      setSearchQuery(statusFilter ? `status:${statusFilter}` : "");
-    }
-    handleResetPage();
-  };
-
-  const handleFilterChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const newFilter = event.target.value;
-
-    setStatusFilter(newFilter);
-
-    if (newFilter) {
-      setSearchQuery(
-        `status:${newFilter}${searchText ? ` ${searchText}` : ""}`,
-      );
-    } else {
-      setSearchQuery(searchText);
-    }
-
-    handleResetPage();
+  const handleFilterChange = (newStatus: string) => {
+    setPageParams({
+      status: newStatus,
+    });
   };
 
   const handleClear = () => {
-    setSearchText("");
-    setSearchQuery(statusFilter ? `status:${statusFilter}` : "");
-    handleResetPage();
+    setPageParams({
+      search: "",
+    });
   };
 
   const handleSubmit = (event: SyntheticEvent) => {
@@ -217,8 +196,8 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
         wrapperClassName={classes.select}
         className="u-no-margin--bottom"
         options={ACTIVITY_STATUS_OPTIONS}
-        value={statusFilter}
-        onChange={handleFilterChange}
+        onChange={(event) => handleFilterChange(event.target.value)}
+        value={status}
       />
 
       <div

@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { CellProps, Column } from "react-table";
 import {
   Button,
@@ -12,7 +12,6 @@ import { ROOT_PATH } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
 import PackageDetails from "@/pages/dashboard/instances/[single]/tabs/packages/PackageDetails";
 import UbuntuProNotification from "@/pages/dashboard/instances/[single]/tabs/packages/UbuntuProNotification";
-import { Instance } from "@/types/Instance";
 import { Package } from "@/types/Package";
 import { LOADING_PACKAGE } from "./constants";
 import {
@@ -24,7 +23,6 @@ import classes from "./PackageList.module.scss";
 
 interface PackageListProps {
   emptyMsg: string;
-  instance: Instance;
   onPackagesSelect: (packages: Package[]) => void;
   packages: Package[];
   packagesLoading: boolean;
@@ -34,7 +32,6 @@ interface PackageListProps {
 
 const PackageList: FC<PackageListProps> = ({
   emptyMsg,
-  instance,
   onPackagesSelect,
   packages,
   packagesLoading,
@@ -44,6 +41,7 @@ const PackageList: FC<PackageListProps> = ({
   const [selectedByTabState, setSelectedByTabState] = useState(false);
   const [hideUbuntuProInfo, setHideUbuntuProInfo] = useState(false);
 
+  const { instanceId, childInstanceId } = useParams();
   const { setSidePanelContent } = useSidePanel();
 
   const packagesToShow = useMemo(() => {
@@ -82,7 +80,7 @@ const PackageList: FC<PackageListProps> = ({
   const handlePackageClick = (singlePackage: Package) => {
     setSidePanelContent(
       "Package details",
-      <PackageDetails singlePackage={singlePackage} instanceId={instance.id} />,
+      <PackageDetails singlePackage={singlePackage} />,
     );
   };
 
@@ -113,7 +111,7 @@ const PackageList: FC<PackageListProps> = ({
                 <div>
                   <p className="u-no-padding--top">Ubuntu Pro is required</p>
                   <Link
-                    to={`${ROOT_PATH}instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`}
+                    to={`${ROOT_PATH}instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`}
                     state={{ tab: "ubuntu-pro" }}
                     className={classes.tooltipLink}
                   >
@@ -207,10 +205,7 @@ const PackageList: FC<PackageListProps> = ({
   return (
     <>
       {!hideUbuntuProInfo && packages.some(isUbuntuProRequired) && (
-        <UbuntuProNotification
-          instance={instance}
-          onDismiss={() => setHideUbuntuProInfo(true)}
-        />
+        <UbuntuProNotification onDismiss={() => setHideUbuntuProInfo(true)} />
       )}
       <ModularTable
         columns={columns}

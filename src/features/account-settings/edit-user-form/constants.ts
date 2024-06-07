@@ -1,6 +1,7 @@
 import { ListFilter } from "@/types/Filters";
 
 export const TIMEZONES_FILTER: ListFilter = {
+  slug: "timezones",
   label: "Timezones",
   type: "select",
   options: [

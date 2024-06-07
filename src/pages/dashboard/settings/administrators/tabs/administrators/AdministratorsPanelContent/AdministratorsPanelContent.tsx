@@ -1,9 +1,10 @@
-import { FC, useState } from "react";
-import TablePagination from "@/components/layout/TablePagination";
+import { FC } from "react";
+import { TablePagination } from "@/components/layout/TablePagination";
 import useRoles from "@/hooks/useRoles";
 import { Administrator } from "@/types/Administrator";
 import AdministratorList from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorList";
 import AdministratorsPanelHeader from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelHeader";
+import { usePageParams } from "@/hooks/usePageParams";
 
 interface AdministratorsPanelContentProps {
   administrators: Administrator[];
@@ -12,10 +13,7 @@ interface AdministratorsPanelContentProps {
 const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
   administrators,
 }) => {
-  const [searchText, setSearchText] = useState("");
-  const [pageSize, setPageSize] = useState(20);
-  const [currentPage, setCurrentPage] = useState(1);
-
+  const { search: searchText, pageSize, currentPage } = usePageParams();
   const { getRolesQuery } = useRoles();
 
   const { data: getRolesQueryResult } = getRolesQuery();
@@ -45,14 +43,7 @@ const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
 
   return (
     <>
-      <AdministratorsPanelHeader
-        onClear={() => {
-          setSearchText("");
-        }}
-        onSearch={(inputText) => {
-          setSearchText(inputText);
-        }}
-      />
+      <AdministratorsPanelHeader />
       <AdministratorList
         administrators={filteredAdministrators}
         emptyMessage={
@@ -64,10 +55,6 @@ const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
       />
       {filteredAdministrators.length > 0 && (
         <TablePagination
-          currentPage={currentPage}
-          pageSize={pageSize}
-          paginate={(page) => setCurrentPage(page)}
-          setPageSize={(itemsNumber) => setPageSize(itemsNumber)}
           totalItems={searchedAdministrators.length}
           currentItemCount={filteredAdministrators.length}
         />

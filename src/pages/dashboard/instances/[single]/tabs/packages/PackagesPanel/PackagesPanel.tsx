@@ -1,92 +1,60 @@
-import { FC, useEffect, useState } from "react";
-import TablePagination from "@/components/layout/TablePagination";
+import { FC, useState } from "react";
+import { TablePagination } from "@/components/layout/TablePagination";
 import { usePackages } from "@/hooks/usePackages";
 import LoadingState from "@/components/layout/LoadingState";
 import PackageList from "@/pages/dashboard/instances/[single]/tabs/packages/PackageList";
 import PackagesPanelHeader from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesPanelHeader";
 import { Package } from "@/types/Package";
-import { Instance } from "@/types/Instance";
 import { emptyMessage } from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesPanel/helpers";
+import { useLocation, useParams } from "react-router-dom";
+import { usePageParams } from "@/hooks/usePageParams";
 
-interface PackagesPanelProps {
-  instance: Instance;
-  tabState: { filter: string; selectAll: boolean } | null;
-}
-
-const PackagesPanel: FC<PackagesPanelProps> = ({ instance, tabState }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+const PackagesPanel: FC = () => {
   const [selected, setSelected] = useState<Package[]>([]);
-  const [packageSearch, setPackageSearch] = useState("");
-  const [filter, setFilter] = useState("");
 
-  useEffect(() => {
-    if (!tabState) {
-      return;
-    }
-
-    handleFilterChange(tabState.filter);
-  }, [tabState]);
-
-  const handlePackageSearchChange = (searchText: string) => {
-    setPackageSearch(searchText);
-    setCurrentPage(1);
-    setSelected([]);
-  };
-
-  const handleFilterChange = (newFilter: string) => {
-    setFilter(newFilter);
-    setCurrentPage(1);
-    setSelected([]);
-  };
-
-  const handlePageSizeChange = (size: number) => {
-    setPageSize(size);
-    setCurrentPage(1);
-  };
-
+  const { instanceId: urlInstanceId } = useParams();
+  const { status, search, currentPage, pageSize } = usePageParams();
   const { getInstancePackagesQuery } = usePackages();
+  const { state } = useLocation() as { state: { selectAll?: boolean } };
+
+  const instanceId = Number(urlInstanceId);
+
+  const handleClearSelection = () => {
+    setSelected([]);
+  };
 
   const {
     data: getInstancePackagesQueryResult,
     isLoading: getInstancePackagesQueryLoading,
-  } = getInstancePackagesQuery(
-    {
-      instance_id: instance.id,
-      search: packageSearch,
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
-      available: false,
-      installed: filter === "installed" || !filter || undefined,
-      upgrade: filter === "upgrade" || undefined,
-      held: filter === "held" || undefined,
-      security: filter === "security" || undefined,
-    },
-    {
-      enabled: !!instance,
-    },
-  );
+  } = getInstancePackagesQuery({
+    instance_id: instanceId,
+    search: search,
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+    available: false,
+    installed: status === "installed" || !status || undefined,
+    upgrade: status === "upgrade" || undefined,
+    held: status === "held" || undefined,
+    security: status === "security" || undefined,
+  });
 
   return (
     <>
-      {!packageSearch &&
-        !filter &&
+      {!search &&
+        !status &&
         currentPage === 1 &&
         pageSize === 20 &&
         getInstancePackagesQueryLoading && <LoadingState />}
 
-      {(packageSearch ||
-        filter ||
+      {(search ||
+        status ||
         currentPage !== 1 ||
         pageSize !== 20 ||
         !getInstancePackagesQueryLoading) && (
         <>
           <PackagesPanelHeader
-            instance={instance}
             selectedPackages={selected}
-            filter={filter}
-            onFilterChange={handleFilterChange}
-            onPackageSearchChange={handlePackageSearchChange}
+            handleClearSelection={handleClearSelection}
           />
           <PackageList
             packages={getInstancePackagesQueryResult?.data.results ?? []}
@@ -95,20 +63,14 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ instance, tabState }) => {
             onPackagesSelect={(packageNames) => {
               setSelected(packageNames);
             }}
-            instance={instance}
-            emptyMsg={emptyMessage(filter, packageSearch)}
-            selectAll={tabState?.selectAll ?? false}
+            emptyMsg={emptyMessage(status, search)}
+            selectAll={state?.selectAll ?? false}
           />
         </>
       )}
       <TablePagination
-        currentPage={currentPage}
+        handleClearSelection={handleClearSelection}
         totalItems={getInstancePackagesQueryResult?.data.count}
-        paginate={(page) => {
-          setCurrentPage(page);
-        }}
-        pageSize={pageSize}
-        setPageSize={handlePageSizeChange}
         currentItemCount={getInstancePackagesQueryResult?.data.results.length}
       />
     </>

@@ -14,18 +14,18 @@ import { CTA_LABELS, INITIAL_VALUES } from "./constants";
 import { FormProps } from "./types";
 import PackagesUpgradeInfo from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesUpgradeInfo";
 import * as Yup from "yup";
+import { useParams } from "react-router-dom";
 
 interface InstalledPackagesActionFormProps {
   action: "remove" | "upgrade" | "downgrade";
-  instanceId: number;
   packages: Package[];
 }
 
 const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   action,
-  instanceId,
   packages,
 }) => {
+  const { instanceId: urlInstanceId } = useParams();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const {
@@ -34,6 +34,8 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
     removePackagesQuery,
     upgradePackagesQuery,
   } = usePackages();
+
+  const instanceId = Number(urlInstanceId);
 
   const { data: getDowngradePackageVersionsQueryResult } =
     getDowngradePackageVersionsQuery(

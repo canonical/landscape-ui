@@ -15,7 +15,6 @@ import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 interface SnapsListProps {
-  instanceId: number;
   installedSnaps: InstalledSnap[];
   selectedSnapIds: string[];
   setSelectedSnapIds: (items: string[]) => void;
@@ -23,7 +22,6 @@ interface SnapsListProps {
 }
 
 const SnapsList: FC<SnapsListProps> = ({
-  instanceId,
   installedSnaps,
   selectedSnapIds,
   isSnapsLoading,
@@ -51,7 +49,7 @@ const SnapsList: FC<SnapsListProps> = ({
     setSidePanelContent(
       `${snap.snap.name} details`,
       <Suspense fallback={<LoadingState />}>
-        <SnapDetails instanceId={instanceId} installedSnap={snap} />
+        <SnapDetails installedSnap={snap} />
       </Suspense>,
     );
   };

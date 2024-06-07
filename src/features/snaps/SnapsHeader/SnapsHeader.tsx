@@ -4,25 +4,39 @@ import SnapsActions from "../SnapsActions";
 import { InstalledSnap } from "@/types/Snap";
 import { getSelectedSnaps } from "../helpers";
 import classes from "./SnapsHeader.module.scss";
+import { usePageParams } from "@/hooks/usePageParams";
 
 interface SnapsHeaderProps {
-  instanceId: number;
-  onSnapsSearchChange: (searchText: string) => void;
+  handleClearSelection: () => void;
   selectedSnapIds: string[];
   installedSnaps: InstalledSnap[];
 }
 
 const SnapsHeader: FC<SnapsHeaderProps> = ({
-  instanceId,
-  onSnapsSearchChange,
+  handleClearSelection,
   selectedSnapIds,
   installedSnaps,
 }) => {
-  const [searchText, setSearchText] = useState("");
+  const { search, setPageParams } = usePageParams();
+
+  const [searchText, setSearchText] = useState(search);
+
+  const handleSearch = () => {
+    setPageParams({
+      search: searchText,
+    });
+    handleClearSelection();
+  };
+
+  const handleClear = () => {
+    setPageParams({
+      search: "",
+    });
+  };
 
   const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
-    onSnapsSearchChange(searchText);
+    handleSearch();
   };
 
   return (
@@ -36,17 +50,13 @@ const SnapsHeader: FC<SnapsHeaderProps> = ({
             value={searchText}
             aria-label="Snap search"
             onChange={(inputValue) => setSearchText(inputValue)}
-            onSearch={() => onSnapsSearchChange(searchText)}
-            onClear={() => {
-              setSearchText("");
-              onSnapsSearchChange("");
-            }}
+            onSearch={handleSearch}
+            onClear={handleClear}
           />
         </Form>
       </div>
       <div className={classes.cta}>
         <SnapsActions
-          instanceId={instanceId}
           selectedSnapIds={selectedSnapIds}
           installedSnaps={getSelectedSnaps(installedSnaps, selectedSnapIds)}
         />

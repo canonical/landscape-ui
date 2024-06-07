@@ -17,18 +17,21 @@ import { useSnaps } from "@/hooks/useSnaps";
 import { InstalledSnap } from "@/types/Snap";
 import { EditSnapType } from "../helpers";
 import useSidePanel from "@/hooks/useSidePanel";
+import { useParams } from "react-router-dom";
 
 interface EditSnapProps {
-  instanceId: number;
   type: EditSnapType;
   installedSnaps: InstalledSnap[];
 }
 
-const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type, instanceId }) => {
+const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
+  const { instanceId: urlInstanceId } = useParams();
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { snapsActionQuery, getAvailableSnapInfo } = useSnaps();
+
+  const instanceId = Number(urlInstanceId);
   const { mutateAsync: snapsActionMutation, isLoading } = snapsActionQuery;
   const { data: snapInfoData } = getAvailableSnapInfo(
     {

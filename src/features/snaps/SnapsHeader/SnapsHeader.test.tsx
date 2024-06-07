@@ -1,18 +1,18 @@
 import { describe, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import SnapsHeader from "./SnapsHeader";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "@/tests/render";
 
 const props = {
-  instanceId: 1,
-  onSnapsSearchChange: vi.fn(),
+  handleClearSelection: vi.fn(),
   selectedSnapIds: [],
   installedSnaps: [],
 };
 
 describe("SnapsHeader", () => {
   beforeEach(() => {
-    render(<SnapsHeader {...props} />);
+    renderWithProviders(<SnapsHeader {...props} />);
   });
 
   it("renders SnapsHeader correctly", () => {
@@ -23,7 +23,6 @@ describe("SnapsHeader", () => {
     const searchBox = screen.getByRole("searchbox");
     await userEvent.type(searchBox, "test{enter}");
     expect(searchBox).toHaveValue("test");
-    expect(props.onSnapsSearchChange).toHaveBeenCalledWith("test");
   });
 
   it("should clear search box", async () => {

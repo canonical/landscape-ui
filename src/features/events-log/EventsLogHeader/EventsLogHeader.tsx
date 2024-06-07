@@ -2,34 +2,35 @@ import { Form, SearchBox, Select } from "@canonical/react-components";
 import { FC, SyntheticEvent, useState } from "react";
 import classes from "./EventsLogHeader.module.scss";
 import { DAY_OPTIONS } from "./constants";
+import { usePageParams } from "@/hooks/usePageParams";
 
-interface EventsLogHeaderProps {
-  setSearch: (newSearchQuery: string) => void;
-  handleResetPage: () => void;
-  dayFilter: number;
-  handleDayChange: (newDay: number) => void;
-}
+const EventsLogHeader: FC = () => {
+  const { search, days, setPageParams } = usePageParams();
 
-const EventsLogHeader: FC<EventsLogHeaderProps> = ({
-  setSearch,
-  handleResetPage,
-  dayFilter,
-  handleDayChange,
-}) => {
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState(search);
+
   const handleSearch = () => {
-    setSearch(searchText);
-    handleResetPage();
+    setPageParams({
+      search: searchText,
+    });
   };
+
   const handleClear = () => {
-    setSearchText("");
-    handleResetPage();
+    setPageParams({
+      search: "",
+    });
   };
+
+  const handleFilterChange = (days: string) => {
+    setPageParams({
+      days: days,
+    });
+  };
+
   const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
     handleSearch();
   };
-
   return (
     <div className={classes.container}>
       <div className={classes.searchContainer}>
@@ -49,8 +50,8 @@ const EventsLogHeader: FC<EventsLogHeaderProps> = ({
         label="Days"
         labelClassName="u-no-margin--bottom"
         options={DAY_OPTIONS}
-        value={dayFilter}
-        onChange={(e) => handleDayChange(Number(e.target.value))}
+        value={days}
+        onChange={(e) => handleFilterChange(e.target.value)}
       />
     </div>
   );

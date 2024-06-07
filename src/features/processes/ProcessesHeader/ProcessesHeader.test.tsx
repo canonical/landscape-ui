@@ -5,11 +5,8 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 const props = {
-  instanceId: 21,
-  onPageChange: vi.fn(),
-  onSearch: vi.fn(),
   selectedPids: [],
-  setSelectedPids: vi.fn(),
+  handleClearSelection: vi.fn(),
 };
 
 describe("ProcessesHeader", () => {
@@ -29,7 +26,6 @@ describe("ProcessesHeader", () => {
     const searchBox = screen.getByRole("searchbox");
     await userEvent.type(searchBox, "test{enter}");
     expect(searchBox).toHaveValue("test");
-    expect(props.onSearch).toHaveBeenCalledWith("test");
   });
 
   it("should clear search box", async () => {

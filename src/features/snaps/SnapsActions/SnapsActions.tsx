@@ -11,19 +11,18 @@ import { InstalledSnap } from "@/types/Snap";
 import { EditSnapType, getSnapUpgradeCounts } from "../helpers";
 
 interface SnapsActionProps {
-  instanceId: number;
   selectedSnapIds: string[];
   installedSnaps: InstalledSnap[];
   sidePanel?: boolean;
 }
 
 const SnapsActions: FC<SnapsActionProps> = ({
-  instanceId,
   selectedSnapIds,
   installedSnaps,
   sidePanel = false,
 }) => {
   const { setSidePanelContent } = useSidePanel();
+
   const singleSnap = installedSnaps.length === 1 ? installedSnaps[0] : null;
   const selectedSnaps = getSelectedSnaps(installedSnaps, selectedSnapIds);
   const { held, unheld } = getSnapUpgradeCounts(selectedSnaps);
@@ -43,20 +42,13 @@ const SnapsActions: FC<SnapsActionProps> = ({
     setSidePanelContent(
       title,
       <Suspense fallback={<LoadingState />}>
-        <EditSnap
-          instanceId={instanceId}
-          installedSnaps={selectedSnaps}
-          type={action}
-        />
+        <EditSnap installedSnaps={selectedSnaps} type={action} />
       </Suspense>,
     );
   };
 
   const handleInstallSnap = () => {
-    setSidePanelContent(
-      "Install snap",
-      <InstallSnaps instanceId={instanceId} />,
-    );
+    setSidePanelContent("Install snap", <InstallSnaps />);
   };
 
   return (

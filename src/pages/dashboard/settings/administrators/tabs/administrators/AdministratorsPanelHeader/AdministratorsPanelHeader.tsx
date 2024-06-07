@@ -1,37 +1,40 @@
-import { FC, useState } from "react";
+import { FC, SyntheticEvent, useState } from "react";
 import { Col, Form, Row, SearchBox } from "@canonical/react-components";
+import { usePageParams } from "@/hooks/usePageParams";
 
-interface AdministratorsPanelHeaderProps {
-  onClear: () => void;
-  onSearch: (inputText: string) => void;
-}
+const AdministratorsPanelHeader: FC = () => {
+  const { search, setPageParams } = usePageParams();
 
-const AdministratorsPanelHeader: FC<AdministratorsPanelHeaderProps> = ({
-  onClear,
-  onSearch,
-}) => {
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState(search);
+
+  const handleSearch = () => {
+    setPageParams({
+      search: inputText,
+    });
+  };
+
+  const handleClear = () => {
+    setPageParams({
+      search: "",
+    });
+  };
+
+  const handleSubmit = (event: SyntheticEvent) => {
+    event.preventDefault();
+    handleSearch();
+  };
 
   return (
     <Row className="u-no-padding--left u-no-padding--right u-no-margin--left u-no-margin--right">
       <Col size={6}>
-        <Form
-          onSubmit={(event) => {
-            event.preventDefault();
-            onSearch(inputText);
-          }}
-          noValidate
-        >
+        <Form onSubmit={handleSubmit} noValidate>
           <SearchBox
             externallyControlled
             shouldRefocusAfterReset
             value={inputText}
             onChange={(inputValue) => setInputText(inputValue)}
-            onSearch={() => onSearch(inputText)}
-            onClear={() => {
-              setInputText("");
-              onClear();
-            }}
+            onSearch={handleSearch}
+            onClear={handleClear}
             autocomplete="off"
           />
         </Form>

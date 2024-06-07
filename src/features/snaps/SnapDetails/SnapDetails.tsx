@@ -7,15 +7,13 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 
 interface SnapDetailsProps {
-  instanceId: number;
   installedSnap: InstalledSnap;
 }
 
-const SnapDetails: FC<SnapDetailsProps> = ({ instanceId, installedSnap }) => {
+const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
   return (
     <>
       <SnapsActions
-        instanceId={instanceId}
         selectedSnapIds={[installedSnap.snap.id]}
         installedSnaps={[installedSnap]}
         sidePanel

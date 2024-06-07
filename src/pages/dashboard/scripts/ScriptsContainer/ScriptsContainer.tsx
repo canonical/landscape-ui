@@ -1,14 +1,13 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import TablePagination from "@/components/layout/TablePagination";
+import { TablePagination } from "@/components/layout/TablePagination";
 import { ScriptList, ScriptsEmptyState, useScripts } from "@/features/scripts";
+import { usePageParams } from "@/hooks/usePageParams";
 
 interface ScriptsContainerProps {}
 
 const ScriptsContainer: FC<ScriptsContainerProps> = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-
+  const { currentPage, pageSize } = usePageParams();
   const { getScriptsQuery } = useScripts();
 
   const { data: getScriptsQueryResult, isLoading: getScriptsQueryLoading } =
@@ -40,15 +39,7 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
                 scripts={getScriptsQueryResult?.data.results ?? []}
               />
               <TablePagination
-                currentPage={currentPage}
                 totalItems={getScriptsQueryResult?.data.count}
-                paginate={(page) => {
-                  setCurrentPage(page);
-                }}
-                pageSize={pageSize}
-                setPageSize={(itemsNumber) => {
-                  setPageSize(itemsNumber);
-                }}
                 currentItemCount={getScriptsQueryResult.data.results.length}
               />
             </>

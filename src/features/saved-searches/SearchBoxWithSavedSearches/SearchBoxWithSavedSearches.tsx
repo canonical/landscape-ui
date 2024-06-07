@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { FC, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FC, KeyboardEvent, useMemo, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { Form, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
@@ -11,37 +11,30 @@ import SearchPrompt from "@/features/saved-searches/SearchPrompt";
 import { ExtendedSearchAndFilterChip } from "@/features/saved-searches/types";
 import { SavedSearch } from "@/types/SavedSearch";
 import classes from "./SearchBoxWithSavedSearches.module.scss";
+import { usePageParams } from "@/hooks/usePageParams";
+import { areChipArraysEqual, parseSearchToChips } from "./helpers";
 
 interface SearchBoxWithSavedSearchesProps {
   onHelpButtonClick: () => void;
   returnSearchData: (searchData: ExtendedSearchAndFilterChip[]) => void;
-  existingSearchData?: ExtendedSearchAndFilterChip[];
+  existingSearchData: ExtendedSearchAndFilterChip[];
 }
 
 const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   onHelpButtonClick,
   returnSearchData,
-  existingSearchData = [],
+  existingSearchData,
 }) => {
+  const { search, setPageParams } = usePageParams();
   const [inputText, setInputText] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [searchData, setSearchData] = useState<ExtendedSearchAndFilterChip[]>(
-    [],
-  );
+
   const [overflowingChipsAmount, setOverflowingChipsAmount] = useState(0);
 
   const { getSavedSearchesQuery } = useSavedSearches();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const chipsContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    returnSearchData(searchData);
-  }, [searchData]);
-
-  useEffect(() => {
-    setSearchData((prevState) => [...existingSearchData, ...prevState]);
-  }, [existingSearchData.length]);
 
   const handleDropdownClose = () => {
     setShowDropdown(false);
@@ -50,15 +43,27 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   useOnClickOutside(containerRef, handleDropdownClose);
 
   const handleChipDismiss = (chipValue: string) => {
-    setSearchData((prevState) =>
-      prevState.filter(({ value }) => value !== chipValue),
-    );
+    setPageParams({
+      search: search
+        .split(",")
+        .filter((searchParam) => searchParam !== chipValue)
+        .join(","),
+    });
   };
 
   const {
     data: getSavedSearchesQueryResult,
     isLoading: getSavedSearchesQueryLoading,
   } = getSavedSearchesQuery();
+
+  const searchData = parseSearchToChips(
+    search,
+    getSavedSearchesQueryResult?.data,
+  );
+
+  if (!areChipArraysEqual(existingSearchData, searchData)) {
+    returnSearchData(searchData);
+  }
 
   const filteredSearches = useMemo(() => {
     if (!getSavedSearchesQueryResult) {
@@ -83,18 +88,17 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
       return;
     }
 
-    setSearchData((prevState) => [
-      ...prevState,
-      { value: inputText, quoteValue: true },
-    ]);
+    setPageParams({
+      search: `${search}${search ? "," : ""}${inputText}`,
+    });
+
     setInputText("");
   };
 
   const handleSavedSearchClick = (savedSearch: SavedSearch) => {
-    setSearchData((prevState) => [
-      ...prevState,
-      { value: savedSearch.search, lead: "search", title: savedSearch.name },
-    ]);
+    setPageParams({
+      search: `${search}${search ? "," : ""}${savedSearch.name}`,
+    });
   };
 
   const handleKeysOnSearchBox = (event: KeyboardEvent<HTMLInputElement>) => {

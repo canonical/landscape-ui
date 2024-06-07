@@ -33,10 +33,6 @@ const SingleInstance = lazy(
 );
 const ActivitiesPage = lazy(() => import("@/pages/dashboard/activities"));
 const ScriptsPage = lazy(() => import("@/pages/dashboard/scripts"));
-const SavedSearchesPage = lazy(
-  () => import("@/pages/dashboard/instances/saved-searches"),
-);
-const AccountPage = lazy(() => import("@/pages/dashboard/account"));
 const ProfilesPage = lazy(() => import("@/pages/dashboard/profiles"));
 const PackageProfilesPage = lazy(
   () => import("@/pages/dashboard/profiles/package-profiles"),
@@ -180,14 +176,6 @@ const App: FC = () => {
               }
             />
             <Route
-              path="instances/searches"
-              element={
-                <AuthRoute>
-                  <SavedSearchesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
               path="activities"
               element={
                 <AuthRoute>
@@ -200,14 +188,6 @@ const App: FC = () => {
               element={
                 <AuthRoute>
                   <ScriptsPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="account"
-              element={
-                <AuthRoute>
-                  <AccountPage />
                 </AuthRoute>
               }
             />

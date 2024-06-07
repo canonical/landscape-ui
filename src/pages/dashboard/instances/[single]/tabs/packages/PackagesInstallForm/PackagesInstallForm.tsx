@@ -6,14 +6,12 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Package } from "@/types/Package";
 import useNotify from "@/hooks/useNotify";
 import PackageDropdownSearch from "../PackageDropdownSearch";
+import { useParams } from "react-router-dom";
 
-interface PackagesInstallFormProps {
-  instanceId: number;
-}
-
-const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceId }) => {
+const PackagesInstallForm: FC = () => {
   const [selected, setSelected] = useState<Package[]>([]);
 
+  const { instanceId } = useParams();
   const debug = useDebug();
   const { notify } = useNotify();
   const { installPackagesQuery } = usePackages();
@@ -41,7 +39,6 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceId }) => {
   return (
     <>
       <PackageDropdownSearch
-        instanceId={instanceId}
         selectedItems={selected}
         setSelectedItems={(items) => setSelected(items)}
       />

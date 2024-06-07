@@ -6,21 +6,17 @@ import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
 import ProcessesPanel from "./ProcessesPanel";
 
-const props = {
-  instanceId: 1,
-};
-
 describe("ProcessesPanel", () => {
   it("renders empty state", async () => {
     setEndpointStatus("empty");
-    renderWithProviders(<ProcessesPanel {...props} />);
+    renderWithProviders(<ProcessesPanel />);
 
     const emptyStateTitle = await screen.findByText("No processes running");
     expect(emptyStateTitle).toBeInTheDocument();
   });
 
   it("renders filtered list of processes", async () => {
-    renderWithProviders(<ProcessesPanel {...props} />);
+    renderWithProviders(<ProcessesPanel />);
 
     for (let i = 0; i < processes.length; i++) {
       const chosenProcess = processes[i];
