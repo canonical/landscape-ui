@@ -53,6 +53,7 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     label: "Repositories",
     path: `${ROOT_PATH}repositories`,
+    env: "selfHosted",
     icon: "fork",
     items: [
       {

@@ -1,13 +1,15 @@
+import classNames from "classnames";
 import { FC, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import classNames from "classnames";
-import classes from "./Navigation.module.scss";
+import useEnv from "@/hooks/useEnv";
 import { MENU_ITEMS } from "./constants";
+import classes from "./Navigation.module.scss";
 
 const Navigation: FC = () => {
   const [expanded, setExpanded] = useState("");
 
   const { pathname } = useLocation();
+  const { isSaas, isSelfHosted } = useEnv();
 
   useEffect(() => {
     const shouldBeExpandedPath = MENU_ITEMS.filter(
@@ -23,7 +25,11 @@ const Navigation: FC = () => {
     <div className="p-side-navigation--icons is-dark">
       <nav aria-label="Main">
         <ul className="u-no-margin--bottom u-no-margin--left u-no-padding--left">
-          {MENU_ITEMS.map((item) => (
+          {MENU_ITEMS.filter(
+            ({ env }) =>
+              (!isSaas && env !== "saas") ||
+              (!isSelfHosted && env !== "selfHosted"),
+          ).map((item) => (
             <li
               key={item.path}
               className={classNames("p-side-navigation__item", {
