@@ -1,0 +1,1 @@
+const e=[{label:"Sunday",order:0,value:"su"},{label:"Monday",order:1,value:"mo"},{label:"Tuesday",order:2,value:"tu"},{label:"Wednesday",order:3,value:"we"},{label:"Thursday",order:4,value:"th"},{label:"Friday",order:5,value:"fr"},{label:"Saturday",order:6,value:"sa"}];export{e as D};
