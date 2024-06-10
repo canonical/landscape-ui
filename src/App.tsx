@@ -1,16 +1,18 @@
 import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Outlet, Route, Routes, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import AppNotification from "@/components/layout/AppNotification";
+import LoadingState from "@/components/layout/LoadingState";
+import { ROOT_PATH } from "@/constants";
 import FetchProvider from "@/context/fetch";
 import FetchOldProvider from "@/context/fetchOld";
 import useAuth from "@/hooks/useAuth";
+import useEnv from "@/hooks/useEnv";
+import useNotify from "@/hooks/useNotify";
 import DashboardPage from "@/pages/dashboard";
 import RepositoryPage from "@/pages/dashboard/repositories";
-import LoadingState from "@/components/layout/LoadingState";
-import { ROOT_PATH } from "@/constants";
-import AppNotification from "@/components/layout/AppNotification";
-import useNotify from "@/hooks/useNotify";
 
+const EnvError = lazy(() => import("@/pages/EnvError"));
 const PageNotFound = lazy(() => import("@/pages/PageNotFound"));
 const LoginPage = lazy(() => import("@/pages/auth/login"));
 const DistributionsPage = lazy(
@@ -100,6 +102,21 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
   return <>{children}</>;
 };
 
+const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
+  const { isSelfHosted } = useEnv();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSelfHosted) {
+      return;
+    }
+
+    navigate(`${ROOT_PATH}env-error`, { replace: true });
+  }, [isSelfHosted]);
+
+  return <>{children}</>;
+};
+
 const App: FC = () => {
   const { notify, sidePanel } = useNotify();
 
@@ -111,206 +128,87 @@ const App: FC = () => {
         )}
         <Routes>
           <Route
-            path={ROOT_PATH}
             element={
               <AuthRoute>
-                <DashboardPage />
+                <Outlet />
               </AuthRoute>
             }
           >
-            <Route
-              path="repositories"
-              element={
-                <AuthRoute>
-                  <RepositoryPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="repositories/mirrors"
-              element={
-                <AuthRoute>
-                  <DistributionsPage />
-                </AuthRoute>
-              }
-            />
-
-            <Route
-              path="repositories/gpg-keys"
-              element={
-                <AuthRoute>
-                  <GPGKeysPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="repositories/apt-sources"
-              element={
-                <AuthRoute>
-                  <APTSourcesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="instances"
-              element={
-                <AuthRoute>
-                  <InstancesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="instances/:instanceId"
-              element={
-                <AuthRoute>
-                  <SingleInstance />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="instances/:instanceId/:childInstanceId"
-              element={
-                <AuthRoute>
-                  <SingleInstance />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="activities"
-              element={
-                <AuthRoute>
-                  <ActivitiesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="scripts"
-              element={
-                <AuthRoute>
-                  <ScriptsPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="events-log"
-              element={
-                <AuthRoute>
-                  <EventsLogPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="settings"
-              element={
-                <AuthRoute>
-                  <SettingsPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="settings/administrators"
-              element={
-                <AuthRoute>
-                  <AdministratorsPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="settings/access-groups"
-              element={
-                <AuthRoute>
-                  <AccessGroupsPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="settings/roles"
-              element={
-                <AuthRoute>
-                  <RolesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="settings/general"
-              element={
-                <AuthRoute>
-                  <GeneralOrganisationSettings />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="profiles"
-              element={
-                <AuthRoute>
-                  <ProfilesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="profiles/repositories"
-              element={
-                <AuthRoute>
-                  <RepositoryProfilesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="profiles/package"
-              element={
-                <AuthRoute>
-                  <PackageProfilesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="profiles/removal"
-              element={
-                <AuthRoute>
-                  <RemovalProfilesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="profiles/upgrade"
-              element={
-                <AuthRoute>
-                  <UpgradeProfilesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="profiles/wsl"
-              element={
-                <AuthRoute>
-                  <WSLProfilesPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="user"
-              element={
-                <AuthRoute>
-                  <UserPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="alerts"
-              element={
-                <AuthRoute>
-                  <AlertNotificationsPage />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="overview"
-              element={
-                <AuthRoute>
-                  <OverviewPage />
-                </AuthRoute>
-              }
-            />
+            <Route path={ROOT_PATH} element={<DashboardPage />}>
+              <Route
+                element={
+                  <SelfHostedRoute>
+                    <Outlet />
+                  </SelfHostedRoute>
+                }
+              >
+                <Route path="repositories" element={<RepositoryPage />} />
+                <Route
+                  path="repositories/mirrors"
+                  element={<DistributionsPage />}
+                />
+                <Route path="repositories/gpg-keys" element={<GPGKeysPage />} />
+                <Route
+                  path="repositories/apt-sources"
+                  element={<APTSourcesPage />}
+                />
+              </Route>
+              <Route path="instances" element={<InstancesPage />} />
+              <Route
+                path="instances/:instanceId"
+                element={<SingleInstance />}
+              />
+              <Route
+                path="instances/:instanceId/:childInstanceId"
+                element={<SingleInstance />}
+              />
+              <Route path="activities" element={<ActivitiesPage />} />
+              <Route path="scripts" element={<ScriptsPage />} />
+              <Route path="events-log" element={<EventsLogPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route
+                path="settings/administrators"
+                element={<AdministratorsPage />}
+              />
+              <Route
+                path="settings/access-groups"
+                element={<AccessGroupsPage />}
+              />
+              <Route path="settings/roles" element={<RolesPage />} />
+              <Route
+                path="settings/general"
+                element={<GeneralOrganisationSettings />}
+              />
+              <Route path="profiles" element={<ProfilesPage />} />
+              <Route
+                path="profiles/repositories"
+                element={<RepositoryProfilesPage />}
+              />
+              <Route
+                path="profiles/package"
+                element={<PackageProfilesPage />}
+              />
+              <Route
+                path="profiles/removal"
+                element={<RemovalProfilesPage />}
+              />
+              <Route
+                path="profiles/upgrade"
+                element={<UpgradeProfilesPage />}
+              />
+              <Route path="profiles/wsl" element={<WSLProfilesPage />} />
+              <Route path="user" element={<UserPage />} />
+              <Route path="alerts" element={<AlertNotificationsPage />} />
+              <Route path="overview" element={<OverviewPage />} />
+              <Route
+                path="env-error"
+                element={
+                  <Suspense fallback={<LoadingState />}>
+                    <EnvError />
+                  </Suspense>
+                }
+              />
+            </Route>
           </Route>
           <Route
             path={`${ROOT_PATH}login`}
