@@ -2,13 +2,9 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import NewUserForm from "./NewUserForm";
 
-const mockProps = {
-  instanceId: 1,
-};
-
 describe("NewUserForm", () => {
   beforeEach(() => {
-    renderWithProviders(<NewUserForm {...mockProps} />);
+    renderWithProviders(<NewUserForm />);
   });
   it("renders the form", () => {
     const form = screen.getByRole("form");

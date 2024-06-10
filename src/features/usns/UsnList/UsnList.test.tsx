@@ -19,6 +19,7 @@ const expandableProps = {
 const paginatedProps = {
   ...commonProps,
   instance: instances[0],
+  instanceTitle: instances[0].title,
   tableType: "paginated" as "paginated",
   search: "",
   selectedUsns: [],

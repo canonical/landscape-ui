@@ -8,6 +8,7 @@ import { usns } from "@/tests/mocks/usn";
 
 const props = {
   instance: instances[0],
+  instanceTitle: instances[0].title,
 };
 
 describe("SecurityIssuesPanel", () => {

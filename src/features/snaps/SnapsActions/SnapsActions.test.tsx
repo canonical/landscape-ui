@@ -47,7 +47,6 @@ describe("SnapsActions", () => {
     it.each(tableSnapButtons)("renders %s button", async (button) => {
       renderWithProviders(
         <SnapsActions
-          instanceId={1}
           installedSnaps={getSelectedSnaps(installedSnaps, snapData.empty)}
           selectedSnapIds={snapData.empty}
         />,
@@ -64,7 +63,6 @@ describe("SnapsActions", () => {
         async (button) => {
           renderWithProviders(
             <SnapsActions
-              instanceId={1}
               installedSnaps={getSelectedSnaps(installedSnaps, snapData.empty)}
               selectedSnapIds={snapData.empty}
             />,
@@ -83,7 +81,6 @@ describe("SnapsActions", () => {
       it("Unhold button disabled when only unheld snaps are selected", () => {
         renderWithProviders(
           <SnapsActions
-            instanceId={1}
             installedSnaps={getSelectedSnaps(
               installedSnaps,
               snapData.multiple.unheldSnaps,
@@ -98,7 +95,6 @@ describe("SnapsActions", () => {
       it("Hold button disabled when only held snaps are selected", () => {
         renderWithProviders(
           <SnapsActions
-            instanceId={1}
             installedSnaps={getSelectedSnaps(
               installedSnaps,
               snapData.multiple.heldSnaps,
@@ -113,7 +109,6 @@ describe("SnapsActions", () => {
       it("Hold and Unhold enabled when only held and unheld snaps are selected", () => {
         renderWithProviders(
           <SnapsActions
-            instanceId={1}
             installedSnaps={getSelectedSnaps(
               installedSnaps,
               mixedSelectedSnapIds,
@@ -135,7 +130,6 @@ describe("SnapsActions", () => {
       async (button) => {
         renderWithProviders(
           <SnapsActions
-            instanceId={1}
             installedSnaps={getSelectedSnaps(installedSnaps, [
               snapData.single.heldSnap,
             ])}
@@ -155,7 +149,6 @@ describe("SnapsActions", () => {
       async (button) => {
         renderWithProviders(
           <SnapsActions
-            instanceId={1}
             installedSnaps={getSelectedSnaps(installedSnaps, [
               snapData.single.unheldSnap,
             ])}
