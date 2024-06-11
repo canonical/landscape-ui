@@ -59,7 +59,10 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   downgradeOptions.unshift({ label: "Select version", value: "" });
 
   const packagesToUpgrade = packages
-    .filter(({ status }) => ["upgrade", "security"].includes(status))
+    .filter(
+      ({ status, available_version }) =>
+        status === "security" || (status === "installed" && available_version),
+    )
     .map(({ name }) => name);
 
   const securityUpgradeCount = packages.filter(
