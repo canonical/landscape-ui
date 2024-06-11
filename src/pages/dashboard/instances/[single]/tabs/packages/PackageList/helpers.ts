@@ -26,12 +26,14 @@ export const getPackageStatusInfo = (pkg: Package) => {
   } else if (pkg.status === "security") {
     pkgStatusInfo.label = "Security upgrade";
     pkgStatusInfo.icon = "status-failed-small";
-  } else if (pkg.status === "upgrade") {
-    pkgStatusInfo.label = "Regular upgrade";
-    pkgStatusInfo.icon = "status-waiting-small";
   } else if (pkg.status === "installed") {
-    pkgStatusInfo.label = "Installed";
-    pkgStatusInfo.icon = "status-succeeded-small";
+    if (pkg.available_version) {
+      pkgStatusInfo.label = "Regular upgrade";
+      pkgStatusInfo.icon = "status-waiting-small";
+    } else {
+      pkgStatusInfo.label = "Installed";
+      pkgStatusInfo.icon = "status-succeeded-small";
+    }
   }
 
   return pkgStatusInfo;
