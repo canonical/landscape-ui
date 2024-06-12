@@ -37,7 +37,7 @@ const PackageProfileListContextualMenu: FC<
 
   const handleConstraintsChange = (profile: PackageProfile) => () => {
     setSidePanelContent(
-      `Change "${profile.name}" profile's constraints`,
+      `Change "${profile.title}" profile's constraints`,
       <Suspense fallback={<LoadingState />}>
         <PackageProfileConstraintsEditForm profile={profile} />
       </Suspense>,
@@ -47,7 +47,7 @@ const PackageProfileListContextualMenu: FC<
 
   const handlePackageProfileEdit = (profile: PackageProfile) => {
     setSidePanelContent(
-      "Edit package profile",
+      `Edit "${profile.title}" profile`,
       <Suspense fallback={<LoadingState />}>
         <PackageProfileEditForm profile={profile} />
       </Suspense>,
@@ -56,19 +56,19 @@ const PackageProfileListContextualMenu: FC<
 
   const handlePackageProfileDuplicate = (profile: PackageProfile) => {
     setSidePanelContent(
-      "Duplicate package profile",
+      `Duplicate "${profile.title}" profile`,
       <Suspense fallback={<LoadingState />}>
         <PackageProfileDuplicateForm profile={profile} />
       </Suspense>,
     );
   };
 
-  const handleRemovePackageProfile = async (name: string) => {
+  const handleRemovePackageProfile = async (profile: PackageProfile) => {
     try {
-      await removePackageProfile({ name });
+      await removePackageProfile({ name: profile.name });
 
       notify.success({
-        message: `Package profile "${name}" removed successfully`,
+        message: `Package profile "${profile.title}" removed successfully`,
         title: "Package profile removed",
       });
     } catch (error) {
@@ -78,17 +78,17 @@ const PackageProfileListContextualMenu: FC<
     }
   };
 
-  const handleRemovePackageProfileDialog = (name: string) => {
+  const handleRemovePackageProfileDialog = (profile: PackageProfile) => {
     confirmModal({
       title: "Remove package profile",
-      body: `This will remove "${name}" profile.`,
+      body: `This will remove "${profile.title}" profile.`,
       buttons: [
         <Button
           key="remove"
           type="button"
           appearance="negative"
-          onClick={() => handleRemovePackageProfile(name)}
-          aria-label={`Remove ${name} profile`}
+          onClick={() => handleRemovePackageProfile(profile)}
+          aria-label={`Remove ${profile.title} profile`}
         >
           Remove
         </Button>,
@@ -102,6 +102,7 @@ const PackageProfileListContextualMenu: FC<
       toggleClassName={classes.toggleButton}
       toggleAppearance="base"
       toggleLabel={<Icon name="contextual-menu" />}
+      toggleProps={{ "aria-label": `${profile.title} profile actions` }}
     >
       <Button
         type="button"
@@ -112,7 +113,7 @@ const PackageProfileListContextualMenu: FC<
           classes.actionButton,
         )}
         onClick={() => handlePackageProfileEdit(profile)}
-        aria-label={`Edit ${profile.name} profile`}
+        aria-label={`Edit ${profile.title} profile`}
       >
         <Icon name="edit" />
         <span>Edit</span>
@@ -126,7 +127,7 @@ const PackageProfileListContextualMenu: FC<
           classes.actionButton,
         )}
         onClick={handleConstraintsChange(profile)}
-        aria-label={`Change ${profile.name} package constraints`}
+        aria-label={`Change ${profile.title} package constraints`}
       >
         <Icon name="applications" />
         <span className={classes.noWrap}>Change package constraints</span>
@@ -140,7 +141,7 @@ const PackageProfileListContextualMenu: FC<
           classes.actionButton,
         )}
         onClick={() => handlePackageProfileDuplicate(profile)}
-        aria-label={`Duplicate ${profile.name} profile`}
+        aria-label={`Duplicate ${profile.title} profile`}
       >
         <Icon name="canvas" />
         <span>Duplicate</span>
@@ -153,8 +154,8 @@ const PackageProfileListContextualMenu: FC<
           "u-no-margin--bottom u-no-margin--right",
           classes.actionButton,
         )}
-        onClick={() => handleRemovePackageProfileDialog(profile.name)}
-        aria-label={`Remove ${profile.name} profile`}
+        onClick={() => handleRemovePackageProfileDialog(profile)}
+        aria-label={`Remove ${profile.title} profile`}
       >
         <Icon name="delete" />
         <span>Remove</span>

@@ -32,21 +32,13 @@ const PackageProfileDetailsConstraintsInfo: FC<
       return [];
     }
 
-    const constraints = profileConstraints.map(
+    return profileConstraints.map(
       (constraint): Constraint => ({
         ...constraint,
         notAnyVersion: !!constraint.version,
       }),
     );
-
-    if (!search) {
-      return constraints;
-    }
-
-    return constraints.filter((constraint) =>
-      constraint.package.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [isConstraintsLoading, profileConstraints, search]);
+  }, [isConstraintsLoading, profileConstraints]);
 
   const columns = useMemo<Column<Constraint>[]>(
     () => [

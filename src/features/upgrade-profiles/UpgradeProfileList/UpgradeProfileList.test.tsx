@@ -23,12 +23,11 @@ describe("UpgradeProfileList", () => {
       "Actions",
     ]);
 
+    expect(screen.getAllByRole("row")).toHaveLength(upgradeProfiles.length + 1);
+
     await waitFor(() => {
       upgradeProfiles.forEach(async (profile) => {
         expect(screen.getByText(profile.title)).toBeInTheDocument();
-        expect(
-          screen.getByLabelText(`${profile.name} profile actions`),
-        ).toBeInTheDocument();
         expect(
           screen.getByLabelText(`${profile.name} profile actions`),
         ).toBeInTheDocument();

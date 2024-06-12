@@ -11,6 +11,7 @@ import upgradeProfile from "./upgradeProfile";
 import activity from "./activity";
 import packages from "./packages";
 import process from "./process";
+import packageProfile from "./packageProfile";
 
 export default [
   ...auth,
@@ -26,4 +27,5 @@ export default [
   ...accessGroup,
   ...tag,
   ...upgradeProfile,
+  ...packageProfile,
 ];
