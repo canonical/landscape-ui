@@ -1,7 +1,6 @@
 import axios from "axios";
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { API_URL, IS_DEV_ENV } from "@/constants";
+import { API_URL, IS_DEV_ENV, IS_SELF_HOSTED_ENV } from "@/constants";
 
 const initialState = {
   isSaas: false,
@@ -16,19 +15,13 @@ interface EnvProviderProps {
 
 const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
   const [state, setState] = useState(initialState);
-  const [searchParams] = useSearchParams();
-
-  const selfHostedSearchParam = searchParams.get("self-hosted");
-  const isSearchParamDependent =
-    IS_DEV_ENV &&
-    (selfHostedSearchParam === "true" || selfHostedSearchParam === "false");
 
   useEffect(() => {
     (async () => {
       const {
         data: { self_hosted },
-      } = isSearchParamDependent
-        ? { data: { self_hosted: selfHostedSearchParam === "true" } }
+      } = IS_DEV_ENV
+        ? { data: { self_hosted: "true" === IS_SELF_HOSTED_ENV } }
         : await axios.get<{ self_hosted: boolean }>(`${API_URL}is-self-hosted`);
 
       setState({
@@ -36,7 +29,7 @@ const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
         isSelfHosted: self_hosted,
       });
     })();
-  }, [isSearchParamDependent, selfHostedSearchParam]);
+  }, []);
 
   return <EnvContext.Provider value={state}>{children}</EnvContext.Provider>;
 };
