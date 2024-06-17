@@ -126,7 +126,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     queryClient.clear();
   };
 
-  if (isAuthError) {
+  if (isAuthError && user) {
     handleLogout();
   }
 
