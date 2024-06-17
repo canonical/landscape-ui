@@ -1,7 +1,7 @@
 import { Form, SearchBox, Select } from "@canonical/react-components";
-import { FC, SyntheticEvent, useState } from "react";
+import { ChangeEvent, FC, SyntheticEvent, useState } from "react";
 import classes from "./EventsLogHeader.module.scss";
-import { DAY_OPTIONS } from "./constants";
+import { FILTERS } from "./constants";
 import { usePageParams } from "@/hooks/usePageParams";
 
 const EventsLogHeader: FC = () => {
@@ -21,9 +21,9 @@ const EventsLogHeader: FC = () => {
     });
   };
 
-  const handleFilterChange = (days: string) => {
+  const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setPageParams({
-      days: days,
+      days: e.target.value,
     });
   };
 
@@ -45,14 +45,16 @@ const EventsLogHeader: FC = () => {
           />
         </Form>
       </div>
-      <Select
-        wrapperClassName={classes.select}
-        label="Days"
-        labelClassName="u-no-margin--bottom"
-        options={DAY_OPTIONS}
-        value={days}
-        onChange={(e) => handleFilterChange(e.target.value)}
-      />
+      {FILTERS.days.type === "select" && (
+        <Select
+          wrapperClassName={classes.select}
+          label={FILTERS.days.label}
+          labelClassName="u-no-margin--bottom"
+          options={FILTERS.days.options}
+          value={days}
+          onChange={handleFilterChange}
+        />
+      )}
     </div>
   );
 };

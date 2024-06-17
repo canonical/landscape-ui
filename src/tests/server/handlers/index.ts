@@ -12,6 +12,7 @@ import activity from "./activity";
 import packages from "./packages";
 import process from "./process";
 import packageProfile from "./packageProfile";
+import eventLogs from "./eventLogs";
 
 export default [
   ...auth,
@@ -28,4 +29,5 @@ export default [
   ...tag,
   ...upgradeProfile,
   ...packageProfile,
+  ...eventLogs,
 ];

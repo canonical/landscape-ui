@@ -2,15 +2,30 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { EventLog } from "@/types/EventLogs";
 import { ModularTable } from "@canonical/react-components";
 import moment from "moment";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useRef, useState } from "react";
 import { CellProps, Column } from "react-table";
 import classes from "./EventsLogList.module.scss";
-import OverflowingCell from "@/components/layout/OverflowingCell";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { useOnClickOutside } from "usehooks-ts";
+import { getTableRows } from "@/features/usns/UsnList/helpers";
+import { handleEventLogsCellProps, handleRowProps } from "./helpers";
 interface EventsLogListProps {
   eventsLog: EventLog[];
 }
 
 const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
+  const [expandedEvent, setExpandedEvent] = useState<string>("");
+  const [expandedRowIndex, setExpandedRowIndex] = useState(-1);
+  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
+
+  useOnClickOutside(
+    {
+      current:
+        expandedRowIndex !== -1 ? tableRowsRef.current[expandedRowIndex] : null,
+    },
+    () => setExpandedRowIndex(-1),
+  );
+
   const columns = useMemo<Column<EventLog>[]>(
     () => [
       {
@@ -43,25 +58,32 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
         accessor: "message",
         className: classes.message,
         Header: "event log message",
-        Cell: ({ row }: CellProps<EventLog>) => {
-          return row.original.message.length < 120 ? (
-            <>{row.original.message}</>
-          ) : (
-            <OverflowingCell items={[row.original.message]} />
-          );
-        },
+        Cell: ({ row: { original, index } }: CellProps<EventLog>) => (
+          <TruncatedCell
+            content={original.message}
+            isExpanded={index === expandedRowIndex}
+            onExpand={() => {
+              setExpandedEvent("");
+              setExpandedRowIndex(expandedEvent ? index - 1 : index);
+            }}
+          />
+        ),
       },
     ],
-    [eventsLog],
+    [eventsLog, expandedRowIndex],
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={eventsLog}
-      sortable={true}
-      emptyMsg="No events found"
-    />
+    <div ref={getTableRows(tableRowsRef)}>
+      <ModularTable
+        getCellProps={handleEventLogsCellProps(expandedRowIndex)}
+        getRowProps={handleRowProps(expandedRowIndex)}
+        columns={columns}
+        data={eventsLog}
+        sortable={true}
+        emptyMsg="No events found"
+      />
+    </div>
   );
 };
 
