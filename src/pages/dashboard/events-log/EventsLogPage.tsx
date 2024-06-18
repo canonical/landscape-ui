@@ -53,7 +53,8 @@ const EventsLogPage: FC = () => {
       />
       <PageContent>
         <EventsLogHeader />
-        {isLoading ? <LoadingState /> : <EventsLogList eventsLog={eventsLog} />}
+        {isLoading && <LoadingState />}
+        {!isLoading && eventsLog && <EventsLogList eventsLog={eventsLog} />}
         <TablePagination
           totalItems={eventsLogData?.data.count}
           currentItemCount={eventsLog.length}

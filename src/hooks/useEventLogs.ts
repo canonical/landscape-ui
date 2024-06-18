@@ -6,7 +6,7 @@ import useFetch from "./useFetch";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { QueryFnType } from "@/types/QueryFnType";
 
-interface GetEventsLogParams {
+export interface GetEventsLogParams {
   days: number;
   limit: number;
   offset: number;
