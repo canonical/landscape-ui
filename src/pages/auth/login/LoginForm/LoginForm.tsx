@@ -13,6 +13,7 @@ import axios, { AxiosResponse } from "axios";
 import { API_URL } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { AuthUser } from "@/context/auth";
+import { useNavigate } from "react-router-dom";
 
 export interface LoginRequestParams {
   email: string;
@@ -31,6 +32,7 @@ const LoginForm: FC = () => {
   const debug = useDebug();
   const { setUser } = useAuth();
   const [isLoading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -59,6 +61,8 @@ const LoginForm: FC = () => {
         });
 
         setUser(data, values.remember);
+
+        navigate("/", { replace: true });
       } catch (error) {
         debug(error);
       }
