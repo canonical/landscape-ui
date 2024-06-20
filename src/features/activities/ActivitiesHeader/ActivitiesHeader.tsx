@@ -125,7 +125,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   const handleRedoActivities = async () => {
     try {
-      await redoActivities({ activityIds: selectedIds });
+      await redoActivities({ activity_ids: selectedIds });
     } catch (error) {
       debug(error);
     } finally {
@@ -147,7 +147,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   const handleUndoActivities = async () => {
     try {
-      await undoActivities({ activityIds: selectedIds });
+      await undoActivities({ activity_ids: selectedIds });
     } catch (error) {
       debug(error);
     } finally {

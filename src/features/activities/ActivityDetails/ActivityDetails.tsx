@@ -116,7 +116,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const handleRedoActivities = async (activity: Activity) => {
     try {
-      await redoActivities({ activityIds: [activity.id] });
+      await redoActivities({ activity_ids: [activity.id] });
     } catch (error) {
       debug(error);
     } finally {
@@ -142,7 +142,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const handleUndoActivities = async (activity: Activity) => {
     try {
-      await undoActivities({ activityIds: [activity.id] });
+      await undoActivities({ activity_ids: [activity.id] });
     } catch (error) {
       debug(error);
     } finally {

@@ -35,7 +35,7 @@ interface ApproveActivitiesParams {
 }
 
 interface RedoUndoActivitiesParams {
-  activityIds: number[];
+  activity_ids: number[];
 }
 
 export default function useActivities() {
@@ -113,7 +113,7 @@ export default function useActivities() {
     AxiosError<ApiError>,
     RedoUndoActivitiesParams
   >({
-    mutationFn: (params) => authFetch!.post("activities/reapply", { params }),
+    mutationFn: (params) => authFetch!.post("activities/reapply", params),
     onSuccess: () => queryClient.invalidateQueries(["activities"]),
   });
 
@@ -122,7 +122,7 @@ export default function useActivities() {
     AxiosError<ApiError>,
     RedoUndoActivitiesParams
   >({
-    mutationFn: (params) => authFetch!.post("activities/revert", { params }),
+    mutationFn: (params) => authFetch!.post("activities/revert", params),
     onSuccess: () => queryClient.invalidateQueries(["activities"]),
   });
 
