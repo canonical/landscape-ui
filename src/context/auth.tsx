@@ -92,6 +92,14 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    if (!isAuthError) {
+      return;
+    }
+
+    handleLogout();
+  }, [isAuthError]);
+
   const handleSetUser = (user: AuthUser, remember?: boolean) => {
     setUser(user);
     if (remember) {
@@ -125,10 +133,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     navigate(`${ROOT_PATH}login`, { replace: true });
     queryClient.clear();
   };
-
-  if (isAuthError && user) {
-    handleLogout();
-  }
 
   return (
     <AuthContext.Provider
