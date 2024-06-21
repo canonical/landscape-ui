@@ -1,0 +1,20 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.link {
+  &:visited {
+    color: $color-link;
+  }
+}
+
+.helperContent {
+  align-self: flex-end;
+  padding-bottom: $spv--large;
+  margin-left: $sph--small;
+  font-size: 14px;
+}

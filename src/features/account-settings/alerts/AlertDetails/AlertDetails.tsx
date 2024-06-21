@@ -37,7 +37,7 @@ const AlertDetails: FC<AlertDetailsProps> = ({ alert }) => {
 
   return (
     <>
-      <AlertButtons sidePanel alerts={[alert]} />
+      <AlertButtons alerts={[alert]} />
       <ModularTable
         columns={columns}
         data={subscribers}

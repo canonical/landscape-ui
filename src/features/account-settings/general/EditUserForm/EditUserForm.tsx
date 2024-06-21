@@ -1,0 +1,261 @@
+import LoadingState from "@/components/layout/LoadingState";
+import useAuth from "@/hooks/useAuth";
+import useDebug from "@/hooks/useDebug";
+import useEnv from "@/hooks/useEnv";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import useUserDetails from "@/hooks/useUserDetails";
+import { UserDetails } from "@/types/UserDetails";
+import { Button, Form, Input, Link, Select } from "@canonical/react-components";
+import { useFormik } from "formik";
+import { FC, Suspense, lazy } from "react";
+import * as Yup from "yup";
+import { TIMEZONES_FILTER } from "./constants";
+import classes from "./EditUserForm.module.scss";
+import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
+
+const ChangePasswordForm = lazy(() => import("../ChangePasswordForm"));
+
+interface FormProps {
+  name: string;
+  timezone: string;
+  email: string;
+  defaultOrganisation: string;
+}
+
+interface EditUserFormProps {
+  user: UserDetails;
+}
+
+const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
+  const debug = useDebug();
+  const { notify } = useNotify();
+  const { isSaas, isSelfHosted } = useEnv();
+  const { setSidePanelContent } = useSidePanel();
+  const { user: authUser, updateUser } = useAuth();
+  const { editUserDetails, setPreferredAccount } = useUserDetails();
+  const { mutateAsync: editUserMutation, isLoading: isEditingUser } =
+    editUserDetails;
+  const {
+    mutateAsync: mutateSetPreferredAccount,
+    isLoading: isChangingPreferredAccount,
+  } = setPreferredAccount;
+
+  const emails = user.allowable_emails.map((email) => ({
+    label: email,
+    value: email,
+  }));
+
+  const ORGANISATIONS_OPTIONS = user.accounts.map((acc) => ({
+    label: acc.title,
+    value: acc.name,
+  }));
+
+  const currentEmail = emails.find((e) => e.label === user.email);
+  const formik = useFormik<FormProps>({
+    initialValues: {
+      name: user.name,
+      timezone: user.timezone,
+      email: currentEmail?.label ?? "Select",
+      defaultOrganisation:
+        authUser?.accounts.find((acc) => acc.name === user.preferred_account)
+          ?.name ?? "Select",
+    },
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("This field is required"),
+      timezone: Yup.string().required("This field is required"),
+      email: Yup.string()
+        .email("Please provide a valid email address")
+        .required("This field is required"),
+    }),
+    onSubmit: async (values) => {
+      try {
+        await Promise.all([
+          editUserMutation({
+            name: values.name,
+            email: values.email,
+            timezone: values.timezone,
+          }),
+          mutateSetPreferredAccount({
+            preferred_account: values.defaultOrganisation,
+          }),
+        ]);
+
+        updateUser({
+          ...authUser!,
+          email: values.email,
+          name: values.name,
+        });
+
+        notify.success({
+          message: "User details updated successfully",
+        });
+
+        formik.resetForm({
+          values: {
+            name: values.name,
+            timezone: values.timezone,
+            email: values.email,
+            defaultOrganisation: values.defaultOrganisation,
+          },
+        });
+      } catch (error) {
+        debug(error);
+      }
+    },
+  });
+
+  const handleChangePassword = () => {
+    setSidePanelContent(
+      "Change password",
+      <Suspense fallback={<LoadingState />}>
+        <ChangePasswordForm />
+      </Suspense>,
+    );
+  };
+
+  return (
+    <Form noValidate onSubmit={formik.handleSubmit}>
+      <Input
+        label="Name"
+        type="text"
+        error={
+          formik.touched.name && formik.errors.name
+            ? formik.errors.name
+            : undefined
+        }
+        help="Visible to others in the organisation"
+        {...formik.getFieldProps("name")}
+      />
+      {emails.length > 1 ? (
+        <Select
+          label="Email address"
+          options={emails}
+          help={
+            <>
+              This email address is used to receive notifications from
+              Landscape.{" "}
+              {isSaas && (
+                <>
+                  <br />
+                  To change or add an email, go to{" "}
+                  <Link
+                    className={classes.link}
+                    href="https://login.ubuntu.com/"
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                  >
+                    Ubuntu One
+                  </Link>
+                </>
+              )}
+            </>
+          }
+          {...formik.getFieldProps("email")}
+          error={
+            formik.touched.email && formik.errors.email
+              ? formik.errors.email
+              : undefined
+          }
+        />
+      ) : (
+        <Input
+          label="Email"
+          type="text"
+          disabled={isSaas}
+          help={
+            <>
+              This email address is used to receive notifications from
+              Landscape.{" "}
+              {isSaas && (
+                <>
+                  <br />
+                  To change or add an email, go to{" "}
+                  <Link
+                    className={classes.link}
+                    href="https://login.ubuntu.com/"
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                  >
+                    Ubuntu One
+                  </Link>
+                </>
+              )}
+            </>
+          }
+          {...formik.getFieldProps("email")}
+          error={
+            formik.touched.email && formik.errors.email
+              ? formik.errors.email
+              : undefined
+          }
+        />
+      )}
+      <div className={classes.passwordField}>
+        <Input
+          label="Current"
+          type="password"
+          defaultValue="****************"
+          wrapperClassName={classes.passwordInputWrapper}
+          disabled
+          help={
+            isSaas ? (
+              <>
+                To change your passphrase, go to{" "}
+                <Link
+                  className={classes.link}
+                  href="https://login.ubuntu.com/"
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                >
+                  Ubuntu One
+                </Link>
+              </>
+            ) : undefined
+          }
+        />
+        {isSelfHosted && (
+          <Button type="button" onClick={handleChangePassword}>
+            Change password
+          </Button>
+        )}
+      </div>
+      {TIMEZONES_FILTER.type === "select" && (
+        <Select
+          label={TIMEZONES_FILTER.label}
+          options={TIMEZONES_FILTER.options}
+          {...formik.getFieldProps("timezone")}
+          error={
+            formik.touched.timezone && formik.errors.timezone
+              ? formik.errors.timezone
+              : undefined
+          }
+        />
+      )}
+      <Select
+        label="Default organisation"
+        options={ORGANISATIONS_OPTIONS}
+        {...formik.getFieldProps("defaultOrganisation")}
+        error={
+          formik.touched.timezone && formik.errors.timezone
+            ? formik.errors.timezone
+            : undefined
+        }
+      />
+      <div className={buttonClasses.buttons}>
+        <Button
+          className="u-no-margin--bottom"
+          appearance="positive"
+          type="submit"
+          disabled={
+            isEditingUser || isChangingPreferredAccount || !formik.dirty
+          }
+        >
+          Save changes
+        </Button>
+      </div>
+    </Form>
+  );
+};
+
+export default EditUserForm;

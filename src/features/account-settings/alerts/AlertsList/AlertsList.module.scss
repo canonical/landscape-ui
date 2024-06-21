@@ -15,7 +15,11 @@
 }
 
 .switch {
+  :global(.p-switch__input) {
+    top: 0;
+  }
   :global(.p-switch__label) {
     @extend .u-off-screen;
+    top: 0;
   }
 }

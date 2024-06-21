@@ -1,0 +1,14 @@
+@import "vanilla-framework/scss/settings_breakpoints";
+
+.wrapper {
+  display: flex;
+}
+
+.secondaryNavigation {
+  flex-shrink: 0;
+}
+
+.pageContent {
+  width: 100%;
+  overflow-y: auto;
+}

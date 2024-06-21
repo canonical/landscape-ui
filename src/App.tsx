@@ -57,13 +57,18 @@ const AdministratorsPage = lazy(
 );
 const RolesPage = lazy(() => import("@/pages/dashboard/settings/roles"));
 const EventsLogPage = lazy(() => import("@/pages/dashboard/events-log"));
-const UserPage = lazy(() => import("@/pages/dashboard/user"));
 const AlertNotificationsPage = lazy(
   () => import("@/pages/dashboard/alert-notifications"),
 );
 const OverviewPage = lazy(() => import("@/pages/dashboard/overview"));
 const GeneralOrganisationSettings = lazy(
   () => import("@/pages/dashboard/settings/general"),
+);
+const AccountPage = lazy(() => import("@/pages/dashboard/account"));
+const GeneralSettings = lazy(() => import("@/pages/dashboard/account/general"));
+const Alerts = lazy(() => import("@/pages/dashboard/account/alerts"));
+const ApiCredentials = lazy(
+  () => import("@/pages/dashboard/account/api-credentials"),
 );
 
 interface AuthRouteProps {
@@ -197,7 +202,13 @@ const App: FC = () => {
                 element={<UpgradeProfilesPage />}
               />
               <Route path="profiles/wsl" element={<WSLProfilesPage />} />
-              <Route path="user" element={<UserPage />} />
+              <Route path="account" element={<AccountPage />} />
+              <Route path="account/general" element={<GeneralSettings />} />
+              <Route path="account/alerts" element={<Alerts />} />
+              <Route
+                path="account/api-credentials"
+                element={<ApiCredentials />}
+              />
               <Route path="alerts" element={<AlertNotificationsPage />} />
               <Route path="overview" element={<OverviewPage />} />
               <Route

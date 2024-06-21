@@ -1,7 +1,8 @@
 import { describe } from "vitest";
 import LoginForm from "./LoginForm";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "@/tests/render";
 
 const user = {
   email: "john@example.com",
@@ -10,7 +11,7 @@ const user = {
 
 describe("LoginForm", () => {
   it("should log in", async () => {
-    render(<LoginForm />);
+    renderWithProviders(<LoginForm />);
 
     await waitFor(() => {
       userEvent.type(screen.getByTestId("email"), user.email);

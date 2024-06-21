@@ -11,15 +11,10 @@ import useNotify from "@/hooks/useNotify";
 
 interface AlertButtonsProps {
   alerts: Alert[];
-  sidePanel?: boolean;
   setSelectedAlerts?: (alerts: string[]) => void;
 }
 
-const AlertButtons: FC<AlertButtonsProps> = ({
-  alerts,
-  sidePanel = false,
-  setSelectedAlerts,
-}) => {
+const AlertButtons: FC<AlertButtonsProps> = ({ alerts, setSelectedAlerts }) => {
   const { notify } = useNotify();
   const debug = useDebug();
   const { confirmModal, closeConfirmModal } = useConfirm();
@@ -32,9 +27,6 @@ const AlertButtons: FC<AlertButtonsProps> = ({
 
   const selectedAlert = alerts[0];
   const isSingleAlert = alerts.length === 1;
-
-  const subscribeButtonDisabled = alerts.every((alert) => alert.subscribed);
-  const unsubscribeButtonDisabled = alerts.every((alert) => !alert.subscribed);
 
   const handleEditAlert = () => {
     setSidePanelContent(
@@ -75,9 +67,7 @@ const AlertButtons: FC<AlertButtonsProps> = ({
       debug(error);
     } finally {
       closeConfirmModal();
-      if (sidePanel) {
-        closeSidePanel();
-      }
+      closeSidePanel();
     }
   };
 
@@ -118,52 +108,29 @@ const AlertButtons: FC<AlertButtonsProps> = ({
   return (
     <div className="p-segmented-control">
       <div className="p-segmented-control__list">
-        {sidePanel ? (
-          <>
-            <Button
-              className="p-segmented-control__button"
-              onClick={handleEditAlert}
-              aria-label={`Edit ${selectedAlert.label}`}
-            >
-              Edit
-            </Button>
-            {selectedAlert.subscribed ? (
-              <Button
-                className="p-segmented-control__button"
-                onClick={handleUnsubscribeConfirmation}
-                aria-label={`Unsubscribe from ${selectedAlert.label}`}
-              >
-                Unsubscribe
-              </Button>
-            ) : (
-              <Button
-                className="p-segmented-control__button"
-                onClick={handleSubscribeConfirmation}
-                aria-label={`Subscribe to ${selectedAlert.label}`}
-              >
-                Subscribe
-              </Button>
-            )}
-          </>
+        <Button
+          className="p-segmented-control__button"
+          onClick={handleEditAlert}
+          aria-label={`Edit ${selectedAlert.label}`}
+        >
+          Edit
+        </Button>
+        {selectedAlert.subscribed ? (
+          <Button
+            className="p-segmented-control__button"
+            onClick={handleUnsubscribeConfirmation}
+            aria-label={`Unsubscribe from ${selectedAlert.label}`}
+          >
+            Unsubscribe
+          </Button>
         ) : (
-          <>
-            <Button
-              className="p-segmented-control__button"
-              onClick={handleUnsubscribeConfirmation}
-              aria-label="Unsubscribe from alerts"
-              disabled={unsubscribeButtonDisabled}
-            >
-              Unsubscribe
-            </Button>
-            <Button
-              className="p-segmented-control__button"
-              onClick={handleSubscribeConfirmation}
-              aria-label="Subscribe to alerts"
-              disabled={subscribeButtonDisabled}
-            >
-              Subscribe
-            </Button>
-          </>
+          <Button
+            className="p-segmented-control__button"
+            onClick={handleSubscribeConfirmation}
+            aria-label={`Subscribe to ${selectedAlert.label}`}
+          >
+            Subscribe
+          </Button>
         )}
       </div>
     </div>

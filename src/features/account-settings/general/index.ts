@@ -1,1 +1,1 @@
-export { default } from "./GeneralSettings";
+export { default as EditUserForm } from "./EditUserForm";

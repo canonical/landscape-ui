@@ -1,1 +1,1 @@
-export { default } from "./AlertsPage";
+export { default as SettingsAlertsList } from "./AlertsList";

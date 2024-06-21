@@ -10,7 +10,7 @@ import {
   PasswordToggle,
 } from "@canonical/react-components";
 import axios, { AxiosResponse } from "axios";
-import { API_URL } from "@/constants";
+import { API_URL, ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { AuthUser } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
@@ -62,7 +62,7 @@ const LoginForm: FC = () => {
 
         setUser(data, values.remember);
 
-        navigate("/", { replace: true });
+        navigate(`${ROOT_PATH}`, { replace: true });
       } catch (error) {
         debug(error);
       }
