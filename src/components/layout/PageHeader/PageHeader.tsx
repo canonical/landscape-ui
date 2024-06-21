@@ -13,6 +13,7 @@ interface PageHeaderProps {
   className?: string;
   visualTitle?: string;
   sticky?: boolean;
+  helperContent?: ReactNode;
 }
 
 const PageHeader: FC<PageHeaderProps> = ({
@@ -22,15 +23,18 @@ const PageHeader: FC<PageHeaderProps> = ({
   className,
   actions,
   breadcrumbs,
+  helperContent,
   sticky = false,
 }) => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
-
   return (
     <div
       className={classNames(
         "p-panel__header",
-        { [classes.sticky]: sticky },
+        {
+          [classes.sticky]: sticky,
+          "u-no-padding--right": helperContent !== undefined,
+        },
         className,
       )}
     >
@@ -71,13 +75,16 @@ const PageHeader: FC<PageHeaderProps> = ({
           )}
         </>
       ) : (
-        <h1
-          className={classNames("p-panel__title", {
-            "u-no-padding--bottom": isSmallerScreen,
-          })}
-        >
-          {title}
-        </h1>
+        <>
+          <h1
+            className={classNames("p-panel__title", {
+              "u-no-padding--bottom": isSmallerScreen,
+            })}
+          >
+            {title}
+          </h1>
+          <>{helperContent}</>
+        </>
       )}
       {actions && actions.length > 0 && (
         <div className={classNames("p-panel__controls", classes.controls)}>
