@@ -1,0 +1,17 @@
+landscape-dashboard (0.0.3-0landscape0) jammy; urgency=medium
+
+  * Release 0.0.3 for jammy
+
+ -- Mitch Burton <mitch.burton@canonical.com>  Fri, 21 Jun 2024 12:37:19 -0700
+
+landscape-dashboard (0.0.2-0landscape1) jammy; urgency=medium
+
+  * Release 0.0.2 for jammy
+
+ -- Mitch Burton <mitch.burton@canonical.com>  Mon, 17 Jun 2024 15:31:06 -0700
+
+landscape-dashboard (0.0.1-0landscape1) jammy; urgency=medium
+
+  * Initial release for jammy
+
+ -- Mitch Burton <mitch.burton@canonical.com>  Fri, 07 Jun 2024 12:05:03 -0700
