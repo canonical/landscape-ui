@@ -3,14 +3,8 @@ import { FC, useEffect } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import {
-  CopyPackageProfileParams,
-  usePackageProfiles,
-} from "@/features/package-profiles/hooks";
-import {
-  DuplicateFormProps,
-  PackageProfile,
-} from "@/features/package-profiles/types";
+import { CopyPackageProfileParams, usePackageProfiles } from "../hooks";
+import { DuplicateFormProps, PackageProfile } from "../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";

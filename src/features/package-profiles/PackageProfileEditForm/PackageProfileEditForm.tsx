@@ -1,11 +1,8 @@
 import { FC, useEffect } from "react";
-import {
-  EditFormProps,
-  PackageProfile,
-} from "@/features/package-profiles/types";
+import { EditFormProps, PackageProfile } from "../types";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import { usePackageProfiles } from "@/features/package-profiles/hooks";
+import { usePackageProfiles } from "../hooks";
 import { useFormik } from "formik";
 import useRoles from "@/hooks/useRoles";
 import { Form, Input, Select } from "@canonical/react-components";

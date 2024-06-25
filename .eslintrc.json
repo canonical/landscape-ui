@@ -40,6 +40,12 @@
         "component": true,
         "html": true
       }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": ["@/features/*/*"]
+      }
     ]
   }
 }

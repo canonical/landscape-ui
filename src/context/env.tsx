@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createContext, FC, ReactNode, useEffect, useState } from "react";
-import { API_URL, IS_DEV_ENV, IS_SELF_HOSTED_ENV } from "@/constants";
+import { API_URL, IS_SELF_HOSTED_ENV } from "@/constants";
 
 interface AboutResponse {
   self_hosted: boolean;
@@ -28,12 +28,14 @@ const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
     (async () => {
       const { data } = await axios.get<AboutResponse>(`${API_URL}about`);
       setState({
-        isSaas: IS_DEV_ENV
-          ? ["false", "0"].includes(IS_SELF_HOSTED_ENV)
-          : !data.self_hosted,
-        isSelfHosted: IS_DEV_ENV
-          ? ["true", "1"].includes(IS_SELF_HOSTED_ENV)
-          : data.self_hosted,
+        isSaas:
+          undefined !== IS_SELF_HOSTED_ENV
+            ? ["false", "0"].includes(IS_SELF_HOSTED_ENV)
+            : !data.self_hosted,
+        isSelfHosted:
+          undefined !== IS_SELF_HOSTED_ENV
+            ? ["true", "1"].includes(IS_SELF_HOSTED_ENV)
+            : data.self_hosted,
         packageVersion: data.package_version,
         revision: data.revision,
       });

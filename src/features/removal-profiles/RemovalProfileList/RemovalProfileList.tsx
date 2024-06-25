@@ -8,8 +8,8 @@ import {
   ModularTable,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import { useRemovalProfiles } from "@/features/removal-profiles/hooks";
-import { RemovalProfile } from "@/features/removal-profiles/types";
+import { useRemovalProfiles } from "../hooks";
+import { RemovalProfile } from "../types";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -17,9 +17,7 @@ import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./RemovalProfileList.module.scss";
 
-const RemovalProfileDetails = lazy(
-  () => import("@/features/removal-profiles/RemovalProfileDetails"),
-);
+const RemovalProfileDetails = lazy(() => import("../RemovalProfileDetails"));
 const SingleRemovalProfileForm = lazy(
   () => import("@/features/removal-profiles/SingleRemovalProfileForm"),
 );

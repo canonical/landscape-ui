@@ -1,7 +1,7 @@
 import { FC, RefObject, useEffect } from "react";
 import { useEventListener } from "usehooks-ts";
 import { Chip } from "@canonical/react-components";
-import { ExtendedSearchAndFilterChip } from "@/features/saved-searches/types";
+import { ExtendedSearchAndFilterChip } from "../types";
 
 interface SearchChipsProps {
   containerRef: RefObject<HTMLDivElement>;

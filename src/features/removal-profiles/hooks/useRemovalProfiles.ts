@@ -1,6 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { RemovalProfile } from "@/features/removal-profiles/types";
+import { RemovalProfile } from "../types";
 import useFetchOld from "@/hooks/useFetchOld";
 import { ApiError } from "@/types/ApiError";
 import { QueryFnType } from "@/types/QueryFnType";

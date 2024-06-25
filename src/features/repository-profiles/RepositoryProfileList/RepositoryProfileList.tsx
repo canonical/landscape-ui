@@ -15,8 +15,8 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import { useRepositoryProfiles } from "@/features/repository-profiles/hooks";
-import { RepositoryProfile } from "@/features/repository-profiles/types";
+import { useRepositoryProfiles } from "../hooks";
+import { RepositoryProfile } from "../types";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
@@ -25,9 +25,7 @@ import { SelectOption } from "@/types/SelectOption";
 import { handleCellProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
 
-const RepositoryProfileForm = lazy(
-  () => import("@/features/repository-profiles/RepositoryProfileForm"),
-);
+const RepositoryProfileForm = lazy(() => import("../RepositoryProfileForm"));
 
 interface RepositoryProfileListProps {
   repositoryProfiles: RepositoryProfile[];

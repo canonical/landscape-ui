@@ -9,15 +9,12 @@ import {
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import ActivitiesEmptyState from "@/features/activities/ActivitiesEmptyState";
-import ActivitiesHeader from "@/features/activities/ActivitiesHeader";
-import { ACTIVITY_STATUSES } from "@/features/activities/constants";
-import {
-  useActivities,
-  useOpenActivityDetails,
-} from "@/features/activities/hooks";
+import ActivitiesEmptyState from "../ActivitiesEmptyState";
+import ActivitiesHeader from "../ActivitiesHeader";
+import { ACTIVITY_STATUSES } from "../constants";
+import { useActivities, useOpenActivityDetails } from "../hooks";
 import useSidePanel from "@/hooks/useSidePanel";
-import { ActivityCommon } from "@/features/activities/types";
+import { ActivityCommon } from "../types";
 import classes from "./Activities.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
 

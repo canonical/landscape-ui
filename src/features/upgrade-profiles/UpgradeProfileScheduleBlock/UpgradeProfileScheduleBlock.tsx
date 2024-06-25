@@ -3,8 +3,8 @@ import { FormikContextType } from "formik";
 import { FC } from "react";
 import { Icon, Input, RadioInput, Tooltip } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
-import { DAY_OPTIONS } from "@/features/upgrade-profiles/constants";
-import { FormProps } from "@/features/upgrade-profiles/types";
+import { DAY_OPTIONS } from "../constants";
+import { FormProps } from "../types";
 import { EXPIRATION_TOOLTIP_MESSAGE } from "./constants";
 import classes from "./UpgradeProfileScheduleBlock.module.scss";
 

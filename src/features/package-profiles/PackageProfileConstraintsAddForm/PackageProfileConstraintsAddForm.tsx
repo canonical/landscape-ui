@@ -2,14 +2,11 @@ import { useFormik } from "formik";
 import { FC, Suspense } from "react";
 import { Form } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import PackageProfileConstraintsBlock from "@/features/package-profiles/PackageProfileConstraintsBlock";
-import PackageProfileConstraintsEditForm from "@/features/package-profiles/PackageProfileConstraintsEditForm";
-import { EMPTY_CONSTRAINT } from "@/features/package-profiles/constants";
-import { usePackageProfiles } from "@/features/package-profiles/hooks";
-import {
-  ConstraintsFormProps,
-  PackageProfile,
-} from "@/features/package-profiles/types";
+import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
+import PackageProfileConstraintsEditForm from "../PackageProfileConstraintsEditForm";
+import { EMPTY_CONSTRAINT } from "../constants";
+import { usePackageProfiles } from "../hooks";
+import { ConstraintsFormProps, PackageProfile } from "../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";

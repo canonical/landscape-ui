@@ -1,5 +1,5 @@
 import { Cell, TableCellProps } from "react-table";
-import { PackageProfile } from "@/features/package-profiles/types";
+import { PackageProfile } from "../types";
 import { HTMLProps } from "react";
 
 export const getCellProps = ({

@@ -2,7 +2,8 @@ import {
   CopyPackageProfileParams,
   CreatePackageProfileParams,
   EditPackageProfileParams,
-} from "@/features/package-profiles/hooks/usePackageProfiles";
+} from "../hooks/usePackageProfiles";
+
 import {
   PackageProfileConstraint,
   PackageProfileConstraintType,

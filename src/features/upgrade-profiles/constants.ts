@@ -1,5 +1,5 @@
 import { SelectOption } from "@/types/SelectOption";
-import { UpgradeProfileDay } from "@/features/upgrade-profiles/types/UpgradeProfile";
+import { UpgradeProfileDay } from "./types/UpgradeProfile";
 
 export const DAY_OPTIONS: (SelectOption & {
   value: UpgradeProfileDay;

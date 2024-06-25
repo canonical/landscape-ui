@@ -2,12 +2,12 @@ import { FormikContextType } from "formik";
 import { FC, lazy, Suspense } from "react";
 import { Button, Icon, Select } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import { usePackageProfiles } from "@/features/package-profiles/hooks";
+import { usePackageProfiles } from "../hooks";
 import {
   Constraint,
   PackageProfile,
   PackageProfileConstraintType,
-} from "@/features/package-profiles/types";
+} from "../types";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -16,7 +16,7 @@ import { CONSTRAINT_TYPE_OPTIONS } from "./constants";
 import classes from "./PackageProfileConstraintsEditFormActions.module.scss";
 
 const PackageProfileConstraintsAddForm = lazy(
-  () => import("@/features/package-profiles/PackageProfileConstraintsAddForm"),
+  () => import("../PackageProfileConstraintsAddForm"),
 );
 
 interface PackageProfileConstraintsEditFormActionsProps {

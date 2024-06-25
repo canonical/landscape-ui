@@ -3,7 +3,7 @@ import { FC, SyntheticEvent, useState } from "react";
 import { Button, Form, Select } from "@canonical/react-components";
 import SearchBoxWithDescriptionButton from "@/components/form/SearchBoxWithDescriptionButton";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
-import { useActivities } from "@/features/activities/hooks";
+import { useActivities } from "../hooks";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import classes from "./ActivitiesHeader.module.scss";

@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { FormikContextType } from "formik";
 import { FC } from "react";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
-import { Constraint } from "@/features/package-profiles/types";
+import { Constraint } from "../types";
 import classes from "./PackageProfileConstraintsEditFormTableActions.module.scss";
 
 interface PackageProfileConstraintsEditFormTableActionsProps {

@@ -1,5 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
-import AvailableSnapDetails from "@/features/snaps/AvailableSnapDetails";
+import AvailableSnapDetails from "../AvailableSnapDetails";
 import useDebug from "@/hooks/useDebug";
 import { useSnaps } from "@/hooks/useSnaps";
 import { AvailableSnap, SelectedSnaps } from "@/types/Snap";
@@ -9,7 +9,7 @@ import Downshift from "downshift";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useDebounceCallback } from "usehooks-ts";
 import classes from "./SnapDropdownSearch.module.scss";
-import { DEBOUNCE_DELAY, boldSubstring } from "./helpers";
+import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
 import { useParams } from "react-router-dom";
 
 interface SnapDropdownSearchProps {

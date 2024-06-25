@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { SelectOption } from "@/types/SelectOption";
-import { ACTIVITY_STATUSES } from "@/features/activities/constants";
+import { ACTIVITY_STATUSES } from "../constants";
 
 export const ACTIVITY_SEARCH_HELP_TERMS: {
   term: string;

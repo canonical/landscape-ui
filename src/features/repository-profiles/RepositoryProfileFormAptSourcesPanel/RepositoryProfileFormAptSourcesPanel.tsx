@@ -2,8 +2,8 @@ import classNames from "classnames";
 import { FormikContextType } from "formik";
 import { FC, useState } from "react";
 import { CheckboxInput, Col, Row } from "@canonical/react-components";
-import RepositoryProfileFormSearch from "@/features/repository-profiles/RepositoryProfileFormSearch";
-import { RepositoryProfileFormValues } from "@/features/repository-profiles/types";
+import RepositoryProfileFormSearch from "../RepositoryProfileFormSearch";
+import { RepositoryProfileFormValues } from "../types";
 import { APTSource } from "@/types/APTSource";
 import { getFilteredAptSources } from "./helpers";
 

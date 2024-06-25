@@ -1,4 +1,4 @@
-import { CreateUpgradeProfileParams } from "@/features/upgrade-profiles/hooks/useUpgradeProfiles";
+import { CreateUpgradeProfileParams } from "../hooks/useUpgradeProfiles";
 
 export interface FormProps extends Required<CreateUpgradeProfileParams> {
   at_hour: number | "";

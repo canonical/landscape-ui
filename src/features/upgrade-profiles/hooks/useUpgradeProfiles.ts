@@ -5,7 +5,7 @@ import type {
   UpgradeProfileDay,
   UpgradeProfileFrequency,
   UpgradeProfileType,
-} from "@/features/upgrade-profiles/types";
+} from "../types";
 import useFetchOld from "@/hooks/useFetchOld";
 import { Activity } from "@/features/activities";
 import { ApiError } from "@/types/ApiError";

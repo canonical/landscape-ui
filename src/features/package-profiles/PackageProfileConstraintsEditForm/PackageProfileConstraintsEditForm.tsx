@@ -2,14 +2,14 @@ import { FormikHelpers, useFormik } from "formik";
 import { FC, useState } from "react";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
-import PackageProfileConstraintsEditFormActions from "@/features/package-profiles/PackageProfileConstraintsEditFormActions";
-import PackageProfileConstraintsEditFormTable from "@/features/package-profiles/PackageProfileConstraintsEditFormTable";
-import { usePackageProfiles } from "@/features/package-profiles/hooks";
+import PackageProfileConstraintsEditFormActions from "../PackageProfileConstraintsEditFormActions";
+import PackageProfileConstraintsEditFormTable from "../PackageProfileConstraintsEditFormTable";
+import { usePackageProfiles } from "../hooks";
 import {
   Constraint,
   PackageProfile,
   PackageProfileConstraintType,
-} from "@/features/package-profiles/types";
+} from "../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";

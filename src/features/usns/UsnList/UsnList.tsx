@@ -12,7 +12,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import UsnPackageList from "@/features/usns/UsnPackageList";
+import UsnPackageList from "../UsnPackageList";
 import { Usn } from "@/types/Usn";
 import { USN_LOADING } from "./constants";
 import {

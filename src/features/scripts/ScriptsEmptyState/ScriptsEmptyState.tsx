@@ -4,7 +4,7 @@ import EmptyState from "@/components/layout/EmptyState";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 
-const SingleScript = lazy(() => import("@/features/scripts/SingleScript"));
+const SingleScript = lazy(() => import("../SingleScript"));
 
 const ScriptsEmptyState: FC = () => {
   const { setSidePanelContent } = useSidePanel();

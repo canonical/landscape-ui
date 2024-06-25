@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { EditFormProps } from "@/features/package-profiles/types";
+import { EditFormProps } from "../types";
 
 export const INITIAL_VALUES: EditFormProps = {
   access_group: "",

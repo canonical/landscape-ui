@@ -1,6 +1,6 @@
 import { HTMLProps, MutableRefObject } from "react";
 import { Cell, Row, TableCellProps, TableRowProps } from "react-table";
-import { USN_EXPANDED } from "@/features/usns/UsnList/constants";
+import { USN_EXPANDED } from "./constants";
 import { Usn } from "@/types/Usn";
 import classes from "./UsnList.module.scss";
 

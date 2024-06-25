@@ -1,10 +1,6 @@
 import { HTMLProps } from "react";
 import { Cell, TableCellProps } from "react-table";
-import {
-  AddFormProps,
-  Constraint,
-  ConstraintsFormProps,
-} from "@/features/package-profiles/types";
+import { AddFormProps, Constraint, ConstraintsFormProps } from "../types";
 import classes from "./PackageProfileConstraintsBlock.module.scss";
 import { FormikContextType } from "formik";
 

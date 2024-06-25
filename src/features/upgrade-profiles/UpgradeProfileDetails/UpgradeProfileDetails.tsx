@@ -2,8 +2,8 @@ import { FC, lazy, Suspense } from "react";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import { useUpgradeProfiles } from "@/features/upgrade-profiles/hooks";
-import { UpgradeProfile } from "@/features/upgrade-profiles/types";
+import { useUpgradeProfiles } from "../hooks";
+import { UpgradeProfile } from "../types";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -13,7 +13,7 @@ import { getScheduleInfo } from "./helpers";
 import classes from "./UpgradeProfileDetails.module.scss";
 
 const SingleUpgradeProfileForm = lazy(
-  () => import("@/features/upgrade-profiles/SingleUpgradeProfileForm"),
+  () => import("../SingleUpgradeProfileForm"),
 );
 
 interface UpgradeProfileDetailsProps {

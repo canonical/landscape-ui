@@ -1,16 +1,16 @@
 import { FC, Suspense } from "react";
-import { PackageProfile } from "@/features/package-profiles/types";
+import { PackageProfile } from "../types";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
-import { usePackageProfiles } from "@/features/package-profiles/hooks";
-import PackageProfileEditForm from "@/features/package-profiles/PackageProfileEditForm";
-import PackageProfileDuplicateForm from "@/features/package-profiles/PackageProfileDuplicateForm";
+import { usePackageProfiles } from "../hooks";
+import PackageProfileEditForm from "../PackageProfileEditForm";
+import PackageProfileDuplicateForm from "../PackageProfileDuplicateForm";
 import useNotify from "@/hooks/useNotify";
-import PackageProfileDetailsConstraints from "@/features/package-profiles/PackageProfileDetailsConstraints";
+import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraints";
 
 interface PackageProfileDetailsProps {
   profile: PackageProfile;

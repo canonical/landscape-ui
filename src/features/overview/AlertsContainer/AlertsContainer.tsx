@@ -2,7 +2,7 @@ import { FC } from "react";
 import AlertCard from "../AlertCard";
 import classes from "./AlertsContainer.module.scss";
 import { widgetAlerts } from "./constants";
-import PendingInstancesWidget from "@/features/overview/PendingInstancesWidget";
+import { PendingInstancesWidget } from "@/features/overview";
 
 const AlertsContainer: FC = () => {
   return (

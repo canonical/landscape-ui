@@ -3,12 +3,9 @@ import { FC, useEffect } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import {
-  CreateUpgradeProfileParams,
-  useUpgradeProfiles,
-} from "@/features/upgrade-profiles/hooks";
-import { FormProps, UpgradeProfile } from "@/features/upgrade-profiles/types";
-import UpgradeProfileScheduleBlock from "@/features/upgrade-profiles/UpgradeProfileScheduleBlock";
+import { CreateUpgradeProfileParams, useUpgradeProfiles } from "../hooks";
+import { FormProps, UpgradeProfile } from "../types";
+import UpgradeProfileScheduleBlock from "../UpgradeProfileScheduleBlock";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";

@@ -1,4 +1,4 @@
-import { FormProps } from "@/features/upgrade-profiles/types";
+import { FormProps } from "../types";
 
 export const CTA_LABELS = {
   add: "Add upgrade profile",

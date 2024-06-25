@@ -4,7 +4,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { SettingsAlertsList } from "@/features/account-settings/Alerts";
+import { SettingsAlertsList } from "@/features/account-settings";
 
 const AlertsPage: FC = () => {
   const { getAlertsQuery } = useAlerts();

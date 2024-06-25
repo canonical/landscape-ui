@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { Constraint } from "@/features/package-profiles/types";
+import { Constraint } from "../types";
 
 export const INITIAL_VALUES: Constraint = {
   constraint: "",

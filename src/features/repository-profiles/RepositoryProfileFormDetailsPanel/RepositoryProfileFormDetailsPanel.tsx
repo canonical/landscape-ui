@@ -2,7 +2,7 @@ import { FormikContextType } from "formik";
 import { FC } from "react";
 import { Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
-import { RepositoryProfileFormValues } from "@/features/repository-profiles/types";
+import { RepositoryProfileFormValues } from "../types";
 import { AccessGroup } from "@/types/AccessGroup";
 
 interface RepositoryProfileFormDetailsPanelProps {

@@ -3,7 +3,7 @@ import {
   PackageProfile,
   PackageProfileConstraint,
   PackageProfileConstraintType,
-} from "@/features/package-profiles/types";
+} from "../types";
 import {
   useMutation,
   useQuery,

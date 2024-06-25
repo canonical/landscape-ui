@@ -3,11 +3,8 @@ import { FC, useEffect } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import {
-  CreateRemovalProfileParams,
-  useRemovalProfiles,
-} from "@/features/removal-profiles/hooks";
-import { RemovalProfile } from "@/features/removal-profiles/types";
+import { CreateRemovalProfileParams, useRemovalProfiles } from "../hooks";
+import { RemovalProfile } from "../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";

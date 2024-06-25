@@ -1,4 +1,4 @@
-import { RepositoryProfileFormValues } from "@/features/repository-profiles/types";
+import { RepositoryProfileFormValues } from "../types";
 
 export const INITIAL_VALUES: RepositoryProfileFormValues = {
   access_group: "",

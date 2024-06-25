@@ -8,16 +8,13 @@ import {
 } from "@canonical/react-components";
 import CellInput from "@/components/form/CellInput";
 import LoadingState from "@/components/layout/LoadingState";
-import PackageProfileConstraintsEditFormTableActions from "@/features/package-profiles/PackageProfileConstraintsEditFormTableActions";
+import PackageProfileConstraintsEditFormTableActions from "../PackageProfileConstraintsEditFormTableActions";
 import {
   CONSTRAINT_OPTIONS,
   CONSTRAINT_RULE_OPTIONS,
   LOADING_CONSTRAINT,
-} from "@/features/package-profiles/constants";
-import {
-  Constraint,
-  PackageProfileConstraint,
-} from "@/features/package-profiles/types";
+} from "../constants";
+import { Constraint, PackageProfileConstraint } from "../types";
 import {
   getCellProps,
   getConstraintPropHandlers,

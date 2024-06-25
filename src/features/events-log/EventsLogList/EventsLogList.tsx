@@ -7,8 +7,9 @@ import { CellProps, Column } from "react-table";
 import classes from "./EventsLogList.module.scss";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useOnClickOutside } from "usehooks-ts";
-import { getTableRows } from "@/features/usns/UsnList/helpers";
+import { getTableRows } from "@/features/usns";
 import { handleEventLogsCellProps, handleRowProps } from "./helpers";
+
 interface EventsLogListProps {
   eventsLog: EventLog[];
 }

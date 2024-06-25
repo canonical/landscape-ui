@@ -2,8 +2,8 @@ import { FC, lazy, Suspense } from "react";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import { useRemovalProfiles } from "@/features/removal-profiles/hooks";
-import { RemovalProfile } from "@/features/removal-profiles/types";
+import { useRemovalProfiles } from "../hooks";
+import { RemovalProfile } from "../types";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -12,7 +12,7 @@ import { SelectOption } from "@/types/SelectOption";
 import classes from "./RemovalProfileDetails.module.scss";
 
 const SingleRemovalProfileForm = lazy(
-  () => import("@/features/removal-profiles/SingleRemovalProfileForm"),
+  () => import("../SingleRemovalProfileForm"),
 );
 
 interface RemovalProfileDetailsProps {

@@ -8,8 +8,8 @@ import {
   ModularTable,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import { useUpgradeProfiles } from "@/features/upgrade-profiles/hooks";
-import { UpgradeProfile } from "@/features/upgrade-profiles/types";
+import { useUpgradeProfiles } from "../hooks";
+import { UpgradeProfile } from "../types";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";

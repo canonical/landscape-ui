@@ -1,5 +1,5 @@
 import { Cell, TableCellProps } from "react-table";
-import { RepositoryProfile } from "@/features/repository-profiles/types";
+import { RepositoryProfile } from "../types";
 import { HTMLProps } from "react";
 
 export const handleCellProps = ({ column }: Cell<RepositoryProfile>) => {

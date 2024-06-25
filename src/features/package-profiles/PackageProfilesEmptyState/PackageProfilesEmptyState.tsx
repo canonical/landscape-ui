@@ -4,9 +4,7 @@ import { Button } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 
-const PackageProfileAddForm = lazy(
-  () => import("@/features/package-profiles/PackageProfileCreateForm"),
-);
+const PackageProfileAddForm = lazy(() => import("../PackageProfileCreateForm"));
 
 const PackageProfilesEmptyState: FC = () => {
   const { setSidePanelContent } = useSidePanel();

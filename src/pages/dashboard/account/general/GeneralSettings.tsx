@@ -8,7 +8,7 @@ import classNames from "classnames";
 import { FC } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classes from "./GeneralSettings.module.scss";
-import { EditUserForm } from "@/features/account-settings/General";
+import { EditUserForm } from "@/features/account-settings";
 
 const GeneralSettings: FC = () => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");

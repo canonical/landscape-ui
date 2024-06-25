@@ -11,11 +11,11 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import useConfirm from "@/hooks/useConfirm";
-import { useScripts } from "@/features/scripts/hooks";
-import { Script } from "@/features/scripts/types";
+import { useScripts } from "../hooks";
+import { Script } from "../types";
 
-const SingleScript = lazy(() => import("@/features/scripts/SingleScript"));
-const ScriptRunForm = lazy(() => import("@/features/scripts/ScriptRunForm"));
+const SingleScript = lazy(() => import("../SingleScript"));
+const ScriptRunForm = lazy(() => import("../ScriptRunForm"));
 
 interface ScriptListActionsProps {
   script: Script;

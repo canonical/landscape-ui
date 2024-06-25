@@ -3,7 +3,7 @@ import {
   UpgradeProfileDay,
   UpgradeProfileFrequency,
   UpgradeProfileType,
-} from "@/features/upgrade-profiles/types";
+} from "../types";
 
 export const getValidationSchema = (action: "add" | "edit") => {
   return Yup.object().shape({

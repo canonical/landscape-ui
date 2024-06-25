@@ -5,7 +5,7 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { Activity, ActivityCommon } from "@/features/activities/types";
+import { Activity, ActivityCommon } from "../types";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
 import { ApiError } from "@/types/ApiError";
@@ -14,7 +14,7 @@ import { QueryFnType } from "@/types/QueryFnType";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import ActivityDetails from "@/features/activities/ActivityDetails";
+import ActivityDetails from "../ActivityDetails";
 
 interface GetActivitiesParams {
   limit?: number;

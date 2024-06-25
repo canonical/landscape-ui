@@ -7,9 +7,9 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import PackageProfileDetails from "@/features/package-profiles/PackageProfileDetails";
-import PackageProfileListContextualMenu from "@/features/package-profiles/PackageProfileListContextualMenu";
-import { PackageProfile } from "@/features/package-profiles/types";
+import PackageProfileDetails from "../PackageProfileDetails";
+import PackageProfileListContextualMenu from "../PackageProfileListContextualMenu";
+import { PackageProfile } from "../types";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { SelectOption } from "@/types/SelectOption";

@@ -1,5 +1,5 @@
 import { SelectOption } from "@/types/SelectOption";
-import { Constraint } from "@/features/package-profiles/types";
+import { Constraint } from "./types";
 
 export const EMPTY_CONSTRAINT: Omit<Constraint, "id"> = {
   constraint: "",

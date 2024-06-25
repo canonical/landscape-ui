@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Activity } from "@/features/activities";
-import { RepositoryProfile } from "@/features/repository-profiles/types";
+import { RepositoryProfile } from "../types";
 import useDebug from "@/hooks/useDebug";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";

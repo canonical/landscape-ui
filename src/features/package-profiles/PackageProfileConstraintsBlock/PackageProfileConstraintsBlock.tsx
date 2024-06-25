@@ -13,12 +13,8 @@ import {
   CONSTRAINT_RULE_OPTIONS,
   EMPTY_CONSTRAINT,
   TOUCHED_CONSTRAINT,
-} from "@/features/package-profiles/constants";
-import {
-  AddFormProps,
-  Constraint,
-  ConstraintsFormProps,
-} from "@/features/package-profiles/types";
+} from "../constants";
+import { AddFormProps, Constraint, ConstraintsFormProps } from "../types";
 import { getCellProps, getConstraintPropHandlers } from "./helpers";
 import classes from "./PackageProfileConstraintsBlock.module.scss";
 

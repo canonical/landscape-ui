@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import ApiCredentialsTables from "@/features/account-settings/ApiCredentials";
+import ApiCredentialsTables from "@/features/account-settings";
 import useUserDetails from "@/hooks/useUserDetails";
 import { FC } from "react";
 

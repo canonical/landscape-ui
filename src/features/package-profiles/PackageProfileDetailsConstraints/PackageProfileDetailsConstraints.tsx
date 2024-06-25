@@ -3,15 +3,15 @@ import { FC, lazy, Suspense, useState } from "react";
 import { Button, Col, Row } from "@canonical/react-components";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
-import PackageProfileDetailsConstraintsInfo from "@/features/package-profiles/PackageProfileDetailsConstraintsInfo";
-import { usePackageProfiles } from "@/features/package-profiles/hooks";
-import { PackageProfile } from "@/features/package-profiles/types";
+import PackageProfileDetailsConstraintsInfo from "../PackageProfileDetailsConstraintsInfo";
+import { usePackageProfiles } from "../hooks";
+import { PackageProfile } from "../types";
 import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./PackageProfileDetailsConstraints.module.scss";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 
 const PackageProfileConstraintsEditForm = lazy(
-  () => import("@/features/package-profiles/PackageProfileConstraintsEditForm"),
+  () => import("../PackageProfileConstraintsEditForm"),
 );
 
 interface PackageProfileDetailsConstraintsProps {

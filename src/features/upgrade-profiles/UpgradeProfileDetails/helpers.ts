@@ -1,9 +1,6 @@
 import moment from "moment";
-import {
-  UpgradeProfile,
-  UpgradeProfileDay,
-} from "@/features/upgrade-profiles/types";
-import { DAY_OPTIONS } from "@/features/upgrade-profiles/constants";
+import { UpgradeProfile, UpgradeProfileDay } from "../types";
+import { DAY_OPTIONS } from "../constants";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 const getScheduledDays = (onDays: UpgradeProfileDay[]) => {

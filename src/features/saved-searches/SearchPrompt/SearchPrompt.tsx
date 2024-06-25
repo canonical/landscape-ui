@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { Button } from "@canonical/react-components";
-import SavedSearchCreateForm from "@/features/saved-searches/SavedSearchCreateForm";
+import SavedSearchCreateForm from "../SavedSearchCreateForm";
 import classes from "./SearchPrompt.module.scss";
 
 interface SearchPromptProps {

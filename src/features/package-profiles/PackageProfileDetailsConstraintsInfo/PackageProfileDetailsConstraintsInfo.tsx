@@ -6,11 +6,8 @@ import {
   CONSTRAINT_OPTIONS,
   CONSTRAINT_RULE_OPTIONS,
   LOADING_CONSTRAINT,
-} from "@/features/package-profiles/constants";
-import {
-  Constraint,
-  PackageProfileConstraint,
-} from "@/features/package-profiles/types";
+} from "../constants";
+import { Constraint, PackageProfileConstraint } from "../types";
 import { getCellProps } from "./helpers";
 import classes from "./PackageProfileDetailsConstraintsInfo.module.scss";
 

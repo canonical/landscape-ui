@@ -1,6 +1,6 @@
 import { HTMLProps } from "react";
 import { Cell, TableCellProps } from "react-table";
-import { Constraint } from "@/features/package-profiles/types";
+import { Constraint } from "../types";
 import classes from "./PackageProfileDetailsConstraintsInfo.module.scss";
 
 export const getCellProps = ({ row, column }: Cell<Constraint>) => {

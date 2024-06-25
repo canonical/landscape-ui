@@ -2,16 +2,10 @@ import { useFormik } from "formik";
 import { FC } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
-import {
-  CreatePackageProfileParams,
-  usePackageProfiles,
-} from "@/features/package-profiles/hooks";
+import { CreatePackageProfileParams, usePackageProfiles } from "../hooks";
 import useSidePanel from "@/hooks/useSidePanel";
-import PackageProfileConstraintsTypeBlock from "@/features/package-profiles/PackageProfileConstraintsTypeBlock";
-import {
-  AddFormProps,
-  PackageProfileConstraintType,
-} from "@/features/package-profiles/types";
+import PackageProfileConstraintsTypeBlock from "../PackageProfileConstraintsTypeBlock";
+import { AddFormProps, PackageProfileConstraintType } from "../types";
 import useRoles from "@/hooks/useRoles";
 import { SelectOption } from "@/types/SelectOption";
 import AssociationBlock from "@/components/form/AssociationBlock";

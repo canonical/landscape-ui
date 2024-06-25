@@ -1,6 +1,6 @@
 import * as Yup from "yup";
-import { EMPTY_CONSTRAINT } from "@/features/package-profiles/constants";
-import { AddFormProps } from "@/features/package-profiles/types";
+import { EMPTY_CONSTRAINT } from "../constants";
+import { AddFormProps } from "../types";
 
 export const INITIAL_VALUES: AddFormProps = {
   access_group: "",
