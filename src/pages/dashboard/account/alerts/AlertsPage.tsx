@@ -1,22 +1,40 @@
-import { FC, useState } from "react";
+import { FC, useMemo } from "react";
 import useAlerts from "@/hooks/useAlerts";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { SettingsAlertsList } from "@/features/account-settings";
+import { AlertsList } from "@/features/account-settings";
+import useInstances from "@/hooks/useInstances";
+import { MultiSelectItem } from "@canonical/react-components";
 
 const AlertsPage: FC = () => {
   const { getAlertsQuery } = useAlerts();
+  const { getAllInstanceTagsQuery } = useInstances();
 
-  const [selectedAlerts, setSelectedAlerts] = useState<string[]>([]);
+  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
 
   const { data: getAlertsQueryResult, isLoading } = getAlertsQuery();
 
-  const alerts =
-    getAlertsQueryResult?.data.filter(
-      (alert) => !alert.alert_type.toUpperCase().includes("LICENSE"),
-    ) ?? [];
+  const alerts = useMemo(
+    () =>
+      getAlertsQueryResult?.data.filter(
+        (alert) => !alert.alert_type.toUpperCase().includes("LICENSE"),
+      ) ?? [],
+    [getAlertsQueryResult],
+  );
+
+  const tagOptions: MultiSelectItem[] =
+    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
+      label: tag,
+      value: tag,
+      group: "Tags",
+    })) ?? [];
+
+  const availableTagOptions = [
+    { label: "All instances", value: "All" },
+    ...tagOptions,
+  ];
 
   return (
     <PageMain>
@@ -24,10 +42,9 @@ const AlertsPage: FC = () => {
       <PageContent>
         {isLoading && <LoadingState />}
         {!isLoading && alerts && (
-          <SettingsAlertsList
+          <AlertsList
             alerts={alerts}
-            selectedAlerts={selectedAlerts}
-            setSelectedAlerts={(items) => setSelectedAlerts(items)}
+            availableTagOptions={availableTagOptions}
           />
         )}
       </PageContent>

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { MultiSelect, MultiSelectProps } from "@canonical/react-components";
 import classNames from "classnames";
 import classes from "./MultiSelectField.module.scss";
@@ -7,6 +7,7 @@ interface MultiSelectFieldProps extends MultiSelectProps {
   className?: string;
   label?: string;
   labelClassName?: string;
+  innerRef?: React.Ref<HTMLDivElement>;
 }
 
 const MultiSelectField: FC<MultiSelectFieldProps> = ({
@@ -16,6 +17,7 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
   className,
   label,
   labelClassName,
+  innerRef,
   ...otherProps
 }) => {
   const footer = error ? (
@@ -38,6 +40,7 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
         classes.container,
         className,
       )}
+      ref={innerRef}
     >
       {label && (
         <label
