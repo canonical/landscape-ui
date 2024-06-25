@@ -16,6 +16,8 @@ interface GetWslParams {
 export interface CreateChildInstanceParams {
   computer_name: string;
   parent_id: number;
+  rootfs_url?: string;
+  cloud_init?: string;
 }
 
 interface SetDefaultChildInstanceParams {
@@ -31,7 +33,7 @@ interface ChildInstancesActionsParams {
   computer_ids: number[];
 }
 
-interface WslInstanceName {
+export interface WslInstanceName {
   label: string;
   name: string;
 }
@@ -63,8 +65,8 @@ export const useWsl = () => {
     AxiosError<ApiError>,
     CreateChildInstanceParams
   >({
-    mutationFn: (params) =>
-      authFetchOld!.get("CreateChildComputer", { params }),
+    mutationFn: ({ parent_id, ...params }) =>
+      authFetch!.post(`computers/${parent_id}/children`, params),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries(["wsl-hosts"]),

@@ -1,48 +1,86 @@
 import { useFormik } from "formik";
 import { FC } from "react";
 import * as Yup from "yup";
-import { Form, Select } from "@canonical/react-components";
+import { Form, Input, Select } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import { useWsl } from "@/hooks/useWsl";
-import { SelectOption } from "@/types/SelectOption";
 import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import { useActivities } from "@/features/activities";
+import { useParams } from "react-router-dom";
+import { FORM_FIELDS, RESERVED_PATTERNS } from "./constants";
+import FileInput from "@/components/form/FileInput";
+import { fileToBase64 } from "./helper";
 
-interface InstallWslInstanceFormProps {
-  parentId: number;
+interface FormProps {
+  instanceType: string;
+  cloudInit: File | null;
+  instanceName: string;
+  rootfs: string;
 }
 
-const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
-  parentId,
-}) => {
+const InstallWslInstanceForm: FC = () => {
+  const { instanceId } = useParams();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
   const { createChildInstanceQuery, getWslInstanceNamesQuery } = useWsl();
   const { openActivityDetails } = useActivities();
 
-  const { data: getWslInstanceNamesQueryResult } = getWslInstanceNamesQuery();
-
-  const instanceTypeOptions: SelectOption[] =
-    getWslInstanceNamesQueryResult?.data.map(({ label, name }) => ({
-      label,
-      value: name,
-    })) || [];
+  const {
+    data: getWslInstanceNamesQueryResult,
+    isLoading: isLoadingWslInstanceNames,
+  } = getWslInstanceNamesQuery();
 
   const { mutateAsync: createChildInstance } = createChildInstanceQuery;
 
-  const formik = useFormik({
-    initialValues: { instanceType: "Ubuntu" },
+  const formik = useFormik<FormProps>({
+    initialValues: {
+      instanceType: "Ubuntu",
+      cloudInit: null,
+      instanceName: "",
+      rootfs: "",
+    },
     validationSchema: Yup.object({
       instanceType: Yup.string().required("This field is required"),
+      cloudInit: Yup.mixed().nullable(),
+      instanceName: Yup.string().when("instanceType", {
+        is: "custom",
+        then: (schema) =>
+          schema
+            .required("This field is required")
+            .test(
+              "not-match-reserved-patterns",
+              "Instance name cannot match 'ubuntu', 'ubuntu-preview', or 'ubuntu-<dd>.<dd>'",
+              (value) =>
+                !RESERVED_PATTERNS.some((pattern) =>
+                  pattern.test(value.toLowerCase()),
+                ),
+            ),
+      }),
+      rootfs: Yup.string().when("instanceType", {
+        is: "custom",
+        then: (schema) => schema.required("This field is required"),
+      }),
     }),
     onSubmit: async (values) => {
       try {
+        const cloudInitBase64 = await fileToBase64(values.cloudInit);
+
+        const strippedCloudInit = cloudInitBase64
+          ? cloudInitBase64.split(",")[1]
+          : undefined;
+
         const { data: activity } = await createChildInstance({
-          parent_id: parentId,
-          computer_name: values.instanceType,
+          parent_id: parseInt(instanceId ?? ""),
+          computer_name:
+            values.instanceType === "custom"
+              ? values.instanceName
+              : values.instanceType,
+          rootfs_url:
+            values.instanceType === "custom" ? values.rootfs : undefined,
+          cloud_init: strippedCloudInit,
         });
 
         closeSidePanel();
@@ -62,22 +100,79 @@ const InstallWslInstanceForm: FC<InstallWslInstanceFormProps> = ({
     },
   });
 
+  const instanceOptions =
+    getWslInstanceNamesQueryResult?.data.map(({ label, name }) => ({
+      label,
+      value: name,
+    })) || [];
+
+  const handleFileUpload = async (files: File[]) => {
+    await formik.setFieldValue("cloudInit", files[0]);
+  };
+
+  const handleRemoveFile = async () => {
+    await formik.setFieldValue("cloudInit", "");
+  };
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Select
-        label="Instance type"
-        required
-        options={instanceTypeOptions}
-        {...formik.getFieldProps("instanceType")}
+      {FORM_FIELDS.instanceType.type === "select" && (
+        <Select
+          label={FORM_FIELDS.instanceType.label}
+          required
+          disabled={isLoadingWslInstanceNames}
+          options={[...instanceOptions, ...FORM_FIELDS.instanceType.options]}
+          {...formik.getFieldProps("instanceType")}
+          error={
+            formik.touched.instanceType && formik.errors.instanceType
+              ? formik.errors.instanceType
+              : undefined
+          }
+        />
+      )}
+
+      {formik.values.instanceType === "custom" && (
+        <>
+          <Input
+            label={FORM_FIELDS.instanceName.label}
+            type={FORM_FIELDS.instanceName.type}
+            required
+            {...formik.getFieldProps("instanceName")}
+            error={
+              formik.touched.instanceName && formik.errors.instanceName
+                ? formik.errors.instanceName
+                : undefined
+            }
+          />
+          <Input
+            label={FORM_FIELDS.rootfs.label}
+            type={FORM_FIELDS.rootfs.type}
+            required
+            {...formik.getFieldProps("rootfs")}
+            error={
+              formik.touched.rootfs && formik.errors.rootfs
+                ? formik.errors.rootfs
+                : undefined
+            }
+          />
+        </>
+      )}
+
+      <FileInput
+        label={FORM_FIELDS.cloudInit.label}
+        {...formik.getFieldProps("cloudInit")}
+        onFileRemove={handleRemoveFile}
+        onFileUpload={handleFileUpload}
+        help="You can use a cloud-init configuration file to register new WSL instances. Cloud-init streamlines the setup by automating installation and configuration tasks."
         error={
-          formik.touched.instanceType && formik.errors.instanceType
-            ? formik.errors.instanceType
+          formik.touched.cloudInit && formik.errors.cloudInit
+            ? formik.errors.cloudInit
             : undefined
         }
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting || !formik.isValid}
         submitButtonText="Install"
         submitButtonAriaLabel="Install new WSL instance"
       />

@@ -220,7 +220,6 @@ const InstancesPanel: FC<InstancesPanelProps> = ({ instance }) => {
   return (
     <>
       <InstancesPanelHeader
-        parentId={instance.id}
         resetQuery={() => {
           setSearchQuery("");
         }}

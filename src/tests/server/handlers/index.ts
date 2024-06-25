@@ -13,6 +13,7 @@ import packages from "./packages";
 import process from "./process";
 import packageProfile from "./packageProfile";
 import eventLogs from "./eventLogs";
+import wsl from "./wsl";
 
 export default [
   ...auth,
@@ -30,4 +31,5 @@ export default [
   ...upgradeProfile,
   ...packageProfile,
   ...eventLogs,
+  ...wsl,
 ];

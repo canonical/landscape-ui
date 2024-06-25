@@ -9,14 +9,12 @@ import { InstanceWithoutRelation } from "@/types/Instance";
 import classes from "./InstancesPanelHeader.module.scss";
 
 interface InstancesPanelHeaderProps {
-  parentId: number;
   resetQuery: () => void;
   selectedInstances: InstanceWithoutRelation[];
   setQuery: (newQuery: string) => void;
 }
 
 const InstancesPanelHeader: FC<InstancesPanelHeaderProps> = ({
-  parentId,
   resetQuery,
   selectedInstances,
   setQuery,
@@ -92,7 +90,7 @@ const InstancesPanelHeader: FC<InstancesPanelHeaderProps> = ({
           onClick={() => {
             setSidePanelContent(
               "Install new WSL instance",
-              <InstallWslInstanceForm parentId={parentId} />,
+              <InstallWslInstanceForm />,
             );
           }}
         >
