@@ -1,0 +1,49 @@
+@import "../../../../../node_modules/vanilla-framework/scss/settings_colors";
+@import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
+@import "../../../../../node_modules/vanilla-framework/scss/utilities_off-screen";
+@include vf-u-off-screen;
+
+.switch {
+  :global(.p-switch__input) {
+    top: 0;
+  }
+  :global(.p-switch) {
+    margin-bottom: 0;
+  }
+  :global(.p-switch__label) {
+    @extend .u-off-screen;
+    top: 0;
+  }
+}
+
+.noWrap {
+  white-space: nowrap;
+}
+
+.alertsWrapper {
+  padding-bottom: $spv--large;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $colors--light-theme--border-default;
+    margin-bottom: $spv--small;
+  }
+}
+
+.emailColumn {
+  width: 15%;
+}
+
+.nameColumn {
+  width: 20%;
+}
+
+.tags {
+  tbody & {
+    border-color: $color-mid-x-light;
+    border-width: 0 1px;
+    border-style: solid;
+    padding: 0;
+  }
+  overflow: visible;
+  width: 20%;
+}

@@ -14,6 +14,7 @@ import process from "./process";
 import packageProfile from "./packageProfile";
 import eventLogs from "./eventLogs";
 import wsl from "./wsl";
+import alerts from "./alerts";
 
 export default [
   ...auth,
@@ -32,4 +33,5 @@ export default [
   ...packageProfile,
   ...eventLogs,
   ...wsl,
+  ...alerts,
 ];

@@ -1,3 +1,6 @@
+import { Alert, AlertSummaryResponse } from "@/types/Alert";
+import { ApiError } from "@/types/ApiError";
+import { QueryFnType } from "@/types/QueryFnType";
 import {
   useMutation,
   UseMutationResult,
@@ -5,22 +8,11 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
-import { Alert, AlertSummaryResponse, Subscriber } from "../types/Alert";
-import { ApiError } from "../types/ApiError";
-import { QueryFnType } from "../types/QueryFnType";
 import useDebug from "./useDebug";
 import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
 
-interface SubscribeParams {
-  alert_type: string;
-}
-
-interface UnsubscribeParams {
-  alert_type: string;
-}
-
-interface GetAlertSubscribersParams {
+export interface SubscriptionParams {
   alert_type: string;
 }
 
@@ -42,19 +34,15 @@ interface UseAlertsResult {
     AxiosResponse<AlertSummaryResponse>,
     undefined
   >;
-  getAlertSubscribersQuery: QueryFnType<
-    AxiosResponse<Subscriber[]>,
-    GetAlertSubscribersParams
-  >;
   subscribeQuery: UseMutationResult<
     AxiosResponse<void>,
     AxiosError<ApiError>,
-    SubscribeParams
+    SubscriptionParams
   >;
   unsubscribeQuery: UseMutationResult<
     AxiosResponse<void>,
     AxiosError<ApiError>,
-    UnsubscribeParams
+    SubscriptionParams
   >;
   associateAlert: UseMutationResult<
     AxiosResponse<Alert>,
@@ -89,22 +77,10 @@ export default function useAlerts(): UseAlertsResult {
       queryFn: () => authFetch!.get("alerts/summary"),
     });
 
-  const getAlertSubscribersQuery: QueryFnType<
-    AxiosResponse<Subscriber[]>,
-    GetAlertSubscribersParams
-  > = (queryParams, config = {}) => {
-    return useQuery<AxiosResponse<Subscriber[]>, AxiosError<ApiError>>({
-      queryKey: ["alert", "subscribers"],
-      queryFn: () =>
-        authFetchOld!.get("GetAlertSubscribers", { params: queryParams }),
-      ...config,
-    });
-  };
-
   const subscribeQuery = useMutation<
     AxiosResponse<void>,
     AxiosError<ApiError>,
-    SubscribeParams
+    SubscriptionParams
   >({
     mutationKey: ["alert", "subscribe"],
     mutationFn: (params) => authFetchOld!.get("SubscribeToAlert", { params }),
@@ -116,7 +92,7 @@ export default function useAlerts(): UseAlertsResult {
   const unsubscribeQuery = useMutation<
     AxiosResponse<void>,
     AxiosError<ApiError>,
-    UnsubscribeParams
+    SubscriptionParams
   >({
     mutationKey: ["alert", "unsubscribe"],
     mutationFn: (params) =>
@@ -153,7 +129,6 @@ export default function useAlerts(): UseAlertsResult {
   return {
     getAlertsQuery,
     getAlertsSummaryQuery,
-    getAlertSubscribersQuery,
     subscribeQuery,
     unsubscribeQuery,
     associateAlert,

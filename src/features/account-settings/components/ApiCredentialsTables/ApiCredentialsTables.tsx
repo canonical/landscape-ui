@@ -80,109 +80,98 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
     });
   };
 
-  return (
-    <Row className="u-no-padding--left u-no-padding--right u-no-max-width">
-      {user.accounts.map((account) => {
-        const accountCredentials = credentials.find(
-          (cred) => cred.account_name === account.name,
-        );
-        const accRow = [
-          { label: "Name", value: account.name },
-          { label: "Title", value: account.title },
-          {
-            label: "Identity",
-            value: <code>{user.identity}</code>,
-          },
-          {
-            label: "Endpoint",
-            value: <code>{accountCredentials?.endpoint ?? ""}</code>,
-          },
-          {
-            label: "Access Key",
-            value: <code>{accountCredentials?.access_key ?? ""}</code>,
-          },
-          {
-            label: "Secret Key",
-            value: <code>{accountCredentials?.secret_key ?? ""}</code>,
-          },
-          { label: "Roles", value: account.roles.join(", ") },
-        ];
+  return user.accounts.map((account) => {
+    const accountCredentials = credentials.find(
+      (cred) => cred.account_name === account.name,
+    );
+    const accRow = [
+      { label: "Name", value: account.name },
+      { label: "Title", value: account.title },
+      {
+        label: "Identity",
+        value: <code>{user.identity}</code>,
+      },
+      {
+        label: "Endpoint",
+        value: <code>{accountCredentials?.endpoint ?? ""}</code>,
+      },
+      {
+        label: "Access Key",
+        value: <code>{accountCredentials?.access_key ?? ""}</code>,
+      },
+      {
+        label: "Secret Key",
+        value: <code>{accountCredentials?.secret_key ?? ""}</code>,
+      },
+      { label: "Roles", value: account.roles.join(", ") },
+    ];
 
-        const tableRows = accRow.map((item) => {
-          return {
-            columns: [
-              {
-                content: item.label,
-                "aria-label": item.label,
-                className: "u-no-margin--bottom",
-              },
-              {
-                content: item.value,
-                "aria-label": `${item.label} value`,
-              },
-            ],
-          };
-        });
-        const action =
-          accountCredentials?.secret_key || accountCredentials?.access_key
-            ? "Regenerate"
-            : "Generate";
+    const tableRows = accRow.map((item) => {
+      return {
+        columns: [
+          {
+            content: item.label,
+            "aria-label": item.label,
+            className: "u-no-margin--bottom",
+          },
+          {
+            content: item.value,
+            "aria-label": `${item.label} value`,
+          },
+        ],
+      };
+    });
+    const action =
+      accountCredentials?.secret_key || accountCredentials?.access_key
+        ? "Regenerate"
+        : "Generate";
 
-        return (
-          <Col
-            size={12}
-            key={account.title}
-            className={distributionCardClasses.item}
-          >
-            <div className={seriesCardClasses.card}>
-              <div className={seriesCardClasses.header}>
-                <p className={seriesCardClasses.title}>{account.title}</p>
-                <Button
-                  className={classNames("u-no-margin--bottom", {
-                    "is-small": isLargeScreen,
-                  })}
-                  onClick={() =>
-                    handleGenerateKeys({
-                      accountName: account.name,
-                      accountTitle: account.title,
-                      action,
-                    })
-                  }
+    return (
+      <div key={account.title} className={distributionCardClasses.item}>
+        <div className={seriesCardClasses.card}>
+          <div className={seriesCardClasses.header}>
+            <p className={seriesCardClasses.title}>{account.title}</p>
+            <Button
+              className={classNames("u-no-margin--bottom", {
+                "is-small": isLargeScreen,
+              })}
+              onClick={() =>
+                handleGenerateKeys({
+                  accountName: account.name,
+                  accountTitle: account.title,
+                  action,
+                })
+              }
+            >
+              <span>{action} API credentials</span>
+            </Button>
+          </div>
+          <div className={seriesCardClasses.content}>
+            {isLargeScreen ? (
+              <MainTable rows={tableRows} emptyStateMsg="No data available" />
+            ) : (
+              tableRows.map((row, index) => (
+                <Row
+                  key={index}
+                  className={classNames(
+                    "u-no-padding--left u-no-padding--right",
+                    classes.apiCredentials,
+                  )}
                 >
-                  <span>{action} API credentials</span>
-                </Button>
-              </div>
-              <div className={seriesCardClasses.content}>
-                {isLargeScreen ? (
-                  <MainTable
-                    rows={tableRows}
-                    emptyStateMsg="No data available"
-                  />
-                ) : (
-                  tableRows.map((row, index) => (
-                    <Row
-                      key={index}
-                      className={classNames(
-                        "u-no-padding--left u-no-padding--right",
-                        classes.apiCredentials,
-                      )}
-                    >
-                      <Col size={2} small={2}>
-                        <InfoItem label="" value={row.columns[0].content} />
-                      </Col>
-                      <Col size={2} small={2}>
-                        <InfoItem label="" value={row.columns[1].content} />
-                      </Col>
-                    </Row>
-                  ))
-                )}
-              </div>
-            </div>
-          </Col>
-        );
-      })}
-    </Row>
-  );
+                  <Col size={2} small={2}>
+                    <InfoItem label="" value={row.columns[0].content} />
+                  </Col>
+                  <Col size={2} small={2}>
+                    <InfoItem label="" value={row.columns[1].content} />
+                  </Col>
+                </Row>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  });
 };
 
 export default ApiCredentialsTables;

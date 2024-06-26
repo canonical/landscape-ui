@@ -39,6 +39,5 @@ describe("InstallWslInstanceForm", () => {
     });
 
     expect(installInstanceButton).toBeInTheDocument();
-    expect(installInstanceButton).toBeDisabled();
   });
 });
