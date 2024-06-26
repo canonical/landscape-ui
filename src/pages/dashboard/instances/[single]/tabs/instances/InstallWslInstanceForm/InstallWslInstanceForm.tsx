@@ -9,7 +9,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import { useActivities } from "@/features/activities";
 import { useParams } from "react-router-dom";
-import { FORM_FIELDS, RESERVED_PATTERNS } from "./constants";
+import { FORM_FIELDS, MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
 import FileInput from "@/components/form/FileInput";
 import { fileToBase64 } from "./helper";
 
@@ -44,7 +44,29 @@ const InstallWslInstanceForm: FC = () => {
     },
     validationSchema: Yup.object({
       instanceType: Yup.string().required("This field is required"),
-      cloudInit: Yup.mixed().nullable(),
+      cloudInit: Yup.mixed<File>()
+        .nullable()
+        .test("file-size", "File size must be less than 1MB", (value) => {
+          if (!value) {
+            return true;
+          }
+
+          if (value.size === undefined) {
+            return false;
+          }
+
+          return value.size <= MAX_FILE_SIZE_MB * 1024 * 1024;
+        })
+        .test("file-type", "File type must be YAML", (value) => {
+          if (!value) {
+            return true;
+          }
+
+          return (
+            value.type === "application/x-yaml" ||
+            value.type === "application/yaml"
+          );
+        }),
       instanceName: Yup.string().when("instanceType", {
         is: "custom",
         then: (schema) =>
@@ -162,10 +184,11 @@ const InstallWslInstanceForm: FC = () => {
 
       <FileInput
         label={FORM_FIELDS.cloudInit.label}
+        accept=".yaml"
         {...formik.getFieldProps("cloudInit")}
         onFileRemove={handleRemoveFile}
         onFileUpload={handleFileUpload}
-        help="You can use a cloud-init configuration file to register new WSL instances. Cloud-init streamlines the setup by automating installation and configuration tasks."
+        help="You can use a cloud-init configuration YAML file under 1MB to register new WSL instances. Cloud-init streamlines the setup by automating installation and configuration tasks."
         error={
           formik.touched.cloudInit && formik.errors.cloudInit
             ? formik.errors.cloudInit

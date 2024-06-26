@@ -49,9 +49,11 @@ const FileInput: FC<FileInputProps> = ({
         type="button"
         appearance="base"
         hasIcon
+        dense
         onClick={onFileRemove}
         className="u-no-padding--left"
         aria-errormessage={`${value.name}-error-message`}
+        style={{ marginLeft: "0.5rem" }}
       >
         <span className="u-off-screen">Remove</span>
         <Icon name="delete" />
