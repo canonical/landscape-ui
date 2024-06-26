@@ -1,0 +1,21 @@
+@import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
+
+.container {
+  align-items: center;
+  column-gap: $sp-x-large;
+  display: flex;
+  margin-bottom: $spv--x-large;
+}
+
+.searchContainer {
+  flex-basis: 30rem;
+}
+
+.select {
+  column-gap: $sph--large;
+  display: flex;
+}
+
+.cta {
+  margin-left: auto;
+}

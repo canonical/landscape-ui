@@ -1,2 +1,2 @@
-export { default as SearchBoxWithSavedSearches } from "./SearchBoxWithSavedSearches";
+export { default as SearchBoxWithSavedSearches } from "./components/SearchBoxWithSavedSearches";
 export type { ExtendedSearchAndFilterChip } from "./types";

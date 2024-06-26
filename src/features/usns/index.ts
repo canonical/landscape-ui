@@ -1,2 +1,2 @@
-export { default as UsnList } from "./UsnList";
-export { getTableRows } from "./UsnList/helpers";
+export { default as UsnList } from "./components/UsnList";
+export { getTableRows } from "./components/UsnList/helpers";

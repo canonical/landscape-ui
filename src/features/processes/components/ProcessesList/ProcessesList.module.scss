@@ -1,0 +1,11 @@
+@import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
+
+.header {
+  display: flex;
+  column-gap: $sph--large;
+  margin-top: $spv--x-large;
+}
+
+.search {
+  flex-basis: 30rem;
+}

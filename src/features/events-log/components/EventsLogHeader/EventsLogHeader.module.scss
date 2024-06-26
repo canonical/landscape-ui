@@ -1,0 +1,17 @@
+@import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
+
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: $sp-x-large;
+}
+
+.searchContainer {
+  flex-basis: 30rem;
+}
+
+.select {
+  column-gap: $sph--large;
+  display: flex;
+}

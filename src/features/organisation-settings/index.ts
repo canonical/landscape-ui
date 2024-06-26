@@ -1,1 +1,2 @@
-export { default as OrganisationPreferences } from "./OrganisationPreferences";
+export { default as OrganisationPreferences } from "./components/OrganisationPreferences";
+export { default as EditOrganisationPreferencesForm } from "./components/EditOrganisationPreferencesForm";

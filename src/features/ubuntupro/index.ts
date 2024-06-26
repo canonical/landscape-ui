@@ -1,2 +1,2 @@
-export { default as UbuntuProHeader } from "./UbuntuProHeader";
-export { default as UbuntuProList } from "./UbuntuProList";
+export { default as UbuntuProHeader } from "./components/UbuntuProHeader";
+export { default as UbuntuProList } from "./components/UbuntuProList";

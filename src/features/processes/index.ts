@@ -1,2 +1,2 @@
-export { default as ProcessesList } from "./ProcessesList";
-export { default as ProcessesHeader } from "./ProcessesHeader";
+export { default as ProcessesList } from "./components/ProcessesList";
+export { default as ProcessesHeader } from "./components/ProcessesHeader";

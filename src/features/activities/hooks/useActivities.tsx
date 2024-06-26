@@ -14,7 +14,7 @@ import { QueryFnType } from "@/types/QueryFnType";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import ActivityDetails from "../ActivityDetails";
+import ActivityDetails from "../components/ActivityDetails";
 
 interface GetActivitiesParams {
   limit?: number;

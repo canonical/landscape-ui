@@ -10,9 +10,10 @@ import { Preferences } from "@/types/Preferences";
 import { Button } from "@canonical/react-components";
 import { FC, lazy, Suspense } from "react";
 
-const EditOrganisationForm = lazy(
-  () =>
-    import("@/features/organisation-settings/EditOrganisationPreferencesForm"),
+const EditOrganisationPreferencesForm = lazy(() =>
+  import("@/features/organisation-settings").then((mod) => ({
+    default: mod.EditOrganisationPreferencesForm,
+  })),
 );
 
 const GeneralOrganisationSettings: FC = () => {
@@ -33,7 +34,7 @@ const GeneralOrganisationSettings: FC = () => {
     setSidePanelContent(
       "Edit details",
       <Suspense fallback={<LoadingState />}>
-        <EditOrganisationForm
+        <EditOrganisationPreferencesForm
           organisationPreferences={organisationPreferences as Preferences}
         />
       </Suspense>,
