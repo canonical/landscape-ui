@@ -59,10 +59,12 @@ const InstallWslInstanceForm: FC = () => {
                 ),
             ),
       }),
-      rootfs: Yup.string().when("instanceType", {
-        is: "custom",
-        then: (schema) => schema.required("This field is required"),
-      }),
+      rootfs: Yup.string()
+        .url()
+        .when("instanceType", {
+          is: "custom",
+          then: (schema) => schema.required("This field is required"),
+        }),
     }),
     onSubmit: async (values) => {
       try {
@@ -111,7 +113,7 @@ const InstallWslInstanceForm: FC = () => {
   };
 
   const handleRemoveFile = async () => {
-    await formik.setFieldValue("cloudInit", "");
+    await formik.setFieldValue("cloudInit", null);
   };
 
   return (
@@ -172,7 +174,7 @@ const InstallWslInstanceForm: FC = () => {
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting || !formik.isValid}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Install"
         submitButtonAriaLabel="Install new WSL instance"
       />
