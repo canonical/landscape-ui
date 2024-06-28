@@ -2,11 +2,12 @@ import { useEffect } from "react";
 import { Activity, ActivityCommon } from "../types";
 import { useLocation } from "react-router-dom";
 
-export default function useOpenActivityDetailsEffect(
+export default function useOpenActivityDetails(
   handleActivityDetailsOpen: (activity: ActivityCommon) => void,
 ) {
   const { state }: { state: { activity?: Activity } } = useLocation();
   const activity = state?.activity;
+
   useEffect(() => {
     if (!state?.activity) {
       return;

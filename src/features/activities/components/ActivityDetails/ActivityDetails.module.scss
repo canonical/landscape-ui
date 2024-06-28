@@ -1,7 +1,7 @@
 @import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
 
 .statusIcon {
-  margin-right: $sph--small;
+  margin-right: $sph--small !important;
 }
 
 .output {
