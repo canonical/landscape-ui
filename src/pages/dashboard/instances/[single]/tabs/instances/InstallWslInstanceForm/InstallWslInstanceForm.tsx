@@ -76,7 +76,7 @@ const InstallWslInstanceForm: FC = () => {
               "not-match-reserved-patterns",
               "Instance name cannot match 'ubuntu', 'ubuntu-preview', or 'ubuntu-<dd>.<dd>'",
               (value) =>
-                !RESERVED_PATTERNS.some((pattern) =>
+                !RESERVED_PATTERNS.some((pattern: RegExp) =>
                   pattern.test(value.toLowerCase()),
                 ),
             ),

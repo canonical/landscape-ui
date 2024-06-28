@@ -1,1 +1,1 @@
-export { default } from "./InstancesPanel";
+export { default } from "../InstancesPanel/InstancesPanel";
