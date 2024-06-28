@@ -18,8 +18,8 @@ import { CellProps, Column } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
 import AlertTagsCell from "../AlertTagsCell";
 import classes from "./AlertsTable.module.scss";
-import { EMAIL_TOOLTIP } from "./constants";
 import { handleCellProps } from "./helper";
+import useAuth from "@/hooks/useAuth";
 
 interface AlertsTableProps {
   alerts: Alert[];
@@ -30,6 +30,7 @@ const AlertsTable: FC<AlertsTableProps> = ({ alerts, availableTagOptions }) => {
   const isLargerScreen = useMediaQuery("(min-width: 620px)");
   const debug = useDebug();
   const { unsubscribeQuery, subscribeQuery } = useAlerts();
+  const { user } = useAuth();
 
   const { mutateAsync: subscribeMutation } = subscribeQuery;
   const { mutateAsync: unsubscribeMutation } = unsubscribeQuery;
@@ -58,9 +59,14 @@ const AlertsTable: FC<AlertsTableProps> = ({ alerts, availableTagOptions }) => {
         Header: (
           <div className={classes.noWrap}>
             <span>Email </span>
-            <Tooltip position="btm-left" message={EMAIL_TOOLTIP}>
-              <Icon name="help" />
-            </Tooltip>
+            {user && (
+              <Tooltip
+                position="btm-left"
+                message={`Enabling email notifications will send alerts to ${user.email}, associated with your account`}
+              >
+                <Icon name="help" />
+              </Tooltip>
+            )}
           </div>
         ),
         accessor: "subscribed",
