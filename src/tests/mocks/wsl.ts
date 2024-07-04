@@ -1,4 +1,4 @@
-import { WslInstanceName } from "@/hooks/useWsl";
+import { WslInstanceName } from "@/features/wsl";
 
 export const wslInstanceNames: WslInstanceName[] = [
   { name: "Ubuntu", label: "Ubuntu" },

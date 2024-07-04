@@ -1,5 +1,5 @@
 import { API_URL } from "@/constants";
-import { WslInstanceName } from "@/hooks/useWsl";
+import { WslInstanceName } from "@/features/wsl";
 import { wslInstanceNames } from "@/tests/mocks/wsl";
 import { http, HttpResponse } from "msw";
 

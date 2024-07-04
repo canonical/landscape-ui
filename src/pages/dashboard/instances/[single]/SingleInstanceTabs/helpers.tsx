@@ -1,6 +1,6 @@
 import { Badge, Spinner } from "@canonical/react-components";
 import { Instance } from "@/types/Instance";
-import { TAB_LINKS } from "@/pages/dashboard/instances/[single]/SingleInstanceTabs/constants";
+import { TAB_LINKS } from "./constants";
 
 interface GetTabLabelProps {
   id: string;
@@ -73,10 +73,10 @@ export const getTabLinks = ({
 }: GetTabLinksProps) => {
   return TAB_LINKS.filter(({ id }) =>
     !instance.distribution || /\d{1,2}\.\d{2}/.test(instance.distribution)
-      ? id !== "tab-link-instances"
+      ? id !== "tab-link-wsl"
       : [
           "tab-link-info",
-          "tab-link-instances",
+          "tab-link-wsl",
           "tab-link-activities",
           "tab-link-hardware",
         ].includes(id),

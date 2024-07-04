@@ -1,17 +1,17 @@
 import { useFormik } from "formik";
 import { FC } from "react";
+import { useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { Form, Input, Select } from "@canonical/react-components";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import useDebug from "@/hooks/useDebug";
-import { useWsl } from "@/hooks/useWsl";
-import useSidePanel from "@/hooks/useSidePanel";
-import useNotify from "@/hooks/useNotify";
-import { useActivities } from "@/features/activities";
-import { useParams } from "react-router-dom";
-import { FORM_FIELDS, MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
 import FileInput from "@/components/form/FileInput";
-import { fileToBase64 } from "./helper";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { useActivities } from "@/features/activities";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import { useWsl } from "../../hooks";
+import { FORM_FIELDS, MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
+import { fileToBase64 } from "./helpers";
 
 interface FormProps {
   instanceType: string;
@@ -20,7 +20,7 @@ interface FormProps {
   rootfs: string;
 }
 
-const InstallWslInstanceForm: FC = () => {
+const WslInstanceInstallForm: FC = () => {
   const { instanceId } = useParams();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
@@ -205,4 +205,4 @@ const InstallWslInstanceForm: FC = () => {
   );
 };
 
-export default InstallWslInstanceForm;
+export default WslInstanceInstallForm;

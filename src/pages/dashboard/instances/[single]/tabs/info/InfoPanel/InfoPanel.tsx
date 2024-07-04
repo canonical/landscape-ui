@@ -1,21 +1,23 @@
 import classNames from "classnames";
 import { FC, lazy, Suspense, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import TagMultiSelect from "@/components/form/TagMultiSelect";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
+import { ROOT_PATH } from "@/constants";
+import { useWsl } from "@/features/wsl";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
+import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { useWsl } from "@/hooks/useWsl";
 import ActivityConfirmation from "@/pages/dashboard/instances/[single]/tabs/info/ActivityConfirmation";
 import { Instance } from "@/types/Instance";
 import { SelectOption } from "@/types/SelectOption";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
-import useNotify from "@/hooks/useNotify";
 
 const EditInstance = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
@@ -34,6 +36,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   >(null);
   const [instanceTags, setInstanceTags] = useState(instance.tags);
 
+  const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
   const { confirmModal, closeConfirmModal } = useConfirm();
@@ -77,6 +80,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       await removeInstances({
         computer_ids: [instance.id],
       });
+
+      navigate(`${ROOT_PATH}instances`, { replace: true });
     } catch (error) {
       debug(error);
     } finally {
@@ -86,8 +91,16 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   const handleRemoveInstanceDialog = () => {
     confirmModal({
-      title: `Remove ${instance.title}`,
-      body: "Removing this instance will delete all associated data and free up one license slot for another instance to be registered.",
+      title: "Remove instance from Landscape",
+      body: (
+        <p>
+          This will remove the instance <b>{instance.title}</b> from Landscape.
+          <br />
+          <br />
+          It will remain on the parent machine. You can re-register it to
+          Landscape at any time.
+        </p>
+      ),
       buttons: [
         <Button
           key="remove"
@@ -125,6 +138,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       await deleteChildInstances({
         computer_ids: [instance.id],
       });
+
+      navigate(`${ROOT_PATH}instances`, { replace: true });
     } catch (error) {
       debug(error);
     } finally {
@@ -134,15 +149,20 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   const handleDeleteChildInstancesDialog = async () => {
     confirmModal({
-      title: `Delete ${instance.title}`,
-      body: "This will remove selected WSL instance from the host and Landscape",
+      title: "Delete instance",
+      body: (
+        <p>
+          This will permanently delete the instance <b>{instance.title}</b> from
+          both the Windows host machine and Landscape.
+        </p>
+      ),
       buttons: [
         <Button
           key="delete"
           appearance="negative"
           onClick={handleDeleteChildInstances}
         >
-          Uninstall
+          Delete
         </Button>,
       ],
     });
@@ -173,7 +193,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               className="u-no-margin--bottom u-no-margin--right"
               onClick={handleDeleteChildInstancesDialog}
             >
-              Uninstall WSL Instance
+              Delete instance
             </Button>
           )}
           <div key="buttons" className="p-segmented-control">
@@ -201,7 +221,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 disabled={removeInstancesLoading}
               >
                 <Icon name="delete" />
-                <span>Remove</span>
+                <span>Remove from Landscape</span>
               </Button>
               <Button
                 className="p-segmented-control__button u-no-margin--bottom"

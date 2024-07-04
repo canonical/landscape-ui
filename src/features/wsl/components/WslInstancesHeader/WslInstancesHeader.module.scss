@@ -7,8 +7,13 @@
 
 .searchContainer {
   flex: 0 1 30rem;
+  margin-right: $sph--large;
 }
 
 .cta {
   display: flex;
+}
+
+.noWrap {
+  white-space: nowrap;
 }

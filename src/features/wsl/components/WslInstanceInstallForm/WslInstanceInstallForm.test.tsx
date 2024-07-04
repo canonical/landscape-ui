@@ -1,11 +1,11 @@
-import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import InstallWslInstanceForm from "./InstallWslInstanceForm";
 import userEvent from "@testing-library/user-event";
+import { renderWithProviders } from "@/tests/render";
+import WslInstanceInstallForm from "./WslInstanceInstallForm";
 
-describe("InstallWslInstanceForm", () => {
+describe("WslInstanceInstallForm", () => {
   it("renders correct form fields when a provided instance type is selected", () => {
-    const { container } = renderWithProviders(<InstallWslInstanceForm />);
+    const { container } = renderWithProviders(<WslInstanceInstallForm />);
 
     expect(container).toHaveTexts(["Instance type", "Cloud-init"]);
 
@@ -17,7 +17,7 @@ describe("InstallWslInstanceForm", () => {
   });
 
   it("renders correct form fields when a provided custom instance type is selected", async () => {
-    const { container } = renderWithProviders(<InstallWslInstanceForm />);
+    const { container } = renderWithProviders(<WslInstanceInstallForm />);
 
     expect(container).toHaveTexts(["Instance type", "Cloud-init"]);
 

@@ -4,8 +4,8 @@ export const TAB_LINKS = [
     id: "tab-link-info",
   },
   {
-    label: "Instances",
-    id: "tab-link-instances",
+    label: "WSL",
+    id: "tab-link-wsl",
   },
   {
     label: "Activities",

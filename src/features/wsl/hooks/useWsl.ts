@@ -1,19 +1,19 @@
-import { QueryFnType } from "@/types/QueryFnType";
-import { Instance } from "@/types/Instance";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Activity } from "@/features/activities";
+import useFetch from "@/hooks/useFetch";
+import useFetchOld from "@/hooks/useFetchOld";
 import { ApiError } from "@/types/ApiError";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import useFetch from "./useFetch";
-import useFetchOld from "./useFetchOld";
-import { Activity } from "@/features/activities";
+import { Instance } from "@/types/Instance";
+import { QueryFnType } from "@/types/QueryFnType";
 
 interface GetWslParams {
   limit?: number;
   offset?: number;
 }
 
-export interface CreateChildInstanceParams {
+interface CreateChildInstanceParams {
   computer_name: string;
   parent_id: number;
   rootfs_url?: string;
