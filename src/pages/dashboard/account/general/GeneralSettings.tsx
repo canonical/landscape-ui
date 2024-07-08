@@ -3,12 +3,12 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import useUserDetails from "@/hooks/useUserDetails";
-import { Link } from "@canonical/react-components";
-import classNames from "classnames";
 import { FC } from "react";
+import { Link } from "@canonical/react-components";
 import { useMediaQuery } from "usehooks-ts";
-import classes from "./GeneralSettings.module.scss";
 import { EditUserForm } from "@/features/account-settings";
+import classes from "./GeneralSettings.module.scss";
+import classNames from "classnames";
 
 const GeneralSettings: FC = () => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");

@@ -15,6 +15,8 @@ import packageProfile from "./packageProfile";
 import eventLogs from "./eventLogs";
 import wsl from "./wsl";
 import alerts from "./alerts";
+import organisationPreferences from "./organisationPreferences";
+import userSettings from "./userSettings";
 
 export default [
   ...auth,
@@ -34,4 +36,6 @@ export default [
   ...eventLogs,
   ...wsl,
   ...alerts,
+  ...organisationPreferences,
+  ...userSettings,
 ];

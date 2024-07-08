@@ -1,17 +1,18 @@
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { useOrgSettings } from "@/hooks/useOrgSettings";
-import useSidePanel from "@/hooks/useSidePanel";
 import { Preferences } from "@/types/Preferences";
-import { Form, Input } from "@canonical/react-components";
+import { Button, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
-import * as Yup from "yup";
+import { ChangeEvent, FC } from "react";
+import classes from "./EditOrganisationPreferencesForm.module.scss";
+import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
+import { useOrgSettings } from "../../hooks";
+import { FORM_FIELDS, VALIDATION_SCHEMA } from "./constants";
 
 interface FormProps {
   title: string;
+  use_registration_key: boolean;
   registration_password: string;
   auto_register_new_computers: boolean;
 }
@@ -26,52 +27,55 @@ const EditOrganisationPreferencesForm: FC<
   const { updateUser, user } = useAuth();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
   const { changeOrganisationPreferences } = useOrgSettings();
-  const { mutateAsync, isLoading } = changeOrganisationPreferences;
+
+  const { mutateAsync } = changeOrganisationPreferences;
+
+  const initialValues: FormProps = {
+    title: organisationPreferences.title,
+    use_registration_key: Boolean(
+      organisationPreferences.registration_password,
+    ),
+    registration_password: organisationPreferences.registration_password || "",
+    auto_register_new_computers:
+      organisationPreferences.auto_register_new_computers,
+  };
 
   const formik = useFormik<FormProps>({
-    initialValues: {
-      title: organisationPreferences.title,
-      registration_password: organisationPreferences.registration_password
-        ? organisationPreferences.registration_password
-        : "",
-      auto_register_new_computers:
-        organisationPreferences.auto_register_new_computers,
-    },
-    validationSchema: Yup.object().shape({
-      title: Yup.string().required("This field is required"),
-      use_registration_key: Yup.boolean(),
-      registration_password: Yup.string()
-        .notRequired()
-        .test(
-          "min",
-          "Registration key must be at least 3 characters",
-          (val) => !val || val.length >= 3,
-        ),
-      auto_register_new_computers: Yup.boolean(),
-    }),
+    initialValues: initialValues,
+    validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
-        mutateAsync({
+        await mutateAsync({
           title: values.title,
-          registration_password: values.registration_password
-            ? values.registration_password
-            : undefined,
+          registration_password: values.registration_password,
           auto_register_new_computers: values.auto_register_new_computers,
         });
-        updateUser({
-          ...user!,
-          current_account: values.title,
-          accounts: user!.accounts.map((account) =>
-            account.title === organisationPreferences.title
-              ? { ...account, title: values.title }
-              : account,
-          ),
+
+        if (values.title !== organisationPreferences.title) {
+          updateUser({
+            ...user!,
+            current_account: values.title,
+            accounts: user!.accounts.map((account) =>
+              account.title === organisationPreferences.title
+                ? { ...account, title: values.title }
+                : account,
+            ),
+          });
+        }
+
+        formik.resetForm({
+          values: {
+            auto_register_new_computers: values.auto_register_new_computers,
+            registration_password: values.registration_password,
+            title: values.title,
+            use_registration_key: values.use_registration_key,
+          },
         });
-        closeSidePanel();
+
         notify.success({
-          message: "Organisation settings updated successfully",
+          title: "Your changes have been saved",
+          message: `Changes made to organisation settings for ${values.title} have been successfully saved.`,
         });
       } catch (error) {
         debug(error);
@@ -79,12 +83,24 @@ const EditOrganisationPreferencesForm: FC<
     },
   });
 
+  const handleUseRegistrationKeyChange = (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    formik.getFieldProps("registration_password").onChange(event);
+
+    formik.setFieldValue("registration_password", "");
+    formik.setFieldTouched("registration_password", false);
+    formik.setFieldError("registration_password", undefined);
+
+    formik.setFieldValue("auto_register_new_computers", false);
+  };
+
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <Input
-        label="Name"
-        type="text"
-        required
+        label={FORM_FIELDS.organisationName.label}
+        type={FORM_FIELDS.organisationName.type}
+        help="Visible to others in organisation"
         error={
           formik.touched.title && formik.errors.title
             ? formik.errors.title
@@ -92,28 +108,53 @@ const EditOrganisationPreferencesForm: FC<
         }
         {...formik.getFieldProps("title")}
       />
+
       <Input
-        label="Registration key"
-        type="text"
-        error={
-          formik.touched.registration_password &&
-          formik.errors.registration_password
-            ? formik.errors.registration_password
-            : undefined
-        }
-        {...formik.getFieldProps("registration_password")}
+        label={FORM_FIELDS.useRegistrationKey.label}
+        type={FORM_FIELDS.useRegistrationKey.type}
+        checked={formik.values.use_registration_key}
+        {...formik.getFieldProps("use_registration_key")}
+        onChange={handleUseRegistrationKeyChange}
       />
-      <Input
-        label="Auto register new computers"
-        type="checkbox"
-        checked={formik.values.auto_register_new_computers}
-        help="This will automatically accept new instances that register to your organisation."
-        {...formik.getFieldProps("auto_register_new_computers")}
-      />
-      <SidePanelFormButtons
-        submitButtonDisabled={isLoading}
-        submitButtonText="Save changes"
-      />
+
+      {formik.values.use_registration_key && (
+        <div className={classes.registrationContainer}>
+          <Input
+            aria-label={FORM_FIELDS.registrationKey.label}
+            type={FORM_FIELDS.registrationKey.type}
+            error={
+              formik.touched.registration_password &&
+              formik.errors.registration_password
+                ? formik.errors.registration_password
+                : undefined
+            }
+            {...formik.getFieldProps("registration_password")}
+          />
+          <Input
+            label={FORM_FIELDS.autoRegisterNewComputers.label}
+            type={FORM_FIELDS.autoRegisterNewComputers.type}
+            checked={formik.values.auto_register_new_computers}
+            help="This will automatically accept new instances that register to your organisation."
+            {...formik.getFieldProps("auto_register_new_computers")}
+          />
+        </div>
+      )}
+
+      <p className="p-form-help-text">
+        When this feature is enabled, new computers must be enrolled using the
+        key that&apos;s defined in the field.
+      </p>
+
+      <div className={buttonClasses.buttons}>
+        <Button
+          className="u-no-margin--bottom"
+          appearance="positive"
+          type="submit"
+          disabled={formik.isSubmitting || !formik.dirty}
+        >
+          Save changes
+        </Button>
+      </div>
     </Form>
   );
 };

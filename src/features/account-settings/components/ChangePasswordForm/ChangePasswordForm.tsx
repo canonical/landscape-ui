@@ -92,6 +92,7 @@ const ChangePasswordForm: FC = () => {
         id="new-password"
         label="New password"
         autoComplete="new-password"
+        data-testid="new-password"
         error={
           formik.touched.newPassword &&
           formik.errors.newPassword &&

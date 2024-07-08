@@ -3,21 +3,14 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { OrganisationPreferences } from "@/features/organisation-settings";
-import { useOrgSettings } from "@/hooks/useOrgSettings";
-import useSidePanel from "@/hooks/useSidePanel";
-import { Preferences } from "@/types/Preferences";
+import {
+  EditOrganisationPreferencesForm,
+  useOrgSettings,
+} from "@/features/organisation-settings";
 import { Button } from "@canonical/react-components";
-import { FC, lazy, Suspense } from "react";
-
-const EditOrganisationPreferencesForm = lazy(() =>
-  import("@/features/organisation-settings").then((mod) => ({
-    default: mod.EditOrganisationPreferencesForm,
-  })),
-);
+import { FC } from "react";
 
 const GeneralOrganisationSettings: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
   const { getOrganisationPreferences } = useOrgSettings();
   const {
     data: orgPreferencesData,
@@ -30,34 +23,10 @@ const GeneralOrganisationSettings: FC = () => {
     refetch();
   };
 
-  const handleEditOrganisation = () => {
-    setSidePanelContent(
-      "Edit details",
-      <Suspense fallback={<LoadingState />}>
-        <EditOrganisationPreferencesForm
-          organisationPreferences={organisationPreferences as Preferences}
-        />
-      </Suspense>,
-    );
-  };
-
   return (
     <PageMain>
-      <PageHeader
-        title="General"
-        actions={[
-          <Button
-            key="edit-settings"
-            className="p-segmented-control__button u-no-margin--bottom"
-            type="button"
-            disabled={isLoading || !organisationPreferences}
-            onClick={handleEditOrganisation}
-          >
-            <span>Edit settings</span>
-          </Button>,
-        ]}
-      />
-      <PageContent>
+      <PageHeader title="General" />
+      <PageContent container="medium">
         {isLoading && <LoadingState />}
         {!isLoading && !organisationPreferences && (
           <EmptyState
@@ -74,8 +43,8 @@ const GeneralOrganisationSettings: FC = () => {
             ]}
           />
         )}
-        {organisationPreferences && (
-          <OrganisationPreferences
+        {organisationPreferences && !isLoading && (
+          <EditOrganisationPreferencesForm
             organisationPreferences={organisationPreferences}
           />
         )}
