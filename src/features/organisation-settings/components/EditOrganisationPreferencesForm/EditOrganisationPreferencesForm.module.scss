@@ -1,0 +1,10 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.registrationContainer {
+  margin-bottom: $spv--x-large;
+  margin-left: $sph--small;
+  padding-left: $sph--large;
+  padding-top: $sph--small;
+  border-left: 1px solid $colors--light-theme--border-default;
+}

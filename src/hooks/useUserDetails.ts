@@ -23,9 +23,6 @@ interface EditUserDetailsParams {
   email: string;
   name: string;
   timezone: string;
-}
-
-interface SetPreferredAccountParams {
   preferred_account: string;
 }
 
@@ -46,11 +43,6 @@ interface useUserDetailsResult {
     AxiosResponse<UserDetails>,
     AxiosError<ApiError>,
     EditUserDetailsParams
-  >;
-  setPreferredAccount: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    SetPreferredAccountParams
   >;
   changePassword: UseMutationResult<
     AxiosResponse<void>,
@@ -110,18 +102,6 @@ export default function useUserDetails(): useUserDetailsResult {
     },
   });
 
-  const setPreferredAccount = useMutation<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    SetPreferredAccountParams
-  >({
-    mutationKey: ["userDetails", "preferredAccount"],
-    mutationFn: (params) => authFetch!.post("person", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["userDetails", "get"]).catch(debug);
-    },
-  });
-
   const changePassword = useMutation<
     AxiosResponse<void>,
     AxiosError<ApiError>,
@@ -136,7 +116,6 @@ export default function useUserDetails(): useUserDetailsResult {
     generateApiCredentials,
     getUserApiCredentials,
     editUserDetails,
-    setPreferredAccount,
     changePassword,
   };
 }

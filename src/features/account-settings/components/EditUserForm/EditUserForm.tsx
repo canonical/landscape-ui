@@ -9,8 +9,7 @@ import { UserDetails } from "@/types/UserDetails";
 import { Button, Form, Input, Link, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { FC, Suspense, lazy } from "react";
-import * as Yup from "yup";
-import { TIMEZONES_FILTER } from "./constants";
+import { TIMEZONES_FILTER, VALIDATION_SCHEMA } from "./constants";
 import classes from "./EditUserForm.module.scss";
 import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 
@@ -33,15 +32,12 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   const { isSaas, isSelfHosted } = useEnv();
   const { setSidePanelContent } = useSidePanel();
   const { user: authUser, updateUser } = useAuth();
-  const { editUserDetails, setPreferredAccount } = useUserDetails();
+  const { editUserDetails } = useUserDetails();
+
   const { mutateAsync: editUserMutation, isLoading: isEditingUser } =
     editUserDetails;
-  const {
-    mutateAsync: mutateSetPreferredAccount,
-    isLoading: isChangingPreferredAccount,
-  } = setPreferredAccount;
 
-  const emails = user.allowable_emails.map((email) => ({
+  const EMAIL_OPTIONS = user.allowable_emails.map((email) => ({
     label: email,
     value: email,
   }));
@@ -51,7 +47,8 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     value: acc.name,
   }));
 
-  const currentEmail = emails.find((e) => e.label === user.email);
+  const currentEmail = EMAIL_OPTIONS.find((e) => e.label === user.email);
+
   const formik = useFormik<FormProps>({
     initialValues: {
       name: user.name,
@@ -61,25 +58,15 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         authUser?.accounts.find((acc) => acc.name === user.preferred_account)
           ?.name ?? "Select",
     },
-    validationSchema: Yup.object().shape({
-      name: Yup.string().required("This field is required"),
-      timezone: Yup.string().required("This field is required"),
-      email: Yup.string()
-        .email("Please provide a valid email address")
-        .required("This field is required"),
-    }),
+    validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
-        await Promise.all([
-          editUserMutation({
-            name: values.name,
-            email: values.email,
-            timezone: values.timezone,
-          }),
-          mutateSetPreferredAccount({
-            preferred_account: values.defaultOrganisation,
-          }),
-        ]);
+        await editUserMutation({
+          name: values.name,
+          email: values.email,
+          timezone: values.timezone,
+          preferred_account: values.defaultOrganisation,
+        });
 
         updateUser({
           ...authUser!,
@@ -127,10 +114,10 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         help="Visible to others in the organisation"
         {...formik.getFieldProps("name")}
       />
-      {emails.length > 1 ? (
+      {EMAIL_OPTIONS.length > 1 ? (
         <Select
           label="Email address"
-          options={emails}
+          options={EMAIL_OPTIONS}
           help={
             <>
               This email address is used to receive notifications from
@@ -247,9 +234,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           className="u-no-margin--bottom"
           appearance="positive"
           type="submit"
-          disabled={
-            isEditingUser || isChangingPreferredAccount || !formik.dirty
-          }
+          disabled={isEditingUser || !formik.dirty}
         >
           Save changes
         </Button>
