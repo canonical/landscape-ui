@@ -62,10 +62,12 @@ const WslInstanceInstallForm: FC = () => {
             return true;
           }
 
-          return (
-            value.type === "application/x-yaml" ||
-            value.type === "application/yaml"
-          );
+          return [
+            "text/yaml",
+            "text/x-yaml",
+            "application/x-yaml",
+            "application/yaml",
+          ].includes(value.type);
         }),
       instanceName: Yup.string().when("instanceType", {
         is: "custom",
