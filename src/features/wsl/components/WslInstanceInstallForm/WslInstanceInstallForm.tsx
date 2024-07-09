@@ -127,7 +127,7 @@ const WslInstanceInstallForm: FC = () => {
   });
 
   const instanceOptions =
-    getWslInstanceNamesQueryResult?.data.map(({ label, name }) => ({
+    (getWslInstanceNamesQueryResult?.data ?? []).map(({ label, name }) => ({
       label,
       value: name,
     })) || [];
