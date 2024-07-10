@@ -1,1 +1,0 @@
-import{j as e}from"./index-CXO_SLS5.js";import{P as s,a as r,b as a}from"./PageMain-BAyQ8Yd7.js";const i=()=>e.jsxs(s,{children:[e.jsx(r,{title:"WSL Profiles"}),e.jsx(a,{children:e.jsx("div",{children:"WSL Profiles"})})]}),n=i;export{n as default};
