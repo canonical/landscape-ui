@@ -7,7 +7,7 @@
   flex-direction: column;
   border: 1px solid $color-mid-light;
   padding: $sp-medium;
-  height: 300px;
+  height: 100%;
   @media (min-width: $breakpoint-large) {
     padding-right: 0;
   }

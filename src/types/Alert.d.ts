@@ -16,6 +16,7 @@ export interface Subscriber extends Record<string, unknown> {
 }
 
 export interface AlertSummary {
+  id: number;
   alert_type: string;
   summary: string;
   activation_time: string;

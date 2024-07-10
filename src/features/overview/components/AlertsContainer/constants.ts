@@ -6,6 +6,7 @@ const overviewAlerts = [
   "ComputerRebootAlert",
   "EsmDisabledAlert",
   "ComputerDuplicateAlert",
+  "PendingComputersAlert",
 ];
 
 export const widgetAlerts = Object.values(STATUSES)

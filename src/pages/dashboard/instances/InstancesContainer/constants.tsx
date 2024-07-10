@@ -173,7 +173,6 @@ const alertTypes = [
   "ComputerOnlineAlert",
   "ComputerRebootAlert",
   "ComputerDuplicateAlert",
-  "PendingComputersAlert",
   "UnapprovedActivitiesAlert",
 ];
 

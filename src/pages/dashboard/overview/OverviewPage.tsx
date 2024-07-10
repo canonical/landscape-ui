@@ -14,7 +14,7 @@ const OverviewPage: FC = () => {
     <PageMain>
       <PageHeader title="Overview" />
       <PageContent>
-        <div className={classes.chartAndAlertsContainer}>
+        <div className={classes.container}>
           <ChartContainer />
           <AlertsContainer />
         </div>
