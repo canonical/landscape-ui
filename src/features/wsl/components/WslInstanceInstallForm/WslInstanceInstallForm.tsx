@@ -56,18 +56,6 @@ const WslInstanceInstallForm: FC = () => {
           }
 
           return value.size <= MAX_FILE_SIZE_MB * 1024 * 1024;
-        })
-        .test("file-type", "File type must be YAML", (value) => {
-          if (!value) {
-            return true;
-          }
-
-          return [
-            "text/yaml",
-            "text/x-yaml",
-            "application/x-yaml",
-            "application/yaml",
-          ].includes(value.type);
         }),
       instanceName: Yup.string().when("instanceType", {
         is: "custom",
