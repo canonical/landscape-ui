@@ -1,4 +1,4 @@
-import { Alert } from "@/types/Alert";
+import { Alert, AlertSummary } from "@/types/Alert";
 
 export const alerts: Alert[] = [
   {
@@ -111,5 +111,51 @@ export const alerts: Alert[] = [
     all_computers: true,
     tags: [],
     label: "Unapproved Activities Alert",
+  },
+];
+
+export const alertsSummary: AlertSummary[] = [
+  {
+    id: 3,
+    alert_type: "PackageUpgradesAlert",
+    summary: "7 computers have package upgrades available",
+    activation_time: "2024-06-25 08:09:38.784578",
+  },
+  {
+    id: 5,
+    alert_type: "SecurityUpgradesAlert",
+    summary: "5 computers have security upgrades available",
+    activation_time: "2024-02-08 00:58:51.578756",
+  },
+  {
+    id: 6,
+    alert_type: "PackageReporterAlert",
+    summary: "2 computers are having issues reporting packages",
+    activation_time: "2024-01-25 11:56:52.305336",
+  },
+  {
+    id: 7,
+    alert_type: "EsmDisabledAlert",
+    summary: "1 computer has ESM disabled",
+    activation_time: "2024-06-21 15:02:10.991144",
+  },
+  {
+    id: 9,
+    alert_type: "ComputerOfflineAlert",
+    summary:
+      "12 computers haven't contacted Landscape within the last 5 minutes",
+    activation_time: "2024-01-30 12:29:55.499358",
+  },
+  {
+    id: 10,
+    alert_type: "ComputerRebootAlert",
+    summary: "2 computers need to be rebooted",
+    activation_time: "2024-06-21 15:05:07.711100",
+  },
+  {
+    id: 11,
+    alert_type: "PendingComputersAlert",
+    summary: "2 computers are pending",
+    activation_time: "2024-06-22 15:05:07.711100",
   },
 ];

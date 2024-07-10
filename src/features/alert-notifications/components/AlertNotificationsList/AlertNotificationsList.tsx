@@ -10,12 +10,15 @@ import LoadingState from "@/components/layout/LoadingState";
 import PendingInstancesForm from "@/pages/dashboard/instances/PendingInstancesForm";
 import { PendingInstance } from "@/types/Instance";
 
-interface AlertsListProps {
+interface AlertNotificationsListProps {
   alerts: AlertSummary[];
   pendingInstances: PendingInstance[];
 }
 
-const AlertsList: FC<AlertsListProps> = ({ alerts, pendingInstances }) => {
+const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
+  alerts,
+  pendingInstances,
+}) => {
   const { setSidePanelContent } = useSidePanel();
 
   const handlePendingInstancesReview = () => {
@@ -31,40 +34,34 @@ const AlertsList: FC<AlertsListProps> = ({ alerts, pendingInstances }) => {
   const listItems = alerts.map((alert) => (
     <div key={alert.alert_type} className={classes.listItem}>
       <i className={`p-icon--${STATUSES[alert.alert_type].icon.color}`} />
-      <Link
-        href={`${ROOT_PATH}instances?status=${STATUSES[alert.alert_type].filterValue}`}
-        className={classNames(
-          "u-no-margin u-no-padding",
-          classes.listItem__link,
-        )}
-      >
-        {alert.summary}
-      </Link>
-    </div>
-  ));
-  if (pendingInstances.length > 0) {
-    listItems.push(
-      <div className={classes.listItem}>
-        <i className={`p-icon--${STATUSES.PendingComputers.icon.color}`} />
+      {alert.alert_type === "PendingComputersAlert" ? (
         <Button
           type="button"
           appearance="link"
           className="u-no-margin u-no-padding"
           onClick={handlePendingInstancesReview}
         >
-          <span className={classes.instancesNumber}>
-            {pendingInstances.length}
-          </span>{" "}
-          pending{" "}
+          {`${pendingInstances.length} pending `}
           {pendingInstances.length !== 1
             ? "computers need "
             : "computer needs "}
           authorization
         </Button>
-      </div>,
-    );
-  }
+      ) : (
+        <Link
+          href={`${ROOT_PATH}instances?status=${STATUSES[alert.alert_type].filterValue}`}
+          className={classNames(
+            "u-no-margin u-no-padding",
+            classes.listItem__link,
+          )}
+        >
+          {alert.summary}
+        </Link>
+      )}
+    </div>
+  ));
+
   return <List items={listItems} />;
 };
 
-export default AlertsList;
+export default AlertNotificationsList;

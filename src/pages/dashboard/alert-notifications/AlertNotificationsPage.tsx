@@ -16,35 +16,24 @@ const AlertNotificationsPage: FC = () => {
   const { getAlertsSummaryQuery } = useAlerts();
   const { getPendingInstancesQuery } = useInstances();
 
-  const { data: alertsSummaryData, isLoading } = getAlertsSummaryQuery();
+  const {
+    data: getAlertsSummaryQueryResult,
+    isLoading: getAlertsSummaryQueryLoading,
+  } = getAlertsSummaryQuery();
+
   const {
     data: getPendingInstancesQueryResult,
-    isLoading: getPendingInstancesQueryLoading,
-  } = getPendingInstancesQuery(
-    {},
-    {
-      enabled: !!alertsSummaryData?.data.alerts_summary.find(
-        (alert) => alert.alert_type === "PendingComputersAlert",
-      ),
-    },
-  );
-
-  const alerts =
-    alertsSummaryData?.data.alerts_summary.filter(
-      (alert) => alert.alert_type !== "PendingComputersAlert",
-    ) || [];
-  const pendingInstances = getPendingInstancesQueryResult?.data || [];
-
-  const getLoadingPending = () => {
-    const hasPending = alertsSummaryData?.data.alerts_summary.find(
+    isInitialLoading: getPendingInstancesQueryLoading,
+  } = getPendingInstancesQuery(undefined, {
+    enabled: !!getAlertsSummaryQueryResult?.data.alerts_summary.find(
       (alert) => alert.alert_type === "PendingComputersAlert",
-    );
-    if (hasPending) {
-      return getPendingInstancesQueryLoading;
-    } else {
-      return false;
-    }
-  };
+    ),
+  });
+
+  const alerts = getAlertsSummaryQueryResult?.data.alerts_summary || [];
+  const pendingInstances = getPendingInstancesQueryResult?.data || [];
+  const isLoading =
+    getAlertsSummaryQueryLoading || getPendingInstancesQueryLoading;
 
   return (
     <PageMain>
@@ -71,7 +60,7 @@ const AlertNotificationsPage: FC = () => {
             ]}
           />
         )}
-        {!isLoading && !getLoadingPending() && alerts.length > 0 && (
+        {!isLoading && alerts.length > 0 && (
           <AlertNotificationsList
             alerts={alerts}
             pendingInstances={pendingInstances}

@@ -54,7 +54,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
         .join(" ")}${queryOsFilter ?? ""} ${queryStatus}`.trim(),
       root_only: queryGroupBy === "parent",
       with_alerts: true,
-      with_upgrades: status !== "pending-computers",
+      with_upgrades: true,
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
     });

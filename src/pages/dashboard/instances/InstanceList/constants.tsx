@@ -106,11 +106,12 @@ export const STATUSES: { [keyof: string]: Status } = {
     query: "NOT alert:package-upgrades",
     icon: { color: "up-to-date" },
   },
-  PendingComputers: {
-    alertType: "",
+  PendingComputersAlert: {
+    alertType: "PendingComputersAlert",
     label: "Pending",
+    alternateLabel: "Pending",
     filterValue: "",
-    query: "alert:pending-computers",
+    query: "",
     icon: { gray: "pause", color: "pause-color" },
   },
   Unknown: {

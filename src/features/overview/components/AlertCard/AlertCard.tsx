@@ -1,71 +1,122 @@
-import { FC } from "react";
+import { FC, Suspense } from "react";
 import classes from "./AlertCard.module.scss";
 import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
 import { Link } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
-import LoadingState from "@/components/layout/LoadingState";
 import { Status } from "@/pages/dashboard/instances/InstanceList/constants";
+import LoadingState from "@/components/layout/LoadingState";
+import useSidePanel from "@/hooks/useSidePanel";
+import PendingInstancesForm from "@/pages/dashboard/instances/PendingInstancesForm";
+import { Button } from "@canonical/react-components";
 
 const AlertCard: FC<Status> = ({
+  alertType,
   filterValue,
   icon,
   alternateLabel,
   label,
   query,
 }) => {
-  const { getInstancesQuery } = useInstances();
+  const { getInstancesQuery, getPendingInstancesQuery } = useInstances();
+  const { setSidePanelContent } = useSidePanel();
+
+  const isPendingComputersAlert = alertType === "PendingComputersAlert";
 
   const {
-    data: alertsData,
-    isLoading,
-    isError,
-  } = getInstancesQuery({
-    query: query,
-    limit: 1,
-    root_only: false,
+    data: getAlertsQueryResult,
+    isInitialLoading: getAlertsQueryLoading,
+    isError: getAlertsQueryError,
+  } = getInstancesQuery(
+    {
+      query: query,
+      limit: 1,
+      root_only: false,
+    },
+    {
+      enabled: !isPendingComputersAlert,
+    },
+  );
+
+  const {
+    data: getPendingInstancesQueryResult,
+    isInitialLoading: getPendingInstancesQueryLoading,
+    error: getPendingInstancesQueryError,
+  } = getPendingInstancesQuery(undefined, {
+    enabled: isPendingComputersAlert,
   });
+
+  const alertData =
+    getAlertsQueryResult?.data.results ||
+    getPendingInstancesQueryResult?.data ||
+    [];
+  const alertCount =
+    getAlertsQueryResult?.data.count ||
+    getPendingInstancesQueryResult?.data.length ||
+    0;
+  const isLoading = getAlertsQueryLoading || getPendingInstancesQueryLoading;
+  const isError = getAlertsQueryError || getPendingInstancesQueryError;
+
+  const handlePendingInstancesReview = () => {
+    setSidePanelContent(
+      "Review Pending Instances",
+      <Suspense fallback={<LoadingState />}>
+        <PendingInstancesForm
+          instances={getPendingInstancesQueryResult?.data ?? []}
+        />
+      </Suspense>,
+      "large",
+    );
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.title}>
-        <i className={`p-icon--${icon.gray}`} />
+        <i className={classNames(`p-icon--${icon.gray}`, classes.icon)} />
         <p className="p-heading--5 u-no-padding u-no-margin">
           {alternateLabel ?? label}
         </p>
       </div>
+
       {isLoading && <LoadingState />}
+
       {!isLoading && isError && (
         <p className="u-no-margin--bottom">Error loading data.</p>
       )}
-      {!isLoading && !isError && (
+      {alertData && !isLoading && !isError && (
         <>
-          {alertsData.data.count > 0 ? (
-            <>
-              <Link
-                className={classNames("u-no-margin u-no-padding", classes.link)}
-                to={`${ROOT_PATH}instances?status=${filterValue}`}
-              >
-                <span className={classes.instancesNumber}>
-                  {alertsData.data.count}
-                </span>{" "}
-                {alertsData.data.count === 1 ? "instance" : "instances"}
-              </Link>
-            </>
-          ) : (
-            <>
-              <span
-                className={classNames(
-                  "u-no-margin u-no-padding u-text--muted",
-                  classes.link,
-                )}
-              >
-                <span className={classes.instancesNumber}>
-                  {alertsData.data.count}
-                </span>{" "}
-                instances
-              </span>
-            </>
+          {isPendingComputersAlert && alertCount > 0 && (
+            <Button
+              type="button"
+              appearance="link"
+              className={classNames("u-no-margin u-no-padding", classes.link)}
+              onClick={handlePendingInstancesReview}
+            >
+              <span className={classes.instancesNumber}>{alertCount}</span>{" "}
+              {alertCount !== 1 ? "instances" : "instance"}
+            </Button>
+          )}
+
+          {!isPendingComputersAlert && alertCount > 0 && (
+            <Link
+              className={classNames("u-no-margin u-no-padding", classes.link)}
+              to={`${ROOT_PATH}instances?status=${filterValue}`}
+            >
+              <span className={classes.instancesNumber}>{alertCount}</span>{" "}
+              {alertCount === 1 ? "instance" : "instances"}
+            </Link>
+          )}
+
+          {alertCount === 0 && (
+            <span
+              className={classNames(
+                "u-no-margin u-no-padding u-text--muted",
+                classes.link,
+              )}
+            >
+              <span className={classes.instancesNumber}>{alertCount}</span>{" "}
+              instances
+            </span>
           )}
         </>
       )}

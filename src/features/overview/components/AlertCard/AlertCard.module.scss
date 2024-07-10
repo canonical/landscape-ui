@@ -3,17 +3,25 @@
 
 .container {
   border: 1px solid $color-mid-light;
-  padding-left: $sp-medium;
+  padding: $sp-large $sp-medium;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .title {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
   gap: $sp-x-small;
+
+  p::before {
+    content: "";
+    display: block;
+    margin-top: -$sph--x-small;
+  }
+}
+
+.icon {
+  flex-shrink: 0;
 }
 
 .link {
