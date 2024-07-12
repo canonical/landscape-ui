@@ -131,15 +131,17 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
       toggleLabel={<Icon name="contextual-menu" />}
       toggleProps={{ "aria-label": `${instance.title} instance actions` }}
     >
-      <Button
-        type="button"
-        appearance="base"
-        className={classes.actionButton}
-        onClick={handleSetDefaultChildInstanceDialog}
-        aria-label={`Set ${instance.title} as default instance`}
-      >
-        Set default instance
-      </Button>
+      {!instance.is_default_child && (
+        <Button
+          type="button"
+          appearance="base"
+          className={classes.actionButton}
+          onClick={handleSetDefaultChildInstanceDialog}
+          aria-label={`Set ${instance.title} as default instance`}
+        >
+          Set default instance
+        </Button>
+      )}
       <Button
         type="button"
         appearance="base"

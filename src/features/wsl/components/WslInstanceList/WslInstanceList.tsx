@@ -95,10 +95,8 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
       {
         accessor: "default",
         Header: "Default",
-        Cell: ({ row }: CellProps<InstanceWithoutRelation>) => (
-          <span>
-            {row.original.title === instance.default_child ? "Yes" : "No"}
-          </span>
+        Cell: ({ row: { original } }: CellProps<InstanceWithoutRelation>) => (
+          <>{original.is_default_child ? "Yes" : "No"}</>
         ),
       },
       {
