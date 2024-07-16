@@ -21,7 +21,7 @@ test("should add mirror using page header button", async ({ page }) => {
   await page.getByText("Release", { exact: true }).click();
   await page.getByText("Security", { exact: true }).click();
   await page.getByText("Updates", { exact: true }).click();
-  await page.getByText("Include .udeb packages (debian-installer)").click();
+  await page.getByText("Include .udeb packages").click();
   await page
     .getByRole("complementary")
     .getByRole("button", { name: "Add mirror" })

@@ -388,10 +388,108 @@ const PackageList: FC<PackageListProps> = ({
 
   return (
     <>
-      {!search &&
-        currentPage === 1 &&
-        itemsPerPage === 20 &&
-        listPocketLoading && <LoadingState />}
+      <Row
+        className={classNames(
+          "u-no-padding--left u-no-padding--right",
+          classes.ctaRow,
+        )}
+      >
+        <Col
+          size={"upload" === pocket.mode ? 8 : 6}
+          medium={"upload" === pocket.mode ? 4 : 3}
+        >
+          <div className="p-segmented-control">
+            <div className="p-segmented-control__list">
+              {("mirror" == pocket.mode || "pull" == pocket.mode) && (
+                <Button
+                  className="p-segmented-control__button"
+                  onClick={handleSync}
+                  disabled={
+                    isSynchronizingMirrorPocket && isPullingPackagesToPocket
+                  }
+                  aria-label={
+                    "mirror" === pocket.mode
+                      ? `Synchronize ${pocket.name} pocket of ${distributionName}/${seriesName}`
+                      : `Pull packages to ${pocket.name} pocket of ${distributionName}/${seriesName}`
+                  }
+                >
+                  {"mirror" === pocket.mode ? "Sync" : "Pull"}
+                </Button>
+              )}
+              <Button
+                className="p-segmented-control__button"
+                onClick={handleEditPocket}
+                aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${seriesName}`}
+              >
+                Edit
+              </Button>
+              <Button
+                className="p-segmented-control__button"
+                onClick={handleRemovePocketDialog}
+                aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${seriesName}`}
+              >
+                Remove
+              </Button>
+              {"upload" === pocket.mode && (
+                <Button
+                  className="p-segmented-control__button"
+                  disabled={
+                    0 === selectedPackages.length ||
+                    isRemovingPackagesFromPocket
+                  }
+                  onClick={handleRemovePackagesDialog}
+                  aria-label={`Remove selected packages from ${pocket.name} pocket of ${distributionName}/${seriesName}`}
+                >
+                  Remove packages
+                </Button>
+              )}
+            </div>
+          </div>
+        </Col>
+        {("pull" === pocket.mode || "mirror" === pocket.mode) &&
+          (search ||
+            currentPage !== 1 ||
+            itemsPerPage !== 20 ||
+            (!listPocketLoading &&
+              listPocketData &&
+              listPocketData.data.count > 0)) && (
+            <Col size={6} medium={3}>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setSearch(inputText);
+                  setCurrentPage(1);
+                }}
+                noValidate
+              >
+                <SearchBox
+                  externallyControlled
+                  shouldRefocusAfterReset
+                  aria-label="Package search"
+                  onChange={(inputValue) => {
+                    setInputText(inputValue);
+                  }}
+                  value={inputText}
+                  onClear={() => {
+                    setInputText("");
+                    setSearch("");
+                    setCurrentPage(1);
+                  }}
+                  className={classNames({
+                    "is-dense": !isSmallerScreen,
+                    "u-no-margin--bottom": isSmallerScreen,
+                  })}
+                  onSearch={() => {
+                    setSearch(inputText);
+                    setCurrentPage(1);
+                  }}
+                  autocomplete="off"
+                />
+              </form>
+            </Col>
+          )}
+      </Row>
+      {listPocketLoading && <LoadingState />}
       {!search &&
         currentPage === 1 &&
         itemsPerPage === 20 &&
@@ -399,111 +497,12 @@ const PackageList: FC<PackageListProps> = ({
         (!listPocketData || !listPocketData.data.count) && (
           <p>No packages found</p>
         )}
-      {(search ||
-        currentPage !== 1 ||
-        itemsPerPage !== 20 ||
-        (!listPocketLoading &&
-          listPocketData &&
-          listPocketData.data.count > 0)) && (
-        <>
-          <Row
-            className={classNames(
-              "u-no-padding--left u-no-padding--right",
-              classes.ctaRow,
-            )}
-          >
-            <Col
-              size={"upload" === pocket.mode ? 8 : 6}
-              medium={"upload" === pocket.mode ? 4 : 3}
-            >
-              <div className="p-segmented-control">
-                <div className="p-segmented-control__list">
-                  {("mirror" == pocket.mode || "pull" == pocket.mode) && (
-                    <Button
-                      className="p-segmented-control__button"
-                      onClick={handleSync}
-                      disabled={
-                        isSynchronizingMirrorPocket && isPullingPackagesToPocket
-                      }
-                      aria-label={
-                        "mirror" === pocket.mode
-                          ? `Synchronize ${pocket.name} pocket of ${distributionName}/${seriesName}`
-                          : `Pull packages to ${pocket.name} pocket of ${distributionName}/${seriesName}`
-                      }
-                    >
-                      {"mirror" === pocket.mode ? "Sync" : "Pull"}
-                    </Button>
-                  )}
-                  <Button
-                    className="p-segmented-control__button"
-                    onClick={handleEditPocket}
-                    aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    className="p-segmented-control__button"
-                    onClick={handleRemovePocketDialog}
-                    aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-                  >
-                    Remove
-                  </Button>
-                  {"upload" === pocket.mode && (
-                    <Button
-                      className="p-segmented-control__button"
-                      disabled={
-                        0 === selectedPackages.length ||
-                        isRemovingPackagesFromPocket
-                      }
-                      onClick={handleRemovePackagesDialog}
-                      aria-label={`Remove selected packages from ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-                    >
-                      Remove packages
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Col>
-            {("pull" === pocket.mode || "mirror" === pocket.mode) && (
-              <Col size={6} medium={3}>
-                <form
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    setSearch(inputText);
-                    setCurrentPage(1);
-                  }}
-                  noValidate
-                >
-                  <SearchBox
-                    externallyControlled
-                    shouldRefocusAfterReset
-                    aria-label="Package search"
-                    onChange={(inputValue) => {
-                      setInputText(inputValue);
-                    }}
-                    value={inputText}
-                    onClear={() => {
-                      setInputText("");
-                      setSearch("");
-                      setCurrentPage(1);
-                    }}
-                    className={classNames({
-                      "is-dense": !isSmallerScreen,
-                      "u-no-margin--bottom": isSmallerScreen,
-                    })}
-                    onSearch={() => {
-                      setSearch(inputText);
-                      setCurrentPage(1);
-                    }}
-                    autocomplete="off"
-                  />
-                </form>
-              </Col>
-            )}
-          </Row>
-          {listPocketLoading ? (
-            <LoadingState />
-          ) : (
+      {!listPocketLoading &&
+        (search ||
+          currentPage !== 1 ||
+          itemsPerPage !== 20 ||
+          (listPocketData && listPocketData.data.count > 0)) && (
+          <>
             <ModularTable
               columns={columns}
               data={packagesToShow}
@@ -527,21 +526,20 @@ const PackageList: FC<PackageListProps> = ({
                 }
               }}
             />
-          )}
-          <SidePanelTablePagination
-            currentPage={currentPage}
-            totalItems={listPocketData?.data.count}
-            paginate={(page) => {
-              setSelectedPackages([]);
-              setCurrentPage(page);
-            }}
-            pageSize={itemsPerPage}
-            setPageSize={(itemsNumber) => {
-              setItemsPerPage(itemsNumber);
-            }}
-          />
-        </>
-      )}
+            <SidePanelTablePagination
+              currentPage={currentPage}
+              totalItems={listPocketData?.data.count}
+              paginate={(page) => {
+                setSelectedPackages([]);
+                setCurrentPage(page);
+              }}
+              pageSize={itemsPerPage}
+              setPageSize={(itemsNumber) => {
+                setItemsPerPage(itemsNumber);
+              }}
+            />
+          </>
+        )}
     </>
   );
 };

@@ -19,7 +19,7 @@ test("should add series to test distribution", async ({ page }) => {
   await page.getByText("Release", { exact: true }).click();
   await page.getByText("Security", { exact: true }).click();
   await page.getByText("Updates", { exact: true }).click();
-  await page.getByText("Proposed").click();
+  await page.getByText("Proposed", { exact: true }).click();
   await page.getByText("Universe").click();
   await page.getByText("Main").click();
   await page.getByText("Restricted").click();
@@ -36,7 +36,7 @@ test("should add series to test distribution", async ({ page }) => {
 
   await expect(
     await page.getByRole("button", {
-      name: "List proposes pocket of test-e2e-distro/test-mirror-xenial",
+      name: "List proposed pocket of test-e2e-distro/test-mirror-xenial",
     }),
   ).toBeVisible();
 });

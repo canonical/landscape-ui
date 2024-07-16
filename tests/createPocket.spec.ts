@@ -24,7 +24,7 @@ test("should add pockets with the different mode", async ({ page }) => {
   await page
     .locator('select[name="mirror_gpg_key"]')
     .selectOption("test-e2e-gpg-key");
-  await page.getByText("Include .udeb packages (debian-installer)").click();
+  await page.getByText("Include .udeb packages").click();
   await page.getByRole("button", { name: "Add pocket" }).click();
 
   await expect(
@@ -40,7 +40,7 @@ test("should add pockets with the different mode", async ({ page }) => {
           name: "List test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
         }),
       })
-      .getByRole("gridcell", { name: "Mode" }),
+      .getByRole("cell", { name: "Mode" }),
   ).toHaveText("mirror");
 
   await page
@@ -70,7 +70,7 @@ test("should add pockets with the different mode", async ({ page }) => {
           name: "List test-pull-pocket pocket of test-e2e-distro/test-derived-series",
         }),
       })
-      .getByRole("gridcell", { name: "Mode" }),
+      .getByRole("cell", { name: "Mode" }),
   ).toHaveText("pull");
 
   await page
@@ -97,6 +97,6 @@ test("should add pockets with the different mode", async ({ page }) => {
           name: "List test-upload-pocket pocket of test-e2e-distro/test-derived-series",
         }),
       })
-      .getByRole("gridcell", { name: "Mode" }),
+      .getByRole("cell", { name: "Mode" }),
   ).toHaveText("upload");
 });

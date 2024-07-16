@@ -33,7 +33,7 @@ test("should edit mirror pocket", async ({ page }) => {
   await expect(
     page
       .locator("label")
-      .filter({ hasText: "Include .udeb packages (debian-installer)" })
+      .filter({ hasText: "Include .udeb packages" })
       .getByRole("checkbox"),
   ).toBeChecked();
 
@@ -43,7 +43,7 @@ test("should edit mirror pocket", async ({ page }) => {
   await page.getByText("i386").click();
   await page.getByText("amd64").click();
   await page.locator('select[name="mirror_gpg_key"]').selectOption("-");
-  await page.getByText("Include .udeb packages (debian-installer)").click();
+  await page.getByText("Include .udeb packages").click();
   await page.getByRole("button", { name: "Save changes" }).click();
 
   await page
@@ -81,7 +81,7 @@ test("should edit mirror pocket", async ({ page }) => {
   await expect(
     page
       .locator("label")
-      .filter({ hasText: "Include .udeb packages (debian-installer)" })
+      .filter({ hasText: "Include .udeb packages" })
       .getByRole("checkbox"),
   ).not.toBeChecked();
 });

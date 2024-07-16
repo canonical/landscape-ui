@@ -3,8 +3,9 @@ import { expect, test } from "@playwright/test";
 test("should add repository profile", async ({ page }) => {
   await page.goto("/repositories/mirrors");
 
-  await page.getByRole("link", { name: "Profiles" }).click();
-  await expect(page).toHaveURL(/profiles/);
+  await page.getByRole("button", { name: "Profiles" }).click();
+  await page.getByRole("link", { name: "Repository Profiles" }).click();
+  await expect(page).toHaveURL(/profiles\/repositories/);
 
   await expect(
     page.getByRole("heading", { name: "Repository Profiles" }),
@@ -22,11 +23,11 @@ test("should add repository profile", async ({ page }) => {
     .getByRole("complementary")
     .getByText("Access group", { exact: true })
     .selectOption("global");
-  await expect(page.locator('input[name="tags"]')).toBeEnabled();
+  await expect(page.getByRole("combobox", { name: "tags" })).toBeVisible();
   await page.getByText("All instances").click();
-  await expect(page.locator('input[name="tags"]')).toBeDisabled();
+  await expect(page.getByRole("combobox", { name: "tags" })).not.toBeVisible();
 
-  await page.getByTestId("pockets-tab").click();
+  await page.getByRole("tab", { name: "Pockets" }).click();
 
   await page
     .getByRole("listitem")
@@ -41,7 +42,7 @@ test("should add repository profile", async ({ page }) => {
     .filter({ hasText: "test-e2e-distro" })
     .getByRole("listitem")
     .filter({ hasText: "test-mirror-xenial" })
-    .getByText("proposes")
+    .getByText("proposed")
     .click();
 
   const testDerivedSeriesOptions = page
@@ -50,10 +51,10 @@ test("should add repository profile", async ({ page }) => {
     .getByRole("listitem")
     .filter({ hasText: "test-derived-series" });
 
-  await testDerivedSeriesOptions.getByText("proposes").click();
+  await testDerivedSeriesOptions.getByText("proposed").click();
   await testDerivedSeriesOptions.getByText("test-mirror-pocket").click();
 
-  await page.getByTestId("apt-sources-tab").click();
+  await page.getByRole("tab", { name: "APT Sources" }).click();
 
   const rows = page
     .getByRole("complementary")
@@ -62,12 +63,15 @@ test("should add repository profile", async ({ page }) => {
 
   expect(await rows.count()).toBeGreaterThanOrEqual(1);
   await page.getByPlaceholder("Search").fill("e2e");
+  await page.getByPlaceholder("Search").press("Enter");
   expect(await rows.count()).toEqual(1);
 
   await page.getByText("test-e2e-apt-source").click();
   await page.getByRole("button", { name: "Reset search" }).click();
   expect(await rows.count()).toBeGreaterThanOrEqual(1);
-  await page.getByLabel("Add profile").click();
+  await page
+    .getByRole("button", { name: "Add a new repository profile" })
+    .click();
 
   await expect(
     page.getByText("test-e2e-profile", { exact: true }),

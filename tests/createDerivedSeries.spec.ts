@@ -16,16 +16,16 @@ test("should add test derived series", async ({ page }) => {
     page.getByRole("heading", { name: "test-derived-series" }),
   ).toBeVisible();
   await expect(
-    page.getByText("pulling from test-mirror-xenial/proposes"),
+    page.getByText("pulling from test-mirror-xenial/proposed"),
   ).toBeVisible();
   await expect(
     page
       .getByRole("rowgroup")
       .filter({
         has: page.getByRole("button", {
-          name: "List proposes pocket of test-e2e-distro/test-derived-series",
+          name: "List proposed pocket of test-e2e-distro/test-derived-series",
         }),
       })
-      .getByRole("gridcell", { name: "Mode" }),
+      .getByRole("cell", { name: "Mode" }),
   ).toHaveText("pull");
 });

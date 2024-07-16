@@ -15,7 +15,7 @@ export const POCKET_OPTIONS: SelectOption[] = [
   },
   {
     label: "Proposed",
-    value: "proposes",
+    value: "proposed",
   },
   {
     label: "Backports",

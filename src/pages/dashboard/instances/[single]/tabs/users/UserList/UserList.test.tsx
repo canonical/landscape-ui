@@ -40,7 +40,7 @@ describe("UserList", () => {
     it("shows locked user icon in the user table", async () => {
       expect(lockedUser).toBeDefined();
 
-      const userStatus = screen.getByRole("gridcell", {
+      const userStatus = screen.getByRole("cell", {
         name: `User ${lockedUser.username} status`,
       });
       const iconElement = userStatus.querySelector("i");
@@ -52,7 +52,7 @@ describe("UserList", () => {
     it("shows unlocked user icon in the user table", async () => {
       expect(unlockedUser).toBeDefined();
 
-      const userStatus = screen.getByRole("gridcell", {
+      const userStatus = screen.getByRole("cell", {
         name: `User ${unlockedUser.username} status`,
       });
       const iconElement = userStatus.querySelector("i");

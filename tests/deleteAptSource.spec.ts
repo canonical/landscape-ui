@@ -24,7 +24,7 @@ test("should delete APT source", async ({ page }) => {
 
   await expect(
     page.getByRole("row").filter({
-      has: page.getByRole("gridcell", { name: "test-e2e-apt-source" }),
+      has: page.getByRole("cell", { name: "test-e2e-apt-source" }),
     }),
   ).toHaveCount(0);
 });

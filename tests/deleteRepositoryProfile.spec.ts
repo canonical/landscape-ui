@@ -1,19 +1,17 @@
 import { expect, test } from "@playwright/test";
 
 test("should handle repository profile", async ({ page }) => {
-  await page.goto("/repositories/mirrors");
-
-  await page.getByRole("link", { name: "Profiles" }).click();
+  await page.goto("/profiles/repositories");
 
   await page
     .getByRole("button", { name: "Edit test-e2e-profile repository profile" })
     .click();
 
   await expect(page.getByText("All instances")).not.toBeChecked();
-  await expect(page.locator('input[name="tags"]')).toBeEnabled();
-  await expect(page.locator('input[name="tags"]')).toHaveValue("test-tag");
+  await expect(page.getByRole("combobox", { name: "tags" })).toBeVisible();
+  await expect(page.getByLabel("test-tag")).toBeChecked();
 
-  await page.getByTestId("pockets-tab").click();
+  await page.getByRole("tab", { name: "Pockets" }).click();
 
   await expect(
     page
@@ -30,7 +28,7 @@ test("should handle repository profile", async ({ page }) => {
       .filter({ hasText: "test-e2e-distro" })
       .getByRole("listitem")
       .filter({ hasText: "test-mirror-xenial" })
-      .getByText("proposes"),
+      .getByText("proposed"),
   ).toBeChecked();
 
   const testSnapshotOptions = page
@@ -39,7 +37,7 @@ test("should handle repository profile", async ({ page }) => {
     .getByRole("listitem")
     .filter({ hasText: "test-derived-series" });
 
-  await expect(testSnapshotOptions.getByText("proposes")).not.toBeChecked();
+  await expect(testSnapshotOptions.getByText("proposed")).not.toBeChecked();
   await expect(
     testSnapshotOptions.getByText("test-mirror-pocket"),
   ).not.toBeChecked();
@@ -48,7 +46,7 @@ test("should handle repository profile", async ({ page }) => {
     testSnapshotOptions.getByText("test-upload-pocket"),
   ).toBeChecked();
 
-  await page.getByTestId("apt-sources-tab").click();
+  await page.getByRole("tab", { name: "APT Sources" }).click();
 
   await expect(page.getByText("test-e2e-apt-source")).not.toBeChecked();
 
