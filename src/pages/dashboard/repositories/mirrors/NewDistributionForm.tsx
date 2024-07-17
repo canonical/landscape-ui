@@ -28,7 +28,9 @@ const NewDistributionForm: FC = () => {
     value: accessGroup.name,
   }));
 
-  const { data: getDistributionsResponse } = getDistributionsQuery();
+  const { data: getDistributionsResponse } = getDistributionsQuery({
+    include_latest_sync: true,
+  });
 
   const formik = useFormik({
     validationSchema: Yup.object().shape({

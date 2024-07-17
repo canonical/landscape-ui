@@ -61,7 +61,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
   const { getDistributionsQuery } = useDistributions();
 
   const { data: getDistributionsQueryResult } = getDistributionsQuery(
-    {},
+    { include_latest_sync: true },
     { enabled: !distribution },
   );
 
