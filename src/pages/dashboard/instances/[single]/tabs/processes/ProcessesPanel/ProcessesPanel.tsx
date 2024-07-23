@@ -10,11 +10,11 @@ import { useParams } from "react-router-dom";
 const ProcessesPanel: FC = () => {
   const [selectedPids, setSelectedPids] = useState<number[]>([]);
 
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams();
   const { search, currentPage, pageSize } = usePageParams();
   const { getProcessesQuery } = useProcesses();
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const { data: getProcessesQueryResult, isLoading } = getProcessesQuery({
     computer_id: instanceId,

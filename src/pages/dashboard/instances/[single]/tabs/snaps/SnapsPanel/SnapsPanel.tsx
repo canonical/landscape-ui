@@ -12,12 +12,12 @@ import { useParams } from "react-router-dom";
 const SnapsPanel: FC = () => {
   const [selectedSnapIds, setSelectedSnapIds] = useState<string[]>([]);
 
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams();
   const { search, currentPage, pageSize } = usePageParams();
   const { getSnapsQuery } = useSnaps();
   const { setSidePanelContent } = useSidePanel();
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const { data: getSnapsQueryResult, isLoading } = getSnapsQuery({
     instance_id: instanceId,

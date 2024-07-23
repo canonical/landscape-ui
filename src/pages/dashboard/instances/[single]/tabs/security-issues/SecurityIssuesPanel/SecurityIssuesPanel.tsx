@@ -13,11 +13,11 @@ interface SecurityIssuesPanelProps {
 const SecurityIssuesPanel: FC<SecurityIssuesPanelProps> = ({
   instanceTitle,
 }) => {
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams();
   const { search, currentPage, pageSize } = usePageParams();
   const { getUsnsQuery } = useUsns();
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const { data: getUsnsQueryResult, isLoading: getUsnsQueryLoading } =
     getUsnsQuery({

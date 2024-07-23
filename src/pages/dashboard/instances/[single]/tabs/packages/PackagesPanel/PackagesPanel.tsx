@@ -12,12 +12,12 @@ import { usePageParams } from "@/hooks/usePageParams";
 const PackagesPanel: FC = () => {
   const [selected, setSelected] = useState<Package[]>([]);
 
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams();
   const { status, search, currentPage, pageSize } = usePageParams();
   const { getInstancePackagesQuery } = usePackages();
   const { state } = useLocation() as { state: { selectAll?: boolean } };
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const handleClearSelection = () => {
     setSelected([]);

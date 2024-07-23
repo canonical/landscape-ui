@@ -18,12 +18,12 @@ const MAX_USERS_LIMIT = 1000;
 const UserPanel: FC = () => {
   const [selected, setSelected] = useState<number[]>([]);
 
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams();
   const { search, currentPage, pageSize } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getUsersQuery } = useUsers();
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const { data: userResponse, isLoading } = getUsersQuery({
     computer_id: instanceId,
