@@ -7,15 +7,15 @@ import {
 } from "react";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
+import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import useConfirm from "@/hooks/useConfirm";
 import { useScripts } from "../../hooks";
 import { Script } from "../../types";
 
 const SingleScript = lazy(() => import("../SingleScript"));
-const ScriptRunForm = lazy(() => import("../ScriptRunForm"));
+const RunScriptForm = lazy(() => import("../RunScriptForm"));
 
 interface ScriptListActionsProps {
   script: Script;
@@ -39,7 +39,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
     setSidePanelContent(
       `Run "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <ScriptRunForm script={script} />
+        <RunScriptForm script={script} />
       </Suspense>,
     );
   };

@@ -1,5 +1,5 @@
-import { FormProps } from "./types";
 import * as Yup from "yup";
+import { FormProps } from "./types";
 
 export const INITIAL_VALUES: FormProps = {
   deliverImmediately: true,

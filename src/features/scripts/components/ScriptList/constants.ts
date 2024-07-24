@@ -1,4 +1,4 @@
-import { Script } from "@/features/scripts";
+import { Script } from "../../types";
 
 export const LOADING_SCRIPT: Script = {
   access_group: "",

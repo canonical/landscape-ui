@@ -1,24 +1,24 @@
 import { useFormik } from "formik";
-import moment from "moment";
-import { ChangeEvent, FC } from "react";
+import moment from "moment/moment";
+import { FC } from "react";
 import { Form, Input, MultiSelectItem } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { ExecuteScriptParams, useScripts } from "../../hooks";
-import { Script } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import { ExecuteScriptParams, useScripts } from "../../hooks";
+import { Script } from "../../types";
+import DeliveryBlock from "../DeliveryBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { FormProps } from "./types";
-import classes from "./ScriptRunForm.module.scss";
 
-interface ScriptRunFormProps {
+interface RunScriptFormProps {
   script: Script;
 }
 
-const ScriptRunForm: FC<ScriptRunFormProps> = ({ script }) => {
+const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
@@ -78,17 +78,6 @@ const ScriptRunForm: FC<ScriptRunFormProps> = ({ script }) => {
       label: title,
       value: id,
     })) ?? [];
-
-  const handleDeliveryTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const deliverImmediately = event.currentTarget.value === "true";
-    formik.setFieldValue("deliverImmediately", deliverImmediately);
-    if (!deliverImmediately) {
-      formik.setFieldValue(
-        "deliver_after",
-        moment().toISOString().slice(0, 16),
-      );
-    }
-  };
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -172,38 +161,8 @@ const ScriptRunForm: FC<ScriptRunFormProps> = ({ script }) => {
             : undefined
         }
       />
-      <span className={classes.bold}>Delivery time</span>
-      <div className={classes.radioGroup}>
-        <Input
-          type="radio"
-          label="As soon as possible"
-          name="deliverImmediately"
-          value="true"
-          onChange={handleDeliveryTimeChange}
-          checked={formik.values.deliverImmediately}
-        />
-        <Input
-          type="radio"
-          label="Scheduled"
-          name="deliverImmediately"
-          value="false"
-          onChange={handleDeliveryTimeChange}
-          checked={!formik.values.deliverImmediately}
-        />
-      </div>
-      {!formik.values.deliverImmediately && (
-        <Input
-          type="datetime-local"
-          label="Deliver after"
-          labelClassName="u-off-screen"
-          {...formik.getFieldProps("deliver_after")}
-          error={
-            formik.touched.deliver_after && formik.errors.deliver_after
-              ? formik.errors.deliver_after
-              : undefined
-          }
-        />
-      )}
+
+      <DeliveryBlock formik={formik} />
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
@@ -213,4 +172,4 @@ const ScriptRunForm: FC<ScriptRunFormProps> = ({ script }) => {
   );
 };
 
-export default ScriptRunForm;
+export default RunScriptForm;

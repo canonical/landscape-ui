@@ -12,8 +12,10 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Instance } from "@/types/Instance";
 import LoadingState from "@/components/layout/LoadingState";
 
-const RunScriptForm = lazy(
-  () => import("@/pages/dashboard/instances/RunScriptForm/RunScriptForm"),
+const RunInstanceScriptForm = lazy(() =>
+  import("@/features/scripts").then((module) => ({
+    default: module.RunInstanceScriptForm,
+  })),
 );
 const Upgrades = lazy(() => import("@/pages/dashboard/instances/Upgrades"));
 const ReportView = lazy(() => import("@/pages/dashboard/instances/ReportView"));
@@ -38,7 +40,7 @@ const InstancesPage: FC = () => {
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
-        <RunScriptForm
+        <RunInstanceScriptForm
           query={`id:${selected.map(({ id }) => id).join(" id:")}`}
         />
       </Suspense>,

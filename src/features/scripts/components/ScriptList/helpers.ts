@@ -1,6 +1,6 @@
 import { HTMLProps } from "react";
 import { Cell, TableCellProps } from "react-table";
-import { Script } from "@/features/scripts";
+import { Script } from "../../types";
 
 export const getCellProps = ({ column, row: { original } }: Cell<Script>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =

@@ -22,8 +22,10 @@ import classes from "./InfoPanel.module.scss";
 const EditInstance = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
 );
-const RunScriptForm = lazy(
-  () => import("@/pages/dashboard/instances/RunScriptForm"),
+const RunInstanceScriptForm = lazy(() =>
+  import("@/features/scripts").then((module) => ({
+    default: module.RunInstanceScriptForm,
+  })),
 );
 
 interface InfoPanelProps {
@@ -126,7 +128,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
-        <RunScriptForm query={`id:${instance.id}`} />
+        <RunInstanceScriptForm query={`id:${instance.id}`} />
       </Suspense>,
     );
   };
