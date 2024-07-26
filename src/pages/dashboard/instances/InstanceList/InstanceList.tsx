@@ -9,7 +9,12 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT, ROOT_PATH } from "@/constants";
+import NoData from "@/components/layout/NoData";
+import {
+  DISPLAY_DATE_TIME_FORMAT,
+  INPUT_DATE_FORMAT,
+  ROOT_PATH,
+} from "@/constants";
 import { Instance } from "@/types/Instance";
 import classes from "./InstanceList.module.scss";
 import { STATUSES } from "./constants";
@@ -94,6 +99,16 @@ const InstanceList: FC<InstanceListProps> = ({
   };
 
   const getUpgradesRowIconAndLabel = (instance: Instance) => {
+    if (
+      !instance.distribution ||
+      !/\d{1,2}\.\d{2}/.test(instance.distribution)
+    ) {
+      return {
+        icon: "",
+        label: <NoData />,
+      };
+    }
+
     if (
       !instance.upgrades ||
       (!instance.upgrades.security && !instance.upgrades.regular)
@@ -259,7 +274,7 @@ const InstanceList: FC<InstanceListProps> = ({
         Header: "OS",
         Cell: ({ row: { original } }: CellProps<Instance>) => {
           if (!original.distribution) {
-            return "---";
+            return <NoData />;
           }
 
           if (/\d{1,2}\.\d{2}/.test(original.distribution)) {
@@ -278,12 +293,13 @@ const InstanceList: FC<InstanceListProps> = ({
             moment(
               row.original.ubuntu_pro_info.expires,
               INPUT_DATE_FORMAT,
-            ).isValid()
-              ? `Exp. ${moment(
-                  row.original.ubuntu_pro_info.expires,
-                  INPUT_DATE_FORMAT,
-                ).format(DISPLAY_DATE_FORMAT)}`
-              : "---"}
+            ).isValid() ? (
+              `Exp. ${moment(row.original.ubuntu_pro_info.expires).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )}`
+            ) : (
+              <NoData />
+            )}
           </>
         ),
       },
@@ -296,11 +312,13 @@ const InstanceList: FC<InstanceListProps> = ({
         accessor: "last_ping_time",
         Cell: ({ row }: CellProps<Instance>) => (
           <>
-            {moment(row.original.last_ping_time, INPUT_DATE_FORMAT).isValid()
-              ? moment(row.original.last_ping_time, INPUT_DATE_FORMAT).format(
-                  DISPLAY_DATE_FORMAT,
-                )
-              : "---"}
+            {moment(row.original.last_ping_time).isValid() ? (
+              moment(row.original.last_ping_time).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )
+            ) : (
+              <NoData />
+            )}
           </>
         ),
       },

@@ -2,13 +2,14 @@ import { FC, lazy, Suspense } from "react";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import { useUpgradeProfiles } from "../../hooks";
-import { UpgradeProfile } from "../../types";
+import NoData from "@/components/layout/NoData";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { SelectOption } from "@/types/SelectOption";
+import { useUpgradeProfiles } from "../../hooks";
+import { UpgradeProfile } from "../../types";
 import { getScheduleInfo } from "./helpers";
 import classes from "./UpgradeProfileDetails.module.scss";
 
@@ -155,7 +156,7 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
         {!profile.all_computers && profile.tags.length > 0 && (
           <InfoItem
             label="Tags"
-            value={profile.tags.length ? profile.tags.join(", ") : "---"}
+            value={profile.tags.length ? profile.tags.join(", ") : <NoData />}
           />
         )}
       </div>

@@ -2,13 +2,14 @@ import { FC, lazy, Suspense } from "react";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import { useRemovalProfiles } from "../../hooks";
-import { RemovalProfile } from "../../types";
+import NoData from "@/components/layout/NoData";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { SelectOption } from "@/types/SelectOption";
+import { useRemovalProfiles } from "../../hooks";
+import { RemovalProfile } from "../../types";
 import classes from "./RemovalProfileDetails.module.scss";
 
 const SingleRemovalProfileForm = lazy(
@@ -134,7 +135,7 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
         {!profile.all_computers && profile.tags.length > 0 && (
           <InfoItem
             label="Tags"
-            value={profile.tags.length ? profile.tags.join(", ") : "---"}
+            value={profile.tags.length ? profile.tags.join(", ") : <NoData />}
           />
         )}
       </div>

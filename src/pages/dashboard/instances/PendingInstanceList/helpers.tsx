@@ -1,8 +1,9 @@
-import { Cell, TableCellProps } from "react-table";
-import { PendingInstance } from "@/types/Instance";
-import { HTMLProps } from "react";
 import moment from "moment/moment";
+import { HTMLProps } from "react";
+import { Cell, TableCellProps } from "react-table";
+import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { PendingInstance } from "@/types/Instance";
 import { SelectOption } from "@/types/SelectOption";
 
 export const getCellProps = ({
@@ -34,7 +35,7 @@ export const getAccessGroup = (
   accessGroup: string | null,
 ) => {
   if (!accessGroup) {
-    return "---";
+    return <NoData />;
   }
 
   return (

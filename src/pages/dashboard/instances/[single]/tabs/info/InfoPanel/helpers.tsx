@@ -1,5 +1,6 @@
 import moment from "moment/moment";
 import { InfoItemProps } from "@/components/layout/InfoItem";
+import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { InstanceWithoutRelation } from "@/types/Instance";
 import { SelectOption } from "@/types/SelectOption";
@@ -12,9 +13,11 @@ export const getInstanceInfoItems = (
     {
       label: "Last ping time",
       value:
-        instance.last_ping_time && moment(instance.last_ping_time).isValid()
-          ? moment(instance.last_ping_time).format(DISPLAY_DATE_TIME_FORMAT)
-          : "---",
+        instance.last_ping_time && moment(instance.last_ping_time).isValid() ? (
+          moment(instance.last_ping_time).format(DISPLAY_DATE_TIME_FORMAT)
+        ) : (
+          <NoData />
+        ),
     },
     {
       label: "Hostname",
@@ -26,11 +29,11 @@ export const getInstanceInfoItems = (
     },
     {
       label: "Serial number",
-      value: instance.grouped_hardware?.system.serial ?? "---",
+      value: instance.grouped_hardware?.system.serial ?? <NoData />,
     },
     {
       label: "Product identifier",
-      value: instance.grouped_hardware?.system.model ?? "---",
+      value: instance.grouped_hardware?.system.model ?? <NoData />,
     },
     {
       label: "Distribution",
@@ -44,20 +47,22 @@ export const getInstanceInfoItems = (
     },
     {
       label: "Annotations",
-      value: instance.annotations
-        ? Object.entries(instance.annotations).map(
-            ([key, value], index, array) => (
-              <>
-                <span>{`${key}: ${value}`}</span>
-                {index < array.length - 1 && <br />}
-              </>
-            ),
-          )
-        : "---",
+      value: instance.annotations ? (
+        Object.entries(instance.annotations).map(
+          ([key, value], index, array) => (
+            <>
+              <span>{`${key}: ${value}`}</span>
+              {index < array.length - 1 && <br />}
+            </>
+          ),
+        )
+      ) : (
+        <NoData />
+      ),
     },
     {
       label: "Comment",
-      value: instance.comment || "---",
+      value: instance.comment || <NoData />,
     },
   ];
 };

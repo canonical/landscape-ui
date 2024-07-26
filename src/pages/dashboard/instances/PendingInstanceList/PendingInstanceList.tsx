@@ -1,14 +1,15 @@
 import { FC, useMemo } from "react";
-import { PendingInstance } from "@/types/Instance";
 import { CellProps, Column } from "react-table";
 import {
   CheckboxInput,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
+import NoData from "@/components/layout/NoData";
+import { PendingInstance } from "@/types/Instance";
+import { SelectOption } from "@/types/SelectOption";
 import { getAccessGroup, getCellProps, getCreationTime } from "./helpers";
 import classes from "./PendingInstanceList.module.scss";
-import { SelectOption } from "@/types/SelectOption";
 
 interface PendingInstanceListProps {
   accessGroupOptions: SelectOption[];
@@ -91,7 +92,7 @@ const PendingInstanceList: FC<PendingInstanceListProps> = ({
               {original.client_tags.join(", ")}
             </Tooltip>
           ) : (
-            "---"
+            <NoData />
           ),
       },
       {

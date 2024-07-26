@@ -4,6 +4,7 @@ import { FC, lazy, Suspense, useEffect } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { Button, Icon } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, NOT_AVAILABLE } from "@/constants";
 import { ACTIVITY_STATUSES } from "@/features/activities";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -61,7 +62,7 @@ const PocketSyncActivity: FC<PocketSyncActivityProps> = ({
   }
 
   if (!pocket.last_sync_status) {
-    return "---";
+    return <NoData />;
   }
 
   if (pocket.last_sync_status === "synced") {

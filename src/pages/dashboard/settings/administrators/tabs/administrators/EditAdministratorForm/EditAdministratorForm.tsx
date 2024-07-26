@@ -1,17 +1,18 @@
-import { FC, useEffect, useState } from "react";
-import { Button, Col, Form, Row, Spinner } from "@canonical/react-components";
 import { useFormik } from "formik";
+import { FC, useEffect, useState } from "react";
 import * as Yup from "yup";
-import { SelectOption } from "@/types/SelectOption";
-import { Administrator } from "@/types/Administrator";
-import useDebug from "@/hooks/useDebug";
-import useAdministrators from "@/hooks/useAdministrators";
-import useConfirm from "@/hooks/useConfirm";
+import { Button, Col, Form, Row, Spinner } from "@canonical/react-components";
+import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
-import useRoles from "@/hooks/useRoles";
+import NoData from "@/components/layout/NoData";
+import useAdministrators from "@/hooks/useAdministrators";
+import useConfirm from "@/hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import MultiSelectField from "@/components/form/MultiSelectField";
+import useRoles from "@/hooks/useRoles";
+import { Administrator } from "@/types/Administrator";
+import { SelectOption } from "@/types/SelectOption";
 
 interface EditAdministratorFormProps {
   administrator: Administrator;
@@ -120,10 +121,10 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
           <InfoItem label="Email" value={currentAdministrator.email} />
         </Col>
         <Col size={12}>
-          <InfoItem label="Timezone" value={"---"} />
+          <InfoItem label="Timezone" value={<NoData />} />
         </Col>
         <Col size={12}>
-          <InfoItem label="Identity URL" value={"---"} />
+          <InfoItem label="Identity URL" value={<NoData />} />
         </Col>
       </Row>
 

@@ -9,11 +9,12 @@ import {
   ModularTable,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
 import TruncatedCell from "@/components/layout/TruncatedCell";
-import { DISPLAY_DATE_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import UsnPackageList from "../UsnPackageList";
 import { Usn } from "@/types/Usn";
+import UsnPackageList from "../UsnPackageList";
 import { USN_LOADING } from "./constants";
 import {
   getTableRows,
@@ -208,9 +209,11 @@ const UsnList: FC<UsnListProps> = ({ isUsnsLoading, usns, ...otherProps }) => {
           Header: "Date published",
           Cell: ({ row }: CellProps<Usn>) => (
             <>
-              {moment(row.original.date).isValid()
-                ? moment(row.original.date).format(DISPLAY_DATE_FORMAT)
-                : "---"}
+              {moment(row.original.date).isValid() ? (
+                moment(row.original.date).format(DISPLAY_DATE_TIME_FORMAT)
+              ) : (
+                <NoData />
+              )}
             </>
           ),
         },
