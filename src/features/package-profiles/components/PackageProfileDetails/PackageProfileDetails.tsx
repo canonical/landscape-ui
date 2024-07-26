@@ -1,4 +1,4 @@
-import { FC, Suspense } from "react";
+import { FC, lazy, Suspense } from "react";
 import { PackageProfile } from "../../types";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
@@ -7,10 +7,13 @@ import LoadingState from "@/components/layout/LoadingState";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import { usePackageProfiles } from "../../hooks";
-import PackageProfileEditForm from "../PackageProfileEditForm";
-import PackageProfileDuplicateForm from "../PackageProfileDuplicateForm";
 import useNotify from "@/hooks/useNotify";
 import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraints";
+
+const PackageProfileDuplicateForm = lazy(
+  () => import("../PackageProfileDuplicateForm"),
+);
+const PackageProfileEditForm = lazy(() => import("../PackageProfileEditForm"));
 
 interface PackageProfileDetailsProps {
   profile: PackageProfile;

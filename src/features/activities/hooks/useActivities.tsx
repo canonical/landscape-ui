@@ -12,9 +12,10 @@ import { ApiError } from "@/types/ApiError";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { QueryFnType } from "@/types/QueryFnType";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import ActivityDetails from "../components/ActivityDetails";
+
+const ActivityDetails = lazy(() => import("../components/ActivityDetails"));
 
 interface GetActivitiesParams {
   limit?: number;

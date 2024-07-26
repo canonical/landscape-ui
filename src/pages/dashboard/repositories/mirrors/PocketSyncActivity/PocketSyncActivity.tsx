@@ -1,23 +1,16 @@
 import classNames from "classnames";
 import moment from "moment";
-import { FC, lazy, Suspense, useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { Button, Icon } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, NOT_AVAILABLE } from "@/constants";
-import { ACTIVITY_STATUSES } from "@/features/activities";
+import { ACTIVITY_STATUSES, ActivityDetails } from "@/features/activities";
 import useSidePanel from "@/hooks/useSidePanel";
 import { SyncPocketRef } from "@/pages/dashboard/repositories/mirrors/types";
 import { Pocket } from "@/types/Pocket";
 import { getLastSyncStatusIcon } from "./helpers";
 import classes from "./PocketSyncActivity.module.scss";
-
-const ActivityDetails = lazy(() =>
-  import("@/features/activities").then((module) => ({
-    default: module.ActivityDetails,
-  })),
-);
 
 interface PocketSyncActivityProps {
   pocket: Pocket;
@@ -97,9 +90,7 @@ const PocketSyncActivity: FC<PocketSyncActivityProps> = ({
   const handleActivityClick = () => {
     setSidePanelContent(
       pocket.last_sync_activity.summary,
-      <Suspense fallback={<LoadingState />}>
-        <ActivityDetails activityId={pocket.last_sync_activity.id} />
-      </Suspense>,
+      <ActivityDetails activityId={pocket.last_sync_activity.id} />,
     );
   };
 
