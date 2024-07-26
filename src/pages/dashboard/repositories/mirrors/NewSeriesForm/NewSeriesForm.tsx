@@ -368,9 +368,9 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
               ? formik.errors.snapshotDate
               : undefined
           }
-          help={`Starting from ${moment(SNAPSHOT_START_DATE).format(
-            DISPLAY_DATE_FORMAT,
-          )} in dd.mm.yyyy format`}
+          help={`Starting from approximately ${moment(
+            SNAPSHOT_START_DATE,
+          ).format(DISPLAY_DATE_FORMAT)} in dd.mm.yyyy format`}
         />
       )}
 
