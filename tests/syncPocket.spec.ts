@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { e2eCloseSidePanel } from "./helpers";
 
 test("should sync mirror pocket", async ({ page }) => {
   await page.route(/\?action=SyncMirrorPocket/, (route) => {
@@ -41,8 +42,10 @@ test("should sync mirror pocket", async ({ page }) => {
       name: "List test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
+
+  await e2eCloseSidePanel(page);
+
   await page
-    .getByRole("complementary")
     .getByRole("button", {
       name: "Synchronize test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
     })

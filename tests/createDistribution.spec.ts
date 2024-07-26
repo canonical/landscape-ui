@@ -1,10 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
-  await page.goto("/repositories/mirrors");
-});
-
 test("should add distribution", async ({ page }) => {
+  await page.goto("/repositories/mirrors");
+
   await expect(
     page.getByRole("button", { name: "Add mirror", exact: true }),
   ).toHaveCount(1);

@@ -1,10 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
-  await page.goto("/repositories/mirrors");
-});
-
 test("should add ubuntu snapshot", async ({ page }) => {
+  await page.goto("/repositories/mirrors");
+
   await page.getByRole("button", { name: "Add mirror", exact: true }).click();
 
   await expect(

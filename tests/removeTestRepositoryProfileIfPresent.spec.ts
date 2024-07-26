@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 test("should remove test repository profile if present", async ({ page }) => {
-  await page.goto("/repositories/mirrors");
-  await page.getByRole("button", { name: "Profiles" }).click();
-  await page.getByRole("link", { name: "Repository Profiles" }).click();
+  await page.goto("/profiles/repositories");
+
+  await page.getByRole("link", { name: "Repository Profiles\n" }).click();
 
   await expect(
     page

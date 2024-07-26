@@ -1,24 +1,28 @@
 import { expect, test } from "@playwright/test";
+import { e2eCheckPageHeading, e2eCheckSitePanelTitle } from "./helpers";
 
 test("should add repository profile", async ({ page }) => {
-  await page.goto("/repositories/mirrors");
+  await page.goto("/profiles/repositories");
 
-  await page.getByRole("button", { name: "Profiles" }).click();
-  await page.getByRole("link", { name: "Repository Profiles" }).click();
-  await expect(page).toHaveURL(/profiles\/repositories/);
+  await page
+    .getByRole("complementary")
+    .getByRole("link", { name: "Profiles" })
+    .click();
 
-  await expect(
-    page.getByRole("heading", { name: "Repository Profiles" }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Add Profile" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Add repository profile" }),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/profiles/);
+
+  await e2eCheckPageHeading(page, "Repository Profiles");
+
+  await page.getByRole("button", { name: "Add profile" }).click();
+
+  await e2eCheckSitePanelTitle(page, "Add repository profile");
 
   await page.locator('input[name="title"]').fill("test-e2e-profile");
+
   await page
     .locator('input[name="description"]')
     .fill("Test profile description");
+
   await page
     .getByRole("complementary")
     .getByText("Access group", { exact: true })
@@ -57,7 +61,6 @@ test("should add repository profile", async ({ page }) => {
   await page.getByRole("tab", { name: "APT Sources" }).click();
 
   const rows = page
-    .getByRole("complementary")
     .getByRole("listitem")
     .filter({ hasNot: page.getByRole("tab") });
 

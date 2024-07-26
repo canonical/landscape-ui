@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { e2eCheckSitePanelTitle, e2eCloseSidePanel } from "./helpers";
 
 test("should pull packages to test pocket", async ({ page }) => {
   await page.route(/\?action=PullPackagesToPocket/, (route) => {
@@ -51,11 +52,12 @@ test("should pull packages to test pocket", async ({ page }) => {
       name: "List test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
-  await expect(
-    page.getByRole("heading", { name: "test-derived-series test-pull-pocket" }),
-  ).toBeVisible();
+
+  await e2eCheckSitePanelTitle(page, "test-derived-series test-pull-pocket");
+
+  await e2eCloseSidePanel(page);
+
   await page
-    .getByRole("complementary")
     .getByRole("button", {
       name: "Pull packages to test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     })

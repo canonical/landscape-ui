@@ -1,12 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
-  await page.goto("/repositories/mirrors");
-});
-
 test("should add mirror using distribution empty state button", async ({
   page,
 }) => {
+  await page.goto("/repositories/mirrors");
   await page
     .getByRole("button", { name: "Add mirror for test-e2e-distro" })
     .click();

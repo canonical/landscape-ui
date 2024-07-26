@@ -48,10 +48,7 @@ test("should handle GPG key", async ({ page }) => {
   ).toBeVisible();
   await page.locator('input[name="name"]').fill("test-e2e-gpg-key");
   await page.locator('textarea[name="material"]').fill(TEST_GPG_MATERIAL);
-  await page
-    .getByRole("complementary")
-    .getByRole("button", { name: "Import key" })
-    .click();
+  await page.getByRole("button", { name: "Import key" }).click();
 
   await expect(
     page.getByText("test-e2e-gpg-key", { exact: true }),

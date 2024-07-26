@@ -40,7 +40,7 @@ test("should add pockets with the different mode", async ({ page }) => {
           name: "List test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
         }),
       })
-      .getByRole("cell", { name: "Mode" }),
+      .getByLabel("Mode"),
   ).toHaveText("mirror");
 
   await page
@@ -70,7 +70,7 @@ test("should add pockets with the different mode", async ({ page }) => {
           name: "List test-pull-pocket pocket of test-e2e-distro/test-derived-series",
         }),
       })
-      .getByRole("cell", { name: "Mode" }),
+      .getByLabel("Mode"),
   ).toHaveText("pull");
 
   await page
@@ -97,6 +97,6 @@ test("should add pockets with the different mode", async ({ page }) => {
           name: "List test-upload-pocket pocket of test-e2e-distro/test-derived-series",
         }),
       })
-      .getByRole("cell", { name: "Mode" }),
+      .getByLabel("Mode"),
   ).toHaveText("upload");
 });

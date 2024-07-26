@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 test("should remove packages from upload pocket", async ({ page }) => {
+  await page.goto("/repositories/mirrors");
+
   await page.route(/\?action=RemovePackagesFromPocket/, (route) => {
     expect(route.request().url().includes("test-upload-pocket")).toBeTruthy();
     expect(

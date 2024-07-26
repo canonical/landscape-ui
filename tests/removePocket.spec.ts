@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { e2eCheckSitePanelTitle, e2eCloseSidePanel } from "./helpers";
 
 test("should remove test distribution pockets", async ({ page }) => {
   const responseBody = {
-    status: "success",
-    message: "Removing pocket started",
+    count: 0,
+    next: null,
+    previous: null,
+    results: [],
   };
 
   await page.route(/\?action=RemovePocket/, (route) => {
@@ -61,11 +64,12 @@ test("should remove test distribution pockets", async ({ page }) => {
       name: "List security pocket of test-e2e-distro/test-mirror-jammy",
     })
     .click();
-  await expect(
-    page.getByRole("heading", { name: "test-mirror-jammy security" }),
-  ).toBeVisible();
+
+  await e2eCheckSitePanelTitle(page, "test-mirror-jammy security");
+
+  await e2eCloseSidePanel(page);
+
   await page
-    .getByRole("complementary")
     .getByRole("button", {
       name: "Remove security pocket of test-e2e-distro/test-mirror-jammy",
     })

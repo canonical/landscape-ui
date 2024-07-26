@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("should edit pull pocket", async ({ page }) => {
   await page.goto("/repositories/mirrors");
+
   await page
     .getByRole("button", {
       name: "Edit test-pull-pocket pocket of test-e2e-distro/test-derived-series",
@@ -16,6 +17,7 @@ test("should edit pull pocket", async ({ page }) => {
     response.request().url().includes("?action=AddPackageFiltersToPocket"),
   );
   await page.getByRole("button", { name: "Save changes" }).click();
+
   const response = await responsePromise;
   expect(response.status()).toBe(200);
   const json = await response.json();
@@ -30,5 +32,6 @@ test("should edit pull pocket", async ({ page }) => {
       name: "Edit test-pull-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
+
   await expect(page.getByRole("textbox")).toHaveValue("apache2,apt");
 });

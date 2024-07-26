@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("should remove test APT source if present", async ({ page }) => {
   await page.goto("/repositories/mirrors");
+
   await page.getByRole("link", { name: "APT Sources" }).click();
 
   await expect(

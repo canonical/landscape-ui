@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 test("should edit repository profile", async ({ page }) => {
   await page.goto("/profiles/repositories");
 
+  await page.getByRole("link", { name: "Profiles" }).click();
+
   await page
     .getByRole("button", { name: "Edit test-e2e-profile repository profile" })
     .click();

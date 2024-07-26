@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("should remove test distribution", async ({ page }) => {
   await page.goto("/repositories/mirrors");
+
   await expect(
     page.getByRole("heading", { name: "test-e2e-distro" }),
   ).toBeVisible();

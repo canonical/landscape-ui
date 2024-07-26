@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("should edit mirror pocket", async ({ page }) => {
   await page.goto("/repositories/mirrors");
+
   await page
     .getByRole("button", {
       name: "Edit test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
@@ -51,9 +52,11 @@ test("should edit mirror pocket", async ({ page }) => {
       name: "Edit test-mirror-pocket pocket of test-e2e-distro/test-derived-series",
     })
     .click();
+
   await expect(
     page.getByRole("heading", { name: "Edit test-mirror-pocket pocket" }),
   ).toBeVisible();
+
   await expect(
     page
       .getByRole("group", { name: "* Components" })

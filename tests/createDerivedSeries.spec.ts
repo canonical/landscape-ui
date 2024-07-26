@@ -26,6 +26,6 @@ test("should add test derived series", async ({ page }) => {
           name: "List proposed pocket of test-e2e-distro/test-derived-series",
         }),
       })
-      .getByRole("cell", { name: "Mode" }),
+      .getByLabel("Mode"),
   ).toHaveText("pull");
 });

@@ -1,10 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
-  await page.goto("/repositories/mirrors");
-});
-
 test("should add series to test distribution", async ({ page }) => {
+  await page.goto("/repositories/mirrors");
+
   await page
     .getByRole("button", { name: "Add series to test-e2e-distro" })
     .click();
@@ -35,7 +33,7 @@ test("should add series to test distribution", async ({ page }) => {
   ).toBeVisible();
 
   await expect(
-    await page.getByRole("button", {
+    page.getByRole("button", {
       name: "List proposed pocket of test-e2e-distro/test-mirror-xenial",
     }),
   ).toBeVisible();
