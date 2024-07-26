@@ -10,11 +10,7 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import NoData from "@/components/layout/NoData";
-import {
-  DISPLAY_DATE_TIME_FORMAT,
-  INPUT_DATE_FORMAT,
-  ROOT_PATH,
-} from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
 import { Instance } from "@/types/Instance";
 import classes from "./InstanceList.module.scss";
 import { STATUSES } from "./constants";
@@ -290,10 +286,7 @@ const InstanceList: FC<InstanceListProps> = ({
         Cell: ({ row }: CellProps<Instance>) => (
           <>
             {row.original.ubuntu_pro_info &&
-            moment(
-              row.original.ubuntu_pro_info.expires,
-              INPUT_DATE_FORMAT,
-            ).isValid() ? (
+            moment(row.original.ubuntu_pro_info.expires).isValid() ? (
               `Exp. ${moment(row.original.ubuntu_pro_info.expires).format(
                 DISPLAY_DATE_TIME_FORMAT,
               )}`
