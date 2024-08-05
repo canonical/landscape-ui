@@ -18,7 +18,7 @@ import { CellProps, Column } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
 import AlertTagsCell from "../AlertTagsCell";
 import classes from "./AlertsTable.module.scss";
-import { handleCellProps } from "./helper";
+import { handleCellProps } from "./helpers";
 import useAuth from "@/hooks/useAuth";
 
 interface AlertsTableProps {
