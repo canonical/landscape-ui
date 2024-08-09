@@ -9,9 +9,11 @@ import { useMediaQuery } from "usehooks-ts";
 import { EditUserForm } from "@/features/account-settings";
 import classes from "./GeneralSettings.module.scss";
 import classNames from "classnames";
+import useEnv from "@/hooks/useEnv";
 
 const GeneralSettings: FC = () => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
+  const { isSaas } = useEnv();
   const { getUserDetails } = useUserDetails();
   const { data: userData, isLoading } = getUserDetails();
 
@@ -22,21 +24,23 @@ const GeneralSettings: FC = () => {
       <PageHeader
         title="General"
         helperContent={
-          <span
-            className={classNames("u-text--muted", classes.helperContent, {
-              "u-no-padding--bottom": isSmallerScreen,
-            })}
-          >
-            listed from{" "}
-            <Link
-              className={classes.link}
-              href="https://login.ubuntu.com/"
-              target="_blank"
-              rel="nofollow noopener noreferrer"
+          isSaas ? (
+            <span
+              className={classNames("u-text--muted", classes.helperContent, {
+                "u-no-padding--bottom": isSmallerScreen,
+              })}
             >
-              Ubuntu One
-            </Link>
-          </span>
+              listed from{" "}
+              <Link
+                className={classes.link}
+                href="https://login.ubuntu.com/"
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+              >
+                Ubuntu One
+              </Link>
+            </span>
+          ) : null
         }
       />
       <PageContent container="medium">

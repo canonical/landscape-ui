@@ -8,14 +8,16 @@ import { Credential, UserDetails } from "@/types/UserDetails";
 import {
   Button,
   Col,
-  MainTable,
+  ModularTable,
   Row,
   Spinner,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classes from "./ApiCredentialsTables.module.scss";
+import { Column } from "react-table";
+import { NOT_AVAILABLE } from "@/constants";
 
 interface ApiCredentialsTablesProps {
   user: UserDetails;
@@ -27,7 +29,6 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
   credentials,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
-
   const { confirmModal, closeConfirmModal } = useConfirm();
   const debug = useDebug();
   const { generateApiCredentials } = useUserDetails();
@@ -69,7 +70,7 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
         <Button
           key="confirm-generate-credentials"
           appearance="negative"
-          hasIcon={true}
+          hasIcon
           onClick={() => handleGenerateKeysMutation(accountName)}
           aria-label={`${action} API credentials confirmation for ${accountTitle}`}
         >
@@ -80,47 +81,53 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
     });
   };
 
+  const columns = useMemo<Column<{ label: string; value: React.ReactNode }>[]>(
+    () => [
+      {
+        Header: "Label",
+        accessor: "label",
+      },
+      {
+        Header: "Value",
+        accessor: "value",
+        Cell: ({ value }: { value: React.ReactNode }) => value,
+      },
+    ],
+    [user, credentials],
+  );
+
   return user.accounts.map((account) => {
     const accountCredentials = credentials.find(
       (cred) => cred.account_name === account.name,
     );
-    const accRow = [
-      { label: "Name", value: account.name },
-      { label: "Title", value: account.title },
-      {
-        label: "Identity",
-        value: <code>{user.identity}</code>,
-      },
+
+    const data = [
+      { label: "Name", value: accountCredentials?.account_name },
+      { label: "Title", value: accountCredentials?.account_title },
+      { label: "Identity", value: <code>{user.identity}</code> },
       {
         label: "Endpoint",
-        value: <code>{accountCredentials?.endpoint ?? ""}</code>,
+        value: <code>{accountCredentials?.endpoint}</code>,
       },
       {
         label: "Access Key",
-        value: <code>{accountCredentials?.access_key ?? ""}</code>,
+        value: accountCredentials?.access_key ? (
+          <code>{accountCredentials.access_key}</code>
+        ) : (
+          NOT_AVAILABLE
+        ),
       },
       {
         label: "Secret Key",
-        value: <code>{accountCredentials?.secret_key ?? ""}</code>,
+        value: accountCredentials?.secret_key ? (
+          <code>{accountCredentials.secret_key}</code>
+        ) : (
+          NOT_AVAILABLE
+        ),
       },
       { label: "Roles", value: account.roles.join(", ") },
     ];
 
-    const tableRows = accRow.map((item) => {
-      return {
-        columns: [
-          {
-            content: item.label,
-            "aria-label": item.label,
-            className: "u-no-margin--bottom",
-          },
-          {
-            content: item.value,
-            "aria-label": `${item.label} value`,
-          },
-        ],
-      };
-    });
     const action =
       accountCredentials?.secret_key || accountCredentials?.access_key
         ? "Regenerate"
@@ -146,11 +153,20 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
               <span>{action} API credentials</span>
             </Button>
           </div>
-          <div className={seriesCardClasses.content}>
+          <div
+            className={classNames(
+              seriesCardClasses.content,
+              classes.tableWrapper,
+            )}
+          >
             {isLargeScreen ? (
-              <MainTable rows={tableRows} emptyStateMsg="No data available" />
+              <ModularTable
+                columns={columns}
+                data={data}
+                emptyMsg="No data available"
+              />
             ) : (
-              tableRows.map((row, index) => (
+              data.map((row, index) => (
                 <Row
                   key={index}
                   className={classNames(
@@ -159,10 +175,10 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
                   )}
                 >
                   <Col size={2} small={2}>
-                    <InfoItem label="" value={row.columns[0].content} />
+                    <InfoItem label="" value={row.label} />
                   </Col>
                   <Col size={2} small={2}>
-                    <InfoItem label="" value={row.columns[1].content} />
+                    <InfoItem label="" value={row.value} />
                   </Col>
                 </Row>
               ))

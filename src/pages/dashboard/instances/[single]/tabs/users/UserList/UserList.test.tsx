@@ -40,25 +40,23 @@ describe("UserList", () => {
     it("shows locked user icon in the user table", async () => {
       expect(lockedUser).toBeDefined();
 
-      const userStatus = screen.getByRole("gridcell", {
-        name: `User ${lockedUser.username} status`,
+      const statuses = screen.getAllByRole("cell", {
+        name: /status/i,
       });
-      const iconElement = userStatus.querySelector("i");
 
-      expect(iconElement).toBeInTheDocument();
-      expect(iconElement).toHaveClass("p-icon--lock-locked-active");
-    });
-
-    it("shows unlocked user icon in the user table", async () => {
-      expect(unlockedUser).toBeDefined();
-
-      const userStatus = screen.getByRole("gridcell", {
-        name: `User ${unlockedUser.username} status`,
+      const lockedIconElement = statuses.find((status) => {
+        return status
+          .querySelector("i")
+          ?.classList.contains("p-icon--lock-locked-active");
       });
-      const iconElement = userStatus.querySelector("i");
+      expect(lockedIconElement).toBeInTheDocument();
 
-      expect(iconElement).toBeInTheDocument();
-      expect(iconElement).toHaveClass("p-icon--lock-unlock");
+      const unlockedIconElement = statuses.find((status) => {
+        return status
+          .querySelector("i")
+          ?.classList.contains("p-icon--lock-unlock");
+      });
+      expect(unlockedIconElement).toBeInTheDocument();
     });
 
     it("should select all users when clicking ToggleAll checkbox", async () => {

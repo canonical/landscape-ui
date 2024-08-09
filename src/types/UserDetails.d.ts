@@ -26,7 +26,7 @@ export interface UserCredentials {
   credentials: Credential[];
 }
 
-export interface Credential extends ApiKeyCredentials {
+export interface Credential extends ApiKeyCredentials, Record<string, unknown> {
   account_title: string;
   endpoint: string;
   exports: string;

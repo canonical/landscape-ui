@@ -9,7 +9,7 @@ import * as Yup from "yup";
 import classes from "./AlertTagsCell.module.scss";
 import useAlerts from "@/hooks/useAlerts";
 import { AxiosResponse } from "axios";
-import { findExclusiveTags } from "./helper";
+import { findExclusiveTags } from "./helpers";
 
 interface AlertTagsCellProps {
   alert: Alert;
