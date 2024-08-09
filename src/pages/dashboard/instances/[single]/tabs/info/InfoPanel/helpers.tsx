@@ -5,27 +5,37 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { InstanceWithoutRelation } from "@/types/Instance";
 import { SelectOption } from "@/types/SelectOption";
 
+const getIpAddress = (instance: InstanceWithoutRelation) => {
+  const network = instance.grouped_hardware?.network;
+
+  if (!Array.isArray(network) || network.length === 0) {
+    return <NoData />;
+  }
+
+  return (
+    network
+      .filter(({ ip }) => ip !== "Not available")
+      .map(({ ip }) => ip)
+      .join(", ") || <NoData />
+  );
+};
+
 export const getInstanceInfoItems = (
   instance: InstanceWithoutRelation,
   accessGroupOptions: SelectOption[],
 ): InfoItemProps[] => {
   return [
     {
-      label: "Last ping time",
-      value:
-        instance.last_ping_time && moment(instance.last_ping_time).isValid() ? (
-          moment(instance.last_ping_time).format(DISPLAY_DATE_TIME_FORMAT)
-        ) : (
-          <NoData />
-        ),
+      label: "instance ID",
+      value: instance.id,
     },
     {
       label: "Hostname",
       value: instance.hostname,
     },
     {
-      label: "instance ID",
-      value: instance.id,
+      label: "IP Address",
+      value: getIpAddress(instance),
     },
     {
       label: "Serial number",
@@ -44,6 +54,15 @@ export const getInstanceInfoItems = (
       value:
         accessGroupOptions.find(({ value }) => value === instance.access_group)
           ?.label || instance.access_group,
+    },
+    {
+      label: "Last ping time",
+      value:
+        instance.last_ping_time && moment(instance.last_ping_time).isValid() ? (
+          moment(instance.last_ping_time).format(DISPLAY_DATE_TIME_FORMAT)
+        ) : (
+          <NoData />
+        ),
     },
     {
       label: "Annotations",
