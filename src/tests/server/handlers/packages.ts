@@ -1,10 +1,9 @@
+import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
-import { GetPackagesParams } from "@/hooks/usePackages";
+import { GetPackagesParams, OldPackage } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { packages } from "@/tests/mocks/packages";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { OldPackage } from "@/types/Package";
-import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse } from "./_helpers";
 
 export default [

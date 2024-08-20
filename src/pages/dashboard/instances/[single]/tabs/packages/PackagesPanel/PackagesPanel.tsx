@@ -1,13 +1,15 @@
 import { FC, useState } from "react";
-import { TablePagination } from "@/components/layout/TablePagination";
-import { usePackages } from "@/hooks/usePackages";
-import LoadingState from "@/components/layout/LoadingState";
-import PackageList from "@/pages/dashboard/instances/[single]/tabs/packages/PackageList";
-import PackagesPanelHeader from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesPanelHeader";
-import { Package } from "@/types/Package";
-import { emptyMessage } from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesPanel/helpers";
 import { useLocation, useParams } from "react-router-dom";
+import LoadingState from "@/components/layout/LoadingState";
+import { TablePagination } from "@/components/layout/TablePagination";
+import {
+  Package,
+  PackageList,
+  PackagesPanelHeader,
+  usePackages,
+} from "@/features/packages";
 import { usePageParams } from "@/hooks/usePageParams";
+import { getEmptyMessage } from "./helpers";
 
 const PackagesPanel: FC = () => {
   const [selected, setSelected] = useState<Package[]>([]);
@@ -63,7 +65,7 @@ const PackagesPanel: FC = () => {
             onPackagesSelect={(packageNames) => {
               setSelected(packageNames);
             }}
-            emptyMsg={emptyMessage(status, search)}
+            emptyMsg={getEmptyMessage(status, search)}
             selectAll={state?.selectAll ?? false}
           />
         </>

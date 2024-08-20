@@ -1,13 +1,13 @@
 import { FC, SyntheticEvent } from "react";
-import { Instance } from "@/types/Instance";
-import useDebug from "@/hooks/useDebug";
-import { usePackages } from "@/hooks/usePackages";
+import { usePackages } from "@/features/packages";
 import { Form } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import UpgradesUsnContainer from "@/pages/dashboard/instances/UpgradesUsnContainer";
-import UpgradesInstanceList from "@/pages/dashboard/instances/UpgradesInstanceList";
+import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import UpgradesUsnContainer from "@/pages/dashboard/instances/UpgradesUsnContainer";
+import UpgradesInstanceList from "@/pages/dashboard/instances/UpgradesInstanceList";
+import { Instance } from "@/types/Instance";
 
 interface UpgradesProps {
   selectedInstances: Instance[];

@@ -1,23 +1,31 @@
-import { FC } from "react";
-import { Col, Form, Input, Row, Select } from "@canonical/react-components";
-import { useFormik } from "formik";
-import { CommonPackagesActionParams, usePackages } from "@/hooks/usePackages";
-import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
-import moment from "moment";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import classes from "./InstalledPackagesActionForm.module.scss";
+import { AxiosResponse } from "axios";
 import classNames from "classnames";
-import { Package } from "@/types/Package";
-import InfoItem from "@/components/layout/InfoItem";
-import { CTA_LABELS, INITIAL_VALUES } from "./constants";
-import { FormProps } from "./types";
-import PackagesUpgradeInfo from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesUpgradeInfo";
-import * as Yup from "yup";
+import { useFormik } from "formik";
+import moment from "moment";
+import { FC } from "react";
 import { useParams } from "react-router-dom";
+import { Col, Form, Input, Row, Select } from "@canonical/react-components";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import InfoItem from "@/components/layout/InfoItem";
+import { Activity, useActivities } from "@/features/activities";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
+import { usePackages } from "../../hooks";
+import { InstalledPackageAction, Package } from "../../types";
+import PackagesUpgradeInfo from "../PackagesUpgradeInfo";
+import { INITIAL_VALUES } from "./constants";
+import {
+  getActionInfo,
+  getActionSuccessNotificationProps,
+  getValidationSchema,
+} from "./helpers";
+import { FormProps } from "./types";
+import classes from "./InstalledPackagesActionForm.module.scss";
 
 interface InstalledPackagesActionFormProps {
-  action: "remove" | "upgrade" | "downgrade";
+  action: InstalledPackageAction;
   packages: Package[];
 }
 
@@ -25,17 +33,19 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   action,
   packages,
 }) => {
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams();
   const debug = useDebug();
+  const { notify } = useNotify();
+  const { openActivityDetails } = useActivities();
   const { closeSidePanel } = useSidePanel();
   const {
     downgradePackageVersionQuery,
     getDowngradePackageVersionsQuery,
-    removePackagesQuery,
     upgradePackagesQuery,
+    packagesActionQuery,
   } = usePackages();
 
-  const instanceId = Number(urlInstanceId);
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const { data: getDowngradePackageVersionsQueryResult } =
     getDowngradePackageVersionsQuery(
@@ -49,12 +59,10 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
     );
 
   const downgradeOptions =
-    getDowngradePackageVersionsQueryResult &&
-    getDowngradePackageVersionsQueryResult.data.results.length > 0
-      ? getDowngradePackageVersionsQueryResult.data.results.map(
-          ({ version }) => ({ label: version, value: version }),
-        )
-      : [];
+    getDowngradePackageVersionsQueryResult?.data.results.map(({ version }) => ({
+      label: version,
+      value: version,
+    })) ?? [];
 
   downgradeOptions.unshift({ label: "Select version", value: "" });
 
@@ -70,37 +78,11 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   ).length;
 
   const { mutateAsync: downgradePackageVersion } = downgradePackageVersionQuery;
-  const { mutateAsync: removePackages } = removePackagesQuery;
   const { mutateAsync: upgradePackages } = upgradePackagesQuery;
-
-  const VALIDATION_SCHEMA = Yup.object({
-    deliver_after: Yup.string().test({
-      test: (value) => {
-        if (!value) {
-          return true;
-        }
-
-        return moment(value).isValid();
-      },
-      message: "You have to enter a valid date and time",
-    }),
-    deliver_delay_window: Yup.number().min(
-      0,
-      "Delivery delay must be greater than or equal to 0",
-    ),
-    deliver_immediately: Yup.boolean(),
-    randomize_delivery: Yup.boolean(),
-    version: Yup.string().test({
-      name: "required",
-      message: "This field is required",
-      params: { action },
-      test: (value) => action !== "downgrade" || !!value,
-    }),
-  });
+  const { mutateAsync: packagesAction } = packagesActionQuery;
 
   const handleSubmit = async (values: FormProps) => {
-    const commonPackagesParams: Omit<CommonPackagesActionParams, "packages"> = {
-      query: `id:${instanceId}`,
+    const packagesDeliveryParams = {
       deliver_after: values.deliver_immediately
         ? undefined
         : `${values.deliver_after}:00Z`,
@@ -109,28 +91,40 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
         : values.deliver_delay_window,
     };
 
+    let promise: Promise<AxiosResponse<Activity>>;
+
+    if (action === "upgrade") {
+      promise = upgradePackages({
+        ...packagesDeliveryParams,
+        packages: packagesToUpgrade,
+        query: `id:${instanceId}`,
+      });
+    } else if (action === "downgrade") {
+      promise = downgradePackageVersion({
+        instanceId,
+        package_name: packages[0].name,
+        package_version: values.version,
+      });
+    } else {
+      promise = packagesAction({
+        ...packagesDeliveryParams,
+        action,
+        computer_ids: [instanceId],
+        package_ids: packages.map(({ id }) => id),
+      });
+    }
+
     try {
-      if (action === "remove") {
-        await removePackages({
-          ...commonPackagesParams,
-          packages: packages
-            .filter((pkg) => pkg.current_version)
-            .map(({ name }) => name),
-        });
-      } else if (action === "upgrade") {
-        await upgradePackages({
-          ...commonPackagesParams,
-          packages: packagesToUpgrade,
-        });
-      } else if (action === "downgrade") {
-        await downgradePackageVersion({
-          instanceId,
-          package_name: packages[0].name,
-          package_version: values.version,
-        });
-      }
+      const { data: activity } = await promise;
 
       closeSidePanel();
+
+      notify.success({
+        ...getActionSuccessNotificationProps(action, packages, values.version),
+        actions: [
+          { label: "Details", onClick: () => openActivityDetails(activity) },
+        ],
+      });
     } catch (error) {
       debug(error);
     }
@@ -138,7 +132,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
 
   const formik = useFormik({
     initialValues: INITIAL_VALUES,
-    validationSchema: VALIDATION_SCHEMA,
+    validationSchema: getValidationSchema(action),
     onSubmit: handleSubmit,
   });
 
@@ -176,7 +170,10 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
             totalUpgradePackageCount={packagesToUpgrade.length}
           />
         )}
-      {["remove", "upgrade"].includes(action) && (
+      {(action === "hold" || action === "unhold") && (
+        <p>{getActionInfo(packages, action)}</p>
+      )}
+      {["remove", "upgrade", "hold", "unhold"].includes(action) && (
         <>
           <span className={classes.bold}>Delivery time</span>
           <div className={classes.radioGroup}>
@@ -198,7 +195,11 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
                 formik.setFieldValue("deliver_immediately", false);
                 formik.setFieldValue(
                   "deliver_after",
-                  moment().toISOString().slice(0, 16),
+                  moment()
+                    .utc(true)
+                    .add(1, "minute")
+                    .toISOString()
+                    .slice(0, 16),
                 );
               }}
             />
@@ -258,12 +259,11 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
         </>
       )}
 
-      {(["remove", "upgrade"].includes(action) ||
-        downgradeOptions.length > 1) && (
+      {(action !== "downgrade" || downgradeOptions.length > 1) && (
         <SidePanelFormButtons
           submitButtonDisabled={formik.isSubmitting}
-          submitButtonText={CTA_LABELS[action]}
-          submitButtonAppearance={action === "remove" ? "negative" : "positive"}
+          submitButtonText={INSTALLED_PACKAGE_ACTIONS[action].label}
+          submitButtonAppearance={INSTALLED_PACKAGE_ACTIONS[action].appearance}
         />
       )}
     </Form>

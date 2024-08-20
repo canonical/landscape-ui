@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { CellProps, Column } from "react-table";
 import {
@@ -10,9 +10,9 @@ import {
 import LoadingState from "@/components/layout/LoadingState";
 import { ROOT_PATH } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import PackageDetails from "@/pages/dashboard/instances/[single]/tabs/packages/PackageDetails";
-import UbuntuProNotification from "@/pages/dashboard/instances/[single]/tabs/packages/UbuntuProNotification";
-import { Package } from "@/types/Package";
+import { Package } from "../../types";
+import PackageListActions from "../PackageListActions";
+import UbuntuProNotification from "../UbuntuProNotification";
 import { LOADING_PACKAGE } from "./constants";
 import {
   getPackageStatusInfo,
@@ -20,6 +20,8 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
+
+const PackageDetails = lazy(() => import("../PackageDetails"));
 
 interface PackageListProps {
   emptyMsg: string;
@@ -80,7 +82,9 @@ const PackageList: FC<PackageListProps> = ({
   const handlePackageClick = (singlePackage: Package) => {
     setSidePanelContent(
       "Package details",
-      <PackageDetails singlePackage={singlePackage} />,
+      <Suspense fallback={<LoadingState />}>
+        <PackageDetails singlePackage={singlePackage} />
+      </Suspense>,
     );
   };
 
@@ -197,6 +201,14 @@ const PackageList: FC<PackageListProps> = ({
           ) : (
             original.summary
           ),
+      },
+      {
+        accessor: "actions",
+        className: classes.actions,
+        Header: "Actions",
+        Cell: ({ row: { original } }: CellProps<Package>) => (
+          <PackageListActions pkg={original} />
+        ),
       },
     ],
     [packages, selectedPackages.length],

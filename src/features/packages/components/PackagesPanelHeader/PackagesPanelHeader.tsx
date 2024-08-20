@@ -1,10 +1,10 @@
 import { FC, SyntheticEvent, useState } from "react";
 import { Form, SearchBox, Select } from "@canonical/react-components";
-import classes from "./PackagesPanelHeader.module.scss";
-import PackageActions from "@/pages/dashboard/instances/[single]/tabs/packages/PackageActions";
-import { Package } from "@/types/Package";
-import { filterOptions } from "./constants";
 import { usePageParams } from "@/hooks/usePageParams";
+import { Package } from "../../types";
+import PackageActions from "../PackageActions";
+import { filterOptions } from "./constants";
+import classes from "./PackagesPanelHeader.module.scss";
 
 interface PackagesPanelHeaderProps {
   handleClearSelection: () => void;
@@ -20,22 +20,17 @@ const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
   const [searchText, setSearchText] = useState(search);
 
   const handleSearch = () => {
-    setPageParams({
-      search: searchText,
-    });
+    setPageParams({ search: searchText });
     handleClearSelection();
   };
 
   const handleClear = () => {
-    setPageParams({
-      search: "",
-    });
+    setPageParams({ search: "" });
   };
 
   const handleFilterChange = (newStatus: string) => {
-    setPageParams({
-      status: newStatus,
-    });
+    setPageParams({ status: newStatus });
+    handleClearSelection();
   };
 
   const handleSubmit = (event: SyntheticEvent) => {

@@ -1,9 +1,9 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Activity } from "@/features/activities";
+import { PackageDiff, PackageObject } from "@/features/packages";
 import { ApiError } from "@/types/ApiError";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { PackageDiff, PackageObject } from "@/types/Package";
 import { Pocket } from "@/types/Pocket";
 import { QueryFnType } from "@/types/QueryFnType";
 import useDebug from "./useDebug";

@@ -1,6 +1,6 @@
-import { Package } from "@/types/Package";
-import { Cell, TableCellProps } from "react-table";
 import { HTMLProps } from "react";
+import { Cell, TableCellProps } from "react-table";
+import { Package } from "../../types";
 import classes from "./PackageList.module.scss";
 
 export const isUbuntuProRequired = (pkg: Package) => {

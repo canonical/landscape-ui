@@ -1,5 +1,5 @@
 import { API_URL } from "@/constants";
-import { GetPackagesParams } from "@/hooks/usePackages";
+import { GetPackagesParams } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
