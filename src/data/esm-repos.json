@@ -1,0 +1,98 @@
+[
+  {
+    "mirror_type": "apps",
+    "mirror_uri": "https://esm.ubuntu.com/apps/ubuntu",
+    "series": ["xenial","bionic","focal","jammy","noble"],
+    "pockets": ["apps-updates","apps-security"],
+    "components": ["main"],
+    "architectures": ["amd64","i386","source"]
+  },
+  {
+    "mirror_type": "cc",
+    "mirror_uri": "https://esm.ubuntu.com/cc/ubuntu",
+    "series": ["xenial","bionic"],
+    "pockets": ["release"],
+    "components": ["main"],
+    "architectures": ["amd64","i386","source"]
+  },
+  {
+    "mirror_type": "cis",
+    "mirror_uri": "https://esm.ubuntu.com/cis/ubuntu",
+    "series": ["xenial","bionic","focal","jammy"],
+    "pockets": ["release"],
+    "components": ["main"],
+    "architectures": ["amd64","i386","source"]
+  },
+  {
+    "mirror_type": "fips",
+    "mirror_uri": "https://esm.ubuntu.com/fips/ubuntu",
+    "series": ["xenial","bionic","focal"],
+    "pockets": ["release"],
+    "components": ["main"],
+    "architectures": ["amd64","i386","source"]
+  },
+  {
+    "mirror_type": "fips-preview",
+    "mirror_uri": "https://esm.ubuntu.com/fips-preview/ubuntu",
+    "series": ["focal","jammy"],
+    "pockets": ["release"],
+    "components": ["main"],
+    "architectures": ["amd64","i386","source"]
+  },
+  {
+    "mirror_type": "fips-updates",
+    "mirror_uri": "https://esm.ubuntu.com/fips-updates/ubuntu",
+    "series": ["xenial","bionic","focal","jammy"],
+    "pockets": ["updates"],
+    "components": ["main"],
+    "architectures": ["amd64","i386","source"]
+  },
+  {
+    "mirror_type": "infra",
+    "mirror_uri": "https://esm.ubuntu.com/infra/ubuntu",
+    "series": ["trusty","xenial","bionic","focal","jammy","noble"],
+    "pockets": ["infra-updates","infra-security"],
+    "components": ["main"],
+    "architectures": ["amd64","i386","source"]
+  },
+  {
+    "mirror_type": "infra-legacy",
+    "mirror_uri": "https://esm.ubuntu.com/infra-legacy/ubuntu",
+    "series": ["trusty"],
+    "pockets": ["infra-legacy-updates","infra-legacy-security"],
+    "components": ["main"],
+    "architectures": ["amd64","i386","source"]
+  },
+  {
+    "mirror_type": "realtime",
+    "mirror_uri": "https://esm.ubuntu.com/realtime/ubuntu",
+    "series": ["jammy","noble"],
+    "pockets": ["release"],
+    "components": ["main"],
+    "architectures": ["amd64","arm64","source"]
+  },
+  {
+    "mirror_type": "ros",
+    "mirror_uri": "https://esm.ubuntu.com/ros/ubuntu",
+    "series": ["xenial","bionic"],
+    "pockets": ["updates","security"],
+    "components": ["main"],
+    "architectures": ["amd64","arm64","armhf","i386","source"]
+  },
+  {
+    "mirror_type": "ros",
+    "mirror_uri": "https://esm.ubuntu.com/ros/ubuntu",
+    "series": ["focal"],
+    "pockets": ["security"],
+    "components": ["main"],
+    "architectures": ["amd64","arm64","armhf","i386","source"]
+  },
+  {
+    "mirror_type": "ros-updates",
+    "mirror_uri": "https://esm.ubuntu.com/ros-updates/ubuntu",
+    "series": ["xenial","bionic"],
+    "pockets": ["updates"],
+    "components": ["main"],
+    "architectures": ["amd64","arm64","armhf","i386","source"]
+  }
+]

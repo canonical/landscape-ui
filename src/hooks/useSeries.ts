@@ -1,15 +1,12 @@
-import useFetchOld from "./useFetchOld";
-import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { Series } from "../types/Series";
-import useDebug from "./useDebug";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "../types/ApiError";
-import { QueryFnType } from "../types/QueryFnType";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import CATEGORIES from "@/data/esm-repos.json";
+import { ApiError } from "@/types/ApiError";
+import { Series } from "@/types/Series";
+import { QueryFnType } from "@/types/QueryFnType";
+import { UbuntuProCategory } from "@/types/UbuntuProCategory";
+import useDebug from "./useDebug";
+import useFetchOld from "./useFetchOld";
 
 export interface CreateSeriesParams {
   distribution: string;
@@ -56,26 +53,7 @@ export interface GetRepoInfoParams {
   mirror_uri: string;
 }
 
-export interface UseSeriesResult {
-  createSeriesQuery: UseMutationResult<
-    AxiosResponse<Series>,
-    AxiosError<ApiError>,
-    CreateSeriesParams
-  >;
-  deriveSeriesQuery: UseMutationResult<
-    AxiosResponse<Series>,
-    AxiosError<ApiError>,
-    DeriveSeriesParams
-  >;
-  removeSeriesQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    RemoveSeriesParams
-  >;
-  getRepoInfo: QueryFnType<AxiosResponse<RepoInfo>, GetRepoInfoParams>;
-}
-
-export default function useSeries(): UseSeriesResult {
+export default function useSeries() {
   const queryClient = useQueryClient();
   const authFetch = useFetchOld();
   const debug = useDebug();
@@ -121,11 +99,24 @@ export default function useSeries(): UseSeriesResult {
     config = {},
   ) =>
     useQuery<AxiosResponse<RepoInfo>, AxiosError<ApiError>>({
-      queryKey: ["repoInfo", { queryParams }],
+      queryKey: ["repoInfo", queryParams],
       queryFn: () =>
         authFetch!.get("GetRepoInfo", {
           params: queryParams,
         }),
+      ...config,
+    });
+
+  const getUbuntuProCategoriesQuery = (queryParams = {}, config = {}) =>
+    useQuery<UbuntuProCategory[]>({
+      queryKey: ["ubuntuProCategories", queryParams],
+      queryFn: () =>
+        CATEGORIES.map((category) => ({
+          ...category,
+          pockets: category.pockets.map((pocket) =>
+            pocket.replace(/^([a-z]+-)*/, ""),
+          ),
+        })),
       ...config,
     });
 
@@ -134,5 +125,6 @@ export default function useSeries(): UseSeriesResult {
     removeSeriesQuery,
     deriveSeriesQuery,
     getRepoInfo,
+    getUbuntuProCategoriesQuery,
   };
 }
