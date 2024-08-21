@@ -1,19 +1,9 @@
-export const USN_LOADING = {
+export const EMPTY_USN = {
   computers_count: 0,
   cves: [],
   date: "",
   info: "",
   packages: [],
-  usn: "loading",
-  usn_link: "",
-};
-
-export const USN_EXPANDED = {
-  computers_count: 0,
-  cves: [],
-  date: "",
-  info: "",
-  packages: [],
-  usn: "expandedUsn",
+  usn: "",
   usn_link: "",
 };

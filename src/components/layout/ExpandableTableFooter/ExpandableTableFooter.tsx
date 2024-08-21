@@ -11,7 +11,7 @@ interface ExpandableTableFooterProps {
   limit: number;
   onLimitChange: () => void;
   totalCount: number;
-  additionalCta?: ReactNode[];
+  additionalCta?: ReactNode;
   viewAll?: boolean;
   className?: string;
 }

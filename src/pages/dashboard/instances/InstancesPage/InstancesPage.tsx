@@ -17,7 +17,11 @@ const RunInstanceScriptForm = lazy(() =>
     default: module.RunInstanceScriptForm,
   })),
 );
-const Upgrades = lazy(() => import("@/pages/dashboard/instances/Upgrades"));
+const Upgrades = lazy(() =>
+  import("@/features/upgrades").then((module) => ({
+    default: module.Upgrades,
+  })),
+);
 const ReportView = lazy(() => import("@/pages/dashboard/instances/ReportView"));
 
 const InstancesPage: FC = () => {
@@ -62,9 +66,7 @@ const InstancesPage: FC = () => {
   const handleShutdownInstanceDialog = () => {
     confirmModal({
       title: "Shutting down selected instances",
-      body: `Are you sure you want to shutdown ${selected.length} instance${
-        selected.length === 1 ? "" : "s"
-      }?`,
+      body: `Are you sure you want to shutdown ${selected.length} ${selected.length === 1 ? "instance" : "instances"}?`,
       buttons: [
         <Button
           key="shutdown"
@@ -92,9 +94,7 @@ const InstancesPage: FC = () => {
   const handleRebootInstanceDialog = () => {
     confirmModal({
       title: "Restarting selected instances",
-      body: `Are you sure you want to restart ${selected.length} instance${
-        selected.length === 1 ? "" : "s"
-      }?`,
+      body: `Are you sure you want to restart ${selected.length} ${selected.length === 1 ? "instance" : "instances"}?`,
       buttons: [
         <Button
           key="restart"

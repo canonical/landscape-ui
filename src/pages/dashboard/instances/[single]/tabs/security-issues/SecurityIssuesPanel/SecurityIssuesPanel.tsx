@@ -2,26 +2,21 @@ import { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import useUsns from "@/hooks/useUsns";
-import SecurityIssueList from "@/pages/dashboard/instances/[single]/tabs/security-issues/SecurityIssueList";
 import { usePageParams } from "@/hooks/usePageParams";
-import { useParams } from "react-router-dom";
+import SecurityIssueList from "@/pages/dashboard/instances/[single]/tabs/security-issues/SecurityIssueList";
+import { Instance } from "@/types/Instance";
 
 interface SecurityIssuesPanelProps {
-  instanceTitle: string;
+  instance: Instance;
 }
 
-const SecurityIssuesPanel: FC<SecurityIssuesPanelProps> = ({
-  instanceTitle,
-}) => {
-  const { instanceId: urlInstanceId, childInstanceId } = useParams();
+const SecurityIssuesPanel: FC<SecurityIssuesPanelProps> = ({ instance }) => {
   const { search, currentPage, pageSize } = usePageParams();
   const { getUsnsQuery } = useUsns();
 
-  const instanceId = Number(childInstanceId ?? urlInstanceId);
-
   const { data: getUsnsQueryResult, isLoading: getUsnsQueryLoading } =
     getUsnsQuery({
-      computer_ids: [instanceId],
+      computer_ids: [instance.id],
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
       search: search,
@@ -30,19 +25,26 @@ const SecurityIssuesPanel: FC<SecurityIssuesPanelProps> = ({
 
   return (
     <>
-      {!search && getUsnsQueryLoading && <LoadingState />}
       {!search &&
+        currentPage === 1 &&
+        pageSize === 20 &&
+        getUsnsQueryLoading && <LoadingState />}
+      {!search &&
+        currentPage === 1 &&
+        pageSize === 20 &&
         !getUsnsQueryLoading &&
         (!getUsnsQueryResult ||
           getUsnsQueryResult.data.results.length === 0) && (
           <EmptyState icon="inspector-debug" title="No security issues found" />
         )}
       {(search ||
+        currentPage > 1 ||
+        pageSize !== 20 ||
         (!getUsnsQueryLoading &&
           getUsnsQueryResult &&
           getUsnsQueryResult.data.results.length > 0)) && (
         <SecurityIssueList
-          instanceTitle={instanceTitle}
+          instance={instance}
           isUsnsLoading={getUsnsQueryLoading}
           totalUsnCount={getUsnsQueryResult?.data.count ?? 0}
           usns={getUsnsQueryResult?.data.results ?? []}

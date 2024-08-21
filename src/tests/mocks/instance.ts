@@ -25,6 +25,10 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    upgrades: {
+      regular: 7,
+      security: 0,
+    },
   },
   {
     id: 2,
@@ -50,6 +54,10 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    upgrades: {
+      regular: 7,
+      security: 0,
+    },
   },
   {
     id: 11,
@@ -147,6 +155,10 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    upgrades: {
+      regular: 7,
+      security: 0,
+    },
   },
   {
     id: 8,
@@ -197,6 +209,10 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    upgrades: {
+      regular: 7,
+      security: 0,
+    },
   },
   {
     id: 4,
@@ -222,6 +238,10 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    upgrades: {
+      regular: 7,
+      security: 0,
+    },
   },
   {
     id: 9,
@@ -447,6 +467,10 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    upgrades: {
+      regular: 6,
+      security: 6,
+    },
   },
   {
     id: 21,
@@ -508,6 +532,10 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    upgrades: {
+      regular: 333,
+      security: 208,
+    },
   },
 ];
 

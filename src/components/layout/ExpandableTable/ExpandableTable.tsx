@@ -1,4 +1,4 @@
-import { HTMLProps, ReactNode } from "react";
+import { HTMLProps, isValidElement, ReactNode } from "react";
 import { Cell, Column, Row, TableCellProps, TableRowProps } from "react-table";
 import { ModularTable } from "@canonical/react-components";
 import ExpandableTableFooter from "@/components/layout/ExpandableTableFooter";
@@ -10,24 +10,22 @@ interface ExpandableTableProps<T extends Record<string, unknown>> {
     plural: string;
     singular: string;
   };
-  limit: number;
   onLimitChange: () => void;
   totalCount: number;
-  additionalCta?: ReactNode[];
+  additionalCta?: ReactNode;
   getCellProps?: (
     cell: Cell<T>,
   ) => Partial<TableCellProps & HTMLProps<HTMLTableCellElement>>;
   getRowProps?: (
     row: Row<T>,
   ) => Partial<TableRowProps & HTMLProps<HTMLTableRowElement>>;
-  title?: string;
+  title?: ReactNode;
 }
 
 const ExpandableTable = <T extends Record<string, unknown>>({
   additionalCta,
   columns,
   data,
-  limit,
   onLimitChange,
   itemNames,
   totalCount,
@@ -37,7 +35,8 @@ const ExpandableTable = <T extends Record<string, unknown>>({
 }: ExpandableTableProps<T>) => {
   return (
     <>
-      {title && <p className="p-heading--5">{title}</p>}
+      {typeof title === "string" && <p className="p-heading--5">{title}</p>}
+      {isValidElement(title) && title}
       <ModularTable
         columns={columns}
         data={data}
@@ -48,7 +47,7 @@ const ExpandableTable = <T extends Record<string, unknown>>({
       <ExpandableTableFooter
         additionalCta={additionalCta}
         itemNames={itemNames}
-        limit={limit}
+        limit={data.length}
         onLimitChange={onLimitChange}
         totalCount={totalCount}
       />

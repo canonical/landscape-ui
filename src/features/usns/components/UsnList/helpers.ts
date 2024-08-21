@@ -1,56 +1,45 @@
 import { HTMLProps, MutableRefObject } from "react";
 import { Cell, Row, TableCellProps, TableRowProps } from "react-table";
-import { USN_EXPANDED } from "./constants";
 import { Usn } from "@/types/Usn";
+import { ExpandedCell } from "./types";
 import classes from "./UsnList.module.scss";
 
 export const getUsnsWithExpanded = (
   usns: Usn[],
-  expandedUsn: string,
-  tableType: "expandable" | "paginated",
-  usnLimit: number,
+  expandedCell: ExpandedCell,
+  isFetchingNextPage: boolean,
 ) => {
-  if (expandedUsn === "") {
-    return tableType === "expandable" ? usns.slice(0, usnLimit) : usns;
+  if (
+    expandedCell?.column !== "computers_count" &&
+    expandedCell?.column !== "release_packages"
+  ) {
+    return isFetchingNextPage ? [...usns, usns[0]] : usns;
   }
 
-  const indexToInsertPackageTable =
-    usns.findIndex(({ usn }) => usn === expandedUsn) + 1;
-
   return [
-    ...usns.slice(0, indexToInsertPackageTable),
-    USN_EXPANDED,
-    ...usns.slice(
-      indexToInsertPackageTable,
-      tableType === "expandable" ? usnLimit : usns.length,
-    ),
+    ...usns.slice(0, expandedCell.row + 1),
+    ...usns.slice(expandedCell.row),
+    ...usns.slice(isFetchingNextPage ? -1 : usns.length),
   ];
 };
 
-export const handleSecurityIssuesCellProps =
-  (
-    tableType: "expandable" | "paginated",
-    expandedRowIndex: number,
-    expandedUsn: string,
-  ) =>
-  ({
-    column,
-    row: {
-      original: { usn },
-      index,
-    },
-  }: Cell<Usn>) => {
+export const handleCellProps =
+  (expandedCell: ExpandedCell, isLoading: boolean, lastUsnIndex?: number) =>
+  ({ column, row: { index } }: Cell<Usn>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
 
-    if (usn === expandedUsn) {
-      if (column.id === "release_packages") {
-        cellProps.className = classes.expanded;
-      }
-    } else if (["expandedUsn", "loading"].includes(usn)) {
+    if (
+      (isLoading && index === (lastUsnIndex ?? 0)) ||
+      (expandedCell?.row === index - 1 &&
+        ["computers_count", "release_packages"].includes(expandedCell.column))
+    ) {
       if (column.id === "usn") {
-        cellProps.colSpan = tableType === "expandable" ? 4 : 5;
-        if (usn === "expandedUsn") {
+        cellProps.colSpan = 5;
+        if (
+          expandedCell?.row === index - 1 &&
+          ["computers_count", "release_packages"].includes(expandedCell.column)
+        ) {
           cellProps.className = classes.innerTable;
         }
       } else {
@@ -62,25 +51,35 @@ export const handleSecurityIssuesCellProps =
     } else if (column.id === "cves") {
       cellProps["aria-label"] = "CVE(s)";
 
-      if (expandedRowIndex === index) {
+      if (expandedCell?.column === column.id && expandedCell.row === index) {
         cellProps.className = classes.expandedCell;
       }
     } else if (column.id === "date") {
       cellProps["aria-label"] = "Date published";
+    } else if (column.id === "computers_count") {
+      cellProps["aria-label"] = "Affected instances";
+      cellProps.className =
+        expandedCell?.column === column.id && expandedCell.row === index
+          ? classes.expanded
+          : classes.row;
     } else if (column.id === "release_packages") {
       cellProps["aria-label"] = "Affected packages";
+      cellProps.className =
+        expandedCell?.column === column.id && expandedCell.row === index
+          ? classes.expanded
+          : classes.row;
     }
 
     return cellProps;
   };
 
 export const handleRowProps =
-  (rowIndex?: number) =>
+  (expandedCell: ExpandedCell) =>
   ({ index }: Row<Usn>) => {
     const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
       {};
 
-    if (rowIndex === index) {
+    if (expandedCell?.column === "cves" && expandedCell.row === index) {
       rowProps.className = classes.expandedRow;
     }
 

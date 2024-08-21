@@ -1,8 +1,8 @@
 import React, { FC, ReactNode } from "react";
 import axios, { AxiosError, AxiosInstance } from "axios";
 
-import { API_URL_OLD } from "../constants";
-import { generateRequestParams } from "../utils/api";
+import { API_URL_OLD } from "@/constants";
+import { generateRequestParams } from "@/utils/api";
 import useAuth from "../hooks/useAuth";
 
 export const FetchContext = React.createContext<AxiosInstance | null>(null);
@@ -22,7 +22,11 @@ const FetchOldProvider: FC<FetchProviderProps> = ({ children }) => {
       (config) => {
         config.headers["Authorization"] = `Bearer ${user.token}`;
 
-        return generateRequestParams({ config, isOld: true });
+        const params = generateRequestParams({ config, isOld: true });
+
+        console.log("params", params);
+
+        return params;
       },
       (error: AxiosError) => {
         Promise.reject(error);

@@ -66,6 +66,11 @@ interface PackagesActionParams {
   deliver_delay_window?: number;
 }
 
+export interface UpgradeInstancePackagesParams {
+  id: number;
+  exclude_packages: string[];
+}
+
 export default function usePackages() {
   const queryClient = useQueryClient();
   const authFetchOld = useFetchOld();
@@ -119,6 +124,20 @@ export default function usePackages() {
   >({
     mutationFn: (params) => authFetchOld!.get("UpgradePackages", { params }),
     onSuccess: () => queryClient.invalidateQueries(["packages"]),
+  });
+
+  const upgradeInstancesPackagesQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    UpgradeInstancePackagesParams[]
+  >({
+    mutationFn: (params) =>
+      authFetch!.post("computers/packages/upgrade", params),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["packages"]),
+        queryClient.invalidateQueries(["instances"]),
+      ]),
   });
 
   const getDowngradePackageVersionsQuery = (
@@ -175,5 +194,6 @@ export default function usePackages() {
     getDowngradePackageVersionsQuery,
     downgradePackageVersionQuery,
     packagesActionQuery,
+    upgradeInstancesPackagesQuery,
   };
 }

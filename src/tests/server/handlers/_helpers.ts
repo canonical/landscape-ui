@@ -2,10 +2,10 @@ import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 
 interface GeneratePaginatedResponseProps<D> {
   data: D[];
+  limit: number | undefined;
+  offset: number | undefined;
   search?: string;
   searchFields?: string[];
-  limit?: number;
-  offset?: number;
 }
 
 function getNestedProperty(obj: any, path: string) {
@@ -25,7 +25,7 @@ export function generatePaginatedResponse<D>({
     results = generateFilteredResponse(results, search, searchFields);
   }
 
-  if (offset && limit) {
+  if (undefined !== offset && limit) {
     results = results.slice(offset, offset + limit);
   }
 

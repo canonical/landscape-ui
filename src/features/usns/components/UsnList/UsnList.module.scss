@@ -1,10 +1,6 @@
-@import "../../../../../node_modules/vanilla-framework/scss/base_placeholders";
-@import "../../../../../node_modules/vanilla-framework/scss/settings_colors";
-@import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
-
-.checkboxColumn {
-  width: $sp-x-large;
-}
+@import "vanilla-framework/scss/base_placeholders";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
 
 .expanded {
   @include vf-highlight-bar($colors--light-theme--text-default, bottom, false);
@@ -25,6 +21,12 @@
 
 .innerTable {
   background-color: $color-light;
+}
+
+.row,
+.expanded {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .expandedRow {
