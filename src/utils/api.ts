@@ -47,6 +47,9 @@ export const generateRequestParams = ({
       }
     } else if (["number", "boolean"].includes(typeof value)) {
       paramsToPass[param] = isOld ? `${value}` : value;
+    } else if (typeof value === "object") {
+      paramsToPass[param] =
+        isOld || "get" === config.method ? JSON.stringify(value) : value;
     } else if (
       "" !== value &&
       undefined !== value &&

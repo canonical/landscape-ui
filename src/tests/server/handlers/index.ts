@@ -17,6 +17,7 @@ import wsl from "./wsl";
 import alerts from "./alerts";
 import organisationPreferences from "./organisationPreferences";
 import userSettings from "./userSettings";
+import identityProviders from "./identityProviders";
 
 export default [
   ...auth,
@@ -38,4 +39,5 @@ export default [
   ...alerts,
   ...organisationPreferences,
   ...userSettings,
+  ...identityProviders,
 ];

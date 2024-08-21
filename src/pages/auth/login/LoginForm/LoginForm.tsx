@@ -103,7 +103,12 @@ const LoginForm: FC = () => {
       />
 
       <div className="form-buttons">
-        <Button type="submit" appearance="positive" disabled={isLoading}>
+        <Button
+          type="submit"
+          appearance="positive"
+          disabled={isLoading}
+          className="u-no-margin--bottom"
+        >
           Login
         </Button>
       </div>

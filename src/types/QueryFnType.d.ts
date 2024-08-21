@@ -9,3 +9,11 @@ export type QueryFnType<Result, Params> = (
     "queryKey" | "queryFn"
   >,
 ) => UseQueryResult<Result, AxiosError<ApiError>>;
+
+export type QueryFnTypeWithRequiredParam<Result, Params> = (
+  queryParams: Params,
+  config?: Omit<
+    UseQueryOptions<Result, AxiosError<ApiError>>,
+    "queryKey" | "queryFn"
+  >,
+) => UseQueryResult<Result, AxiosError<ApiError>>;

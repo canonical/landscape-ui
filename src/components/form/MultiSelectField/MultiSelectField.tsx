@@ -1,23 +1,28 @@
-import React, { FC } from "react";
+import { FC, ReactNode, Ref } from "react";
 import { MultiSelect, MultiSelectProps } from "@canonical/react-components";
 import classNames from "classnames";
 import classes from "./MultiSelectField.module.scss";
 
-interface MultiSelectFieldProps extends MultiSelectProps {
+interface MultiSelectFieldProps extends Omit<MultiSelectProps, "help"> {
   className?: string;
+  help?: ReactNode;
+  innerRef?: Ref<HTMLDivElement>;
   label?: string;
   labelClassName?: string;
-  innerRef?: React.Ref<HTMLDivElement>;
 }
 
 const MultiSelectField: FC<MultiSelectFieldProps> = ({
+  className,
+  disabled,
+  disabledItems,
   dropdownFooter,
   error,
-  required,
-  className,
+  help,
+  innerRef,
+  items,
   label,
   labelClassName,
-  innerRef,
+  required,
   ...otherProps
 }) => {
   const footer = error ? (
@@ -53,10 +58,14 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
           {label}
         </label>
       )}
+      {help && <p className="p-form-help-text">{help}</p>}
       <MultiSelect
-        label={label}
-        error={error}
         dropdownFooter={footer}
+        disabled={disabled}
+        disabledItems={disabled ? items : disabledItems}
+        error={error}
+        items={items}
+        label={label}
         {...otherProps}
       />
       {error && (
