@@ -22,11 +22,7 @@ const FetchOldProvider: FC<FetchProviderProps> = ({ children }) => {
       (config) => {
         config.headers["Authorization"] = `Bearer ${user.token}`;
 
-        const params = generateRequestParams({ config, isOld: true });
-
-        console.log("params", params);
-
-        return params;
+        return generateRequestParams({ config, isOld: true });
       },
       (error: AxiosError) => {
         Promise.reject(error);

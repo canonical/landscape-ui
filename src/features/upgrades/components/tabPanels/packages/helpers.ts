@@ -1,23 +1,23 @@
-import { OldPackage, UpgradeInstancePackagesParams } from "@/features/packages";
+import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
 
 export const checkIsUpdateRequired = (
   excludedPackages: UpgradeInstancePackagesParams[],
-  packages: OldPackage[],
+  packages: Package[],
 ) => {
-  return packages.some(({ computers: { upgrades }, name }) =>
+  return packages.some(({ computers, name }) =>
     excludedPackages
-      .filter(({ id }) => upgrades.includes(id))
+      .filter(({ id }) => computers.some((instance) => instance.id === id))
       .some(({ exclude_packages }) => !exclude_packages.includes(name)),
   );
 };
 
 export const toggleCurrentPackage = (
   excludedPackages: UpgradeInstancePackagesParams[],
-  pkg: OldPackage,
+  pkg: Package,
   isUpdateRequired: boolean,
 ) => {
   return excludedPackages.map(({ id, exclude_packages }) => {
-    if (!pkg.computers.upgrades.includes(id)) {
+    if (pkg.computers.every((instance) => instance.id !== id)) {
       return { id, exclude_packages };
     }
 
@@ -36,7 +36,7 @@ export const toggleCurrentPackage = (
 
 export const getToggledPackage = (
   excludedPackages: UpgradeInstancePackagesParams[],
-  pkg: OldPackage,
+  pkg: Package,
 ) => {
   return toggleCurrentPackage(
     excludedPackages,

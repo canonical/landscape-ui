@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
-import { GetPackagesParams, OldPackage } from "@/features/packages";
+import { GetPackagesParams, Package } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { packages } from "@/tests/mocks/packages";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
@@ -8,7 +8,7 @@ import { generatePaginatedResponse } from "./_helpers";
 
 export default [
   // @ts-ignore-next-line
-  http.get<GetPackagesParams, never, ApiPaginatedResponse<OldPackage>>(
+  http.get<GetPackagesParams, never, ApiPaginatedResponse<Package>>(
     `${API_URL}packages`,
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
@@ -30,7 +30,7 @@ export default [
       const limit = Number(url.searchParams.get("limit"));
 
       return HttpResponse.json(
-        generatePaginatedResponse<OldPackage>({
+        generatePaginatedResponse<Package>({
           data: packages,
           limit,
           offset,

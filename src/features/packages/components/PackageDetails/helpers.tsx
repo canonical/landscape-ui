@@ -1,6 +1,6 @@
-import { Package } from "../../types";
+import { InstancePackage } from "../../types";
 
-export const highlightVersionsDifference = (pkg: Package) => {
+export const highlightVersionsDifference = (pkg: InstancePackage) => {
   if (!pkg.available_version) {
     return "";
   }

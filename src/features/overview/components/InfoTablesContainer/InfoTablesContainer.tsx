@@ -5,7 +5,7 @@ import { Activity, ActivityCommon, useActivities } from "@/features/activities";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import { OldPackage, usePackages } from "@/features/packages";
+import { Package, usePackages } from "@/features/packages";
 import useUsns from "@/hooks/useUsns";
 import {
   Button,
@@ -174,7 +174,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
   );
 
   const upgradesTableColumns = useMemo<
-    Column<Instance | OldPackage | Usn>[]
+    Column<Instance | Package | Usn>[]
   >(() => {
     switch (currentUpgradesTab) {
       case 0:
@@ -212,7 +212,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
           {
             Header: "Affected Instances",
             accessor: "computers",
-            Cell: ({ row }: CellProps<OldPackage>) => (
+            Cell: ({ row }: CellProps<Package>) => (
               <Link
                 to={`${ROOT_PATH}instances`}
                 className={classNames("u-no-margin--bottom", classes.link)}

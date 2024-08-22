@@ -3,7 +3,10 @@ import { CellProps, Column } from "react-table";
 import { CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
-import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
+import {
+  InstancePackage,
+  UpgradeInstancePackagesParams,
+} from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import SelectAllButton from "../SelectAllButton";
 import { handleCellProps } from "./helpers";
@@ -15,7 +18,7 @@ interface AffectedPackagesProps {
     newExcludedPackages: UpgradeInstancePackagesParams[],
   ) => void;
   onLimitChange: () => void;
-  packages: Package[];
+  packages: InstancePackage[];
   packagesCount: number;
   packagesLoading: boolean;
 }
@@ -82,7 +85,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
     );
   };
 
-  const columns = useMemo<Column<Package>[]>(
+  const columns = useMemo<Column<InstancePackage>[]>(
     () => [
       {
         accessor: "checkbox",
@@ -102,7 +105,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             onChange={toggleAllPackages}
           />
         ),
-        Cell: ({ row: { index, original } }: CellProps<Package>) => {
+        Cell: ({ row: { index, original } }: CellProps<InstancePackage>) => {
           if (packagesLoading && index === packageData.length - 1) {
             return <LoadingState />;
           }

@@ -1,9 +1,9 @@
 import { HTMLProps } from "react";
 import { Cell, TableCellProps } from "react-table";
-import { Package } from "../../types";
+import { InstancePackage } from "../../types";
 import classes from "./PackageList.module.scss";
 
-export const isUbuntuProRequired = (pkg: Package) => {
+export const isUbuntuProRequired = (pkg: InstancePackage) => {
   return (
     !!pkg.available_version &&
     !!pkg.current_version &&
@@ -11,7 +11,7 @@ export const isUbuntuProRequired = (pkg: Package) => {
   );
 };
 
-export const getPackageStatusInfo = (pkg: Package) => {
+export const getPackageStatusInfo = (pkg: InstancePackage) => {
   const pkgStatusInfo = {
     label: "Unknown",
     icon: "",
@@ -39,7 +39,7 @@ export const getPackageStatusInfo = (pkg: Package) => {
   return pkgStatusInfo;
 };
 
-export const handleCellProps = ({ column, row }: Cell<Package>) => {
+export const handleCellProps = ({ column, row }: Cell<InstancePackage>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
     {};
 

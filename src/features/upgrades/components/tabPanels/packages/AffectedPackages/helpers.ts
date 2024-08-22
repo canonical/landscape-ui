@@ -1,18 +1,18 @@
 import { HTMLProps } from "react";
 import { Cell, TableCellProps } from "react-table";
-import { OldPackage, UpgradeInstancePackagesParams } from "@/features/packages";
+import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
 import { toggleCurrentPackage } from "../helpers";
 import classes from "./AffectedPackages.module.scss";
 
 export const handleCellProps =
   (expandedRow: number, loading: boolean) =>
-  ({ column, row: { index, original } }: Cell<OldPackage>) => {
+  ({ column, row: { index, original } }: Cell<Package>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
 
     if (loading || (expandedRow > -1 && expandedRow === index - 1)) {
       if (column.id === "name") {
-        cellProps.colSpan = 5;
+        cellProps.colSpan = 3;
         if (expandedRow > -1 && expandedRow === index - 1) {
           cellProps.className = classes.innerTable;
         }
@@ -38,25 +38,25 @@ export const handleCellProps =
   };
 
 export const areAllInstancesNeedToUpdate = (
-  pkg: OldPackage,
+  pkg: Package,
   excludedPackages: UpgradeInstancePackagesParams[],
 ) => {
-  return !pkg.computers.upgrades.some((instanceId) =>
+  return !pkg.computers.some((instance) =>
     excludedPackages
-      .find(({ id }) => id === instanceId)
+      .find(({ id }) => id === instance.id)
       ?.exclude_packages.includes(pkg.name),
   );
 };
 
 export const areAllPackagesNeedToUpdate = (
-  packages: OldPackage[],
+  packages: Package[],
   excludedPackages: UpgradeInstancePackagesParams[],
 ) => {
   return (
     packages.length > 0 &&
-    packages.every(({ computers: { upgrades }, name }) =>
+    packages.every(({ computers, name }) =>
       excludedPackages
-        .filter(({ id }) => upgrades.includes(id))
+        .filter(({ id }) => computers.some((instance) => instance.id === id))
         .every(({ exclude_packages }) => !exclude_packages.includes(name)),
     )
   );
@@ -64,7 +64,7 @@ export const areAllPackagesNeedToUpdate = (
 
 export const getToggledPackages = (
   excludedPackages: UpgradeInstancePackagesParams[],
-  packages: OldPackage[],
+  packages: Package[],
   isUpdateRequired: boolean,
 ) => {
   return packages.reduce(

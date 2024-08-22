@@ -1,4 +1,4 @@
-import { OldPackage, UpgradeInstancePackagesParams } from "@/features/packages";
+import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
 
 export const isInstanceNeedToUpdatePackage = (
   excludedPackages: UpgradeInstancePackagesParams[],
@@ -12,20 +12,20 @@ export const isInstanceNeedToUpdatePackage = (
 
 export const areAllInstancesNeedToUpdate = (
   excludedPackages: UpgradeInstancePackagesParams[],
-  pkg: OldPackage,
+  pkg: Package,
 ) => {
-  return !pkg.computers.upgrades.some((instanceId) =>
+  return !pkg.computers.some((instance) =>
     excludedPackages
-      .find(({ id }) => id === instanceId)
+      .find(({ id }) => id === instance.id)
       ?.exclude_packages.includes(pkg.name),
   );
 };
 
 export const checkIsUpdateRequired = (
-  pkg: OldPackage,
+  pkg: Package,
   excludedPackages: UpgradeInstancePackagesParams[],
 ) => {
   return excludedPackages
-    .filter(({ id }) => pkg.computers.upgrades.includes(id))
+    .filter(({ id }) => pkg.computers.some((instance) => id === instance.id))
     .some(({ exclude_packages }) => !exclude_packages.includes(pkg.name));
 };

@@ -1,5 +1,6 @@
 export {
-  OldPackage,
+  DowngradePackageVersion,
+  InstancePackage,
   Package,
   PackageObject,
   PackageDiff,

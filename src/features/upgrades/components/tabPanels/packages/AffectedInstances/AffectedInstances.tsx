@@ -2,17 +2,16 @@ import { FC, useMemo, useState } from "react";
 import { CellProps, Column } from "react-table";
 import { CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import { OldPackage, UpgradeInstancePackagesParams } from "@/features/packages";
+import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import { checkIsUpdateRequired, getToggledPackage } from "../helpers";
 import {
   areAllInstancesNeedToUpdate,
   isInstanceNeedToUpdatePackage,
 } from "./helpers";
-import classes from "./AffectedInstances.module.scss";
 
 interface AffectedInstancesProps {
-  currentPackage: OldPackage;
+  currentPackage: Package;
   excludedPackages: UpgradeInstancePackagesParams[];
   onExcludedPackagesChange: (
     newExcludedPackages: UpgradeInstancePackagesParams[],
@@ -28,7 +27,7 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
 }) => {
   const [limit, setLimit] = useState(5);
 
-  const instanceIds = currentPackage.computers.upgrades;
+  const instanceIds = currentPackage.computers.map(({ id }) => id);
 
   const instanceData = useMemo(
     () =>
@@ -102,13 +101,31 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
       },
       {
         accessor: "title",
-        className: classes.name,
         Header: "Name",
       },
       {
         accessor: "current_version",
         Header: "Current version",
-        Cell: currentPackage.version,
+        Cell: ({ row: { original } }: CellProps<Instance>) => (
+          <>
+            {
+              currentPackage.computers.find(({ id }) => id === original.id)
+                ?.current_version
+            }
+          </>
+        ),
+      },
+      {
+        accessor: "available_version",
+        Header: "New version",
+        Cell: ({ row: { original } }: CellProps<Instance>) => (
+          <>
+            {
+              currentPackage.computers.find(({ id }) => id === original.id)
+                ?.available_version
+            }
+          </>
+        ),
       },
     ],
     [currentPackage, excludedPackages, instanceData],

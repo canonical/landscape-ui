@@ -1,11 +1,11 @@
 import { HTMLProps } from "react";
 import { Cell, TableCellProps } from "react-table";
-import { Package } from "@/features/packages";
+import { InstancePackage } from "@/features/packages";
 import classes from "./AffectedPackages.module.scss";
 
 export const handleCellProps =
   ({ loading, showToggle }: { loading: boolean; showToggle: boolean }) =>
-  ({ column, row }: Cell<Package>) => {
+  ({ column, row }: Cell<InstancePackage>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
 

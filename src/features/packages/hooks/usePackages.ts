@@ -6,13 +6,13 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { Activity } from "@/features/activities";
-import useFetchOld from "@/hooks/useFetchOld";
 import useDebug from "@/hooks/useDebug";
 import useFetch from "@/hooks/useFetch";
+import useFetchOld from "@/hooks/useFetchOld";
 import { ApiError } from "@/types/ApiError";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { QueryFnType } from "@/types/QueryFnType";
-import { OldPackage, Package } from "../types";
+import { DowngradePackageVersion, InstancePackage, Package } from "../types";
 
 export interface GetPackagesParams {
   query: string;
@@ -78,11 +78,11 @@ export default function usePackages() {
   const debug = useDebug();
 
   const getPackagesQuery: QueryFnType<
-    AxiosResponse<ApiPaginatedResponse<OldPackage>>,
+    AxiosResponse<ApiPaginatedResponse<Package>>,
     GetPackagesParams
   > = (queryParams, config = {}) => {
     return useQuery<
-      AxiosResponse<ApiPaginatedResponse<OldPackage>>,
+      AxiosResponse<ApiPaginatedResponse<Package>>,
       AxiosError<ApiError>
     >({
       queryKey: ["packages", queryParams],
@@ -98,14 +98,14 @@ export default function usePackages() {
     { instance_id, ...queryParams }: GetInstancePackagesParams,
     config: Omit<
       UseQueryOptions<
-        AxiosResponse<ApiPaginatedResponse<Package>>,
+        AxiosResponse<ApiPaginatedResponse<InstancePackage>>,
         AxiosError<ApiError>
       >,
       "queryKey" | "queryFn"
     > = {},
   ) => {
     return useQuery<
-      AxiosResponse<ApiPaginatedResponse<Package>>,
+      AxiosResponse<ApiPaginatedResponse<InstancePackage>>,
       AxiosError<ApiError>
     >({
       queryKey: ["packages", { instance_id, ...queryParams }],
@@ -144,18 +144,14 @@ export default function usePackages() {
     { instanceId, packageName }: GetDowngradePackageVersionsParams,
     config: Omit<
       UseQueryOptions<
-        AxiosResponse<
-          ApiPaginatedResponse<Pick<OldPackage, "name" | "summary" | "version">>
-        >,
+        AxiosResponse<{ results: DowngradePackageVersion[] }>,
         AxiosError<ApiError>
       >,
       "queryKey" | "queryFn"
     > = {},
   ) =>
     useQuery<
-      AxiosResponse<
-        ApiPaginatedResponse<Pick<OldPackage, "name" | "summary" | "version">>
-      >,
+      AxiosResponse<{ results: DowngradePackageVersion[] }>,
       AxiosError<ApiError>
     >({
       queryKey: ["packageDowngradeVersion", { instanceId, packageName }],

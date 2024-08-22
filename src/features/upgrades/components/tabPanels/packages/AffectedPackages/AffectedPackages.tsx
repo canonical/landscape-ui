@@ -3,7 +3,7 @@ import { FC, useMemo, useState } from "react";
 import { CellProps, Column } from "react-table";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import { OldPackage, UpgradeInstancePackagesParams } from "@/features/packages";
+import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import AffectedInstances from "../AffectedInstances";
 import { checkIsUpdateRequired, getToggledPackage } from "../helpers";
@@ -22,7 +22,7 @@ interface AffectedPackagesProps {
     newExcludedPackages: UpgradeInstancePackagesParams[],
   ) => void;
   onTableLimitChange: () => void;
-  packages: OldPackage[];
+  packages: Package[];
   totalPackageCount: number;
 }
 
@@ -56,7 +56,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
 
         return acc;
       },
-      {} as Record<string, OldPackage>,
+      {} as Record<string, Package>,
     ),
   );
 
@@ -71,7 +71,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
     );
   };
 
-  const handlePackageToggle = (pkg: OldPackage) => {
+  const handlePackageToggle = (pkg: Package) => {
     onExcludedPackagesChange(getToggledPackage(excludedPackages, pkg));
   };
 
@@ -85,7 +85,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
     });
   };
 
-  const columns = useMemo<Column<OldPackage>[]>(
+  const columns = useMemo<Column<Package>[]>(
     () => [
       {
         accessor: "checkbox",
@@ -106,7 +106,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             onChange={handleAllPackagesToggle}
           />
         ),
-        Cell: ({ row: { original } }: CellProps<OldPackage>) => (
+        Cell: ({ row: { original } }: CellProps<Package>) => (
           <CheckboxInput
             inline
             label={
@@ -125,8 +125,9 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
       },
       {
         accessor: "name",
+        className: classes.nameColumn,
         Header: "Package name",
-        Cell: ({ row: { index, original } }: CellProps<OldPackage>) => {
+        Cell: ({ row: { index, original } }: CellProps<Package>) => {
           if (expandedRow === -1 || expandedRow !== index - 1) {
             return <>{original.name}</>;
           }
@@ -142,24 +143,16 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
         },
       },
       {
-        accessor: "current_version",
-        Header: "Current version",
-      },
-      {
-        accessor: "version",
-        Header: "New version",
-      },
-      {
         accessor: "computers.upgrades",
         Header: "Affected instances",
-        Cell: ({ row: { index, original } }: CellProps<OldPackage>) => (
+        Cell: ({ row: { index, original } }: CellProps<Package>) => (
           <Button
             type="button"
             className={classNames("p-accordion__tab", classes.expandButton)}
             aria-expanded={expandedRow === index}
             onClick={() => handleExpandCellClick(index)}
           >
-            {original.computers.upgrades.length}
+            {original.computers.length}
           </Button>
         ),
       },

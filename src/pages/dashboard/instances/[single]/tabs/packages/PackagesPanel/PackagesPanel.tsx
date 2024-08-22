@@ -3,7 +3,7 @@ import { useLocation, useParams } from "react-router-dom";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import {
-  Package,
+  InstancePackage,
   PackageList,
   PackagesPanelHeader,
   usePackages,
@@ -12,7 +12,7 @@ import { usePageParams } from "@/hooks/usePageParams";
 import { getEmptyMessage } from "./helpers";
 
 const PackagesPanel: FC = () => {
-  const [selected, setSelected] = useState<Package[]>([]);
+  const [selected, setSelected] = useState<InstancePackage[]>([]);
 
   const { instanceId: urlInstanceId, childInstanceId } = useParams();
   const { status, search, currentPage, pageSize } = usePageParams();
