@@ -1,6 +1,7 @@
 import { HTMLProps, MutableRefObject } from "react";
 import { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import { Usn } from "@/types/Usn";
+import { EMPTY_USN } from "./constants";
 import { ExpandedCell } from "./types";
 import classes from "./UsnList.module.scss";
 
@@ -13,13 +14,13 @@ export const getUsnsWithExpanded = (
     expandedCell?.column !== "computers_count" &&
     expandedCell?.column !== "release_packages"
   ) {
-    return isFetchingNextPage ? [...usns, usns[0]] : usns;
+    return isFetchingNextPage ? [...usns, EMPTY_USN] : usns;
   }
 
   return [
     ...usns.slice(0, expandedCell.row + 1),
     ...usns.slice(expandedCell.row),
-    ...usns.slice(isFetchingNextPage ? -1 : usns.length),
+    ...[EMPTY_USN].slice(isFetchingNextPage ? -1 : 0),
   ];
 };
 
@@ -30,7 +31,7 @@ export const handleCellProps =
       {};
 
     if (
-      (isLoading && index === (lastUsnIndex ?? 0)) ||
+      (isLoading && index === lastUsnIndex) ||
       (expandedCell?.row === index - 1 &&
         ["computers_count", "release_packages"].includes(expandedCell.column))
     ) {

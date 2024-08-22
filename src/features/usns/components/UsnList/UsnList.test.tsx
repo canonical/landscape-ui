@@ -21,8 +21,6 @@ const expandableProps: ComponentProps<typeof UsnList> = {
   totalUsnCount,
   usns: mockedUsns,
   onNextPageFetch,
-  hasNextPage: true,
-  isFetchingNextPage: false,
 };
 
 const paginatedProps: ComponentProps<typeof UsnList> = {

@@ -17,7 +17,6 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { Instance } from "@/types/Instance";
 import { Usn } from "@/types/Usn";
 import UsnPackagesContainer from "../UsnPackagesContainer";
-import { EMPTY_USN } from "./constants";
 import {
   getTableRows,
   getUsnsWithExpanded,
@@ -42,8 +41,6 @@ type UsnListProps = {
   | {
       tableType: "expandable";
       onNextPageFetch: () => void;
-      hasNextPage: boolean | undefined;
-      isFetchingNextPage: boolean;
     }
 );
 
@@ -70,15 +67,9 @@ const UsnList: FC<UsnListProps> = ({
     () => setExpandedCell(null),
   );
 
-  const isFetchingNextPage =
-    otherProps.tableType === "expandable" && otherProps.isFetchingNextPage;
-
   const securityIssues = useMemo<Usn[]>(
-    (): Usn[] =>
-      isUsnsLoading
-        ? [EMPTY_USN]
-        : getUsnsWithExpanded(usns, expandedCell, isFetchingNextPage),
-    [usns, expandedCell, isUsnsLoading, isFetchingNextPage],
+    (): Usn[] => getUsnsWithExpanded(usns, expandedCell, isUsnsLoading),
+    [usns, expandedCell, isUsnsLoading],
   );
 
   const handleToggleSingleUsn = (usn: string) => {
@@ -139,6 +130,7 @@ const UsnList: FC<UsnListProps> = ({
               label={
                 <span className="u-off-screen">{`Toggle ${original.usn}`}</span>
               }
+              disabled={isUsnsLoading}
               name="usn"
               checked={selectedUsns.includes(original.usn)}
               onChange={() => handleToggleSingleUsn(original.usn)}
@@ -172,10 +164,7 @@ const UsnList: FC<UsnListProps> = ({
               );
             }
 
-            if (
-              isUsnsLoading ||
-              (index === securityIssues.length - 1 && isFetchingNextPage)
-            ) {
+            if (isUsnsLoading && index === securityIssues.length - 1) {
               return <LoadingState />;
             }
 
@@ -281,14 +270,12 @@ const UsnList: FC<UsnListProps> = ({
           data={securityIssues}
           getCellProps={handleCellProps(
             expandedCell,
-            isUsnsLoading || isFetchingNextPage,
+            isUsnsLoading,
             securityIssues.length - 1,
           )}
           getRowProps={handleRowProps(expandedCell)}
           itemNames={{ plural: "security issues", singular: "security issue" }}
-          onLimitChange={() => {
-            !otherProps.isFetchingNextPage && otherProps.onNextPageFetch();
-          }}
+          onLimitChange={otherProps.onNextPageFetch}
           totalCount={totalUsnCount}
         />
       ) : (

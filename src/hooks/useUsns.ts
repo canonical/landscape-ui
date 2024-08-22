@@ -2,7 +2,6 @@ import useFetch from "./useFetch";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import {
-  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -11,18 +10,13 @@ import {
 import { ApiError } from "@/types/ApiError";
 import { Usn, UsnPackage } from "@/types/Usn";
 import { Activity } from "@/features/activities";
-import type { UseInfiniteQueryOptions } from "@tanstack/react-query/src/types";
-import { API_URL } from "@/constants";
 
-interface GetUsnsInfiniteParams {
+export interface GetUsnsParams {
   computer_ids: number[];
   limit?: number;
+  offset?: number;
   search?: string;
   show_packages?: boolean;
-}
-
-export interface GetUsnsParams extends GetUsnsInfiniteParams {
-  offset?: number;
 }
 
 export interface GetAffectedPackagesParams {
@@ -60,45 +54,6 @@ export default function useUsns() {
     >({
       queryKey: ["usns", queryParams],
       queryFn: () => authFetch!.get("usns", { params: queryParams }),
-      ...config,
-    });
-  };
-
-  const getUsnsInfiniteQuery = (
-    queryParams: GetUsnsInfiniteParams,
-    config: Omit<
-      UseInfiniteQueryOptions<
-        AxiosResponse<ApiPaginatedResponse<Usn>>,
-        AxiosError<ApiError>
-      >,
-      "queryKey" | "queryFn" | "keepPreviousData"
-    > = {},
-  ) => {
-    return useInfiniteQuery<
-      AxiosResponse<ApiPaginatedResponse<Usn>>,
-      AxiosError<ApiError>
-    >({
-      queryKey: ["usnsInfinite", queryParams],
-      queryFn: ({ pageParam = 0 }) => {
-        console.log("pageParam", pageParam);
-
-        return authFetch!.get("usns", {
-          params: { ...queryParams, offset: pageParam },
-        });
-      },
-      getNextPageParam: (lastPage) => {
-        console.log("lastPage", lastPage);
-
-        return lastPage.data.next
-          ? parseInt(
-              new URL(lastPage.data.next, API_URL).searchParams.get("offset") ??
-                "0",
-              10,
-            )
-          : undefined;
-      },
-      keepPreviousData: false,
-
       ...config,
     });
   };
@@ -147,7 +102,6 @@ export default function useUsns() {
 
   return {
     getUsnsQuery,
-    getUsnsInfiniteQuery,
     getAffectedPackagesQuery,
     upgradeUsnPackagesQuery,
     removeUsnPackagesQuery,
