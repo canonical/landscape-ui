@@ -1,7 +1,8 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { Instance } from "@/types/Instance";
+import LoadingState from "@/components/layout/LoadingState";
 import useUsns from "@/hooks/useUsns";
 import { UsnList } from "@/features/usns";
+import { Instance } from "@/types/Instance";
 import { Usn } from "@/types/Usn";
 
 interface UsnsPanelProps {
@@ -13,6 +14,7 @@ const UsnsPanel: FC<UsnsPanelProps> = ({ instances }) => {
   const [usns, setUsns] = useState<Usn[]>([]);
   const [selectedUsns, setSelectedUsns] = useState<string[]>([]);
 
+  const totalUsnCountRef = useRef(0);
   const offsetRef = useRef(-1);
 
   const { getUsnsQuery } = useUsns();
@@ -30,6 +32,7 @@ const UsnsPanel: FC<UsnsPanelProps> = ({ instances }) => {
       return;
     }
 
+    totalUsnCountRef.current = getUsnsQueryResult.data.count;
     offsetRef.current = offset;
     setUsns((prevState) => [...prevState, ...getUsnsQueryResult.data.results]);
     setSelectedUsns((prevState) => [
@@ -38,19 +41,19 @@ const UsnsPanel: FC<UsnsPanelProps> = ({ instances }) => {
     ]);
   }, [getUsnsQueryResult]);
 
-  return (
-    <>
-      <UsnList
-        tableType="expandable"
-        onNextPageFetch={() => setOffset((prevState) => prevState + 5)}
-        instances={instances}
-        isUsnsLoading={getUsnsQueryLoading}
-        onSelectedUsnsChange={(usns) => setSelectedUsns(usns)}
-        selectedUsns={selectedUsns}
-        totalUsnCount={getUsnsQueryResult?.data.count ?? 0}
-        usns={usns}
-      />
-    </>
+  return getUsnsQueryLoading && !usns.length ? (
+    <LoadingState />
+  ) : (
+    <UsnList
+      tableType="expandable"
+      onNextPageFetch={() => setOffset((prevState) => prevState + 5)}
+      instances={instances}
+      isUsnsLoading={getUsnsQueryLoading}
+      onSelectedUsnsChange={(usns) => setSelectedUsns(usns)}
+      selectedUsns={selectedUsns}
+      totalUsnCount={totalUsnCountRef.current}
+      usns={usns}
+    />
   );
 };
 

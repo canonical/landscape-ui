@@ -34,7 +34,7 @@ const ExpandableTableFooter: FC<ExpandableTableFooterProps> = ({
         <span className="p-text--small u-text--muted">{`Showing ${Math.min(
           totalCount,
           limit,
-        )} of ${totalCount} ${totalCount > 1 ? itemNames.plural : itemNames.singular}.`}</span>
+        )} of ${totalCount} ${totalCount !== 1 ? itemNames.plural : itemNames.singular}.`}</span>
         {limit < totalCount && (
           <Button
             type="button"

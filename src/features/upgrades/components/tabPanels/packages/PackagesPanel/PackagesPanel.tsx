@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import {
   UpgradeInstancePackagesParams,
@@ -6,6 +6,7 @@ import {
 } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import AffectedPackages from "../AffectedPackages";
+import { Package } from "@/types/Package";
 
 interface PackagesPanelProps {
   excludedPackages: UpgradeInstancePackagesParams[];
@@ -20,7 +21,11 @@ const PackagesPanel: FC<PackagesPanelProps> = ({
   instances,
   onExcludedPackagesChange,
 }) => {
-  const [tableLimit, setTableLimit] = useState(5);
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [offset, setOffset] = useState(0);
+
+  const totalPackageCountRef = useRef(0);
+  const offsetRef = useRef(-1);
 
   const { getPackagesQuery } = usePackages();
 
@@ -28,19 +33,34 @@ const PackagesPanel: FC<PackagesPanelProps> = ({
     getPackagesQuery({
       query: `id:${instances.map(({ id }) => id).join(" OR id:")}`,
       upgrade: true,
-      limit: tableLimit,
+      limit: 5,
+      offset,
     });
 
-  return getPackagesQueryLoading ? (
+  useEffect(() => {
+    if (!getPackagesQueryResult || offset === offsetRef.current) {
+      return;
+    }
+
+    totalPackageCountRef.current = getPackagesQueryResult.data.count;
+    offsetRef.current = offset;
+    setPackages((prevState) => [
+      ...prevState,
+      ...getPackagesQueryResult.data.results,
+    ]);
+  }, [getPackagesQueryResult]);
+
+  return getPackagesQueryLoading && !packages.length ? (
     <LoadingState />
   ) : (
     <AffectedPackages
       excludedPackages={excludedPackages}
       instances={instances}
+      isPackagesLoading={getPackagesQueryLoading}
       onExcludedPackagesChange={onExcludedPackagesChange}
-      onTableLimitChange={() => setTableLimit((prevState) => prevState + 5)}
-      packages={getPackagesQueryResult?.data.results ?? []}
-      totalPackageCount={getPackagesQueryResult?.data.count ?? 0}
+      onTableLimitChange={() => setOffset((prevState) => prevState + 5)}
+      packages={packages}
+      totalPackageCount={totalPackageCountRef.current}
     />
   );
 };

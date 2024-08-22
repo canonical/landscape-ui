@@ -274,6 +274,7 @@ const UsnList: FC<UsnListProps> = ({
             securityIssues.length - 1,
           )}
           getRowProps={handleRowProps(expandedCell)}
+          itemCount={usns.length}
           itemNames={{ plural: "security issues", singular: "security issue" }}
           onLimitChange={otherProps.onNextPageFetch}
           totalCount={totalUsnCount}

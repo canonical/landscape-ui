@@ -2,15 +2,19 @@ import { HTMLProps } from "react";
 import { Cell, TableCellProps } from "react-table";
 import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
 import { toggleCurrentPackage } from "../helpers";
+import { EMPTY_PACKAGE } from "./constants";
 import classes from "./AffectedPackages.module.scss";
 
 export const handleCellProps =
-  (expandedRow: number, loading: boolean) =>
+  (expandedRow: number, loading: boolean, lastPackageIndex: number) =>
   ({ column, row: { index, original } }: Cell<Package>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
 
-    if (loading || (expandedRow > -1 && expandedRow === index - 1)) {
+    if (
+      (loading && index === lastPackageIndex) ||
+      (expandedRow > -1 && expandedRow === index - 1)
+    ) {
       if (column.id === "name") {
         cellProps.colSpan = 3;
         if (expandedRow > -1 && expandedRow === index - 1) {
@@ -71,4 +75,20 @@ export const getToggledPackages = (
     (acc, pkg) => toggleCurrentPackage(acc, pkg, isUpdateRequired),
     excludedPackages,
   );
+};
+
+export const getPackagesData = (
+  packages: Package[],
+  expandedRow: number,
+  isPackagesLoading: boolean,
+) => {
+  if (expandedRow !== -1) {
+    return [
+      ...packages.slice(0, expandedRow + 1),
+      ...packages.slice(expandedRow),
+      ...[EMPTY_PACKAGE].slice(isPackagesLoading ? 0 : 1),
+    ];
+  }
+
+  return isPackagesLoading ? [...packages, EMPTY_PACKAGE] : packages;
 };

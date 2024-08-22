@@ -3,6 +3,7 @@ import { FC, useMemo, useState } from "react";
 import { CellProps, Column } from "react-table";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
+import LoadingState from "@/components/layout/LoadingState";
 import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import AffectedInstances from "../AffectedInstances";
@@ -10,6 +11,7 @@ import { checkIsUpdateRequired, getToggledPackage } from "../helpers";
 import {
   areAllInstancesNeedToUpdate,
   areAllPackagesNeedToUpdate,
+  getPackagesData,
   getToggledPackages,
   handleCellProps,
 } from "./helpers";
@@ -18,6 +20,7 @@ import classes from "./AffectedPackages.module.scss";
 interface AffectedPackagesProps {
   excludedPackages: UpgradeInstancePackagesParams[];
   instances: Instance[];
+  isPackagesLoading: boolean;
   onExcludedPackagesChange: (
     newExcludedPackages: UpgradeInstancePackagesParams[],
   ) => void;
@@ -29,6 +32,7 @@ interface AffectedPackagesProps {
 const AffectedPackages: FC<AffectedPackagesProps> = ({
   excludedPackages,
   instances,
+  isPackagesLoading,
   onExcludedPackagesChange,
   onTableLimitChange,
   packages,
@@ -36,15 +40,9 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
 }) => {
   const [expandedRow, setExpandedRow] = useState(-1);
 
-  const packageData = useMemo(
-    () =>
-      expandedRow > -1
-        ? [
-            ...packages.slice(0, expandedRow + 1),
-            ...packages.slice(expandedRow),
-          ]
-        : packages,
-    [packages, expandedRow],
+  const packagesData = useMemo(
+    () => getPackagesData(packages, expandedRow, isPackagesLoading),
+    [packages, expandedRow, isPackagesLoading],
   );
 
   const uniquePackages = Object.values(
@@ -94,7 +92,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
           <CheckboxInput
             inline
             label={<span className="u-off-screen">Toggle all packages</span>}
-            disabled={packageData.length === 0}
+            disabled={packagesData.length === 0}
             checked={areAllPackagesNeedToUpdate(
               uniquePackages,
               excludedPackages,
@@ -128,18 +126,22 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
         className: classes.nameColumn,
         Header: "Package name",
         Cell: ({ row: { index, original } }: CellProps<Package>) => {
-          if (expandedRow === -1 || expandedRow !== index - 1) {
-            return <>{original.name}</>;
+          if (expandedRow !== -1 && expandedRow === index - 1) {
+            return (
+              <AffectedInstances
+                currentPackage={original}
+                excludedPackages={excludedPackages}
+                onExcludedPackagesChange={onExcludedPackagesChange}
+                selectedInstances={instances}
+              />
+            );
           }
 
-          return (
-            <AffectedInstances
-              currentPackage={original}
-              excludedPackages={excludedPackages}
-              onExcludedPackagesChange={onExcludedPackagesChange}
-              selectedInstances={instances}
-            />
-          );
+          if (isPackagesLoading && index === packagesData.length - 1) {
+            return <LoadingState />;
+          }
+
+          return original.name;
         },
       },
       {
@@ -157,14 +159,19 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
         ),
       },
     ],
-    [packageData, instances, excludedPackages, expandedRow],
+    [packagesData, instances, excludedPackages, expandedRow, isPackagesLoading],
   );
 
   return (
     <ExpandableTable
       columns={columns}
-      data={packageData}
-      getCellProps={handleCellProps(expandedRow, packageData.length === 0)}
+      data={packagesData}
+      itemCount={packages.length}
+      getCellProps={handleCellProps(
+        expandedRow,
+        isPackagesLoading,
+        packagesData.length - 1,
+      )}
       itemNames={{ plural: "packages", singular: "package" }}
       onLimitChange={onTableLimitChange}
       totalCount={totalPackageCount}

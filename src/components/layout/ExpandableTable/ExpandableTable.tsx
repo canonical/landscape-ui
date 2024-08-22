@@ -19,6 +19,7 @@ interface ExpandableTableProps<T extends Record<string, unknown>> {
   getRowProps?: (
     row: Row<T>,
   ) => Partial<TableRowProps & HTMLProps<HTMLTableRowElement>>;
+  itemCount?: number;
   title?: ReactNode;
 }
 
@@ -27,6 +28,7 @@ const ExpandableTable = <T extends Record<string, unknown>>({
   columns,
   data,
   onLimitChange,
+  itemCount,
   itemNames,
   totalCount,
   getCellProps,
@@ -47,7 +49,7 @@ const ExpandableTable = <T extends Record<string, unknown>>({
       <ExpandableTableFooter
         additionalCta={additionalCta}
         itemNames={itemNames}
-        limit={data.length}
+        limit={itemCount ?? data.length}
         onLimitChange={onLimitChange}
         totalCount={totalCount}
       />

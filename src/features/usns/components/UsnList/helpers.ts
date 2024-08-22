@@ -20,7 +20,7 @@ export const getUsnsWithExpanded = (
   return [
     ...usns.slice(0, expandedCell.row + 1),
     ...usns.slice(expandedCell.row),
-    ...[EMPTY_USN].slice(isFetchingNextPage ? -1 : 0),
+    ...[EMPTY_USN].slice(isFetchingNextPage ? 0 : 1),
   ];
 };
 
