@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { CellProps, Column } from "react-table";
 import { Button } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
@@ -11,6 +11,7 @@ import { Instance } from "@/types/Instance";
 import AffectedPackages from "../AffectedPackages";
 import { handleCellProps } from "./helpers";
 import classes from "./InstancesPanel.module.scss";
+import { InstancePackage } from "@/types/Package";
 
 interface InstancesPanelProps {
   excludedPackages: UpgradeInstancePackagesParams[];
@@ -27,7 +28,11 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
 }) => {
   const [tableLimit, setTableLimit] = useState(5);
   const [expandedRow, setExpandedRow] = useState(-1);
-  const [innerTableLimit, setInnerTableLimit] = useState(5);
+  const [packages, setPackages] = useState<InstancePackage[]>([]);
+  const [offset, setOffset] = useState(0);
+
+  const totalPackageCountRef = useRef(0);
+  const offsetRef = useRef(-1);
 
   const { getInstancePackagesQuery } = usePackages();
 
@@ -37,7 +42,8 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
   } = getInstancePackagesQuery(
     {
       instance_id: instances[expandedRow]?.id,
-      limit: innerTableLimit,
+      limit: 5,
+      offset,
       upgrade: true,
     },
     {
@@ -45,7 +51,22 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
     },
   );
 
+  useEffect(() => {
+    if (!getInstancePackagesResult || offset === offsetRef.current) {
+      return;
+    }
+
+    offsetRef.current = offset;
+    totalPackageCountRef.current = getInstancePackagesResult.data.count;
+    setPackages((prevState) => [
+      ...prevState,
+      ...getInstancePackagesResult.data.results,
+    ]);
+  }, [getInstancePackagesResult]);
+
   const handleExpandCellClick = (index: number) => {
+    setOffset(0);
+    setPackages([]);
     setExpandedRow((prevState) => {
       if (prevState === index) {
         return -1;
@@ -53,7 +74,6 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
 
       return prevState > -1 && prevState < index ? index - 1 : index;
     });
-    setInnerTableLimit(5);
   };
 
   const instanceData = useMemo(
@@ -83,11 +103,9 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
               excludedPackages={excludedPackages}
               instance={original}
               onExcludedPackagesChange={onExcludedPackagesChange}
-              onLimitChange={() =>
-                setInnerTableLimit((prevState) => prevState + 5)
-              }
-              packages={getInstancePackagesResult?.data.results ?? []}
-              packagesCount={getInstancePackagesResult?.data.count ?? 0}
+              onLimitChange={() => setOffset((prevState) => prevState + 5)}
+              packages={packages}
+              packagesCount={totalPackageCountRef.current}
               packagesLoading={getInstancePackagesLoading}
             />
           );
@@ -113,7 +131,7 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
       excludedPackages,
       expandedRow,
       getInstancePackagesLoading,
-      getInstancePackagesResult,
+      packages,
       instanceData.length,
     ],
   );

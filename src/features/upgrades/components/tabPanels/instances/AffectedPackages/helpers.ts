@@ -4,12 +4,23 @@ import { InstancePackage } from "@/features/packages";
 import classes from "./AffectedPackages.module.scss";
 
 export const handleCellProps =
-  ({ loading, showToggle }: { loading: boolean; showToggle: boolean }) =>
-  ({ column, row }: Cell<InstancePackage>) => {
+  ({
+    lastPackageIndex,
+    loading,
+    showToggle,
+  }: {
+    lastPackageIndex: number;
+    loading: boolean;
+    showToggle: boolean;
+  }) =>
+  ({ column, row: { index } }: Cell<InstancePackage>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
 
-    if ((showToggle && row.index === 0) || loading) {
+    if (
+      (showToggle && index === 0) ||
+      (loading && index === lastPackageIndex)
+    ) {
       if (column.id === "checkbox") {
         cellProps.colSpan = 5;
       } else {
@@ -20,3 +31,15 @@ export const handleCellProps =
 
     return cellProps;
   };
+
+export const getPackageData = (
+  packages: InstancePackage[],
+  showSelectAllButton: boolean,
+  packagesLoading: boolean,
+) => {
+  return [
+    ...packages.slice(showSelectAllButton ? -1 : packages.length),
+    ...packages,
+    ...packages.slice(packagesLoading ? -1 : packages.length),
+  ];
+};

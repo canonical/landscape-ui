@@ -9,7 +9,7 @@ import {
 } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import SelectAllButton from "../SelectAllButton";
-import { handleCellProps } from "./helpers";
+import { getPackageData, handleCellProps } from "./helpers";
 
 interface AffectedPackagesProps {
   excludedPackages: UpgradeInstancePackagesParams[];
@@ -46,8 +46,8 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
   }, [instanceExcludedPackages.length, packages]);
 
   const packageData = useMemo(
-    () => (showSelectAllButton ? [packages[0], ...packages] : packages),
-    [packages, instanceExcludedPackages.length],
+    () => getPackageData(packages, showSelectAllButton, packagesLoading),
+    [packages, showSelectAllButton, packagesLoading],
   );
 
   const toggleAllPackages = () => {
@@ -162,12 +162,13 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
     [packageData.length, packagesLoading, instanceExcludedPackages.length],
   );
 
-  return packagesLoading ? (
+  return packagesLoading && !packages.length ? (
     <LoadingState />
   ) : (
     <ExpandableTable
       columns={columns}
       data={packageData}
+      itemCount={packages.length}
       itemNames={{ plural: "packages", singular: "package" }}
       onLimitChange={onLimitChange}
       totalCount={packagesCount}
@@ -177,6 +178,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
         </p>
       }
       getCellProps={handleCellProps({
+        lastPackageIndex: packageData.length - 1,
         loading: packagesLoading,
         showToggle: showSelectAllButton,
       })}
