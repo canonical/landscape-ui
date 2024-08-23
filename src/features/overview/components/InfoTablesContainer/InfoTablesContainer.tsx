@@ -21,10 +21,11 @@ import { FC, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CellProps, Column } from "react-table";
 import classes from "./InfoTablesContainer.module.scss";
-import { InstancesUpgradesTableItem, UpgradesTableItem } from "./helpers";
 import { Usn } from "@/types/Usn";
 import useNotify from "@/hooks/useNotify";
 import LoadingState from "@/components/layout/LoadingState";
+import { Instance } from "@/types/Instance";
+import NoData from "@/components/layout/NoData";
 
 interface InfoTablesContainerProps {}
 
@@ -40,6 +41,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
   const { getPackagesQuery, upgradePackagesQuery } = usePackages();
   const { getUsnsQuery } = useUsns();
   const { getActivitiesQuery, approveActivitiesQuery } = useActivities();
+
   const { mutateAsync: upgradePackages } = upgradePackagesQuery;
   const { mutateAsync: approveActivities } = approveActivitiesQuery;
 
@@ -51,6 +53,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     query: "status:unapproved",
     limit: 10,
   });
+
   const {
     data: inProgressActivitiesRes,
     refetch: refetchInProgressActivities,
@@ -59,6 +62,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     query: "status:delivered",
     limit: 10,
   });
+
   const {
     data: instancesUpgradesRes,
     refetch: refetchInstanceUpgrades,
@@ -66,9 +70,11 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
   } = getInstancesQuery({
     query: "alert:security-upgrades OR alert:package-upgrades",
     limit: 10,
+    with_upgrades: true,
   });
 
   const instancesData = instancesUpgradesRes?.data.results ?? [];
+
   const {
     data: usnsData,
     refetch: refetchUsns,
@@ -90,52 +96,17 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     {
       query: instancesData.map((instance) => `id:${instance.id}`).join(" OR "),
       upgrade: true,
+      limit: 10,
     },
     {
       enabled: instancesData.length > 0,
     },
   );
 
-  const getInstancesTableData = () => {
-    if (!packageDataRes) {
-      return [];
-    }
-    return instancesData.map((instance) => {
-      const affectedPackages = packageDataRes.data.results.reduce(
-        (acc: number, pkg: OldPackage) => {
-          if (pkg.computers.upgrades.includes(instance.id)) {
-            return acc + 1;
-          }
-          return acc;
-        },
-        0,
-      );
-      return {
-        id: instance.id,
-        instanceName: instance.hostname,
-        affectedPackages: affectedPackages,
-      };
-    });
-  };
-
-  const instanceUpgradesData = useMemo(
-    () => getInstancesTableData(),
-    [packageDataRes, instancesData],
-  );
-  const packagesData = packageDataRes?.data.results.slice(0, 10) ?? [];
+  const packagesData = packageDataRes?.data.results ?? [];
   const usnsUpgradesData = usnsData?.data.results ?? [];
-
-  const unapprovedActivities: Activity[] =
-    unapprovedActivitiesRes?.data.results.map((activity) => {
-      return activity;
-    }) ?? [];
-
-  const unapprovedActivitiesData = unapprovedActivities.slice(0, 10);
-
-  const inProgressActivitiesData: Activity[] =
-    inProgressActivitiesRes?.data.results.map((activity) => {
-      return activity;
-    }) ?? [];
+  const unapprovedActivitiesData = unapprovedActivitiesRes?.data.results ?? [];
+  const inProgressActivitiesData = inProgressActivitiesRes?.data.results ?? [];
 
   const getTotalTableItemsCount = (table: "activities" | "upgrades") => {
     if (table === "upgrades") {
@@ -172,17 +143,10 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     }
   };
 
-  const handleClickUpgradesTab = (tabIndex: number) => {
-    setCurrentUpgradesTab(tabIndex);
-  };
-  const handleClickActivitiesTab = (tabIndex: number) => {
-    setCurrentActivitiesTab(tabIndex);
-  };
-
-  const getUpgradesTableData = (): UpgradesTableItem[] => {
+  const getUpgradesTableData = () => {
     switch (currentUpgradesTab) {
       case 0:
-        return instanceUpgradesData;
+        return instancesData;
       case 1:
         return packagesData;
       case 2:
@@ -193,38 +157,50 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
   };
 
   const getIsLoadingUpgrades = () => {
-    if (currentUpgradesTab === 0) {
-      return isLoadingInstanceUpgrades || isLoadingPackages;
-    } else if (currentUpgradesTab === 1) {
-      return isLoadingPackages;
-    } else {
-      return isLoadingUsns;
+    switch (currentUpgradesTab) {
+      case 0:
+        return isLoadingInstanceUpgrades;
+      case 1:
+        return isLoadingPackages;
+      case 2:
+        return isLoadingUsns;
+      default:
+        return false;
     }
   };
 
   const upgradesTableData = useMemo(
     () => getUpgradesTableData(),
-    [currentUpgradesTab, instanceUpgradesData, packagesData, usnsUpgradesData],
+    [currentUpgradesTab, instancesData, packagesData, usnsUpgradesData],
   );
-  const upgradesTableColumns = useMemo<Column<UpgradesTableItem>[]>(() => {
+
+  const upgradesTableColumns = useMemo<
+    Column<Instance | OldPackage | Usn>[]
+  >(() => {
     switch (currentUpgradesTab) {
       case 0:
         return [
           {
             Header: "Instance Name",
             accessor: "instanceName",
-            Cell: ({ row }: CellProps<InstancesUpgradesTableItem>) => (
+            Cell: ({ row }: CellProps<Instance>) => (
               <Link
                 to={`${ROOT_PATH}instances/${row.original.id}`}
                 className={classNames("u-no-margin--bottom", classes.link)}
               >
-                {row.original.instanceName}
+                {row.original.title}
               </Link>
             ),
           },
           {
             Header: "Affected Packages",
-            accessor: "affectedPackages",
+            accessor: "upgrades",
+            Cell: ({ row }: CellProps<Instance>) => (
+              <>
+                {(row.original.upgrades?.security ?? 0) +
+                  (row.original.upgrades?.regular ?? 0)}
+              </>
+            ),
             className: classes.lastCol,
           },
         ];
@@ -236,13 +212,13 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
           },
           {
             Header: "Affected Instances",
-            accessor: "computers.upgrades",
+            accessor: "computers",
             Cell: ({ row }: CellProps<OldPackage>) => (
               <Link
                 to={`${ROOT_PATH}instances`}
                 className={classNames("u-no-margin--bottom", classes.link)}
               >
-                {row.original.computers.upgrades.length}
+                {row.original.computers.length}
               </Link>
             ),
             className: classes.lastCol,
@@ -273,7 +249,6 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     }
   }, [currentUpgradesTab]);
 
-  //activities
   const getActivitiesTableData = () => {
     switch (currentActivitiesTab) {
       case 0:
@@ -291,10 +266,13 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
   );
 
   const getIsLoadingActivities = () => {
-    if (currentActivitiesTab === 0) {
-      return isLoadingUnapprovedActivitiesData;
-    } else {
-      return isLoadingInProgressActivitiesData;
+    switch (currentActivitiesTab) {
+      case 0:
+        return isLoadingUnapprovedActivitiesData;
+      case 1:
+        return isLoadingInProgressActivitiesData;
+      default:
+        return false;
     }
   };
 
@@ -318,7 +296,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
         Header: "Creator",
         accessor: "creator.name",
         Cell: ({ row }: CellProps<ActivityCommon>) => (
-          <>{row.original.creator?.name ?? "-"}</>
+          <>{row.original.creator?.name ?? <NoData />}</>
         ),
       },
       {
@@ -332,6 +310,14 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     ],
     [currentUpgradesTab],
   );
+
+  const handleClickUpgradesTab = (tabIndex: number) => {
+    setCurrentUpgradesTab(tabIndex);
+  };
+
+  const handleClickActivitiesTab = (tabIndex: number) => {
+    setCurrentActivitiesTab(tabIndex);
+  };
 
   const handleUpgradesRefresh = () => {
     switch (currentUpgradesTab) {
@@ -423,83 +409,79 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
     <Row
       className={classNames("u-no-padding u-no-max-width", classes.container)}
     >
-      {upgradesTableData && (
-        <Col size={6} className={classes.tableContainer}>
-          <div className={classes.tableHeader}>
-            <p className="p-heading--5 u-no-margin--bottom">
-              Upgrades available
-            </p>
-            <Button
-              className="is-small u-no-margin--bottom"
-              onClick={handleConfirmUpgradesDialog}
-            >
-              Upgrade all
-            </Button>
-          </div>
-          <Tabs
-            links={[
-              {
-                label: "Instances",
-                role: "tab",
-                active: 0 === currentUpgradesTab,
-                onClick: () => {
-                  handleClickUpgradesTab(0);
-                },
+      <Col size={6} className={classes.tableContainer}>
+        <div className={classes.tableHeader}>
+          <p className="p-heading--5 u-no-margin--bottom">Upgrades available</p>
+          <Button
+            className="is-small u-no-margin--bottom"
+            onClick={handleConfirmUpgradesDialog}
+          >
+            Upgrade all
+          </Button>
+        </div>
+        <Tabs
+          links={[
+            {
+              label: "Instances",
+              role: "tab",
+              active: 0 === currentUpgradesTab,
+              onClick: () => {
+                handleClickUpgradesTab(0);
               },
-              {
-                label: "Packages",
-                role: "tab",
-                active: 1 === currentUpgradesTab,
-                onClick: () => {
-                  handleClickUpgradesTab(1);
-                },
+            },
+            {
+              label: "Packages",
+              role: "tab",
+              active: 1 === currentUpgradesTab,
+              onClick: () => {
+                handleClickUpgradesTab(1);
               },
-              {
-                label: "USNs",
-                role: "tab",
-                active: 2 === currentUpgradesTab,
-                onClick: () => {
-                  handleClickUpgradesTab(2);
-                },
+            },
+            {
+              label: "USNs",
+              role: "tab",
+              active: 2 === currentUpgradesTab,
+              onClick: () => {
+                handleClickUpgradesTab(2);
               },
+            },
+          ]}
+        />
+        {getIsLoadingUpgrades() && <LoadingState />}
+        {!getIsLoadingUpgrades() && upgradesTableData.length === 0 && (
+          <EmptyState
+            title="All instances are up to date"
+            body="Your instances are up to date. Check back later for any new upgrades."
+            cta={[
+              <Button key="refresh" onClick={handleUpgradesRefresh}>
+                Refresh
+              </Button>,
             ]}
           />
-          {getIsLoadingUpgrades() && <LoadingState />}
-          {!getIsLoadingUpgrades() && upgradesTableData.length === 0 && (
-            <EmptyState
-              title="All instances are up to date"
-              body="Your instances are up to date. Check back later for any new upgrades."
-              cta={[
-                <Button key="refresh" onClick={handleUpgradesRefresh}>
-                  Refresh
-                </Button>,
-              ]}
+        )}
+        {!getIsLoadingUpgrades() && upgradesTableData.length > 0 && (
+          <>
+            <ModularTable
+              data={upgradesTableData}
+              columns={upgradesTableColumns}
+              className="u-no-margin--bottom"
             />
-          )}
-          {!getIsLoadingUpgrades() && upgradesTableData.length > 0 && (
-            <>
-              <ModularTable
-                data={upgradesTableData}
-                columns={upgradesTableColumns}
-                className="u-no-margin--bottom"
+            {getTotalTableItemsCount("upgrades") > 10 && (
+              <ExpandableTableFooter
+                viewAll
+                itemNames={{
+                  singular: getUpgradesTableFooterName(),
+                  plural: `${getUpgradesTableFooterName()}s`,
+                }}
+                limit={10}
+                onLimitChange={() => navigate(`${ROOT_PATH}instances`)}
+                totalCount={getTotalTableItemsCount("upgrades")}
+                className={classes.footer}
               />
-              {getTotalTableItemsCount("upgrades") > 10 && (
-                <ExpandableTableFooter
-                  viewAll
-                  itemNames={{
-                    singular: getUpgradesTableFooterName(),
-                    plural: `${getUpgradesTableFooterName()}s`,
-                  }}
-                  limit={10}
-                  onLimitChange={() => navigate(`${ROOT_PATH}instances`)}
-                  totalCount={getTotalTableItemsCount("upgrades")}
-                  className={classes.footer}
-                />
-              )}
-            </>
-          )}
-        </Col>
-      )}
+            )}
+          </>
+        )}
+      </Col>
 
       <Col size={6} className={classes.tableContainer}>
         <div className={classes.tableHeader}>

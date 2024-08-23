@@ -1,4 +1,5 @@
-import { within } from "@testing-library/react";
+import { render, within } from "@testing-library/react";
+import { ReactNode } from "react";
 import { expect } from "vitest";
 
 expect.extend({
@@ -60,26 +61,38 @@ expect.extend({
           : `expected ${this.utils.printReceived(received)} to contain input values ${this.utils.printExpected(notFoundValues)}`,
     };
   },
-  toHaveInfoItem(received: HTMLElement, label: string, value: string) {
-    if (value.length > 120) {
-      value = value.slice(0, 120) + "...";
-    }
+  toHaveInfoItem(received: HTMLElement, label: string, value: string | Object) {
     const infoItem = within(received).getByText(label);
+    let expectedValue: string;
+
+    if (typeof value === "string") {
+      expectedValue = value.length > 120 ? value.slice(0, 120) + "..." : value;
+    } else if (typeof value === "object") {
+      const { container } = render(value as ReactNode);
+      expectedValue = container.textContent ?? "";
+    } else {
+      return {
+        message: () =>
+          `expected ${this.utils.printReceived(received)} not to contain an item with label "${this.utils.printReceived(label)}" and value "${this.utils.printReceived(expectedValue)}"`,
+        pass: true,
+      };
+    }
+
     const pass =
       infoItem &&
       infoItem.nextSibling &&
-      infoItem.nextSibling.textContent === value;
+      infoItem.nextSibling.textContent === expectedValue;
 
     if (pass) {
       return {
         message: () =>
-          `expected ${this.utils.printReceived(received)} not to contain an item with label "${this.utils.printReceived(label)}" and value "${this.utils.printReceived(value)}"`,
+          `expected ${this.utils.printReceived(received)} not to contain an item with label "${this.utils.printReceived(label)}" and value "${this.utils.printReceived(expectedValue)}"`,
         pass: true,
       };
     } else {
       return {
         message: () =>
-          `expected ${this.utils.printReceived(received)} to contain an item with label "${this.utils.printReceived(label)}" and value "${this.utils.printReceived(value)}"`,
+          `expected ${this.utils.printReceived(received)} to contain an item with label "${this.utils.printReceived(label)}" and value "${this.utils.printReceived(expectedValue)}"`,
         pass: false,
       };
     }

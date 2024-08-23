@@ -3,6 +3,9 @@ import classes from "./UbuntuProHeader.module.scss";
 import { Col, Link, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import { UbuntuProInfo } from "@/types/Instance";
+import NoData from "@/components/layout/NoData";
+import moment from "moment";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 interface UbuntuProHeaderProps {
   ubuntuProData: UbuntuProInfo;
@@ -12,30 +15,24 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => {
   const infoItems = [
     {
       label: "Account",
-      value: ubuntuProData.account?.name ?? "-",
+      value: ubuntuProData.account?.name || <NoData />,
     },
     {
       label: "Subscription",
-      value: ubuntuProData.contract?.name ?? "-",
+      value: ubuntuProData.contract?.name || <NoData />,
     },
     {
       label: "Valid Until",
       value:
-        ubuntuProData.expires !== "n/a"
-          ? new Date(ubuntuProData.expires).toLocaleString("en-GB", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-              timeZoneName: "short",
-              timeZone: "UTC",
-            })
-          : "-",
+        ubuntuProData.expires && moment(ubuntuProData.expires).isValid() ? (
+          moment(ubuntuProData.expires).format(DISPLAY_DATE_TIME_FORMAT)
+        ) : (
+          <NoData />
+        ),
     },
     {
       label: "Technical Support Level",
-      value: ubuntuProData.contract?.tech_support_level ?? "-",
+      value: ubuntuProData.contract?.tech_support_level ?? <NoData />,
     },
   ];
   return (

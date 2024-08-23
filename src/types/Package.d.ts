@@ -16,13 +16,15 @@ export interface PocketPackagesList {
   [componentArchitecturePair: string]: PocketPackage[];
 }
 
+interface OldPackageComputerInfo {
+  id: number;
+  status: "available" | "installed" | "held" | "security";
+  available_version: string | null;
+  current_version: string | null;
+}
+
 export interface OldPackage extends Record<string, unknown> {
-  computers: {
-    available: number[];
-    held: number[];
-    installed: number[];
-    upgrades: number[];
-  };
+  computers: OldPackageComputerInfo[];
   name: string;
   summary: string;
   version: string;
