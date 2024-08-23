@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import useDebug from "@/hooks/useDebug";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -13,7 +13,7 @@ import axios, { AxiosResponse } from "axios";
 import { API_URL, ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { AuthUser } from "@/context/auth";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export interface LoginRequestParams {
   email: string;
@@ -31,8 +31,10 @@ interface FormProps {
 const LoginForm: FC = () => {
   const debug = useDebug();
   const { setUser } = useAuth();
-  const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { search } = useLocation();
+
+  const redirect = new URLSearchParams(search).get("redirect");
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -48,8 +50,6 @@ const LoginForm: FC = () => {
       remember: Yup.boolean(),
     }),
     onSubmit: async (values) => {
-      setLoading(true);
-
       try {
         const { data } = await axios.post<
           LoginRequestResponse,
@@ -62,12 +62,10 @@ const LoginForm: FC = () => {
 
         setUser(data, values.remember);
 
-        navigate(`${ROOT_PATH}`, { replace: true });
+        navigate(redirect ?? ROOT_PATH, { replace: true });
       } catch (error) {
         debug(error);
       }
-
-      setLoading(false);
     },
   });
 
@@ -106,7 +104,7 @@ const LoginForm: FC = () => {
         <Button
           type="submit"
           appearance="positive"
-          disabled={isLoading}
+          disabled={formik.isSubmitting}
           className="u-no-margin--bottom"
         >
           Login

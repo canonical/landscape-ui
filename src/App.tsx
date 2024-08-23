@@ -1,5 +1,11 @@
 import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
-import { Outlet, Route, Routes, useNavigate } from "react-router-dom";
+import {
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import AppNotification from "@/components/layout/AppNotification";
 import LoadingState from "@/components/layout/LoadingState";
@@ -82,13 +88,16 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
   const { authorized, authLoading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { pathname, search } = useLocation();
 
   useEffect(() => {
     if (authorized || authLoading) {
       return;
     }
 
-    navigate(`${ROOT_PATH}login`, { replace: true });
+    navigate(`${ROOT_PATH}login?redirect=${pathname}${search}`, {
+      replace: true,
+    });
     queryClient.clear();
   }, [authorized, authLoading]);
 
