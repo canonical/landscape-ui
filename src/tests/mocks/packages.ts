@@ -1,4 +1,6 @@
-export const packages = [
+import { OldPackage } from "@/types/Package";
+
+export const packages: OldPackage[] = [
   {
     name: "accountsservice",
     version: "0.6.55-0ubuntu12~20.04.6",
@@ -7,1022 +9,127 @@ export const packages = [
       name: "6190-1",
       summary: "accountsservice vulnerability",
     },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
+    computers: [
+      {
+        available_version: "0.6.55-5",
+        current_version: "0.6.55-0ubuntu12~20.04.5",
+        id: 1,
+        status: "installed",
+      },
+      {
+        available_version: "0.6.55-5",
+        current_version: "0.6.55-0ubuntu12~20.04.5",
+        id: 2,
+        status: "security",
+      },
+    ],
   },
   {
-    name: "alsa-ucm-conf",
-    version: "1.2.2-1ubuntu0.13",
-    summary: "ALSA Use Case Manager configuration files",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
+    name: "acl",
+    version: "2.2.53-10ubuntu1",
+    summary: "Access control list utilities",
+    usn: {
+      name: "6190-1",
+      summary: "acl vulnerability",
     },
+    computers: [
+      {
+        available_version: "2.2.53-10ubuntu1",
+        current_version: "2.2.53-10ubuntu1",
+        id: 1,
+        status: "installed",
+      },
+      {
+        available_version: "2.2.53-10ubuntu1",
+        current_version: "2.2.53-10ubuntu1",
+        id: 2,
+        status: "installed",
+      },
+    ],
+  },
+  {
+    name: "acpid",
+    version: "1:2.0.32-1ubuntu1",
+    summary: "Advanced Configuration and Power Interface event daemon",
+    usn: {
+      name: "6190-1",
+      summary: "acpid vulnerability",
+    },
+    computers: [
+      {
+        available_version: "1: 2.0.32-1ubuntu1",
+        current_version: "1:2.0.32-1ubuntu1",
+        id: 1,
+        status: "installed",
+      },
+    ],
+  },
+  {
+    name: "adduser",
+    version: "3.118ubuntu2",
+    summary: "add and remove users and groups",
+    usn: {
+      name: "6190-1",
+      summary: "adduser vulnerability",
+    },
+    computers: [
+      {
+        available_version: "3.118ubuntu2",
+        current_version: "3.118ubuntu2",
+        id: 1,
+        status: "installed",
+      },
+    ],
   },
   {
     name: "apparmor",
-    version: "2.13.3-7ubuntu5.3",
+    version: "2.13.3-7.1ubuntu1.3",
     summary: "user-space parser utility for AppArmor",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
+    usn: {
+      name: "6190-1",
+      summary: "apparmor vulnerability",
     },
+    computers: [
+      {
+        available_version: "2.13.3-7.1ubuntu1.3",
+        current_version: "2.13.3-7.1ubuntu1.3",
+        id: 1,
+        status: "installed",
+      },
+    ],
   },
   {
     name: "apport",
-    version: "2.20.11-0ubuntu27.27",
-    summary: "automatically generate crash reports for debugging",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "apport",
-    version: "2.20.11-0ubuntu27.26",
+    version: "2.20.11-0ubuntu27.16",
     summary: "automatically generate crash reports for debugging",
     usn: {
-      name: "6018-1",
+      name: "6190-1",
       summary: "apport vulnerability",
     },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
+    computers: [
+      {
+        available_version: "2.20.11-0ubuntu27.16",
+        current_version: "2.20.11-0ubuntu27.16",
+        id: 1,
+        status: "installed",
+      },
+    ],
   },
   {
     name: "apt",
-    version: "2.0.10",
-    summary: "commandline package manager",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "apt",
-    version: "2.0.2ubuntu0.2",
+    version: "2.0.6",
     summary: "commandline package manager",
     usn: {
-      name: "4667-1",
+      name: "6190-1",
       summary: "apt vulnerability",
     },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "apt-utils",
-    version: "2.0.10",
-    summary: "package management related utility programs",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "apt-utils",
-    version: "2.0.2ubuntu0.2",
-    summary: "package management related utility programs",
-    usn: {
-      name: "4667-1",
-      summary: "apt vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "base-files",
-    version: "11ubuntu5.7",
-    summary: "Debian base system miscellaneous files",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "bash",
-    version: "5.0-6ubuntu1.2",
-    summary: "GNU Bourne Again SHell",
-    usn: {
-      name: "5380-1",
-      summary: "bash vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "bcache-tools",
-    version: "1.0.8-3ubuntu0.1",
-    summary: "bcache userspace tools",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "bind9-dnsutils",
-    version: "1:9.16.1-0ubuntu2.16",
-    summary: "Clients provided with BIND 9",
-    usn: {
-      name: "6390-1",
-      summary: "bind9 vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "bind9-host",
-    version: "1:9.16.1-0ubuntu2.16",
-    summary: "DNS Lookup Utility",
-    usn: {
-      name: "6390-1",
-      summary: "bind9 vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "bind9-libs",
-    version: "1:9.16.1-0ubuntu2.16",
-    summary: "Shared Libraries used by BIND 9",
-    usn: {
-      name: "6390-1",
-      summary: "bind9 vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "binutils",
-    version: "2.38-4ubuntu2.4",
-    summary: "GNU assembler, linker and binary utilities",
-    usn: {
-      name: "6544-1",
-      summary: "binutils vulnerabilities",
-    },
-    computers: {
-      available: [20],
-      installed: [],
-      upgrades: [20],
-      held: [],
-    },
-  },
-  {
-    name: "binutils-common",
-    version: "2.38-4ubuntu2.4",
-    summary: "Common files for the GNU assembler, linker and binary utilities",
-    usn: {
-      name: "6544-1",
-      summary: "binutils vulnerabilities",
-    },
-    computers: {
-      available: [20],
-      installed: [],
-      upgrades: [20],
-      held: [],
-    },
-  },
-  {
-    name: "binutils-x86-64-linux-gnu",
-    version: "2.38-4ubuntu2.4",
-    summary: "GNU binary utilities, for x86-64-linux-gnu target",
-    usn: {
-      name: "6544-1",
-      summary: "binutils vulnerabilities",
-    },
-    computers: {
-      available: [20],
-      installed: [],
-      upgrades: [20],
-      held: [],
-    },
-  },
-  {
-    name: "bolt",
-    version: "0.9.1-2~ubuntu20.04.2",
-    summary: "system daemon to manage thunderbolt 3 devices",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "bsdutils",
-    version: "1:2.34-0.1ubuntu9.4",
-    summary: "basic utilities from 4.4BSD-Lite",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "bsdutils",
-    version: "1:2.34-0.1ubuntu9.3",
-    summary: "basic utilities from 4.4BSD-Lite",
-    usn: {
-      name: "5279-1",
-      summary: "util-linux vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "busybox-initramfs",
-    version: "1:1.30.1-4ubuntu6.4",
-    summary: "Standalone shell setup for initramfs",
-    usn: {
-      name: "5179-1",
-      summary: "busybox vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "busybox-static",
-    version: "1:1.30.1-4ubuntu6.4",
-    summary: "Standalone rescue shell with tons of builtin utilities",
-    usn: {
-      name: "5179-1",
-      summary: "busybox vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "ca-certificates",
-    version: "20230311ubuntu0.20.04.1",
-    summary: "Common CA certificates",
-    usn: {
-      name: "6105-1",
-      summary: "ca-certificates update",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "cloud-init",
-    version: "23.3.3-0ubuntu0~20.04.1",
-    summary: "initialization and customization tool for cloud instances",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "cloud-init",
-    version: "23.1.2-0ubuntu0~20.04.2",
-    summary: "initialization and customization tool for cloud instances",
-    usn: {
-      name: "6042-2",
-      summary: "cloud-init regression",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "cloud-initramfs-copymods",
-    version: "0.45ubuntu2",
-    summary: "copy initramfs modules into root filesystem for later use",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "cloud-initramfs-dyn-netconf",
-    version: "0.45ubuntu2",
-    summary: "write a network interface file in /run for BOOTIF",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "command-not-found",
-    version: "20.04.6",
-    summary: "Suggest installation of packages in interactive bash sessions",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "cpio",
-    version: "2.13+dfsg-2ubuntu0.3",
-    summary: "GNU cpio -- a program to manage archives of files",
-    usn: {
-      name: "5064-1",
-      summary: "cpio vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "cryptsetup",
-    version: "2:2.2.2-3ubuntu2.4",
-    summary: "disk encryption support - startup scripts",
-    usn: {
-      name: "5286-1",
-      summary: "cryptsetup vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "cryptsetup-bin",
-    version: "2:2.2.2-3ubuntu2.4",
-    summary: "disk encryption support - command line tools",
-    usn: {
-      name: "5286-1",
-      summary: "cryptsetup vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "cryptsetup-initramfs",
-    version: "2:2.2.2-3ubuntu2.4",
-    summary: "disk encryption support - initramfs integration",
-    usn: {
-      name: "5286-1",
-      summary: "cryptsetup vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "cryptsetup-run",
-    version: "2:2.2.2-3ubuntu2.4",
-    summary: "transitional dummy package for cryptsetup",
-    usn: {
-      name: "5286-1",
-      summary: "cryptsetup vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "curl",
-    version: "7.68.0-1ubuntu2.21",
-    summary: "command line tool for transferring data with URL syntax",
-    usn: {
-      name: "6535-1",
-      summary: "curl vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "dbus",
-    version: "1.12.16-2ubuntu2.3",
-    summary: "simple interprocess messaging system (daemon and utilities)",
-    usn: {
-      name: "5704-1",
-      summary: "dbus vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "dbus-user-session",
-    version: "1.12.16-2ubuntu2.3",
-    summary:
-      "simple interprocess messaging system (systemd --user integration)",
-    usn: {
-      name: "5704-1",
-      summary: "dbus vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "dirmngr",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - network certificate management service",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "distro-info-data",
-    version: "0.43ubuntu1.15",
-    summary: "information about the distributions' releases (data files)",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "distro-info-data",
-    version: "0.43ubuntu1.10",
-    summary: "information about the distributions' releases (data files)",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "dpkg",
-    version: "1.19.7ubuntu3.2",
-    summary: "Debian package management system",
-    usn: {
-      name: "5446-1",
-      summary: "dpkg vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "e2fsprogs",
-    version: "1.45.5-2ubuntu1.1",
-    summary: "ext2/ext3/ext4 file system utilities",
-    usn: {
-      name: "5464-1",
-      summary: "e2fsprogs vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "fdisk",
-    version: "2.34-0.1ubuntu9.4",
-    summary: "collection of partitioning utilities",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "fdisk",
-    version: "2.34-0.1ubuntu9.3",
-    summary: "collection of partitioning utilities",
-    usn: {
-      name: "5279-1",
-      summary: "util-linux vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "finalrd",
-    version: "6~ubuntu20.04.1",
-    summary: "final runtime directory for shutdown",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "findutils",
-    version: "4.2.31-1ubuntu2.1-2",
-    summary: "utilities for finding files--find, xargs, and locate",
-    computers: {
-      available: [5, 1, 2, 3, 4],
-      installed: [],
-      upgrades: [5, 1, 2, 3, 4],
-      held: [],
-    },
-  },
-  {
-    name: "findutils",
-    version: "4.2.31-1ubuntu2.1-1",
-    summary: "utilities for finding files--find, xargs, and locate",
-    computers: {
-      available: [5, 1, 2, 3, 4],
-      installed: [],
-      upgrades: [5, 1, 2, 3, 4],
-      held: [],
-    },
-  },
-  {
-    name: "friendly-recovery",
-    version: "0.2.41ubuntu0.20.04.1",
-    summary: "Make recovery boot mode more user-friendly",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "fwupd",
-    version: "1.7.9-1~20.04.3",
-    summary: "Firmware update daemon",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "fwupd",
-    version: "1.3.9-4ubuntu0.1",
-    summary: "Firmware update daemon",
-    usn: {
-      name: "4395-1",
-      summary: "fwupd vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "fwupd-signed",
-    version: "1.51.1~20.04.1+1.4-0ubuntu0.1",
-    summary: "Linux Firmware Updater EFI signed binary",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "fwupd-signed",
-    version: "1.27.1ubuntu1+1.3.9-4ubuntu0.1",
-    summary: "Linux Firmware Updater EFI signed binary",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gawk",
-    version: "1:5.0.1+dfsg-1ubuntu0.1",
-    summary: "GNU awk, a pattern scanning and processing language",
-    usn: {
-      name: "6373-1",
-      summary: "gawk vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gcc-10-base",
-    version: "10.5.0-1ubuntu1~20.04",
-    summary: "GCC, the GNU Compiler Collection (base package)",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gir1.2-glib-2.0",
-    version: "1.64.1-1~ubuntu20.04.1",
-    summary: "Introspection data for GLib, GObject, Gio and GModule",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gir1.2-packagekitglib-1.0",
-    version: "1.1.13-2ubuntu1.1",
-    summary: "GObject introspection data for the PackageKit GLib library",
-    usn: {
-      name: "4538-1",
-      summary: "packagekit vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "git",
-    version: "1:2.25.1-1ubuntu3.11",
-    summary: "fast, scalable, distributed revision control system",
-    usn: {
-      name: "6050-1",
-      summary: "git vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "git-man",
-    version: "1:2.25.1-1ubuntu3.11",
-    summary:
-      "fast, scalable, distributed revision control system (manual pages)",
-    usn: {
-      name: "6050-1",
-      summary: "git vulnerabilities",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "glib-networking",
-    version: "2.64.2-1ubuntu0.1",
-    summary: "network-related giomodules for GLib",
-    usn: {
-      name: "4405-1",
-      summary: "glib-networking vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "glib-networking-common",
-    version: "2.64.2-1ubuntu0.1",
-    summary: "network-related giomodules for GLib - data files",
-    usn: {
-      name: "4405-1",
-      summary: "glib-networking vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "glib-networking-services",
-    version: "2.64.2-1ubuntu0.1",
-    summary: "network-related giomodules for GLib - D-Bus services",
-    usn: {
-      name: "4405-1",
-      summary: "glib-networking vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gnupg",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - a free PGP replacement",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gnupg-l10n",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - localization files",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gnupg-utils",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - utility programs",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gpg",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU Privacy Guard -- minimalist public key operations",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gpg-agent",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - cryptographic agent",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gpg-wks-client",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - Web Key Service client",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gpg-wks-server",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - Web Key Service server",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gpgconf",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - core configuration utilities",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gpgsm",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - S/MIME version",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gpgv",
-    version: "2.2.19-3ubuntu2.2",
-    summary: "GNU privacy guard - signature verification tool",
-    usn: {
-      name: "5503-1",
-      summary: "gnupg2 vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "gzip",
-    version: "1.10-0ubuntu4.1",
-    summary: "GNU compression utilities",
-    usn: {
-      name: "5378-1",
-      summary: "gzip vulnerability",
-    },
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "initramfs-tools",
-    version: "0.136ubuntu6.7",
-    summary: "generic modular initramfs generator (automation)",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "initramfs-tools-bin",
-    version: "0.136ubuntu6.7",
-    summary: "binaries used by initramfs-tools",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "initramfs-tools-core",
-    version: "0.136ubuntu6.7",
-    summary: "generic modular initramfs generator (core tools)",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
-  },
-  {
-    name: "iptables",
-    version: "1.8.4-3ubuntu2.1",
-    summary: "administration tools for packet filtering and NAT",
-    computers: {
-      available: [21],
-      installed: [],
-      upgrades: [21],
-      held: [],
-    },
+    computers: [
+      {
+        available_version: "2.0.6",
+        current_version: "2.0.6",
+        id: 1,
+        status: "installed",
+      },
+    ],
   },
 ];

@@ -100,9 +100,10 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
       {
         accessor: "actions",
         className: classes.actions,
-        Cell: ({ row: { original } }: CellProps<Role>) => (
-          <RoleListActions role={original} />
-        ),
+        Cell: ({ row: { original } }: CellProps<Role>) =>
+          original.name !== "GlobalAdmin" ? (
+            <RoleListActions role={original} />
+          ) : null,
       },
     ],
     [roles, getPermissionsQueryResult, expandedCell],

@@ -2,6 +2,9 @@ import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import UbuntuProHeader from "./UbuntuProHeader";
 import { screen } from "@testing-library/react";
+import moment from "moment";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import NoData from "@/components/layout/NoData";
 
 const ubuntuProDataWithAccountInfo = instances.find(
   (instance) => instance.ubuntu_pro_info && instance.ubuntu_pro_info?.account,
@@ -23,30 +26,24 @@ describe("renders Ubuntu Pro Panel", () => {
       const ubuntuProHeaderFields = [
         {
           label: "Account",
-          value: data.account?.name ?? "-",
+          value: data.account?.name ?? <NoData />,
         },
         {
           label: "Subscription",
-          value: data.contract?.name ?? "-",
+          value: data.contract?.name ?? <NoData />,
         },
         {
           label: "Valid Until",
           value:
-            data.expires !== "n/a"
-              ? new Date(data.expires).toLocaleString("en-GB", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                  timeZoneName: "short",
-                  timeZone: "UTC",
-                })
-              : "-",
+            data.expires && moment(data.expires).isValid() ? (
+              moment(data.expires).format(DISPLAY_DATE_TIME_FORMAT)
+            ) : (
+              <NoData />
+            ),
         },
         {
           label: "Technical Support Level",
-          value: data.contract?.tech_support_level ?? "-",
+          value: data.contract?.tech_support_level ?? <NoData />,
         },
       ];
       ubuntuProHeaderFields.forEach((field) => {
