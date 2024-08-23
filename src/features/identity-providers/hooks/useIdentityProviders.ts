@@ -31,6 +31,11 @@ export interface AddProviderParams {
 
 type UpdateProviderParams = SingleProviderParams & AddProviderParams;
 
+export interface GetAuthUrlParams {
+  id: number;
+  return_to?: string;
+}
+
 export default function useIdentityProviders() {
   const queryClient = useQueryClient();
   const authFetch = useFetch();
@@ -112,6 +117,16 @@ export default function useIdentityProviders() {
       queryClient.invalidateQueries({ queryKey: ["oidcProviders"] }),
   });
 
+  const getAuthUrlQuery: QueryFnTypeWithRequiredParam<
+    AxiosResponse<{ location: string }>,
+    GetAuthUrlParams
+  > = (queryParams, config = {}) =>
+    useQuery<AxiosResponse<{ location: string }>, AxiosError<ApiError>>({
+      queryKey: ["authUrl"],
+      queryFn: () => authFetch!.get(`/auth/start`, { params: queryParams }),
+      ...config,
+    });
+
   return {
     addProviderQuery,
     getSupportedProvidersQuery,
@@ -119,5 +134,6 @@ export default function useIdentityProviders() {
     getSingleProviderQuery,
     updateProviderQuery,
     deleteProviderQuery,
+    getAuthUrlQuery,
   };
 }
