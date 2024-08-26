@@ -13,6 +13,13 @@ const AvailableProviderList: FC = () => {
   const { getProvidersQuery, getAuthUrlQuery } = useIdentityProviders();
   const { search } = useLocation();
 
+  const hostnameParts = window.location.hostname.split(".");
+  let subdomain = "";
+
+  if (hostnameParts.length > 2) {
+    subdomain = hostnameParts[0];
+  }
+
   const return_to = new URLSearchParams(search).get("redirect");
 
   const params: GetAuthUrlParams = { id: providerId };
@@ -30,8 +37,8 @@ const AvailableProviderList: FC = () => {
   }
 
   const { data: identityProviders, isLoading } = getProvidersQuery(
-    { account_name: account ?? "" },
-    { enabled: !!account },
+    { account_name: subdomain ?? account ?? "" },
+    { enabled: !!subdomain || !!account },
   );
 
   const availableProviders =
