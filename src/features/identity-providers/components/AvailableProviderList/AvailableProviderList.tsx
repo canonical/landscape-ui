@@ -20,7 +20,8 @@ const AvailableProviderList: FC = () => {
     subdomain = hostnameParts[0];
   }
 
-  const return_to = new URLSearchParams(search).get("redirect");
+  const return_to = new URLSearchParams(search).get("redirect-to");
+  const open = new URLSearchParams(search).get("open") === "true";
 
   const params: GetAuthUrlParams = { id: providerId };
 
@@ -33,7 +34,9 @@ const AvailableProviderList: FC = () => {
   });
 
   if (getAuthUrlQueryResult) {
-    window.open(getAuthUrlQueryResult.data.location, "_self")?.focus();
+    open
+      ? window.open(getAuthUrlQueryResult.data.location, "_self")?.focus()
+      : (window.location.href = getAuthUrlQueryResult.data.location);
   }
 
   const { data: identityProviders, isLoading } = getProvidersQuery(

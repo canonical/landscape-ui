@@ -95,7 +95,7 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
       return;
     }
 
-    navigate(`${ROOT_PATH}login?redirect=${pathname}${search}`, {
+    navigate(`${ROOT_PATH}login?redirect-to=${pathname}${search}`, {
       replace: true,
     });
     queryClient.clear();

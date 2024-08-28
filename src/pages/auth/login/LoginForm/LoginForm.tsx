@@ -34,7 +34,7 @@ const LoginForm: FC = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
 
-  const redirect = new URLSearchParams(search).get("redirect");
+  const redirectTo = new URLSearchParams(search).get("redirect-to");
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -62,7 +62,7 @@ const LoginForm: FC = () => {
 
         setUser(data, values.remember);
 
-        navigate(redirect ?? ROOT_PATH, { replace: true });
+        navigate(redirectTo ?? ROOT_PATH, { replace: true });
       } catch (error) {
         debug(error);
       }
