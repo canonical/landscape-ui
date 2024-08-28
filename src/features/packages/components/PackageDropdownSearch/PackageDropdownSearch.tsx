@@ -1,15 +1,15 @@
-import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
-import { usePackages } from "@/hooks/usePackages";
-import { Package } from "@/types/Package";
-import { Button, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import React, { FC, useState } from "react";
-import { useDebounceCallback } from "usehooks-ts";
-import classes from "./PackageDropdownSearch.module.scss";
-import { DEBOUNCE_DELAY, boldSubstring } from "./helpers";
 import { useParams } from "react-router-dom";
+import { useDebounceCallback } from "usehooks-ts";
+import { Button, SearchBox } from "@canonical/react-components";
+import LoadingState from "@/components/layout/LoadingState";
+import useDebug from "@/hooks/useDebug";
+import { usePackages } from "../../hooks";
+import { Package } from "../../types";
+import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
+import classes from "./PackageDropdownSearch.module.scss";
 
 interface PackageDropdownSearchProps {
   selectedItems: Package[];

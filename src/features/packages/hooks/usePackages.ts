@@ -1,18 +1,18 @@
+import { AxiosError, AxiosResponse } from "axios";
 import {
   useMutation,
   useQuery,
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import useFetchOld from "./useFetchOld";
-import { QueryFnType } from "@/types/QueryFnType";
-import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "@/types/ApiError";
-import { OldPackage, Package } from "@/types/Package";
-import useDebug from "./useDebug";
-import useFetch from "./useFetch";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { Activity } from "@/features/activities";
+import useFetchOld from "@/hooks/useFetchOld";
+import useDebug from "@/hooks/useDebug";
+import useFetch from "@/hooks/useFetch";
+import { ApiError } from "@/types/ApiError";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { QueryFnType } from "@/types/QueryFnType";
+import { OldPackage, Package } from "../types";
 
 export interface GetPackagesParams {
   query: string;
@@ -39,14 +39,11 @@ interface GetInstancePackagesParams {
   security?: boolean;
 }
 
-export interface CommonPackagesActionParams {
+export interface UpgradePackagesParams {
   query: string;
-  packages?: string[];
   deliver_after?: string;
   deliver_delay_window?: number;
-}
-
-interface UpgradePackagesParams extends CommonPackagesActionParams {
+  packages?: string[];
   security_only?: boolean;
 }
 
@@ -61,7 +58,15 @@ interface DowngradePackageVersionParams {
   package_version: string;
 }
 
-export const usePackages = () => {
+interface PackagesActionParams {
+  action: "install" | "remove" | "hold" | "unhold";
+  computer_ids: number[];
+  package_ids: number[];
+  deliver_after?: string;
+  deliver_delay_window?: number;
+}
+
+export default function usePackages() {
   const queryClient = useQueryClient();
   const authFetchOld = useFetchOld();
   const authFetch = useFetch();
@@ -107,40 +112,13 @@ export const usePackages = () => {
     });
   };
 
-  const installPackagesQuery = useMutation<
-    AxiosResponse<unknown>,
-    AxiosError<ApiError>,
-    CommonPackagesActionParams
-  >({
-    mutationKey: ["packages", "install"],
-    mutationFn: (params) => authFetchOld!.get("InstallPackages", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["packages"]).catch(debug);
-    },
-  });
-
-  const removePackagesQuery = useMutation<
-    AxiosResponse<unknown>,
-    AxiosError<ApiError>,
-    CommonPackagesActionParams
-  >({
-    mutationKey: ["packages", "install"],
-    mutationFn: (params) => authFetchOld!.get("RemovePackages", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["packages"]).catch(debug);
-    },
-  });
-
   const upgradePackagesQuery = useMutation<
-    AxiosResponse<unknown>,
+    AxiosResponse<Activity>,
     AxiosError<ApiError>,
     UpgradePackagesParams
   >({
-    mutationKey: ["packages", "upgrade"],
     mutationFn: (params) => authFetchOld!.get("UpgradePackages", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["packages"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries(["packages"]),
   });
 
   const getDowngradePackageVersionsQuery = (
@@ -161,7 +139,7 @@ export const usePackages = () => {
       >,
       AxiosError<ApiError>
     >({
-      queryKey: ["packages", { instanceId, packageName }],
+      queryKey: ["packageDowngradeVersion", { instanceId, packageName }],
       queryFn: () =>
         authFetch!.get(
           `computers/${instanceId}/packages/installed/${packageName}/downgrades`,
@@ -181,13 +159,21 @@ export const usePackages = () => {
     },
   });
 
+  const packagesActionQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    PackagesActionParams
+  >({
+    mutationFn: (params) => authFetch!.post("packages", params),
+    onSuccess: () => queryClient.invalidateQueries(["packages"]),
+  });
+
   return {
     getPackagesQuery,
     getInstancePackagesQuery,
-    installPackagesQuery,
-    removePackagesQuery,
     upgradePackagesQuery,
     getDowngradePackageVersionsQuery,
     downgradePackageVersionQuery,
+    packagesActionQuery,
   };
-};
+}

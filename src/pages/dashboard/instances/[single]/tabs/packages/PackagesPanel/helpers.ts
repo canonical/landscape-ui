@@ -1,4 +1,4 @@
-export const emptyMessage = (filter: string, packageSearch: string) => {
+export const getEmptyMessage = (filter: string, packageSearch: string) => {
   let message: string;
 
   if (filter === "") {

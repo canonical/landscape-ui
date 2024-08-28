@@ -45,6 +45,7 @@ export interface PackageObject {
 export interface Package extends Record<string, unknown> {
   available_version: string | null;
   current_version: string | null;
+  id: number;
   name: string;
   status: "available" | "installed" | "held" | "security";
   summary: string;

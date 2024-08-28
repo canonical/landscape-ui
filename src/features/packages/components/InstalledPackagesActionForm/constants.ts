@@ -7,9 +7,3 @@ export const INITIAL_VALUES: FormProps = {
   randomize_delivery: false,
   version: "",
 };
-
-export const CTA_LABELS = {
-  remove: "Remove",
-  upgrade: "Upgrade",
-  downgrade: "Downgrade",
-};

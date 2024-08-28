@@ -1,4 +1,4 @@
-import { OldPackage } from "@/types/Package";
+import { OldPackage } from "@/features/packages";
 
 export const packages: OldPackage[] = [
   {

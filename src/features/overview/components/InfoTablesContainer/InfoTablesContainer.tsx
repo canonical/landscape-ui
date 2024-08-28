@@ -5,9 +5,8 @@ import { Activity, ActivityCommon, useActivities } from "@/features/activities";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import { usePackages } from "@/hooks/usePackages";
+import { OldPackage, usePackages } from "@/features/packages";
 import useUsns from "@/hooks/useUsns";
-import { OldPackage } from "@/types/Package";
 import {
   Button,
   Col,
