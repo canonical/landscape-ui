@@ -38,12 +38,11 @@ describe("AlertNotificationsList", () => {
           ? alert.summary === item.textContent
           : null,
       );
-
       const icon = item.querySelector("i");
 
       if (icon && alert) {
         expect(icon.className).toContain(
-          `p-icon--${STATUSES[alert.alert_type].icon.color}`,
+          `p-icon--${STATUSES[alert.alert_type].icon.color ?? STATUSES[alert.alert_type].icon.gray}`,
         );
       }
     });
