@@ -1,12 +1,12 @@
 import { FC, useEffect, useRef, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import {
+  Package,
   UpgradeInstancePackagesParams,
   usePackages,
 } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import AffectedPackages from "../AffectedPackages";
-import { Package } from "@/types/Package";
 
 interface PackagesPanelProps {
   excludedPackages: UpgradeInstancePackagesParams[];

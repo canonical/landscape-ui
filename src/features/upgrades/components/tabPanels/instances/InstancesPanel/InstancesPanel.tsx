@@ -4,6 +4,7 @@ import { CellProps, Column } from "react-table";
 import { Button } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import {
+  InstancePackage,
   UpgradeInstancePackagesParams,
   usePackages,
 } from "@/features/packages";
@@ -11,7 +12,6 @@ import { Instance } from "@/types/Instance";
 import AffectedPackages from "../AffectedPackages";
 import { handleCellProps } from "./helpers";
 import classes from "./InstancesPanel.module.scss";
-import { InstancePackage } from "@/types/Package";
 
 interface InstancesPanelProps {
   excludedPackages: UpgradeInstancePackagesParams[];

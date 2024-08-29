@@ -1,4 +1,4 @@
-import { Package } from "@/types/Package";
+import { Package } from "@/features/packages";
 
 export const EMPTY_PACKAGE: Package = {
   name: "",
