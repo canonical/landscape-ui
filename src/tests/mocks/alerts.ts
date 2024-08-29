@@ -116,9 +116,21 @@ export const alerts: Alert[] = [
 
 export const alertsSummary: AlertSummary[] = [
   {
-    id: 3,
+    id: 1,
+    alert_type: "ComputerDuplicateAlert",
+    summary: "2 computers are duplicates",
+    activation_time: "2024-06-25 08:09:38.784578",
+  },
+  {
+    id: 2,
     alert_type: "PackageUpgradesAlert",
     summary: "7 computers have package upgrades available",
+    activation_time: "2024-06-25 08:09:38.784578",
+  },
+  {
+    id: 3,
+    alert_type: "PackageProfilesAlert",
+    summary: "3 computers have package profiles available",
     activation_time: "2024-06-25 08:09:38.784578",
   },
   {
@@ -156,6 +168,12 @@ export const alertsSummary: AlertSummary[] = [
     id: 11,
     alert_type: "PendingComputersAlert",
     summary: "2 computers are pending",
+    activation_time: "2024-06-22 15:05:07.711100",
+  },
+  {
+    id: 12,
+    alert_type: "UnapprovedActivitiesAlert",
+    summary: "2 activities need approving",
     activation_time: "2024-06-22 15:05:07.711100",
   },
 ];

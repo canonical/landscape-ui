@@ -26,7 +26,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
     return instance.children.filter(
       ({ title, hostname }) =>
         title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        hostname.toLowerCase().includes(searchQuery.toLowerCase()),
+        hostname?.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [instance, searchQuery]);
 
@@ -118,7 +118,11 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
         selectedInstances={selectedInstances}
         setQuery={(newQuery) => setSearchQuery(newQuery)}
       />
-      <ModularTable columns={columns} data={wslInstances} />
+      <ModularTable
+        columns={columns}
+        data={wslInstances}
+        emptyMsg="No WSL instances found"
+      />
     </>
   );
 };

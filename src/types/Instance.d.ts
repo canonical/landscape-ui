@@ -186,7 +186,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   comment: string;
   container_info: string | null;
   distribution: string | null;
-  hostname: string;
+  hostname: string | null;
   id: number;
   is_default_child: boolean | null;
   is_wsl_instance: boolean;
