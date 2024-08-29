@@ -10,15 +10,8 @@ const AvailableProviderList: FC = () => {
   const [providerId, setProviderId] = useState(0);
 
   const { account } = useParams();
-  const { getProvidersQuery, getAuthUrlQuery } = useIdentityProviders();
+  const { getAuthMethodsQuery, getAuthUrlQuery } = useIdentityProviders();
   const { search } = useLocation();
-
-  const hostnameParts = window.location.hostname.split(".");
-  let subdomain = "";
-
-  if (hostnameParts.length > 2) {
-    subdomain = hostnameParts[0];
-  }
 
   const return_to = new URLSearchParams(search).get("redirect-to");
   const open = new URLSearchParams(search).get("open") === "true";
@@ -39,15 +32,12 @@ const AvailableProviderList: FC = () => {
       : (window.location.href = getAuthUrlQueryResult.data.location);
   }
 
-  const { data: identityProviders, isLoading } = getProvidersQuery(
-    { account_name: subdomain ?? account ?? "" },
-    { enabled: !!subdomain || !!account },
-  );
+  const { data: getAuthMethodsQueryResult, isLoading } = getAuthMethodsQuery();
 
-  const availableProviders =
-    identityProviders?.data.results.filter(({ enabled }) => enabled) ?? [];
+  const availableOidcProviders =
+    getAuthMethodsQueryResult?.data.oidc.filter(({ enabled }) => enabled) ?? [];
 
-  if (!account || availableProviders.length === 0) {
+  if (!account || availableOidcProviders.length === 0) {
     return null;
   }
 
@@ -55,12 +45,25 @@ const AvailableProviderList: FC = () => {
     <>
       {isLoading && <LoadingState />}
       {!isLoading &&
-        identityProviders &&
-        identityProviders.data.results.length > 0 && (
+        (availableOidcProviders.length > 0 ||
+          getAuthMethodsQueryResult?.data["ubuntu-one"].enabled) && (
           <>
             <p className={classes.divider}>OR</p>
             <ul className={classes.list}>
-              {availableProviders.map((provider) => (
+              {getAuthMethodsQueryResult?.data["ubuntu-one"].enabled && (
+                <li className="p-list__item">
+                  <Button
+                    type="button"
+                    hasIcon
+                    onClick={() => undefined}
+                    className={classes.button}
+                  >
+                    <Icon name={SUPPORTED_PROVIDERS["ubuntu-one"].icon} />
+                    <span>Ubuntu One</span>
+                  </Button>
+                </li>
+              )}
+              {availableOidcProviders.map((provider) => (
                 <li key={provider.id} className="p-list__item">
                   <Button
                     type="button"

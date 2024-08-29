@@ -5,47 +5,25 @@ import {
   ProvidersEmptyState,
   useIdentityProviders,
 } from "@/features/identity-providers";
-import useAuth from "@/hooks/useAuth";
 
 const IdentityProvidersContainer: FC = () => {
-  const { user } = useAuth();
-  const { getProvidersQuery, deleteProviderQuery } = useIdentityProviders();
+  const { getAuthMethodsQuery } = useIdentityProviders();
 
-  const { data: identityProviders, isLoading } = getProvidersQuery({
-    account_name: user?.current_account ?? "",
-  });
-
-  const { mutateAsync } = deleteProviderQuery;
-
-  if (!user) {
-    console.log(mutateAsync);
-  }
-
-  // useEffect(() => {
-  //   if (!identityProviders || !identityProviders.data.results.length) {
-  //     return;
-  //   }
-  //
-  //   const provider = identityProviders.data.results[0];
-  //
-  //   console.log("provider", provider);
-  //
-  //   (async () => {
-  //     await mutateAsync({ provider });
-  //   })();
-  // }, [identityProviders]);
+  const { data: getAuthMethodsQueryResult, isLoading } = getAuthMethodsQuery();
 
   return (
     <>
       {isLoading && <LoadingState />}
       {!isLoading &&
-        (!identityProviders || !identityProviders.data.results.length) && (
+        (!getAuthMethodsQueryResult ||
+          (!getAuthMethodsQueryResult.data.oidc.length &&
+            !getAuthMethodsQueryResult.data["ubuntu-one"].enabled)) && (
           <ProvidersEmptyState />
         )}
       {!isLoading &&
-        identityProviders &&
-        identityProviders.data.results.length > 0 && (
-          <ProviderList providers={identityProviders.data.results} />
+        getAuthMethodsQueryResult &&
+        getAuthMethodsQueryResult.data.oidc.length > 0 && (
+          <ProviderList providers={getAuthMethodsQueryResult.data.oidc} />
         )}
     </>
   );

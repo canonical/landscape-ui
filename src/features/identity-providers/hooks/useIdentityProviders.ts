@@ -10,8 +10,14 @@ import {
   SupportedIdentityProvider,
 } from "../types";
 
-interface GetProvidersParams {
-  account_name: string;
+interface AuthMethods {
+  oidc: IdentityProvider[];
+  password: {
+    enabled: boolean;
+  };
+  "ubuntu-one": {
+    enabled: boolean;
+  };
 }
 
 interface SingleProviderParams {
@@ -50,25 +56,17 @@ export default function useIdentityProviders() {
     >({
       queryKey: ["supportedOidcProviders"],
       queryFn: () =>
-        authFetch!.get("/auth/supported-providers", {
-          params: queryParams,
-        }),
+        authFetch!.get("/auth/supported-providers", { params: queryParams }),
       ...config,
     });
 
-  const getProvidersQuery: QueryFnTypeWithRequiredParam<
-    AxiosResponse<{ results: IdentityProvider[] }>,
-    GetProvidersParams
-  > = (queryParams, config = {}) =>
-    useQuery<
-      AxiosResponse<{ results: IdentityProvider[] }>,
-      AxiosError<ApiError>
-    >({
-      queryKey: ["oidcProviders"],
-      queryFn: () =>
-        authFetch!.get("/auth/oidc-providers", {
-          params: queryParams,
-        }),
+  const getAuthMethodsQuery: QueryFnType<AxiosResponse<AuthMethods>, {}> = (
+    queryParams = {},
+    config = {},
+  ) =>
+    useQuery<AxiosResponse<AuthMethods>, AxiosError<ApiError>>({
+      queryKey: ["authMethods"],
+      queryFn: () => authFetch!.get("/auth/methods", { params: queryParams }),
       ...config,
     });
 
@@ -130,7 +128,7 @@ export default function useIdentityProviders() {
   return {
     addProviderQuery,
     getSupportedProvidersQuery,
-    getProvidersQuery,
+    getAuthMethodsQuery,
     getSingleProviderQuery,
     updateProviderQuery,
     deleteProviderQuery,
