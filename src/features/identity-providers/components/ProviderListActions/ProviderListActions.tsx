@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import { FC, lazy, Suspense } from "react";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
@@ -71,10 +70,7 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({ provider }) => {
         type="button"
         appearance="base"
         hasIcon
-        className={classNames(
-          "u-no-margin--bottom u-no-margin--right",
-          classes.actionButton,
-        )}
+        className="p-contextual-menu__link"
         onClick={handleIdentityProviderEdit}
         aria-label={`Edit ${provider.name} provider`}
       >
@@ -85,10 +81,7 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({ provider }) => {
         type="button"
         appearance="base"
         hasIcon
-        className={classNames(
-          "u-no-margin--bottom u-no-margin--right",
-          classes.actionButton,
-        )}
+        className="p-contextual-menu__link"
         onClick={handleProviderDeleteDialog}
         aria-label={`Delete ${provider.name} provider`}
         disabled={provider.provider === "ubuntu-one"}

@@ -1,24 +1,6 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.divider {
-  align-items: center;
-  column-gap: $sph--large;
-  display: flex;
-  margin-bottom: $spv--large;
-  margin-top: $spv--large;
-  padding-top: 0;
-
-  &::before,
-  &::after {
-    content: "";
-    display: block;
-    flex-grow: 1;
-    height: 1px;
-    background-color: $colors--light-theme--border-default;
-  }
-}
-
 .list {
   list-style: none;
   margin-bottom: 0;

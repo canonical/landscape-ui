@@ -14,17 +14,15 @@ const IdentityProvidersContainer: FC = () => {
   return (
     <>
       {isLoading && <LoadingState />}
-      {!isLoading &&
-        (!getAuthMethodsQueryResult ||
-          (!getAuthMethodsQueryResult.data.oidc.length &&
-            !getAuthMethodsQueryResult.data["ubuntu-one"].enabled)) && (
-          <ProvidersEmptyState />
-        )}
-      {!isLoading &&
-        getAuthMethodsQueryResult &&
-        getAuthMethodsQueryResult.data.oidc.length > 0 && (
-          <ProviderList providers={getAuthMethodsQueryResult.data.oidc} />
-        )}
+      {!isLoading && !getAuthMethodsQueryResult && <ProvidersEmptyState />}
+      {!isLoading && getAuthMethodsQueryResult && (
+        <ProviderList
+          oidcProviders={getAuthMethodsQueryResult.data.oidc}
+          ubuntuOneEnabled={
+            getAuthMethodsQueryResult.data["ubuntu-one"].enabled
+          }
+        />
+      )}
     </>
   );
 };

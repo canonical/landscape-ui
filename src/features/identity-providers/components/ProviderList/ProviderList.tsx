@@ -3,13 +3,24 @@ import { CellProps, Column } from "react-table";
 import { ModularTable } from "@canonical/react-components";
 import ProviderListActions from "../ProviderListActions";
 import { IdentityProvider } from "../../types";
+import { UBUNTU_ONE_PROVIDER } from "./constants";
 
 interface ProviderListProps {
-  providers: IdentityProvider[];
+  oidcProviders: IdentityProvider[];
+  ubuntuOneEnabled: boolean;
 }
 
-const ProviderList: FC<ProviderListProps> = ({ providers }) => {
-  const providerData = useMemo(() => providers, [providers]);
+const ProviderList: FC<ProviderListProps> = ({
+  oidcProviders,
+  ubuntuOneEnabled,
+}) => {
+  const providerData = useMemo(
+    () => [
+      { ...UBUNTU_ONE_PROVIDER, enabled: ubuntuOneEnabled },
+      ...oidcProviders,
+    ],
+    [oidcProviders],
+  );
 
   const columns = useMemo<Column<IdentityProvider>[]>(
     () => [
