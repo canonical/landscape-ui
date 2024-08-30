@@ -24,6 +24,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
   const [excludedPackages, setExcludedPackages] = useState<
     InstancePackagesToExclude[]
   >(affectedInstances.map(({ id }) => ({ id, exclude_packages: [] })));
+  const [excludedUsns, setExcludedUsns] = useState<string[]>([]);
 
   const instancesWithUsn = affectedInstances.filter(
     ({ upgrades }) => upgrades?.security,
@@ -48,8 +49,8 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${affectedInstances.length} packages to be upgraded`,
-        message: `${excludedPackages.length} packages on ${selectedInstances.length} instances will be upgraded and are queued in Activities`,
+        title: "You queued packages to be upgraded",
+        message: `Packages on ${selectedInstances.length} instances will be upgraded and are queued in Activities`,
       });
     } catch (error) {
       debug(error);
@@ -89,7 +90,11 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
             />
           )}
           {activeTabLinkId === "tab-link-usns" && (
-            <TAB_PANELS.usns instances={instancesWithUsn} />
+            <TAB_PANELS.usns
+              excludedUsns={excludedUsns}
+              instances={instancesWithUsn}
+              onExcludedUsnsChange={(usns) => setExcludedUsns(usns)}
+            />
           )}
         </Suspense>
       </div>

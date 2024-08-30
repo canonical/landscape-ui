@@ -6,13 +6,18 @@ import { Instance } from "@/types/Instance";
 import { Usn } from "@/types/Usn";
 
 interface UsnsPanelProps {
+  excludedUsns: string[];
   instances: Instance[];
+  onExcludedUsnsChange: (usns: string[]) => void;
 }
 
-const UsnsPanel: FC<UsnsPanelProps> = ({ instances }) => {
+const UsnsPanel: FC<UsnsPanelProps> = ({
+  excludedUsns,
+  instances,
+  onExcludedUsnsChange,
+}) => {
   const [offset, setOffset] = useState(0);
   const [usns, setUsns] = useState<Usn[]>([]);
-  const [selectedUsns, setSelectedUsns] = useState<string[]>([]);
 
   const totalUsnCountRef = useRef(0);
   const offsetRef = useRef(-1);
@@ -35,11 +40,17 @@ const UsnsPanel: FC<UsnsPanelProps> = ({ instances }) => {
     totalUsnCountRef.current = getUsnsQueryResult.data.count;
     offsetRef.current = offset;
     setUsns((prevState) => [...prevState, ...getUsnsQueryResult.data.results]);
-    setSelectedUsns((prevState) => [
-      ...prevState,
-      ...getUsnsQueryResult.data.results.map(({ usn }) => usn),
-    ]);
   }, [getUsnsQueryResult]);
+
+  const handleSelectedUsnsChange = (newUsns: string[]) => {
+    onExcludedUsnsChange(
+      usns.filter(({ usn }) => !newUsns.includes(usn)).map(({ usn }) => usn),
+    );
+  };
+
+  const selectedUsns = usns
+    .filter(({ usn }) => !excludedUsns.includes(usn))
+    .map(({ usn }) => usn);
 
   return getUsnsQueryLoading && !usns.length ? (
     <LoadingState />
@@ -49,7 +60,7 @@ const UsnsPanel: FC<UsnsPanelProps> = ({ instances }) => {
       onNextPageFetch={() => setOffset((prevState) => prevState + 5)}
       instances={instances}
       isUsnsLoading={getUsnsQueryLoading}
-      onSelectedUsnsChange={(usns) => setSelectedUsns(usns)}
+      onSelectedUsnsChange={handleSelectedUsnsChange}
       selectedUsns={selectedUsns}
       totalUsnCount={totalUsnCountRef.current}
       usns={usns}
