@@ -2,10 +2,7 @@ import { FC, Suspense, SyntheticEvent, useState } from "react";
 import { Form, Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import {
-  UpgradeInstancePackagesParams,
-  usePackages,
-} from "@/features/packages";
+import { InstancePackagesToExclude, usePackages } from "@/features/packages";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -25,13 +22,8 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
 
   const [activeTabLinkId, setActiveTabLinkId] = useState(TAB_LINKS[0].id);
   const [excludedPackages, setExcludedPackages] = useState<
-    UpgradeInstancePackagesParams[]
-  >(
-    affectedInstances.map(({ id }) => ({
-      id,
-      exclude_packages: [],
-    })),
-  );
+    InstancePackagesToExclude[]
+  >(affectedInstances.map(({ id }) => ({ id, exclude_packages: [] })));
 
   const instancesWithUsn = affectedInstances.filter(
     ({ upgrades }) => upgrades?.security,
@@ -51,7 +43,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
     event.preventDefault();
 
     try {
-      await upgradeInstancesPackages(excludedPackages);
+      await upgradeInstancesPackages({ computers: excludedPackages });
 
       closeSidePanel();
 

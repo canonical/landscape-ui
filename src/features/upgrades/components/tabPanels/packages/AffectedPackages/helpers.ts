@@ -1,7 +1,7 @@
 import { HTMLProps } from "react";
 import { Cell, TableCellProps } from "react-table";
-import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
-import { toggleCurrentPackage } from "../helpers";
+import { InstancePackagesToExclude, Package } from "@/features/packages";
+import { checkIsPackageUpdateRequired, toggleCurrentPackage } from "../helpers";
 import { EMPTY_PACKAGE } from "./constants";
 import classes from "./AffectedPackages.module.scss";
 
@@ -41,33 +41,31 @@ export const handleCellProps =
     return cellProps;
   };
 
-export const areAllInstancesNeedToUpdate = (
-  pkg: Package,
-  excludedPackages: UpgradeInstancePackagesParams[],
+export const checkIsUpdateRequired = (
+  excludedPackages: InstancePackagesToExclude[],
+  packages: Package[],
 ) => {
-  return !pkg.computers.some((instance) =>
-    excludedPackages
-      .find(({ id }) => id === instance.id)
-      ?.exclude_packages.includes(pkg.name),
+  return packages.some((pkg) =>
+    checkIsPackageUpdateRequired(excludedPackages, pkg),
   );
 };
 
-export const areAllPackagesNeedToUpdate = (
+export const checkIsUpdateRequiredForAllVisiblePackages = (
+  excludedPackages: InstancePackagesToExclude[],
   packages: Package[],
-  excludedPackages: UpgradeInstancePackagesParams[],
 ) => {
   return (
     packages.length > 0 &&
-    packages.every(({ computers, name }) =>
+    packages.every(({ computers, id }) =>
       excludedPackages
         .filter(({ id }) => computers.some((instance) => instance.id === id))
-        .every(({ exclude_packages }) => !exclude_packages.includes(name)),
+        .every(({ exclude_packages }) => !exclude_packages.includes(id)),
     )
   );
 };
 
 export const getToggledPackages = (
-  excludedPackages: UpgradeInstancePackagesParams[],
+  excludedPackages: InstancePackagesToExclude[],
   packages: Package[],
   isUpdateRequired: boolean,
 ) => {

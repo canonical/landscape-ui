@@ -2,19 +2,23 @@ import { FC, useMemo, useState } from "react";
 import { CellProps, Column } from "react-table";
 import { CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
+import { InstancePackagesToExclude, Package } from "@/features/packages";
 import { Instance } from "@/types/Instance";
-import { checkIsUpdateRequired, getToggledPackage } from "../helpers";
 import {
-  areAllInstancesNeedToUpdate,
-  isInstanceNeedToUpdatePackage,
+  checkIsPackageUpdateRequired,
+  checkIsPackageUpdateRequiredForAllInstances,
+  getToggledPackage,
+} from "../helpers";
+import {
+  checkIsPackageUpdateRequiredForInstance,
+  getToggledInstance,
 } from "./helpers";
 
 interface AffectedInstancesProps {
   currentPackage: Package;
-  excludedPackages: UpgradeInstancePackagesParams[];
+  excludedPackages: InstancePackagesToExclude[];
   onExcludedPackagesChange: (
-    newExcludedPackages: UpgradeInstancePackagesParams[],
+    newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
   selectedInstances: Instance[];
 }
@@ -44,23 +48,16 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
   };
 
   const handleInstanceToggle = (instanceId: number) => {
-    const updatedExcludedPackages = excludedPackages.map(
-      ({ id, exclude_packages }) => {
-        if (id !== instanceId) {
-          return { id, exclude_packages };
-        }
-
-        return {
-          id,
-          exclude_packages: exclude_packages.includes(currentPackage.name)
-            ? exclude_packages.filter((name) => name !== currentPackage.name)
-            : [...exclude_packages, currentPackage.name],
-        };
-      },
+    onExcludedPackagesChange(
+      getToggledInstance(excludedPackages, instanceId, currentPackage.id),
     );
-
-    onExcludedPackagesChange(updatedExcludedPackages);
   };
+
+  const isPackageUpdateRequiredForAllInstances =
+    checkIsPackageUpdateRequiredForAllInstances(
+      excludedPackages,
+      currentPackage,
+    );
 
   const columns = useMemo<Column<Instance>[]>(
     () => [
@@ -71,13 +68,10 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
           <CheckboxInput
             inline
             label={<span className="u-off-screen">Toggle all instances</span>}
-            checked={areAllInstancesNeedToUpdate(
-              excludedPackages,
-              currentPackage,
-            )}
+            checked={isPackageUpdateRequiredForAllInstances}
             indeterminate={
-              !areAllInstancesNeedToUpdate(excludedPackages, currentPackage) &&
-              checkIsUpdateRequired(excludedPackages, [currentPackage])
+              !isPackageUpdateRequiredForAllInstances &&
+              checkIsPackageUpdateRequired(excludedPackages, currentPackage)
             }
             onChange={handlePackageToggle}
           />
@@ -90,10 +84,10 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
                 Toggle {original.title} instance
               </span>
             }
-            checked={isInstanceNeedToUpdatePackage(
+            checked={checkIsPackageUpdateRequiredForInstance(
               excludedPackages,
               original.id,
-              currentPackage.name,
+              currentPackage.id,
             )}
             onChange={() => handleInstanceToggle(original.id)}
           />

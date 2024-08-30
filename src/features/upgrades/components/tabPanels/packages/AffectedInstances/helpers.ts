@@ -1,31 +1,30 @@
-import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
+import { InstancePackagesToExclude } from "@/features/packages";
 
-export const isInstanceNeedToUpdatePackage = (
-  excludedPackages: UpgradeInstancePackagesParams[],
+export const checkIsPackageUpdateRequiredForInstance = (
+  excludedPackages: InstancePackagesToExclude[],
   instanceId: number,
-  packageName: string,
+  packageId: number,
 ) => {
   return !excludedPackages
     .find(({ id }) => id === instanceId)
-    ?.exclude_packages.includes(packageName);
+    ?.exclude_packages.includes(packageId);
 };
 
-export const areAllInstancesNeedToUpdate = (
-  excludedPackages: UpgradeInstancePackagesParams[],
-  pkg: Package,
+export const getToggledInstance = (
+  excludedPackages: InstancePackagesToExclude[],
+  instanceId: number,
+  packageId: number,
 ) => {
-  return !pkg.computers.some((instance) =>
-    excludedPackages
-      .find(({ id }) => id === instance.id)
-      ?.exclude_packages.includes(pkg.name),
-  );
-};
+  return excludedPackages.map(({ id, exclude_packages }) => {
+    if (id !== instanceId) {
+      return { id, exclude_packages };
+    }
 
-export const checkIsUpdateRequired = (
-  pkg: Package,
-  excludedPackages: UpgradeInstancePackagesParams[],
-) => {
-  return excludedPackages
-    .filter(({ id }) => pkg.computers.some((instance) => id === instance.id))
-    .some(({ exclude_packages }) => !exclude_packages.includes(pkg.name));
+    return {
+      id,
+      exclude_packages: exclude_packages.includes(packageId)
+        ? exclude_packages.filter((packageId) => packageId !== packageId)
+        : [...exclude_packages, packageId],
+    };
+  });
 };

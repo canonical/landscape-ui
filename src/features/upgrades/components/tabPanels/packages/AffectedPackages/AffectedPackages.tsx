@@ -4,13 +4,17 @@ import { CellProps, Column } from "react-table";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
-import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
+import { InstancePackagesToExclude, Package } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import AffectedInstances from "../AffectedInstances";
-import { checkIsUpdateRequired, getToggledPackage } from "../helpers";
 import {
-  areAllInstancesNeedToUpdate,
-  areAllPackagesNeedToUpdate,
+  checkIsPackageUpdateRequired,
+  checkIsPackageUpdateRequiredForAllInstances,
+  getToggledPackage,
+} from "../helpers";
+import {
+  checkIsUpdateRequired,
+  checkIsUpdateRequiredForAllVisiblePackages,
   getPackagesData,
   getToggledPackages,
   handleCellProps,
@@ -18,11 +22,11 @@ import {
 import classes from "./AffectedPackages.module.scss";
 
 interface AffectedPackagesProps {
-  excludedPackages: UpgradeInstancePackagesParams[];
+  excludedPackages: InstancePackagesToExclude[];
   instances: Instance[];
   isPackagesLoading: boolean;
   onExcludedPackagesChange: (
-    newExcludedPackages: UpgradeInstancePackagesParams[],
+    newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
   onTableLimitChange: () => void;
   packages: Package[];
@@ -45,27 +49,11 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
     [packages, expandedRow, isPackagesLoading],
   );
 
-  const uniquePackages = Object.values(
-    packages.reduce(
-      (acc, current) => {
-        if (!acc[current.name]) {
-          acc[current.name] = current;
-        }
-
-        return acc;
-      },
-      {} as Record<string, Package>,
-    ),
-  );
-
-  const isUpdateRequired = checkIsUpdateRequired(
-    excludedPackages,
-    uniquePackages,
-  );
+  const isUpdateRequired = checkIsUpdateRequired(excludedPackages, packages);
 
   const handleAllPackagesToggle = () => {
     onExcludedPackagesChange(
-      getToggledPackages(excludedPackages, uniquePackages, isUpdateRequired),
+      getToggledPackages(excludedPackages, packages, isUpdateRequired),
     );
   };
 
@@ -83,6 +71,9 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
     });
   };
 
+  const isUpdateRequiredForAllVisiblePackages =
+    checkIsUpdateRequiredForAllVisiblePackages(excludedPackages, packages);
+
   const columns = useMemo<Column<Package>[]>(
     () => [
       {
@@ -93,13 +84,9 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             inline
             label={<span className="u-off-screen">Toggle all packages</span>}
             disabled={packagesData.length === 0}
-            checked={areAllPackagesNeedToUpdate(
-              uniquePackages,
-              excludedPackages,
-            )}
+            checked={isUpdateRequiredForAllVisiblePackages}
             indeterminate={
-              !areAllPackagesNeedToUpdate(uniquePackages, excludedPackages) &&
-              isUpdateRequired
+              !isUpdateRequiredForAllVisiblePackages && isUpdateRequired
             }
             onChange={handleAllPackagesToggle}
           />
@@ -112,10 +99,15 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
                 Toggle {original.name} package
               </span>
             }
-            checked={areAllInstancesNeedToUpdate(original, excludedPackages)}
+            checked={checkIsPackageUpdateRequiredForAllInstances(
+              excludedPackages,
+              original,
+            )}
             indeterminate={
-              !areAllInstancesNeedToUpdate(original, excludedPackages) &&
-              checkIsUpdateRequired(excludedPackages, [original])
+              !checkIsPackageUpdateRequiredForAllInstances(
+                excludedPackages,
+                original,
+              ) && checkIsPackageUpdateRequired(excludedPackages, original)
             }
             onChange={() => handlePackageToggle(original)}
           />

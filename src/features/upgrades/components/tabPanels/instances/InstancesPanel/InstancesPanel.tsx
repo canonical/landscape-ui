@@ -5,7 +5,7 @@ import { Button } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import {
   InstancePackage,
-  UpgradeInstancePackagesParams,
+  InstancePackagesToExclude,
   usePackages,
 } from "@/features/packages";
 import { Instance } from "@/types/Instance";
@@ -14,10 +14,10 @@ import { handleCellProps } from "./helpers";
 import classes from "./InstancesPanel.module.scss";
 
 interface InstancesPanelProps {
-  excludedPackages: UpgradeInstancePackagesParams[];
+  excludedPackages: InstancePackagesToExclude[];
   instances: Instance[];
   onExcludedPackagesChange: (
-    newExcludedPackages: UpgradeInstancePackagesParams[],
+    newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
 }
 

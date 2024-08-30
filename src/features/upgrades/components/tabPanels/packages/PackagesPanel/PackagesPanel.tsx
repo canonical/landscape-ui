@@ -1,18 +1,18 @@
 import { FC, useEffect, useRef, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import {
+  InstancePackagesToExclude,
   Package,
-  UpgradeInstancePackagesParams,
   usePackages,
 } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import AffectedPackages from "../AffectedPackages";
 
 interface PackagesPanelProps {
-  excludedPackages: UpgradeInstancePackagesParams[];
+  excludedPackages: InstancePackagesToExclude[];
   instances: Instance[];
   onExcludedPackagesChange: (
-    newExcludedPackages: UpgradeInstancePackagesParams[],
+    newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
 }
 

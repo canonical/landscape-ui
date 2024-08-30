@@ -5,17 +5,17 @@ import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import {
   InstancePackage,
-  UpgradeInstancePackagesParams,
+  InstancePackagesToExclude,
 } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import SelectAllButton from "../SelectAllButton";
 import { getPackageData, handleCellProps } from "./helpers";
 
 interface AffectedPackagesProps {
-  excludedPackages: UpgradeInstancePackagesParams[];
+  excludedPackages: InstancePackagesToExclude[];
   instance: Instance;
   onExcludedPackagesChange: (
-    newExcludedPackages: UpgradeInstancePackagesParams[],
+    newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
   onLimitChange: () => void;
   packages: InstancePackage[];
@@ -37,11 +37,11 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
     [];
 
   const showSelectAllButton = useMemo(() => {
-    const packageNames = [...new Set(packages.map(({ name }) => name))];
+    const packageIdSet = new Set(packages.map(({ id }) => id));
 
     return (
       instanceExcludedPackages.length > 0 &&
-      instanceExcludedPackages.some((name) => !packageNames.includes(name))
+      instanceExcludedPackages.some((id) => !packageIdSet.has(id))
     );
   }, [instanceExcludedPackages.length, packages]);
 
@@ -51,7 +51,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
   );
 
   const toggleAllPackages = () => {
-    const packageNames = [...new Set(packages.map(({ name }) => name))];
+    const packageIds = packages.map(({ id }) => id);
 
     onExcludedPackagesChange(
       excludedPackages.map(({ id, exclude_packages }) => {
@@ -62,13 +62,13 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
         return {
           id,
           exclude_packages:
-            exclude_packages.length < packageNames.length ? packageNames : [],
+            exclude_packages.length < packageIds.length ? packageIds : [],
         };
       }),
     );
   };
 
-  const togglePackage = (name: string) => {
+  const togglePackage = (pkgId: number) => {
     onExcludedPackagesChange(
       excludedPackages.map(({ id, exclude_packages }) => {
         if (id !== instance.id) {
@@ -77,9 +77,9 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
 
         return {
           id,
-          exclude_packages: exclude_packages.includes(name)
-            ? exclude_packages.filter((packageName) => packageName !== name)
-            : [...exclude_packages, name],
+          exclude_packages: exclude_packages.includes(pkgId)
+            ? exclude_packages.filter((packageId) => packageId !== pkgId)
+            : [...exclude_packages, pkgId],
         };
       }),
     );
@@ -98,9 +98,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             checked={instanceExcludedPackages.length === 0}
             indeterminate={
               instanceExcludedPackages.length > 0 &&
-              packages.some(
-                ({ name }) => !instanceExcludedPackages.includes(name),
-              )
+              packages.some(({ id }) => !instanceExcludedPackages.includes(id))
             }
             onChange={toggleAllPackages}
           />
@@ -136,8 +134,8 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
                   Toggle {original.name} package
                 </span>
               }
-              checked={!instanceExcludedPackages.includes(original.name)}
-              onChange={() => togglePackage(original.name)}
+              checked={!instanceExcludedPackages.includes(original.id)}
+              onChange={() => togglePackage(original.id)}
             />
           );
         },

@@ -1,46 +1,61 @@
-import { Package, UpgradeInstancePackagesParams } from "@/features/packages";
+import { InstancePackagesToExclude, Package } from "@/features/packages";
 
-export const checkIsUpdateRequired = (
-  excludedPackages: UpgradeInstancePackagesParams[],
-  packages: Package[],
+export const checkIsPackageUpdateRequired = (
+  excludedPackages: InstancePackagesToExclude[],
+  pkg: Package,
 ) => {
-  return packages.some(({ computers, name }) =>
-    excludedPackages
-      .filter(({ id }) => computers.some((instance) => instance.id === id))
-      .some(({ exclude_packages }) => !exclude_packages.includes(name)),
+  const instancesIdSet = new Set(pkg.computers.map((instance) => instance.id));
+
+  return excludedPackages.some(
+    ({ exclude_packages, id }) =>
+      instancesIdSet.has(id) && !exclude_packages.includes(pkg.id),
   );
 };
 
 export const toggleCurrentPackage = (
-  excludedPackages: UpgradeInstancePackagesParams[],
+  excludedPackages: InstancePackagesToExclude[],
   pkg: Package,
   isUpdateRequired: boolean,
 ) => {
+  const instanceIdSet = new Set(pkg.computers.map(({ id }) => id));
+
   return excludedPackages.map(({ id, exclude_packages }) => {
-    if (pkg.computers.every((instance) => instance.id !== id)) {
+    if (!instanceIdSet.has(id)) {
       return { id, exclude_packages };
     }
 
     const filteredPackages = exclude_packages.filter(
-      (name) => name !== pkg.name,
+      (packageId) => packageId !== pkg.id,
     );
 
     return {
       id,
       exclude_packages: isUpdateRequired
-        ? [...filteredPackages, pkg.name]
+        ? [...filteredPackages, pkg.id]
         : filteredPackages,
     };
   });
 };
 
 export const getToggledPackage = (
-  excludedPackages: UpgradeInstancePackagesParams[],
+  excludedPackages: InstancePackagesToExclude[],
   pkg: Package,
 ) => {
   return toggleCurrentPackage(
     excludedPackages,
     pkg,
-    checkIsUpdateRequired(excludedPackages, [pkg]),
+    checkIsPackageUpdateRequired(excludedPackages, pkg),
+  );
+};
+
+export const checkIsPackageUpdateRequiredForAllInstances = (
+  excludedPackages: InstancePackagesToExclude[],
+  pkg: Package,
+) => {
+  const instancesIdSet = new Set(pkg.computers.map(({ id }) => id));
+
+  return excludedPackages.every(
+    ({ exclude_packages, id }) =>
+      !instancesIdSet.has(id) || !exclude_packages.includes(pkg.id),
   );
 };

@@ -66,9 +66,13 @@ interface PackagesActionParams {
   deliver_delay_window?: number;
 }
 
-export interface UpgradeInstancePackagesParams {
+export interface InstancePackagesToExclude {
   id: number;
-  exclude_packages: string[];
+  exclude_packages: number[];
+}
+
+interface UpgradeInstancePackagesParams {
+  computers: InstancePackagesToExclude[];
 }
 
 export default function usePackages() {
@@ -129,7 +133,7 @@ export default function usePackages() {
   const upgradeInstancesPackagesQuery = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
-    UpgradeInstancePackagesParams[]
+    UpgradeInstancePackagesParams
   >({
     mutationFn: (params) =>
       authFetch!.post("computers/packages/upgrade", params),
