@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { FC, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useEnv from "@/hooks/useEnv";
-import { MENU_ITEMS } from "./constants";
+import { getFilteredByEnvMenuItems, getPathToExpand } from "./helpers";
 import classes from "./Navigation.module.scss";
 
 const Navigation: FC = () => {
@@ -12,9 +12,7 @@ const Navigation: FC = () => {
   const { isSaas, isSelfHosted } = useEnv();
 
   useEffect(() => {
-    const shouldBeExpandedPath = MENU_ITEMS.filter(
-      ({ items }) => items && items.length > 0,
-    ).find(({ path }) => pathname.startsWith(path))?.path;
+    const shouldBeExpandedPath = getPathToExpand(pathname);
 
     if (shouldBeExpandedPath) {
       setExpanded(shouldBeExpandedPath);
@@ -25,11 +23,7 @@ const Navigation: FC = () => {
     <div className="p-side-navigation--icons is-dark">
       <nav aria-label="Main">
         <ul className="u-no-margin--bottom u-no-margin--left u-no-padding--left">
-          {MENU_ITEMS.filter(
-            ({ env }) =>
-              (!isSaas && env !== "saas") ||
-              (!isSelfHosted && env !== "selfHosted"),
-          ).map((item) => (
+          {getFilteredByEnvMenuItems({ isSaas, isSelfHosted }).map((item) => (
             <li
               key={item.path}
               className={classNames("p-side-navigation__item", {

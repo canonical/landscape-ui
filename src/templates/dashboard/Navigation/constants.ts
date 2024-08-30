@@ -92,6 +92,7 @@ export const MENU_ITEMS: MenuItem[] = [
         path: `${ROOT_PATH}settings/access-groups`,
       },
       {
+        env: "saas",
         label: "Identity providers",
         path: `${ROOT_PATH}settings/identity-providers`,
       },
