@@ -136,7 +136,7 @@ export default function usePackages() {
     UpgradeInstancePackagesParams
   >({
     mutationFn: (params) =>
-      authFetch!.post("computers/packages/upgrade", params),
+      authFetch!.post("/computers/upgrade-packages", params),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries(["packages"]),
