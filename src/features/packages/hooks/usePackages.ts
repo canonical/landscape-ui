@@ -23,6 +23,7 @@ export interface GetPackagesParams {
   names?: string[];
   offset?: number;
   search?: string;
+  security?: boolean;
   upgrade?: boolean;
 }
 
@@ -35,8 +36,8 @@ interface GetInstancePackagesParams {
   names?: string[];
   offset?: number;
   search?: string;
-  upgrade?: boolean;
   security?: boolean;
+  upgrade?: boolean;
 }
 
 export interface UpgradePackagesParams {
@@ -67,8 +68,8 @@ interface PackagesActionParams {
 }
 
 export interface InstancePackagesToExclude {
-  id: number;
   exclude_packages: number[];
+  id: number;
 }
 
 interface UpgradeInstancePackagesParams {
