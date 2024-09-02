@@ -1,15 +1,15 @@
-import useFetch from "./useFetch";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import {
   useMutation,
   useQuery,
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { ApiError } from "@/types/ApiError";
-import { Usn, UsnPackage } from "@/types/Usn";
 import { Activity } from "@/features/activities";
+import useFetch from "@/hooks/useFetch";
+import { ApiError } from "@/types/ApiError";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { Usn, UsnPackage } from "@/types/Usn";
 
 export interface GetUsnsParams {
   computer_ids: number[];
@@ -19,28 +19,28 @@ export interface GetUsnsParams {
   show_packages?: boolean;
 }
 
-export interface GetAffectedPackagesParams {
+interface GetAffectedPackagesParams {
   computer_ids: number[];
   usn: string;
 }
 
-export interface UpgradeInstanceUsnsParams {
+interface UpgradeInstanceUsnsParams {
   instanceId: number;
   usns: string[];
 }
 
-export interface RemoveUsnPackagesParams {
+interface RemoveUsnPackagesParams {
   instanceId: number;
   usns: string;
 }
 
-interface InstanceUsnsToUpgrade {
+interface InstanceUsnsToExclude {
   id: number;
   exclude_usns: string[];
 }
 
 interface UpgradeUsnsParams {
-  computers: InstanceUsnsToUpgrade[];
+  computers: InstanceUsnsToExclude[];
 }
 
 export default function useUsns() {

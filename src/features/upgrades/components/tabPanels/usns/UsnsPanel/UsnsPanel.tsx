@@ -1,7 +1,6 @@
 import { FC, useEffect, useRef, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import useUsns from "@/hooks/useUsns";
-import { UsnList } from "@/features/usns";
+import { useUsns, UsnList } from "@/features/usns";
 import { Instance } from "@/types/Instance";
 import { Usn } from "@/types/Usn";
 

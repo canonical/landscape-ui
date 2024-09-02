@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { GetUsnsParams } from "@/hooks/useUsns";
+import { GetUsnsParams } from "@/features/usns";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { Usn } from "@/types/Usn";
 import { API_URL } from "@/constants";

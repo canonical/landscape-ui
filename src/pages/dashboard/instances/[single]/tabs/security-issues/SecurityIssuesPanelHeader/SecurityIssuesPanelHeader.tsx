@@ -6,7 +6,7 @@ import { ROOT_PATH } from "@/constants";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useUsns from "@/hooks/useUsns";
+import { useUsns } from "@/features/usns";
 import classes from "./SecurityIssuesPanelHeader.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
 

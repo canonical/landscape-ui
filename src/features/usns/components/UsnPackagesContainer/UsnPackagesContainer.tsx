@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { useParams } from "react-router-dom";
 import LoadingState from "@/components/layout/LoadingState";
-import useUsns from "@/hooks/useUsns";
+import { useUsns } from "@/features/usns";
 import { Instance } from "@/types/Instance";
 import UsnInstanceList from "../UsnInstanceList";
 import UsnPackageList from "../UsnPackageList";

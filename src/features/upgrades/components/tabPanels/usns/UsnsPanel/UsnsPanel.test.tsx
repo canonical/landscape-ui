@@ -9,7 +9,9 @@ describe("UsnsPanel", () => {
   it("should render USN panel after loading", async () => {
     renderWithProviders(
       <UsnsPanel
+        excludedUsns={[]}
         instances={instances.filter(({ upgrades }) => upgrades?.security)}
+        onExcludedUsnsChange={() => undefined}
       />,
     );
 

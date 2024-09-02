@@ -6,7 +6,7 @@ import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import { Package, usePackages } from "@/features/packages";
-import useUsns from "@/hooks/useUsns";
+import { useUsns } from "@/features/usns";
 import {
   Button,
   Col,
