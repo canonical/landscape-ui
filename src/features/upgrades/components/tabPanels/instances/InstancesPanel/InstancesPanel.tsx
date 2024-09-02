@@ -52,16 +52,30 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
   );
 
   useEffect(() => {
-    if (!getInstancePackagesResult || offset === offsetRef.current) {
+    if (!getInstancePackagesResult) {
       return;
     }
 
-    offsetRef.current = offset;
     totalPackageCountRef.current = getInstancePackagesResult.data.count;
-    setPackages((prevState) => [
-      ...prevState,
-      ...getInstancePackagesResult.data.results,
-    ]);
+
+    if (offset !== offsetRef.current) {
+      offsetRef.current = offset;
+
+      setPackages((prevState) => [
+        ...prevState,
+        ...getInstancePackagesResult.data.results,
+      ]);
+    } else {
+      offsetRef.current = offset;
+
+      setPackages((prevState) => [
+        ...prevState.slice(
+          0,
+          -1 * getInstancePackagesResult.data.results.length,
+        ),
+        ...getInstancePackagesResult.data.results,
+      ]);
+    }
   }, [getInstancePackagesResult]);
 
   const handleExpandCellClick = (index: number) => {
