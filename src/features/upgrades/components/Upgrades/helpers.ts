@@ -1,5 +1,7 @@
 import { TabLink } from "@canonical/react-components/dist/components/Tabs/Tabs";
+import { Instance } from "@/types/Instance";
 import { TAB_LINKS } from "./constants";
+import { UpgradesFormProps } from "./types";
 
 export const getTabLinks = ({
   activeTabLinkId,
@@ -21,4 +23,11 @@ export const getTabLinks = ({
       role: "tab",
     }),
   );
+};
+
+export const getInitialValues = (instances: Instance[]): UpgradesFormProps => {
+  return {
+    excludedPackages: instances.map(({ id }) => ({ id, exclude_packages: [] })),
+    excludedUsns: [],
+  };
 };

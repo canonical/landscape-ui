@@ -1,30 +1,29 @@
-import { FC, Suspense, SyntheticEvent, useState } from "react";
+import { useFormik } from "formik";
+import { FC, Suspense, useState } from "react";
 import { Form, Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { InstancePackagesToExclude, usePackages } from "@/features/packages";
+import { usePackages } from "@/features/packages";
+import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Instance } from "@/types/Instance";
 import UpgradeInfo from "../UpgradeInfo";
-import { TAB_LINKS, TAB_PANELS } from "./constants";
-import { getTabLinks } from "./helpers";
+import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
+import { getInitialValues, getTabLinks } from "./helpers";
+import { UpgradesFormProps } from "./types";
 
 interface UpgradesProps {
   selectedInstances: Instance[];
 }
 
 const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
+  const [activeTabLinkId, setActiveTabLinkId] = useState(TAB_LINKS[0].id);
+
   const affectedInstances = selectedInstances.filter(
     ({ upgrades }) => upgrades?.security || upgrades?.regular,
   );
-
-  const [activeTabLinkId, setActiveTabLinkId] = useState(TAB_LINKS[0].id);
-  const [excludedPackages, setExcludedPackages] = useState<
-    InstancePackagesToExclude[]
-  >(affectedInstances.map(({ id }) => ({ id, exclude_packages: [] })));
-  const [excludedUsns, setExcludedUsns] = useState<string[]>([]);
 
   const instancesWithUsn = affectedInstances.filter(
     ({ upgrades }) => upgrades?.security,
@@ -34,17 +33,24 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { upgradeInstancesPackagesQuery } = usePackages();
+  const { upgradeUsnsQuery } = useUsns();
 
-  const {
-    mutateAsync: upgradeInstancesPackages,
-    isLoading: isUpgradingInstancesPackages,
-  } = upgradeInstancesPackagesQuery;
+  const { mutateAsync: upgradeInstancesPackages } =
+    upgradeInstancesPackagesQuery;
+  const { mutateAsync: upgradeUsns } = upgradeUsnsQuery;
 
-  const handleSubmit = async (event: SyntheticEvent) => {
-    event.preventDefault();
-
+  const handleSubmit = async (values: UpgradesFormProps) => {
     try {
-      await upgradeInstancesPackages({ computers: excludedPackages });
+      activeTabLinkId === "tab-link-usns"
+        ? await upgradeUsns({
+            computers: instancesWithUsn.map(({ id }) => ({
+              id,
+              exclude_usns: values.excludedUsns,
+            })),
+          })
+        : await upgradeInstancesPackages({
+            computers: values.excludedPackages,
+          });
 
       closeSidePanel();
 
@@ -57,8 +63,14 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
     }
   };
 
+  const formik = useFormik({
+    initialValues: getInitialValues(affectedInstances),
+    onSubmit: handleSubmit,
+    validationSchema: VALIDATION_SCHEMA,
+  });
+
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={formik.handleSubmit}>
       <UpgradeInfo instances={selectedInstances} />
 
       <Tabs
@@ -73,34 +85,36 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
         <Suspense fallback={<LoadingState />}>
           {activeTabLinkId === "tab-link-instances" && (
             <TAB_PANELS.instances
-              excludedPackages={excludedPackages}
+              excludedPackages={formik.values.excludedPackages}
               instances={affectedInstances}
               onExcludedPackagesChange={(newExcludedPackages) =>
-                setExcludedPackages(newExcludedPackages)
+                formik.setFieldValue("excludedPackages", newExcludedPackages)
               }
             />
           )}
           {activeTabLinkId === "tab-link-packages" && (
             <TAB_PANELS.packages
-              excludedPackages={excludedPackages}
+              excludedPackages={formik.values.excludedPackages}
               instances={affectedInstances}
               onExcludedPackagesChange={(newExcludedPackages) =>
-                setExcludedPackages(newExcludedPackages)
+                formik.setFieldValue("excludedPackages", newExcludedPackages)
               }
             />
           )}
           {activeTabLinkId === "tab-link-usns" && (
             <TAB_PANELS.usns
-              excludedUsns={excludedUsns}
+              excludedUsns={formik.values.excludedUsns}
               instances={instancesWithUsn}
-              onExcludedUsnsChange={(usns) => setExcludedUsns(usns)}
+              onExcludedUsnsChange={(usns) =>
+                formik.setFieldValue("excludedUsns", usns)
+              }
             />
           )}
         </Suspense>
       </div>
 
       <SidePanelFormButtons
-        submitButtonDisabled={isUpgradingInstancesPackages}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Upgrade"
       />
     </Form>
