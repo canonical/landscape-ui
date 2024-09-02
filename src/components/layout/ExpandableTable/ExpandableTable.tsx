@@ -13,6 +13,7 @@ interface ExpandableTableProps<T extends Record<string, unknown>> {
   onLimitChange: () => void;
   totalCount: number;
   additionalCta?: ReactNode;
+  hasNoMoreItems?: boolean;
   getCellProps?: (
     cell: Cell<T>,
   ) => Partial<TableCellProps & HTMLProps<HTMLTableCellElement>>;
@@ -27,13 +28,14 @@ const ExpandableTable = <T extends Record<string, unknown>>({
   additionalCta,
   columns,
   data,
-  onLimitChange,
-  itemCount,
-  itemNames,
-  totalCount,
+  hasNoMoreItems,
   getCellProps,
   getRowProps,
+  itemCount,
+  itemNames,
+  onLimitChange,
   title,
+  totalCount,
 }: ExpandableTableProps<T>) => {
   return (
     <>
@@ -48,8 +50,9 @@ const ExpandableTable = <T extends Record<string, unknown>>({
       />
       <ExpandableTableFooter
         additionalCta={additionalCta}
+        hasNoMoreItems={hasNoMoreItems}
+        itemCount={itemCount ?? data.length}
         itemNames={itemNames}
-        limit={itemCount ?? data.length}
         onLimitChange={onLimitChange}
         totalCount={totalCount}
       />

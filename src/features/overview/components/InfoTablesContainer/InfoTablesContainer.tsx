@@ -472,7 +472,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
                   singular: getUpgradesTableFooterName(),
                   plural: `${getUpgradesTableFooterName()}s`,
                 }}
-                limit={10}
+                itemCount={10}
                 onLimitChange={() => navigate(`${ROOT_PATH}instances`)}
                 totalCount={getTotalTableItemsCount("upgrades")}
                 className={classes.footer}
@@ -550,7 +550,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
                   singular: "activity",
                   plural: "activities",
                 }}
-                limit={10}
+                itemCount={10}
                 onLimitChange={() => navigate(`${ROOT_PATH}activities`)}
                 totalCount={getTotalTableItemsCount("activities")}
                 className={classes.footer}

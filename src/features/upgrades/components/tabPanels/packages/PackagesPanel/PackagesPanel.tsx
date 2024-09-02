@@ -55,6 +55,7 @@ const PackagesPanel: FC<PackagesPanelProps> = ({
   ) : (
     <AffectedPackages
       excludedPackages={excludedPackages}
+      hasNoMoreItems={getPackagesQueryResult?.data.next === null}
       instances={instances}
       isPackagesLoading={getPackagesQueryLoading}
       onExcludedPackagesChange={onExcludedPackagesChange}

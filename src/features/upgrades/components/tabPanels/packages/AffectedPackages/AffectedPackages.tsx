@@ -23,6 +23,7 @@ import classes from "./AffectedPackages.module.scss";
 
 interface AffectedPackagesProps {
   excludedPackages: InstancePackagesToExclude[];
+  hasNoMoreItems: boolean;
   instances: Instance[];
   isPackagesLoading: boolean;
   onExcludedPackagesChange: (
@@ -35,6 +36,7 @@ interface AffectedPackagesProps {
 
 const AffectedPackages: FC<AffectedPackagesProps> = ({
   excludedPackages,
+  hasNoMoreItems,
   instances,
   isPackagesLoading,
   onExcludedPackagesChange,
@@ -159,6 +161,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
       columns={columns}
       data={packagesData}
       itemCount={packages.length}
+      hasNoMoreItems={hasNoMoreItems}
       getCellProps={handleCellProps(
         expandedRow,
         isPackagesLoading,

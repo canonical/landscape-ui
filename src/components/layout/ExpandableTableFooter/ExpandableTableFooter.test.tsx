@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ExpandableTableFooter from "./ExpandableTableFooter";
 
-const limit = 5;
+const itemCount = 5;
 const onLimitChange = vi.fn();
 const totalCount = 12;
 
@@ -13,7 +13,7 @@ const props: ComponentProps<typeof ExpandableTableFooter> = {
     singular: "item",
     plural: "items",
   },
-  limit,
+  itemCount,
   onLimitChange,
   totalCount,
 };
@@ -23,15 +23,15 @@ describe("ExpandableTableFooter", () => {
     const { rerender } = render(<ExpandableTableFooter {...props} />);
 
     expect(
-      screen.getByText(`Showing ${limit} of ${totalCount} items.`),
+      screen.getByText(`Showing ${itemCount} of ${totalCount} items.`),
     ).toBeInTheDocument();
     expect(screen.getByRole("button")).toHaveTextContent(
-      `Show ${Math.min(totalCount - limit, 5)} more`,
+      `Show ${Math.min(totalCount - itemCount, 5)} more`,
     );
 
     const newLimit = 10;
     onLimitChange.mockImplementationOnce(() =>
-      rerender(<ExpandableTableFooter {...props} limit={newLimit} />),
+      rerender(<ExpandableTableFooter {...props} itemCount={newLimit} />),
     );
 
     await userEvent.click(screen.getByRole("button"));
@@ -44,7 +44,7 @@ describe("ExpandableTableFooter", () => {
     );
 
     onLimitChange.mockImplementationOnce(() =>
-      rerender(<ExpandableTableFooter {...props} limit={totalCount} />),
+      rerender(<ExpandableTableFooter {...props} itemCount={totalCount} />),
     );
 
     await userEvent.click(screen.getByRole("button"));
