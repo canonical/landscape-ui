@@ -135,8 +135,7 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
             aria-expanded={expandedRow === index}
             onClick={() => handleExpandCellClick(index)}
           >
-            {(original.upgrades?.regular ?? 0) +
-              (original.upgrades?.security ?? 0)}
+            {original.upgrades?.regular ?? original.upgrades?.security ?? 0}
           </Button>
         ),
       },
