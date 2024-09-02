@@ -16,16 +16,16 @@ import { SelectOption } from "@/types/SelectOption";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps } from "./helpers";
 import classes from "./PackageProfileList.module.scss";
+import { usePageParams } from "@/hooks/usePageParams";
 
 interface PackageProfileListProps {
   packageProfiles: PackageProfile[];
-  searchText: string;
 }
 
 const PackageProfileList: FC<PackageProfileListProps> = ({
   packageProfiles,
-  searchText,
 }) => {
+  const { search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
 
@@ -46,14 +46,14 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
   };
 
   const profiles = useMemo(() => {
-    if (!searchText) {
+    if (!search) {
       return packageProfiles;
     }
 
     return packageProfiles.filter((profile) => {
-      return profile.title.toLowerCase().includes(searchText.toLowerCase());
+      return profile.title.toLowerCase().includes(search.toLowerCase());
     });
-  }, [packageProfiles, searchText]);
+  }, [packageProfiles, search]);
 
   const columns = useMemo<Column<PackageProfile>[]>(
     () => [
@@ -154,7 +154,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
     <ModularTable
       columns={columns}
       data={profiles}
-      emptyMsg={`No package profiles found with the search "${searchText}"`}
+      emptyMsg={`No package profiles found with the search "${search}"`}
       getCellProps={getCellProps}
     />
   );

@@ -17,6 +17,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { ActivityCommon } from "../../types";
 import classes from "./Activities.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
+import NoData from "@/components/layout/NoData";
 
 const ActivityDetails = lazy(
   () => import("@/features/activities/components/ActivityDetails"),
@@ -154,7 +155,7 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
         accessor: "creator.name",
         Header: "Creator",
         Cell: ({ row }: CellProps<ActivityCommon>) => (
-          <>{row.original.creator?.name ?? "-"}</>
+          <>{row.original.creator?.name ?? <NoData />}</>
         ),
       },
     ],

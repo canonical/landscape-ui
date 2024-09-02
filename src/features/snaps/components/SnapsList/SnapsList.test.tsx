@@ -6,6 +6,7 @@ import { describe, expect, vi } from "vitest";
 import SnapsList from "./SnapsList";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import NoData from "@/components/layout/NoData";
 
 async function findSnapByName(name: string) {
   return await screen.findByRole("button", {
@@ -83,29 +84,30 @@ describe("SnapsList", () => {
       expect(props.setSelectedSnapIds).toHaveBeenCalledWith(snapIds);
     });
 
-    it.each(snapIds)(
-      "should select snap %s when clicking on its row checkbox",
-      async (snapId) => {
-        const snapCheckbox = await screen.findByRole("checkbox", {
-          name: installedSnaps.find((snap) => snap.snap.id === snapId)!.snap
-            .name,
-        });
-        await userEvent.click(snapCheckbox);
+    it("should select snap when clicking on its row checkbox", async () => {
+      const selectedSnap = installedSnaps[0];
+      const snapCheckbox = await screen.findByRole("checkbox", {
+        name: selectedSnap.snap.name,
+      });
+      await userEvent.click(snapCheckbox);
 
-        expect(props.setSelectedSnapIds).toHaveBeenCalledWith([snapId]);
-      },
-    );
+      expect(props.setSelectedSnapIds).toHaveBeenCalledWith([
+        selectedSnap.snap.id,
+      ]);
+    });
   });
 
   describe("Sidepanel", () => {
+    const selectedSnap = installedSnaps[0];
+
     beforeEach(async () => {
-      await clickSnapOnTable(installedSnaps[0].snap.name);
+      await clickSnapOnTable(selectedSnap.snap.name);
     });
 
     it("should open side panel when snap in table is clicked", async () => {
       const form = await screen.findByRole("complementary");
       const heading = within(form).getByText(
-        `${installedSnaps[0].snap.name} details`,
+        `${selectedSnap.snap.name} details`,
       );
       expect(heading).toBeVisible();
     });
@@ -122,23 +124,25 @@ describe("SnapsList", () => {
 
     it("should show correct side panel details for a snap", async () => {
       const fieldsToCheck = [
-        { label: "snap name", value: installedSnaps[0].snap.name },
-        { label: "channel", value: installedSnaps[0].tracking_channel },
-        { label: "version", value: installedSnaps[0].version },
-        { label: "confinement", value: installedSnaps[0].confinement },
+        { label: "snap name", value: selectedSnap.snap.name },
+        { label: "channel", value: selectedSnap.tracking_channel },
+        { label: "version", value: selectedSnap.version },
+        { label: "confinement", value: selectedSnap.confinement },
         {
           label: "held until",
-          value:
-            installedSnaps[0].held_until === null
-              ? "-"
-              : moment(installedSnaps[0].held_until).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                ),
+          value: moment(selectedSnap.held_until).isValid() ? (
+            moment(selectedSnap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
+          ) : (
+            <NoData />
+          ),
         },
-        { label: "summary", value: installedSnaps[0].snap.summary ?? "-" },
+        {
+          label: "summary",
+          value: selectedSnap.snap.summary ?? <NoData />,
+        },
         {
           label: "publisher",
-          value: installedSnaps[0].snap.publisher.username,
+          value: selectedSnap.snap.publisher.username,
         },
       ];
       const form = await screen.findByRole("complementary");

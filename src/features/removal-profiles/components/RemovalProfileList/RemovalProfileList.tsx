@@ -16,6 +16,7 @@ import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./RemovalProfileList.module.scss";
+import { usePageParams } from "@/hooks/usePageParams";
 
 const RemovalProfileDetails = lazy(() => import("../RemovalProfileDetails"));
 const SingleRemovalProfileForm = lazy(
@@ -24,13 +25,10 @@ const SingleRemovalProfileForm = lazy(
 
 interface RemovalProfileListProps {
   profiles: RemovalProfile[];
-  search: string;
 }
 
-const RemovalProfileList: FC<RemovalProfileListProps> = ({
-  profiles,
-  search,
-}) => {
+const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
+  const { search } = usePageParams();
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();

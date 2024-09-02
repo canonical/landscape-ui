@@ -5,6 +5,7 @@ import { InstalledSnap } from "@/types/Snap";
 import { Col, Row } from "@canonical/react-components";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
+import NoData from "@/components/layout/NoData";
 
 interface SnapDetailsProps {
   installedSnap: InstalledSnap;
@@ -35,16 +36,21 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
           <InfoItem
             label="held until"
             value={
-              installedSnap.held_until
-                ? moment(installedSnap.held_until).format(
-                    DISPLAY_DATE_TIME_FORMAT,
-                  )
-                : "-"
+              moment(installedSnap.held_until).isValid() ? (
+                moment(installedSnap.held_until).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )
+              ) : (
+                <NoData />
+              )
             }
           />
         </Col>
         <Col size={12}>
-          <InfoItem label="summary" value={installedSnap.snap.summary ?? "-"} />
+          <InfoItem
+            label="summary"
+            value={installedSnap.snap.summary ?? <NoData />}
+          />
         </Col>
         <Col size={12}>
           <InfoItem

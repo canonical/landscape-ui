@@ -1,8 +1,8 @@
-import { FC } from "react";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import { usePageParams } from "@/hooks/usePageParams";
+import { FC } from "react";
 
-const UpgradeProfilesHeader: FC = () => {
+const PackageProfileHeader: FC = () => {
   const { setPageParams } = usePageParams();
 
   const handleSearch = (searchText: string) => {
@@ -12,4 +12,4 @@ const UpgradeProfilesHeader: FC = () => {
   return <HeaderWithSearch onSearch={handleSearch} />;
 };
 
-export default UpgradeProfilesHeader;
+export default PackageProfileHeader;

@@ -6,7 +6,6 @@ import UpgradeProfileList from "./UpgradeProfileList";
 
 const props: ComponentProps<typeof UpgradeProfileList> = {
   profiles: upgradeProfiles,
-  search: "",
 };
 
 describe("UpgradeProfileList", () => {
@@ -38,7 +37,11 @@ describe("UpgradeProfileList", () => {
   it("should filter profiles by search", () => {
     const searchText = upgradeProfiles[0].name;
 
-    renderWithProviders(<UpgradeProfileList {...props} search={searchText} />);
+    renderWithProviders(
+      <UpgradeProfileList {...props} />,
+      undefined,
+      `/profiles/upgrade?search=${searchText}`,
+    );
 
     expect(screen.getByText(searchText)).toBeInTheDocument();
 

@@ -5,6 +5,7 @@ import UserPanelActionButtons from "../UserPanelActionButtons";
 import useUsers from "@/hooks/useUsers";
 import { NOT_AVAILABLE } from "@/constants";
 import { useParams } from "react-router-dom";
+import NoData from "@/components/layout/NoData";
 
 interface UserDetailsProps {
   user: User;
@@ -26,8 +27,9 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
   const primaryGroup = groupsData?.find(
     (group) => group.gid === user.primary_gid,
   )?.name;
-  const userGroups =
-    userGroupsData?.data.groups.map((group) => group.name).join(", ") || "-";
+  const userGroups = userGroupsData?.data.groups
+    .map((group) => group.name)
+    .join(", ");
 
   return (
     <>
@@ -38,11 +40,16 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
         value={user.name !== "" ? user.name : NOT_AVAILABLE}
       />
       <InfoItem label="passphrase" type="password" />
-      <InfoItem label="primary group" value={primaryGroup ?? "-"} />
-      <InfoItem label="additional groups" type="truncated" value={userGroups} />
-      <InfoItem label="location" value={user?.location ?? "-"} />
-      <InfoItem label="home phone" value={user?.home_phone ?? "-"} />
-      <InfoItem label="work phone" value={user?.work_phone ?? "-"} />
+      <InfoItem label="primary group" value={primaryGroup ?? <NoData />} />
+      <InfoItem
+        label="additional groups"
+        {...(userGroups
+          ? { type: "truncated", value: userGroups }
+          : { value: <NoData /> })}
+      />
+      <InfoItem label="location" value={user?.location ?? <NoData />} />
+      <InfoItem label="home phone" value={user?.home_phone ?? <NoData />} />
+      <InfoItem label="work phone" value={user?.work_phone ?? <NoData />} />
     </>
   );
 };

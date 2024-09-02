@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import EditOrganisationPreferencesForm from "./EditOrganisationPreferencesForm";
-import { FORM_FIELDS, REGISTRATION_KEY_REGEX } from "./constants";
+import { REGISTRATION_KEY_REGEX } from "./constants";
 
 const props = {
   organisationPreferences: {
@@ -19,8 +19,8 @@ describe("EditOrganisationPreferencesForm", () => {
     );
 
     expect(container).toHaveTexts([
-      FORM_FIELDS.organisationName.label,
-      FORM_FIELDS.useRegistrationKey.label,
+      "Organisation's name",
+      "Use registration key",
     ]);
 
     const saveButton = screen.getByRole("button", { name: /save changes/i });
@@ -49,9 +49,9 @@ describe("EditOrganisationPreferencesForm", () => {
     await userEvent.click(useRegistrationKeyCheckbox);
 
     expect(container).toHaveTexts([
-      FORM_FIELDS.organisationName.label,
-      FORM_FIELDS.useRegistrationKey.label,
-      FORM_FIELDS.autoRegisterNewComputers.label,
+      "Organisation's name",
+      "Use registration key",
+      "Auto register new computers",
     ]);
   });
 

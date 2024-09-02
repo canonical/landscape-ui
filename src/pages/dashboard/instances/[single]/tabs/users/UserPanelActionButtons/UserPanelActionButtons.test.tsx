@@ -30,39 +30,34 @@ const formUnlockedUserButtons = ["Lock", "Edit", "Delete"];
 
 describe("UserPanelActionButtons", () => {
   describe("User buttons in table", () => {
-    it.each(tableUserButtons)("renders %s button", async (button) => {
-      renderWithProviders(
+    it("renders table buttons", () => {
+      const { container } = renderWithProviders(
         <UserPanelActionButtons
           selectedUsers={getSelectedUsers(users, userData.empty)}
           handleClearSelection={vi.fn()}
         />,
       );
-      const actionButton = await screen.findByRole("button", {
-        name: button,
-      });
-      expect(actionButton).toBeInTheDocument();
+      expect(container).toHaveTexts(tableUserButtons);
     });
 
     describe("Check button disabled statuses", () => {
-      it.each(tableUserButtons)(
-        "renders disabled %s button when no users selected",
-        async (button) => {
-          renderWithProviders(
-            <UserPanelActionButtons
-              selectedUsers={getSelectedUsers(users, userData.empty)}
-              handleClearSelection={vi.fn()}
-            />,
-          );
-          const actionButton = await screen.findByRole("button", {
-            name: button,
-          });
+      it("renders buttons disabled when no users selected", () => {
+        renderWithProviders(
+          <UserPanelActionButtons
+            selectedUsers={getSelectedUsers(users, userData.empty)}
+            handleClearSelection={vi.fn()}
+          />,
+        );
+
+        for (const button of tableUserButtons) {
+          const actionButton = screen.getByRole("button", { name: button });
           if (button !== "Add user") {
             expect(actionButton).toBeDisabled();
           } else {
             expect(actionButton).toBeEnabled();
           }
-        },
-      );
+        }
+      });
 
       it("Unlocked button disabled when only unlocked users are selected", () => {
         renderWithProviders(
@@ -108,42 +103,30 @@ describe("UserPanelActionButtons", () => {
   });
 
   describe("User buttons in sidepanel", () => {
-    it.each(formLockedUserButtons)(
-      "Renders %s button for held user in sidepanel",
-      async (button) => {
-        renderWithProviders(
-          <UserPanelActionButtons
-            selectedUsers={getSelectedUsers(users, [
-              userData.single.lockedUser,
-            ])}
-            handleClearSelection={vi.fn()}
-            sidePanel
-          />,
-        );
-        const actionButton = await screen.findByRole("button", {
-          name: button,
-        });
-        expect(actionButton).toBeInTheDocument();
-      },
-    );
+    it("renders buttons for held user in sidepanel", () => {
+      const { container } = renderWithProviders(
+        <UserPanelActionButtons
+          selectedUsers={getSelectedUsers(users, [userData.single.lockedUser])}
+          handleClearSelection={vi.fn()}
+          sidePanel
+        />,
+      );
 
-    it.each(formUnlockedUserButtons)(
-      "Renders %s button for unheld user in sidepanel",
-      async (button) => {
-        renderWithProviders(
-          <UserPanelActionButtons
-            selectedUsers={getSelectedUsers(users, [
-              userData.single.unlockedUser,
-            ])}
-            handleClearSelection={vi.fn()}
-            sidePanel
-          />,
-        );
-        const actionButton = await screen.findByRole("button", {
-          name: button,
-        });
-        expect(actionButton).toBeInTheDocument();
-      },
-    );
+      expect(container).toHaveTexts(formLockedUserButtons);
+    });
+
+    it("renders buttons for unheld user in sidepanel", () => {
+      const { container } = renderWithProviders(
+        <UserPanelActionButtons
+          selectedUsers={getSelectedUsers(users, [
+            userData.single.unlockedUser,
+          ])}
+          handleClearSelection={vi.fn()}
+          sidePanel
+        />,
+      );
+
+      expect(container).toHaveTexts(formUnlockedUserButtons);
+    });
   });
 });

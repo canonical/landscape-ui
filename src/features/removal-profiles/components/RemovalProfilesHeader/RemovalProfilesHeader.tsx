@@ -1,40 +1,15 @@
-import { FC, useState } from "react";
-import { Col, Form, Row, SearchBox } from "@canonical/react-components";
+import { FC } from "react";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import { usePageParams } from "@/hooks/usePageParams";
 
-interface RemovalProfilesHeaderProps {
-  onSearch: (searchText: string) => void;
-}
+const RemovalProfilesHeader: FC = () => {
+  const { setPageParams } = usePageParams();
 
-const RemovalProfilesHeader: FC<RemovalProfilesHeaderProps> = ({
-  onSearch,
-}) => {
-  const [inputText, setInputText] = useState("");
+  const handleSearch = (searchText: string) => {
+    setPageParams({ search: searchText });
+  };
 
-  return (
-    <Form
-      onSubmit={(event) => {
-        event.preventDefault();
-        onSearch(inputText);
-      }}
-    >
-      <Row className="u-no-margin--left u-no-margin--right u-no-padding--left u-no-padding--right">
-        <Col size={4}>
-          <SearchBox
-            externallyControlled
-            shouldRefocusAfterReset
-            autoComplete="off"
-            value={inputText}
-            onChange={(inputValue) => setInputText(inputValue)}
-            onReset={() => {
-              setInputText("");
-              onSearch("");
-            }}
-            onSearch={() => onSearch(inputText)}
-          />
-        </Col>
-      </Row>
-    </Form>
-  );
+  return <HeaderWithSearch onSearch={handleSearch} />;
 };
 
 export default RemovalProfilesHeader;

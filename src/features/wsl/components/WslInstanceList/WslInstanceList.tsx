@@ -7,6 +7,7 @@ import { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import WslInstanceListActions from "../WslInstanceListActions";
 import WslInstancesHeader from "../WslInstancesHeader";
 import classes from "./WslInstanceList.module.scss";
+import { usePageParams } from "@/hooks/usePageParams";
 
 interface WslInstanceListProps {
   instance: Instance;
@@ -16,19 +17,19 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
   const [selectedInstances, setSelectedInstances] = useState<
     InstanceWithoutRelation[]
   >([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { search } = usePageParams();
 
   const wslInstances = useMemo(() => {
-    if (!searchQuery) {
+    if (!search) {
       return instance.children;
     }
 
     return instance.children.filter(
       ({ title, hostname }) =>
-        title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        hostname?.toLowerCase().includes(searchQuery.toLowerCase()),
+        title.toLowerCase().includes(search.toLowerCase()) ||
+        hostname?.toLowerCase().includes(search.toLowerCase()),
     );
-  }, [instance, searchQuery]);
+  }, [instance, search]);
 
   const handleInstanceCheck = (instance: InstanceWithoutRelation) => {
     setSelectedInstances((prevState) =>
@@ -113,11 +114,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
 
   return (
     <>
-      <WslInstancesHeader
-        resetQuery={() => setSearchQuery("")}
-        selectedInstances={selectedInstances}
-        setQuery={(newQuery) => setSearchQuery(newQuery)}
-      />
+      <WslInstancesHeader selectedInstances={selectedInstances} />
       <ModularTable
         columns={columns}
         data={wslInstances}

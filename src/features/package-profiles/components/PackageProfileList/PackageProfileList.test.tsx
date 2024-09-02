@@ -6,11 +6,10 @@ import PackageProfileList from "./PackageProfileList";
 
 const props: ComponentProps<typeof PackageProfileList> = {
   packageProfiles,
-  searchText: "",
 };
 
 describe("PackageProfileList", () => {
-  it("should render profile list", async () => {
+  it("should render profile list", () => {
     const { container } = renderWithProviders(
       <PackageProfileList {...props} />,
     );
@@ -39,7 +38,9 @@ describe("PackageProfileList", () => {
     const searchText = packageProfiles[0].title;
 
     renderWithProviders(
-      <PackageProfileList {...props} searchText={searchText} />,
+      <PackageProfileList {...props} />,
+      undefined,
+      `/profiles/package?search=${searchText}`,
     );
 
     expect(

@@ -1,19 +1,4 @@
-@import "vanilla-framework/scss/settings_spacing";
-
-.container {
-  column-gap: $sph--large;
+.actions {
   display: flex;
-}
-
-.searchContainer {
-  flex-basis: 30rem;
-}
-
-.selectContainer {
-  display: flex;
-  column-gap: $sph--large;
-}
-
-.cta {
-  margin-left: auto;
+  justify-content: flex-end;
 }

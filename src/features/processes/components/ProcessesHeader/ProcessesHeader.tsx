@@ -1,11 +1,13 @@
-import { FC, SyntheticEvent, useState } from "react";
+import { FC } from "react";
 import useDebug from "@/hooks/useDebug";
 import { useProcesses } from "@/hooks/useProcesses";
-import { Button, Form, SearchBox } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import classes from "./ProcessesHeader.module.scss";
 import useNotify from "@/hooks/useNotify";
 import { usePageParams } from "@/hooks/usePageParams";
 import { useParams } from "react-router-dom";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import classNames from "classnames";
 
 interface ProcessesHeaderProps {
   handleClearSelection: () => void;
@@ -17,33 +19,20 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   handleClearSelection,
 }) => {
   const { instanceId: urlInstanceId } = useParams();
-  const { search, setPageParams } = usePageParams();
+  const { setPageParams } = usePageParams();
   const { notify } = useNotify();
   const debug = useDebug();
   const { killProcessQuery, terminateProcessQuery } = useProcesses();
-
-  const [searchText, setSearchText] = useState(search);
 
   const instanceId = Number(urlInstanceId);
   const { mutateAsync: terminateProcess } = terminateProcessQuery;
   const { mutateAsync: killProcess } = killProcessQuery;
 
-  const handleSearch = () => {
+  const handleSearch = (searchText: string) => {
     setPageParams({
       search: searchText,
     });
     handleClearSelection();
-  };
-
-  const handleClear = () => {
-    setPageParams({
-      search: "",
-    });
-  };
-
-  const handleSubmit = (event: SyntheticEvent) => {
-    event.preventDefault();
-    handleSearch();
   };
 
   const handleEndProcess = async () => {
@@ -77,40 +66,29 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   };
 
   return (
-    <div className={classes.container}>
-      <div className={classes.searchContainer}>
-        <Form onSubmit={handleSubmit} noValidate>
-          <SearchBox
-            shouldRefocusAfterReset
-            externallyControlled
-            autocomplete="off"
-            aria-label="Process search"
-            value={searchText}
-            onChange={(inputValue) => setSearchText(inputValue)}
-            onSearch={handleSearch}
-            onClear={handleClear}
-          />
-        </Form>
-      </div>
-      <div className="p-segmented-control">
-        <div className="p-segmented-control__list">
-          <Button
-            className="p-segmented-control__button"
-            disabled={0 === selectedPids.length}
-            onClick={handleEndProcess}
-          >
-            End process
-          </Button>
-          <Button
-            className="p-segmented-control__button"
-            disabled={0 === selectedPids.length}
-            onClick={handleKillProcess}
-          >
-            Kill process
-          </Button>
+    <HeaderWithSearch
+      onSearch={handleSearch}
+      actions={
+        <div className={classNames("p-segmented-control", classes.actions)}>
+          <div className="p-segmented-control__list">
+            <Button
+              className="p-segmented-control__button"
+              disabled={0 === selectedPids.length}
+              onClick={handleEndProcess}
+            >
+              End process
+            </Button>
+            <Button
+              className="p-segmented-control__button"
+              disabled={0 === selectedPids.length}
+              onClick={handleKillProcess}
+            >
+              Kill process
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 };
 

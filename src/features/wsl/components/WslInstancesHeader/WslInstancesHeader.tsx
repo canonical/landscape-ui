@@ -1,5 +1,5 @@
-import { FC, lazy, Suspense, SyntheticEvent, useState } from "react";
-import { Button, Form, SearchBox } from "@canonical/react-components";
+import { FC, lazy, Suspense } from "react";
+import { Button } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
@@ -8,22 +8,19 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { InstanceWithoutRelation } from "@/types/Instance";
 import { useWsl } from "../../hooks";
 import classes from "./WslInstancesHeader.module.scss";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import { usePageParams } from "@/hooks/usePageParams";
 
 const WslInstanceInstallForm = lazy(() => import("../WslInstanceInstallForm"));
 
 interface WslInstancesHeaderProps {
-  resetQuery: () => void;
   selectedInstances: InstanceWithoutRelation[];
-  setQuery: (newQuery: string) => void;
 }
 
 const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
-  resetQuery,
   selectedInstances,
-  setQuery,
 }) => {
-  const [searchText, setSearchText] = useState("");
-
+  const { setPageParams } = usePageParams();
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
   const { confirmModal, closeConfirmModal } = useConfirm();
@@ -137,59 +134,42 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
     );
   };
 
-  const handleSubmit = (event: SyntheticEvent) => {
-    event.preventDefault();
-    setQuery(searchText);
+  const handleSearch = (searchText: string) => {
+    setPageParams({ search: searchText });
   };
 
   return (
-    <div className={classes.container}>
-      <div className={classes.searchContainer}>
-        <Form onSubmit={handleSubmit} noValidate>
-          <SearchBox
-            onChange={(value) => setSearchText(value)}
-            value={searchText}
-            onSearch={() => setQuery(searchText)}
-            autocomplete="off"
-            onClear={() => {
-              resetQuery();
-              setSearchText("");
-            }}
-          />
-        </Form>
-      </div>
+    <HeaderWithSearch
+      onSearch={handleSearch}
+      actions={
+        <div className={classes.cta}>
+          <Button type="button" onClick={handleWslInstanceInstall}>
+            <span>Create new instance</span>
+          </Button>
 
-      <div className={classes.cta}>
-        <Button
-          type="button"
-          onClick={handleWslInstanceInstall}
-          className={classes.noWrap}
-        >
-          <span>Create new instance</span>
-        </Button>
-
-        <div className="p-segmented-control">
-          <div className="p-segmented-control__list">
-            <Button
-              type="button"
-              className="p-segmented-control__button"
-              onClick={handleDeleteChildInstancesDialog}
-              disabled={selectedInstances.length === 0}
-            >
-              <span>Delete instance</span>
-            </Button>
-            <Button
-              type="button"
-              className="p-segmented-control__button"
-              onClick={handleRemoveInstancesDialog}
-              disabled={selectedInstances.length === 0}
-            >
-              <span>Remove from Landscape</span>
-            </Button>
+          <div className="p-segmented-control">
+            <div className="p-segmented-control__list">
+              <Button
+                type="button"
+                className="p-segmented-control__button"
+                onClick={handleDeleteChildInstancesDialog}
+                disabled={selectedInstances.length === 0}
+              >
+                <span>Delete instance</span>
+              </Button>
+              <Button
+                type="button"
+                className="p-segmented-control__button"
+                onClick={handleRemoveInstancesDialog}
+                disabled={selectedInstances.length === 0}
+              >
+                <span>Remove from Landscape</span>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 };
 

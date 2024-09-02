@@ -2,14 +2,12 @@ import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
 import { User } from "@/types/User";
-import {
-  screen,
-  waitForElementToBeRemoved,
-  within,
-} from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import UserList from "./UserList";
+import NoData from "@/components/layout/NoData";
+import { expectLoadingState } from "@/tests/helpers";
 
 const userIds = users.map((user) => user.uid);
 const unlockedUser = users.find((user) => user.enabled)!;
@@ -68,18 +66,17 @@ describe("UserList", () => {
       expect(props.setSelected).toHaveBeenCalledWith(userIds);
     });
 
-    it.each(userIds)(
-      "should select user %s when clicking on its row checkbox",
-      async (userId) => {
-        const userCheckbox = await screen.findByRole("checkbox", {
-          name: `Select user ${users.find((user) => user.uid === userId)!.username}`,
-        });
-        expect(userCheckbox).toBeInTheDocument();
-        await userEvent.click(userCheckbox);
+    it("should select user when clicking on its row checkbox", async () => {
+      const selectedUser = users[0];
 
-        expect(props.setSelected).toHaveBeenCalledWith([userId]);
-      },
-    );
+      const userCheckbox = await screen.findByRole("checkbox", {
+        name: `Select user ${selectedUser.username}`,
+      });
+      expect(userCheckbox).toBeInTheDocument();
+      await userEvent.click(userCheckbox);
+
+      expect(props.setSelected).toHaveBeenCalledWith([selectedUser.uid]);
+    });
   });
 
   describe("User details sidepanel", () => {
@@ -96,20 +93,18 @@ describe("UserList", () => {
 
     it("should show correct locked user side panel action buttons", async () => {
       const user = lockedUser;
+      const buttonNames = ["Unlock", "Edit", "Delete"];
 
       const userTableButton = await screen.findByRole("button", {
         name: `Show details of user ${user.username}`,
       });
       await userEvent.click(userTableButton);
 
-      const buttonsNames = ["Unlock", "Edit", "Delete"];
       const form = await screen.findByRole("complementary");
 
-      const loader = await screen.findByText("Loading...");
-      expect(loader).toBeInTheDocument();
-      await waitForElementToBeRemoved(loader);
+      await expectLoadingState();
 
-      buttonsNames.forEach((buttonName) => {
+      buttonNames.forEach((buttonName) => {
         const button = within(form).getByText(buttonName);
         expect(button).toBeInTheDocument();
       });
@@ -149,13 +144,13 @@ describe("UserList", () => {
       const getFieldsToCheck = (user: User) => {
         return [
           { label: "username", value: user.username },
-          { label: "name", value: user?.name ?? "-" },
+          { label: "name", value: user?.name ?? <NoData /> },
           { label: "passphrase", value: "****************" },
-          { label: "primary group", value: primaryGroup ?? "-" },
+          { label: "primary group", value: primaryGroup ?? <NoData /> },
           { label: "additional groups", value: groupsData },
-          { label: "location", value: user?.location ?? "-" },
-          { label: "home phone", value: user?.home_phone ?? "-" },
-          { label: "work phone", value: user?.work_phone ?? "-" },
+          { label: "location", value: user?.location ?? <NoData /> },
+          { label: "home phone", value: user?.home_phone ?? <NoData /> },
+          { label: "work phone", value: user?.work_phone ?? <NoData /> },
         ];
       };
       const fieldsToCheck = getFieldsToCheck(user);

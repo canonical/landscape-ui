@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import {
   RemovalProfileList,
@@ -8,8 +8,6 @@ import {
 } from "@/features/removal-profiles";
 
 const RemovalProfileContainer: FC = () => {
-  const [search, setSearch] = useState("");
-
   const { getRemovalProfilesQuery } = useRemovalProfiles();
 
   const {
@@ -29,13 +27,8 @@ const RemovalProfileContainer: FC = () => {
         getRemovalProfilesQueryResult &&
         getRemovalProfilesQueryResult.data.length > 0 && (
           <>
-            <RemovalProfilesHeader
-              onSearch={(searchText) => setSearch(searchText)}
-            />
-            <RemovalProfileList
-              profiles={getRemovalProfilesQueryResult.data}
-              search={search}
-            />
+            <RemovalProfilesHeader />
+            <RemovalProfileList profiles={getRemovalProfilesQueryResult.data} />
           </>
         )}
     </>

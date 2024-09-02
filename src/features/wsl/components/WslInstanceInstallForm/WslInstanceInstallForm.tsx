@@ -10,7 +10,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { useWsl } from "../../hooks";
-import { FORM_FIELDS, MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
+import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
 import { fileToBase64 } from "./helpers";
 
 interface FormProps {
@@ -114,11 +114,16 @@ const WslInstanceInstallForm: FC = () => {
     },
   });
 
-  const instanceOptions =
+  const instanceQueryResultOptions =
     (getWslInstanceNamesQueryResult?.data ?? []).map(({ label, name }) => ({
       label,
       value: name,
     })) || [];
+
+  const instanceOptions = [
+    ...instanceQueryResultOptions,
+    { label: "Custom", value: "custom" },
+  ];
 
   const handleFileUpload = async (files: File[]) => {
     await formik.setFieldValue("cloudInit", files[0]);
@@ -130,26 +135,24 @@ const WslInstanceInstallForm: FC = () => {
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      {FORM_FIELDS.instanceType.type === "select" && (
-        <Select
-          label={FORM_FIELDS.instanceType.label}
-          required
-          disabled={isLoadingWslInstanceNames}
-          options={[...instanceOptions, ...FORM_FIELDS.instanceType.options]}
-          {...formik.getFieldProps("instanceType")}
-          error={
-            formik.touched.instanceType && formik.errors.instanceType
-              ? formik.errors.instanceType
-              : undefined
-          }
-        />
-      )}
+      <Select
+        label="Instance type"
+        required
+        disabled={isLoadingWslInstanceNames}
+        options={instanceOptions}
+        {...formik.getFieldProps("instanceType")}
+        error={
+          formik.touched.instanceType && formik.errors.instanceType
+            ? formik.errors.instanceType
+            : undefined
+        }
+      />
 
       {formik.values.instanceType === "custom" && (
         <>
           <Input
-            label={FORM_FIELDS.instanceName.label}
-            type={FORM_FIELDS.instanceName.type}
+            label="Instance name"
+            type="text"
             required
             {...formik.getFieldProps("instanceName")}
             error={
@@ -159,8 +162,8 @@ const WslInstanceInstallForm: FC = () => {
             }
           />
           <Input
-            label={FORM_FIELDS.rootfs.label}
-            type={FORM_FIELDS.rootfs.type}
+            label="Rootfs URL"
+            type="text"
             required
             {...formik.getFieldProps("rootfs")}
             error={
@@ -173,7 +176,7 @@ const WslInstanceInstallForm: FC = () => {
       )}
 
       <FileInput
-        label={FORM_FIELDS.cloudInit.label}
+        label="Cloud-init"
         accept=".yaml"
         {...formik.getFieldProps("cloudInit")}
         onFileRemove={handleRemoveFile}

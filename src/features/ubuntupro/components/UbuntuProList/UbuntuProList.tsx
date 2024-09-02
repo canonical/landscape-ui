@@ -3,6 +3,7 @@ import { FC, useMemo } from "react";
 import { CellProps, Column } from "react-table";
 import classes from "./UbuntuProList.module.scss";
 import { UbuntuProService } from "@/types/Instance";
+import NoData from "@/components/layout/NoData";
 
 interface UbuntuProServicesListProps {
   services: UbuntuProService[];
@@ -20,14 +21,14 @@ const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {
         accessor: "entitled",
         Header: "Entitled",
         Cell: ({ row }: CellProps<UbuntuProService>) => (
-          <>{row.original.entitled ?? "-"}</>
+          <>{row.original.entitled ?? <NoData />}</>
         ),
       },
       {
         accessor: "status",
         Header: "Status",
         Cell: ({ row }: CellProps<UbuntuProService>) => (
-          <>{row.original.status ?? "-"}</>
+          <>{row.original.status ?? <NoData />}</>
         ),
         getCellIcon: ({ row: { original } }: CellProps<UbuntuProService>) => {
           if (!original.status) {

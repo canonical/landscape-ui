@@ -11,6 +11,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import classes from "./UserList.module.scss";
 import { Column, CellProps } from "react-table";
 import { handleCellProps } from "./helpers";
+import NoData from "@/components/layout/NoData";
 
 const EditUserForm = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
@@ -126,7 +127,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
         Header: "Full Name",
         accessor: "name",
         sortType: "basic",
-        Cell: ({ value }: CellProps<User>) => (value ? value : "-"),
+        Cell: ({ row }: CellProps<User>) => row.original.name || <NoData />,
       },
       {
         accessor: "actions",
