@@ -146,7 +146,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             aria-expanded={expandedRow === index}
             onClick={() => handleExpandCellClick(index)}
           >
-            {original.computers.length}
+            {new Set(original.computers.map(({ id }) => id)).size}
           </Button>
         ),
       },

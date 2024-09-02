@@ -31,13 +31,11 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
 }) => {
   const [limit, setLimit] = useState(5);
 
-  const instanceIds = currentPackage.computers.map(({ id }) => id);
+  const instanceIds = new Set(currentPackage.computers.map(({ id }) => id));
 
   const instanceData = useMemo(
     () =>
-      selectedInstances
-        .filter(({ id }) => instanceIds.includes(id))
-        .slice(0, limit),
+      selectedInstances.filter(({ id }) => instanceIds.has(id)).slice(0, limit),
     [instanceIds, limit, selectedInstances],
   );
 
@@ -131,7 +129,7 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
       data={instanceData}
       itemNames={{ plural: "instances", singular: "instance" }}
       onLimitChange={() => setLimit((prevState) => prevState + 5)}
-      totalCount={instanceIds.length}
+      totalCount={instanceIds.size}
       title={
         <p className="p-heading--4">
           Instances affected by <b>{currentPackage.name}</b>
