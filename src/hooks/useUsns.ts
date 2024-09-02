@@ -24,7 +24,7 @@ export interface GetAffectedPackagesParams {
   usn: string;
 }
 
-export interface UpgradeUsnPackagesParams {
+export interface UpgradeInstanceUsnsParams {
   instanceId: number;
   usns: string[];
 }
@@ -32,6 +32,15 @@ export interface UpgradeUsnPackagesParams {
 export interface RemoveUsnPackagesParams {
   instanceId: number;
   usns: string;
+}
+
+interface InstanceUsnsToUpgrade {
+  id: number;
+  exclude_usns: string[];
+}
+
+interface UpgradeUsnsParams {
+  computers: InstanceUsnsToUpgrade[];
 }
 
 export default function useUsns() {
@@ -72,10 +81,10 @@ export default function useUsns() {
     });
   };
 
-  const upgradeUsnPackagesQuery = useMutation<
+  const upgradeInstanceUsnsQuery = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
-    UpgradeUsnPackagesParams
+    UpgradeInstanceUsnsParams
   >({
     mutationFn: ({ instanceId, ...params }) =>
       authFetch!.post(`/computers/${instanceId}/usns/upgrade-packages`, params),
@@ -100,10 +109,25 @@ export default function useUsns() {
       ]),
   });
 
+  const upgradeUsnsQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    UpgradeUsnsParams
+  >({
+    mutationFn: (params) =>
+      authFetch!.post("/computers/usns/upgrade-packages", params),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["usns"]),
+        queryClient.invalidateQueries(["activities"]),
+      ]),
+  });
+
   return {
     getUsnsQuery,
     getAffectedPackagesQuery,
-    upgradeUsnPackagesQuery,
+    upgradeInstanceUsnsQuery,
     removeUsnPackagesQuery,
+    upgradeUsnsQuery,
   };
 }

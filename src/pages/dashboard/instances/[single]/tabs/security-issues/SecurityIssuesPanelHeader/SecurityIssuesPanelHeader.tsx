@@ -27,14 +27,14 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { upgradeUsnPackagesQuery } = useUsns();
+  const { upgradeInstanceUsnsQuery } = useUsns();
 
   const instanceId = Number(urlInstanceId);
 
   const {
-    mutateAsync: upgradeUsnPackages,
+    mutateAsync: upgradeInstanceUsns,
     isLoading: upgradeUsnPackagesLoading,
-  } = upgradeUsnPackagesQuery;
+  } = upgradeInstanceUsnsQuery;
 
   const handleActivityDetailsView = () => {
     navigate(
@@ -46,7 +46,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 
   const handleUpgradePackages = async () => {
     try {
-      await upgradeUsnPackages({
+      await upgradeInstanceUsns({
         instanceId: instanceId,
         usns,
       });
