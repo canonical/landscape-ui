@@ -13,6 +13,7 @@ import SnapDetails from "../SnapDetails";
 import classes from "./SnapsList.module.scss";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import NoData from "@/components/layout/NoData";
 
 interface SnapsListProps {
   installedSnaps: InstalledSnap[];
@@ -113,9 +114,11 @@ const SnapsList: FC<SnapsListProps> = ({
         accessor: "held_until",
         Cell: ({ row }: CellProps<InstalledSnap>) => (
           <>
-            {row.original.held_until
-              ? moment(row.original.held_until).format(DISPLAY_DATE_TIME_FORMAT)
-              : "-"}
+            {moment(row.original.held_until).isValid() ? (
+              moment(row.original.held_until).format(DISPLAY_DATE_TIME_FORMAT)
+            ) : (
+              <NoData />
+            )}
           </>
         ),
       },

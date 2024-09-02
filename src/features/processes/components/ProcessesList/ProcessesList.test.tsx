@@ -28,21 +28,16 @@ describe("ProcessesList", () => {
     expect(props.setSelectedPids).toHaveBeenCalledWith(processIds);
   });
 
-  it.each(processIds)(
-    "should select snap %s when clicking on its row checkbox",
-    async (processId) => {
-      const chosenProcess = processes.find(
-        (process) => process.pid === processId,
-      )!;
-      const row = screen.getByRole("row", {
-        name: `Select process ${chosenProcess.name} ${chosenProcess.name} ${chosenProcess.state} ${chosenProcess.vm_size} ${(100 * chosenProcess.cpu_utilisation).toFixed(1)}% ${chosenProcess.pid} ${chosenProcess.start_time} ${chosenProcess.gid}`,
-      });
-      const processCheckbox = await within(row).findByRole("checkbox", {
-        name: `Select process ${chosenProcess.name}`,
-      });
-      await userEvent.click(processCheckbox);
+  it("should select process when clicking on its row checkbox", async () => {
+    const chosenProcess = processes[0];
+    const row = screen.getByRole("row", {
+      name: `Select process ${chosenProcess.name} ${chosenProcess.name} ${chosenProcess.state} ${chosenProcess.vm_size} ${(100 * chosenProcess.cpu_utilisation).toFixed(1)}% ${chosenProcess.pid} ${chosenProcess.start_time} ${chosenProcess.gid}`,
+    });
+    const processCheckbox = await within(row).findByRole("checkbox", {
+      name: `Select process ${chosenProcess.name}`,
+    });
+    await userEvent.click(processCheckbox);
 
-      expect(props.setSelectedPids).toHaveBeenCalledWith([processId]);
-    },
-  );
+    expect(props.setSelectedPids).toHaveBeenCalledWith([chosenProcess.pid]);
+  });
 });

@@ -6,6 +6,7 @@ import { describe } from "vitest";
 import UserDetails from "./UserDetails";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { screen } from "@testing-library/react";
+import NoData from "@/components/layout/NoData";
 
 const unlockedUser = users.find((user) => user.enabled)!;
 
@@ -24,13 +25,13 @@ describe("user details", () => {
     const getFieldsToCheck = (user: User) => {
       return [
         { label: "username", value: user.username },
-        { label: "name", value: user?.name ?? "-" },
+        { label: "name", value: user?.name ?? <NoData /> },
         { label: "passphrase", value: "****************" },
-        { label: "primary group", value: primaryGroup ?? "-" },
+        { label: "primary group", value: primaryGroup ?? <NoData /> },
         { label: "additional groups", value: groupsData },
-        { label: "location", value: user?.location ?? "-" },
-        { label: "home phone", value: user?.home_phone ?? "-" },
-        { label: "work phone", value: user?.work_phone ?? "-" },
+        { label: "location", value: user?.location ?? <NoData /> },
+        { label: "home phone", value: user?.home_phone ?? <NoData /> },
+        { label: "work phone", value: user?.work_phone ?? <NoData /> },
       ];
     };
     const fieldsToCheck = getFieldsToCheck(user);

@@ -6,7 +6,7 @@ interface ListFilterBase {
 }
 
 interface ListFilterInput {
-  type: "text" | "date" | "checkbox" | "file";
+  type: "text" | "date" | "checkbox";
 }
 
 interface ListFilterSelect {

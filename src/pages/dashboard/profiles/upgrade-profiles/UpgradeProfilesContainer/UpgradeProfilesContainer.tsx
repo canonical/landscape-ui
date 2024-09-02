@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import {
   UpgradeProfileList,
   UpgradeProfilesEmptyState,
@@ -8,8 +8,6 @@ import {
 import LoadingState from "@/components/layout/LoadingState";
 
 const UpgradeProfilesContainer: FC = () => {
-  const [search, setSearch] = useState("");
-
   const { getUpgradeProfilesQuery } = useUpgradeProfiles();
 
   const {
@@ -29,13 +27,8 @@ const UpgradeProfilesContainer: FC = () => {
         getUpgradeProfilesResult &&
         getUpgradeProfilesResult.data.length > 0 && (
           <>
-            <UpgradeProfilesHeader
-              onSearch={(searchText) => setSearch(searchText)}
-            />
-            <UpgradeProfileList
-              profiles={getUpgradeProfilesResult.data}
-              search={search}
-            />
+            <UpgradeProfilesHeader />
+            <UpgradeProfileList profiles={getUpgradeProfilesResult.data} />
           </>
         )}
     </>

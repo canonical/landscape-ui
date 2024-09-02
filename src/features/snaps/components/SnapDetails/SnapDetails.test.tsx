@@ -6,6 +6,7 @@ import { InstalledSnap } from "@/types/Snap";
 import moment from "moment";
 import { describe } from "vitest";
 import SnapDetails from "./SnapDetails";
+import NoData from "@/components/layout/NoData";
 
 const heldSnap = installedSnaps.find((snap) => snap.held_until !== null)!;
 const unheldSnap = installedSnaps.find((snap) => snap.held_until === null)!;
@@ -25,12 +26,13 @@ describe("Snap details", () => {
           { label: "confinement", value: snap.confinement },
           {
             label: "held until",
-            value:
-              snap.held_until === null
-                ? "-"
-                : moment(snap.held_until).format(DISPLAY_DATE_TIME_FORMAT),
+            value: moment(snap.held_until).isValid() ? (
+              moment(snap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
+            ) : (
+              <NoData />
+            ),
           },
-          { label: "summary", value: snap.snap.summary ?? "-" },
+          { label: "summary", value: snap.snap.summary ?? <NoData /> },
           {
             label: "publisher",
             value: snap.snap.publisher.username,

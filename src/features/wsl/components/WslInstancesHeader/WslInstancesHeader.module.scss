@@ -1,19 +1,4 @@
-@import "vanilla-framework/scss/settings_spacing";
-
-.container {
-  display: flex;
-  justify-content: space-between;
-}
-
-.searchContainer {
-  flex: 0 1 30rem;
-  margin-right: $sph--large;
-}
-
 .cta {
   display: flex;
-}
-
-.noWrap {
-  white-space: nowrap;
+  justify-content: flex-end;
 }

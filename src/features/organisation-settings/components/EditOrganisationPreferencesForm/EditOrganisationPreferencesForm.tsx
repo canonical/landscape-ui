@@ -8,7 +8,7 @@ import { ChangeEvent, FC } from "react";
 import classes from "./EditOrganisationPreferencesForm.module.scss";
 import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 import { useOrgSettings } from "../../hooks";
-import { FORM_FIELDS, VALIDATION_SCHEMA } from "./constants";
+import { VALIDATION_SCHEMA } from "./constants";
 
 interface FormProps {
   title: string;
@@ -98,8 +98,8 @@ const EditOrganisationPreferencesForm: FC<
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <Input
-        label={FORM_FIELDS.organisationName.label}
-        type={FORM_FIELDS.organisationName.type}
+        label="Organisation's name"
+        type="text"
         help="Visible to others in organisation"
         error={
           formik.touched.title && formik.errors.title
@@ -110,8 +110,8 @@ const EditOrganisationPreferencesForm: FC<
       />
 
       <Input
-        label={FORM_FIELDS.useRegistrationKey.label}
-        type={FORM_FIELDS.useRegistrationKey.type}
+        label="Use registration key"
+        type="checkbox"
         checked={formik.values.use_registration_key}
         {...formik.getFieldProps("use_registration_key")}
         onChange={handleUseRegistrationKeyChange}
@@ -120,8 +120,10 @@ const EditOrganisationPreferencesForm: FC<
       {formik.values.use_registration_key && (
         <div className={classes.registrationContainer}>
           <Input
-            aria-label={FORM_FIELDS.registrationKey.label}
-            type={FORM_FIELDS.registrationKey.type}
+            labelClassName="u-off-screen"
+            label="Registration key"
+            aria-label="Registration key"
+            type="text"
             error={
               formik.touched.registration_password &&
               formik.errors.registration_password
@@ -131,8 +133,8 @@ const EditOrganisationPreferencesForm: FC<
             {...formik.getFieldProps("registration_password")}
           />
           <Input
-            label={FORM_FIELDS.autoRegisterNewComputers.label}
-            type={FORM_FIELDS.autoRegisterNewComputers.type}
+            label="Auto register new computers"
+            type="checkbox"
             checked={formik.values.auto_register_new_computers}
             help="This will automatically accept new instances that register to your organisation."
             {...formik.getFieldProps("auto_register_new_computers")}

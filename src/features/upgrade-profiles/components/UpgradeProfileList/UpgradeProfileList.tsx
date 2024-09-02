@@ -17,6 +17,7 @@ import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { SelectOption } from "@/types/SelectOption";
 import classes from "./UpgradeProfileList.module.scss";
+import { usePageParams } from "@/hooks/usePageParams";
 
 const SingleUpgradeProfileForm = lazy(
   () => import("../SingleUpgradeProfileForm"),
@@ -25,13 +26,10 @@ const UpgradeProfileDetails = lazy(() => import("../UpgradeProfileDetails"));
 
 interface UpgradeProfileListProps {
   profiles: UpgradeProfile[];
-  search: string;
 }
 
-const UpgradeProfileList: FC<UpgradeProfileListProps> = ({
-  profiles,
-  search,
-}) => {
+const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
+  const { search } = usePageParams();
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
@@ -53,7 +51,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({
     }
 
     return profiles.filter((profile) => {
-      return profile.title.includes(search);
+      return profile.title.toLowerCase().includes(search.toLowerCase());
     });
   }, [profiles, search]);
 

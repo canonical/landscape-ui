@@ -1,10 +1,10 @@
-import { Form, SearchBox } from "@canonical/react-components";
-import { FC, FormEvent, useState } from "react";
+import { FC } from "react";
 import classes from "./UserPanelHeader.module.scss";
 import UserPanelActionButtons from "../UserPanelActionButtons";
 import { User } from "@/types/User";
 import { getSelectedUsers } from "./helpers";
 import { usePageParams } from "@/hooks/usePageParams";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 
 interface UserPanelHeaderProps {
   selected: number[];
@@ -17,46 +17,25 @@ const UserPanelHeader: FC<UserPanelHeaderProps> = ({
   handleClearSelection,
   users,
 }) => {
-  const { search, setPageParams } = usePageParams();
+  const { setPageParams } = usePageParams();
 
-  const [searchText, setSearchText] = useState(search);
-
-  const handleSearch = () => {
-    setPageParams({
-      search: searchText,
-    });
+  const handleSearch = (searchText: string) => {
+    setPageParams({ search: searchText });
     handleClearSelection();
   };
 
-  const handleClear = () => {
-    setPageParams({
-      search: "",
-    });
-  };
-
-  const handleSearchSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    handleSearch();
-  };
-
   return (
-    <div className={classes.headerContainer}>
-      <div className={classes.searchContainer}>
-        <Form onSubmit={handleSearchSubmit} noValidate>
-          <SearchBox
-            externallyControlled
-            shouldRefocusAfterReset
-            value={searchText}
-            onChange={(inputValue) => setSearchText(inputValue)}
-            onClear={handleClear}
+    <HeaderWithSearch
+      onSearch={handleSearch}
+      actions={
+        <div className={classes.actions}>
+          <UserPanelActionButtons
+            handleClearSelection={handleClearSelection}
+            selectedUsers={getSelectedUsers(users, selected)}
           />
-        </Form>
-      </div>
-      <UserPanelActionButtons
-        handleClearSelection={handleClearSelection}
-        selectedUsers={getSelectedUsers(users, selected)}
-      />
-    </div>
+        </div>
+      }
+    />
   );
 };
 

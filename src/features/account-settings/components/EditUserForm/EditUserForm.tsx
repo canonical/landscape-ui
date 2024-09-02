@@ -9,7 +9,7 @@ import { UserDetails } from "@/types/UserDetails";
 import { Button, Form, Input, Link, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { FC, Suspense, lazy } from "react";
-import { TIMEZONES_FILTER, VALIDATION_SCHEMA } from "./constants";
+import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
 import classes from "./EditUserForm.module.scss";
 import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 
@@ -207,18 +207,16 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           </Button>
         )}
       </div>
-      {TIMEZONES_FILTER.type === "select" && (
-        <Select
-          label={TIMEZONES_FILTER.label}
-          options={TIMEZONES_FILTER.options}
-          {...formik.getFieldProps("timezone")}
-          error={
-            formik.touched.timezone && formik.errors.timezone
-              ? formik.errors.timezone
-              : undefined
-          }
-        />
-      )}
+      <Select
+        label="Timezone"
+        options={TIMEZONE_OPTIONS}
+        {...formik.getFieldProps("timezone")}
+        error={
+          formik.touched.timezone && formik.errors.timezone
+            ? formik.errors.timezone
+            : undefined
+        }
+      />
       <Select
         label="Default organisation"
         options={ORGANISATIONS_OPTIONS}

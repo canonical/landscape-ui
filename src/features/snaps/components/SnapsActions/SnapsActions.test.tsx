@@ -44,39 +44,35 @@ const formUnheldSnapButtons = [
 
 describe("SnapsActions", () => {
   describe("Snap buttons in table", () => {
-    it.each(tableSnapButtons)("renders %s button", async (button) => {
-      renderWithProviders(
+    it("renders table buttons", () => {
+      const { container } = renderWithProviders(
         <SnapsActions
           installedSnaps={getSelectedSnaps(installedSnaps, snapData.empty)}
           selectedSnapIds={snapData.empty}
         />,
       );
-      const actionButton = await screen.findByRole("button", {
-        name: button,
-      });
-      expect(actionButton).toBeInTheDocument();
+
+      expect(container).toHaveTexts(tableSnapButtons);
     });
 
     describe("Check button disabled statuses", () => {
-      it.each(tableSnapButtons)(
-        "renders disabled %s button when no snaps selected",
-        async (button) => {
-          renderWithProviders(
-            <SnapsActions
-              installedSnaps={getSelectedSnaps(installedSnaps, snapData.empty)}
-              selectedSnapIds={snapData.empty}
-            />,
-          );
-          const actionButton = await screen.findByRole("button", {
-            name: button,
-          });
+      it("renders disabled buttons when no snaps selected", () => {
+        renderWithProviders(
+          <SnapsActions
+            installedSnaps={getSelectedSnaps(installedSnaps, snapData.empty)}
+            selectedSnapIds={snapData.empty}
+          />,
+        );
+
+        for (const button of tableSnapButtons) {
+          const actionButton = screen.getByRole("button", { name: button });
           if (button !== "Install") {
             expect(actionButton).toBeDisabled();
           } else {
             expect(actionButton).toBeEnabled();
           }
-        },
-      );
+        }
+      });
 
       it("Unhold button disabled when only unheld snaps are selected", () => {
         renderWithProviders(
@@ -125,42 +121,32 @@ describe("SnapsActions", () => {
   });
 
   describe("Snap buttons in sidepanel", () => {
-    it.each(formHeldSnapButtons)(
-      "Renders %s button for held snap in sidepanel",
-      async (button) => {
-        renderWithProviders(
-          <SnapsActions
-            installedSnaps={getSelectedSnaps(installedSnaps, [
-              snapData.single.heldSnap,
-            ])}
-            selectedSnapIds={[snapData.single.heldSnap]}
-            sidePanel={true}
-          />,
-        );
-        const actionButton = await screen.findByRole("button", {
-          name: button,
-        });
-        expect(actionButton).toBeInTheDocument();
-      },
-    );
+    it("renders correct buttons for held snap in sidepanel", () => {
+      const { container } = renderWithProviders(
+        <SnapsActions
+          installedSnaps={getSelectedSnaps(installedSnaps, [
+            snapData.single.heldSnap,
+          ])}
+          selectedSnapIds={[snapData.single.heldSnap]}
+          sidePanel={true}
+        />,
+      );
 
-    it.each(formUnheldSnapButtons)(
-      "Renders %s button for unheld snap in sidepanel",
-      async (button) => {
-        renderWithProviders(
-          <SnapsActions
-            installedSnaps={getSelectedSnaps(installedSnaps, [
-              snapData.single.unheldSnap,
-            ])}
-            selectedSnapIds={[snapData.single.unheldSnap]}
-            sidePanel={true}
-          />,
-        );
-        const actionButton = await screen.findByRole("button", {
-          name: button,
-        });
-        expect(actionButton).toBeInTheDocument();
-      },
-    );
+      expect(container).toHaveTexts(formHeldSnapButtons);
+    });
+
+    it("renders correct buttons for unheld snap in sidepanel", () => {
+      const { container } = renderWithProviders(
+        <SnapsActions
+          installedSnaps={getSelectedSnaps(installedSnaps, [
+            snapData.single.unheldSnap,
+          ])}
+          selectedSnapIds={[snapData.single.unheldSnap]}
+          sidePanel={true}
+        />,
+      );
+
+      expect(container).toHaveTexts(formUnheldSnapButtons);
+    });
   });
 });

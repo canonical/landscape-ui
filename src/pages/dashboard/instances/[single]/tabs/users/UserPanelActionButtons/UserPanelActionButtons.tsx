@@ -8,8 +8,6 @@ import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
 import { User } from "@/types/User";
 import NewUserForm from "../NewUserForm";
-import classes from "./UserPanelActionButtons.module.scss";
-import { useMediaQuery } from "usehooks-ts";
 import {
   UserAction,
   getSelectedUsernames,
@@ -38,7 +36,6 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
     useState(false);
 
   const { instanceId: urlInstanceId } = useParams();
-  const isLargeScreen = useMediaQuery("(min-width: 620px)");
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent, closeSidePanel } = useSidePanel();
@@ -173,7 +170,6 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
     <div
       className={classNames("p-panel__controls u-no-padding--top", {
         "u-no-margin--left": sidePanel,
-        [classes.cta]: !sidePanel && isLargeScreen,
       })}
     >
       {!sidePanel && (

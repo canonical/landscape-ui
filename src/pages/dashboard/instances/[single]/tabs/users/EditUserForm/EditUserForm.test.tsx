@@ -37,10 +37,10 @@ describe("EditUserForm", () => {
     const form = screen.getByRole("form");
     expect(form).toHaveInputValues([
       props.user.username,
-      props.user.name ?? "-",
-      props.user.location ?? "-",
-      props.user.home_phone ?? "-",
-      props.user.work_phone ?? "-",
+      props.user.name ?? "",
+      props.user.location ?? "",
+      props.user.home_phone ?? "",
+      props.user.work_phone ?? "",
     ]);
   });
 

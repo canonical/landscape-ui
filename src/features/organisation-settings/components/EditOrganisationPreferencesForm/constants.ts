@@ -1,34 +1,4 @@
-import { ListFilter } from "@/types/Filters";
 import * as Yup from "yup";
-
-type FormKey =
-  | "organisationName"
-  | "useRegistrationKey"
-  | "registrationKey"
-  | "autoRegisterNewComputers";
-
-export const FORM_FIELDS: { [key in FormKey]: ListFilter } = {
-  organisationName: {
-    slug: "organisationName",
-    label: "Organisation's name",
-    type: "text",
-  },
-  useRegistrationKey: {
-    slug: "useRegistrationKey",
-    label: "Use registration key",
-    type: "checkbox",
-  },
-  registrationKey: {
-    slug: "registrationKey",
-    label: "Registration key",
-    type: "text",
-  },
-  autoRegisterNewComputers: {
-    slug: "autoRegisterNewComputers",
-    label: "Auto register new computers",
-    type: "checkbox",
-  },
-};
 
 export const REGISTRATION_KEY_REGEX = /^(?!.*[;#])(?!.*\s$).+$/;
 
