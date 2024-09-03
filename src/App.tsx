@@ -134,21 +134,6 @@ const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-const SaasHostedRoute: FC<AuthRouteProps> = ({ children }) => {
-  const { isSaas } = useEnv();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isSaas) {
-      return;
-    }
-
-    navigate(`${ROOT_PATH}env-error`, { replace: true });
-  }, [isSaas]);
-
-  return <>{children}</>;
-};
-
 const App: FC = () => {
   const { notify, sidePanel } = useNotify();
 
@@ -189,20 +174,6 @@ const App: FC = () => {
               </Route>
               <Route
                 element={
-                  <SaasHostedRoute>
-                    <Suspense fallback={<LoadingState />}>
-                      <Outlet />
-                    </Suspense>
-                  </SaasHostedRoute>
-                }
-              >
-                <Route
-                  path="settings/identity-providers"
-                  element={<IdentityProvidersPage />}
-                />
-              </Route>
-              <Route
-                element={
                   <Suspense fallback={<LoadingState />}>
                     <Outlet />
                   </Suspense>
@@ -233,6 +204,10 @@ const App: FC = () => {
                 <Route
                   path="settings/general"
                   element={<GeneralOrganisationSettings />}
+                />
+                <Route
+                  path="settings/identity-providers"
+                  element={<IdentityProvidersPage />}
                 />
                 <Route path="profiles" element={<ProfilesPage />} />
                 <Route
