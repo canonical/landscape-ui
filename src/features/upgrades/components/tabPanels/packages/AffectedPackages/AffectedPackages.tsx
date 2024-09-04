@@ -20,6 +20,7 @@ import {
   handleCellProps,
 } from "./helpers";
 import classes from "./AffectedPackages.module.scss";
+import SelectAllButton from "@/components/layout/SelectAllButton";
 
 interface AffectedPackagesProps {
   excludedPackages: InstancePackagesToExclude[];
@@ -45,10 +46,33 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
   totalPackageCount,
 }) => {
   const [expandedRow, setExpandedRow] = useState(-1);
+  const [limit, setLimit] = useState(5);
+
+  const excludedPackageIdSet = new Set(
+    excludedPackages.flatMap(({ exclude_packages }) => exclude_packages),
+  );
+
+  const showSelectAllButton = useMemo(() => {
+    const packageIdSet = new Set(packages.map(({ id }) => id));
+
+    for (const excludedPackageId of excludedPackageIdSet) {
+      if (!packageIdSet.has(excludedPackageId)) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [packages.length, excludedPackageIdSet]);
 
   const packagesData = useMemo(
-    () => getPackagesData(packages, expandedRow, isPackagesLoading),
-    [packages, expandedRow, isPackagesLoading],
+    () =>
+      getPackagesData({
+        expandedRow,
+        isPackagesLoading,
+        packages,
+        showSelectAllButton,
+      }),
+    [packages, expandedRow, isPackagesLoading, showSelectAllButton],
   );
 
   const isUpdateRequired = checkIsUpdateRequired(excludedPackages, packages);
@@ -64,6 +88,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
   };
 
   const handleExpandCellClick = (index: number) => {
+    setLimit(5);
     setExpandedRow((prevState) => {
       if (prevState === index) {
         return -1;
@@ -120,12 +145,32 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
         className: classes.nameColumn,
         Header: "Package name",
         Cell: ({ row: { index, original } }: CellProps<Package>) => {
+          if (showSelectAllButton && index === 0) {
+            return (
+              <SelectAllButton
+                count={totalPackageCount - excludedPackageIdSet.size}
+                itemName={{ plural: "packages", singular: "package" }}
+                onClick={() =>
+                  onExcludedPackagesChange(
+                    excludedPackages.map(({ id }) => ({
+                      id,
+                      exclude_packages: [],
+                    })),
+                  )
+                }
+                totalCount={totalPackageCount}
+              />
+            );
+          }
+
           if (expandedRow !== -1 && expandedRow === index - 1) {
             return (
               <AffectedInstances
                 currentPackage={original}
                 excludedPackages={excludedPackages}
+                limit={limit}
                 onExcludedPackagesChange={onExcludedPackagesChange}
+                onLimitChange={() => setLimit((prevState) => prevState + 5)}
                 selectedInstances={instances}
               />
             );
@@ -153,7 +198,14 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
         ),
       },
     ],
-    [packagesData, instances, excludedPackages, expandedRow, isPackagesLoading],
+    [
+      packagesData,
+      instances,
+      excludedPackages,
+      expandedRow,
+      isPackagesLoading,
+      limit,
+    ],
   );
 
   return (
@@ -162,11 +214,12 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
       data={packagesData}
       itemCount={packages.length}
       hasNoMoreItems={hasNoMoreItems}
-      getCellProps={handleCellProps(
+      getCellProps={handleCellProps({
         expandedRow,
         isPackagesLoading,
-        packagesData.length - 1,
-      )}
+        lastPackageIndex: packagesData.length - 1,
+        showSelectAllButton,
+      })}
       itemNames={{ plural: "packages", singular: "package" }}
       onLimitChange={onTableLimitChange}
       totalCount={totalPackageCount}

@@ -6,13 +6,24 @@ import { EMPTY_PACKAGE } from "./constants";
 import classes from "./AffectedPackages.module.scss";
 
 export const handleCellProps =
-  (expandedRow: number, loading: boolean, lastPackageIndex: number) =>
+  ({
+    expandedRow,
+    isPackagesLoading,
+    lastPackageIndex,
+    showSelectAllButton,
+  }: {
+    expandedRow: number;
+    isPackagesLoading: boolean;
+    lastPackageIndex: number;
+    showSelectAllButton: boolean;
+  }) =>
   ({ column, row: { index, original } }: Cell<Package>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
 
     if (
-      (loading && index === lastPackageIndex) ||
+      (showSelectAllButton && index === 0) ||
+      (isPackagesLoading && index === lastPackageIndex) ||
       (expandedRow > -1 && expandedRow === index - 1)
     ) {
       if (column.id === "name") {
@@ -75,18 +86,23 @@ export const getToggledPackages = (
   );
 };
 
-export const getPackagesData = (
-  packages: Package[],
-  expandedRow: number,
-  isPackagesLoading: boolean,
-) => {
-  if (expandedRow !== -1) {
-    return [
-      ...packages.slice(0, expandedRow + 1),
-      ...packages.slice(expandedRow),
-      ...[EMPTY_PACKAGE].slice(isPackagesLoading ? 0 : 1),
-    ];
-  }
+export const getPackagesData = ({
+  expandedRow,
+  isPackagesLoading,
+  packages,
+  showSelectAllButton,
+}: {
+  expandedRow: number;
+  isPackagesLoading: boolean;
+  packages: Package[];
+  showSelectAllButton: boolean;
+}) => {
+  const indexToInsert = expandedRow > -1 ? expandedRow + 1 : 0;
 
-  return isPackagesLoading ? [...packages, EMPTY_PACKAGE] : packages;
+  return [
+    ...[EMPTY_PACKAGE].slice(showSelectAllButton ? 0 : 1),
+    ...packages.slice(0, indexToInsert || packages.length),
+    ...packages.slice(indexToInsert ? indexToInsert - 1 : packages.length),
+    ...[EMPTY_PACKAGE].slice(isPackagesLoading ? 0 : 1),
+  ];
 };

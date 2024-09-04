@@ -1,4 +1,34 @@
 import { InstancePackagesToExclude } from "@/features/packages";
+import { Cell, TableCellProps } from "react-table";
+import { HTMLProps } from "react";
+import { Instance } from "@/types/Instance";
+
+export const getCellProps =
+  (showSelectAllButton: boolean) =>
+  ({ column, row }: Cell<Instance>) => {
+    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
+      {};
+
+    if (showSelectAllButton && row.index === 0) {
+      if (column.id === "checkbox") {
+        cellProps.colSpan = 4;
+      } else {
+        cellProps.style = cellProps.style || {};
+        cellProps.style.display = "none";
+        cellProps["aria-hidden"] = true;
+      }
+    } else if (column.id === "checkbox") {
+      cellProps["aria-label"] = `Toggle ${row.original.name} instance`;
+    } else if (column.id === "title") {
+      cellProps.role = "rowheader";
+    } else if (column.id === "current_version") {
+      cellProps["aria-label"] = "Current version";
+    } else if (column.id === "available_version") {
+      cellProps["aria-label"] = "New version";
+    }
+
+    return cellProps;
+  };
 
 export const checkIsPackageUpdateRequiredForInstance = (
   excludedPackages: InstancePackagesToExclude[],
