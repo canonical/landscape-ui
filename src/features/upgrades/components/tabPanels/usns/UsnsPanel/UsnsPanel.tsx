@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { useUsns, UsnList } from "@/features/usns";
 import { Instance } from "@/types/Instance";
@@ -51,6 +51,14 @@ const UsnsPanel: FC<UsnsPanelProps> = ({
     .filter(({ usn }) => !excludedUsns.includes(usn))
     .map(({ usn }) => usn);
 
+  const showSelectAllButton = useMemo(() => {
+    const usnSet = new Set(usns.map(({ usn }) => usn));
+
+    return (
+      excludedUsns.length > 0 && excludedUsns.some((usn) => !usnSet.has(usn))
+    );
+  }, [excludedUsns.length, usns]);
+
   return getUsnsQueryLoading && !usns.length ? (
     <LoadingState />
   ) : (
@@ -60,7 +68,10 @@ const UsnsPanel: FC<UsnsPanelProps> = ({
       instances={instances}
       isUsnsLoading={getUsnsQueryLoading}
       onSelectedUsnsChange={handleSelectedUsnsChange}
+      onSelectAllClick={() => onExcludedUsnsChange([])}
       selectedUsns={selectedUsns}
+      showSelectAllButton={showSelectAllButton}
+      totalSelectedUsnCount={totalUsnCountRef.current - excludedUsns.length}
       totalUsnCount={totalUsnCountRef.current}
       usns={usns}
     />

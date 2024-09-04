@@ -3,12 +3,12 @@ import { CellProps, Column } from "react-table";
 import { CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
+import SelectAllButton from "@/components/layout/SelectAllButton";
 import {
   InstancePackage,
   InstancePackagesToExclude,
 } from "@/features/packages";
 import { Instance } from "@/types/Instance";
-import SelectAllButton from "../SelectAllButton";
 import { getPackageData, handleCellProps } from "./helpers";
 
 interface AffectedPackagesProps {
@@ -112,6 +112,7 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             return (
               <SelectAllButton
                 count={packagesCount - instanceExcludedPackages.length}
+                itemName={{ plural: "packages", singular: "package" }}
                 onClick={() =>
                   onExcludedPackagesChange(
                     excludedPackages.map(({ id, exclude_packages }) => ({

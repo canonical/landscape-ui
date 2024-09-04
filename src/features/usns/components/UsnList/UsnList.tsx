@@ -11,6 +11,7 @@ import {
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import SelectAllButton from "@/components/layout/SelectAllButton";
 import { TablePagination } from "@/components/layout/TablePagination";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
@@ -41,6 +42,9 @@ type UsnListProps = {
   | {
       tableType: "expandable";
       onNextPageFetch: () => void;
+      onSelectAllClick: () => void;
+      showSelectAllButton: boolean;
+      totalSelectedUsnCount: number;
     }
 );
 
@@ -67,9 +71,18 @@ const UsnList: FC<UsnListProps> = ({
     () => setExpandedCell(null),
   );
 
+  const showSelectAllButton =
+    otherProps.tableType === "expandable" && otherProps.showSelectAllButton;
+
   const securityIssues = useMemo<Usn[]>(
-    (): Usn[] => getUsnsWithExpanded(usns, expandedCell, isUsnsLoading),
-    [usns, expandedCell, isUsnsLoading],
+    (): Usn[] =>
+      getUsnsWithExpanded({
+        expandedCell,
+        isUsnsLoading,
+        showSelectAllButton,
+        usns,
+      }),
+    [usns, expandedCell, isUsnsLoading, showSelectAllButton],
   );
 
   const handleToggleSingleUsn = (usn: string) => {
@@ -141,6 +154,20 @@ const UsnList: FC<UsnListProps> = ({
           accessor: "usn",
           Header: "USN",
           Cell: ({ row: { index, original } }: CellProps<Usn>) => {
+            if (index === 0 && showSelectAllButton) {
+              return (
+                <SelectAllButton
+                  count={otherProps.totalSelectedUsnCount}
+                  itemName={{
+                    plural: "security issues",
+                    singular: "security issue",
+                  }}
+                  onClick={otherProps.onSelectAllClick}
+                  totalCount={totalUsnCount}
+                />
+              );
+            }
+
             if (
               expandedCell?.row === index - 1 &&
               ["computers_count", "release_packages"].includes(
@@ -268,11 +295,12 @@ const UsnList: FC<UsnListProps> = ({
         <ExpandableTable
           columns={securityIssueColumns}
           data={securityIssues}
-          getCellProps={handleCellProps(
+          getCellProps={handleCellProps({
             expandedCell,
             isUsnsLoading,
-            securityIssues.length - 1,
-          )}
+            lastUsnIndex: securityIssues.length - 1,
+            showSelectAllButton,
+          })}
           getRowProps={handleRowProps(expandedCell)}
           itemCount={usns.length}
           itemNames={{ plural: "security issues", singular: "security issue" }}
@@ -284,7 +312,7 @@ const UsnList: FC<UsnListProps> = ({
           <ModularTable
             columns={securityIssueColumns}
             data={securityIssues}
-            getCellProps={handleCellProps(expandedCell, isUsnsLoading)}
+            getCellProps={handleCellProps({ expandedCell, isUsnsLoading })}
             getRowProps={handleRowProps(expandedCell)}
             emptyMsg={`No security issues found with the search "${otherProps.search}"`}
           />

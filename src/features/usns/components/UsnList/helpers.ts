@@ -5,33 +5,50 @@ import { EMPTY_USN } from "./constants";
 import { ExpandedCell } from "./types";
 import classes from "./UsnList.module.scss";
 
-export const getUsnsWithExpanded = (
-  usns: Usn[],
-  expandedCell: ExpandedCell,
-  isFetchingNextPage: boolean,
-) => {
-  if (
-    expandedCell?.column !== "computers_count" &&
-    expandedCell?.column !== "release_packages"
-  ) {
-    return isFetchingNextPage ? [...usns, EMPTY_USN] : usns;
-  }
+export const getUsnsWithExpanded = ({
+  expandedCell,
+  isUsnsLoading,
+  showSelectAllButton,
+  usns,
+}: {
+  expandedCell: ExpandedCell;
+  isUsnsLoading: boolean;
+  showSelectAllButton: boolean;
+  usns: Usn[];
+}) => {
+  const rowIndexToInsert =
+    expandedCell?.column === "computers_count" ||
+    expandedCell?.column === "release_packages"
+      ? expandedCell.row + 1
+      : 0;
 
   return [
-    ...usns.slice(0, expandedCell.row + 1),
-    ...usns.slice(expandedCell.row),
-    ...[EMPTY_USN].slice(isFetchingNextPage ? 0 : 1),
+    ...[EMPTY_USN].slice(showSelectAllButton ? 0 : 1),
+    ...usns.slice(0, rowIndexToInsert || usns.length),
+    ...usns.slice(rowIndexToInsert ? rowIndexToInsert - 1 : usns.length),
+    ...[EMPTY_USN].slice(isUsnsLoading ? 0 : 1),
   ];
 };
 
 export const handleCellProps =
-  (expandedCell: ExpandedCell, isLoading: boolean, lastUsnIndex?: number) =>
+  ({
+    expandedCell,
+    isUsnsLoading,
+    lastUsnIndex,
+    showSelectAllButton,
+  }: {
+    expandedCell: ExpandedCell;
+    isUsnsLoading: boolean;
+    lastUsnIndex?: number;
+    showSelectAllButton?: boolean;
+  }) =>
   ({ column, row: { index } }: Cell<Usn>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
 
     if (
-      (isLoading && index === lastUsnIndex) ||
+      (showSelectAllButton && index === 0) ||
+      (isUsnsLoading && index === lastUsnIndex) ||
       (expandedCell?.row === index - 1 &&
         ["computers_count", "release_packages"].includes(expandedCell.column))
     ) {
