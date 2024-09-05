@@ -31,25 +31,23 @@ const UpgradeInfo: FC<UpgradeInfoProps> = ({ instances }) => {
       >
         {instancesWithSecurityUpgradeCount > 0 && (
           <li>
-            <span>
-              <b>{instancesWithSecurityUpgradeCount}</b>
-            </span>
+            <span>Security upgrades are available for </span>
+            <b>{instancesWithSecurityUpgradeCount}</b>
             <span>
               {instancesWithSecurityUpgradeCount !== 1
-                ? " instances require a security upgrade"
-                : " instance requires a security upgrade"}
+                ? " instances"
+                : " instance"}
             </span>
           </li>
         )}
         {instancesWithRegularUpgradeCount > 0 && (
           <li>
-            <span>
-              <b>{instancesWithRegularUpgradeCount}</b>
-            </span>
+            <span>Regular upgrades are available for </span>
+            <b>{instancesWithRegularUpgradeCount}</b>
             <span>
               {instancesWithRegularUpgradeCount !== 1
-                ? " instances require a regular upgrade"
-                : " instance requires a regular upgrade"}
+                ? " instances"
+                : " instance"}
             </span>
           </li>
         )}
