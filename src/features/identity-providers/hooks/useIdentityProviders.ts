@@ -1,5 +1,6 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AuthUser } from "@/context/auth";
 import { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
 import { ApiError } from "@/types/ApiError";
@@ -39,6 +40,15 @@ type UpdateProviderParams = SingleProviderParams & AddProviderParams;
 
 export interface GetAuthUrlParams {
   id: number;
+  return_to?: string;
+}
+
+interface GetAuthStateParams {
+  code: string;
+  state: string;
+}
+
+interface GetAuthStateResponse extends AuthUser {
   return_to?: string;
 }
 
@@ -90,7 +100,7 @@ export default function useIdentityProviders() {
   >({
     mutationFn: (params) => authFetch!.post(`/auth/oidc-providers`, params),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["oidcProviders"] }),
+      queryClient.invalidateQueries({ queryKey: ["authMethods"] }),
   });
 
   const updateProviderQuery = useMutation<
@@ -121,7 +131,18 @@ export default function useIdentityProviders() {
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<{ location: string }>, AxiosError<ApiError>>({
       queryKey: ["authUrl"],
-      queryFn: () => authFetch!.get(`/auth/start`, { params: queryParams }),
+      queryFn: () => authFetch!.get("/auth/start", { params: queryParams }),
+      ...config,
+    });
+
+  const getAuthStateQuery: QueryFnTypeWithRequiredParam<
+    AxiosResponse<GetAuthStateResponse>,
+    GetAuthStateParams
+  > = (queryParams, config = {}) =>
+    useQuery<AxiosResponse<GetAuthStateResponse>, AxiosError<ApiError>>({
+      queryKey: ["authUser"],
+      queryFn: () =>
+        authFetch!.get("/auth/handle-code", { params: queryParams }),
       ...config,
     });
 
@@ -133,5 +154,6 @@ export default function useIdentityProviders() {
     updateProviderQuery,
     deleteProviderQuery,
     getAuthUrlQuery,
+    getAuthStateQuery,
   };
 }

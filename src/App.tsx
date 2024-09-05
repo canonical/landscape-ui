@@ -17,6 +17,7 @@ import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
 import DashboardPage from "@/pages/dashboard";
 
+const AuthHandle = lazy(() => import("@/pages/auth/handle"));
 const EnvError = lazy(() => import("@/pages/EnvError"));
 const PageNotFound = lazy(() => import("@/pages/PageNotFound"));
 const LoginPage = lazy(() => import("@/pages/auth/login"));
@@ -241,25 +242,17 @@ const App: FC = () => {
             </Route>
           </Route>
           <Route
-            path={`${ROOT_PATH}login`}
             element={
               <GuestRoute>
                 <Suspense fallback={<LoadingState />}>
-                  <LoginPage />
+                  <Outlet />
                 </Suspense>
               </GuestRoute>
             }
-          />
-          <Route
-            path={`${ROOT_PATH}:account/login`}
-            element={
-              <GuestRoute>
-                <Suspense fallback={<LoadingState />}>
-                  <LoginPage />
-                </Suspense>
-              </GuestRoute>
-            }
-          />
+          >
+            <Route path={`${ROOT_PATH}login`} element={<LoginPage />} />
+            <Route path={`${ROOT_PATH}handle-auth`} element={<AuthHandle />} />
+          </Route>
           <Route
             path={`${ROOT_PATH}*`}
             element={

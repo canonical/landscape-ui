@@ -1,10 +1,10 @@
 import { FC, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Icon } from "@canonical/react-components";
+import { IdentityProvider } from "@/features/identity-providers";
 import { SUPPORTED_PROVIDERS } from "../../constants";
 import { GetAuthUrlParams, useIdentityProviders } from "../../hooks";
 import classes from "./AvailableProviderList.module.scss";
-import { IdentityProvider } from "@/features/identity-providers";
 
 interface AvailableProviderListProps {
   isUbuntuOneEnabled: boolean;
@@ -17,16 +17,16 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
 }) => {
   const [providerId, setProviderId] = useState(0);
 
-  const { getAuthUrlQuery } = useIdentityProviders();
   const { search } = useLocation();
+  const { getAuthUrlQuery } = useIdentityProviders();
 
-  const return_to = new URLSearchParams(search).get("redirect-to");
+  const redirectTo = new URLSearchParams(search).get("redirect-to");
   const open = new URLSearchParams(search).get("open") === "true";
 
   const params: GetAuthUrlParams = { id: providerId };
 
-  if (return_to) {
-    params.return_to = return_to;
+  if (redirectTo) {
+    params.return_to = redirectTo;
   }
 
   const { data: getAuthUrlQueryResult } = getAuthUrlQuery(params, {
