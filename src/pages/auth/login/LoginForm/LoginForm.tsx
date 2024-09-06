@@ -13,7 +13,7 @@ import axios, { AxiosResponse } from "axios";
 import { API_URL, ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { AuthUser } from "@/context/auth";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export interface LoginRequestParams {
   email: string;
@@ -29,12 +29,13 @@ interface FormProps {
 }
 
 const LoginForm: FC = () => {
+  const [searchParams] = useSearchParams();
+
   const debug = useDebug();
   const { setUser } = useAuth();
   const navigate = useNavigate();
-  const { search } = useLocation();
 
-  const redirectTo = new URLSearchParams(search).get("redirect-to");
+  const redirectTo = searchParams.get("redirect-to");
 
   const formik = useFormik<FormProps>({
     initialValues: {

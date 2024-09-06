@@ -9,31 +9,51 @@ import LoginForm from "../LoginForm";
 import classes from "./LoginPage.module.scss";
 
 const LoginPage: FC = () => {
-  const { getAuthMethodsQuery } = useIdentityProviders();
+  const { getLoginMethodsQuery } = useIdentityProviders();
 
-  const { data: getAuthMethodsQueryResult, isLoading } = getAuthMethodsQuery();
+  const { data: getLoginMethodsQueryResult, isLoading } =
+    getLoginMethodsQuery();
 
-  const availableOidcProviders =
-    getAuthMethodsQueryResult?.data.oidc.filter(({ enabled }) => enabled) ?? [];
+  const availableOidcProviders = getLoginMethodsQueryResult?.data.oidc.available
+    ? getLoginMethodsQueryResult?.data.oidc.configurations.filter(
+        ({ enabled }) => enabled,
+      )
+    : [];
 
-  const isUbuntuOneEnabled =
-    !!getAuthMethodsQueryResult?.data["ubuntu-one"].enabled;
+  const isUbuntuOneEnabled = !!(
+    getLoginMethodsQueryResult?.data.ubuntu_one.available &&
+    getLoginMethodsQueryResult.data.ubuntu_one.enabled
+  );
+
+  const isPasswordEnabled = !!(
+    getLoginMethodsQueryResult?.data.password.available &&
+    getLoginMethodsQueryResult.data.password.enabled
+  );
 
   return (
     <AuthTemplate title="Login">
       {isLoading && <LoadingState />}
-      {!isLoading && getAuthMethodsQueryResult?.data.password && <LoginForm />}
+      {!isLoading && isPasswordEnabled && <LoginForm />}
       {!isLoading &&
-        getAuthMethodsQueryResult?.data.password &&
-        (availableOidcProviders.length > 0 || isUbuntuOneEnabled) && (
+        isPasswordEnabled &&
+        (isUbuntuOneEnabled || availableOidcProviders.length > 0) && (
           <p className={classes.divider}>OR</p>
         )}
       {!isLoading &&
-        (availableOidcProviders.length > 0 || isUbuntuOneEnabled) && (
+        (isUbuntuOneEnabled || availableOidcProviders.length > 0) && (
           <AvailableProviderList
             isUbuntuOneEnabled={isUbuntuOneEnabled}
             oidcProviders={availableOidcProviders}
           />
+        )}
+      {!isLoading &&
+        !isPasswordEnabled &&
+        !isUbuntuOneEnabled &&
+        !availableOidcProviders.length && (
+          <span>
+            It seems like you have no way to get in. Please contact our support
+            team.
+          </span>
         )}
     </AuthTemplate>
   );

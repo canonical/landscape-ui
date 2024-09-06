@@ -11,12 +11,17 @@ import {
   SupportedIdentityProvider,
 } from "../types";
 
-interface AuthMethods {
-  oidc: IdentityProvider[];
+interface LoginMethods {
+  oidc: {
+    available: boolean;
+    configurations: IdentityProvider[];
+  };
   password: {
+    available: boolean;
     enabled: boolean;
   };
-  "ubuntu-one": {
+  ubuntu_one: {
+    available: boolean;
     enabled: boolean;
   };
 }
@@ -70,13 +75,13 @@ export default function useIdentityProviders() {
       ...config,
     });
 
-  const getAuthMethodsQuery: QueryFnType<AxiosResponse<AuthMethods>, {}> = (
+  const getLoginMethodsQuery: QueryFnType<AxiosResponse<LoginMethods>, {}> = (
     queryParams = {},
     config = {},
   ) =>
-    useQuery<AxiosResponse<AuthMethods>, AxiosError<ApiError>>({
-      queryKey: ["authMethods"],
-      queryFn: () => authFetch!.get("/auth/methods", { params: queryParams }),
+    useQuery<AxiosResponse<LoginMethods>, AxiosError<ApiError>>({
+      queryKey: ["loginMethods"],
+      queryFn: () => authFetch!.get("/login/methods", { params: queryParams }),
       ...config,
     });
 
@@ -100,7 +105,7 @@ export default function useIdentityProviders() {
   >({
     mutationFn: (params) => authFetch!.post(`/auth/oidc-providers`, params),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["authMethods"] }),
+      queryClient.invalidateQueries({ queryKey: ["loginMethods"] }),
   });
 
   const updateProviderQuery = useMutation<
@@ -149,7 +154,7 @@ export default function useIdentityProviders() {
   return {
     addProviderQuery,
     getSupportedProvidersQuery,
-    getAuthMethodsQuery,
+    getLoginMethodsQuery,
     getSingleProviderQuery,
     updateProviderQuery,
     deleteProviderQuery,

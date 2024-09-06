@@ -7,20 +7,23 @@ import {
 } from "@/features/identity-providers";
 
 const IdentityProvidersContainer: FC = () => {
-  const { getAuthMethodsQuery } = useIdentityProviders();
+  const { getLoginMethodsQuery } = useIdentityProviders();
 
-  const { data: getAuthMethodsQueryResult, isLoading } = getAuthMethodsQuery();
+  const { data: getLoginMethodsQueryResult, isLoading } =
+    getLoginMethodsQuery();
 
   return (
     <>
       {isLoading && <LoadingState />}
-      {!isLoading && !getAuthMethodsQueryResult && <ProvidersEmptyState />}
-      {!isLoading && getAuthMethodsQueryResult && (
+      {!isLoading && !getLoginMethodsQueryResult && <ProvidersEmptyState />}
+      {!isLoading && getLoginMethodsQueryResult && (
         <ProviderList
-          oidcProviders={getAuthMethodsQueryResult.data.oidc}
-          ubuntuOneEnabled={
-            getAuthMethodsQueryResult.data["ubuntu-one"].enabled
+          oidcAvailable={getLoginMethodsQueryResult.data.oidc.available}
+          oidcProviders={getLoginMethodsQueryResult.data.oidc.configurations}
+          ubuntuOneAvailable={
+            getLoginMethodsQueryResult.data.ubuntu_one.available
           }
+          ubuntuOneEnabled={getLoginMethodsQueryResult.data.ubuntu_one.enabled}
         />
       )}
     </>

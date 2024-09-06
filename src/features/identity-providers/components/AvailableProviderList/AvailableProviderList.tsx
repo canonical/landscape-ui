@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Button, Icon } from "@canonical/react-components";
 import { IdentityProvider } from "@/features/identity-providers";
 import { SUPPORTED_PROVIDERS } from "../../constants";
@@ -16,12 +16,12 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   oidcProviders,
 }) => {
   const [providerId, setProviderId] = useState(0);
+  const [searchParams] = useSearchParams();
 
-  const { search } = useLocation();
   const { getAuthUrlQuery } = useIdentityProviders();
 
-  const redirectTo = new URLSearchParams(search).get("redirect-to");
-  const open = new URLSearchParams(search).get("open") === "true";
+  const redirectTo = searchParams.get("redirect-to");
+  const open = searchParams.get("open") === "true";
 
   const params: GetAuthUrlParams = { id: providerId };
 

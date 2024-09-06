@@ -339,7 +339,7 @@ a[target="_blank"] {
 
 .p-icon--ubuntu-one {
   @extend %icon;
-  @include vf-icon--ubuntu-one($color-mid-dark);
+  @include vf-icon--ubuntu-one($color-ubuntu);
   height: $sp-x-large;
   width: $sp-x-large;
 }

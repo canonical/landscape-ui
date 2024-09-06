@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useIdentityProviders } from "@/features/identity-providers";
 import useAuth from "@/hooks/useAuth";
 import { ROOT_PATH } from "@/constants";
@@ -8,13 +8,14 @@ import classes from "./AuthHandle.module.scss";
 import { Button } from "@canonical/react-components";
 
 const AuthHandle: FC = () => {
+  const [searchParams] = useSearchParams();
+
   const { setUser } = useAuth();
   const { getAuthStateQuery } = useIdentityProviders();
-  const { search } = useLocation();
   const navigate = useNavigate();
 
-  const code = new URLSearchParams(search).get("code");
-  const state = new URLSearchParams(search).get("state");
+  const code = searchParams.get("code");
+  const state = searchParams.get("state");
 
   useEffect(() => {
     if (!code || !state) {

@@ -6,18 +6,24 @@ import { IdentityProvider } from "../../types";
 import { UBUNTU_ONE_PROVIDER } from "./constants";
 
 interface ProviderListProps {
+  oidcAvailable: boolean;
   oidcProviders: IdentityProvider[];
+  ubuntuOneAvailable: boolean;
   ubuntuOneEnabled: boolean;
 }
 
 const ProviderList: FC<ProviderListProps> = ({
+  oidcAvailable,
   oidcProviders,
+  ubuntuOneAvailable,
   ubuntuOneEnabled,
 }) => {
   const providerData = useMemo(
     () => [
-      { ...UBUNTU_ONE_PROVIDER, enabled: ubuntuOneEnabled },
-      ...oidcProviders,
+      ...[{ ...UBUNTU_ONE_PROVIDER, enabled: ubuntuOneEnabled }].slice(
+        ubuntuOneAvailable ? 0 : 1,
+      ),
+      ...oidcProviders.slice(oidcAvailable ? 0 : oidcProviders.length),
     ],
     [oidcProviders],
   );
