@@ -8,19 +8,23 @@ import { renderWithProviders } from "@/tests/render";
 import UsnList from "./UsnList";
 
 const mockedUsns = usns.slice(0, 5);
-const onSelectedUsnsChange = vi.fn();
 const onNextPageFetch = vi.fn();
+const onSelectedUsnsChange = vi.fn();
+const onSelectAllClick = vi.fn();
 const totalUsnCount = 15;
 
 const expandableProps: ComponentProps<typeof UsnList> = {
   instances,
   isUsnsLoading: false,
+  onNextPageFetch,
+  onSelectAllClick,
   onSelectedUsnsChange,
   selectedUsns: [],
+  showSelectAllButton: false,
   tableType: "expandable",
+  totalSelectedUsnCount: 0,
   totalUsnCount,
   usns: mockedUsns,
-  onNextPageFetch,
 };
 
 const paginatedProps: ComponentProps<typeof UsnList> = {
@@ -74,6 +78,31 @@ describe("UsnList", () => {
     await userEvent.click(screen.getAllByText(/show packages/i)[0]);
 
     expect(screen.getByText(/hide packages/i)).toBeInTheDocument();
+  });
+
+  it("should render 'select all' button", async () => {
+    renderWithProviders(
+      <UsnList
+        {...expandableProps}
+        selectedUsns={mockedUsns.map((usn) => usn.usn)}
+        showSelectAllButton
+        totalSelectedUsnCount={totalUsnCount - 1}
+      />,
+    );
+
+    expect(screen.getByLabelText("Toggle all security issues")).toBeChecked();
+
+    expect(
+      screen.getByText(
+        `Selected ${totalUsnCount - 1} security issues currently.`,
+      ),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      screen.getByText(`Select all ${totalUsnCount} security issues.`),
+    );
+
+    expect(onSelectAllClick).toHaveBeenCalledOnce();
   });
 
   it("should render paginated list", () => {

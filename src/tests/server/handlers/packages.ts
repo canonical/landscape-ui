@@ -2,7 +2,7 @@ import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
 import { GetPackagesParams, Package } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { packages } from "@/tests/mocks/packages";
+import { getInstancePackages, packages } from "@/tests/mocks/packages";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { generatePaginatedResponse } from "./_helpers";
 
@@ -26,8 +26,8 @@ export default [
       }
 
       const url = new URL(request.url);
-      const offset = Number(url.searchParams.get("offset")) ?? 0;
       const limit = Number(url.searchParams.get("limit"));
+      const offset = Number(url.searchParams.get("offset")) ?? 0;
 
       return HttpResponse.json(
         generatePaginatedResponse<Package>({
@@ -38,4 +38,21 @@ export default [
       );
     },
   ),
+
+  http.get(`${API_URL}computers/:id/packages`, ({ params, request }) => {
+    const url = new URL(request.url);
+    const limit = Number(url.searchParams.get("limit"));
+    const offset = Number(url.searchParams.get("offset")) ?? 0;
+    const instanceId = Number(params.id);
+
+    const instancePackages = getInstancePackages(instanceId);
+
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: instancePackages,
+        limit,
+        offset,
+      }),
+    );
+  }),
 ];

@@ -1,4 +1,4 @@
-import { Package } from "@/features/packages";
+import { InstancePackage, Package } from "@/features/packages";
 
 export const packages: Package[] = [
   {
@@ -32,6 +32,12 @@ export const packages: Package[] = [
       },
       {
         id: 5,
+        status: "installed",
+        current_version: "0.1.9-1",
+        available_version: "0.1.9-1-1",
+      },
+      {
+        id: 6,
         status: "installed",
         current_version: "0.1.9-1",
         available_version: "0.1.9-1-1",
@@ -286,3 +292,13 @@ export const packages: Package[] = [
     ],
   },
 ];
+
+export const getInstancePackages = (instanceId: number): InstancePackage[] => {
+  return packages
+    .filter(({ computers }) => computers.some(({ id }) => id === instanceId))
+    .flatMap(({ computers, ...commonProps }) =>
+      computers
+        .filter(({ id }) => id === instanceId)
+        .map((instanceProps) => ({ ...instanceProps, ...commonProps })),
+    );
+};
