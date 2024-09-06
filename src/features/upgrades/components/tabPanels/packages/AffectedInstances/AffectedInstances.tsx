@@ -2,19 +2,18 @@ import { FC, useMemo } from "react";
 import { CellProps, Column } from "react-table";
 import { CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
+import SelectAllButton from "@/components/layout/SelectAllButton";
 import { InstancePackagesToExclude, Package } from "@/features/packages";
 import { Instance } from "@/types/Instance";
-import {
-  checkIsPackageUpdateRequired,
-  checkIsPackageUpdateRequiredForAllInstances,
-  getToggledPackage,
-} from "../helpers";
+import { getToggledPackage } from "../helpers";
 import {
   checkIsPackageUpdateRequiredForInstance,
   getCellProps,
+  getSelectedInstanceCount,
+  getSelectedPackage,
+  getToggleAllCheckboxState,
   getToggledInstance,
 } from "./helpers";
-import SelectAllButton from "@/components/layout/SelectAllButton";
 
 interface AffectedInstancesProps {
   currentPackage: Package;
@@ -35,7 +34,7 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
   onLimitChange,
   selectedInstances,
 }) => {
-  const instanceIds = new Set(currentPackage.computers.map(({ id }) => id));
+  const instanceIdSet = new Set(currentPackage.computers.map(({ id }) => id));
 
   const excludedInstances = excludedPackages.filter(({ exclude_packages }) =>
     exclude_packages.includes(currentPackage.id),
@@ -53,10 +52,10 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
     () => [
       ...selectedInstances.slice(0, showSelectAllButton ? 1 : 0),
       ...selectedInstances
-        .filter(({ id }) => instanceIds.has(id))
+        .filter(({ id }) => instanceIdSet.has(id))
         .slice(0, limit),
     ],
-    [instanceIds, limit, selectedInstances, showSelectAllButton],
+    [instanceIdSet, limit, selectedInstances, showSelectAllButton],
   );
 
   const handlePackageToggle = () => {
@@ -71,11 +70,18 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
     );
   };
 
-  const isPackageUpdateRequiredForAllInstances =
-    checkIsPackageUpdateRequiredForAllInstances(
-      excludedPackages,
-      currentPackage,
+  const handlePackageSelect = () => {
+    onExcludedPackagesChange(
+      getSelectedPackage(excludedPackages, currentPackage),
     );
+  };
+
+  const toggleAllCheckboxState = getToggleAllCheckboxState({
+    excludePackages: excludedPackages,
+    instances: selectedInstances,
+    limit,
+    pkg: currentPackage,
+  });
 
   const columns = useMemo<Column<Instance>[]>(
     () => [
@@ -86,29 +92,21 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
           <CheckboxInput
             inline
             label={<span className="u-off-screen">Toggle all instances</span>}
-            checked={isPackageUpdateRequiredForAllInstances}
-            indeterminate={
-              !isPackageUpdateRequiredForAllInstances &&
-              checkIsPackageUpdateRequired(excludedPackages, currentPackage)
-            }
+            checked={toggleAllCheckboxState === "checked"}
+            indeterminate={toggleAllCheckboxState === "indeterminate"}
             onChange={handlePackageToggle}
           />
         ),
         Cell: ({ row: { index, original } }: CellProps<Instance>) =>
           showSelectAllButton && index === 0 ? (
             <SelectAllButton
-              count={selectedInstances.length - excludedInstances.length}
+              count={getSelectedInstanceCount(excludedPackages, currentPackage)}
               itemName={{
                 plural: "instances",
                 singular: "instance",
               }}
-              onClick={() =>
-                selectedInstances.map(({ id }) => ({
-                  id,
-                  exclude_packages: [],
-                }))
-              }
-              totalCount={selectedInstances.length}
+              onClick={handlePackageSelect}
+              totalCount={instanceIdSet.size}
             />
           ) : (
             <CheckboxInput
@@ -166,7 +164,7 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
       getCellProps={getCellProps(showSelectAllButton)}
       itemNames={{ plural: "instances", singular: "instance" }}
       onLimitChange={onLimitChange}
-      totalCount={instanceIds.size}
+      totalCount={instanceIdSet.size}
       title={
         <p className="p-heading--4">
           Instances affected by <b>{currentPackage.name}</b>

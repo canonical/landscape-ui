@@ -47,15 +47,3 @@ export const getToggledPackage = (
     checkIsPackageUpdateRequired(excludedPackages, pkg),
   );
 };
-
-export const checkIsPackageUpdateRequiredForAllInstances = (
-  excludedPackages: InstancePackagesToExclude[],
-  pkg: Package,
-) => {
-  const instancesIdSet = new Set(pkg.computers.map(({ id }) => id));
-
-  return excludedPackages.every(
-    ({ exclude_packages, id }) =>
-      !instancesIdSet.has(id) || !exclude_packages.includes(pkg.id),
-  );
-};

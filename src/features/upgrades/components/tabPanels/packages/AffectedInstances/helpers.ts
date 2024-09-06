@@ -1,7 +1,8 @@
-import { InstancePackagesToExclude } from "@/features/packages";
-import { Cell, TableCellProps } from "react-table";
 import { HTMLProps } from "react";
+import { Cell, TableCellProps } from "react-table";
+import { InstancePackagesToExclude, Package } from "@/features/packages";
 import { Instance } from "@/types/Instance";
+import { toggleCurrentPackage } from "../helpers";
 
 export const getCellProps =
   (showSelectAllButton: boolean) =>
@@ -57,4 +58,58 @@ export const getToggledInstance = (
         : [...exclude_packages, packageId],
     };
   });
+};
+
+export const getToggleAllCheckboxState = ({
+  excludePackages,
+  instances,
+  limit,
+  pkg,
+}: {
+  excludePackages: InstancePackagesToExclude[];
+  instances: Instance[];
+  limit: number;
+  pkg: Package;
+}) => {
+  const instanceIdSet = new Set(pkg.computers.map(({ id }) => id));
+  const shownInstance = instances
+    .filter(({ id }) => instanceIdSet.has(id))
+    .slice(0, limit);
+
+  const excludedInstanceIdSet = new Set(
+    excludePackages
+      .filter(({ exclude_packages }) => exclude_packages.includes(pkg.id))
+      .map(({ id }) => id),
+  );
+
+  const selectedPackageCount = shownInstance.filter(
+    ({ id }) => !excludedInstanceIdSet.has(id),
+  ).length;
+
+  if (selectedPackageCount === 0) {
+    return "unchecked";
+  }
+
+  return selectedPackageCount === shownInstance.length
+    ? "checked"
+    : "indeterminate";
+};
+
+export const getSelectedInstanceCount = (
+  excludePackages: InstancePackagesToExclude[],
+  pkg: Package,
+) => {
+  const instanceSet = new Set(pkg.computers.map(({ id }) => id));
+
+  return excludePackages.filter(
+    ({ exclude_packages, id }) =>
+      instanceSet.has(id) && !exclude_packages.includes(pkg.id),
+  ).length;
+};
+
+export const getSelectedPackage = (
+  excludePackages: InstancePackagesToExclude[],
+  pkg: Package,
+) => {
+  return toggleCurrentPackage(excludePackages, pkg, false);
 };

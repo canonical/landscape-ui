@@ -106,3 +106,15 @@ export const getPackagesData = ({
     ...[EMPTY_PACKAGE].slice(isPackagesLoading ? 0 : 1),
   ];
 };
+
+export const checkIsPackageUpdateRequiredForAllInstances = (
+  excludedPackages: InstancePackagesToExclude[],
+  pkg: Package,
+) => {
+  const instancesIdSet = new Set(pkg.computers.map(({ id }) => id));
+
+  return excludedPackages.every(
+    ({ exclude_packages, id }) =>
+      !instancesIdSet.has(id) || !exclude_packages.includes(pkg.id),
+  );
+};

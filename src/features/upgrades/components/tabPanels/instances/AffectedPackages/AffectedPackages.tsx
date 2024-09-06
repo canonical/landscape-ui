@@ -9,7 +9,11 @@ import {
   InstancePackagesToExclude,
 } from "@/features/packages";
 import { Instance } from "@/types/Instance";
-import { getPackageData, handleCellProps } from "./helpers";
+import {
+  getPackageData,
+  getToggleAllCheckboxState,
+  handleCellProps,
+} from "./helpers";
 
 interface AffectedPackagesProps {
   excludedPackages: InstancePackagesToExclude[];
@@ -85,6 +89,11 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
     );
   };
 
+  const toggleAllCheckboxState = getToggleAllCheckboxState(
+    instanceExcludedPackages,
+    packages,
+  );
+
   const columns = useMemo<Column<InstancePackage>[]>(
     () => [
       {
@@ -95,11 +104,8 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             inline
             label={<span className="u-off-screen">Toggle all packages</span>}
             disabled={packageData.length === 0}
-            checked={instanceExcludedPackages.length === 0}
-            indeterminate={
-              instanceExcludedPackages.length > 0 &&
-              packages.some(({ id }) => !instanceExcludedPackages.includes(id))
-            }
+            checked={toggleAllCheckboxState === "checked"}
+            indeterminate={toggleAllCheckboxState === "indeterminate"}
             onChange={toggleAllPackages}
           />
         ),

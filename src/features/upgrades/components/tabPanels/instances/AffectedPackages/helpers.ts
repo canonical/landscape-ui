@@ -43,3 +43,20 @@ export const getPackageData = (
     ...packages.slice(packagesLoading ? -1 : packages.length),
   ];
 };
+
+export const getToggleAllCheckboxState = (
+  instanceExcludedPackages: number[],
+  packages: InstancePackage[],
+) => {
+  const excludedPackageIdSet = new Set(instanceExcludedPackages);
+
+  const selectedPackageCount = packages.filter(
+    ({ id }) => !excludedPackageIdSet.has(id),
+  ).length;
+
+  if (selectedPackageCount === 0) {
+    return "unchecked";
+  }
+
+  return selectedPackageCount === packages.length ? "checked" : "indeterminate";
+};

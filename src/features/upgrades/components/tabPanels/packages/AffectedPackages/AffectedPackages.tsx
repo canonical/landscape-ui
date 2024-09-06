@@ -4,15 +4,13 @@ import { CellProps, Column } from "react-table";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
+import SelectAllButton from "@/components/layout/SelectAllButton";
 import { InstancePackagesToExclude, Package } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import AffectedInstances from "../AffectedInstances";
+import { checkIsPackageUpdateRequired, getToggledPackage } from "../helpers";
 import {
-  checkIsPackageUpdateRequired,
   checkIsPackageUpdateRequiredForAllInstances,
-  getToggledPackage,
-} from "../helpers";
-import {
   checkIsUpdateRequired,
   checkIsUpdateRequiredForAllVisiblePackages,
   getPackagesData,
@@ -20,7 +18,6 @@ import {
   handleCellProps,
 } from "./helpers";
 import classes from "./AffectedPackages.module.scss";
-import SelectAllButton from "@/components/layout/SelectAllButton";
 
 interface AffectedPackagesProps {
   excludedPackages: InstancePackagesToExclude[];
