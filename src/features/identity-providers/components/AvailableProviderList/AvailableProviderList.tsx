@@ -18,7 +18,7 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   const [providerId, setProviderId] = useState(0);
   const [searchParams] = useSearchParams();
 
-  const { getAuthUrlQuery } = useIdentityProviders();
+  const { getAuthUrlQuery, getUbuntuOneUrlQuery } = useIdentityProviders();
 
   const redirectTo = searchParams.get("redirect-to");
   const open = searchParams.get("open") === "true";
@@ -30,13 +30,24 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   }
 
   const { data: getAuthUrlQueryResult } = getAuthUrlQuery(params, {
-    enabled: providerId !== 0,
+    enabled: providerId > 0,
   });
 
   if (getAuthUrlQueryResult) {
     open
       ? window.open(getAuthUrlQueryResult.data.location, "_self")?.focus()
       : (window.location.href = getAuthUrlQueryResult.data.location);
+  }
+
+  const { data: getUbuntuOneUrlQueryResult } = getUbuntuOneUrlQuery(
+    { return_to: redirectTo ?? `http://localhost:5173/overview` },
+    { enabled: providerId === -1 },
+  );
+
+  if (getUbuntuOneUrlQueryResult) {
+    open
+      ? window.open(getUbuntuOneUrlQueryResult.data.location, "_self")?.focus()
+      : (window.location.href = getUbuntuOneUrlQueryResult.data.location);
   }
 
   return (
@@ -46,7 +57,7 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
           <Button
             type="button"
             hasIcon
-            onClick={() => undefined}
+            onClick={() => setProviderId(-1)}
             className={classes.button}
           >
             <Icon name={SUPPORTED_PROVIDERS["ubuntu-one"].icon} />

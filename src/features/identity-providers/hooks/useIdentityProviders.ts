@@ -57,6 +57,10 @@ interface GetAuthStateResponse extends AuthUser {
   return_to?: string;
 }
 
+interface GetUbuntuOneUrlParams {
+  return_to?: string;
+}
+
 export default function useIdentityProviders() {
   const queryClient = useQueryClient();
   const authFetch = useFetch();
@@ -151,6 +155,17 @@ export default function useIdentityProviders() {
       ...config,
     });
 
+  const getUbuntuOneUrlQuery: QueryFnType<
+    AxiosResponse<{ location: string }>,
+    GetUbuntuOneUrlParams
+  > = (queryParams = {}, config = {}) =>
+    useQuery<AxiosResponse<{ location: string }>, AxiosError<ApiError>>({
+      queryKey: ["ubuntuOneLogin"],
+      queryFn: () =>
+        authFetch!.get("/auth/ubuntu-one/begin", { params: queryParams }),
+      ...config,
+    });
+
   return {
     addProviderQuery,
     getSupportedProvidersQuery,
@@ -160,5 +175,6 @@ export default function useIdentityProviders() {
     deleteProviderQuery,
     getAuthUrlQuery,
     getAuthStateQuery,
+    getUbuntuOneUrlQuery,
   };
 }
