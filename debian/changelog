@@ -1,3 +1,9 @@
+landscape-dashboard (0.0.6-0landscape0) jammy; urgency=medium
+
+  * Release 0.0.6 for jammy
+
+ -- Ardavan Behnia <ardavan.behnia@canonical.com>  Mon, 09 Sep 2024 11:40:04 -0700
+
 landscape-dashboard (0.0.5-0landscape0) jammy; urgency=medium
 
   * Release 0.0.5 for jammy
