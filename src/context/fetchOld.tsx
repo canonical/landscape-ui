@@ -1,8 +1,8 @@
 import React, { FC, ReactNode } from "react";
 import axios, { AxiosError, AxiosInstance } from "axios";
 
-import { API_URL_OLD } from "../constants";
-import { generateRequestParams } from "../utils/api";
+import { API_URL_OLD } from "@/constants";
+import { generateRequestParams } from "@/utils/api";
 import useAuth from "../hooks/useAuth";
 
 export const FetchContext = React.createContext<AxiosInstance | null>(null);

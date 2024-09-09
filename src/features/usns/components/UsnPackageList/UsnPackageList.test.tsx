@@ -1,24 +1,30 @@
+import { ComponentProps } from "react";
 import { describe, expect, vi } from "vitest";
 import UsnPackageList from "./UsnPackageList";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
-import { expectLoadingState } from "@/tests/helpers";
 import { usnPackages, usns } from "@/tests/mocks/usn";
 import userEvent from "@testing-library/user-event";
 
-const props = {
-  limit: 2,
-  onLimitChange: vi.fn(),
+const limit = 2;
+const onLimitChange = vi.fn();
+
+const props: ComponentProps<typeof UsnPackageList> = {
+  limit,
+  onLimitChange,
   usn: usns[0].usn,
-  isRemovable: false as false,
-  instanceIds: [],
+  instanceTitle: "usn-security.lxd",
+  showRemoveButton: true,
+  usnPackages,
 };
 
 describe("UsnPackageList", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("should render list", async () => {
     renderWithProviders(<UsnPackageList {...props} />);
-
-    await expectLoadingState();
 
     await waitFor(() => {
       usnPackages.forEach((usnPackage, index) => {
@@ -29,26 +35,34 @@ describe("UsnPackageList", () => {
         expect(screen.getByText(usnPackage.name)).toBeInTheDocument();
         expect(screen.getByText(usnPackage.summary)).toBeInTheDocument();
       });
-
-      expect(
-        screen.queryByText(
-          `Showing ${props.limit} of ${usnPackages.length} packages.`,
-        ),
-      ).toBeInTheDocument();
     });
+
+    expect(
+      screen.getByText(
+        `Showing ${props.limit} of ${usnPackages.length} packages.`,
+      ),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText(`Uninstall packages`)).toBeInTheDocument();
   });
 
   it("should load more packages", async () => {
-    renderWithProviders(<UsnPackageList {...props} />);
+    const { rerender } = renderWithProviders(<UsnPackageList {...props} />);
 
-    const showMoreButton = await screen.findByText(
-      `Show ${usnPackages.length - props.limit} more`,
+    const newLimit = 4;
+
+    onLimitChange.mockImplementationOnce(() => {
+      rerender(<UsnPackageList {...props} limit={newLimit} />);
+    });
+
+    expect(screen.getAllByRole("rowheader")).toHaveLength(limit);
+
+    await userEvent.click(
+      screen.getByText(`Show ${usnPackages.length - props.limit} more`),
     );
 
-    expect(showMoreButton).toBeInTheDocument();
+    expect(onLimitChange).toHaveBeenCalledOnce();
 
-    await userEvent.click(showMoreButton);
-
-    expect(props.onLimitChange).toBeCalled();
+    expect(screen.getAllByRole("rowheader")).toHaveLength(newLimit);
   });
 });

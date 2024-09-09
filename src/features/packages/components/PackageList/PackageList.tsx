@@ -10,7 +10,7 @@ import {
 import LoadingState from "@/components/layout/LoadingState";
 import { ROOT_PATH } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Package } from "../../types";
+import { InstancePackage } from "../../types";
 import PackageListActions from "../PackageListActions";
 import UbuntuProNotification from "../UbuntuProNotification";
 import { LOADING_PACKAGE } from "./constants";
@@ -25,10 +25,10 @@ const PackageDetails = lazy(() => import("../PackageDetails"));
 
 interface PackageListProps {
   emptyMsg: string;
-  onPackagesSelect: (packages: Package[]) => void;
-  packages: Package[];
+  onPackagesSelect: (packages: InstancePackage[]) => void;
+  packages: InstancePackage[];
   packagesLoading: boolean;
-  selectedPackages: Package[];
+  selectedPackages: InstancePackage[];
   selectAll?: boolean;
 }
 
@@ -54,7 +54,7 @@ const PackageList: FC<PackageListProps> = ({
     return [LOADING_PACKAGE];
   }, [packages, packagesLoading]);
 
-  const handleSelectPackage = (pkg: Package) => {
+  const handleSelectPackage = (pkg: InstancePackage) => {
     onPackagesSelect(
       selectedPackages.some(({ name }) => name === pkg.name)
         ? selectedPackages.filter(({ name }) => name !== pkg.name)
@@ -79,7 +79,7 @@ const PackageList: FC<PackageListProps> = ({
     setSelectedByTabState(true);
   }, [selectAll, packages]);
 
-  const handlePackageClick = (singlePackage: Package) => {
+  const handlePackageClick = (singlePackage: InstancePackage) => {
     setSidePanelContent(
       "Package details",
       <Suspense fallback={<LoadingState />}>
@@ -88,7 +88,7 @@ const PackageList: FC<PackageListProps> = ({
     );
   };
 
-  const columns = useMemo<Column<Package>[]>(
+  const columns = useMemo<Column<InstancePackage>[]>(
     () => [
       {
         accessor: "checkbox",
@@ -108,7 +108,7 @@ const PackageList: FC<PackageListProps> = ({
             onChange={handleToggleAllPackages}
           />
         ),
-        Cell: ({ row }: CellProps<Package>) =>
+        Cell: ({ row }: CellProps<InstancePackage>) =>
           isUbuntuProRequired(row.original) ? (
             <Tooltip
               message={
@@ -156,7 +156,7 @@ const PackageList: FC<PackageListProps> = ({
       {
         accessor: "name",
         Header: "Name",
-        Cell: ({ row }: CellProps<Package>) => {
+        Cell: ({ row }: CellProps<InstancePackage>) => {
           if (row.original.name === "loading") {
             return <LoadingState />;
           }
@@ -178,9 +178,9 @@ const PackageList: FC<PackageListProps> = ({
       {
         accessor: "status",
         Header: "Status",
-        Cell: ({ row: { original } }: CellProps<Package>) =>
+        Cell: ({ row: { original } }: CellProps<InstancePackage>) =>
           getPackageStatusInfo(original).label,
-        getCellIcon: ({ row: { original } }: CellProps<Package>) =>
+        getCellIcon: ({ row: { original } }: CellProps<InstancePackage>) =>
           getPackageStatusInfo(original).icon,
       },
       {
@@ -191,7 +191,7 @@ const PackageList: FC<PackageListProps> = ({
         accessor: "summary",
         className: classes.details,
         Header: "Details",
-        Cell: ({ row: { original } }: CellProps<Package>) =>
+        Cell: ({ row: { original } }: CellProps<InstancePackage>) =>
           original.available_version ? (
             <>
               <span>{original.summary}</span>
@@ -206,7 +206,7 @@ const PackageList: FC<PackageListProps> = ({
         accessor: "actions",
         className: classes.actions,
         Header: "Actions",
-        Cell: ({ row: { original } }: CellProps<Package>) => (
+        Cell: ({ row: { original } }: CellProps<InstancePackage>) => (
           <PackageListActions pkg={original} />
         ),
       },

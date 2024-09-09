@@ -6,7 +6,7 @@ import { ROOT_PATH } from "@/constants";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useUsns from "@/hooks/useUsns";
+import { useUsns } from "@/features/usns";
 import classes from "./SecurityIssuesPanelHeader.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
 
@@ -27,14 +27,14 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { confirmModal, closeConfirmModal } = useConfirm();
-  const { upgradeUsnPackagesQuery } = useUsns();
+  const { upgradeInstanceUsnsQuery } = useUsns();
 
   const instanceId = Number(urlInstanceId);
 
   const {
-    mutateAsync: upgradeUsnPackages,
+    mutateAsync: upgradeInstanceUsns,
     isLoading: upgradeUsnPackagesLoading,
-  } = upgradeUsnPackagesQuery;
+  } = upgradeInstanceUsnsQuery;
 
   const handleActivityDetailsView = () => {
     navigate(
@@ -46,7 +46,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 
   const handleUpgradePackages = async () => {
     try {
-      await upgradeUsnPackages({
+      await upgradeInstanceUsns({
         instanceId: instanceId,
         usns,
       });

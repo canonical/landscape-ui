@@ -1,15 +1,15 @@
-import useFetch from "./useFetch";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import {
   useMutation,
   useQuery,
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { ApiError } from "@/types/ApiError";
-import { Usn, UsnPackage } from "@/types/Usn";
 import { Activity } from "@/features/activities";
+import useFetch from "@/hooks/useFetch";
+import { ApiError } from "@/types/ApiError";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { Usn, UsnPackage } from "@/types/Usn";
 
 export interface GetUsnsParams {
   computer_ids: number[];
@@ -19,19 +19,28 @@ export interface GetUsnsParams {
   show_packages?: boolean;
 }
 
-export interface GetAffectedPackagesParams {
+interface GetAffectedPackagesParams {
   computer_ids: number[];
   usn: string;
 }
 
-export interface UpgradeUsnPackagesParams {
+interface UpgradeInstanceUsnsParams {
   instanceId: number;
   usns: string[];
 }
 
-export interface RemoveUsnPackagesParams {
+interface RemoveUsnPackagesParams {
   instanceId: number;
   usns: string;
+}
+
+interface InstanceUsnsToExclude {
+  id: number;
+  exclude_usns: string[];
+}
+
+interface UpgradeUsnsParams {
+  computers: InstanceUsnsToExclude[];
 }
 
 export default function useUsns() {
@@ -72,10 +81,10 @@ export default function useUsns() {
     });
   };
 
-  const upgradeUsnPackagesQuery = useMutation<
+  const upgradeInstanceUsnsQuery = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
-    UpgradeUsnPackagesParams
+    UpgradeInstanceUsnsParams
   >({
     mutationFn: ({ instanceId, ...params }) =>
       authFetch!.post(`/computers/${instanceId}/usns/upgrade-packages`, params),
@@ -100,10 +109,25 @@ export default function useUsns() {
       ]),
   });
 
+  const upgradeUsnsQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    UpgradeUsnsParams
+  >({
+    mutationFn: (params) =>
+      authFetch!.post("/computers/usns/upgrade-packages", params),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries(["usns"]),
+        queryClient.invalidateQueries(["activities"]),
+      ]),
+  });
+
   return {
     getUsnsQuery,
     getAffectedPackagesQuery,
-    upgradeUsnPackagesQuery,
+    upgradeInstanceUsnsQuery,
     removeUsnPackagesQuery,
+    upgradeUsnsQuery,
   };
 }

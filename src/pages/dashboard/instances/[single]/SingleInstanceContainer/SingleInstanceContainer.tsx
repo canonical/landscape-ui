@@ -8,7 +8,7 @@ import { ROOT_PATH } from "@/constants";
 import { usePackages } from "@/features/packages";
 import useAuth from "@/hooks/useAuth";
 import useInstances from "@/hooks/useInstances";
-import useUsns from "@/hooks/useUsns";
+import { useUsns } from "@/features/usns";
 import SingleInstanceEmptyState from "@/pages/dashboard/instances/[single]/SingleInstanceEmptyState";
 import SingleInstanceTabs from "@/pages/dashboard/instances/[single]/SingleInstanceTabs";
 import { getBreadcrumbs } from "./helpers";

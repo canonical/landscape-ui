@@ -16,22 +16,26 @@ export interface PocketPackagesList {
   [componentArchitecturePair: string]: PocketPackage[];
 }
 
-interface OldPackageComputerInfo {
+interface CommonPackageInfo extends Record<string, unknown> {
   id: number;
-  status: "available" | "installed" | "held" | "security";
-  available_version: string | null;
-  current_version: string | null;
-}
-
-export interface OldPackage extends Record<string, unknown> {
-  computers: OldPackageComputerInfo[];
   name: string;
   summary: string;
-  version: string;
-  usn?: {
-    name: string;
-    summary: string;
-  };
+}
+
+interface InstancePackageInfo extends Record<string, unknown> {
+  available_version: string | null;
+  current_version: string | null;
+  status: "available" | "installed" | "held" | "security";
+}
+
+export type InstancePackage = CommonPackageInfo & InstancePackageInfo;
+
+interface InstancePackageInfoWithInstanceId extends InstancePackageInfo {
+  id: number;
+}
+
+export interface Package extends CommonPackageInfo {
+  computers: InstancePackageInfoWithInstanceId[];
 }
 
 export interface PackageObject {
@@ -42,11 +46,6 @@ export interface PackageObject {
   version: string;
 }
 
-export interface Package extends Record<string, unknown> {
-  available_version: string | null;
-  current_version: string | null;
-  id: number;
-  name: string;
-  status: "available" | "installed" | "held" | "security";
-  summary: string;
+export interface DowngradePackageVersion extends CommonPackageInfo {
+  version: string;
 }

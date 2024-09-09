@@ -1,6 +1,6 @@
-import { Package } from "../../types";
+import { InstancePackage } from "../../types";
 
-export const LOADING_PACKAGE: Package = {
+export const LOADING_PACKAGE: InstancePackage = {
   available_version: null,
   current_version: null,
   id: -1,

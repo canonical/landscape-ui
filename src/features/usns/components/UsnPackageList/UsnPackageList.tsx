@@ -1,129 +1,30 @@
 import { FC, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import { Column } from "react-table";
-import { Button, Icon } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import LoadingState from "@/components/layout/LoadingState";
-import { ROOT_PATH } from "@/constants";
-import useConfirm from "@/hooks/useConfirm";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
-import useUsns from "@/hooks/useUsns";
 import { UsnPackage } from "@/types/Usn";
-import { usePageParams } from "@/hooks/usePageParams";
+import UsnPackagesRemoveButton from "../UsnPackagesRemoveButton";
+import { handleCellProps } from "./helpers";
 
-type UsnPackageListProps = {
+interface UsnPackageListProps {
+  instanceTitle: string;
   limit: number;
   onLimitChange: () => void;
+  showRemoveButton: boolean;
   usn: string;
-} & (
-  | {
-      isRemovable: true;
-      instanceTitle: string;
-    }
-  | {
-      isRemovable: false;
-      instanceIds: number[];
-    }
-);
+  usnPackages: UsnPackage[];
+}
 
 const UsnPackageList: FC<UsnPackageListProps> = ({
+  instanceTitle,
   limit,
   onLimitChange,
+  showRemoveButton,
   usn,
-  ...otherProps
+  usnPackages,
 }) => {
-  const navigate = useNavigate();
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { confirmModal, closeConfirmModal } = useConfirm();
-  const { getAffectedPackagesQuery, removeUsnPackagesQuery } = useUsns();
-  const { setPageParams } = usePageParams();
-  const { instanceId: urlInstanceId, childInstanceId } = useParams();
-
-  const instanceId = Number(urlInstanceId);
-  const { mutateAsync: removeUsnPackages } = removeUsnPackagesQuery;
-
-  const handleActivityDetailsView = () => {
-    navigate(
-      `${ROOT_PATH}instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`,
-    );
-    setPageParams({ tab: "activities" });
-    notify.clear();
-  };
-
-  const handleRemoveUsnPackages = async () => {
-    try {
-      await removeUsnPackages({
-        usns: usn,
-        instanceId: instanceId,
-      });
-
-      notify.success({
-        title: "You queued packages to be uninstalled",
-        message: `Packages affected by "${usn}" security issue will be uninstalled and are queued in Activities.`,
-        actions: [
-          {
-            label: "View details",
-            onClick: () => handleActivityDetailsView(),
-          },
-        ],
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      closeConfirmModal();
-    }
-  };
-
-  const handleRemoveUsnPackagesDialog = (instanceTitle: string) => {
-    confirmModal({
-      title: "Uninstall USN packages",
-      body: `This will uninstall packages affected by "${usn}" security issue from the "${instanceTitle}" instance.`,
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={() => handleRemoveUsnPackages()}
-        >
-          Uninstall
-        </Button>,
-      ],
-    });
-  };
-
-  const additionalCta = otherProps.isRemovable
-    ? [
-        <Button
-          key="remove"
-          type="button"
-          small
-          dense
-          hasIcon
-          onClick={() =>
-            handleRemoveUsnPackagesDialog(otherProps.instanceTitle)
-          }
-        >
-          <Icon name="delete" className="u-no-margin--left" />
-          <span>Uninstall packages</span>
-        </Button>,
-      ]
-    : undefined;
-
-  const {
-    data: getAffectedPackagesQueryResult,
-    isLoading: getAffectedPackagesQueryLoading,
-  } = getAffectedPackagesQuery({
-    usn,
-    computer_ids: otherProps.isRemovable
-      ? [instanceId]
-      : otherProps.instanceIds,
-  });
-
   const packageSlice = useMemo(
-    () => getAffectedPackagesQueryResult?.data.slice(0, limit) || [],
-    [getAffectedPackagesQueryResult, limit],
+    () => usnPackages.slice(0, limit),
+    [limit, usnPackages],
   );
 
   const columns = useMemo<Column<UsnPackage>[]>(
@@ -148,17 +49,24 @@ const UsnPackageList: FC<UsnPackageListProps> = ({
     [packageSlice.length],
   );
 
-  return getAffectedPackagesQueryLoading ? (
-    <LoadingState />
-  ) : (
+  return (
     <ExpandableTable
-      additionalCta={additionalCta}
+      additionalCta={
+        showRemoveButton && (
+          <UsnPackagesRemoveButton instanceTitle={instanceTitle} usn={usn} />
+        )
+      }
       columns={columns}
       data={packageSlice}
       itemNames={{ plural: "packages", singular: "package" }}
-      limit={limit}
       onLimitChange={onLimitChange}
-      totalCount={getAffectedPackagesQueryResult?.data.length ?? 0}
+      title={
+        <p className="p-heading--4">
+          Packages affected by <b>{usn}</b>
+        </p>
+      }
+      totalCount={usnPackages.length}
+      getCellProps={handleCellProps}
     />
   );
 };

@@ -1,6 +1,6 @@
 import moment from "moment/moment";
 import * as Yup from "yup";
-import { InstalledPackageAction, Package } from "../../types";
+import { InstalledPackageAction, InstancePackage } from "../../types";
 
 export const getValidationSchema = (action: InstalledPackageAction) =>
   Yup.object({
@@ -29,7 +29,7 @@ export const getValidationSchema = (action: InstalledPackageAction) =>
   });
 
 export const getActionInfo = (
-  packages: Package[],
+  packages: InstancePackage[],
   action: "hold" | "unhold",
 ) => {
   const title =
@@ -40,7 +40,7 @@ export const getActionInfo = (
 
 export const getActionSuccessNotificationProps = (
   action: InstalledPackageAction,
-  packages: Package[],
+  packages: InstancePackage[],
   version: string,
 ) => {
   const itemTitle =

@@ -8,7 +8,6 @@ import { usns } from "@/tests/mocks/usn";
 
 const props = {
   instance: instances[0],
-  instanceTitle: instances[0].title,
 };
 
 describe("SecurityIssuesPanel", () => {
@@ -18,7 +17,7 @@ describe("SecurityIssuesPanel", () => {
     await expectLoadingState();
 
     await waitFor(() => {
-      usns.forEach((item) => {
+      usns.slice(0, 20).forEach((item) => {
         expect(
           screen.getByRole("link", {
             name: item.usn,

@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { GetUsnsParams } from "@/hooks/useUsns";
+import { GetUsnsParams } from "@/features/usns";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { Usn } from "@/types/Usn";
 import { API_URL } from "@/constants";
@@ -10,8 +10,12 @@ export default [
   // @ts-ignore-next-line
   http.get<GetUsnsParams, never, ApiPaginatedResponse<Usn>>(
     `${API_URL}usns`,
-    async ({ params }) => {
-      const { limit, offset, search } = params;
+    async ({ request }) => {
+      const url = new URL(request.url);
+
+      const limit = Number(url.searchParams.get("limit")) ?? usns.length;
+      const offset = Number(url.searchParams.get("offset")) ?? 0;
+      const search = url.searchParams.get("search") ?? "";
 
       return HttpResponse.json(
         generatePaginatedResponse<Usn>({

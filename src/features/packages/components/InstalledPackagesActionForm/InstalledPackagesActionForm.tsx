@@ -13,7 +13,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import { usePackages } from "../../hooks";
-import { InstalledPackageAction, Package } from "../../types";
+import { InstalledPackageAction, InstancePackage } from "../../types";
 import PackagesUpgradeInfo from "../PackagesUpgradeInfo";
 import { INITIAL_VALUES } from "./constants";
 import {
@@ -26,7 +26,7 @@ import classes from "./InstalledPackagesActionForm.module.scss";
 
 interface InstalledPackagesActionFormProps {
   action: InstalledPackageAction;
-  packages: Package[];
+  packages: InstancePackage[];
 }
 
 const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({

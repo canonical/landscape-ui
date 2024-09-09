@@ -4,7 +4,7 @@ import { Button, Icon } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
-import { InstalledPackageAction, Package } from "../../types";
+import { InstalledPackageAction, InstancePackage } from "../../types";
 import classes from "./PackageActions.module.scss";
 
 const InstalledPackagesActionForm = lazy(
@@ -13,7 +13,7 @@ const InstalledPackagesActionForm = lazy(
 const PackagesInstallForm = lazy(() => import("../PackagesInstallForm"));
 
 interface PackageActionsProps {
-  selectedPackages: Package[];
+  selectedPackages: InstancePackage[];
 }
 
 const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {

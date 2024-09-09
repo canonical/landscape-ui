@@ -5,8 +5,8 @@ import { Activity, ActivityCommon, useActivities } from "@/features/activities";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import { OldPackage, usePackages } from "@/features/packages";
-import useUsns from "@/hooks/useUsns";
+import { Package, usePackages } from "@/features/packages";
+import { useUsns } from "@/features/usns";
 import {
   Button,
   Col,
@@ -174,7 +174,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
   );
 
   const upgradesTableColumns = useMemo<
-    Column<Instance | OldPackage | Usn>[]
+    Column<Instance | Package | Usn>[]
   >(() => {
     switch (currentUpgradesTab) {
       case 0:
@@ -212,7 +212,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
           {
             Header: "Affected Instances",
             accessor: "computers",
-            Cell: ({ row }: CellProps<OldPackage>) => (
+            Cell: ({ row }: CellProps<Package>) => (
               <Link
                 to={`${ROOT_PATH}instances`}
                 className={classNames("u-no-margin--bottom", classes.link)}
@@ -472,7 +472,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
                   singular: getUpgradesTableFooterName(),
                   plural: `${getUpgradesTableFooterName()}s`,
                 }}
-                limit={10}
+                itemCount={10}
                 onLimitChange={() => navigate(`${ROOT_PATH}instances`)}
                 totalCount={getTotalTableItemsCount("upgrades")}
                 className={classes.footer}
@@ -550,7 +550,7 @@ const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
                   singular: "activity",
                   plural: "activities",
                 }}
-                limit={10}
+                itemCount={10}
                 onLimitChange={() => navigate(`${ROOT_PATH}activities`)}
                 totalCount={getTotalTableItemsCount("activities")}
                 className={classes.footer}

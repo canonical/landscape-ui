@@ -5,6 +5,7 @@ export interface CVE extends Record<string, unknown> {
 
 export interface UsnPackage extends Record<string, unknown> {
   computer_ids: number[];
+  current_id: number;
   current_version: string;
   name: string;
   new_version: string;

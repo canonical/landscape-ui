@@ -7,13 +7,13 @@ import { Button, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import { usePackages } from "../../hooks";
-import { Package } from "../../types";
+import { InstancePackage } from "../../types";
 import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
 import classes from "./PackageDropdownSearch.module.scss";
 
 interface PackageDropdownSearchProps {
-  selectedItems: Package[];
-  setSelectedItems: (items: Package[]) => void;
+  selectedItems: InstancePackage[];
+  setSelectedItems: (items: InstancePackage[]) => void;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
@@ -47,7 +47,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
   const packageData = packageDataRes?.data?.results ?? [];
 
-  const getAvailablePackageSuggestions = (item: Package): boolean => {
+  const getAvailablePackageSuggestions = (item: InstancePackage): boolean => {
     return !selectedItems.map((item) => item.name).includes(item.name);
   };
 
@@ -89,12 +89,12 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
     }
   }, DEBOUNCE_DELAY);
 
-  const handleAddToSelectedItems = (item: Package) => {
+  const handleAddToSelectedItems = (item: InstancePackage) => {
     setSelectedItems([...selectedItems, item]);
     handleClearSearch();
   };
 
-  const handleSelectItem = (item: Package | null) => {
+  const handleSelectItem = (item: InstancePackage | null) => {
     if (!item) {
       return;
     }
@@ -159,7 +159,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                 {isFetching ? (
                   <LoadingState />
                 ) : (
-                  suggestions.map((item: Package, index: number) => (
+                  suggestions.map((item: InstancePackage, index: number) => (
                     <li
                       className={classNames("p-list__item", classes.pointer, {
                         [classes.highlighted]: highlightedIndex === index,

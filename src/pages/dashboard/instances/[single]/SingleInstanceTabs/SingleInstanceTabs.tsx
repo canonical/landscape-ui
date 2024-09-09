@@ -91,7 +91,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
             <ActivityPanel instanceId={instance.id} />
           )}
           {"tab-link-security-issues" === currentTabLinkId && (
-            <SecurityIssuesPanel instanceTitle={instance.title} />
+            <SecurityIssuesPanel instance={instance} />
           )}
           {"tab-link-packages" === currentTabLinkId && <PackagesPanel />}
           {"tab-link-snaps" === currentTabLinkId && <SnapsPanel />}
