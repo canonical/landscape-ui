@@ -2,9 +2,9 @@ name: Run tests
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [main, dev]
   pull_request:
-    branches: [ main, dev ]
+    branches: [main, dev]
 
 env:
   VITE_API_URL: http://207.154.219.68:9091/api/v2/
