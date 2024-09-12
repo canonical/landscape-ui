@@ -53,12 +53,17 @@ interface GetAuthStateParams {
   state: string;
 }
 
-interface GetAuthStateResponse extends AuthUser {
+export interface AuthStateResponse extends AuthUser {
   return_to?: string;
 }
 
-interface GetUbuntuOneUrlParams {
+export interface GetUbuntuOneUrlParams {
   return_to?: string;
+}
+
+interface GetUbuntuOneStateParams {
+  client_id: string;
+  url: string;
 }
 
 export default function useIdentityProviders() {
@@ -145,10 +150,10 @@ export default function useIdentityProviders() {
     });
 
   const getAuthStateQuery: QueryFnTypeWithRequiredParam<
-    AxiosResponse<GetAuthStateResponse>,
+    AxiosResponse<AuthStateResponse>,
     GetAuthStateParams
   > = (queryParams, config = {}) =>
-    useQuery<AxiosResponse<GetAuthStateResponse>, AxiosError<ApiError>>({
+    useQuery<AxiosResponse<AuthStateResponse>, AxiosError<ApiError>>({
       queryKey: ["authUser"],
       queryFn: () =>
         authFetch!.get("/auth/handle-code", { params: queryParams }),
@@ -166,6 +171,17 @@ export default function useIdentityProviders() {
       ...config,
     });
 
+  const getUbuntuOneStateQuery: QueryFnTypeWithRequiredParam<
+    AxiosResponse<AuthStateResponse>,
+    GetUbuntuOneStateParams
+  > = (queryParams, config = {}) =>
+    useQuery<AxiosResponse<AuthStateResponse>, AxiosError<ApiError>>({
+      queryKey: ["authUser"],
+      queryFn: () =>
+        authFetch!.get("/auth/ubuntu-one/complete", { params: queryParams }),
+      ...config,
+    });
+
   return {
     addProviderQuery,
     getSupportedProvidersQuery,
@@ -176,5 +192,6 @@ export default function useIdentityProviders() {
     getAuthUrlQuery,
     getAuthStateQuery,
     getUbuntuOneUrlQuery,
+    getUbuntuOneStateQuery,
   };
 }

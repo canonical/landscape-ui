@@ -3,7 +3,11 @@ import { useSearchParams } from "react-router-dom";
 import { Button, Icon } from "@canonical/react-components";
 import { IdentityProvider } from "@/features/identity-providers";
 import { SUPPORTED_PROVIDERS } from "../../constants";
-import { GetAuthUrlParams, useIdentityProviders } from "../../hooks";
+import {
+  GetAuthUrlParams,
+  GetUbuntuOneUrlParams,
+  useIdentityProviders,
+} from "../../hooks";
 import classes from "./AvailableProviderList.module.scss";
 
 interface AvailableProviderListProps {
@@ -39,8 +43,14 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
       : (window.location.href = getAuthUrlQueryResult.data.location);
   }
 
+  const ubuntuOneParams: GetUbuntuOneUrlParams = {};
+
+  if (redirectTo) {
+    ubuntuOneParams.return_to = redirectTo;
+  }
+
   const { data: getUbuntuOneUrlQueryResult } = getUbuntuOneUrlQuery(
-    { return_to: redirectTo ?? `http://localhost:5173/overview` },
+    ubuntuOneParams,
     { enabled: providerId === -1 },
   );
 

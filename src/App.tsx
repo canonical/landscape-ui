@@ -17,7 +17,8 @@ import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
 import DashboardPage from "@/pages/dashboard";
 
-const AuthHandle = lazy(() => import("@/pages/auth/handle"));
+const OidcAuthPage = lazy(() => import("@/pages/auth/handle/oidc"));
+const UbuntuOneAuthPage = lazy(() => import("@/pages/auth/handle/ubuntu-one"));
 const EnvError = lazy(() => import("@/pages/EnvError"));
 const PageNotFound = lazy(() => import("@/pages/PageNotFound"));
 const LoginPage = lazy(() => import("@/pages/auth/login"));
@@ -251,7 +252,14 @@ const App: FC = () => {
             }
           >
             <Route path={`${ROOT_PATH}login`} element={<LoginPage />} />
-            <Route path={`${ROOT_PATH}handle-auth`} element={<AuthHandle />} />
+            <Route
+              path={`${ROOT_PATH}handle-auth/oidc`}
+              element={<OidcAuthPage />}
+            />
+            <Route
+              path={`${ROOT_PATH}handle-auth/ubuntu-one`}
+              element={<UbuntuOneAuthPage />}
+            />
           </Route>
           <Route
             path={`${ROOT_PATH}*`}
