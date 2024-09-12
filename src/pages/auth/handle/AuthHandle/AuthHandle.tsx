@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useIdentityProviders } from "@/features/identity-providers";
 import useAuth from "@/hooks/useAuth";
 import { ROOT_PATH } from "@/constants";
-import LoadingState from "@/components/layout/LoadingState";
 import classes from "./AuthHandle.module.scss";
 import { Button } from "@canonical/react-components";
 
@@ -54,13 +53,16 @@ const AuthHandle: FC = () => {
     state && (
       <div className={classes.container}>
         {getAuthStateQueryLoading && (
-          <div>
-            <LoadingState />
+          <div className="u-align-text--center">
+            <span role="status" style={{ marginRight: "1rem" }}>
+              <span className="u-off-screen">Loading...</span>
+              <i className="p-icon--spinner u-animation--spin" aria-hidden />
+            </span>
             <span>Please wait while your request is being processed...</span>
           </div>
         )}
         {getAuthStateQueryError && (
-          <div className="u-align--center">
+          <div>
             <p>
               Oops! Something went wrong. Please try again or contact our
               support team.
