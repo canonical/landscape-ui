@@ -54,4 +54,4 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run tests
-        run: npx vitest
+        run: npx --max_old_space_size=4048 --max-heap-size=100000 vitest
