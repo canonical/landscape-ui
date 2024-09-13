@@ -26,7 +26,7 @@ export default defineConfig({
     testTimeout: 30000,
     coverage: {
       provider: "v8",
-      reporter: ["cobertura", "json-summary"],
+      reporter: ["cobertura", "json-summary", "html"],
       reportOnFailure: true,
       exclude: [
         "**/tests/**",
