@@ -15,15 +15,7 @@ export default [
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus === "error") {
-        return HttpResponse.json(
-          {
-            error: "InternalServerError",
-            message: "Error response",
-          },
-          {
-            status: 500,
-          },
-        );
+        throw new HttpResponse(null, { status: 500 });
       }
 
       const url = new URL(request.url);

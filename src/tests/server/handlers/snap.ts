@@ -96,15 +96,7 @@ export default [
       const limit = Number(url.searchParams.get("limit")) ?? 20;
 
       if (endpointStatus === "error") {
-        return HttpResponse.json(
-          {
-            error: "InternalServerError",
-            message: "Error response",
-          },
-          {
-            status: 500,
-          },
-        );
+        throw new HttpResponse(null, { status: 500 });
       }
 
       return HttpResponse.json(
