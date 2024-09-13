@@ -6,7 +6,7 @@ import { tags } from "@/tests/mocks/tag";
 
 export default [
   // @ts-ignore-next-line
-  http.get<never, never, ApiPaginatedResponse<string[]>>(
+  http.get<never, never, ApiPaginatedResponse<string>>(
     `${API_URL}tags`,
     // @ts-ignore-next-line
     () => {
