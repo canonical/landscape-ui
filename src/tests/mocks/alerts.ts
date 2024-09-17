@@ -176,4 +176,10 @@ export const alertsSummary: AlertSummary[] = [
     summary: "2 activities need approving",
     activation_time: "2024-06-22 15:05:07.711100",
   },
+  {
+    id: 13,
+    alert_type: "ChildInstanceProfileAlert",
+    summary: "1 noncompliant child instance profile",
+    activation_time: "2024-06-22 15:05:07.711100",
+  },
 ];

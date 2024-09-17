@@ -174,6 +174,7 @@ const alertTypes = [
   "ComputerRebootAlert",
   "ComputerDuplicateAlert",
   "UnapprovedActivitiesAlert",
+  "ChildInstanceProfileAlert",
 ];
 
 type FilterKey = "os" | "groupBy" | "status";

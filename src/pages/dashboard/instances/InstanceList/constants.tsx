@@ -114,6 +114,14 @@ export const STATUSES: { [keyof: string]: Status } = {
     query: "",
     icon: { gray: "pause", color: "pause-color" },
   },
+  ChildInstanceProfileAlert: {
+    alertType: "ChildInstanceProfileAlert",
+    label: "Child instance profiles",
+    alternateLabel: "Child instance profiles",
+    filterValue: "child-instance-profiles",
+    query: "alert:child-instance-profiles",
+    icon: { gray: "machines" },
+  },
   Unknown: {
     alertType: "",
     label: "-",
