@@ -71,7 +71,7 @@ const UserPanel: FC = () => {
             ]}
           />
         )}
-      {(search || (!isLoading && filteredUsers.length)) && (
+      {(search || (!isLoading && filteredUsers.length > 0)) && (
         <>
           <UserPanelHeader
             selected={selected}
