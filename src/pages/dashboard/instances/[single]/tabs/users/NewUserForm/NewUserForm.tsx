@@ -28,7 +28,7 @@ const NewUserForm: FC = () => {
 
   const instanceId = Number(urlInstanceId);
 
-  const { mutateAsync, isLoading } = createUserQuery;
+  const { mutateAsync } = createUserQuery;
   const { data, isLoading: isLoadingGroups } = getGroupsQuery({
     computer_id: instanceId,
   });
@@ -182,7 +182,7 @@ const NewUserForm: FC = () => {
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={isLoading}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add user"
       />
     </Form>

@@ -2,11 +2,11 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .highlighter {
-  border-width: 1px;
+  border-left-color: $colors--light-theme--border-default;
+  border-right-color: $colors--light-theme--border-default;
   border-style: solid;
   border-top-color: $colors--light-theme--border-default;
-  border-right-color: $colors--light-theme--border-default;
-  border-left-color: $colors--light-theme--border-default;
+  border-width: 1px;
   margin-bottom: $input-margin-bottom;
 
   &.error {

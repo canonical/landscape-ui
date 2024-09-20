@@ -6,9 +6,9 @@
 }
 
 .suggestionsContainer {
+  max-height: 20rem;
   position: absolute;
   width: 100%;
-  max-height: 20rem;
   z-index: 100;
 }
 
@@ -22,9 +22,9 @@
 }
 
 .selectedContainer {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
   background-color: $color-light;
+  display: flex;
+  justify-content: space-between;
   margin-top: $spv--medium;
 }

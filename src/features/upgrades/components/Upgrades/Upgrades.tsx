@@ -41,16 +41,18 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
 
   const handleSubmit = async (values: UpgradesFormProps) => {
     try {
-      activeTabLinkId === "tab-link-usns"
-        ? await upgradeUsns({
-            computers: instancesWithUsn.map(({ id }) => ({
-              id,
-              exclude_usns: values.excludedUsns,
-            })),
-          })
-        : await upgradeInstancesPackages({
-            computers: values.excludedPackages,
-          });
+      if (activeTabLinkId === "tab-link-usns") {
+        await upgradeUsns({
+          computers: instancesWithUsn.map(({ id }) => ({
+            id,
+            exclude_usns: values.excludedUsns,
+          })),
+        });
+      } else {
+        await upgradeInstancesPackages({
+          computers: values.excludedPackages,
+        });
+      }
 
       closeSidePanel();
 

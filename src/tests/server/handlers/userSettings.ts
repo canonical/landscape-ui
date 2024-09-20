@@ -1,9 +1,8 @@
 import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { HttpResponse, http } from "msw";
+import { http, HttpResponse } from "msw";
 
 export default [
-  // @ts-ignore-next-line
   http.post(`${API_URL}person`, async () => {
     const endpointStatus = getEndpointStatus();
     if (endpointStatus === "error") {

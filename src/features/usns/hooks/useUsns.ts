@@ -90,8 +90,8 @@ export default function useUsns() {
       authFetch!.post(`/computers/${instanceId}/usns/upgrade-packages`, params),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["usns"]),
-        queryClient.invalidateQueries(["activities"]),
+        queryClient.invalidateQueries({ queryKey: ["usns"] }),
+        queryClient.invalidateQueries({ queryKey: ["activities"] }),
       ]),
   });
 
@@ -104,8 +104,8 @@ export default function useUsns() {
       authFetch!.post(`/computers/${instanceId}/usns/remove-packages`, params),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["usns"]),
-        queryClient.invalidateQueries(["activities"]),
+        queryClient.invalidateQueries({ queryKey: ["usns"] }),
+        queryClient.invalidateQueries({ queryKey: ["activities"] }),
       ]),
   });
 
@@ -118,8 +118,8 @@ export default function useUsns() {
       authFetch!.post("/computers/usns/upgrade-packages", params),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["usns"]),
-        queryClient.invalidateQueries(["activities"]),
+        queryClient.invalidateQueries({ queryKey: ["usns"] }),
+        queryClient.invalidateQueries({ queryKey: ["activities"] }),
       ]),
   });
 

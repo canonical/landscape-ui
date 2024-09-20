@@ -106,7 +106,7 @@ export default function useScripts() {
   >({
     mutationKey: ["scripts", "remove"],
     mutationFn: (params) => authFetchOld!.get("RemoveScript", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["scripts"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
   const createScriptQuery = useMutation<
@@ -116,7 +116,7 @@ export default function useScripts() {
   >({
     mutationKey: ["scripts", "create"],
     mutationFn: (params) => authFetchOld!.get("CreateScript", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["scripts"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
   const editScriptQuery = useMutation<
@@ -126,7 +126,7 @@ export default function useScripts() {
   >({
     mutationKey: ["scripts", "edit"],
     mutationFn: (params) => authFetchOld!.get("EditScript", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["scripts"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
   const copyScriptQuery = useMutation<
@@ -136,7 +136,7 @@ export default function useScripts() {
   >({
     mutationKey: ["scripts", "copy"],
     mutationFn: (params) => authFetchOld!.get("CopyScript", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["scripts"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
   const removeScriptAttachmentQuery = useMutation<
@@ -147,7 +147,7 @@ export default function useScripts() {
     mutationKey: ["scripts", "removeAttachment"],
     mutationFn: (params) =>
       authFetchOld!.get("RemoveScriptAttachment", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["scripts"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
   const createScriptAttachmentQuery = useMutation<
@@ -158,7 +158,7 @@ export default function useScripts() {
     mutationKey: ["scripts", "createAttachment"],
     mutationFn: (params) =>
       authFetchOld!.get("CreateScriptAttachment", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["scripts"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
   return {

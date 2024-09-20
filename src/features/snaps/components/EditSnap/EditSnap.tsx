@@ -32,7 +32,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
   const { snapsActionQuery, getAvailableSnapInfo } = useSnaps();
 
   const instanceId = Number(urlInstanceId);
-  const { mutateAsync: snapsActionMutation, isLoading } = snapsActionQuery;
+  const { mutateAsync: snapsActionMutation } = snapsActionQuery;
   const { data: snapInfoData } = getAvailableSnapInfo(
     {
       instance_id: instanceId,
@@ -281,7 +281,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
         submitButtonAppearance={
           type === EditSnapType.Uninstall ? "negative" : "positive"
         }
-        submitButtonDisabled={isLoading}
+        submitButtonDisabled={formik.isSubmitting}
       />
     </Form>
   );

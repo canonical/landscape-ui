@@ -5,18 +5,12 @@ import useUserDetails from "@/hooks/useUserDetails";
 import distributionCardClasses from "@/pages/dashboard/repositories/mirrors/DistributionCard.module.scss";
 import seriesCardClasses from "@/pages/dashboard/repositories/mirrors/SeriesCard.module.scss";
 import { Credential, UserDetails } from "@/types/UserDetails";
-import {
-  Button,
-  Col,
-  ModularTable,
-  Row,
-  Spinner,
-} from "@canonical/react-components";
+import { Button, Col, ModularTable, Row } from "@canonical/react-components";
 import classNames from "classnames";
 import React, { FC, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classes from "./ApiCredentialsTables.module.scss";
-import { Column } from "react-table";
+import { Column } from "@canonical/react-components/node_modules/@types/react-table";
 import { NOT_AVAILABLE } from "@/constants";
 
 interface ApiCredentialsTablesProps {
@@ -33,10 +27,7 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
   const debug = useDebug();
   const { generateApiCredentials } = useUserDetails();
 
-  const {
-    mutateAsync: mutateGenerateApiCredentials,
-    isLoading: isLoadingCredentials,
-  } = generateApiCredentials;
+  const { mutateAsync: mutateGenerateApiCredentials } = generateApiCredentials;
 
   const handleGenerateKeysMutation = async (accountName: string) => {
     try {
@@ -74,7 +65,6 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
           onClick={() => handleGenerateKeysMutation(accountName)}
           aria-label={`${action} API credentials confirmation for ${accountTitle}`}
         >
-          {isLoadingCredentials && <Spinner />}
           {action} API credentials
         </Button>,
       ],

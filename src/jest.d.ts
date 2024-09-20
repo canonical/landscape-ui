@@ -7,6 +7,6 @@ declare namespace jest {
     toBeOffScreen(): R;
     toHaveTexts: (texts: string[]) => R;
     toHaveInputValues: (values: string[]) => R;
-    toHaveInfoItem: (label: string, value: string | Object) => R;
+    toHaveInfoItem: (label: string, value: string | object) => R;
   }
 }

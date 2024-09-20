@@ -17,8 +17,7 @@ const NewDistributionForm: FC = () => {
 
   const { createDistributionQuery, getDistributionsQuery } = useDistributions();
   const { getAccessGroupQuery } = useRoles();
-  const { mutateAsync: createDistribution, isLoading: isCreatingDistribution } =
-    createDistributionQuery;
+  const { mutateAsync: createDistribution } = createDistributionQuery;
   const { data: getAccessGroupResponse } = getAccessGroupQuery();
 
   const accessGroupsOptions: SelectOption[] = (
@@ -95,7 +94,7 @@ const NewDistributionForm: FC = () => {
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={isCreatingDistribution}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add distribution"
       />
     </Form>

@@ -8,7 +8,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
-import useDebug from "./useDebug";
 import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
 
@@ -60,7 +59,6 @@ export default function useAlerts(): UseAlertsResult {
   const queryClient = useQueryClient();
   const authFetch = useFetch();
   const authFetchOld = useFetchOld();
-  const debug = useDebug();
 
   const getAlertsQuery: QueryFnType<AxiosResponse<Alert[]>, undefined> = () =>
     useQuery<AxiosResponse<Alert[]>, AxiosError<ApiError>>({
@@ -84,9 +82,7 @@ export default function useAlerts(): UseAlertsResult {
   >({
     mutationKey: ["alert", "subscribe"],
     mutationFn: (params) => authFetchOld!.get("SubscribeToAlert", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["alert"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
   const unsubscribeQuery = useMutation<
@@ -97,9 +93,7 @@ export default function useAlerts(): UseAlertsResult {
     mutationKey: ["alert", "unsubscribe"],
     mutationFn: (params) =>
       authFetchOld!.get("UnsubscribeFromAlert", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["alert"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
   const associateAlert = useMutation<
@@ -109,9 +103,7 @@ export default function useAlerts(): UseAlertsResult {
   >({
     mutationKey: ["alert", "associate"],
     mutationFn: (params) => authFetchOld!.get("AssociateAlert", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["alert"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
   const disassociateAlert = useMutation<
@@ -121,9 +113,7 @@ export default function useAlerts(): UseAlertsResult {
   >({
     mutationKey: ["alert", "disassociate"],
     mutationFn: (params) => authFetchOld!.get("DisassociateAlert", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["alert"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
   return {

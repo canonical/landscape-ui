@@ -1,5 +1,10 @@
 import { EventLog } from "@/types/EventLogs";
-import { Cell, Row, TableCellProps, TableRowProps } from "react-table";
+import {
+  Cell,
+  Row,
+  TableCellProps,
+  TableRowProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 
 import { HTMLProps } from "react";
 import classes from "./EventsLogList.module.scss";

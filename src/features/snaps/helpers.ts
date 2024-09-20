@@ -13,7 +13,12 @@ export const getSnapUpgradeCounts = (
 ): { held: number; unheld: number } => {
   return snaps.reduce(
     (counts, snap) => {
-      snap.held_until !== null ? counts.held++ : counts.unheld++;
+      if (snap.held_until !== null) {
+        counts.held++;
+      } else {
+        counts.unheld++;
+      }
+
       return counts;
     },
     { held: 0, unheld: 0 },

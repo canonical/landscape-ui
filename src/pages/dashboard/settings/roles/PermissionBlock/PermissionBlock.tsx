@@ -1,6 +1,9 @@
 import { FC, useMemo } from "react";
 import { PermissionOption } from "@/pages/dashboard/settings/roles/types";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import classes from "./PermissionBlock.module.scss";
 

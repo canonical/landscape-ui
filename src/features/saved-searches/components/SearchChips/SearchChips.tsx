@@ -21,9 +21,8 @@ const SearchChips: FC<SearchChipsProps> = ({
       return;
     }
 
-    // eslint-disable-next-line no-undef
-    const spans: NodeListOf<HTMLSpanElement> =
-      containerRef.current.querySelectorAll(`span.p-chip`);
+    const spans =
+      containerRef.current.querySelectorAll<HTMLSpanElement>(`span.p-chip`);
 
     onOverflowingItemsAmountChange(
       Array.from(spans).filter(

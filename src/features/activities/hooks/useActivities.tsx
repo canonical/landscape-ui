@@ -77,10 +77,10 @@ export default function useActivities() {
     });
   };
 
-  const getActivityTypesQuery: QueryFnType<AxiosResponse<string[]>, {}> = (
-    queryParams = {},
-    config = {},
-  ) => {
+  const getActivityTypesQuery: QueryFnType<
+    AxiosResponse<string[]>,
+    Record<never, unknown>
+  > = (queryParams = {}, config = {}) => {
     return useQuery<AxiosResponse<string[]>, AxiosError<ApiError>>({
       queryKey: ["activityTypes"],
       queryFn: () =>
@@ -96,7 +96,8 @@ export default function useActivities() {
   >({
     mutationKey: ["activities", "cancel"],
     mutationFn: (params) => authFetchOld!.get("CancelActivities", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["activities"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
 
   const approveActivitiesQuery = useMutation<
@@ -106,7 +107,8 @@ export default function useActivities() {
   >({
     mutationKey: ["activities", "approve"],
     mutationFn: (params) => authFetchOld!.get("ApproveActivities", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["activities"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
 
   const redoActivitiesQuery = useMutation<
@@ -115,7 +117,8 @@ export default function useActivities() {
     RedoUndoActivitiesParams
   >({
     mutationFn: (params) => authFetch!.post("activities/reapply", params),
-    onSuccess: () => queryClient.invalidateQueries(["activities"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
 
   const undoActivitiesQuery = useMutation<
@@ -124,7 +127,8 @@ export default function useActivities() {
     RedoUndoActivitiesParams
   >({
     mutationFn: (params) => authFetch!.post("activities/revert", params),
-    onSuccess: () => queryClient.invalidateQueries(["activities"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
 
   const openActivityDetails = (activity: ActivityCommon) => {

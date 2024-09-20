@@ -18,7 +18,10 @@ import classNames from "classnames";
 import moment from "moment";
 import { FC, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import classes from "./InfoTablesContainer.module.scss";
 import { Usn } from "@/types/Usn";
 import useNotify from "@/hooks/useNotify";
@@ -26,9 +29,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { Instance } from "@/types/Instance";
 import NoData from "@/components/layout/NoData";
 
-interface InfoTablesContainerProps {}
-
-const InfoTablesContainer: FC<InfoTablesContainerProps> = () => {
+const InfoTablesContainer: FC = () => {
   const [currentUpgradesTab, setCurrentUpgradesTab] = useState(0);
   const [currentActivitiesTab, setCurrentActivitiesTab] = useState(0);
 

@@ -1,7 +1,10 @@
 import classNames from "classnames";
 import { FormikContextType } from "formik";
 import { HTMLProps } from "react";
-import { Cell, TableCellProps } from "react-table";
+import {
+  Cell,
+  TableCellProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { Constraint } from "../../types";
 import classes from "./PackageProfileConstraintsEditFormTable.module.scss";
 

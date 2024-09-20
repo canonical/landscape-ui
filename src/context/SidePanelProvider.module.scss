@@ -15,9 +15,9 @@
 }
 
 .outerDiv {
+  display: flex;
   flex-grow: 1;
   overflow: visible !important;
-  display: flex;
 }
 
 .innerDiv {

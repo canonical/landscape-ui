@@ -2,8 +2,8 @@
 
 .container {
   align-items: flex-end;
-  display: flex;
   column-gap: $sph--x-large;
+  display: flex;
 }
 
 .search {
@@ -12,6 +12,6 @@
 }
 
 .noShrink {
-  flex-shrink: 0;
   flex-grow: 1;
+  flex-shrink: 0;
 }

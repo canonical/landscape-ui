@@ -1,6 +1,9 @@
 import { FormikContextType, FormikTouched } from "formik";
 import { FC, useEffect, useMemo } from "react";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import {
   Button,
   Icon,

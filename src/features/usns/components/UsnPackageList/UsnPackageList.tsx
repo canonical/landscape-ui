@@ -1,5 +1,5 @@
 import { FC, useMemo } from "react";
-import { Column } from "react-table";
+import { Column } from "@canonical/react-components/node_modules/@types/react-table";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import { UsnPackage } from "@/types/Usn";
 import UsnPackagesRemoveButton from "../UsnPackagesRemoveButton";

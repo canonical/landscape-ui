@@ -30,7 +30,8 @@
 .helpButton {
   display: block;
   height: calc(
-    (2 * $spv-nudge + map-get($line-heights, default-text)) -
+    /* stylelint-disable-next-line */
+      (2 * $spv-nudge + map-get($line-heights, default-text)) -
       (2 * $bar-thickness)
   );
   margin-bottom: 0;

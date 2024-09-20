@@ -40,9 +40,11 @@ const ActivityConfirmation: FC<ActivityConfirmationProps> = ({
     };
 
     try {
-      action === "reboot"
-        ? await rebootInstances(valuesToSubmit)
-        : await shutdownInstances(valuesToSubmit);
+      if (action === "reboot") {
+        await rebootInstances(valuesToSubmit);
+      } else {
+        await shutdownInstances(valuesToSubmit);
+      }
     } catch (error) {
       debug(error);
     } finally {

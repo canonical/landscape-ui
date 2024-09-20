@@ -8,8 +8,7 @@ import { EventLog } from "@/types/EventLogs";
 import { GetEventsLogParams } from "@/hooks/useEventLogs";
 
 export default [
-  // @ts-ignore-next-line
-  http.get<GetEventsLogParams, never, ApiPaginatedResponse<EventLog>>(
+  http.get<never, GetEventsLogParams, ApiPaginatedResponse<EventLog>>(
     `${API_URL}events`,
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
@@ -19,8 +18,8 @@ export default [
       }
 
       const url = new URL(request.url);
-      const offset = Number(url.searchParams.get("offset")) ?? 0;
-      const limit = Number(url.searchParams.get("limit")) ?? 1;
+      const offset = Number(url.searchParams.get("offset")) || 0;
+      const limit = Number(url.searchParams.get("limit")) || 1;
       const search = url.searchParams.get("search") ?? "";
 
       return HttpResponse.json(

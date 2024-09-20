@@ -1,13 +1,13 @@
 @import "vanilla-framework/scss/patterns_lists";
 
 .buttons {
-  position: sticky;
+  background-color: $color-x-light;
+  border-top: 1px solid $colors--light-theme--border-default;
+  bottom: 0;
   margin-bottom: -3 * $sp-unit;
   margin-top: $spv--x-large;
   padding-bottom: $spv--x-large;
-  bottom: 0;
   padding-top: $spv--x-large;
-  background-color: $color-x-light;
-  border-top: 1px solid $colors--light-theme--border-default;
+  position: sticky;
   text-align: right;
 }

@@ -1,8 +1,8 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .selectContainer {
-  display: flex;
   column-gap: $sph--large;
+  display: flex;
 }
 
 .actions {

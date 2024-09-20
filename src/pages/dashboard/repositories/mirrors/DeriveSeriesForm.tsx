@@ -26,7 +26,7 @@ const DeriveSeriesForm: FC<DeriveSeriesProps> = ({ distribution, origin }) => {
   const { closeSidePanel } = useSidePanel();
 
   const { deriveSeriesQuery } = useSeries();
-  const { mutateAsync: deriveSeries, isLoading } = deriveSeriesQuery;
+  const { mutateAsync: deriveSeries } = deriveSeriesQuery;
 
   const validationSchema = Yup.object().shape({
     origin: Yup.string().required("This field is required"),
@@ -86,7 +86,7 @@ const DeriveSeriesForm: FC<DeriveSeriesProps> = ({ distribution, origin }) => {
       <p className="u-text--muted">{`You are deriving ${distribution.name}/${origin}.`}</p>
 
       <SidePanelFormButtons
-        submitButtonDisabled={isLoading}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Derive series"
       />
     </form>

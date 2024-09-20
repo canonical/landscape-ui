@@ -2,8 +2,8 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .container {
-  margin-top: $sp-large;
   gap: $sp-large;
+  margin-top: $sp-large;
 }
 
 .tableContainer {
@@ -12,9 +12,9 @@
 }
 
 .footer {
-  padding-top: $sp-medium;
-  display: flex;
   align-self: flex-end;
+  display: flex;
+  padding-top: $sp-medium;
 }
 
 .lastCol {
@@ -32,8 +32,8 @@
 }
 
 .tableHeader {
-  display: flex;
   align-items: center;
+  display: flex;
   justify-content: space-between;
 }
 

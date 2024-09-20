@@ -1,10 +1,10 @@
-@import "../../../../../node_modules/vanilla-framework/scss/settings_colors";
-@import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
+@import "node_modules/vanilla-framework/scss/settings_colors";
+@import "node_modules/vanilla-framework/scss/settings_spacing";
 
 .footer {
   margin-bottom: $spv--small;
-  width: 100%;
   text-align: right;
+  width: 100%;
 }
 
 .multiSelect {
@@ -12,7 +12,7 @@
     :global(.multi-select__select-button) {
       border-bottom-width: 0;
 
-      &:not(:hover):not([aria-expanded="true"]) {
+      &:not(:hover, [aria-expanded="true"]) {
         background-color: $color-x-light;
       }
     }

@@ -15,7 +15,7 @@ export interface AvailableSnap {
 
 export interface AvailableSnapInfo extends AvailableSnap {
   "channel-map": ChannelMap[];
-  "default-track": any;
+  "default-track": unknown;
 }
 
 export interface SelectedSnaps extends AvailableSnap {

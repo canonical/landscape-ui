@@ -20,7 +20,7 @@ const ChangePasswordForm: FC = () => {
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { changePassword } = useUserDetails();
-  const { mutateAsync: changePasswordMutation, isLoading } = changePassword;
+  const { mutateAsync: changePasswordMutation } = changePassword;
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -133,7 +133,7 @@ const ChangePasswordForm: FC = () => {
         ))}
       </>
       <SidePanelFormButtons
-        submitButtonDisabled={isLoading}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

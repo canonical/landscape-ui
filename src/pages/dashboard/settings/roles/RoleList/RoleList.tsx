@@ -1,5 +1,8 @@
 import { FC, useMemo, useRef, useState } from "react";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { useOnClickOutside } from "usehooks-ts";
 import { ModularTable } from "@canonical/react-components";
 import TruncatedCell from "@/components/layout/TruncatedCell";

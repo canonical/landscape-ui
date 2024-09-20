@@ -4,8 +4,7 @@ import { GetRepoInfoParams, RepoInfo } from "@/hooks/useSeries";
 import { repoInfo } from "@/tests/mocks/repo";
 
 export default [
-  // @ts-ignore-next-line
-  http.get<GetRepoInfoParams, never, RepoInfo>(
+  http.get<never, GetRepoInfoParams, RepoInfo>(
     `${API_URL_OLD}GetRepoInfo`,
     () => {
       return HttpResponse.json(repoInfo);

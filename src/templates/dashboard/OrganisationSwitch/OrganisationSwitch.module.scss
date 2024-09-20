@@ -6,21 +6,23 @@
   padding-left: $sph--small !important;
 }
 
+.container {
+  opacity: 0;
+
+  :global(.l-navigation:not(.is-collapsed)) & {
+    opacity: 1;
+  }
+
+  @media screen and (min-width: $breakpoint-large) {
+    opacity: 1;
+  }
+}
+
 :global(.l-navigation) {
   &:hover,
   &:focus-within {
     .container {
       opacity: 1;
     }
-  }
-}
-
-.container {
-  opacity: 0;
-  :global(.l-navigation:not(.is-collapsed)) & {
-    opacity: 1;
-  }
-  @media screen and (min-width: $breakpoint-large) {
-    opacity: 1;
   }
 }

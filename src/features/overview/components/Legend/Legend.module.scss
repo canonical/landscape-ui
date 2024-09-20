@@ -3,11 +3,11 @@
 @import "vanilla-framework/scss/settings_breakpoints";
 
 .legendItem {
-  display: flex;
   align-items: center;
+  display: flex;
+  height: 100%;
   justify-content: space-between;
   width: 100%;
-  height: 100%;
 }
 
 .legendItem__icon {
@@ -15,8 +15,8 @@
 }
 
 .legendItem__label {
-  display: flex;
   align-items: center;
+  display: flex;
 }
 
 .link {
@@ -26,13 +26,14 @@
 }
 
 .container {
-  width: 100%;
-  height: 60%;
+  border-right: none;
   display: flex;
   flex-direction: column;
+  height: 60%;
   justify-content: center;
-  border-right: none;
   padding-right: 0;
+  width: 100%;
+
   @media (min-width: $breakpoint-large) {
     border-right: 1px solid $color-mid-light;
     padding-right: $sp-x-large;

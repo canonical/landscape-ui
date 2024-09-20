@@ -8,8 +8,7 @@ import { processes } from "@/tests/mocks/process";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
-  // @ts-ignore-next-line
-  http.get<GetProcessesParams, never, ApiPaginatedResponse<Process>>(
+  http.get<never, GetProcessesParams, ApiPaginatedResponse<Process>>(
     `${API_URL}computers/:instanceId/processes`,
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
@@ -19,8 +18,8 @@ export default [
       }
 
       const url = new URL(request.url);
-      const offset = Number(url.searchParams.get("offset")) ?? 0;
-      const limit = Number(url.searchParams.get("limit")) ?? 1;
+      const offset = Number(url.searchParams.get("offset")) || 0;
+      const limit = Number(url.searchParams.get("limit")) || 1;
       const search = url.searchParams.get("search") ?? "";
 
       return HttpResponse.json(

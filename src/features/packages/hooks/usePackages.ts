@@ -6,7 +6,6 @@ import {
   UseQueryOptions,
 } from "@tanstack/react-query";
 import { Activity } from "@/features/activities";
-import useDebug from "@/hooks/useDebug";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
 import { ApiError } from "@/types/ApiError";
@@ -80,7 +79,6 @@ export default function usePackages() {
   const queryClient = useQueryClient();
   const authFetchOld = useFetchOld();
   const authFetch = useFetch();
-  const debug = useDebug();
 
   const getPackagesQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<Package>>,
@@ -128,7 +126,7 @@ export default function usePackages() {
     UpgradePackagesParams
   >({
     mutationFn: (params) => authFetchOld!.get("UpgradePackages", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["packages"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["packages"] }),
   });
 
   const upgradeInstancesPackagesQuery = useMutation<
@@ -140,8 +138,8 @@ export default function usePackages() {
       authFetch!.post("/computers/upgrade-packages", params),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["packages"]),
-        queryClient.invalidateQueries(["instances"]),
+        queryClient.invalidateQueries({ queryKey: ["packages"] }),
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
       ]),
   });
 
@@ -174,9 +172,7 @@ export default function usePackages() {
   >({
     mutationFn: ({ instanceId, ...params }) =>
       authFetch!.post(`computers/${instanceId}/packages/installed`, params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["packages"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["packages"] }),
   });
 
   const packagesActionQuery = useMutation<
@@ -185,7 +181,7 @@ export default function usePackages() {
     PackagesActionParams
   >({
     mutationFn: (params) => authFetch!.post("packages", params),
-    onSuccess: () => queryClient.invalidateQueries(["packages"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["packages"] }),
   });
 
   return {

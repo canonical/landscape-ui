@@ -1,12 +1,11 @@
 import { FC, HTMLProps, useMemo } from "react";
-import { Cell, CellProps, Column, TableCellProps } from "react-table";
 import {
-  Button,
-  Icon,
-  ICONS,
-  ModularTable,
-  Spinner,
-} from "@canonical/react-components";
+  Cell,
+  CellProps,
+  Column,
+  TableCellProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
+import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
 import useAdministrators from "@/hooks/useAdministrators";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
@@ -34,8 +33,7 @@ const AdministratorList: FC<AdministratorListProps> = ({
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { disableAdministratorQuery } = useAdministrators();
 
-  const { mutateAsync: disableAdministrator, isLoading: isDisabling } =
-    disableAdministratorQuery;
+  const { mutateAsync: disableAdministrator } = disableAdministratorQuery;
 
   const administratorsData = useMemo(() => administrators, [administrators]);
 
@@ -70,7 +68,6 @@ const AdministratorList: FC<AdministratorListProps> = ({
           onClick={() => handleAdministratorDisabling(administrator.email)}
           aria-label={`Remove ${administrator.name}`}
         >
-          {isDisabling && <Spinner />}
           <span>Remove</span>
         </Button>,
       ],

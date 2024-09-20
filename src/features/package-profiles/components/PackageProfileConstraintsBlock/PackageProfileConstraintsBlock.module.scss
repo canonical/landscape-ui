@@ -2,14 +2,14 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .action {
-  width: $sp-x-large;
-  vertical-align: middle;
   text-align: center;
+  vertical-align: middle;
+  width: $sp-x-large;
 }
 
 .cell {
-  padding: 0;
   border: 1px solid $colors--light-theme--border-low-contrast;
+  padding: 0;
 
   &:first-child {
     border-left: 0;
@@ -24,7 +24,7 @@
   margin-bottom: 0;
 
   :global(.p-form-validation):not(:global(.is-error)) & {
-    &:not(:hover):not(:focus):not(:active) {
+    &:not(:hover, :focus, :active) {
       background-color: $color-x-light;
       border-bottom-color: $color-x-light;
     }

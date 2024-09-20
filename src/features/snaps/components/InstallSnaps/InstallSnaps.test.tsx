@@ -51,7 +51,7 @@ describe("InstallSnaps", () => {
       name: /install/i,
     });
 
-    expect(installButton).toBeDisabled();
+    expect(installButton).toHaveAttribute("aria-disabled", "true");
 
     await userEvent.type(searchBox, "Snap 2");
     const firstMatchingSnap = await screen.findByText("Snap 2");

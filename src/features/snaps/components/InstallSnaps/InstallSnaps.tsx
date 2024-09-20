@@ -19,7 +19,7 @@ const InstallSnaps: FC = () => {
   const { instanceId: urlInstanceId } = useParams();
 
   const instanceId = Number(urlInstanceId);
-  const { mutateAsync: installSnaps, isLoading: installSnapsLoading } =
+  const { mutateAsync: installSnaps, isPending: installSnapsLoading } =
     snapsActionQuery;
 
   const handleSubmit = async () => {

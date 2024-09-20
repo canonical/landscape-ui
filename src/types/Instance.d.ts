@@ -126,8 +126,6 @@ interface Usb {
   vendor: string;
 }
 
-interface VmInfo {}
-
 type HardwareDescription = [
   attribute: string,
   title: string,
@@ -200,7 +198,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   total_swap: number | null;
   ubuntu_pro_info: UbuntuProInfo | null;
   update_manager_prompt: string;
-  vm_info: VmInfo | null;
+  vm_info: string | null;
   annotations?: Record<string, string>;
   grouped_hardware?: GroupedHardware;
   hardware?: HardwareDescription[];
@@ -222,5 +220,5 @@ export interface PendingInstance extends Record<string, unknown> {
   hostname: string;
   id: number;
   title: string;
-  vm_info: VmInfo | null;
+  vm_info: string | null;
 }

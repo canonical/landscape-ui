@@ -1,28 +1,28 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .root {
-  min-height: 100vh;
-  display: flex;
   align-items: center;
-  justify-content: center;
+  background-color: $colors--light-theme--background-alt;
+  display: flex;
   flex-direction: column;
   gap: 1rem;
-  background-color: $colors--light-theme--background-alt;
+  justify-content: center;
+  min-height: 100vh;
   padding: 1rem;
 }
 
 .inner {
-  width: 500px;
+  background-color: $colors--light-theme--background-default;
+  border: 1px solid $color-mid-light;
   max-width: 100%;
   padding: 2rem;
-  border: 1px solid $color-mid-light;
-  background-color: $colors--light-theme--background-default;
+  width: 500px;
 }
 
 .title {
+  color: $color-x-dark;
   font-size: 1.75rem;
   font-weight: 400;
   line-height: 1;
-  color: $color-x-dark;
   margin-bottom: 1.25rem;
 }

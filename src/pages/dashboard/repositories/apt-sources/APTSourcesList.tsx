@@ -1,17 +1,14 @@
 import { FC, useMemo } from "react";
-import {
-  Button,
-  Icon,
-  ICONS,
-  ModularTable,
-  Spinner,
-} from "@canonical/react-components";
+import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
 import { APTSource } from "../../../../types/APTSource";
 import useConfirm from "../../../../hooks/useConfirm";
 import useDebug from "../../../../hooks/useDebug";
 import useAPTSources from "../../../../hooks/useAPTSources";
 import classes from "./APTSourcesList.module.scss";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 
 interface APTSourcesListProps {
   items: APTSource[];
@@ -22,8 +19,7 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
   const { removeAPTSourceQuery } = useAPTSources();
   const debug = useDebug();
 
-  const { mutateAsync: removeAPTSource, isLoading: isRemoving } =
-    removeAPTSourceQuery;
+  const { mutateAsync: removeAPTSource } = removeAPTSourceQuery;
 
   const columns = useMemo<Column<APTSource>[]>(
     () => [
@@ -71,7 +67,6 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
                     }}
                     aria-label={`Delete ${row.original.name} APT source`}
                   >
-                    {isRemoving && <Spinner />}
                     Delete
                   </Button>,
                 ],

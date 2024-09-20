@@ -1,6 +1,9 @@
 import classNames from "classnames";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { Button } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import {

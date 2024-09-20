@@ -8,12 +8,12 @@
 
 .expandButton {
   background-color: $color-transparent;
+  z-index: 0 !important;
 
   &[aria-expanded="true"] {
     background-color: inherit;
     font-weight: 550;
   }
-  z-index: 0 !important;
 }
 
 .hidden {
@@ -26,8 +26,8 @@
 
 .row,
 .expanded {
-  padding-top: 0;
   padding-bottom: 0;
+  padding-top: 0;
 }
 
 .expandedRow {

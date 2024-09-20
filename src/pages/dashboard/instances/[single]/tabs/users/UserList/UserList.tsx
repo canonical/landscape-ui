@@ -4,12 +4,15 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import { FC, Suspense, lazy, useMemo } from "react";
+import { FC, lazy, Suspense, useMemo } from "react";
 import { User } from "@/types/User";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./UserList.module.scss";
-import { Column, CellProps } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { handleCellProps } from "./helpers";
 import NoData from "@/components/layout/NoData";
 
@@ -52,9 +55,11 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
   };
 
   const handleSelectionChange = (uid: number) => {
-    selected.includes(uid)
-      ? setSelected(selected.filter((id) => id !== uid))
-      : setSelected([...selected, uid]);
+    if (selected.includes(uid)) {
+      setSelected(selected.filter((id) => id !== uid));
+    } else {
+      setSelected([...selected, uid]);
+    }
   };
 
   const columns = useMemo<Column<User>[]>(

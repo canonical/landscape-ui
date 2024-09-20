@@ -2,13 +2,13 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .top {
+  background-color: $color-x-light;
+  column-gap: $sph--x-large;
+  display: flex;
+  padding-bottom: $spv--large;
   position: sticky;
   top: 4.5rem;
-  background-color: $color-x-light;
   z-index: 1;
-  padding-bottom: $spv--large;
-  display: flex;
-  column-gap: $sph--x-large;
 }
 
 .select {
@@ -22,22 +22,22 @@
 }
 
 .widgets {
-  margin-top: auto;
-  position: sticky;
-  margin-bottom: -1.5rem;
-  padding-bottom: 1rem;
-  bottom: 0;
+  align-items: center;
   background-color: $color-x-light;
+  border-top: 1px solid $colors--light-theme--border-default;
+  bottom: 0;
+  column-gap: $sph--x-small;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  column-gap: $sph--x-small;
-  border-top: 1px solid $colors--light-theme--border-default;
+  margin-bottom: -1.5rem;
+  margin-top: auto;
+  padding-bottom: 1rem;
   padding-top: $spv--small;
+  position: sticky;
 
   &:not(:last-child) {
+    border-bottom: 1px solid $colors--light-theme--border-default;
     margin-bottom: $spv--large;
     padding-bottom: $spv--small;
-    border-bottom: 1px solid $colors--light-theme--border-default;
   }
 }

@@ -1,15 +1,9 @@
 import useFetchOld from "./useFetchOld";
-import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { Distribution } from "../types/Distribution";
-import useDebug from "./useDebug";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Distribution } from "@/types/Distribution";
 import { AxiosError, AxiosResponse } from "axios";
-import { QueryFnType } from "../types/QueryFnType";
-import { ApiError } from "../types/ApiError";
+import { QueryFnType } from "@/types/QueryFnType";
+import { ApiError } from "@/types/ApiError";
 
 interface GetDistributionsParams {
   names?: string[];
@@ -25,27 +19,9 @@ interface RemoveDistributionParams {
   name: string;
 }
 
-interface UseDistributionsResult {
-  getDistributionsQuery: QueryFnType<
-    AxiosResponse<Distribution[]>,
-    GetDistributionsParams
-  >;
-  createDistributionQuery: UseMutationResult<
-    AxiosResponse<Distribution>,
-    AxiosError<ApiError>,
-    CreateDistributionParams
-  >;
-  removeDistributionQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    RemoveDistributionParams
-  >;
-}
-
-export default function useDistributions(): UseDistributionsResult {
+export default function useDistributions() {
   const queryClient = useQueryClient();
   const authFetch = useFetchOld();
-  const debug = useDebug();
 
   const getDistributionsQuery: QueryFnType<
     AxiosResponse<Distribution[]>,
@@ -67,9 +43,8 @@ export default function useDistributions(): UseDistributionsResult {
   >({
     mutationKey: ["distributions", "new"],
     mutationFn: (params) => authFetch!.get("CreateDistribution", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["distributions"]).catch(debug);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
   const removeDistributionQuery = useMutation<
@@ -79,9 +54,8 @@ export default function useDistributions(): UseDistributionsResult {
   >({
     mutationKey: ["distributions", "remove"],
     mutationFn: (params) => authFetch!.get("RemoveDistribution", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["distributions"]).catch(debug);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
   return {

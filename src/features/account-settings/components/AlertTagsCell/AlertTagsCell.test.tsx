@@ -59,7 +59,7 @@ describe("AlertTagsCell", () => {
     expect(screen.getByRole("combobox").textContent).toBe(initialComboBoxLabel);
   });
 
-  it("disables Save and Revert buttons when no changes are made", () => {
+  it("disables Save and Revert buttons when no changes are made", async () => {
     renderWithProviders(
       <AlertTagsCell
         alert={mockAlert}
@@ -67,7 +67,12 @@ describe("AlertTagsCell", () => {
       />,
     );
 
-    expect(screen.getByText("Save changes")).toBeDisabled();
-    expect(screen.getByText("Revert")).toBeDisabled();
+    await userEvent.click(screen.getByRole("combobox"));
+
+    expect(screen.getByText("Save changes")).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    expect(screen.getByText("Revert")).toHaveAttribute("aria-disabled", "true");
   });
 });

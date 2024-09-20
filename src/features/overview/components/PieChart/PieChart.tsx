@@ -5,6 +5,7 @@ import { Pie } from "react-chartjs-2";
 import Legend from "../Legend";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./PieChart.module.scss";
+import { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
 
 Chart.register(...registerables);
 
@@ -13,13 +14,13 @@ interface PieChartProps {
 }
 
 const PieChart: React.FC<PieChartProps> = ({ data }) => {
-  const chartRef = useRef<any>();
+  const chartRef = useRef<ChartJSOrUndefined<"pie"> | null>();
   const [chartInstance, setChartInstance] = useState<Chart | null>(null);
   const [selectedArc, setSelectedArc] = useState<number | null>(null);
 
   useEffect(() => {
     if (chartRef.current) {
-      setChartInstance(chartRef.current);
+      setChartInstance(chartRef.current as Chart);
     }
   }, [chartRef.current]);
 

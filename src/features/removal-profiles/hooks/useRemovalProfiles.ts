@@ -32,7 +32,8 @@ export default function useRemovalProfiles() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("CreateRemovalProfile", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["removalProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
 
   const editRemovalProfileQuery = useMutation<
@@ -41,7 +42,8 @@ export default function useRemovalProfiles() {
     EditRemovalProfileParams
   >({
     mutationFn: (params) => authFetchOld!.get(`EditRemovalProfile`, { params }),
-    onSuccess: () => queryClient.invalidateQueries(["removalProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
 
   const removeRemovalProfileQuery = useMutation<
@@ -51,12 +53,13 @@ export default function useRemovalProfiles() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get(`RemoveRemovalProfile`, { params }),
-    onSuccess: () => queryClient.invalidateQueries(["removalProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
 
   const getRemovalProfilesQuery: QueryFnType<
     AxiosResponse<RemovalProfile[]>,
-    {}
+    Record<never, unknown>
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<RemovalProfile[]>, AxiosError<ApiError>>({
       queryKey: ["removalProfiles"],

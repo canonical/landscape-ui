@@ -4,7 +4,7 @@ import { wslInstanceNames } from "@/tests/mocks/wsl";
 import { http, HttpResponse } from "msw";
 
 export default [
-  // @ts-ignore-next-line
+  // @ts-expect-error-next-line
   http.get<undefined, never, WslInstanceName[]>(
     `${API_URL}wsl-instance-names`,
     () => {

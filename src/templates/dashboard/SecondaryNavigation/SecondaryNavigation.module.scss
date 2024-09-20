@@ -4,25 +4,23 @@
 @import "vanilla-framework/scss/layouts_application";
 
 .secondaryNavigation {
+  background-color: #373737 !important;
+  overflow-y: auto;
   transition-duration: 0.165s;
   transition-property: width, box-shadow, background;
   transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-  overflow-y: auto;
-  background-color: #373737 !important;
   width: 100%;
+
   @media (min-width: $breakpoint-small) {
     width: $application-layout--side-nav-width-expanded;
   }
 }
 
 .secondaryNavigation__drawer {
-  min-height: 100%;
-}
-
-.secondaryNavigation__drawer {
-  transform: none;
-  position: static;
   max-width: 100%;
+  min-height: 100%;
+  position: static;
+  transform: none;
 }
 
 .secondaryNavigation__title {

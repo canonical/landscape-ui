@@ -5,8 +5,7 @@ import { Preferences } from "@/types/Preferences";
 import { http, HttpResponse } from "msw";
 
 export default [
-  // @ts-ignore-next-line
-  http.get<undefined, never, Preferences>(`${API_URL}preferences`, () => {
+  http.get<never, never, Preferences>(`${API_URL}preferences`, () => {
     const endpointStatus = getEndpointStatus();
 
     if (endpointStatus === "error") {

@@ -133,13 +133,11 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
           >
             {timeErrors[0] && (
               <p className="p-form-validation__message" id="hour-error">
-                <strong>Error: </strong>
                 <span>{timeErrors[0]}</span>
               </p>
             )}
             {timeErrors[1] && (
               <p className="p-form-validation__message" id="minute-error">
-                <strong>Error: </strong>
                 <span>{timeErrors[1]}</span>
               </p>
             )}

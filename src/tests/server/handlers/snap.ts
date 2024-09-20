@@ -18,7 +18,6 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 export default [
   http.get(
     `${API_URL}computers/:computerId/snaps/available`,
-    // @ts-ignore-next-line
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
       const url = new URL(request.url);
@@ -42,7 +41,6 @@ export default [
 
   http.get(
     `${API_URL}computers/:computerId/snaps/:name/info`,
-    // @ts-ignore-next-line
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
       if (endpointStatus === "error") {
@@ -68,7 +66,6 @@ export default [
       );
     },
   ),
-  // @ts-ignore-next-line
   http.post(`${API_URL}snaps`, async () => {
     const endpointStatus = getEndpointStatus();
     if (endpointStatus === "error") {
@@ -85,15 +82,14 @@ export default [
     return HttpResponse.json(successfulSnapInstallResponse);
   }),
 
-  // @ts-ignore-next-line
-  http.get<GetSnapsParams, never, ApiPaginatedResponse<InstalledSnap>>(
+  http.get<never, GetSnapsParams, ApiPaginatedResponse<InstalledSnap>>(
     `${API_URL}computers/:computerId/snaps/installed`,
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
       const url = new URL(request.url);
       const search = url.searchParams.get("search") ?? "";
-      const offset = Number(url.searchParams.get("offset")) ?? 0;
-      const limit = Number(url.searchParams.get("limit")) ?? 20;
+      const offset = Number(url.searchParams.get("offset")) || 0;
+      const limit = Number(url.searchParams.get("limit")) || 20;
 
       if (endpointStatus === "error") {
         throw new HttpResponse(null, { status: 500 });

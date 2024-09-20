@@ -2,7 +2,11 @@ import classNames from "classnames";
 import moment from "moment";
 import { FC, ReactNode, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { CellProps, Column, Row } from "react-table";
+import {
+  CellProps,
+  Column,
+  Row,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import {
   CheckboxInput,
   Icon,
@@ -36,24 +40,28 @@ const InstanceList: FC<InstanceListProps> = ({
     if (groupBy === "parent" && row.original.children.length > 0) {
       const childrenIds = row.original.children.map(({ id }) => id);
 
-      selectedInstances.some(({ id }) => childrenIds.includes(id))
-        ? setSelectedInstances(
-            selectedInstances.filter(({ id }) => !childrenIds.includes(id)),
-          )
-        : setSelectedInstances([
-            ...selectedInstances,
-            ...row.original.children.map((child) => ({
-              ...child,
-              parent: row.original,
-              children: [],
-            })),
-          ]);
+      if (selectedInstances.some(({ id }) => childrenIds.includes(id))) {
+        setSelectedInstances(
+          selectedInstances.filter(({ id }) => !childrenIds.includes(id)),
+        );
+      } else {
+        setSelectedInstances([
+          ...selectedInstances,
+          ...row.original.children.map((child) => ({
+            ...child,
+            parent: row.original,
+            children: [],
+          })),
+        ]);
+      }
     } else {
-      selectedInstances.some(({ id }) => id === row.original.id)
-        ? setSelectedInstances(
-            selectedInstances.filter(({ id }) => id !== row.original.id),
-          )
-        : setSelectedInstances([...selectedInstances, row.original]);
+      if (selectedInstances.some(({ id }) => id === row.original.id)) {
+        setSelectedInstances(
+          selectedInstances.filter(({ id }) => id !== row.original.id),
+        );
+      } else {
+        setSelectedInstances([...selectedInstances, row.original]);
+      }
     }
   };
 

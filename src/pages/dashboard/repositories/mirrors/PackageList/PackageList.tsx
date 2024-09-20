@@ -1,6 +1,10 @@
 import classNames from "classnames";
 import { FC, lazy, Suspense, useMemo, useState } from "react";
-import { CellProps, Column, HeaderProps } from "react-table";
+import {
+  CellProps,
+  Column,
+  HeaderProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { useMediaQuery } from "usehooks-ts";
 import {
   Button,
@@ -66,9 +70,9 @@ const PackageList: FC<PackageListProps> = ({
     removePocketQuery,
   } = usePockets();
 
-  const { mutate: syncMirrorPocket, isLoading: isSynchronizingMirrorPocket } =
+  const { mutate: syncMirrorPocket, isPending: isSynchronizingMirrorPocket } =
     syncMirrorPocketQuery;
-  const { mutate: pullPackagesToPocket, isLoading: isPullingPackagesToPocket } =
+  const { mutate: pullPackagesToPocket, isPending: isPullingPackagesToPocket } =
     pullPackagesToPocketQuery;
 
   const handleSync = () => {
@@ -100,7 +104,7 @@ const PackageList: FC<PackageListProps> = ({
     );
   };
 
-  const { mutateAsync: removePocket, isLoading: isRemovingPocket } =
+  const { mutateAsync: removePocket, isPending: isRemovingPocket } =
     removePocketQuery;
 
   const handleRemovePocket = async () => {
@@ -139,7 +143,7 @@ const PackageList: FC<PackageListProps> = ({
 
   const {
     mutateAsync: removePackagesFromPocket,
-    isLoading: isRemovingPackagesFromPocket,
+    isPending: isRemovingPackagesFromPocket,
   } = removePackagesFromPocketQuery;
 
   const handleRemovePackages = async () => {

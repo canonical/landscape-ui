@@ -7,8 +7,7 @@ import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { generatePaginatedResponse } from "./_helpers";
 
 export default [
-  // @ts-ignore-next-line
-  http.get<GetPackagesParams, never, ApiPaginatedResponse<Package>>(
+  http.get<never, GetPackagesParams, ApiPaginatedResponse<Package>>(
     `${API_URL}packages`,
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
@@ -19,7 +18,7 @@ export default [
 
       const url = new URL(request.url);
       const limit = Number(url.searchParams.get("limit"));
-      const offset = Number(url.searchParams.get("offset")) ?? 0;
+      const offset = Number(url.searchParams.get("offset")) || 0;
 
       return HttpResponse.json(
         generatePaginatedResponse<Package>({
@@ -34,7 +33,7 @@ export default [
   http.get(`${API_URL}computers/:id/packages`, ({ params, request }) => {
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit"));
-    const offset = Number(url.searchParams.get("offset")) ?? 0;
+    const offset = Number(url.searchParams.get("offset")) || 0;
     const instanceId = Number(params.id);
 
     const instancePackages = getInstancePackages(instanceId);

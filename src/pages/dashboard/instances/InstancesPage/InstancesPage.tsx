@@ -33,11 +33,11 @@ const InstancesPage: FC = () => {
 
   const { rebootInstancesQuery, shutdownInstancesQuery } = useInstances();
 
-  const { mutateAsync: rebootInstances, isLoading: rebootInstancesLoading } =
+  const { mutateAsync: rebootInstances, isPending: rebootInstancesLoading } =
     rebootInstancesQuery;
   const {
     mutateAsync: shutdownInstances,
-    isLoading: shutdownInstancesLoading,
+    isPending: shutdownInstancesLoading,
   } = shutdownInstancesQuery;
 
   const handleRunScript = async () => {

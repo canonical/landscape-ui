@@ -1,6 +1,9 @@
 import { FC, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
 import { Instance, InstanceWithoutRelation } from "@/types/Instance";

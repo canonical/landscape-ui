@@ -20,6 +20,7 @@ export interface LoginRequestParams {
   password: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface LoginRequestResponse extends AuthUser {}
 
 interface FormProps {

@@ -1,6 +1,9 @@
 import classNames from "classnames";
 import { FC, useMemo } from "react";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import {
   Button,
   Icon,

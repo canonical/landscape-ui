@@ -18,7 +18,7 @@ const NewGPGKeyForm: FC = () => {
   const debug = useDebug();
   const { importGPGKeyQuery, getGPGKeysQuery } = useGPGKeys();
 
-  const { mutateAsync, isLoading } = importGPGKeyQuery;
+  const { mutateAsync } = importGPGKeyQuery;
 
   const { data: getGPGKeysResponse } = getGPGKeysQuery();
 
@@ -52,7 +52,7 @@ const NewGPGKeyForm: FC = () => {
         await mutateAsync(values);
 
         closeSidePanel();
-      } catch (error: any) {
+      } catch (error) {
         debug(error);
       }
     },
@@ -84,7 +84,7 @@ const NewGPGKeyForm: FC = () => {
         {...formik.getFieldProps("material")}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={isLoading}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Import key"
       />
     </Form>

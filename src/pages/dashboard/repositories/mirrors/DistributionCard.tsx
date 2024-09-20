@@ -1,6 +1,6 @@
 import { FC, lazy, Suspense, useState } from "react";
 import SeriesCard from "./SeriesCard";
-import { Button, Spinner } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
 import useDistributions from "@/hooks/useDistributions";
 import classes from "./DistributionCard.module.scss";
@@ -33,7 +33,7 @@ const DistributionCard: FC<DistributionCardProps> = ({
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelContent } = useSidePanel();
   const { removeDistributionQuery } = useDistributions();
-  const { mutateAsync: removeDistribution, isLoading: isRemoving } =
+  const { mutateAsync: removeDistribution, isPending: isRemoving } =
     removeDistributionQuery;
 
   const debug = useDebug();
@@ -58,7 +58,6 @@ const DistributionCard: FC<DistributionCardProps> = ({
             }
           }}
         >
-          {isRemoving && <Spinner />}
           Remove
         </Button>,
       ],

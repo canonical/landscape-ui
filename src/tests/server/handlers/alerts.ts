@@ -6,13 +6,11 @@ import { SubscriptionParams } from "@/hooks/useAlerts";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
-  // @ts-ignore-next-line
-  http.get<undefined, never, Alert[]>(`${API_URL}alerts`, () => {
+  http.get<never, never, Alert[]>(`${API_URL}alerts`, () => {
     return HttpResponse.json(alerts);
   }),
 
-  // @ts-ignore-next-line
-  http.get<undefined, never, AlertSummaryResponse>(
+  http.get<never, never, AlertSummaryResponse>(
     `${API_URL}alerts/summary`,
     () => {
       const endpointStatus = getEndpointStatus();

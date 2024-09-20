@@ -61,7 +61,7 @@ expect.extend({
           : `expected ${this.utils.printReceived(received)} to contain input values ${this.utils.printExpected(notFoundValues)}`,
     };
   },
-  toHaveInfoItem(received: HTMLElement, label: string, value: string | Object) {
+  toHaveInfoItem(received: HTMLElement, label: string, value: string | object) {
     const infoItem = within(received).getByText(label);
     let expectedValue: string;
 

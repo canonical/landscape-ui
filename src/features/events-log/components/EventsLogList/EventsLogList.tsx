@@ -3,7 +3,10 @@ import { EventLog } from "@/types/EventLogs";
 import { ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import { FC, useMemo, useRef, useState } from "react";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import classes from "./EventsLogList.module.scss";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useOnClickOutside } from "usehooks-ts";

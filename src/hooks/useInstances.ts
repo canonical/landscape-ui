@@ -111,10 +111,7 @@ export default function useInstances() {
       AxiosError<ApiError>
     >({
       queryKey: ["instances", queryParams],
-      queryFn: () =>
-        authFetch!.get("computers", {
-          params: queryParams,
-        }),
+      queryFn: () => authFetch!.get("computers", { params: queryParams }),
       ...config,
     });
 
@@ -128,9 +125,7 @@ export default function useInstances() {
     useQuery<AxiosResponse<Instance>, AxiosError<ApiError>>({
       queryKey: ["instances", { instanceId, ...queryParams }],
       queryFn: () =>
-        authFetch!.get(`computers/${instanceId}`, {
-          params: queryParams,
-        }),
+        authFetch!.get(`computers/${instanceId}`, { params: queryParams }),
       ...config,
     });
 
@@ -143,8 +138,8 @@ export default function useInstances() {
       authFetch!.put(`computers/${instanceId}`, params),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["instances"]),
-        queryClient.invalidateQueries(["instanceTags"]),
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
+        queryClient.invalidateQueries({ queryKey: ["instanceTags"] }),
       ]),
   });
 
@@ -155,7 +150,7 @@ export default function useInstances() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("AddAnnotationToComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const removeAnnotationFromInstancesQuery = useMutation<
@@ -165,7 +160,7 @@ export default function useInstances() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("RemoveAnnotationFromComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const addTagsToInstancesQuery = useMutation<
@@ -174,7 +169,7 @@ export default function useInstances() {
     AddTagsToInstancesParams
   >({
     mutationFn: (params) => authFetchOld!.get("AddTagsToComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const removeTagsFromInstancesQuery = useMutation<
@@ -184,7 +179,7 @@ export default function useInstances() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("RemoveTagsFromComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const changeInstancesAccessGroupQuery = useMutation<
@@ -194,7 +189,7 @@ export default function useInstances() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("ChangeComputersAccessGroup", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const removeInstancesQuery = useMutation<
@@ -203,12 +198,12 @@ export default function useInstances() {
     RemoveInstances
   >({
     mutationFn: (params) => authFetchOld!.get("RemoveComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const getPendingInstancesQuery: QueryFnType<
     AxiosResponse<PendingInstance[]>,
-    {}
+    Record<never, unknown>
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<PendingInstance[]>, AxiosError<ApiError>>({
       queryKey: ["pendingInstances"],
@@ -224,7 +219,8 @@ export default function useInstances() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("AcceptPendingComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["pendingInstances"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["pendingInstances"] }),
   });
 
   const rejectPendingInstancesQuery = useMutation<
@@ -234,7 +230,8 @@ export default function useInstances() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("RejectPendingComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["pendingInstances"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["pendingInstances"] }),
   });
 
   const createCloudOtpsQuery = useMutation<
@@ -243,7 +240,7 @@ export default function useInstances() {
     CreateCloudOtpsParams
   >({
     mutationFn: (params) => authFetchOld!.get("CreateCloudOtps", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const rebootInstancesQuery = useMutation<
@@ -252,7 +249,7 @@ export default function useInstances() {
     InstancesPowerManageParams
   >({
     mutationFn: (params) => authFetchOld!.get("RebootComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const shutdownInstancesQuery = useMutation<
@@ -261,7 +258,7 @@ export default function useInstances() {
     InstancesPowerManageParams
   >({
     mutationFn: (params) => authFetchOld!.get("ShutdownComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const renameInstancesQuery = useMutation<
@@ -270,12 +267,12 @@ export default function useInstances() {
     RenameInstancesParams
   >({
     mutationFn: (params) => authFetchOld!.get("RenameComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["instances"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const getAllInstanceTagsQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<string>>,
-    {}
+    Record<never, unknown>
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<ApiPaginatedResponse<string>>, AxiosError<ApiError>>(
       {

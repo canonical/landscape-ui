@@ -7,5 +7,5 @@ export interface RequestSchema {
   version: string;
   signature: string;
 
-  [key: string]: string | Object[];
+  [key: string]: string | object[];
 }
