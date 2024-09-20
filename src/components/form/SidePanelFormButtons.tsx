@@ -26,6 +26,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
       <Button
         className="u-no-margin--bottom"
         type="button"
+        appearance="base"
         onClick={closeSidePanel}
         disabled={cancelButtonDisabled}
       >

@@ -8,11 +8,11 @@ import {
 import { CellProps, Column } from "react-table";
 import {
   Button,
+  ContextualMenu,
   Icon,
   ICONS,
   ModularTable,
   Spinner,
-  Tooltip,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { useRepositoryProfiles } from "../../hooks";
@@ -24,6 +24,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { SelectOption } from "@/types/SelectOption";
 import { handleCellProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
+import classNames from "classnames";
 
 const RepositoryProfileForm = lazy(() => import("../RepositoryProfileForm"));
 
@@ -119,37 +120,47 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
       },
       {
         accessor: "id",
+        className: classNames("u-align-text--right", classes.actions),
+        Header: "Actions",
         Cell: ({ row }: CellProps<RepositoryProfile>) => (
-          <div className="divided-blocks">
-            <div className="divided-blocks__item">
-              <Tooltip message="Edit" position="btm-center">
-                <Button
-                  small
-                  hasIcon
-                  appearance="base"
-                  className="u-no-margin--bottom u-no-padding--left"
-                  aria-label={`Edit ${row.original.name} repository profile`}
-                  onClick={(event) => handleEditProfile(event, row.original)}
-                >
-                  <i className="p-icon--edit u-no-margin--left" />
-                </Button>
-              </Tooltip>
-            </div>
-            <div className="divided-blocks__item">
-              <Tooltip message="Delete" position="btm-center">
-                <Button
-                  small
-                  hasIcon
-                  appearance="base"
-                  className="u-no-margin--bottom u-no-padding--left"
-                  aria-label={`Remove ${row.original.name} repository profile`}
-                  onClick={() => handleRemoveProfileDialog(row.original.name)}
-                >
-                  <Icon name={ICONS.delete} className="u-no-margin--left" />
-                </Button>
-              </Tooltip>
-            </div>
-          </div>
+          <ContextualMenu
+            position="left"
+            toggleClassName={classes.toggleButton}
+            toggleAppearance="base"
+            toggleLabel={<Icon name="contextual-menu" aria-hidden />}
+            toggleProps={{
+              "aria-label": `${row.original.name} profile actions`,
+            }}
+          >
+            <Button
+              type="button"
+              appearance="base"
+              hasIcon
+              className={classNames(
+                "u-no-margin--bottom u-no-margin--right",
+                classes.actionButton,
+              )}
+              onClick={(event) => handleEditProfile(event, row.original)}
+              aria-label={`Edit ${row.original.name} profile`}
+            >
+              <Icon name="edit" />
+              <span>Edit</span>
+            </Button>
+            <Button
+              type="button"
+              appearance="base"
+              hasIcon
+              className={classNames(
+                "u-no-margin--bottom u-no-margin--right",
+                classes.actionButton,
+              )}
+              onClick={() => handleRemoveProfileDialog(row.original.name)}
+              aria-label={`Remove ${row.original.name} repository profile`}
+            >
+              <Icon name={ICONS.delete} />
+              <span>Remove</span>
+            </Button>
+          </ContextualMenu>
         ),
       },
     ],

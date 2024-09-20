@@ -1,0 +1,187 @@
+import { FC, lazy, Suspense } from "react";
+import { WslProfile } from "../../types";
+import { Button, Col, Icon, Row } from "@canonical/react-components";
+import InfoItem from "@/components/layout/InfoItem";
+import useSidePanel from "@/hooks/useSidePanel";
+import LoadingState from "@/components/layout/LoadingState";
+import useConfirm from "@/hooks/useConfirm";
+import useDebug from "@/hooks/useDebug";
+import classes from "./WslProfileDetails.module.scss";
+import useNotify from "@/hooks/useNotify";
+import NoData from "@/components/layout/NoData";
+import { SelectOption } from "@/types/SelectOption";
+import { useWslProfiles } from "../../hooks";
+
+const WslProfileEditForm = lazy(() => import("../WslProfileEditForm"));
+const WslProfileInstallForm = lazy(() => import("../WslProfileInstallForm"));
+
+interface WslProfileDetailsProps {
+  profile: WslProfile;
+  accessGroupOptions: SelectOption[];
+}
+
+const WslProfileDetails: FC<WslProfileDetailsProps> = ({
+  profile,
+  accessGroupOptions,
+}) => {
+  const debug = useDebug();
+  const { notify } = useNotify();
+  const { closeSidePanel, setSidePanelContent } = useSidePanel();
+  const { closeConfirmModal, confirmModal } = useConfirm();
+  const { removeWslProfileQuery } = useWslProfiles();
+  const { mutateAsync: removeWslProfile } = removeWslProfileQuery;
+
+  const handleRemoveWslProfile = async (name: string) => {
+    try {
+      await removeWslProfile({ name });
+
+      closeSidePanel();
+
+      notify.success({
+        message: `WSL profile "${name}" removed successfully.`,
+        title: "WSL profile removed",
+      });
+    } catch (error) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleRemoveWslProfileDialog = (name: string) => {
+    confirmModal({
+      title: "Remove WSL profile",
+      body: `This will remove "${name}" profile.`,
+      buttons: [
+        <Button
+          key="remove"
+          type="button"
+          appearance="negative"
+          onClick={() => handleRemoveWslProfile(name)}
+          aria-label={`Remove ${name} profile`}
+        >
+          Remove
+        </Button>,
+      ],
+    });
+  };
+
+  const handleWslProfileEdit = () => {
+    setSidePanelContent(
+      `Edit "${profile.title}" profile`,
+      <Suspense fallback={<LoadingState />}>
+        <WslProfileEditForm profile={profile} />
+      </Suspense>,
+    );
+  };
+
+  const handleWslProfileDuplicate = () => {
+    setSidePanelContent(
+      `Duplicate "${profile.title}" profile`,
+      <Suspense fallback={<LoadingState />}>
+        <WslProfileInstallForm action="duplicate" profile={profile} />
+      </Suspense>,
+    );
+  };
+
+  return (
+    <>
+      <div className="p-segmented-control">
+        <Button
+          type="button"
+          hasIcon
+          className="p-segmented-control__button"
+          onClick={handleWslProfileEdit}
+        >
+          <Icon name="edit" />
+          <span>Edit</span>
+        </Button>
+        <Button
+          type="button"
+          hasIcon
+          className="p-segmented-control__button"
+          onClick={handleWslProfileDuplicate}
+        >
+          <Icon name="canvas" />
+          <span>Duplicate</span>
+        </Button>
+        <Button
+          type="button"
+          hasIcon
+          className="p-segmented-control__button"
+          onClick={() => handleRemoveWslProfileDialog(profile.name)}
+        >
+          <Icon name="delete" />
+          <span>Remove</span>
+        </Button>
+      </div>
+      <Row className="u-no-padding--left u-no-padding--right">
+        <Col size={6}>
+          <InfoItem label="name" value={profile.title} />
+        </Col>
+        <Col size={6}>
+          <InfoItem
+            label="access group"
+            value={
+              accessGroupOptions.find(
+                ({ value }) => value === profile.access_group,
+              )?.label ?? profile.access_group
+            }
+          />
+        </Col>
+        <InfoItem label="description" value={profile.description} />
+        <div className={classes.block}>
+          <InfoItem label="rootfs image name" value={profile.image_name} />
+          {profile.image_source && (
+            <InfoItem
+              type="truncated"
+              label="rootfs image source"
+              value={profile.image_source}
+            />
+          )}
+          <InfoItem
+            label="cloud init"
+            value={profile.cloud_init_contents || "N/A"}
+          />
+        </div>
+
+        <div className={classes.block}>
+          <p className="p-heading--5">Association</p>
+          {profile.all_computers && (
+            <p>This profile has been associated with all instances.</p>
+          )}
+          {!profile.all_computers && !profile.tags.length && (
+            <p>This profile has not yet been associated with any instances.</p>
+          )}
+          {!profile.all_computers && profile.tags.length > 0 && (
+            <InfoItem
+              label="tags"
+              value={profile.tags.length ? profile.tags.join(", ") : <NoData />}
+            />
+          )}
+        </div>
+
+        <Col size={12}>
+          <InfoItem
+            label="associated"
+            value={`${profile.computers.constrained.length} instances`}
+          />
+        </Col>
+        <Col size={6}>
+          <InfoItem
+            label="not compliant"
+            value={`${profile.computers["non-compliant"].length} instances`}
+          />
+        </Col>
+        <Col size={6}>
+          <InfoItem
+            label="pending"
+            value={`${profile.computers.pending?.length ?? 0} instances`}
+          />
+        </Col>
+      </Row>
+    </>
+  );
+};
+
+export default WslProfileDetails;

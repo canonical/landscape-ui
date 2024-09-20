@@ -13,7 +13,7 @@ export const INITIAL_VALUES: RepositoryProfileFormValues = {
 export const CTA_INFO = {
   add: {
     ariaLabel: "Add a new repository profile",
-    label: "Add profile",
+    label: "Add repository profile",
   },
   edit: {
     ariaLabel: "Edit repository profile",

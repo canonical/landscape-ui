@@ -38,7 +38,7 @@ const RepositoryProfilesPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        title="Repository Profiles"
+        title="Repository profiles"
         actions={[
           <Button
             key="new-key-button"
@@ -46,7 +46,7 @@ const RepositoryProfilesPage: FC = () => {
             onClick={handleAddProfile}
             type="button"
           >
-            Add profile
+            Add repository profile
           </Button>,
         ]}
       />
@@ -77,7 +77,7 @@ const RepositoryProfilesPage: FC = () => {
                 onClick={handleAddProfile}
                 type="button"
               >
-                Add profile
+                Add repository profile
               </Button>,
             ]}
           />

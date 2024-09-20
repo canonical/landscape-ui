@@ -1,15 +1,21 @@
 @import "vanilla-framework/scss/settings_spacing";
 
-.accessGroup {
-  width: 15%;
+.truncated,
+.noWrap {
+  white-space: nowrap;
 }
 
-.description {
-  width: 45%;
+.truncated {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .actions {
   width: 4.5rem;
+}
+
+.description {
+  width: 20%;
 }
 
 .toggleButton {

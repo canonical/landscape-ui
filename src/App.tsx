@@ -45,7 +45,7 @@ const RemovalProfilesPage = lazy(
 const UpgradeProfilesPage = lazy(
   () => import("@/pages/dashboard/profiles/upgrade-profiles"),
 );
-const WSLProfilesPage = lazy(
+const WslProfilesPage = lazy(
   () => import("@/pages/dashboard/profiles/wsl-profiles"),
 );
 const SettingsPage = lazy(() => import("@/pages/dashboard/settings"));
@@ -201,7 +201,7 @@ const App: FC = () => {
                 path="profiles/upgrade"
                 element={<UpgradeProfilesPage />}
               />
-              <Route path="profiles/wsl" element={<WSLProfilesPage />} />
+              <Route path="profiles/wsl" element={<WslProfilesPage />} />
               <Route path="account" element={<AccountPage />} />
               <Route path="account/general" element={<GeneralSettings />} />
               <Route path="account/alerts" element={<Alerts />} />
