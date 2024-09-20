@@ -9,6 +9,7 @@
 
 .truncated {
   border-bottom: 1px solid $color-mid-light;
+  word-break: break-all;
 }
 
 .showMore {

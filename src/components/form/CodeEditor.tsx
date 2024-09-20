@@ -12,6 +12,8 @@ interface CodeEditorProps {
   error?: string | false;
   labelClassName?: string;
   required?: boolean;
+  language?: string;
+  defaultValue?: string;
 }
 
 const CodeEditor: FC<CodeEditorProps> = ({
@@ -22,6 +24,8 @@ const CodeEditor: FC<CodeEditorProps> = ({
   error = false,
   labelClassName,
   required = false,
+  language = "shell",
+  defaultValue = "#!/bin/bash",
 }) => {
   return (
     <div
@@ -41,10 +45,10 @@ const CodeEditor: FC<CodeEditorProps> = ({
       </label>
       <div className="p-form__control u-clearfix">
         <Editor
-          language="shell"
+          language={language}
           height="16rem"
           loading={<LoadingState />}
-          defaultValue="#!/bin/bash"
+          defaultValue={defaultValue}
           className={classNames(
             classes.highlighter,
             {

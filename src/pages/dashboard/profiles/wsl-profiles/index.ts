@@ -1,1 +1,1 @@
-export { default } from "./WSLProfilesPage";
+export { default } from "./WslProfilesPage";
