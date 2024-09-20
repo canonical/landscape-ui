@@ -6,7 +6,7 @@
     :global(.multi-select__select-button) {
       border-bottom-color: $color-negative;
 
-      &:not(:hover):not([aria-expanded="true"]) {
+      &:not(:hover, [aria-expanded="true"]) {
         background-color: $color-negative-background;
       }
 
@@ -19,4 +19,8 @@
       }
     }
   }
+}
+
+.errorMessage {
+  margin-top: $spv--medium;
 }

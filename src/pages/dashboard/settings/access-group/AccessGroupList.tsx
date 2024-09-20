@@ -3,10 +3,14 @@ import {
   Icon,
   ICONS,
   ModularTable,
-  Spinner,
+  Tooltip,
 } from "@canonical/react-components";
 import { FC, useMemo } from "react";
-import { Cell, CellProps, Column } from "react-table";
+import {
+  Cell,
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import useRoles from "@/hooks/useRoles";
 import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
@@ -23,8 +27,7 @@ interface IndentedAccessGroup extends AccessGroup, Record<string, unknown> {
 const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroupData }) => {
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { removeAccessGroupQuery } = useRoles();
-  const { mutateAsync: removeAccessGroup, isLoading: isRemoving } =
-    removeAccessGroupQuery;
+  const { mutateAsync: removeAccessGroup } = removeAccessGroupQuery;
   const debug = useDebug();
   const prepareData = (data: AccessGroup[], parent = "", indentLevel = 0) => {
     let result: IndentedAccessGroup[] = [];
@@ -42,6 +45,35 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroupData }) => {
       accessGroupData.sort((a, b) => a.name.localeCompare(b.name)) || [];
     return prepareData(sortedData);
   }, [accessGroupData.length]);
+
+  const handleAccessGroupDelete = async (accessGroup: string) => {
+    try {
+      await removeAccessGroup({
+        name: accessGroup,
+      });
+    } catch (error: unknown) {
+      debug(error);
+    } finally {
+      closeConfirmModal();
+    }
+  };
+
+  const handleAccessGroupDeleteDialog = (accessGroup: string) => {
+    confirmModal({
+      body: `This will delete '${accessGroup}' access group`,
+      title: "Delete access group",
+      buttons: [
+        <Button
+          key={`delete-access-group-${accessGroup}`}
+          appearance="negative"
+          onClick={() => handleAccessGroupDelete(accessGroup)}
+          aria-label={`Delete ${accessGroup} access group`}
+        >
+          Delete
+        </Button>,
+      ],
+    });
+  };
 
   const columns = useMemo<Column<IndentedAccessGroup>[]>(
     () => [
@@ -62,51 +94,27 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroupData }) => {
           return (
             <div className="divided-blocks">
               <div className="divided-blocks__item">
-                <Button
-                  small
-                  hasIcon
-                  appearance="base"
-                  className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
-                  aria-label={`Remove ${row.original.name} access group`}
-                  onClick={() => {
-                    confirmModal({
-                      body: "Are you sure?",
-                      title: `Deleting ${row.original.name} access group`,
-                      buttons: [
-                        <Button
-                          key={`delete-access-group-${row.original.name}`}
-                          appearance="negative"
-                          hasIcon={true}
-                          onClick={async () => {
-                            try {
-                              await removeAccessGroup({
-                                name: row.original.name,
-                              });
-                            } catch (error: unknown) {
-                              debug(error);
-                            } finally {
-                              closeConfirmModal();
-                            }
-                          }}
-                          aria-label={`Delete ${row.original.name} access group`}
-                        >
-                          {isRemoving && <Spinner />}
-                          Delete
-                        </Button>,
-                      ],
-                    });
-                  }}
-                >
-                  <span className="p-tooltip__message">Delete</span>
-                  <Icon name={ICONS.delete} className="u-no-margin--left" />
-                </Button>
+                <Tooltip message="Delete">
+                  <Button
+                    small
+                    hasIcon
+                    appearance="base"
+                    className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
+                    aria-label={`Remove ${row.original.name} access group`}
+                    onClick={() =>
+                      handleAccessGroupDeleteDialog(row.original.name)
+                    }
+                  >
+                    <Icon name={ICONS.delete} className="u-no-margin--left" />
+                  </Button>
+                </Tooltip>
               </div>
             </div>
           );
         },
       },
     ],
-    [],
+    [indentedData],
   );
 
   return (
@@ -114,7 +122,7 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroupData }) => {
       <ModularTable
         columns={columns}
         data={indentedData}
-        getCellProps={(cell: Cell<IndentedAccessGroup, any>) => {
+        getCellProps={(cell: Cell<IndentedAccessGroup>) => {
           const rowData = cell.row.original as IndentedAccessGroup;
           switch (cell.column.id) {
             case "name":

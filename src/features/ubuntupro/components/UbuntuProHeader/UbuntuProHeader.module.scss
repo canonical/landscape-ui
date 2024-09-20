@@ -1,10 +1,10 @@
-@import "../../../../../node_modules/vanilla-framework/scss/settings_colors";
-@import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
+@import "node_modules/vanilla-framework/scss/settings_colors";
+@import "node_modules/vanilla-framework/scss/settings_spacing";
 
 .infoRow {
+  border-bottom: 1px solid $color-mid-light;
   margin-bottom: $spv--large;
   padding-bottom: $spv--large;
-  border-bottom: 1px solid $color-mid-light;
 }
 
 .header {

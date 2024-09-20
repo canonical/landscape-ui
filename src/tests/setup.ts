@@ -1,5 +1,3 @@
-/// <reference types="vitest" />
-
 import "@testing-library/jest-dom";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 import { cleanup } from "@testing-library/react";

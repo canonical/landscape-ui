@@ -69,8 +69,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
 
   const { data: gpgKeysData } = getGPGKeysQuery();
 
-  const { mutateAsync: createSeries, isLoading: isCreating } =
-    createSeriesQuery;
+  const { mutateAsync: createSeries } = createSeriesQuery;
 
   const gpgKeys = gpgKeysData?.data ?? [];
 
@@ -582,7 +581,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
       <UdebCheckboxInput formik={formik} />
 
       <SidePanelFormButtons
-        submitButtonDisabled={isCreating}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText={ctaText}
       />
     </Form>

@@ -36,8 +36,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     syncMirrorPocketQuery,
     pullPackagesToPocketQuery,
   } = usePockets();
-  const { mutateAsync: removePocket, isLoading: isRemovingPocket } =
-    removePocketQuery;
+  const { mutateAsync: removePocket } = removePocketQuery;
 
   const handleRemovePocket = (pocket: Pocket) => {
     confirmModal({
@@ -47,7 +46,6 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
         <Button
           key={`delete-${pocket.name}-pocket`}
           appearance="negative"
-          disabled={isRemovingPocket}
           onClick={async () => {
             try {
               await removePocket({
@@ -69,14 +67,8 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     });
   };
 
-  const {
-    mutateAsync: syncMirrorPocket,
-    isLoading: isSynchronizingMirrorPocket,
-  } = syncMirrorPocketQuery;
-  const {
-    mutateAsync: pullPackagesToPocket,
-    isLoading: isPullingPackagesToPocket,
-  } = pullPackagesToPocketQuery;
+  const { mutateAsync: syncMirrorPocket } = syncMirrorPocketQuery;
+  const { mutateAsync: pullPackagesToPocket } = pullPackagesToPocketQuery;
 
   const handleSyncPocket = async () => {
     try {
@@ -116,7 +108,6 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
             key={pocket.name}
             appearance="positive"
             onClick={handleSyncPocket}
-            disabled={isSynchronizingMirrorPocket}
             aria-label={`Synchronize ${pocket.name} pocket of ${distributionName}/${seriesName}`}
           >
             Sync
@@ -132,7 +123,6 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
             key={pocket.name}
             appearance="positive"
             onClick={handlePullPackagesToPocket}
-            disabled={isPullingPackagesToPocket}
             aria-label={`Pull packages to ${pocket.name} pocket of ${distributionName}/${seriesName}`}
           >
             Pull

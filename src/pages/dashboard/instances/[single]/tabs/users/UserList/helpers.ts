@@ -1,6 +1,9 @@
 import { User } from "@/types/User";
 import { HTMLProps } from "react";
-import { Cell, TableCellProps } from "react-table";
+import {
+  Cell,
+  TableCellProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 
 export const handleCellProps = ({ column }: Cell<User>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =

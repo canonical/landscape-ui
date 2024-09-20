@@ -5,8 +5,7 @@ import { GPGKey } from "@/types/GPGKey";
 import { gpgKeys } from "@/tests/mocks/gpgKey";
 
 export default [
-  // @ts-ignore-next-line
-  http.get<GetGPGKeysParams, never, GPGKey[]>(
+  http.get<never, GetGPGKeysParams, GPGKey[]>(
     `${API_URL_OLD}GetGPGKeys`,
     () => {
       return HttpResponse.json(gpgKeys);

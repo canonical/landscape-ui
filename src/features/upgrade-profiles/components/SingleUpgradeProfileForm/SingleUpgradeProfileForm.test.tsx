@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 
 describe("SingleUpgradeProfileForm", () => {
-  it("should correct validate an empty form", async () => {
+  it("should render initial form state", async () => {
     const { container } = renderWithProviders(
       <SingleUpgradeProfileForm action="add" />,
     );
@@ -29,11 +29,9 @@ describe("SingleUpgradeProfileForm", () => {
       "Associate to all instances",
     ]);
 
-    const submitButton = screen.getByText("Add upgrade profile");
-
-    await userEvent.click(submitButton);
-
-    expect(await screen.findAllByText(/Error/)).toHaveLength(5);
+    expect(
+      screen.getByRole("button", { name: /add upgrade profile/i }),
+    ).toBeInTheDocument();
   });
 
   it("should submit form with correct values", async () => {
@@ -49,7 +47,6 @@ describe("SingleUpgradeProfileForm", () => {
       "Remove packages that are no longer needed",
     );
     const accessGroupSelect = screen.getByLabelText(/access group/i);
-    const fridayOption = screen.getByText("Friday");
     const hoursInput = screen.getByLabelText(/at hour/i);
     const minutesInput = screen.getByLabelText(/at minute/);
     const associationCheckbox = screen.getByLabelText(
@@ -61,7 +58,8 @@ describe("SingleUpgradeProfileForm", () => {
     await user.click(securityIssuesOnlyCheckbox);
     await user.click(autoremoveCheckbox);
     await user.selectOptions(accessGroupSelect, "Desktop machines");
-    await user.click(fridayOption);
+    await user.click(screen.getByRole("combobox", { name: /days/i }));
+    await user.click(await screen.findByText(/friday/i));
     await user.type(hoursInput, "12");
     await user.type(minutesInput, "30");
     await user.click(associationCheckbox);

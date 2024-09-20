@@ -139,12 +139,9 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   const { createPocketQuery, addUploaderGPGKeysToPocketQuery } = usePockets();
   const { getGPGKeysQuery } = useGPGKeys();
 
-  const { mutateAsync: createPocket, isLoading: createPocketLoading } =
-    createPocketQuery;
-  const {
-    mutateAsync: addUploaderGPGKeysToPocket,
-    isLoading: addUploaderGPGKeysToPocketLoading,
-  } = addUploaderGPGKeysToPocketQuery;
+  const { mutateAsync: createPocket } = createPocketQuery;
+  const { mutateAsync: addUploaderGPGKeysToPocket } =
+    addUploaderGPGKeysToPocketQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
   const privateGPGKeysOptions = (gpgKeysData?.data ?? [])
@@ -593,9 +590,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
       <UdebCheckboxInput formik={formik} />
 
       <SidePanelFormButtons
-        submitButtonDisabled={
-          createPocketLoading || addUploaderGPGKeysToPocketLoading
-        }
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add"
         submitButtonAriaLabel="Add pocket"
       />

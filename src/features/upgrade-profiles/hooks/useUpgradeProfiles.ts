@@ -52,7 +52,8 @@ export default function useUpgradeProfiles() {
     mutationFn: (params) => {
       return authFetchOld!.get("CreateUpgradeProfile", { params });
     },
-    onSuccess: () => queryClient.invalidateQueries(["upgradeProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
   });
 
   const editUpgradeProfileQuery = useMutation<
@@ -63,7 +64,8 @@ export default function useUpgradeProfiles() {
     mutationFn: (params) => {
       return authFetchOld!.get("EditUpgradeProfile", { params });
     },
-    onSuccess: () => queryClient.invalidateQueries(["upgradeProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
   });
 
   const removeUpgradeProfileQuery = useMutation<
@@ -74,7 +76,8 @@ export default function useUpgradeProfiles() {
     mutationFn: (params) => {
       return authFetchOld!.get("RemoveUpgradeProfile", { params });
     },
-    onSuccess: () => queryClient.invalidateQueries(["upgradeProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
   });
 
   const getUpgradeProfilesQuery: QueryFnType<

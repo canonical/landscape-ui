@@ -1,5 +1,10 @@
 import { HTMLProps, MutableRefObject } from "react";
-import { Cell, Row, TableCellProps, TableRowProps } from "react-table";
+import {
+  Cell,
+  Row,
+  TableCellProps,
+  TableRowProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { Usn } from "@/types/Usn";
 import { EMPTY_USN } from "./constants";
 import { ExpandedCell } from "./types";

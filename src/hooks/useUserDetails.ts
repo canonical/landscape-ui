@@ -1,19 +1,13 @@
-import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "../types/ApiError";
-import { QueryFnType } from "../types/QueryFnType";
+import { ApiError } from "@/types/ApiError";
+import { QueryFnType } from "@/types/QueryFnType";
 import {
   ApiKeyCredentials,
   UserCredentials,
   UserDetails,
-} from "../types/UserDetails";
+} from "@/types/UserDetails";
 import useFetch from "./useFetch";
-import useDebug from "./useDebug";
 
 interface GenerateApiCredentialsParams {
   account: string;
@@ -31,35 +25,14 @@ interface ChangePasswordParamms {
   new_password: string;
 }
 
-interface useUserDetailsResult {
-  getUserDetails: QueryFnType<AxiosResponse<UserDetails>, {}>;
-  getUserApiCredentials: QueryFnType<AxiosResponse<UserCredentials>, {}>;
-  generateApiCredentials: UseMutationResult<
-    AxiosResponse<ApiKeyCredentials>,
-    AxiosError<ApiError>,
-    GenerateApiCredentialsParams
-  >;
-  editUserDetails: UseMutationResult<
-    AxiosResponse<UserDetails>,
-    AxiosError<ApiError>,
-    EditUserDetailsParams
-  >;
-  changePassword: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    ChangePasswordParamms
-  >;
-}
-
-export default function useUserDetails(): useUserDetailsResult {
+export default function useUserDetails() {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
-  const debug = useDebug();
 
-  const getUserDetails: QueryFnType<AxiosResponse<UserDetails>, {}> = (
-    queryParams = {},
-    config = {},
-  ) =>
+  const getUserDetails: QueryFnType<
+    AxiosResponse<UserDetails>,
+    Record<never, unknown>
+  > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<UserDetails>, AxiosError<ApiError>>({
       queryKey: ["userDetails", "get"],
       queryFn: () => authFetch!.get("person", { params: queryParams }),
@@ -68,7 +41,7 @@ export default function useUserDetails(): useUserDetailsResult {
 
   const getUserApiCredentials: QueryFnType<
     AxiosResponse<UserCredentials>,
-    {}
+    Record<never, unknown>
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<UserCredentials>, AxiosError<ApiError>>({
       queryKey: ["userDetails", "getCredentials"],
@@ -83,11 +56,10 @@ export default function useUserDetails(): useUserDetailsResult {
   >({
     mutationKey: ["userDetails", "generate"],
     mutationFn: (params) => authFetch!.post("credentials", params),
-    onSuccess: () => {
-      queryClient
-        .invalidateQueries(["userDetails", "getCredentials"])
-        .catch(debug);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: ["userDetails", "getCredentials"],
+      }),
   });
 
   const editUserDetails = useMutation<
@@ -97,9 +69,8 @@ export default function useUserDetails(): useUserDetailsResult {
   >({
     mutationKey: ["userDetails", "edit"],
     mutationFn: (params) => authFetch!.post("person", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["userDetails", "get"]).catch(debug);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["userDetails", "get"] }),
   });
 
   const changePassword = useMutation<

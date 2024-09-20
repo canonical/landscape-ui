@@ -4,9 +4,9 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  padding-bottom: $sph--small;
   padding-left: $sph--small;
   padding-right: $sph--small;
-  padding-bottom: $sph--small;
 }
 
 .navigation {

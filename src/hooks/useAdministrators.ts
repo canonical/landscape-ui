@@ -54,7 +54,8 @@ export default function useAdministrators() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("InviteAdministrator", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["invitations"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["invitations"] }),
   });
 
   const disableAdministratorQuery = useMutation<
@@ -64,7 +65,8 @@ export default function useAdministrators() {
   >({
     mutationFn: (params) =>
       authFetchOld!.get("DisableAdministrator", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["administrators"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["administrators"] }),
   });
 
   const editAdministratorQuery = useMutation<
@@ -76,8 +78,8 @@ export default function useAdministrators() {
       authFetch!.put(`administrators/${id}`, params),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["administrators"]),
-        queryClient.invalidateQueries(["roles"]),
+        queryClient.invalidateQueries({ queryKey: ["administrators"] }),
+        queryClient.invalidateQueries({ queryKey: ["roles"] }),
       ]),
   });
 
@@ -100,7 +102,8 @@ export default function useAdministrators() {
     InvitationActionParams
   >({
     mutationFn: (params) => authFetch!.delete(`/invitations/${params.id}`),
-    onSuccess: () => queryClient.invalidateQueries(["invitations"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["invitations"] }),
   });
 
   const resendInvitationQuery = useMutation<
@@ -109,7 +112,8 @@ export default function useAdministrators() {
     InvitationActionParams
   >({
     mutationFn: (params) => authFetch!.post(`/invitations/${params.id}`),
-    onSuccess: () => queryClient.invalidateQueries(["invitations"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["invitations"] }),
   });
 
   return {

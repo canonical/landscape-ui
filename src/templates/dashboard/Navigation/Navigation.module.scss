@@ -40,12 +40,12 @@
     @include vf-icon-chevron($color-mid);
     @include vf-transition($property: transform, $duration: fast);
 
+    align-self: center;
     content: "";
-    width: $sph--large;
+    flex-shrink: 0;
     height: $spv--large;
     margin-left: auto;
-    align-self: center;
-    flex-shrink: 0;
+    width: $sph--large;
   }
 
   &[aria-expanded="false"] {
@@ -67,7 +67,7 @@
 
 .helpContainer {
   border-top: 1px solid $colors--dark-theme--border-default;
-  margin-top: $spv--small;
   margin-bottom: $spv--small;
+  margin-top: $spv--small;
   padding-top: $spv--small;
 }

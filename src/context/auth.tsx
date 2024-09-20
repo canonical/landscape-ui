@@ -85,9 +85,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const maybeSavedState = getFromLocalStorage(AUTH_STORAGE_KEY);
 
-    maybeSavedState
-      ? setUser(maybeSavedState)
-      : localStorage.removeItem(AUTH_STORAGE_KEY);
+    if (maybeSavedState) {
+      setUser(maybeSavedState);
+    } else {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
 
     setLoading(false);
   }, []);

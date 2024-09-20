@@ -74,7 +74,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       value: name,
     })) ?? [];
 
-  const { mutateAsync: removeInstances, isLoading: removeInstancesLoading } =
+  const { mutateAsync: removeInstances, isPending: removeInstancesLoading } =
     removeInstancesQuery;
 
   const handleRemoveInstance = async () => {

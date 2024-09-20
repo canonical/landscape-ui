@@ -1,9 +1,10 @@
 import useFetchOld from "./useFetchOld";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { QueryFnType } from "../types/QueryFnType";
-import { SavedSearch } from "../types/SavedSearch";
+import { QueryFnType } from "@/types/QueryFnType";
+import { SavedSearch } from "@/types/SavedSearch";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "../types/ApiError";
+import { ApiError } from "@/types/ApiError";
+import { Activity } from "@/features/activities";
 
 interface GetSavedSearchesParams {
   limit?: number;
@@ -47,7 +48,8 @@ export const useSavedSearches = () => {
     CreateSavedSearchParams
   >({
     mutationFn: (params) => authFetch!.get("CreateSavedSearch", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["savedSearches"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["savedSearches"] }),
   });
 
   const editSavedSearchQuery = useMutation<
@@ -56,16 +58,18 @@ export const useSavedSearches = () => {
     EditSavedSearchParams
   >({
     mutationFn: (params) => authFetch!.get("EditSavedSearch", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["savedSearches"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["savedSearches"] }),
   });
 
   const removeSavedSearchQuery = useMutation<
-    {},
+    AxiosResponse<Activity>,
     AxiosError<ApiError>,
     RemoveSavedSearchParams
   >({
     mutationFn: (params) => authFetch!.get("RemoveSavedSearch", { params }),
-    onSuccess: () => queryClient.invalidateQueries(["savedSearches"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["savedSearches"] }),
   });
 
   return {

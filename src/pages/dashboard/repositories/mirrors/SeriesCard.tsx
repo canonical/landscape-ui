@@ -1,7 +1,7 @@
 import { FC, lazy, Suspense, useEffect, useState } from "react";
 import SeriesPocketList from "@/pages/dashboard/repositories/mirrors/SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
-import { Button, Spinner } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Series } from "@/types/Series";
 import useSeries from "@/hooks/useSeries";
@@ -57,7 +57,7 @@ const SeriesCard: FC<SeriesCardProps> = ({
   const { removeSeriesQuery } = useSeries();
   const debug = useDebug();
 
-  const { mutateAsync: removeSeries, isLoading: isRemoving } =
+  const { mutateAsync: removeSeries, isPending: isRemoving } =
     removeSeriesQuery;
 
   const handleRemove = async () => {
@@ -83,7 +83,6 @@ const SeriesCard: FC<SeriesCardProps> = ({
           }}
           aria-label={`Remove ${series.name} from ${distribution.name}`}
         >
-          {isRemoving && <Spinner />}
           Remove
         </Button>,
       ],

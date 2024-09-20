@@ -3,10 +3,10 @@
 
 .container {
   border: 1px solid $color-mid-light;
-  padding: $sp-large $sp-medium;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: $sp-large $sp-medium;
 }
 
 .title {
@@ -27,6 +27,7 @@
 .link {
   align-self: flex-start;
   font-size: 22px;
+
   &:visited {
     color: $color-link;
   }

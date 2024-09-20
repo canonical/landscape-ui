@@ -11,8 +11,8 @@
 }
 
 .sticky {
+  background-color: $color-x-light;
   position: sticky;
   top: 0;
-  background-color: $color-x-light;
   z-index: 10;
 }

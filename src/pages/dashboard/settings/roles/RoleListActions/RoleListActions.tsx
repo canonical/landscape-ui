@@ -22,8 +22,7 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
   const { closeConfirmModal, confirmModal } = useConfirm();
   const { removeRoleQuery } = useRoles();
 
-  const { mutateAsync: removeRole, isLoading: removeRoleLoading } =
-    removeRoleQuery;
+  const { mutateAsync: removeRole } = removeRoleQuery;
 
   const handleRemoveRole = async (name: string) => {
     try {
@@ -57,7 +56,6 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
           type="button"
           appearance="negative"
           onClick={() => handleRemoveRole(role.name)}
-          disabled={removeRoleLoading}
         >
           Remove
         </Button>,

@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import { FC, useEffect, useState } from "react";
 import * as Yup from "yup";
-import { Button, Col, Form, Row, Spinner } from "@canonical/react-components";
+import { Button, Col, Form, Row } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
@@ -45,8 +45,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
 
   const { mutateAsync: editAdministrator } = editAdministratorQuery;
 
-  const { mutateAsync: disableAdministrator, isLoading: isDisabling } =
-    disableAdministratorQuery;
+  const { mutateAsync: disableAdministrator } = disableAdministratorQuery;
 
   const handleDisableAdministrator = async () => {
     try {
@@ -70,7 +69,6 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
           hasIcon={true}
           aria-label={`Remove ${currentAdministrator.name}`}
         >
-          {isDisabling && <Spinner />}
           Remove
         </Button>,
       ],

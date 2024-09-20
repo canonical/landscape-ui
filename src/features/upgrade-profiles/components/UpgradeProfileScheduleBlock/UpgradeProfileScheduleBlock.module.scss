@@ -14,12 +14,12 @@
 }
 
 .timeContainer {
+  border-left: 1px solid $colors--light-theme--border-default;
   margin-bottom: $spv--x-large;
   margin-left: $sph--small;
   margin-right: $sph--small;
   padding-left: $sph--large;
   padding-right: $sph--large;
-  border-left: 1px solid $colors--light-theme--border-default;
 }
 
 .time {
@@ -28,8 +28,8 @@
 }
 
 .timeInput {
-  min-width: initial;
   max-width: $sp-xxxx-large;
+  min-width: initial;
 }
 
 .inputDescriptionAfter {

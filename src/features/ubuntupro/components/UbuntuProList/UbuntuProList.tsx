@@ -1,6 +1,9 @@
 import { ModularTable } from "@canonical/react-components";
 import { FC, useMemo } from "react";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import classes from "./UbuntuProList.module.scss";
 import { UbuntuProService } from "@/types/Instance";
 import NoData from "@/components/layout/NoData";

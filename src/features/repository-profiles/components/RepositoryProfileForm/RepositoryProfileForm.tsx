@@ -62,12 +62,14 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     }
 
     try {
-      props.action === "add"
-        ? await createRepositoryProfile(valuesToSubmit)
-        : await editRepositoryProfile({
-            name: props.profile.name,
-            ...valuesToSubmit,
-          });
+      if (props.action === "add") {
+        await createRepositoryProfile(valuesToSubmit);
+      } else {
+        await editRepositoryProfile({
+          name: props.profile.name,
+          ...valuesToSubmit,
+        });
+      }
 
       closeSidePanel();
     } catch (error) {

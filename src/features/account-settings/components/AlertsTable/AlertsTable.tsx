@@ -14,7 +14,10 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC, useMemo } from "react";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { useMediaQuery } from "usehooks-ts";
 import AlertTagsCell from "../AlertTagsCell";
 import classes from "./AlertsTable.module.scss";

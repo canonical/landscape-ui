@@ -119,23 +119,15 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
   } = usePockets();
   const { getGPGKeysQuery } = useGPGKeys();
 
-  const { mutateAsync: editPocket, isLoading: isEditing } = editPocketQuery;
-  const {
-    mutateAsync: addPackageFiltersToPocket,
-    isLoading: isAddingPackageFiltersToPocket,
-  } = addPackageFiltersToPocketQuery;
-  const {
-    mutateAsync: removePackageFiltersFromPocket,
-    isLoading: isRemovingPackageFiltersFromPocket,
-  } = removePackageFiltersFromPocketQuery;
-  const {
-    mutateAsync: addUploaderGPGKeysToPocket,
-    isLoading: isAddingUploaderGPGKeysToPocket,
-  } = addUploaderGPGKeysToPocketQuery;
-  const {
-    mutateAsync: removeUploaderGPGKeysFromPocket,
-    isLoading: isRemovingUploaderGPGKeysFromPocket,
-  } = removeUploaderGPGKeysFromPocketQuery;
+  const { mutateAsync: editPocket } = editPocketQuery;
+  const { mutateAsync: addPackageFiltersToPocket } =
+    addPackageFiltersToPocketQuery;
+  const { mutateAsync: removePackageFiltersFromPocket } =
+    removePackageFiltersFromPocketQuery;
+  const { mutateAsync: addUploaderGPGKeysToPocket } =
+    addUploaderGPGKeysToPocketQuery;
+  const { mutateAsync: removeUploaderGPGKeysFromPocket } =
+    removeUploaderGPGKeysFromPocketQuery;
   const { data: gpgKeysData } = getGPGKeysQuery();
 
   const privateGPGKeysOptions = (gpgKeysData?.data ?? [])
@@ -481,13 +473,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
       <UdebCheckboxInput formik={formik} />
 
       <SidePanelFormButtons
-        submitButtonDisabled={
-          isEditing ||
-          isAddingPackageFiltersToPocket ||
-          isRemovingPackageFiltersFromPocket ||
-          isAddingUploaderGPGKeysToPocket ||
-          isRemovingUploaderGPGKeysFromPocket
-        }
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

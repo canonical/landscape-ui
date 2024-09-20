@@ -1,64 +1,11 @@
 import { QueryFnType } from "@/types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
-import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@/types/ApiError";
 import useFetch from "./useFetch";
 import { GroupsResponse, User } from "@/types/User";
-import useDebug from "./useDebug";
 import { Activity } from "@/features/activities";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-
-interface useUserResult {
-  getUsersQuery: QueryFnType<
-    AxiosResponse<ApiPaginatedResponse<User>>,
-    GetUsersParams
-  >;
-  createUserQuery: UseMutationResult<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    CreateUserParams
-  >;
-  editUserQuery: UseMutationResult<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    EditUserParams
-  >;
-  removeUserQuery: UseMutationResult<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    RemoveUserParams
-  >;
-  lockUserQuery: UseMutationResult<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    LockUserParams
-  >;
-  unlockUserQuery: UseMutationResult<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    UnlockUserParams
-  >;
-  getGroupsQuery: QueryFnType<AxiosResponse<GroupsResponse>, GetGroupsParams>;
-  getUserGroupsQuery: QueryFnType<
-    AxiosResponse<GroupsResponse>,
-    GetUserGroupsParams
-  >;
-  addUserToGroupQuery: UseMutationResult<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    GroupMutationQueryParams
-  >;
-  removeUserFromGroupQuery: UseMutationResult<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    GroupMutationQueryParams
-  >;
-}
 
 interface GetUsersParams {
   computer_id: number;
@@ -122,10 +69,9 @@ interface GroupMutationQueryParams {
   usernames: string[];
 }
 
-export default function useUsers(): useUserResult {
+export default function useUsers() {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
-  const debug = useDebug();
 
   const getUsersQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<User>>,
@@ -144,9 +90,7 @@ export default function useUsers(): useUserResult {
   >({
     mutationKey: ["users", "new"],
     mutationFn: (params) => authFetch!.post("users", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const editUserQuery = useMutation<
@@ -156,9 +100,7 @@ export default function useUsers(): useUserResult {
   >({
     mutationKey: ["users", "edit"],
     mutationFn: (params) => authFetch!.put("users", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const removeUserQuery = useMutation<
@@ -168,9 +110,7 @@ export default function useUsers(): useUserResult {
   >({
     mutationKey: ["users", "remove"],
     mutationFn: (params) => authFetch!.delete("users", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const lockUserQuery = useMutation<
@@ -180,9 +120,7 @@ export default function useUsers(): useUserResult {
   >({
     mutationKey: ["users", "lock"],
     mutationFn: (params) => authFetch!.post("users/lock", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const unlockUserQuery = useMutation<
@@ -192,9 +130,7 @@ export default function useUsers(): useUserResult {
   >({
     mutationKey: ["users", "unlock"],
     mutationFn: (params) => authFetch!.post("users/unlock", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const getGroupsQuery: QueryFnType<
@@ -233,9 +169,7 @@ export default function useUsers(): useUserResult {
         params,
       );
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const removeUserFromGroupQuery = useMutation<
@@ -250,9 +184,7 @@ export default function useUsers(): useUserResult {
         params,
       );
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   return {

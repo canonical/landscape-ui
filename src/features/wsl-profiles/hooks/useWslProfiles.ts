@@ -55,7 +55,8 @@ export default function useWslProfiles() {
     CreateWslProfileParams
   >({
     mutationFn: (params) => authFetch!.post("child-instance-profiles", params),
-    onSuccess: () => queryClient.invalidateQueries(["wslProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
   });
 
   const removeWslProfileQuery = useMutation<
@@ -65,7 +66,8 @@ export default function useWslProfiles() {
   >({
     mutationFn: ({ name }) =>
       authFetch!.delete(`child-instance-profiles/${name}`),
-    onSuccess: () => queryClient.invalidateQueries(["wslProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
   });
 
   const editWslProfileQuery = useMutation<
@@ -75,7 +77,8 @@ export default function useWslProfiles() {
   >({
     mutationFn: ({ name, ...params }) =>
       authFetch!.patch(`child-instance-profiles/${name}`, params),
-    onSuccess: () => queryClient.invalidateQueries(["wslProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
   });
 
   return {

@@ -3,10 +3,10 @@
 
 .block {
   box-shadow: inset 0 1px 0 0 $colors--light-theme--border-low-contrast;
-  margin-top: $spv--medium;
-  padding-top: $spv--medium;
   display: flex;
   flex-direction: column;
+  margin-top: $spv--medium;
+  padding-top: $spv--medium;
 }
 
 .link {

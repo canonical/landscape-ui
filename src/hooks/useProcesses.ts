@@ -45,9 +45,7 @@ export const useProcesses = () => {
     ProcessesSignalParams
   >({
     mutationFn: (params) => authFetch!.post("processes/terminate", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["processes"]);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["processes"] }),
   });
 
   const killProcessQuery = useMutation<
@@ -56,9 +54,7 @@ export const useProcesses = () => {
     ProcessesSignalParams
   >({
     mutationFn: (params) => authFetch!.post("processes/kill", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["processes"]);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["processes"] }),
   });
 
   return { getProcessesQuery, killProcessQuery, terminateProcessQuery };

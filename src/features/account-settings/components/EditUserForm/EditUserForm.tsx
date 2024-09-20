@@ -8,7 +8,7 @@ import useUserDetails from "@/hooks/useUserDetails";
 import { UserDetails } from "@/types/UserDetails";
 import { Button, Form, Input, Link, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC, Suspense, lazy } from "react";
+import { FC, lazy, Suspense } from "react";
 import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
 import classes from "./EditUserForm.module.scss";
 import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
@@ -34,8 +34,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   const { user: authUser, updateUser } = useAuth();
   const { editUserDetails } = useUserDetails();
 
-  const { mutateAsync: editUserMutation, isLoading: isEditingUser } =
-    editUserDetails;
+  const { mutateAsync: editUserMutation } = editUserDetails;
 
   const EMAIL_OPTIONS = user.allowable_emails.map((email) => ({
     label: email,
@@ -232,7 +231,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           className="u-no-margin--bottom"
           appearance="positive"
           type="submit"
-          disabled={isEditingUser || !formik.dirty}
+          disabled={formik.isSubmitting || !formik.dirty}
         >
           Save changes
         </Button>

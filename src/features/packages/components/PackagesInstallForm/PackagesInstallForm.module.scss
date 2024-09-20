@@ -2,19 +2,19 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .pagination {
+  margin-bottom: 0;
   margin-top: 0;
   position: static;
-  margin-bottom: 0;
 }
 
 .buttons {
-  margin-top: auto;
-  position: sticky;
-  margin-bottom: -3 * $sp-unit;
-  padding-bottom: $spv--large;
-  bottom: 0;
   background-color: $color-x-light;
-  column-gap: $sph--x-small;
   border-top: 1px solid $colors--light-theme--border-default;
+  bottom: 0;
+  column-gap: $sph--x-small;
+  margin-bottom: -3 * $sp-unit;
+  margin-top: auto;
+  padding-bottom: $spv--large;
   padding-top: $spv--large;
+  position: sticky;
 }

@@ -5,14 +5,16 @@ import {
   Suspense,
   useMemo,
 } from "react";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import {
   Button,
   ContextualMenu,
   Icon,
   ICONS,
   ModularTable,
-  Spinner,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { useRepositoryProfiles } from "../../hooks";
@@ -39,8 +41,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelContent } = useSidePanel();
   const { removeRepositoryProfileQuery } = useRepositoryProfiles();
-  const { mutateAsync: removeRepositoryProfile, isLoading: isRemoving } =
-    removeRepositoryProfileQuery;
+  const { mutateAsync: removeRepositoryProfile } = removeRepositoryProfileQuery;
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
 
@@ -89,7 +90,6 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
           onClick={() => handleRemoveProfile(profileName)}
           aria-label={`Delete ${profileName} repository profile`}
         >
-          {isRemoving && <Spinner />}
           Delete
         </Button>,
       ],

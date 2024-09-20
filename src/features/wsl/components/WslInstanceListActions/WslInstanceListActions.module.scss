@@ -1,8 +1,8 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .toggleButton {
-  padding: 0 $sph--x-small;
   margin-bottom: 0;
+  padding: 0 $sph--x-small;
 }
 
 .actionButton {
@@ -11,6 +11,6 @@
   justify-content: start;
   margin-bottom: 0;
   margin-right: 0;
-  width: 100%;
   white-space: nowrap;
+  width: 100%;
 }

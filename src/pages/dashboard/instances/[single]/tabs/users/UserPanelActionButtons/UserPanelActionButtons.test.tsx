@@ -1,11 +1,10 @@
 import "@/tests/matcher";
 import { screen } from "@testing-library/react";
-import { describe } from "vitest";
+import { describe, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import UserPanelActionButtons from "./UserPanelActionButtons";
 import { users } from "@/tests/mocks/user";
 import { getSelectedUsers } from "../UserPanelHeader/helpers";
-import { vi } from "vitest";
 
 const userData = {
   empty: [],
@@ -52,9 +51,9 @@ describe("UserPanelActionButtons", () => {
         for (const button of tableUserButtons) {
           const actionButton = screen.getByRole("button", { name: button });
           if (button !== "Add user") {
-            expect(actionButton).toBeDisabled();
+            expect(actionButton).toHaveAttribute("aria-disabled", "true");
           } else {
-            expect(actionButton).toBeEnabled();
+            expect(actionButton).not.toHaveAttribute("aria-disabled");
           }
         }
       });
@@ -70,7 +69,7 @@ describe("UserPanelActionButtons", () => {
           />,
         );
         const unlockButton = screen.getByRole("button", { name: "Unlock" });
-        expect(unlockButton).toBeDisabled();
+        expect(unlockButton).toHaveAttribute("aria-disabled", "true");
       });
 
       it("Lock button disabled when only locked users are selected", () => {
@@ -84,7 +83,7 @@ describe("UserPanelActionButtons", () => {
           />,
         );
         const lockButton = screen.getByRole("button", { name: "Lock" });
-        expect(lockButton).toBeDisabled();
+        expect(lockButton).toHaveAttribute("aria-disabled", "true");
       });
 
       it("Lock and Unlock enabled when only locked and unlocked users are selected", () => {

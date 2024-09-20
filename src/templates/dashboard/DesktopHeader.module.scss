@@ -3,8 +3,8 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .container {
-  border-bottom: 1px solid $colors--dark-theme--border-default;
   align-items: center;
+  border-bottom: 1px solid $colors--dark-theme--border-default;
   justify-content: space-between;
 }
 
@@ -19,9 +19,9 @@
 }
 
 .logoIcon {
+  left: 0;
   position: absolute;
   top: 0;
-  left: 0;
 
   @media (min-width: $breakpoint-large) {
     display: none;

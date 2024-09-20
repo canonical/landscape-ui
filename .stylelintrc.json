@@ -1,12 +1,22 @@
 {
-  "extends": ["stylelint-config-standard-scss"],
-  "plugins": ["stylelint-order", "stylelint-scss"],
+  "extends": [
+    "stylelint-config-standard-scss",
+    "stylelint-prettier/recommended"
+  ],
+  "plugins": ["stylelint-order"],
   "rules": {
     "order/properties-alphabetical-order": true,
     "at-rule-no-unknown": null,
     "scss/at-rule-no-unknown": true,
     "selector-class-pattern": null,
     "no-invalid-position-at-import-rule": null,
-    "scss/no-global-function-names": null
+    "scss/no-global-function-names": null,
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": ["global"]
+      }
+    ],
+    "scss/at-extend-no-missing-placeholder": null
   }
 }

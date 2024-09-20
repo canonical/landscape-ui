@@ -1,15 +1,9 @@
 import useFetchOld from "./useFetchOld";
-import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { Series } from "../types/Series";
-import useDebug from "./useDebug";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Series } from "@/types/Series";
 import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "../types/ApiError";
-import { QueryFnType } from "../types/QueryFnType";
+import { ApiError } from "@/types/ApiError";
+import { QueryFnType } from "@/types/QueryFnType";
 
 export interface CreateSeriesParams {
   distribution: string;
@@ -56,29 +50,9 @@ export interface GetRepoInfoParams {
   mirror_uri: string;
 }
 
-export interface UseSeriesResult {
-  createSeriesQuery: UseMutationResult<
-    AxiosResponse<Series>,
-    AxiosError<ApiError>,
-    CreateSeriesParams
-  >;
-  deriveSeriesQuery: UseMutationResult<
-    AxiosResponse<Series>,
-    AxiosError<ApiError>,
-    DeriveSeriesParams
-  >;
-  removeSeriesQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    RemoveSeriesParams
-  >;
-  getRepoInfo: QueryFnType<AxiosResponse<RepoInfo>, GetRepoInfoParams>;
-}
-
-export default function useSeries(): UseSeriesResult {
+export default function useSeries() {
   const queryClient = useQueryClient();
   const authFetch = useFetchOld();
-  const debug = useDebug();
 
   const createSeriesQuery = useMutation<
     AxiosResponse<Series>,
@@ -87,9 +61,8 @@ export default function useSeries(): UseSeriesResult {
   >({
     mutationKey: ["series", "new"],
     mutationFn: (params) => authFetch!.get("CreateSeries", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["distributions"]).catch(debug);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
   const deriveSeriesQuery = useMutation<
@@ -99,9 +72,8 @@ export default function useSeries(): UseSeriesResult {
   >({
     mutationKey: ["series", "derive"],
     mutationFn: (params) => authFetch!.get("DeriveSeries", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["distributions"]).catch(debug);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
   const removeSeriesQuery = useMutation<
@@ -111,9 +83,8 @@ export default function useSeries(): UseSeriesResult {
   >({
     mutationKey: ["series", "remove"],
     mutationFn: (params) => authFetch!.get("RemoveSeries", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["distributions"]).catch(debug);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
   const getRepoInfo: QueryFnType<AxiosResponse<RepoInfo>, GetRepoInfoParams> = (

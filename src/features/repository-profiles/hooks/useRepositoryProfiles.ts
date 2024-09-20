@@ -2,7 +2,6 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Activity } from "@/features/activities";
 import { RepositoryProfile } from "../types";
-import useDebug from "@/hooks/useDebug";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
 import { ApiError } from "@/types/ApiError";
@@ -42,7 +41,6 @@ export default function useRepositoryProfiles() {
   const queryClient = useQueryClient();
   const authFetch = useFetch();
   const authFetchOld = useFetchOld();
-  const debug = useDebug();
 
   const getRepositoryProfilesQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<RepositoryProfile>>,
@@ -66,7 +64,8 @@ export default function useRepositoryProfiles() {
     CreateRepositoryProfileParams
   >({
     mutationFn: (params) => authFetch!.post("repositoryprofiles", params),
-    onSuccess: () => queryClient.invalidateQueries(["repositoryProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
   });
 
   const editRepositoryProfileQuery = useMutation<
@@ -76,7 +75,8 @@ export default function useRepositoryProfiles() {
   >({
     mutationFn: ({ name, ...params }) =>
       authFetch!.put(`repositoryprofiles/${name}`, params),
-    onSuccess: () => queryClient.invalidateQueries(["repositoryProfiles"]),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
   });
 
   const removeRepositoryProfileQuery = useMutation<
@@ -87,9 +87,8 @@ export default function useRepositoryProfiles() {
     mutationKey: ["repositoryProfiles"],
     mutationFn: (params) =>
       authFetchOld!.get("RemoveRepositoryProfile", { params }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["repositoryProfiles"]).catch(debug);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
   });
 
   return {

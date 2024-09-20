@@ -44,7 +44,7 @@ const NewAPTSourceForm: FC = () => {
       value: name,
     }));
 
-  const { mutateAsync, isLoading } = createAPTSourceQuery;
+  const { mutateAsync } = createAPTSourceQuery;
 
   const { data: getAPTSourcesResponse } = getAPTSourcesQuery();
 
@@ -80,7 +80,7 @@ const NewAPTSourceForm: FC = () => {
         await mutateAsync(values);
 
         closeSidePanel();
-      } catch (error: any) {
+      } catch (error) {
         debug(error);
       }
     },
@@ -139,7 +139,7 @@ const NewAPTSourceForm: FC = () => {
         }
       />
       <SidePanelFormButtons
-        submitButtonDisabled={isLoading}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add APT Source"
       />
     </Form>

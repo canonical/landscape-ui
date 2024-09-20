@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import EditUserForm from "./EditUserForm";
 import useEnv from "@/hooks/useEnv";
 import useAuth from "@/hooks/useAuth";
@@ -78,7 +78,7 @@ describe("EditUserForm", () => {
 
       const saveButton = screen.getByRole("button", { name: /save changes/i });
       expect(saveButton).toBeInTheDocument();
-      expect(saveButton).toBeDisabled();
+      expect(saveButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("enables save button when form values change", async () => {
@@ -101,7 +101,7 @@ describe("EditUserForm", () => {
       const saveButton = screen.getByRole("button", { name: /save changes/i });
       await userEvent.click(saveButton);
 
-      expect(saveButton).toBeDisabled();
+      expect(saveButton).toHaveAttribute("aria-disabled", "true");
     });
   });
 

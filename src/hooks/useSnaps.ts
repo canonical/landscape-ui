@@ -4,7 +4,6 @@ import { QueryFnType } from "@/types/QueryFnType";
 import { AvailableSnap, AvailableSnapInfo, InstalledSnap } from "@/types/Snap";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
-import useDebug from "./useDebug";
 import useFetch from "./useFetch";
 
 interface AffectedSnap {
@@ -42,7 +41,6 @@ interface GetAvailableSnapInfoParams {
 export const useSnaps = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
-  const debug = useDebug();
 
   const getSnapsQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,
@@ -99,9 +97,7 @@ export const useSnaps = () => {
   >({
     mutationKey: ["snaps", "action"],
     mutationFn: (params) => authFetch!.post("snaps", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["snaps"]).catch(debug);
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["snaps"] }),
   });
 
   return {

@@ -16,9 +16,7 @@ type RoleParams = "AccessGroups" | "Permissions";
 type RoleActions = "add" | "remove";
 
 export type GetPromisesToEditRoleFn<
-  T extends Promise<AxiosResponse<Role, any>> = Promise<
-    AxiosResponse<Role, any>
-  >,
+  T extends Promise<AxiosResponse<Role>> = Promise<AxiosResponse<Role>>,
 > = (
   values: FormProps,
   role: Role,

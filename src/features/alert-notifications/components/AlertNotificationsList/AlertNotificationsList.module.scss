@@ -2,11 +2,11 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .listItem {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: $spv--small;
-  margin-top: $spv--small;
   margin-bottom: $spv--small;
+  margin-top: $spv--small;
 }
 
 .listItem__link {

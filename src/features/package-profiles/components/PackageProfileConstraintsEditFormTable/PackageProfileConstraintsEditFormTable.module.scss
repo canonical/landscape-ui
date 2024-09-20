@@ -2,9 +2,9 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .actionsCell {
-  width: 3.5rem;
-  vertical-align: middle;
   text-align: right;
+  vertical-align: middle;
+  width: 3.5rem;
 }
 
 .noPadding {
@@ -29,7 +29,7 @@
   margin-bottom: 0;
 
   :global(.p-form-validation):not(:global(.is-error)) & {
-    &:not(:hover):not(:focus):not(:active) {
+    &:not(:hover, :focus, :active) {
       background-color: $color-x-light;
       border-bottom-color: $color-x-light;
     }

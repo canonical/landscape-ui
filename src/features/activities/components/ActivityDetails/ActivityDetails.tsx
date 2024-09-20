@@ -31,13 +31,13 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const {
     mutateAsync: approveActivities,
-    isLoading: approveActivitiesLoading,
+    isPending: approveActivitiesLoading,
   } = approveActivitiesQuery;
-  const { mutateAsync: cancelActivities, isLoading: cancelActivitiesLoading } =
+  const { mutateAsync: cancelActivities, isPending: cancelActivitiesLoading } =
     cancelActivitiesQuery;
-  const { mutateAsync: redoActivities, isLoading: redoActivitiesLoading } =
+  const { mutateAsync: redoActivities, isPending: redoActivitiesLoading } =
     redoActivitiesQuery;
-  const { mutateAsync: undoActivities, isLoading: undoActivitiesLoading } =
+  const { mutateAsync: undoActivities, isPending: undoActivitiesLoading } =
     undoActivitiesQuery;
 
   const {

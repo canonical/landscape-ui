@@ -1,4 +1,4 @@
-export interface User extends Record<string, any> {
+export interface User extends Record<string, unknown> {
   enabled: boolean;
   primary_gid: number;
   uid: number;

@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { Preferences } from "@/types/Preferences";
 import useFetch from "@/hooks/useFetch";
-import useDebug from "@/hooks/useDebug";
 
 export interface ChangeOrganisationPreferencesParams {
   title?: string;
@@ -15,7 +14,6 @@ export interface ChangeOrganisationPreferencesParams {
 export default function useOrgSettings() {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
-  const debug = useDebug();
 
   const getOrganisationPreferences: QueryFnType<
     AxiosResponse<Preferences>,
@@ -34,9 +32,8 @@ export default function useOrgSettings() {
   >({
     mutationKey: ["preferences", "change"],
     mutationFn: (params) => authFetch!.put("preferences", params),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["preferences"]).catch(debug);
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["preferences"] }),
   });
 
   return {

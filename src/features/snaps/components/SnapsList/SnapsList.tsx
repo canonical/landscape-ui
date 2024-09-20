@@ -5,7 +5,11 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import { FC, Suspense, useMemo } from "react";
-import { CellProps, Column, Row } from "react-table";
+import {
+  CellProps,
+  Column,
+  Row,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { InstalledSnap } from "@/types/Snap";
@@ -31,11 +35,13 @@ const SnapsList: FC<SnapsListProps> = ({
   const { setSidePanelContent } = useSidePanel();
 
   const handleSelectionChange = (row: Row<InstalledSnap>) => {
-    selectedSnapIds.includes(row.original.snap.id)
-      ? setSelectedSnapIds(
-          selectedSnapIds.filter((id) => id !== row.original.snap.id),
-        )
-      : setSelectedSnapIds([...selectedSnapIds, row.original.snap.id]);
+    if (selectedSnapIds.includes(row.original.snap.id)) {
+      setSelectedSnapIds(
+        selectedSnapIds.filter((id) => id !== row.original.snap.id),
+      );
+    } else {
+      setSelectedSnapIds([...selectedSnapIds, row.original.snap.id]);
+    }
   };
 
   const toggleAll = () => {

@@ -49,16 +49,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     username: user.username,
     computer_id: instanceId,
   });
-  const { mutateAsync: editUserMutation, isLoading: isEditingUser } =
-    editUserQuery;
-  const {
-    mutateAsync: addUserToGroupMutation,
-    isLoading: isAddingUserToGroup,
-  } = addUserToGroupQuery;
-  const {
-    mutateAsync: removeUserFromGroupMutation,
-    isLoading: isRemovingUserFromGroup,
-  } = removeUserFromGroupQuery;
+  const { mutateAsync: editUserMutation } = editUserQuery;
+  const { mutateAsync: addUserToGroupMutation } = addUserToGroupQuery;
+  const { mutateAsync: removeUserFromGroupMutation } = removeUserFromGroupQuery;
 
   const groupsData = data?.data.groups ?? [];
   const groups = groupsData.map((group) => ({
@@ -260,9 +253,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={
-          isEditingUser || isAddingUserToGroup || isRemovingUserFromGroup
-        }
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

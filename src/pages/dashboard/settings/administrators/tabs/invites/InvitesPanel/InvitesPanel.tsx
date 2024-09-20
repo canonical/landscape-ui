@@ -1,6 +1,11 @@
 import moment from "moment";
 import { FC, HTMLProps, useMemo } from "react";
-import { Cell, CellProps, Column, TableCellProps } from "react-table";
+import {
+  Cell,
+  CellProps,
+  Column,
+  TableCellProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { Button, ModularTable } from "@canonical/react-components";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useInvitations from "@/hooks/useAdministrators";

@@ -4,11 +4,11 @@
 @import "vanilla-framework/scss/base_forms";
 
 .wrapper {
-  display: flex;
-  width: 100%;
-  position: relative;
   align-items: flex-start;
   background-color: $colors--light-theme--background-inputs;
+  display: flex;
+  position: relative;
+  width: 100%;
 }
 
 .search {
@@ -16,13 +16,13 @@
 }
 
 .buttonContainer {
-  position: relative;
-  padding-bottom: calc($spv--medium + $input-vertical-padding);
-  padding-top: calc($spv--medium + $input-vertical-padding);
   border-bottom: $input-border-thickness solid
     $colors--light-theme--border-high-contrast;
-  width: calc($sp-x-large + 0.5 * $bar-thickness);
   line-height: $spv--x-large;
+  padding-bottom: calc($spv--medium + $input-vertical-padding);
+  padding-top: calc($spv--medium + $input-vertical-padding);
+  position: relative;
+  width: calc($sp-x-large + 0.5 * $bar-thickness);
 
   .search:hover + & {
     background-color: $colors--light-theme--background-hover;
@@ -30,19 +30,19 @@
 }
 
 .button {
-  display: block;
-  height: calc(
-    (2 * $spv-nudge + map-get($line-heights, default-text)) -
-      (2 * $bar-thickness)
-  ); // side padding + icon width - focus outline width * 2
-
-  border-top: none;
-  border-right: none;
+  background-color: $color-transparent;
   border-bottom: none;
   border-left-color: $color-mid-light;
-  position: absolute;
-  background-color: $color-transparent;
+  border-right: none;
+  border-top: none;
+  display: block;
+  height: calc(
+    /* stylelint-disable-next-line */
+      (2 * $spv-nudge + map-get($line-heights, default-text)) -
+      (2 * $bar-thickness)
+  );
   margin: $bar-thickness 0;
+  position: absolute;
   right: 0;
   top: 0;
 

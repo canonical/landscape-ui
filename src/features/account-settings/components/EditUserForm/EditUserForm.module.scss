@@ -1,5 +1,5 @@
-@import "../../../../../node_modules/vanilla-framework/scss/settings_colors";
-@import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
+@import "node_modules/vanilla-framework/scss/settings_colors";
+@import "node_modules/vanilla-framework/scss/settings_spacing";
 
 .link {
   &:visited {
@@ -8,9 +8,9 @@
 }
 
 .passwordField {
-  display: flex;
   align-items: end;
   column-gap: $sph--large;
+  display: flex;
 }
 
 .passwordInputWrapper {

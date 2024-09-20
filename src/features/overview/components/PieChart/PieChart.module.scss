@@ -3,48 +3,55 @@
 @import "vanilla-framework/scss/settings_breakpoints";
 
 .outerContainer {
+  border: 1px solid $color-mid-light;
   display: flex;
   flex-direction: column;
-  border: 1px solid $color-mid-light;
-  padding: $sp-medium;
   height: 100%;
+  padding: $sp-medium;
+
   @media (min-width: $breakpoint-large) {
     padding-right: 0;
   }
+
   @media (min-width: $breakpoint-small) {
-    width: 45%;
     flex-direction: column;
+    width: 45%;
   }
-  @media (max-width: calc(#{$breakpoint-small} - 1px)) {
+
+  @media (width <= calc(#{$breakpoint-small} - 1px)) {
     flex-direction: column;
     width: 100%;
   }
 }
 
 .innerContainer {
+  align-items: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
   height: 100%;
+
   @media (min-width: $breakpoint-large) {
     flex-direction: row;
   }
-  @media (max-width: calc(#{$breakpoint-small} - 1px)) {
+
+  @media (width <= calc(#{$breakpoint-small} - 1px)) {
     flex-direction: row;
     width: 100%;
   }
 }
 
 .chartContainer {
+  min-height: 180px;
+  min-width: 180px;
   position: relative;
   width: 100%;
-  min-width: 180px;
-  min-height: 180px;
-  @media (min-width: 1250px) {
+
+  @media (width >= 1250px) {
     min-height: 250px;
     min-width: 250px;
   }
-  @media (min-width: $breakpoint-large) and (max-width: 1249px) {
+
+  @media (min-width: $breakpoint-large) and (width <= 1249px) {
     min-height: 150px;
     min-width: 150px;
   }

@@ -1,8 +1,8 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .header {
+  background-color: $color-x-light;
   position: sticky;
   top: 0;
-  background-color: $color-x-light;
   z-index: 10;
 }

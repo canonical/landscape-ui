@@ -1,5 +1,10 @@
 import { HTMLProps, MutableRefObject } from "react";
-import { Cell, Row, TableCellProps, TableRowProps } from "react-table";
+import {
+  Cell,
+  Row,
+  TableCellProps,
+  TableRowProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { PermissionOption } from "@/pages/dashboard/settings/roles/types";
 import { Role } from "@/types/Role";
 import { CellCoordinates } from "./types";

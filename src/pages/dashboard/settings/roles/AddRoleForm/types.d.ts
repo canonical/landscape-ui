@@ -13,9 +13,7 @@ export interface FormProps {
 }
 
 export type GetPromisesToAddRoleFn<
-  T extends Promise<AxiosResponse<Role, any>> = Promise<
-    AxiosResponse<Role, any>
-  >,
+  T extends Promise<AxiosResponse<Role>> = Promise<AxiosResponse<Role>>,
 > = (
   values: FormProps,
   accessGroupOptions: AccessGroupOption[],

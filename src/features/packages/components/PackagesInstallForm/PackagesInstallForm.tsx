@@ -23,7 +23,7 @@ const PackagesInstallForm: FC = () => {
 
   const {
     mutateAsync: installPackages,
-    isLoading: installPackagesQueryLoading,
+    isPending: installPackagesQueryLoading,
   } = packagesActionQuery;
 
   const handleSubmit = async () => {

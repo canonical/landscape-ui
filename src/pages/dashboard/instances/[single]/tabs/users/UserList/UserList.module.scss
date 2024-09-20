@@ -1,13 +1,13 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .status {
-  display: flex;
   align-items: center;
+  display: flex;
   gap: $sph--small;
 }
 
 .actions {
-  width: 15%;
   overflow: initial;
   text-align: right;
+  width: 15%;
 }

@@ -31,10 +31,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 
   const instanceId = Number(urlInstanceId);
 
-  const {
-    mutateAsync: upgradeInstanceUsns,
-    isLoading: upgradeUsnPackagesLoading,
-  } = upgradeInstanceUsnsQuery;
+  const { mutateAsync: upgradeInstanceUsns } = upgradeInstanceUsnsQuery;
 
   const handleActivityDetailsView = () => {
     navigate(
@@ -77,7 +74,6 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
           key="upgrade"
           appearance="positive"
           onClick={handleUpgradePackages}
-          disabled={upgradeUsnPackagesLoading}
           aria-label="Upgrade selected packages"
         >
           Upgrade

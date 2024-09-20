@@ -11,9 +11,9 @@
 
 .blockTitle {
   display: block;
-  padding-top: $spv--large;
-  padding-right: $sph--large;
   min-width: 24 * $sp-unit;
+  padding-right: $sph--large;
+  padding-top: $spv--large;
 }
 
 .infoRows {
@@ -21,6 +21,6 @@
 }
 
 .infoRow {
-  padding-top: $spv--large;
   padding-bottom: $spv--large;
+  padding-top: $spv--large;
 }

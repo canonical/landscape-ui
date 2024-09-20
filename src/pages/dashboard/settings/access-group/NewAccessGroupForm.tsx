@@ -13,7 +13,7 @@ interface FormProps {
 
 const NewAccessGroupForm = () => {
   const { createAccessGroupQuery, getAccessGroupQuery } = useRoles();
-  const { mutateAsync, isLoading } = createAccessGroupQuery;
+  const { mutateAsync } = createAccessGroupQuery;
   const { closeSidePanel } = useSidePanel();
   const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =
     getAccessGroupQuery();
@@ -67,7 +67,7 @@ const NewAccessGroupForm = () => {
         {...formik.getFieldProps("parent")}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={isLoading}
+        submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add"
       />
     </Form>

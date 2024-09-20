@@ -8,6 +8,7 @@ interface GeneratePaginatedResponseProps<D> {
   searchFields?: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getNestedProperty(obj: any, path: string) {
   return path.split(".").reduce((obj, key) => obj && obj[key], obj);
 }

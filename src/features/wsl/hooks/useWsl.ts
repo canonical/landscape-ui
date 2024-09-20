@@ -69,8 +69,8 @@ export const useWsl = () => {
       authFetch!.post(`computers/${parent_id}/children`, params),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["wsl-hosts"]),
-        queryClient.invalidateQueries(["instances"]),
+        queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
       ]),
   });
 
@@ -83,8 +83,8 @@ export const useWsl = () => {
       authFetchOld!.get("DeleteChildComputers", { params }),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["wsl-hosts"]),
-        queryClient.invalidateQueries(["instances"]),
+        queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
       ]),
   });
 
@@ -97,8 +97,8 @@ export const useWsl = () => {
       authFetchOld!.get("SetDefaultChildComputer", { params }),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["wsl-hosts"]),
-        queryClient.invalidateQueries(["instances"]),
+        queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
       ]),
   });
 
@@ -111,8 +111,8 @@ export const useWsl = () => {
       authFetchOld!.get("ShutdownHostComputer", { params }),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["wsl-hosts"]),
-        queryClient.invalidateQueries(["instances"]),
+        queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
       ]),
   });
 
@@ -125,8 +125,8 @@ export const useWsl = () => {
       authFetchOld!.get("StartChildComputers", { params }),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["wsl-hosts"]),
-        queryClient.invalidateQueries(["instances"]),
+        queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
       ]),
   });
 
@@ -138,8 +138,8 @@ export const useWsl = () => {
     mutationFn: (params) => authFetchOld!.get("StopChildComputers", { params }),
     onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries(["wsl-hosts"]),
-        queryClient.invalidateQueries(["instances"]),
+        queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
       ]),
   });
 

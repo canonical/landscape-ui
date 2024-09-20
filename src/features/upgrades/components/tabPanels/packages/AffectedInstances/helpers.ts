@@ -1,5 +1,8 @@
 import { HTMLProps } from "react";
-import { Cell, TableCellProps } from "react-table";
+import {
+  Cell,
+  TableCellProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { InstancePackagesToExclude, Package } from "@/features/packages";
 import { Instance } from "@/types/Instance";
 import { toggleCurrentPackage } from "../helpers";

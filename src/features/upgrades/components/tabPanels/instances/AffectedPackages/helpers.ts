@@ -1,5 +1,8 @@
 import { HTMLProps } from "react";
-import { Cell, TableCellProps } from "react-table";
+import {
+  Cell,
+  TableCellProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { InstancePackage } from "@/features/packages";
 import classes from "./AffectedPackages.module.scss";
 

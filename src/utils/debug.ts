@@ -1,11 +1,16 @@
-import { IS_DEV_ENV } from "../constants";
+import { IS_DEV_ENV } from "@/constants";
+import { AxiosError } from "axios";
 
-export const consoleErrorMessage = (error: any) => {
+export const consoleErrorMessage = (error: unknown) => {
   if (IS_DEV_ENV) {
-    console.error(
-      error?.response?.data.message ?? error?.message ?? "Unknown error",
-      error,
-    );
+    if (error instanceof AxiosError && error.response) {
+      console.error(error.response.data.message, error);
+    } else {
+      console.error(
+        error instanceof Error ? error.message : "Unknown error",
+        error,
+      );
+    }
   }
 };
 

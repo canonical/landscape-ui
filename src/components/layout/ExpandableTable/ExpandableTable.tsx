@@ -1,5 +1,11 @@
 import { HTMLProps, isValidElement, ReactNode } from "react";
-import { Cell, Column, Row, TableCellProps, TableRowProps } from "react-table";
+import {
+  Cell,
+  Column,
+  Row,
+  TableCellProps,
+  TableRowProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import { ModularTable } from "@canonical/react-components";
 import ExpandableTableFooter from "@/components/layout/ExpandableTableFooter";
 

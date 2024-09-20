@@ -1,17 +1,20 @@
-@import "../../../../../node_modules/vanilla-framework/scss/settings_colors";
-@import "../../../../../node_modules/vanilla-framework/scss/settings_spacing";
-@import "../../../../../node_modules/vanilla-framework/scss/utilities_off-screen";
+@import "node_modules/vanilla-framework/scss/settings_colors";
+@import "node_modules/vanilla-framework/scss/settings_spacing";
+@import "node_modules/vanilla-framework/scss/utilities_off-screen";
 @include vf-u-off-screen;
 
 .switch {
   :global(.p-switch__input) {
     top: 0;
   }
+
   :global(.p-switch) {
     margin-bottom: 0;
   }
+
   :global(.p-switch__label) {
     @extend .u-off-screen;
+
     top: 0;
   }
 }
@@ -40,10 +43,11 @@
 .tags {
   tbody & {
     border-color: $color-mid-x-light;
-    border-width: 0 1px;
     border-style: solid;
+    border-width: 0 1px;
     padding: 0;
   }
+
   overflow: visible;
   width: 20%;
 }

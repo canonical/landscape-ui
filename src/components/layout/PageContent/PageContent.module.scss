@@ -1,9 +1,9 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .outerDiv {
+  display: flex;
   flex-grow: 1;
   overflow: visible;
-  display: flex;
 }
 
 .innerDiv {

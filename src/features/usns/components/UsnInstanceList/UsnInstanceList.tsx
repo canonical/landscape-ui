@@ -1,5 +1,8 @@
 import { FC, useMemo } from "react";
-import { CellProps, Column } from "react-table";
+import {
+  CellProps,
+  Column,
+} from "@canonical/react-components/node_modules/@types/react-table";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import { Instance } from "@/types/Instance";
 import { UsnPackage } from "@/types/Usn";
