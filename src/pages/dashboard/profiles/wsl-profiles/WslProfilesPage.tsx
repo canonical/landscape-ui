@@ -1,22 +1,17 @@
-import { FC, lazy, Suspense } from "react";
+import { FC } from "react";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import LoadingState from "@/components/layout/LoadingState";
 import {
+  useWslProfiles,
+  WslProfileInstallForm,
   WslProfilesEmptyState,
   WslProfilesHeader,
   WslProfilesList,
-  useWslProfiles,
 } from "@/features/wsl-profiles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-
-const WslProfileInstallForm = lazy(() =>
-  import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileInstallForm,
-  })),
-);
 
 const WslProfilesPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
@@ -28,9 +23,7 @@ const WslProfilesPage: FC = () => {
   const handleAddWslProfile = () => {
     setSidePanelContent(
       "Add WSL profile",
-      <Suspense fallback={<LoadingState />}>
-        <WslProfileInstallForm action="add" />
-      </Suspense>,
+      <WslProfileInstallForm action="add" />,
     );
   };
 
