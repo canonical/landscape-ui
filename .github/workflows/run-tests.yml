@@ -41,6 +41,7 @@ jobs:
             name: playwright-report
             path: playwright-report/
             retention-days: 30
+
   unit-tests:
     runs-on: [self-hosted, Linux, large]
     permissions:
