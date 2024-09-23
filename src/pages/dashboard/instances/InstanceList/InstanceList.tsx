@@ -149,14 +149,7 @@ const InstanceList: FC<InstanceListProps> = ({
       ({ type }) =>
         !["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(type),
     );
-    if (instance.reboot_required_flag) {
-      return {
-        icon: `${STATUSES.ComputerRebootAlert.icon.color}`,
-        label:
-          STATUSES.ComputerRebootAlert.alternateLabel ??
-          STATUSES.ComputerRebootAlert.label,
-      };
-    }
+
     if (0 === filteredAlerts.length) {
       return {
         icon: `${STATUSES.Online.icon.color}`,
@@ -244,7 +237,7 @@ const InstanceList: FC<InstanceListProps> = ({
       },
       {
         Header: "Status",
-        accessor: "reboot_required_flag",
+        accessor: "alerts",
         Cell: ({ row: { original } }: CellProps<Instance>) => {
           const { label } = getStatusRowIconAndLabel(original);
           return label;
