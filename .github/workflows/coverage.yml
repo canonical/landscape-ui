@@ -25,6 +25,8 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm ci
+        env:
+          npm_config_cache: /home/ubuntu/landscape-dashboard/.npm
       - name: Check memory usage
         run: free -m
       - name: Run tests
