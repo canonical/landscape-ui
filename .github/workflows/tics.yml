@@ -1,4 +1,4 @@
-name: Coverage report
+name: TICS report
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
         if: always()
         with:
           name: coverage-report
-          path: ./coverage
+          path: ${{ github.workspace }}/coverage
           retention-days: 1
 
   tics-report:
@@ -47,13 +47,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-          path: ./coverage
+          path: ${{ github.workspace }}/coverage
 
+      - uses: actions/checkout@v4
       - name: Produce TICS report
-        shell: bash
-        run: |
-          set -x
-          export TICSAUTHTOKEN=${{ secrets.TICS_AUTH_TOKEN }}
-          curl --silent --show-error "https://canonical.tiobe.com/tiobeweb/TICS/api/public/v1/fapi/installtics/Script?cfg=default&platform=linux&url=https://canonical.tiobe.com/tiobeweb/TICS/" > install_tics.sh
-          . ./install_tics.sh
-          TICSQServer -project landscape-dashboard -tmpdir /tmp/tics -branchdir .
+        uses: tiobe/tics-github-action@v3
+        with:
+          mode: qserver
+          project: landscape-dashboard
+          viewerUrl: https://canonical.tiobe.com/tiobeweb/TICS/api/cfg?name=default
+          branchdir: ${{ github.workspace }}
+          ticsAuthToken: ${{ secrets.TICS_AUTH_TOKEN }}
+          installTics: true
