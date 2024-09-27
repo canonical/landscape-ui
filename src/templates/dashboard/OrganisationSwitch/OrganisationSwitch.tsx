@@ -5,7 +5,6 @@ import useDebug from "@/hooks/useDebug";
 import useFetch from "@/hooks/useFetch";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Select } from "@canonical/react-components";
-import { API_URL } from "@/constants";
 import { SwitchAccountParams, SwitchAccountResponse } from "./types";
 import classNames from "classnames";
 import classes from "./OrganisationSwitch.module.scss";
@@ -38,7 +37,7 @@ const OrganisationSwitch = () => {
         SwitchAccountResponse,
         AxiosResponse<SwitchAccountResponse>,
         SwitchAccountParams
-      >(`${API_URL}switch-account`, {
+      >("switch-account", {
         account_name: event.target.value,
       });
 
