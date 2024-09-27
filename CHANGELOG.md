@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/canonical/landscape-dashboard/compare/v1.2.0...v1.2.1) (2024-09-27)
+
+
+### Bug Fixes
+
+* bug causing switching organisations not to work ([89728bd](https://github.com/canonical/landscape-dashboard/commit/89728bdf2df276f4a7b6604f751b856e74fa0820))
+
 # [1.2.0](https://github.com/canonical/landscape-dashboard/compare/v1.1.0...v1.2.0) (2024-09-23)
 
 
