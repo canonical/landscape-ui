@@ -5,10 +5,10 @@ This branch is intended for use when building the `landscape-dashboard` package 
   1. check out this branch
 
          git switch ppa-build-debian
-     
+
   2. merge the latest changes from `ppa-build`, resolving all conflicts with that branch's version
 
-         git merge -X theirs ppa-build
+         git merge -X theirs origin/ppa-build
 
   3. update the changelog for new `<VERSION>`
 
@@ -20,12 +20,12 @@ This branch is intended for use when building the `landscape-dashboard` package 
          gzip ../landscape-dashboard_<VERSION>.orig.tar
          rm README.md
 
-  6. perform a source build
+  5. perform a source build
 
          debuild -S
 
-  7. upload
+  6. upload
 
-         dput ppa:myaccount/my-ppa ./landscape-dashboard_0.0.X-0landscape0_source.changes
+         dput ppa:myaccount/my-ppa ./landscape-dashboard_<VERSION>-0landscape0_source.changes
 
-  8. restore the `README` and commit and push to this branch
+  7. restore the `README` and commit and push to this branch
