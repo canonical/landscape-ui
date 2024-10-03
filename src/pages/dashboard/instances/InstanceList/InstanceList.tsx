@@ -180,7 +180,7 @@ const InstanceList: FC<InstanceListProps> = ({
               <Tooltip message={summary}>
                 <Icon
                   className="u-no-margin--left"
-                  name={`${STATUSES[type].icon.color ?? STATUSES.Unknown.icon.color}`}
+                  name={`${STATUSES[type]?.icon.color ?? STATUSES.Unknown.icon.color}`}
                 />
               </Tooltip>
             </span>
