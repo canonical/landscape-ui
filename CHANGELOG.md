@@ -1,3 +1,15 @@
+# [1.3.0](https://github.com/canonical/landscape-dashboard/compare/v1.2.1...v1.3.0) (2024-10-03)
+
+
+### Bug Fixes
+
+* use default icon for unknown alert type ([901e6b7](https://github.com/canonical/landscape-dashboard/commit/901e6b775b3c06cb77ad70455b575354b6921d5b))
+
+
+### Features
+
+* add new child instance alert ([5b2342b](https://github.com/canonical/landscape-dashboard/commit/5b2342b4b2004da55fdf1036a0dbbeef5e06c03a))
+
 ## [1.2.1](https://github.com/canonical/landscape-dashboard/compare/v1.2.0...v1.2.1) (2024-09-27)
 
 
