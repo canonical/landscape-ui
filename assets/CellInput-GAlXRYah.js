@@ -1,1 +1,0 @@
-import{r as u,j as n,h as p}from"./index-BhA4J3ko.js";const x=({onChange:e,value:s,...a})=>{const[t,o]=u.useState(s);return n.jsx(p.Input,{type:"text",autoComplete:"off",...a,value:t,onChange:r=>o(r.target.value),onBlur:()=>e(t)})};export{x as C};
