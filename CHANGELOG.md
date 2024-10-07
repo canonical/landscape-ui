@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/canonical/landscape-dashboard/compare/v1.3.0...v1.4.0) (2024-10-07)
+
+
+### Features
+
+* add custom SSO providers: Okta and Ubuntu One ([03437ce](https://github.com/canonical/landscape-dashboard/commit/03437ce7bac8e055f848062251b19884f39a2930))
+
 # [1.3.0](https://github.com/canonical/landscape-dashboard/compare/v1.2.1...v1.3.0) (2024-10-03)
 
 
