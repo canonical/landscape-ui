@@ -2,19 +2,19 @@ import classNames from "classnames";
 import { FC, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useEnv from "@/hooks/useEnv";
-import { MENU_ITEMS } from "./constants";
+import { getFilteredByEnvMenuItems, getPathToExpand } from "./helpers";
 import classes from "./Navigation.module.scss";
+import useAuth from "@/hooks/useAuth";
 
 const Navigation: FC = () => {
   const [expanded, setExpanded] = useState("");
 
   const { pathname } = useLocation();
   const { isSaas, isSelfHosted } = useEnv();
+  const { isOidcAvailable } = useAuth();
 
   useEffect(() => {
-    const shouldBeExpandedPath = MENU_ITEMS.filter(
-      ({ items }) => items && items.length > 0,
-    ).find(({ path }) => pathname.startsWith(path))?.path;
+    const shouldBeExpandedPath = getPathToExpand(pathname);
 
     if (shouldBeExpandedPath) {
       setExpanded(shouldBeExpandedPath);
@@ -25,11 +25,7 @@ const Navigation: FC = () => {
     <div className="p-side-navigation--icons is-dark">
       <nav aria-label="Main">
         <ul className="u-no-margin--bottom u-no-margin--left u-no-padding--left">
-          {MENU_ITEMS.filter(
-            ({ env }) =>
-              (!isSaas && env !== "saas") ||
-              (!isSelfHosted && env !== "selfHosted"),
-          ).map((item) => (
+          {getFilteredByEnvMenuItems({ isSaas, isSelfHosted }).map((item) => (
             <li
               key={item.path}
               className={classNames("p-side-navigation__item", {
@@ -99,58 +95,63 @@ const Navigation: FC = () => {
                   className="p-side-navigation__list"
                   aria-expanded={expanded === item.path}
                 >
-                  {item.items.map((subItem) => (
-                    <li key={subItem.path}>
-                      {subItem.path.startsWith("http") ? (
-                        <a
-                          className={classNames(
-                            "p-side-navigation__link is-light",
-                            classes.link,
-                          )}
-                          href={subItem.path}
-                          target="_blank"
-                          rel="nofollow noopener noreferrer"
-                        >
-                          <span
+                  {item.items
+                    .filter(
+                      ({ path }) =>
+                        isOidcAvailable || !path.includes("identity-providers"),
+                    )
+                    .map((subItem) => (
+                      <li key={subItem.path}>
+                        {subItem.path.startsWith("http") ? (
+                          <a
                             className={classNames(
-                              "p-side-navigation__label",
-                              classes.label,
+                              "p-side-navigation__link is-light",
+                              classes.link,
                             )}
+                            href={subItem.path}
+                            target="_blank"
+                            rel="nofollow noopener noreferrer"
                           >
-                            {subItem.label}
-                          </span>
-                        </a>
-                      ) : (
-                        <Link
-                          className={classNames(
-                            "p-side-navigation__link",
-                            classes.link,
-                          )}
-                          to={subItem.path}
-                          aria-current={
-                            pathname === subItem.path ? "page" : undefined
-                          }
-                        >
-                          {subItem.icon && (
-                            <i
+                            <span
                               className={classNames(
-                                `p-icon--${subItem.icon} is-light p-side-navigation__icon`,
-                                classes.icon,
+                                "p-side-navigation__label",
+                                classes.label,
                               )}
-                            />
-                          )}
-                          <span
+                            >
+                              {subItem.label}
+                            </span>
+                          </a>
+                        ) : (
+                          <Link
                             className={classNames(
-                              "p-side-navigation__label",
-                              classes.label,
+                              "p-side-navigation__link",
+                              classes.link,
                             )}
+                            to={subItem.path}
+                            aria-current={
+                              pathname === subItem.path ? "page" : undefined
+                            }
                           >
-                            {subItem.label}
-                          </span>
-                        </Link>
-                      )}
-                    </li>
-                  ))}
+                            {subItem.icon && (
+                              <i
+                                className={classNames(
+                                  `p-icon--${subItem.icon} is-light p-side-navigation__icon`,
+                                  classes.icon,
+                                )}
+                              />
+                            )}
+                            <span
+                              className={classNames(
+                                "p-side-navigation__label",
+                                classes.label,
+                              )}
+                            >
+                              {subItem.label}
+                            </span>
+                          </Link>
+                        )}
+                      </li>
+                    ))}
                 </ul>
               )}
             </li>

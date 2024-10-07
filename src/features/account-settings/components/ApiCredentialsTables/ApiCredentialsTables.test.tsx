@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { useMediaQuery } from "usehooks-ts";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import ApiCredentialsTables from "./ApiCredentialsTables";
-import { UserDetails, Credential } from "@/types/UserDetails";
+import { Credential, UserDetails } from "@/types/UserDetails";
 
 const mockUser: UserDetails = {
   name: "test-name",
@@ -15,6 +15,7 @@ const mockUser: UserDetails = {
   last_login_time: "test-time",
   preferred_account: "account1",
   timezone: "test-timezone",
+  oidc_identities: [],
   accounts: [
     {
       name: "account1",

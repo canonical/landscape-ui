@@ -4,7 +4,6 @@ interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string;
   readonly VITE_API_URL: string;
   readonly VITE_API_URL_OLD: string;
-  readonly VITE_OLD_DASHBOARD_URL: string;
   readonly VITE_ROOT_PATH: string;
   readonly VITE_SELF_HOSTED_ENV: string;
 }

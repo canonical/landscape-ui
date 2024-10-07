@@ -1,23 +1,37 @@
 import { FC, ReactNode } from "react";
+import { LoginPageLayout, Notification } from "@canonical/react-components";
+import Logo from "@/assets/images/logo-white-character.svg";
+import { APP_TITLE, ROOT_PATH } from "@/constants";
 import classes from "./AuthTemplate.module.scss";
-import Logo from "../../assets/images/logo-dark-full.svg";
-import { APP_TITLE } from "../../constants";
 
 interface AuthTemplateProps {
-  title: string;
   children: ReactNode;
+  title: string;
+  invitationAccount?: string;
 }
 
-const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
+const AuthTemplate: FC<AuthTemplateProps> = ({
+  title,
+  children,
+  invitationAccount,
+}) => {
   return (
     <div className={classes.root}>
-      <div>
-        <img src={Logo} alt={APP_TITLE} width={175} height={56} />
-      </div>
-      <div className={classes.inner}>
-        <h1 className={classes.title}>{title}</h1>
-        <div>{children}</div>
-      </div>
+      <LoginPageLayout
+        title={title}
+        logo={{
+          src: Logo,
+          title: APP_TITLE,
+          url: ROOT_PATH,
+        }}
+      >
+        {invitationAccount && (
+          <Notification severity="information">
+            {`You've been invited to ${invitationAccount}`}
+          </Notification>
+        )}
+        {children}
+      </LoginPageLayout>
     </div>
   );
 };

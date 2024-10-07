@@ -20,7 +20,7 @@ describe("LoginForm", () => {
 
       userEvent.click(
         screen.getByRole("button", {
-          name: /login/i,
+          name: /sign in/i,
         }),
       );
     });

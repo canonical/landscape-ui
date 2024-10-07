@@ -1,0 +1,23 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.providerButton {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.arrow {
+  transform: rotate(-90deg);
+}
+
+.iconContainer {
+  align-items: center;
+  display: flex;
+}
+
+.icon {
+  height: $sp-x-large;
+  width: $sp-x-large;
+}

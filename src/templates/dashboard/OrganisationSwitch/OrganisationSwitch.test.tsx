@@ -1,38 +1,59 @@
-import { AuthContextProps, AuthUser } from "@/context/auth";
+import { AuthContextProps } from "@/context/auth";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import useAuth from "../../../hooks/useAuth";
 import OrganisationSwitch from "./OrganisationSwitch";
 import userEvent from "@testing-library/user-event";
+import { authUser } from "@/tests/mocks/auth";
 
 vi.mock("@/hooks/useAuth");
 
-const mockUser: AuthUser = {
-  accounts: [{ name: "test-account", title: "Test Account" }],
-  current_account: "test-account",
-  email: "example@mail.com",
-  name: "Test User",
-  token: "test-token",
-};
-
 const authProps: AuthContextProps = {
+  account: {
+    switchable: false,
+  },
   logout: vi.fn(),
   authorized: true,
   authLoading: false,
   setUser: vi.fn(),
-  switchAccount: vi.fn(),
   updateUser: vi.fn(),
-  user: mockUser,
+  user: authUser,
+  isOidcAvailable: true,
 };
 
-const authWithMultipleAccounts = {
+const authWithMultipleAccounts: AuthContextProps = {
   ...authProps,
+  account: {
+    current: "account1",
+    options: [
+      {
+        label: "Account 1",
+        value: "account1",
+      },
+      {
+        label: "Account 2",
+        value: "account2",
+      },
+    ],
+    switch: vi.fn(),
+    switchable: true,
+  },
   user: {
-    ...mockUser,
+    ...authUser,
     accounts: [
-      { name: "account1", title: "Account 1" },
-      { name: "account2", title: "Account 2" },
+      {
+        name: "account1",
+        title: "Account 1",
+        subdomain: null,
+        classic_dashboard_url: "",
+      },
+      {
+        name: "account2",
+        title: "Account 2",
+        subdomain: null,
+        classic_dashboard_url: "",
+      },
     ],
   },
 };
@@ -43,7 +64,7 @@ describe("OrganisationSwitch", () => {
 
     renderWithProviders(<OrganisationSwitch />);
 
-    expect(screen.getByText("organisation")).toBeInTheDocument();
+    expect(screen.getByText(/organisation/i)).toBeInTheDocument();
   });
 
   it("does not render the component when there is only one organisation", () => {
@@ -51,7 +72,7 @@ describe("OrganisationSwitch", () => {
 
     renderWithProviders(<OrganisationSwitch />);
 
-    expect(screen.queryByText("organisation")).not.toBeInTheDocument();
+    expect(screen.queryByText(/organisation/i)).not.toBeInTheDocument();
   });
 
   it("sets the initial account state correctly", () => {
@@ -68,8 +89,11 @@ describe("OrganisationSwitch", () => {
 
     renderWithProviders(<OrganisationSwitch />);
 
-    const select = screen.getByRole("combobox");
-    await userEvent.selectOptions(select, "account2");
-    expect(select).toHaveValue("account2");
+    await userEvent.selectOptions(screen.getByRole("combobox"), "account2");
+
+    expect(
+      authWithMultipleAccounts.account.switchable &&
+        authWithMultipleAccounts.account.switch,
+    ).toHaveBeenCalledWith("account2-token", "account2");
   });
 });

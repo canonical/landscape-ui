@@ -1,0 +1,8 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.buttonRow {
+  border-top: 1px solid $colors--light-theme--border-low-contrast;
+  margin-top: $spv--large;
+  padding-top: $spv--x-large;
+}

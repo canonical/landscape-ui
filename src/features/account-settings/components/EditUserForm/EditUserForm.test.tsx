@@ -6,6 +6,7 @@ import EditUserForm from "./EditUserForm";
 import useEnv from "@/hooks/useEnv";
 import useAuth from "@/hooks/useAuth";
 import { AuthContextProps } from "@/context/auth";
+import { authUser } from "@/tests/mocks/auth";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
@@ -24,6 +25,7 @@ const props = {
     identity: "",
     last_login_host: "",
     last_login_time: "",
+    oidc_identities: [],
   },
 };
 
@@ -32,15 +34,18 @@ const authContextValues: AuthContextProps = {
   authorized: true,
   authLoading: false,
   setUser: vi.fn(),
-  switchAccount: vi.fn(),
-  updateUser: vi.fn(),
-  user: {
-    accounts: [{ name: "test-account", title: "Test Account" }],
-    current_account: "test-account",
-    email: "example@mail.com",
-    name: "Test User",
-    token: "test-token",
+  account: {
+    switchable: true,
+    current: "test-account",
+    options: [
+      { label: "Test Account", value: "test-account" },
+      { label: "Another Account", value: "another-account" },
+    ],
+    switch: vi.fn(),
   },
+  updateUser: vi.fn(),
+  user: authUser,
+  isOidcAvailable: true,
 };
 
 const mockSelfHosted = {

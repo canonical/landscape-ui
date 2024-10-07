@@ -1,11 +1,12 @@
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import AlertsList from "./AlertsList";
 import { alerts } from "@/tests/mocks/alerts";
 import { renderWithProviders } from "@/tests/render";
 import useAuth from "@/hooks/useAuth";
 import { useMediaQuery } from "usehooks-ts";
-import { AuthContextProps, AuthUser } from "@/context/auth";
+import { AuthContextProps } from "@/context/auth";
+import { authUser } from "@/tests/mocks/auth";
 
 vi.mock("@/hooks/useAuth");
 vi.mock("usehooks-ts", () => ({
@@ -18,22 +19,15 @@ const mockAvailableTagOptions = [
   { value: "tag2", label: "Tag 2", group: "Tags" },
 ];
 
-const mockUser: AuthUser = {
-  accounts: [{ name: "test-account", title: "Test Account" }],
-  current_account: "test-account",
-  email: "example@mail.com",
-  name: "Test User",
-  token: "test-token",
-};
-
 const authProps: AuthContextProps = {
   logout: vi.fn(),
   authorized: true,
   authLoading: false,
   setUser: vi.fn(),
-  switchAccount: vi.fn(),
+  account: { switchable: false },
   updateUser: vi.fn(),
-  user: mockUser,
+  user: authUser,
+  isOidcAvailable: true,
 };
 
 describe("AlertsList", () => {
@@ -71,7 +65,7 @@ describe("AlertsList", () => {
   it("displays default title when user account is not found", () => {
     vi.mocked(useAuth).mockReturnValue({
       ...authProps,
-      user: { ...mockUser, current_account: "non-existent" },
+      user: { ...authUser, current_account: "non-existent" },
     });
     vi.mocked(useMediaQuery).mockReturnValue(true);
 

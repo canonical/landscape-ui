@@ -1,0 +1,24 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  background-color: $color-x-light;
+  bottom: 0;
+  box-shadow: inset 0 1px 0 0 $colors--light-theme--border-default;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -$spv--x-large;
+  margin-top: $spv--x-large;
+  padding-bottom: $spv--x-large;
+  padding-top: $spv--x-large;
+  position: sticky;
+}
+
+.backButton {
+  margin-bottom: 0;
+  margin-right: auto;
+}
+
+.chevronIcon {
+  transform: rotate(90deg);
+}

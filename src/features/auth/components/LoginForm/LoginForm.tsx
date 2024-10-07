@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import useDebug from "@/hooks/useDebug";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -9,19 +9,11 @@ import {
   Input,
   PasswordToggle,
 } from "@canonical/react-components";
-import axios, { AxiosResponse } from "axios";
-import { API_URL, ROOT_PATH } from "@/constants";
+import { ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
-import { AuthUser } from "@/context/auth";
-import { useNavigate } from "react-router-dom";
-
-export interface LoginRequestParams {
-  email: string;
-  password: string;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface LoginRequestResponse extends AuthUser {}
+import { useNavigate, useSearchParams } from "react-router-dom";
+import classes from "./LoginForm.module.scss";
+import { useAuthHandle } from "../../hooks";
 
 interface FormProps {
   email: string;
@@ -30,10 +22,18 @@ interface FormProps {
 }
 
 const LoginForm: FC = () => {
+  const [searchParams] = useSearchParams();
+
   const debug = useDebug();
+  const { signInWithEmailAndPasswordQuery } = useAuthHandle();
   const { setUser } = useAuth();
-  const [isLoading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const redirectTo = searchParams.get("redirect-to");
+  const isExternalRedirect = searchParams.has("external");
+
+  const { mutateAsync: signInWithEmailAndPassword } =
+    signInWithEmailAndPasswordQuery;
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -49,26 +49,24 @@ const LoginForm: FC = () => {
       remember: Yup.boolean(),
     }),
     onSubmit: async (values) => {
-      setLoading(true);
-
       try {
-        const { data } = await axios.post<
-          LoginRequestResponse,
-          AxiosResponse<LoginRequestResponse>,
-          LoginRequestParams
-        >(`${API_URL}login`, {
+        const { data } = await signInWithEmailAndPassword({
           email: values.email,
           password: values.password,
         });
 
-        setUser(data, values.remember);
+        if (isExternalRedirect) {
+          window.location.replace(redirectTo ?? ROOT_PATH);
+        } else {
+          setUser(data, values.remember);
 
-        navigate(`${ROOT_PATH}`, { replace: true });
+          const url = new URL(redirectTo ?? ROOT_PATH, location.origin);
+
+          navigate(url.toString().replace(url.origin, ""), { replace: true });
+        }
       } catch (error) {
         debug(error);
       }
-
-      setLoading(false);
     },
   });
 
@@ -103,9 +101,14 @@ const LoginForm: FC = () => {
         {...formik.getFieldProps("remember")}
       />
 
-      <div className="form-buttons">
-        <Button type="submit" appearance="positive" disabled={isLoading}>
-          Login
+      <div className={classes.buttonRow}>
+        <Button
+          type="submit"
+          appearance="positive"
+          disabled={formik.isSubmitting}
+          className="u-no-margin--bottom"
+        >
+          Sign in
         </Button>
       </div>
     </Form>

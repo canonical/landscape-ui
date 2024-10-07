@@ -95,6 +95,10 @@ export const MENU_ITEMS: MenuItem[] = [
         label: "Access groups",
         path: `${ROOT_PATH}settings/access-groups`,
       },
+      {
+        label: "Identity providers",
+        path: `${ROOT_PATH}settings/identity-providers`,
+      },
     ],
   },
   {

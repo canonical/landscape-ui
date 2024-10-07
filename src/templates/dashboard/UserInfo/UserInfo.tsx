@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import { Button } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
@@ -7,13 +7,42 @@ import { Link, useLocation } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
 import { useMediaQuery } from "usehooks-ts";
 import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
+import { useAuthHandle } from "@/features/auth";
+import useDebug from "@/hooks/useDebug";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
+  const { getClassicDashboardUrlQuery, handleLogoutQuery } = useAuthHandle();
+  const debug = useDebug();
 
   const [expandedAccountSettings, setExpandedAccountSettings] = useState(false);
+
+  const {
+    data: getClassicDashboardUrlQueryResult,
+    refetch: refetchClassicDashboardUrl,
+  } = getClassicDashboardUrlQuery({}, { enabled: false });
+
+  useEffect(() => {
+    if (!getClassicDashboardUrlQueryResult) {
+      return;
+    }
+
+    window.location.assign(getClassicDashboardUrlQueryResult.data.url);
+  }, [getClassicDashboardUrlQueryResult]);
+
+  const { mutateAsync: deleteSessionCookies } = handleLogoutQuery;
+
+  const handleLogout = async () => {
+    try {
+      logout();
+
+      await deleteSessionCookies();
+    } catch (error) {
+      debug(error);
+    }
+  };
 
   return (
     <div
@@ -138,9 +167,32 @@ const UserInfo: FC = () => {
             className={classNames(
               "u-no-margin--bottom",
               classes.link,
-              classes.logoutButton,
+              classes.button,
             )}
-            onClick={logout}
+            onClick={refetchClassicDashboardUrl}
+          >
+            <i
+              className={classNames(
+                `p-icon--desktop is-light p-side-navigation__icon`,
+                classes.icon,
+              )}
+            />
+            <span
+              className={classNames("p-side-navigation__label", classes.label)}
+            >
+              Old dashboard
+            </span>
+          </Button>
+        </li>
+        <li className="p-side-navigation__item">
+          <Button
+            appearance="base"
+            className={classNames(
+              "u-no-margin--bottom",
+              classes.link,
+              classes.button,
+            )}
+            onClick={handleLogout}
           >
             <i
               className={classNames(
@@ -151,7 +203,7 @@ const UserInfo: FC = () => {
             <span
               className={classNames("p-side-navigation__label", classes.label)}
             >
-              Log out
+              Sign out
             </span>
           </Button>
         </li>

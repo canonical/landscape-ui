@@ -1,9 +1,11 @@
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import React, { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { ROOT_PATH } from "@/constants";
 import useNotify from "@/hooks/useNotify";
+import { AuthUser, useAuthHandle } from "@/features/auth";
+import { SelectOption } from "@/types/SelectOption";
 
 const AUTH_STORAGE_KEY = "_landscape_auth";
 
@@ -27,38 +29,37 @@ function setToLocalStorage(key: string, value: AuthUser) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
-export interface Account {
-  title: string;
-  name: string;
-  default?: boolean;
-}
-
-export interface AuthUser {
-  email: string;
-  name: string;
-  token: string;
-  accounts: Account[];
-  current_account: string;
-}
-
 export interface AuthContextProps {
-  authorized: boolean;
+  account:
+    | {
+        switchable: false;
+      }
+    | {
+        current: string;
+        options: SelectOption[];
+        switch: (newToken: string, newAccount: string) => void;
+        switchable: true;
+      };
   authLoading: boolean;
-  user: AuthUser | null;
-  switchAccount: (newToken: string, newAccount: string) => void;
-  updateUser: (user: AuthUser) => void;
-  setUser: (user: AuthUser, remember?: boolean) => void;
+  authorized: boolean;
+  isOidcAvailable: boolean;
   logout: () => void;
+  setUser: (user: AuthUser, remember?: boolean) => void;
+  updateUser: (user: AuthUser) => void;
+  user: AuthUser | null;
 }
 
 const initialState: AuthContextProps = {
-  authorized: false,
+  account: {
+    switchable: false,
+  },
   authLoading: false,
-  user: null,
-  setUser: () => undefined,
-  switchAccount: () => undefined,
-  updateUser: () => undefined,
+  authorized: false,
+  isOidcAvailable: false,
   logout: () => undefined,
+  setUser: () => undefined,
+  updateUser: () => undefined,
+  user: null,
 };
 
 export const AuthContext = React.createContext<AuthContextProps>(initialState);
@@ -73,11 +74,13 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { notify } = useNotify();
+  const { getLoginMethodsQuery } = useAuthHandle();
+
+  const { data: getLoginMethodsQueryResult } = getLoginMethodsQuery();
 
   const isAuthError = useMemo(
     () =>
-      notify.notification?.error &&
-      notify.notification.error instanceof AxiosError &&
+      isAxiosError(notify.notification?.error) &&
       notify.notification.error.response?.status === 401,
     [notify.notification],
   );
@@ -121,13 +124,47 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       current_account: newAccount,
       token: newToken,
     };
+
     setUser(newUser);
-    queryClient.removeQueries();
-    queryClient.refetchQueries();
+
     if (maybeSavedState) {
       setToLocalStorage(AUTH_STORAGE_KEY, newUser);
     }
   };
+
+  const account = useMemo<AuthContextProps["account"]>(() => {
+    if (
+      !user ||
+      user.accounts.some(
+        ({ subdomain }) =>
+          !!subdomain && location.hostname.startsWith(subdomain),
+      )
+    ) {
+      return {
+        switchable: false,
+      };
+    }
+
+    const options: SelectOption[] = user.accounts
+      .filter(({ subdomain }) => !subdomain)
+      .map(({ title, name }) => ({
+        label: title,
+        value: name,
+      }));
+
+    return options.length > 1
+      ? {
+          current: options.some(({ value }) => value === user.current_account)
+            ? user.current_account
+            : options[0].value,
+          options,
+          switch: handleSwitchAccount,
+          switchable: true,
+        }
+      : {
+          switchable: false,
+        };
+  }, [user]);
 
   const handleLogout = () => {
     setUser(null);
@@ -139,13 +176,14 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        user,
-        authorized: null !== user,
+        account,
         authLoading: loading,
+        authorized: null !== user,
         logout: handleLogout,
         setUser: handleSetUser,
-        switchAccount: handleSwitchAccount,
         updateUser: handleUpdateUser,
+        isOidcAvailable: !!getLoginMethodsQueryResult?.data.oidc.available,
+        user,
       }}
     >
       {children}

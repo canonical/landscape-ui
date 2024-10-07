@@ -1,18 +1,22 @@
-export const auth = {
-  token:
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDk3NDEzOTQsImlhdCI6MTcwOTY1NDk5NCwic3ViIjoiam9obkBleGFtcGxlLmNvbSIsImFjYyI6Im9ud2FyZCIsImlkIjoxfQ.o0qbj5YmejaewxGrvEbndXs_VHKYJzI7TFuZNAVCqXc",
-  email: "john@example.com",
-  name: "John Smith",
+import { AuthStateResponse, AuthUser } from "@/features/auth";
+
+export const authUser: AuthUser = {
   accounts: [
     {
-      title: "Onward, Inc.",
-      name: "onward",
+      classic_dashboard_url: "",
       default: true,
-    },
-    {
-      title: "Upside Software, Ltd.",
-      name: "upside",
+      name: "test-account",
+      subdomain: null,
+      title: "Test Account",
     },
   ],
-  current_account: "onward",
+  current_account: "test-account",
+  email: "example@mail.com",
+  name: "Test User",
+  token: "test-account-token",
+};
+
+export const authResponse: AuthStateResponse = {
+  ...authUser,
+  return_to: null,
 };

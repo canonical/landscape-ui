@@ -31,20 +31,16 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   const { notify } = useNotify();
   const { isSaas, isSelfHosted } = useEnv();
   const { setSidePanelContent } = useSidePanel();
-  const { user: authUser, updateUser } = useAuth();
+  const { user: authUser, updateUser, account } = useAuth();
   const { editUserDetails } = useUserDetails();
 
   const { mutateAsync: editUserMutation } = editUserDetails;
 
-  const EMAIL_OPTIONS = user.allowable_emails.map((email) => ({
-    label: email,
-    value: email,
-  }));
-
-  const ORGANISATIONS_OPTIONS = user.accounts.map((acc) => ({
-    label: acc.title,
-    value: acc.name,
-  }));
+  const EMAIL_OPTIONS =
+    user.allowable_emails?.map((email) => ({
+      label: email,
+      value: email,
+    })) ?? [];
 
   const currentEmail = EMAIL_OPTIONS.find((e) => e.label === user.email);
 
@@ -53,9 +49,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       name: user.name,
       timezone: user.timezone,
       email: currentEmail?.label ?? "Select",
-      defaultOrganisation:
-        authUser?.accounts.find((acc) => acc.name === user.preferred_account)
-          ?.name ?? "Select",
+      defaultOrganisation: account.switchable ? account.current : "",
     },
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
@@ -216,16 +210,18 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             : undefined
         }
       />
-      <Select
-        label="Default organisation"
-        options={ORGANISATIONS_OPTIONS}
-        {...formik.getFieldProps("defaultOrganisation")}
-        error={
-          formik.touched.timezone && formik.errors.timezone
-            ? formik.errors.timezone
-            : undefined
-        }
-      />
+      {account.switchable && (
+        <Select
+          label="Default organisation"
+          options={account.options}
+          {...formik.getFieldProps("defaultOrganisation")}
+          error={
+            formik.touched.timezone && formik.errors.timezone
+              ? formik.errors.timezone
+              : undefined
+          }
+        />
+      )}
       <div className={buttonClasses.buttons}>
         <Button
           className="u-no-margin--bottom"

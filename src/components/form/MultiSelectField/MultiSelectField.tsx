@@ -1,23 +1,36 @@
-import { FC, MutableRefObject, Ref, useEffect, useRef, useState } from "react";
+import {
+  FC,
+  MutableRefObject,
+  ReactNode,
+  Ref,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { MultiSelect, MultiSelectProps } from "@canonical/react-components";
 import classNames from "classnames";
 import classes from "./MultiSelectField.module.scss";
 
-interface MultiSelectFieldProps extends MultiSelectProps {
+interface MultiSelectFieldProps extends Omit<MultiSelectProps, "help"> {
   className?: string;
+  help?: ReactNode;
   innerRef?: Ref<HTMLDivElement>;
   label?: string;
   labelClassName?: string;
 }
 
 const MultiSelectField: FC<MultiSelectFieldProps> = ({
+  className,
+  disabled,
+  disabledItems,
   dropdownFooter,
   error,
-  required,
-  className,
+  help,
+  innerRef,
+  items,
   label,
   labelClassName,
-  innerRef,
+  required,
   ...otherProps
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -128,10 +141,14 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
           {label}
         </label>
       )}
+      {help && <p className="p-form-help-text">{help}</p>}
       <MultiSelect
-        label={label}
-        error={error}
         dropdownFooter={footer}
+        disabled={disabled}
+        disabledItems={disabled ? items : disabledItems}
+        error={error}
+        items={items}
+        label={label}
         {...otherProps}
       />
       {error && (

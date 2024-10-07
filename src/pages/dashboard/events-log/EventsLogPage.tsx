@@ -7,7 +7,7 @@ import useEventsLog from "@/hooks/useEventLogs";
 import { Button } from "@canonical/react-components";
 import { TablePagination } from "@/components/layout/TablePagination";
 import useAuth from "@/hooks/useAuth";
-import { AuthUser } from "@/context/auth";
+import { AuthUser } from "@/features/auth";
 import moment from "moment";
 import { downloadCSV } from "./helpers";
 import LoadingState from "@/components/layout/LoadingState";

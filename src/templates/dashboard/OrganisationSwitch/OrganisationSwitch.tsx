@@ -1,68 +1,50 @@
-import React, { useState } from "react";
-import { AxiosResponse } from "axios";
 import useAuth from "@/hooks/useAuth";
-import useDebug from "@/hooks/useDebug";
-import useFetch from "@/hooks/useFetch";
-import useSidePanel from "@/hooks/useSidePanel";
 import { Select } from "@canonical/react-components";
-import { SwitchAccountParams, SwitchAccountResponse } from "./types";
 import classNames from "classnames";
 import classes from "./OrganisationSwitch.module.scss";
+import { useAuthHandle } from "@/features/auth";
+import useDebug from "@/hooks/useDebug";
+import { ChangeEvent } from "react";
 
 const OrganisationSwitch = () => {
+  const { account } = useAuth();
   const debug = useDebug();
-  const authFetch = useFetch();
-  const { closeSidePanel } = useSidePanel();
-  const { user, switchAccount } = useAuth();
+  const { switchAccountQuery } = useAuthHandle();
 
-  const [account, setAccount] = useState<string>();
-
-  if (!account && user) {
-    setAccount(user.current_account);
+  if (!account.switchable) {
+    return null;
   }
 
-  const organisations =
-    user?.accounts.map((item) => ({
-      label: item.title,
-      value: item.name,
-    })) ?? [];
+  const { mutateAsync: switchAccount } = switchAccountQuery;
 
   const handleOrganisationChange = async (
-    event: React.ChangeEvent<HTMLSelectElement>,
+    event: ChangeEvent<HTMLSelectElement>,
   ) => {
+    const account_name = event.target.value;
+
     try {
-      setAccount(event.target.value);
+      const { data } = await switchAccount({ account_name });
 
-      const { data } = await authFetch!.post<
-        SwitchAccountResponse,
-        AxiosResponse<SwitchAccountResponse>,
-        SwitchAccountParams
-      >("switch-account", {
-        account_name: event.target.value,
-      });
-
-      switchAccount(data.token, event.target.value);
-
-      closeSidePanel();
+      account.switch(data.token, account_name);
     } catch (error) {
       debug(error);
     }
   };
 
-  return organisations.length > 1 ? (
+  return (
     <div className={classes.container}>
       <Select
-        label="organisation"
+        label="Organisation"
         labelClassName={classNames(
           classes.selectLabel,
           "p-text--small p-text--small-caps",
         )}
-        options={organisations}
-        value={account}
+        options={account.options}
+        value={account.current}
         onChange={handleOrganisationChange}
       />
     </div>
-  ) : null;
+  );
 };
 
 export default OrganisationSwitch;

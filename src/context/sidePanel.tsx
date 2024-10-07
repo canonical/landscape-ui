@@ -89,39 +89,40 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     >
       {children}
       <aside
-        className={classNames(
-          "l-aside",
-          {
-            "is-collapsed": !open,
-            "is-wide": ["medium", "large"].includes(size),
-            [classes.medium]: size === "medium",
-          },
-          classes.container,
-        )}
+        className={classNames("l-aside", {
+          "is-collapsed": !open,
+          [classes.container]: open,
+          "is-wide": ["medium", "large"].includes(size),
+          [classes.medium]: size === "medium",
+        })}
       >
-        <div className={classNames("p-panel__header", classes.header)}>
-          <h3 className="p-panel__title">{title}</h3>
-          <p className="u-text--muted">
-            <i>{titleLabel}</i>
-          </p>
-          <div className="p-panel__controls">
-            <button
-              onClick={handleSidePanelClose}
-              className="p-button--base u-no-margin--bottom has-icon"
-              aria-label="Close side panel"
-            >
-              <i className="p-icon--close" />
-            </button>
-          </div>
-        </div>
-        <div className={classNames("p-panel__content", classes.outerDiv)}>
-          <div className={classNames("p-panel__inner", classes.innerDiv)}>
-            {notify.notification?.type === "negative" && (
-              <AppNotification notify={notify} isSidePanelOpen={true} />
-            )}
-            {body}
-          </div>
-        </div>
+        {open && (
+          <>
+            <div className={classNames("p-panel__header", classes.header)}>
+              <h3 className="p-panel__title">{title}</h3>
+              <p className="u-text--muted">
+                <i>{titleLabel}</i>
+              </p>
+              <div className="p-panel__controls">
+                <button
+                  onClick={handleSidePanelClose}
+                  className="p-button--base u-no-margin--bottom has-icon"
+                  aria-label="Close side panel"
+                >
+                  <i className="p-icon--close" />
+                </button>
+              </div>
+            </div>
+            <div className={classNames("p-panel__content", classes.outerDiv)}>
+              <div className={classNames("p-panel__inner", classes.innerDiv)}>
+                {notify.notification?.type === "negative" && (
+                  <AppNotification notify={notify} isSidePanelOpen={true} />
+                )}
+                {body}
+              </div>
+            </div>
+          </>
+        )}
       </aside>
     </SidePanelContext.Provider>
   );

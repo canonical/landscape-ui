@@ -1,5 +1,11 @@
 import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
-import { Outlet, Route, Routes, useNavigate } from "react-router-dom";
+import {
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import AppNotification from "@/components/layout/AppNotification";
 import LoadingState from "@/components/layout/LoadingState";
@@ -10,14 +16,16 @@ import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
 import DashboardPage from "@/pages/dashboard";
-import RepositoryPage from "@/pages/dashboard/repositories";
 
+const OidcAuthPage = lazy(() => import("@/pages/auth/handle/oidc"));
+const UbuntuOneAuthPage = lazy(() => import("@/pages/auth/handle/ubuntu-one"));
 const EnvError = lazy(() => import("@/pages/EnvError"));
 const PageNotFound = lazy(() => import("@/pages/PageNotFound"));
 const LoginPage = lazy(() => import("@/pages/auth/login"));
 const DistributionsPage = lazy(
   () => import("@/pages/dashboard/repositories/mirrors"),
 );
+const RepositoryPage = lazy(() => import("@/pages/dashboard/repositories"));
 const RepositoryProfilesPage = lazy(
   () => import("@/pages/dashboard/profiles/repository-profiles"),
 );
@@ -70,6 +78,9 @@ const Alerts = lazy(() => import("@/pages/dashboard/account/alerts"));
 const ApiCredentials = lazy(
   () => import("@/pages/dashboard/account/api-credentials"),
 );
+const IdentityProvidersPage = lazy(
+  () => import("@/pages/dashboard/settings/identity-providers"),
+);
 
 interface AuthRouteProps {
   children: ReactNode;
@@ -79,13 +90,16 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
   const { authorized, authLoading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { pathname, search } = useLocation();
 
   useEffect(() => {
     if (authorized || authLoading) {
       return;
     }
 
-    navigate(`${ROOT_PATH}login`, { replace: true });
+    navigate(`${ROOT_PATH}login?redirect-to=${pathname}${search}`, {
+      replace: true,
+    });
     queryClient.clear();
   }, [authorized, authLoading]);
 
@@ -124,6 +138,7 @@ const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
 
 const App: FC = () => {
   const { notify, sidePanel } = useNotify();
+  const { isOidcAvailable } = useAuth();
 
   return (
     <FetchOldProvider>
@@ -143,7 +158,9 @@ const App: FC = () => {
               <Route
                 element={
                   <SelfHostedRoute>
-                    <Outlet />
+                    <Suspense fallback={<LoadingState />}>
+                      <Outlet />
+                    </Suspense>
                   </SelfHostedRoute>
                 }
               >
@@ -158,79 +175,95 @@ const App: FC = () => {
                   element={<APTSourcesPage />}
                 />
               </Route>
-              <Route path="instances" element={<InstancesPage />} />
               <Route
-                path="instances/:instanceId"
-                element={<SingleInstance />}
-              />
-              <Route
-                path="instances/:instanceId/:childInstanceId"
-                element={<SingleInstance />}
-              />
-              <Route path="activities" element={<ActivitiesPage />} />
-              <Route path="scripts" element={<ScriptsPage />} />
-              <Route path="events-log" element={<EventsLogPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route
-                path="settings/administrators"
-                element={<AdministratorsPage />}
-              />
-              <Route
-                path="settings/access-groups"
-                element={<AccessGroupsPage />}
-              />
-              <Route path="settings/roles" element={<RolesPage />} />
-              <Route
-                path="settings/general"
-                element={<GeneralOrganisationSettings />}
-              />
-              <Route path="profiles" element={<ProfilesPage />} />
-              <Route
-                path="profiles/repositories"
-                element={<RepositoryProfilesPage />}
-              />
-              <Route
-                path="profiles/package"
-                element={<PackageProfilesPage />}
-              />
-              <Route
-                path="profiles/removal"
-                element={<RemovalProfilesPage />}
-              />
-              <Route
-                path="profiles/upgrade"
-                element={<UpgradeProfilesPage />}
-              />
-              <Route path="profiles/wsl" element={<WslProfilesPage />} />
-              <Route path="account" element={<AccountPage />} />
-              <Route path="account/general" element={<GeneralSettings />} />
-              <Route path="account/alerts" element={<Alerts />} />
-              <Route
-                path="account/api-credentials"
-                element={<ApiCredentials />}
-              />
-              <Route path="alerts" element={<AlertNotificationsPage />} />
-              <Route path="overview" element={<OverviewPage />} />
-              <Route
-                path="env-error"
                 element={
                   <Suspense fallback={<LoadingState />}>
-                    <EnvError />
+                    <Outlet />
                   </Suspense>
                 }
-              />
+              >
+                <Route path="instances" element={<InstancesPage />} />
+                <Route
+                  path="instances/:instanceId"
+                  element={<SingleInstance />}
+                />
+                <Route
+                  path="instances/:instanceId/:childInstanceId"
+                  element={<SingleInstance />}
+                />
+                <Route path="activities" element={<ActivitiesPage />} />
+                <Route path="scripts" element={<ScriptsPage />} />
+                <Route path="events-log" element={<EventsLogPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route
+                  path="settings/administrators"
+                  element={<AdministratorsPage />}
+                />
+                <Route
+                  path="settings/access-groups"
+                  element={<AccessGroupsPage />}
+                />
+                <Route path="settings/roles" element={<RolesPage />} />
+                <Route
+                  path="settings/general"
+                  element={<GeneralOrganisationSettings />}
+                />
+                {isOidcAvailable && (
+                  <Route
+                    path="settings/identity-providers"
+                    element={<IdentityProvidersPage />}
+                  />
+                )}
+                <Route path="profiles" element={<ProfilesPage />} />
+                <Route
+                  path="profiles/repositories"
+                  element={<RepositoryProfilesPage />}
+                />
+                <Route
+                  path="profiles/package"
+                  element={<PackageProfilesPage />}
+                />
+                <Route
+                  path="profiles/removal"
+                  element={<RemovalProfilesPage />}
+                />
+                <Route
+                  path="profiles/upgrade"
+                  element={<UpgradeProfilesPage />}
+                />
+                <Route path="profiles/wsl" element={<WslProfilesPage />} />
+                <Route path="account" element={<AccountPage />} />
+                <Route path="account/general" element={<GeneralSettings />} />
+                <Route path="account/alerts" element={<Alerts />} />
+                <Route
+                  path="account/api-credentials"
+                  element={<ApiCredentials />}
+                />
+                <Route path="alerts" element={<AlertNotificationsPage />} />
+                <Route path="overview" element={<OverviewPage />} />
+                <Route path="env-error" element={<EnvError />} />
+              </Route>
             </Route>
           </Route>
           <Route
-            path={`${ROOT_PATH}login`}
             element={
               <GuestRoute>
                 <Suspense fallback={<LoadingState />}>
-                  <LoginPage />
+                  <Outlet />
                 </Suspense>
               </GuestRoute>
             }
-          />
+          >
+            <Route path={`${ROOT_PATH}login`} element={<LoginPage />} />
+            <Route
+              path={`${ROOT_PATH}handle-auth/oidc`}
+              element={<OidcAuthPage />}
+            />
+            <Route
+              path={`${ROOT_PATH}handle-auth/ubuntu-one`}
+              element={<UbuntuOneAuthPage />}
+            />
+          </Route>
           <Route
             path={`${ROOT_PATH}*`}
             element={

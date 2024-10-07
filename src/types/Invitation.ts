@@ -6,3 +6,8 @@ export interface Invitation extends Record<string, unknown> {
   name: string;
   secure_id: string;
 }
+
+export interface InvitationSummary {
+  account_title: string;
+  secure_id: string;
+}
