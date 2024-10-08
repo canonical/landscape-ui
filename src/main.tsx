@@ -1,3 +1,4 @@
+import "./styles/index.scss";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -7,7 +8,6 @@ import EnvProvider from "@/context/env";
 import NotifyProvider from "@/context/notify";
 import ReactQueryProvider from "@/context/reactQuery";
 import App from "./App";
-import "./styles/index.scss";
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
