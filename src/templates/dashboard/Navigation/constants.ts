@@ -35,6 +35,7 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "Repository profiles",
         path: `${ROOT_PATH}profiles/repositories`,
+        env: "selfHosted",
       },
       {
         label: "Package profiles",

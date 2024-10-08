@@ -97,8 +97,11 @@ const Navigation: FC = () => {
                 >
                   {item.items
                     .filter(
-                      ({ path }) =>
-                        isOidcAvailable || !path.includes("identity-providers"),
+                      ({ path, env }) =>
+                        (isOidcAvailable ||
+                          !path.includes("identity-providers")) &&
+                        ((!isSaas && env !== "saas") ||
+                          (!isSelfHosted && env !== "selfHosted")),
                     )
                     .map((subItem) => (
                       <li key={subItem.path}>
