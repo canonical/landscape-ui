@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/canonical/landscape-dashboard/compare/v1.4.0...v1.4.1) (2024-10-08)
+
+
+### Bug Fixes
+
+* secondary navigation not appearing for account settings ([846215a](https://github.com/canonical/landscape-dashboard/commit/846215ae426fd49baff64a76d574fbe61860491d))
+
 # [1.4.0](https://github.com/canonical/landscape-dashboard/compare/v1.3.0...v1.4.0) (2024-10-07)
 
 
