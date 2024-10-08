@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/canonical/landscape-dashboard/compare/v1.4.1...v1.4.2) (2024-10-08)
+
+
+### Bug Fixes
+
+* repository profile showing for saas version ([9f8e205](https://github.com/canonical/landscape-dashboard/commit/9f8e205d7f2f2977dedcf556a165b395165183f4))
+
 ## [1.4.1](https://github.com/canonical/landscape-dashboard/compare/v1.4.0...v1.4.1) (2024-10-08)
 
 
