@@ -1,0 +1,1 @@
+import{j as t,L as o,R as e}from"./index-B7TA2mEJ.js";import{A as s}from"./AuthTemplate-BEtd_0cP.js";const r=()=>t.jsxs(s,{title:"Page not found",children:[t.jsx("p",{children:"It seems that page you're looking for doesn't exist."}),t.jsx(o,{to:e,className:"p-button--positive u-no-margin--bottom",children:"Go back to the home page"})]});export{r as default};
