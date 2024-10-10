@@ -1,4 +1,5 @@
 @import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
 
 .root {
   align-items: center;
@@ -17,5 +18,11 @@
     margin-right: auto;
     max-width: 100%;
     width: 500px;
+  }
+
+  :global(.p-card__inner) {
+    padding-bottom: $spv--x-large;
+    padding-left: $sph--x-large;
+    padding-right: $sph--x-large;
   }
 }

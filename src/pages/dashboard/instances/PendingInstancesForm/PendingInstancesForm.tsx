@@ -53,7 +53,6 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
     try {
       await rejectPendingInstances({ computer_ids: instanceIds });
 
-      closeConfirmModal();
       closeSidePanel();
 
       notify.success({
@@ -62,6 +61,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeConfirmModal();
     }
   };
 
@@ -90,7 +91,6 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
         computer_ids: instanceIds,
       });
 
-      closeConfirmModal();
       closeSidePanel();
 
       notify.success({
@@ -99,6 +99,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeConfirmModal();
     }
   };
 
