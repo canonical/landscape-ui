@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/canonical/landscape-dashboard/compare/v1.4.2...v1.4.3) (2024-10-10)
+
+
+### Bug Fixes
+
+* close modal window after accepting or rejecting pending instances, style: change auth template styles ([e96df23](https://github.com/canonical/landscape-dashboard/commit/e96df232e078a08d2ed94b81b6f8063d31a8b2ab))
+
 ## [1.4.2](https://github.com/canonical/landscape-dashboard/compare/v1.4.1...v1.4.2) (2024-10-08)
 
 
