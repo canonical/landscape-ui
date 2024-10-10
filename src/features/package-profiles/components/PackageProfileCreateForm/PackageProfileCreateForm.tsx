@@ -12,7 +12,6 @@ import AssociationBlock from "@/components/form/AssociationBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import useNotify from "@/hooks/useNotify";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import classes from "./PackageProfileCreateForm.module.scss";
 
 const PackageProfileCreateForm: FC = () => {
   const debug = useDebug();
@@ -83,52 +82,50 @@ const PackageProfileCreateForm: FC = () => {
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <div className={classes.container}>
-        <Input
-          type="text"
-          label="Name"
-          required
-          {...formik.getFieldProps("title")}
-          error={
-            formik.touched.title && formik.errors.title
-              ? formik.errors.title
-              : undefined
-          }
-        />
+      <Input
+        type="text"
+        label="Name"
+        required
+        {...formik.getFieldProps("title")}
+        error={
+          formik.touched.title && formik.errors.title
+            ? formik.errors.title
+            : undefined
+        }
+      />
 
-        <Input
-          type="text"
-          label="Description"
-          required
-          autoComplete="off"
-          {...formik.getFieldProps("description")}
-          error={
-            formik.touched.description && formik.errors.description
-              ? formik.errors.description
-              : undefined
-          }
-        />
+      <Input
+        type="text"
+        label="Description"
+        required
+        autoComplete="off"
+        {...formik.getFieldProps("description")}
+        error={
+          formik.touched.description && formik.errors.description
+            ? formik.errors.description
+            : undefined
+        }
+      />
 
-        <Select
-          label="Access group"
-          {...formik.getFieldProps("access_group")}
-          options={accessGroupOptions}
-          error={
-            formik.touched.access_group && formik.errors.access_group
-              ? formik.errors.access_group
-              : undefined
-          }
-        />
+      <Select
+        label="Access group"
+        {...formik.getFieldProps("access_group")}
+        options={accessGroupOptions}
+        error={
+          formik.touched.access_group && formik.errors.access_group
+            ? formik.errors.access_group
+            : undefined
+        }
+      />
 
-        <AssociationBlock formik={formik} />
+      <AssociationBlock formik={formik} />
 
-        <PackageProfileConstraintsTypeBlock formik={formik} />
+      <PackageProfileConstraintsTypeBlock formik={formik} />
 
-        <SidePanelFormButtons
-          submitButtonDisabled={formik.isSubmitting}
-          submitButtonText="Add package profile"
-        />
-      </div>
+      <SidePanelFormButtons
+        submitButtonDisabled={formik.isSubmitting}
+        submitButtonText="Add package profile"
+      />
     </Form>
   );
 };

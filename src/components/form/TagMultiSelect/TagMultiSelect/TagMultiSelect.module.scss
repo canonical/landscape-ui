@@ -5,6 +5,10 @@
   padding-right: calc(
     (2 * $sph--small + map-get($icon-sizes, default) + $bar-thickness)
   ) !important;
+
+  & + :global(.p-search-and-filter__panel) {
+    background-color: $color-x-light;
+  }
 }
 
 .box {

@@ -18,6 +18,10 @@
     }
   }
 
+  :global(.multi-select) {
+    margin-bottom: 0;
+  }
+
   :global(.multi-select__select-button) {
     margin-bottom: 0;
   }
