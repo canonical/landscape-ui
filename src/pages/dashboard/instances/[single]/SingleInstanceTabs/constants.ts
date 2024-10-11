@@ -12,6 +12,10 @@ export const TAB_LINKS = [
     id: "tab-link-activities",
   },
   {
+    label: "Kernel",
+    id: "tab-link-kernel",
+  },
+  {
     label: "Security issues",
     id: "tab-link-security-issues",
   },

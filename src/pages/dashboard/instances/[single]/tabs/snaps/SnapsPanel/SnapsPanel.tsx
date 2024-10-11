@@ -8,11 +8,12 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { InstallSnaps, SnapsHeader, SnapsList } from "@/features/snaps";
 import { usePageParams } from "@/hooks/usePageParams";
 import { useParams } from "react-router-dom";
+import { UrlParams } from "@/types/UrlParams";
 
 const SnapsPanel: FC = () => {
   const [selectedSnapIds, setSelectedSnapIds] = useState<string[]>([]);
 
-  const { instanceId: urlInstanceId, childInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { search, currentPage, pageSize } = usePageParams();
   const { getSnapsQuery } = useSnaps();
   const { setSidePanelContent } = useSidePanel();

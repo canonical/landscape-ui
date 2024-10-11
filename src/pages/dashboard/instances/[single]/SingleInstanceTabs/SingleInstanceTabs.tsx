@@ -22,6 +22,9 @@ const PackagesPanel = lazy(
 const ActivityPanel = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/activities"),
 );
+const KernelPanel = lazy(
+  () => import("@/pages/dashboard/instances/[single]/tabs/kernel"),
+);
 const WslPanel = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/wsl"),
 );
@@ -89,6 +92,9 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
           )}
           {"tab-link-activities" === currentTabLinkId && (
             <ActivityPanel instanceId={instance.id} />
+          )}
+          {"tab-link-kernel" === currentTabLinkId && (
+            <KernelPanel instanceTitle={instance.title} />
           )}
           {"tab-link-security-issues" === currentTabLinkId && (
             <SecurityIssuesPanel instance={instance} />

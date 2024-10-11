@@ -6,13 +6,14 @@ import useUsers from "@/hooks/useUsers";
 import { NOT_AVAILABLE } from "@/constants";
 import { useParams } from "react-router-dom";
 import NoData from "@/components/layout/NoData";
+import { UrlParams } from "@/types/UrlParams";
 
 interface UserDetailsProps {
   user: User;
 }
 
 const UserDetails: FC<UserDetailsProps> = ({ user }) => {
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const { getGroupsQuery, getUserGroupsQuery } = useUsers();
 
   const instanceId = Number(urlInstanceId);

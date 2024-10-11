@@ -7,6 +7,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import SnapDropdownSearch from "../SnapDropdownSearch";
 import { useParams } from "react-router-dom";
+import { UrlParams } from "@/types/UrlParams";
 
 const InstallSnaps: FC = () => {
   const [selectedSnaps, setSelectedSnaps] = useState<SelectedSnaps[]>([]);
@@ -16,7 +17,7 @@ const InstallSnaps: FC = () => {
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { snapsActionQuery } = useSnaps();
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
 
   const instanceId = Number(urlInstanceId);
   const { mutateAsync: installSnaps, isPending: installSnapsLoading } =

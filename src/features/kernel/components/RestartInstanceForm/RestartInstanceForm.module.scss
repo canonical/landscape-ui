@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.radioGroup {
+  column-gap: $sph--x-large;
+  display: flex;
+}
+
+.marginTop {
+  display: block;
+  margin-top: $spv--large;
+}

@@ -1,5 +1,5 @@
-import { FC, SyntheticEvent } from "react";
 import { Button } from "@canonical/react-components";
+import { FC, ReactElement, ReactNode, SyntheticEvent } from "react";
 import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./SidePanelFormButtons.module.scss";
 
@@ -8,6 +8,8 @@ interface SidePanelFormButtonsProps {
   submitButtonText: string;
   submitButtonAppearance?: "positive" | "negative";
   submitButtonAriaLabel?: string;
+  secondaryActionButtonTitle?: ReactNode;
+  secondaryActionButtonSubmit?: (event: SyntheticEvent) => Promise<void> | void;
   cancelButtonDisabled?: boolean;
   onSubmit?: (event: SyntheticEvent) => Promise<void> | void;
 }
@@ -16,10 +18,12 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   submitButtonDisabled,
   submitButtonText,
   submitButtonAriaLabel,
+  secondaryActionButtonTitle,
+  secondaryActionButtonSubmit,
   onSubmit,
   submitButtonAppearance = "positive",
   cancelButtonDisabled = false,
-}) => {
+}): ReactElement => {
   const { closeSidePanel } = useSidePanel();
   return (
     <div className={classes.buttons}>
@@ -32,6 +36,15 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
       >
         Cancel
       </Button>
+      {secondaryActionButtonTitle && secondaryActionButtonSubmit && (
+        <Button
+          type="button"
+          className="u-no-margin--bottom"
+          onClick={secondaryActionButtonSubmit}
+        >
+          {secondaryActionButtonTitle}
+        </Button>
+      )}
       <Button
         className="u-no-margin--bottom"
         type={onSubmit ? "button" : "submit"}

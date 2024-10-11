@@ -8,6 +8,7 @@ import { usePageParams } from "@/hooks/usePageParams";
 import { useParams } from "react-router-dom";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import classNames from "classnames";
+import { UrlParams } from "@/types/UrlParams";
 
 interface ProcessesHeaderProps {
   handleClearSelection: () => void;
@@ -18,7 +19,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   selectedPids,
   handleClearSelection,
 }) => {
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const { setPageParams } = usePageParams();
   const { notify } = useNotify();
   const debug = useDebug();

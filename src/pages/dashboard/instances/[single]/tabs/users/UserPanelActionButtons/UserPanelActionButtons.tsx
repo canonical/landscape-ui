@@ -16,6 +16,7 @@ import {
 } from "./helpers";
 import LoadingState from "@/components/layout/LoadingState";
 import { useParams } from "react-router-dom";
+import { UrlParams } from "@/types/UrlParams";
 
 const EditUserForm = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
@@ -35,7 +36,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   const [confirmDeleteHomeFolders, setConfirmDeleteHomeFolders] =
     useState(false);
 
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent, closeSidePanel } = useSidePanel();

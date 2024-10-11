@@ -18,6 +18,7 @@ import { InstalledSnap } from "@/types/Snap";
 import { EditSnapType } from "../../helpers";
 import useSidePanel from "@/hooks/useSidePanel";
 import { useParams } from "react-router-dom";
+import { UrlParams } from "@/types/UrlParams";
 
 interface EditSnapProps {
   type: EditSnapType;
@@ -25,7 +26,7 @@ interface EditSnapProps {
 }
 
 const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();

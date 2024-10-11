@@ -92,6 +92,12 @@ interface InstancesPowerManageParams {
   deliver_after?: string;
 }
 
+interface RestartInstanceParams {
+  id: number;
+  deliver_after?: string;
+  deliver_delay_window?: number;
+}
+
 interface RenameInstancesParams {
   // `"<instance_id>:<new_title>"[]`
   computer_titles: string[];
@@ -252,6 +258,16 @@ export default function useInstances() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
+  const restartInstanceQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    RestartInstanceParams
+  >({
+    mutationFn: ({ id, ...queryParams }) =>
+      authFetch!.post(`computers/${id}/restart`, queryParams),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+  });
+
   const shutdownInstancesQuery = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
@@ -297,6 +313,7 @@ export default function useInstances() {
     rejectPendingInstancesQuery,
     createCloudOtpsQuery,
     rebootInstancesQuery,
+    restartInstanceQuery,
     shutdownInstancesQuery,
     renameInstancesQuery,
     getAllInstanceTagsQuery,

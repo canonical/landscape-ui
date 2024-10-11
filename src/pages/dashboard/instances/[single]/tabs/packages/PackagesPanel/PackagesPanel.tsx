@@ -10,11 +10,12 @@ import {
 } from "@/features/packages";
 import { usePageParams } from "@/hooks/usePageParams";
 import { getEmptyMessage } from "./helpers";
+import { UrlParams } from "@/types/UrlParams";
 
 const PackagesPanel: FC = () => {
   const [selected, setSelected] = useState<InstancePackage[]>([]);
 
-  const { instanceId: urlInstanceId, childInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { status, search, currentPage, pageSize } = usePageParams();
   const { getInstancePackagesQuery } = usePackages();
   const { state } = useLocation() as { state: { selectAll?: boolean } };

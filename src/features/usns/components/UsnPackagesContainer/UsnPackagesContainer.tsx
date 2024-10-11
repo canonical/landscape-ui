@@ -5,6 +5,7 @@ import { useUsns } from "@/features/usns";
 import { Instance } from "@/types/Instance";
 import UsnInstanceList from "../UsnInstanceList";
 import UsnPackageList from "../UsnPackageList";
+import { UrlParams } from "@/types/UrlParams";
 
 type UsnPackagesContainerProps = {
   instances: Instance[];
@@ -21,7 +22,7 @@ const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
 }) => {
   const [limit, setLimit] = useState(5);
   const { getAffectedPackagesQuery } = useUsns();
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
 
   const instanceId = Number(urlInstanceId);
 

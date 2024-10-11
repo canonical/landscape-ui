@@ -2,6 +2,7 @@ import { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Notification } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
+import { UrlParams } from "@/types/UrlParams";
 
 interface UbuntuProNotificationProps {
   onDismiss: () => void;
@@ -11,7 +12,7 @@ const UbuntuProNotification: FC<UbuntuProNotificationProps> = ({
   onDismiss,
 }) => {
   const navigate = useNavigate();
-  const { instanceId, childInstanceId } = useParams();
+  const { instanceId, childInstanceId } = useParams<UrlParams>();
   return (
     <Notification severity="caution" onDismiss={onDismiss}>
       <strong>Some upgrades require Ubuntu Pro: </strong>
