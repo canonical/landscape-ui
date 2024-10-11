@@ -23,6 +23,7 @@ import {
 } from "./helpers";
 import { FormProps } from "./types";
 import classes from "./InstalledPackagesActionForm.module.scss";
+import { UrlParams } from "@/types/UrlParams";
 
 interface InstalledPackagesActionFormProps {
   action: InstalledPackageAction;
@@ -33,7 +34,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   action,
   packages,
 }) => {
-  const { instanceId: urlInstanceId, childInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
   const { openActivityDetails } = useActivities();

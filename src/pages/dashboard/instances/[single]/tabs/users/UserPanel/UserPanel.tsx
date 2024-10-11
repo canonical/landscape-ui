@@ -12,13 +12,14 @@ import NewUserForm from "../NewUserForm";
 import { Button } from "@canonical/react-components";
 import { usePageParams } from "@/hooks/usePageParams";
 import { useParams } from "react-router-dom";
+import { UrlParams } from "@/types/UrlParams";
 
 const MAX_USERS_LIMIT = 1000;
 
 const UserPanel: FC = () => {
   const [selected, setSelected] = useState<number[]>([]);
 
-  const { instanceId: urlInstanceId, childInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { search, currentPage, pageSize } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getUsersQuery } = useUsers();

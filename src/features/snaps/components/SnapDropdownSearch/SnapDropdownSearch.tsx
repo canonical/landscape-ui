@@ -11,6 +11,7 @@ import { useDebounceCallback } from "usehooks-ts";
 import classes from "./SnapDropdownSearch.module.scss";
 import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
 import { useParams } from "react-router-dom";
+import { UrlParams } from "@/types/UrlParams";
 
 interface SnapDropdownSearchProps {
   selectedItems: SelectedSnaps[];
@@ -23,7 +24,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
   setSelectedItems,
   setConfirming,
 }) => {
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { getAvailableSnaps } = useSnaps();
 

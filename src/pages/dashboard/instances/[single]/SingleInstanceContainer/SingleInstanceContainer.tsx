@@ -12,9 +12,10 @@ import { useUsns } from "@/features/usns";
 import SingleInstanceEmptyState from "@/pages/dashboard/instances/[single]/SingleInstanceEmptyState";
 import SingleInstanceTabs from "@/pages/dashboard/instances/[single]/SingleInstanceTabs";
 import { getBreadcrumbs } from "./helpers";
+import { UrlParams } from "@/types/UrlParams";
 
 const SingleInstanceContainer: FC = () => {
-  const { instanceId, childInstanceId } = useParams();
+  const { instanceId, childInstanceId } = useParams<UrlParams>();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { getSingleInstanceQuery } = useInstances();

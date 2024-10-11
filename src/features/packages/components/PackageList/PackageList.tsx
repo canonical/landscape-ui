@@ -23,6 +23,7 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
+import { UrlParams } from "@/types/UrlParams";
 
 const PackageDetails = lazy(() => import("../PackageDetails"));
 
@@ -46,7 +47,7 @@ const PackageList: FC<PackageListProps> = ({
   const [selectedByTabState, setSelectedByTabState] = useState(false);
   const [hideUbuntuProInfo, setHideUbuntuProInfo] = useState(false);
 
-  const { instanceId, childInstanceId } = useParams();
+  const { instanceId, childInstanceId } = useParams<UrlParams>();
   const { setSidePanelContent } = useSidePanel();
 
   const packagesToShow = useMemo(() => {

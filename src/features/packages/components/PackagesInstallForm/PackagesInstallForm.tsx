@@ -8,11 +8,12 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { usePackages } from "../../hooks";
 import { InstancePackage } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
+import { UrlParams } from "@/types/UrlParams";
 
 const PackagesInstallForm: FC = () => {
   const [selected, setSelected] = useState<InstancePackage[]>([]);
 
-  const { instanceId: urlInstanceId, childInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
   const { packagesActionQuery } = usePackages();

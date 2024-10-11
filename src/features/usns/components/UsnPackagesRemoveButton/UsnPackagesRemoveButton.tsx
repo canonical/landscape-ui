@@ -7,6 +7,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { usePageParams } from "@/hooks/usePageParams";
 import { useUsns } from "@/features/usns";
+import { UrlParams } from "@/types/UrlParams";
 
 interface UsnPackagesRemoveButtonProps {
   instanceTitle: string;
@@ -23,7 +24,7 @@ const UsnPackagesRemoveButton: FC<UsnPackagesRemoveButtonProps> = ({
   const { confirmModal, closeConfirmModal } = useConfirm();
   const { removeUsnPackagesQuery } = useUsns();
   const { setPageParams } = usePageParams();
-  const { instanceId: urlInstanceId, childInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
 
   const instanceId = Number(urlInstanceId);
   const { mutateAsync: removeUsnPackages } = removeUsnPackagesQuery;

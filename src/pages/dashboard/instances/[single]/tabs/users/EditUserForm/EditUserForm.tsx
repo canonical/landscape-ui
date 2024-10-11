@@ -10,6 +10,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
 import { User } from "@/types/User";
 import { useParams } from "react-router-dom";
+import { UrlParams } from "@/types/UrlParams";
 
 interface FormProps {
   name: string;
@@ -28,7 +29,7 @@ interface EditUserFormProps {
 }
 
 const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();

@@ -10,6 +10,7 @@ import { usePackages } from "../../hooks";
 import { InstancePackage } from "../../types";
 import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
 import classes from "./PackageDropdownSearch.module.scss";
+import { UrlParams } from "@/types/UrlParams";
 
 interface PackageDropdownSearchProps {
   selectedItems: InstancePackage[];
@@ -24,7 +25,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState<string>("");
 
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { getInstancePackagesQuery } = usePackages();
 

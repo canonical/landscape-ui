@@ -9,6 +9,7 @@ import useNotify from "@/hooks/useNotify";
 import { useUsns } from "@/features/usns";
 import classes from "./SecurityIssuesPanelHeader.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
+import { UrlParams } from "@/types/UrlParams";
 
 interface SecurityIssuesPanelHeaderProps {
   onSearch: (searchText: string) => void;
@@ -21,7 +22,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 }) => {
   const [inputText, setInputText] = useState("");
 
-  const { instanceId: urlInstanceId, childInstanceId } = useParams();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { setPageParams } = usePageParams();
   const navigate = useNavigate();
   const debug = useDebug();

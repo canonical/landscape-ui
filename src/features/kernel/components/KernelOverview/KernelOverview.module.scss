@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.statusIcon {
+  margin-right: $sph--small;
+}
+
+.tooltipIcon {
+  margin-left: $sph--small;
+}
+
+.container {
+  border-bottom: 1px solid $color-mid-x-light;
+  margin-bottom: $spv--x-large;
+  padding-bottom: $spv--x-large;
+}

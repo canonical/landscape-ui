@@ -7,6 +7,7 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
 import { useParams } from "react-router-dom";
+import { UrlParams } from "@/types/UrlParams";
 
 interface FormProps {
   name: string;
@@ -21,7 +22,7 @@ interface FormProps {
 }
 
 const NewUserForm: FC = () => {
-  const { instanceId: urlInstanceId } = useParams();
+  const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { createUserQuery, getGroupsQuery } = useUsers();
