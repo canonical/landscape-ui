@@ -68,7 +68,7 @@ const NewAccessGroupForm = () => {
       />
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Add"
+        submitButtonText="Add access group"
       />
     </Form>
   );

@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import useAuth from "../../../hooks/useAuth";
-import { Button } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router-dom";
@@ -66,9 +66,10 @@ const UserInfo: FC = () => {
                   setExpandedAccountSettings((prevState) => !prevState);
                 }}
               >
-                <i
+                <Icon
+                  name="account"
                   className={classNames(
-                    `p-icon--account is-light p-side-navigation__icon`,
+                    "is-light p-side-navigation__icon",
                     classes.icon,
                   )}
                 />
@@ -123,9 +124,10 @@ const UserInfo: FC = () => {
               aria-expanded={false}
               aria-current={pathname.includes("account") ? "page" : undefined}
             >
-              <i
+              <Icon
+                name="account"
                 className={classNames(
-                  `p-icon--account is-light p-side-navigation__icon`,
+                  "is-light p-side-navigation__icon",
                   classes.icon,
                 )}
               />
@@ -148,9 +150,10 @@ const UserInfo: FC = () => {
               pathname === `${ROOT_PATH}alerts` ? "page" : undefined
             }
           >
-            <i
+            <Icon
+              name="bell"
               className={classNames(
-                `p-icon--bell is-light p-side-navigation__icon`,
+                "is-light p-side-navigation__icon",
                 classes.icon,
               )}
             />
@@ -163,6 +166,7 @@ const UserInfo: FC = () => {
         </li>
         <li className="p-side-navigation__item">
           <Button
+            type="button"
             appearance="base"
             className={classNames(
               "u-no-margin--bottom",
@@ -186,6 +190,7 @@ const UserInfo: FC = () => {
         </li>
         <li className="p-side-navigation__item">
           <Button
+            type="button"
             appearance="base"
             className={classNames(
               "u-no-margin--bottom",
@@ -194,9 +199,10 @@ const UserInfo: FC = () => {
             )}
             onClick={handleLogout}
           >
-            <i
+            <Icon
+              name="logout"
               className={classNames(
-                `p-icon--logout is-light p-side-navigation__icon`,
+                "is-light p-side-navigation__icon",
                 classes.icon,
               )}
             />

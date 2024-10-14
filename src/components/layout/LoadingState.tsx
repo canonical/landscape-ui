@@ -1,3 +1,4 @@
+import { Icon, ICONS } from "@canonical/react-components";
 import { FC } from "react";
 
 const LoadingState: FC = () => {
@@ -5,7 +6,7 @@ const LoadingState: FC = () => {
     <div className="p-strip" role="status">
       <div className="u-align-text--center">
         <span className="u-off-screen">Loading...</span>
-        <i className="p-icon--spinner u-animation--spin" aria-hidden />
+        <Icon name={ICONS.spinner} className="u-animation--spin" aria-hidden />
       </div>
     </div>
   );

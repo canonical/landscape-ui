@@ -143,7 +143,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       },
       {
         accessor: "actions",
-        className: classNames("u-align-text--right", classes.actions),
+        className: classes.actions,
         Header: "Actions",
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <PackageProfileListContextualMenu profile={original} />

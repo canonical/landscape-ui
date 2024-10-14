@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Instance } from "@/types/Instance";
 import { UbuntuProHeader, UbuntuProList } from "@/features/ubuntupro";
 import EmptyState from "@/components/layout/EmptyState";
-import { Button, Link } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import classes from "./UbuntuProPanel.module.scss";
 
 interface UbuntuProPanelProps {
@@ -25,18 +25,17 @@ const UbuntuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
             entitlement, which provides additional security updates and other
             benefits from Canonical
           </p>
-          <Link
+          <a
             href="https://ubuntu.com/pro"
             target="_blank"
             rel="nofollow noopener noreferrer"
           >
             Learn more about Ubuntu Pro
-            <i className="p-icon--external-link" />
-          </Link>
+          </a>
         </>
       }
       cta={[
-        <Link
+        <a
           key="attach-ubuntu-pro"
           href="http://ubuntu.com/pro/dashboard"
           target="_blank"
@@ -46,7 +45,7 @@ const UbuntuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
           <Button appearance="positive" type="button" aria-label="Go back">
             Attach Ubuntu Pro
           </Button>
-        </Link>,
+        </a>,
       ]}
     />
   );

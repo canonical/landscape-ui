@@ -591,7 +591,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Add"
+        submitButtonText="Add pocket"
         submitButtonAriaLabel="Add pocket"
       />
     </Form>

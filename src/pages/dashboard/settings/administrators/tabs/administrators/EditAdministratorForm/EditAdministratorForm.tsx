@@ -1,13 +1,19 @@
 import { useFormik } from "formik";
 import { FC, useEffect, useState } from "react";
 import * as Yup from "yup";
-import { Button, Col, Form, Row } from "@canonical/react-components";
+import {
+  Col,
+  ConfirmationButton,
+  Form,
+  Icon,
+  ICONS,
+  Row,
+} from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
 import NoData from "@/components/layout/NoData";
 import useAdministrators from "@/hooks/useAdministrators";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
@@ -30,7 +36,6 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
 
   const { notify } = useNotify();
   const debug = useDebug();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { disableAdministratorQuery, editAdministratorQuery } =
     useAdministrators();
   const { getRolesQuery } = useRoles();
@@ -45,34 +50,15 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
 
   const { mutateAsync: editAdministrator } = editAdministratorQuery;
 
-  const { mutateAsync: disableAdministrator } = disableAdministratorQuery;
+  const { mutateAsync: disableAdministrator, isPending: isDisabling } =
+    disableAdministratorQuery;
 
   const handleDisableAdministrator = async () => {
     try {
       await disableAdministrator({ email: currentAdministrator.email });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleConfirmDisableAdministrator = () => {
-    confirmModal({
-      title: "Disable Administrator",
-      body: "This will remove the administrator from your Landscape organization.",
-      buttons: [
-        <Button
-          key="remove-administrator"
-          onClick={handleDisableAdministrator}
-          appearance="negative"
-          hasIcon={true}
-          aria-label={`Remove ${currentAdministrator.name}`}
-        >
-          Remove
-        </Button>,
-      ],
-    });
   };
 
   const handleSubmit = async (values: { roles: string[] }) => {
@@ -106,10 +92,27 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Button type="button" hasIcon onClick={handleConfirmDisableAdministrator}>
-        <i className="p-icon--delete" aria-hidden="true" />
+      <ConfirmationButton
+        type="button"
+        className="has-icon"
+        confirmationModalProps={{
+          title: "Disable Administrator",
+          children: (
+            <p>
+              This will remove the administrator from your Landscape
+              organisation.
+            </p>
+          ),
+          confirmButtonLabel: "Remove",
+          confirmButtonAppearance: "negative",
+          confirmButtonDisabled: isDisabling,
+          confirmButtonLoading: isDisabling,
+          onConfirm: handleDisableAdministrator,
+        }}
+      >
+        <Icon name={ICONS.delete} aria-hidden="true" />
         <span>Remove</span>
-      </Button>
+      </ConfirmationButton>
 
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>

@@ -1,10 +1,16 @@
 import { FC, lazy, Suspense } from "react";
 import { PackageProfile } from "../../types";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
+import {
+  Button,
+  Col,
+  ConfirmationButton,
+  Icon,
+  ICONS,
+  Row,
+} from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import { usePackageProfiles } from "../../hooks";
 import useNotify from "@/hooks/useNotify";
@@ -23,14 +29,14 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
-  const { closeConfirmModal, confirmModal } = useConfirm();
   const { removePackageProfileQuery } = usePackageProfiles();
 
-  const { mutateAsync: removePackageProfile } = removePackageProfileQuery;
+  const { mutateAsync: removePackageProfile, isPending: isRemoving } =
+    removePackageProfileQuery;
 
-  const handleRemovePackageProfile = async (name: string) => {
+  const handleRemovePackageProfile = async () => {
     try {
-      await removePackageProfile({ name });
+      await removePackageProfile({ name: profile.name });
 
       closeSidePanel();
 
@@ -40,27 +46,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleRemovePackageProfileDialog = (name: string) => {
-    confirmModal({
-      title: "Remove package profile",
-      body: `This will remove "${name}" profile.`,
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={() => handleRemovePackageProfile(name)}
-          aria-label={`Remove ${name} profile`}
-        >
-          Remove
-        </Button>,
-      ],
-    });
   };
 
   const handlePackageProfileEdit = () => {
@@ -102,15 +88,24 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           <Icon name="edit" />
           <span>Edit</span>
         </Button>
-        <Button
+        <ConfirmationButton
+          className="p-segmented-control__button has-icon"
           type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          onClick={() => handleRemovePackageProfileDialog(profile.name)}
+          confirmationModalProps={{
+            title: "Remove package profile",
+            children: (
+              <p>This will remove &quot;{profile.name}&quot; profile.</p>
+            ),
+            confirmButtonLabel: "Remove",
+            confirmButtonAppearance: "negative",
+            confirmButtonDisabled: isRemoving,
+            confirmButtonLoading: isRemoving,
+            onConfirm: handleRemovePackageProfile,
+          }}
         >
-          <Icon name="delete" />
+          <Icon name={ICONS.delete} />
           <span>Remove</span>
-        </Button>
+        </ConfirmationButton>
       </div>
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={3}>

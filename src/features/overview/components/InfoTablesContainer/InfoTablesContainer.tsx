@@ -2,14 +2,12 @@ import EmptyState from "@/components/layout/EmptyState";
 import ExpandableTableFooter from "@/components/layout/ExpandableTableFooter";
 import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
 import { Activity, ActivityCommon, useActivities } from "@/features/activities";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import { Package, usePackages } from "@/features/packages";
-import { useUsns } from "@/features/usns";
 import {
   Button,
   Col,
+  ConfirmationButton,
   ModularTable,
   Row,
   Tabs,
@@ -28,6 +26,8 @@ import useNotify from "@/hooks/useNotify";
 import LoadingState from "@/components/layout/LoadingState";
 import { Instance } from "@/types/Instance";
 import NoData from "@/components/layout/NoData";
+import { Package, usePackages } from "@/features/packages";
+import { useUsns } from "@/features/usns";
 
 const InfoTablesContainer: FC = () => {
   const [currentUpgradesTab, setCurrentUpgradesTab] = useState(0);
@@ -36,14 +36,15 @@ const InfoTablesContainer: FC = () => {
   const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { getInstancesQuery } = useInstances();
   const { getPackagesQuery, upgradePackagesQuery } = usePackages();
   const { getUsnsQuery } = useUsns();
   const { getActivitiesQuery, approveActivitiesQuery } = useActivities();
 
-  const { mutateAsync: upgradePackages } = upgradePackagesQuery;
-  const { mutateAsync: approveActivities } = approveActivitiesQuery;
+  const { mutateAsync: upgradePackages, isPending: isUpgrading } =
+    upgradePackagesQuery;
+  const { mutateAsync: approveActivities, isPending: isApproving } =
+    approveActivitiesQuery;
 
   const {
     data: unapprovedActivitiesRes,
@@ -355,8 +356,6 @@ const InfoTablesContainer: FC = () => {
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
@@ -371,38 +370,7 @@ const InfoTablesContainer: FC = () => {
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleApproveActivitiesDialog = () => {
-    confirmModal({
-      title: "Approve activities",
-      body: "Are you sure you want to approve selected activities?",
-      buttons: [
-        <Button
-          key="approve"
-          appearance="positive"
-          onClick={handleApproveActivities}
-        >
-          Approve
-        </Button>,
-      ],
-    });
-  };
-
-  const handleConfirmUpgradesDialog = () => {
-    const items = currentUpgradesTab === 2 ? "USNs" : "packages";
-    confirmModal({
-      title: `Upgrade ${items}`,
-      body: `Are you sure you want to upgrade all ${items}?`,
-      buttons: [
-        <Button key="upgrade" appearance="positive" onClick={handleUpgradeAll}>
-          Upgrade
-        </Button>,
-      ],
-    });
   };
 
   return (
@@ -412,12 +380,26 @@ const InfoTablesContainer: FC = () => {
       <Col size={6} className={classes.tableContainer}>
         <div className={classes.tableHeader}>
           <p className="p-heading--5 u-no-margin--bottom">Upgrades available</p>
-          <Button
+          <ConfirmationButton
+            type="button"
             className="is-small u-no-margin--bottom"
-            onClick={handleConfirmUpgradesDialog}
+            confirmationModalProps={{
+              title: `Upgrade ${currentUpgradesTab === 2 ? "USNs" : "packages"}`,
+              children: (
+                <p>
+                  Are you sure you want to upgrade all{" "}
+                  {currentUpgradesTab === 2 ? "USNs" : "packages"}
+                </p>
+              ),
+              confirmButtonLabel: "Upgrade",
+              confirmButtonAppearance: "positive",
+              confirmButtonDisabled: isUpgrading,
+              confirmButtonLoading: isUpgrading,
+              onConfirm: handleUpgradeAll,
+            }}
           >
             Upgrade all
-          </Button>
+          </ConfirmationButton>
         </div>
         <Tabs
           links={[
@@ -453,7 +435,11 @@ const InfoTablesContainer: FC = () => {
             title="All instances are up to date"
             body="Your instances are up to date. Check back later for any new upgrades."
             cta={[
-              <Button key="refresh" onClick={handleUpgradesRefresh}>
+              <Button
+                type="button"
+                key="refresh"
+                onClick={handleUpgradesRefresh}
+              >
                 Refresh
               </Button>,
             ]}
@@ -487,12 +473,23 @@ const InfoTablesContainer: FC = () => {
         <div className={classes.tableHeader}>
           <p className="p-heading--5 u-no-margin--bottom">Activities</p>
           {currentActivitiesTab === 0 && (
-            <Button
+            <ConfirmationButton
               className="is-small u-no-margin--bottom"
-              onClick={handleApproveActivitiesDialog}
+              type="button"
+              confirmationModalProps={{
+                title: "Approve activities",
+                children: (
+                  <p>Are you sure you want to approve selected activities?</p>
+                ),
+                confirmButtonLabel: "Approve",
+                confirmButtonAppearance: "positive",
+                confirmButtonDisabled: isApproving,
+                confirmButtonLoading: isApproving,
+                onConfirm: handleApproveActivities,
+              }}
             >
               Approve all
-            </Button>
+            </ConfirmationButton>
           )}
         </div>
         <Tabs
@@ -531,7 +528,11 @@ const InfoTablesContainer: FC = () => {
                 : "There are currently no activities in progress. Check back later."
             }
             cta={[
-              <Button key="refresh" onClick={handleActivitiesRefresh}>
+              <Button
+                type="button"
+                key="refresh"
+                onClick={handleActivitiesRefresh}
+              >
                 Refresh
               </Button>,
             ]}

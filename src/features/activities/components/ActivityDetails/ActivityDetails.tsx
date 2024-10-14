@@ -1,13 +1,17 @@
 import moment from "moment";
 import { FC } from "react";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
+import {
+  Col,
+  ConfirmationButton,
+  Icon,
+  Row,
+} from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities } from "../../hooks";
 import { Activity } from "../../types";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import classes from "./ActivityDetails.module.scss";
@@ -18,7 +22,6 @@ interface ActivityDetailsProps {
 
 const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
   const debug = useDebug();
-  const { confirmModal, closeConfirmModal } = useConfirm();
 
   const {
     approveActivitiesQuery,
@@ -62,108 +65,36 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
       ? getInstancesQueryResult.data.results[0].title
       : "";
 
-  const handleApproveActivities = async (activity: Activity) => {
+  const handleApproveActivity = async (activity: Activity) => {
     try {
       await approveActivities({ query: `id:${activity.id}` });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
-  const handleApproveActivitiesDialog = (activity: Activity) => {
-    confirmModal({
-      title: "Approve activity",
-      body: `Are you sure you want to approve ${activity.summary} activity?`,
-      buttons: [
-        <Button
-          key="approve"
-          appearance="positive"
-          onClick={() => handleApproveActivities(activity)}
-        >
-          Approve
-        </Button>,
-      ],
-    });
-  };
-
-  const handleCancelActivities = async (activity: Activity) => {
+  const handleCancelActivity = async (activity: Activity) => {
     try {
       await cancelActivities({ query: `id:${activity.id}` });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
-  const handleCancelActivitiesDialog = (activity: Activity) => {
-    confirmModal({
-      title: "Cancel activity",
-      body: `Are you sure you want to cancel ${activity.summary} activity?`,
-      buttons: [
-        <Button
-          key="cancel"
-          appearance="positive"
-          onClick={() => handleCancelActivities(activity)}
-        >
-          Apply
-        </Button>,
-      ],
-    });
-  };
-
-  const handleRedoActivities = async (activity: Activity) => {
+  const handleRedoActivity = async (activity: Activity) => {
     try {
       await redoActivities({ activity_ids: [activity.id] });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
-  const handleRedoActivitiesDialog = (activity: Activity) => {
-    confirmModal({
-      title: "Redo activity",
-      body: `Are you sure you want to redo ${activity.summary} activity?`,
-      buttons: [
-        <Button
-          key="redo"
-          appearance="positive"
-          onClick={() => handleRedoActivities(activity)}
-        >
-          Redo
-        </Button>,
-      ],
-    });
-  };
-
-  const handleUndoActivities = async (activity: Activity) => {
+  const handleUndoActivity = async (activity: Activity) => {
     try {
       await undoActivities({ activity_ids: [activity.id] });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleUndoActivitiesDialog = (activity: Activity) => {
-    confirmModal({
-      title: "Undo activity",
-      body: `Are you sure you want to undo ${activity.summary} activity?`,
-      buttons: [
-        <Button
-          key="undo"
-          appearance="positive"
-          onClick={() => handleUndoActivities(activity)}
-        >
-          Undo
-        </Button>,
-      ],
-    });
   };
 
   return (
@@ -174,48 +105,100 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           <div key="buttons" className="p-segmented-control">
             <div className="p-segmented-control__list">
               {activity.actions?.approvable && (
-                <Button
+                <ConfirmationButton
                   className="p-segmented-control__button"
                   type="button"
-                  onClick={() => handleApproveActivitiesDialog(activity)}
                   disabled={approveActivitiesLoading}
+                  confirmationModalProps={{
+                    title: "Approve activity",
+                    children: (
+                      <p>
+                        Are you sure you want to approve {activity.summary}{" "}
+                        activity?
+                      </p>
+                    ),
+                    confirmButtonLabel: "Approve",
+                    confirmButtonAppearance: "positive",
+                    confirmButtonDisabled: approveActivitiesLoading,
+                    confirmButtonLoading: approveActivitiesLoading,
+                    onConfirm: () => handleApproveActivity(activity),
+                  }}
                 >
                   Approve
-                </Button>
+                </ConfirmationButton>
               )}
               {activity.actions?.cancelable && (
-                <Button
+                <ConfirmationButton
                   className="p-segmented-control__button"
                   type="button"
-                  onClick={() => handleCancelActivitiesDialog(activity)}
                   disabled={cancelActivitiesLoading}
+                  confirmationModalProps={{
+                    title: "Cancel activity",
+                    children: (
+                      <p>
+                        Are you sure you want to cancel {activity.summary}{" "}
+                        activity?
+                      </p>
+                    ),
+                    confirmButtonLabel: "Apply",
+                    confirmButtonAppearance: "positive",
+                    confirmButtonDisabled: cancelActivitiesLoading,
+                    confirmButtonLoading: cancelActivitiesLoading,
+                    onConfirm: () => handleCancelActivity(activity),
+                  }}
                 >
                   {!activity.actions?.approvable &&
                   !activity.actions?.reappliable &&
                   !activity.actions?.revertable
                     ? "Cancel activity"
                     : "Cancel"}
-                </Button>
+                </ConfirmationButton>
               )}
               {activity.actions?.revertable && (
-                <Button
+                <ConfirmationButton
                   className="p-segmented-control__button"
                   type="button"
-                  onClick={() => handleUndoActivitiesDialog(activity)}
                   disabled={undoActivitiesLoading}
+                  confirmationModalProps={{
+                    title: "Undo activity",
+                    children: (
+                      <p>
+                        Are you sure you want to undo {activity.summary}{" "}
+                        activity?
+                      </p>
+                    ),
+                    confirmButtonLabel: "Undo",
+                    confirmButtonAppearance: "positive",
+                    confirmButtonDisabled: undoActivitiesLoading,
+                    confirmButtonLoading: undoActivitiesLoading,
+                    onConfirm: () => handleUndoActivity(activity),
+                  }}
                 >
                   Undo
-                </Button>
+                </ConfirmationButton>
               )}
               {activity.actions?.reappliable && (
-                <Button
+                <ConfirmationButton
                   className="p-segmented-control__button"
                   type="button"
-                  onClick={() => handleRedoActivitiesDialog(activity)}
                   disabled={redoActivitiesLoading}
+                  confirmationModalProps={{
+                    title: "Redo activity",
+                    children: (
+                      <p>
+                        Are you sure you want to redo {activity.summary}{" "}
+                        activity?
+                      </p>
+                    ),
+                    confirmButtonLabel: "Redo",
+                    confirmButtonAppearance: "positive",
+                    confirmButtonDisabled: redoActivitiesLoading,
+                    confirmButtonLoading: redoActivitiesLoading,
+                    onConfirm: () => handleRedoActivity(activity),
+                  }}
                 >
                   Redo
-                </Button>
+                </ConfirmationButton>
               )}
             </div>
           </div>

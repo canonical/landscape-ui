@@ -77,6 +77,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
       },
       {
         accessor: "actions",
+        className: classes.actions,
         Cell: ({ row: { original } }: CellProps<CommonPocket>) => (
           <SeriesPocketListActions
             distributionName={distributionName}

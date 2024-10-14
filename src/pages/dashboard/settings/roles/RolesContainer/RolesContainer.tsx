@@ -40,6 +40,7 @@ const RolesContainer: FC = () => {
             }
             cta={[
               <Button
+                type="button"
                 key="add"
                 appearance="positive"
                 onClick={() =>

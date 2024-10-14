@@ -96,6 +96,7 @@ const SnapsList: FC<SnapsListProps> = ({
               }}
             />
             <Button
+              type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top"
               onClick={() => {

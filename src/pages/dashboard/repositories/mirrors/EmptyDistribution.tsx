@@ -33,6 +33,7 @@ const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
           </a>
         </p>
         <Button
+          type="button"
           appearance="positive"
           className="u-no-margin--bottom"
           onClick={() => {

@@ -1,9 +1,14 @@
 import classNames from "classnames";
 import { FC, lazy, MouseEvent as ReactMouseEvent, Suspense } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import { Button, Tooltip } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationButton,
+  Icon,
+  ICONS,
+  Tooltip,
+} from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import usePockets from "@/hooks/usePockets";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -29,46 +34,35 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
 }) => {
   const isLargerScreen = useMediaQuery("(min-width: 620px)");
   const debug = useDebug();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelContent } = useSidePanel();
   const {
     removePocketQuery,
     syncMirrorPocketQuery,
     pullPackagesToPocketQuery,
   } = usePockets();
-  const { mutateAsync: removePocket } = removePocketQuery;
+  const { mutateAsync: removePocket, isPending: isRemovingPocket } =
+    removePocketQuery;
 
-  const handleRemovePocket = (pocket: Pocket) => {
-    confirmModal({
-      body: `Do you really want to delete ${pocket.name} pocket from ${seriesName} series of ${distributionName} distribution?`,
-      title: "Deleting pocket",
-      buttons: [
-        <Button
-          key={`delete-${pocket.name}-pocket`}
-          appearance="negative"
-          onClick={async () => {
-            try {
-              await removePocket({
-                distribution: distributionName,
-                series: seriesName,
-                name: pocket.name,
-              });
-            } catch (error) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
-          aria-label={`Delete ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-        >
-          Delete
-        </Button>,
-      ],
-    });
+  const handleRemovePocket = async () => {
+    try {
+      await removePocket({
+        distribution: distributionName,
+        series: seriesName,
+        name: pocket.name,
+      });
+    } catch (error) {
+      debug(error);
+    }
   };
 
-  const { mutateAsync: syncMirrorPocket } = syncMirrorPocketQuery;
-  const { mutateAsync: pullPackagesToPocket } = pullPackagesToPocketQuery;
+  const {
+    mutateAsync: syncMirrorPocket,
+    isPending: isSynchronizingMirrorPocket,
+  } = syncMirrorPocketQuery;
+  const {
+    mutateAsync: pullPackagesToPocket,
+    isPending: isPullingPackagesToPocket,
+  } = pullPackagesToPocketQuery;
 
   const handleSyncPocket = async () => {
     try {
@@ -79,8 +73,6 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
@@ -93,43 +85,34 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
-  const handleSyncPocketDialog = (pocket: Pocket) => {
+  const getPocketModal = () => {
     if ("mirror" === pocket.mode) {
-      confirmModal({
+      return {
         title: `Synchronizing ${pocket.name} pocket`,
-        body: "Do you want to synchronize packages?",
-        buttons: [
-          <Button
-            key={pocket.name}
-            appearance="positive"
-            onClick={handleSyncPocket}
-            aria-label={`Synchronize ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-          >
-            Sync
-          </Button>,
-        ],
-      });
+        children: <p>Do you want to synchronize packages?</p>,
+        confirmButtonLabel: "Sync",
+        confirmButtonAppearance: "positive",
+        confirmButtonDisabled: isSynchronizingMirrorPocket,
+        confirmButtonLoading: isSynchronizingMirrorPocket,
+        onConfirm: handleSyncPocket,
+      };
     } else if ("pull" === pocket.mode) {
-      confirmModal({
+      return {
         title: `Pulling packages to ${pocket.name} pocket`,
-        body: `Do you want to pull packages from ${pocket.pull_pocket}?`,
-        buttons: [
-          <Button
-            key={pocket.name}
-            appearance="positive"
-            onClick={handlePullPackagesToPocket}
-            aria-label={`Pull packages to ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-          >
-            Pull
-          </Button>,
-        ],
-      });
+        children: (
+          <p>Do you want to pull packages from {pocket.pull_pocket}?</p>
+        ),
+        confirmButtonLabel: "Pull",
+        confirmButtonAppearance: "positive",
+        confirmButtonDisabled: isPullingPackagesToPocket,
+        confirmButtonLoading: isPullingPackagesToPocket,
+        onConfirm: handlePullPackagesToPocket,
+      };
     }
+    return {};
   };
 
   const handleEditPocket = (
@@ -154,39 +137,41 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     <div className="divided-blocks">
       {("mirror" == pocket.mode || "pull" == pocket.mode) && (
         <div className="divided-blocks__item">
-          <Tooltip
-            message={"mirror" === pocket.mode ? "Sync" : "Pull"}
-            position="btm-center"
+          <ConfirmationButton
+            type="button"
+            className={classNames("u-no-margin--bottom has-icon", {
+              "u-no-padding--right": isLargerScreen,
+              "is-small": isLargerScreen,
+            })}
+            appearance={isLargerScreen ? "base" : undefined}
+            aria-label={
+              "mirror" === pocket.mode
+                ? `Synchronize ${pocket.name} pocket of ${distributionName}/${seriesName}`
+                : `Pull packages to ${pocket.name} pocket of ${distributionName}/${seriesName}`
+            }
+            disabled={syncPocketRefs.some(
+              (ref) => ref.distributionName === distributionName,
+            )}
+            confirmationModalProps={getPocketModal()}
           >
-            <Button
-              small={isLargerScreen}
-              hasIcon
-              appearance={isLargerScreen ? "base" : ""}
-              className={classNames("u-no-margin--bottom", {
-                "u-no-padding--right": isLargerScreen,
-              })}
-              aria-label={
-                "mirror" === pocket.mode
-                  ? `Synchronize ${pocket.name} pocket of ${distributionName}/${seriesName}`
-                  : `Pull packages to ${pocket.name} pocket of ${distributionName}/${seriesName}`
-              }
-              onClick={() => handleSyncPocketDialog(pocket)}
-              disabled={syncPocketRefs.some(
-                (ref) => ref.distributionName === distributionName,
-              )}
+            <Tooltip
+              position="btm-center"
+              message={"mirror" === pocket.mode ? "Sync" : "Pull"}
             >
-              <i
-                className={classNames("p-icon--change-version", {
+              <Icon
+                name="change-version"
+                className={classNames({
                   "u-no-margin--right": isLargerScreen,
                 })}
               />
-            </Button>
-          </Tooltip>
+            </Tooltip>
+          </ConfirmationButton>
         </div>
       )}
       <div className="divided-blocks__item">
         <Tooltip message="Edit" position="btm-center">
           <Button
+            type="button"
             small={isLargerScreen}
             hasIcon
             appearance={isLargerScreen ? "base" : ""}
@@ -199,8 +184,9 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
               (ref) => ref.distributionName === distributionName,
             )}
           >
-            <i
-              className={classNames("p-icon--edit", {
+            <Icon
+              name="edit"
+              className={classNames({
                 "u-no-margin--right": isLargerScreen,
               })}
             />
@@ -208,27 +194,41 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
         </Tooltip>
       </div>
       <div className="divided-blocks__item">
-        <Tooltip message="Delete" position="btm-center">
-          <Button
-            small={isLargerScreen}
-            hasIcon
-            appearance={isLargerScreen ? "base" : ""}
-            className={classNames("u-no-margin--bottom", {
-              "u-no-padding--right": isLargerScreen,
-            })}
-            aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-            onClick={() => handleRemovePocket(pocket)}
-            disabled={syncPocketRefs.some(
-              (ref) => ref.distributionName === distributionName,
-            )}
-          >
-            <i
-              className={classNames("p-icon--delete", {
+        <ConfirmationButton
+          type="button"
+          className={classNames("u-no-margin--bottom has-icon", {
+            "u-no-padding--right": isLargerScreen,
+            "is-small": isLargerScreen,
+          })}
+          appearance={isLargerScreen ? "base" : undefined}
+          aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${seriesName}`}
+          disabled={syncPocketRefs.some(
+            (ref) => ref.distributionName === distributionName,
+          )}
+          confirmationModalProps={{
+            title: "Deleting pocket",
+            children: (
+              <p>
+                Do you really want to delete {pocket.name} pocket from{" "}
+                {seriesName} series of {distributionName} distribution?
+              </p>
+            ),
+            confirmButtonLabel: "Delete",
+            confirmButtonAppearance: "negative",
+            confirmButtonDisabled: isRemovingPocket,
+            confirmButtonLoading: isRemovingPocket,
+            onConfirm: handleRemovePocket,
+          }}
+        >
+          <Tooltip position="btm-center" message="Delete">
+            <Icon
+              name={ICONS.delete}
+              className={classNames({
                 "u-no-margin--right": isLargerScreen,
               })}
             />
-          </Button>
-        </Tooltip>
+          </Tooltip>
+        </ConfirmationButton>
       </div>
     </div>
   );

@@ -1,13 +1,19 @@
 import { FC, HTMLProps, useMemo } from "react";
 import {
+  Button,
+  ConfirmationButton,
+  Icon,
+  ICONS,
+  ModularTable,
+  Tooltip,
+} from "@canonical/react-components";
+import {
   Cell,
   CellProps,
   Column,
   TableCellProps,
 } from "@canonical/react-components/node_modules/@types/react-table";
-import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
 import useAdministrators from "@/hooks/useAdministrators";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Administrator } from "@/types/Administrator";
@@ -30,10 +36,10 @@ const AdministratorList: FC<AdministratorListProps> = ({
 }) => {
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { disableAdministratorQuery } = useAdministrators();
 
-  const { mutateAsync: disableAdministrator } = disableAdministratorQuery;
+  const { mutateAsync: disableAdministrator, isPending: isDisabling } =
+    disableAdministratorQuery;
 
   const administratorsData = useMemo(() => administrators, [administrators]);
 
@@ -51,27 +57,7 @@ const AdministratorList: FC<AdministratorListProps> = ({
       await disableAdministrator({ email });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleAdministratorDisablingDialog = (administrator: Administrator) => {
-    confirmModal({
-      body: "This will remove the administrator from your Landscape organisation.",
-      title: `Remove ${administrator.name}`,
-      buttons: [
-        <Button
-          key={`remove-administrator-${administrator.id}`}
-          appearance="negative"
-          hasIcon
-          onClick={() => handleAdministratorDisabling(administrator.email)}
-          aria-label={`Remove ${administrator.name}`}
-        >
-          <span>Remove</span>
-        </Button>,
-      ],
-    });
   };
 
   const handleAdministratorClick = (administrator: Administrator) => {
@@ -118,17 +104,33 @@ const AdministratorList: FC<AdministratorListProps> = ({
         accessor: "actions",
         className: classes.actions,
         Cell: ({ row }: CellProps<Administrator>) => (
-          <Button
-            small
-            hasIcon
+          <ConfirmationButton
+            className="u-no-margin--bottom u-no-padding--left is-small has-icon"
+            type="button"
             appearance="base"
-            className="u-no-margin--bottom u-no-padding--left p-tooltip--top-center"
             aria-label={`Remove ${row.original.name}`}
-            onClick={() => handleAdministratorDisablingDialog(row.original)}
+            confirmationModalProps={{
+              title: `Remove ${row.original.name}`,
+              children: (
+                <p>
+                  This will remove the administrator from your Landscape
+                  organisation.
+                </p>
+              ),
+              confirmButtonLabel: "Remove",
+              confirmButtonAppearance: "negative",
+              confirmButtonDisabled: isDisabling,
+              confirmButtonLoading: isDisabling,
+              onConfirm: () => handleAdministratorDisabling(row.original.email),
+            }}
           >
-            <span className="p-tooltip__message">Remove</span>
-            <Icon name={ICONS.delete} className="u-no-margin--left" />
-          </Button>
+            <Tooltip position="top-center" message="Remove">
+              <Icon
+                name={ICONS.delete}
+                className="u-no-margin--left u-no-padding"
+              />
+            </Tooltip>
+          </ConfirmationButton>
         ),
       },
     ],

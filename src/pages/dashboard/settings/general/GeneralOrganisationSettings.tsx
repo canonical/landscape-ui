@@ -34,6 +34,7 @@ const GeneralOrganisationSettings: FC = () => {
             icon="connected"
             cta={[
               <Button
+                type="button"
                 key="refetch"
                 appearance="positive"
                 onClick={handleRefetch}

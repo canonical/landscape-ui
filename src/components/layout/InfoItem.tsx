@@ -111,6 +111,7 @@ const InfoItem: FC<InfoItemProps> = (props) => {
       </div>
       {needsTruncation && (
         <Button
+          type="button"
           appearance="base"
           small
           className={classNames("u-no-margin--right", classes.showMore)}

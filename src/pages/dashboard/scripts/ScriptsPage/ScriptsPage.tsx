@@ -20,6 +20,7 @@ const ScriptsPage: FC = () => {
         title="Scripts"
         actions={[
           <Button
+            type="button"
             key="add-script"
             appearance="positive"
             onClick={handleScriptCreate}

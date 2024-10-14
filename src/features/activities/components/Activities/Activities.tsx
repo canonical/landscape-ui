@@ -119,6 +119,7 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
         Header: "Description",
         Cell: ({ row }: CellProps<ActivityCommon>) => (
           <Button
+            type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={() => handleActivityDetailsOpen(row.original)}

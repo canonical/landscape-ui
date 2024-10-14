@@ -217,11 +217,7 @@ const App: FC = () => {
                 <Route path="profiles" element={<ProfilesPage />} />
                 <Route
                   path="profiles/repositories"
-                  element={
-                    <SelfHostedRoute>
-                      <RepositoryProfilesPage />
-                    </SelfHostedRoute>
-                  }
+                  element={<RepositoryProfilesPage />}
                 />
                 <Route
                   path="profiles/package"

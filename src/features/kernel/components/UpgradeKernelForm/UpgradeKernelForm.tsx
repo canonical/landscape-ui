@@ -24,11 +24,11 @@ import {
   NOTIFICATION_MESSAGE,
   UPGRADE_MESSAGE_WITH_REBOOT,
   UPGRADE_MESSAGE_WITHOUT_REBOOT,
-  VALIDATION_SCHEMA,
 } from "./constants";
 import { FormProps } from "./types";
 import classes from "./UpgradeKernelForm.module.scss";
 import { UrlParams } from "@/types/UrlParams";
+import { KERNEL_ACTIONS_VALIDATION_SCHEMA } from "../../constants";
 
 interface UpgradeKernelFormProps {
   currentKernelVersion: string;
@@ -76,7 +76,7 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
 
   const formik = useFormik<FormProps>({
     initialValues: initialValues,
-    validationSchema: VALIDATION_SCHEMA,
+    validationSchema: KERNEL_ACTIONS_VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
         const { data: activity } = await upgradeKernel({

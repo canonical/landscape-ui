@@ -1,8 +1,7 @@
 import { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Icon } from "@canonical/react-components";
+import { ConfirmationButton, Icon } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { usePageParams } from "@/hooks/usePageParams";
@@ -21,13 +20,13 @@ const UsnPackagesRemoveButton: FC<UsnPackagesRemoveButtonProps> = ({
   const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { removeUsnPackagesQuery } = useUsns();
   const { setPageParams } = usePageParams();
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
 
   const instanceId = Number(urlInstanceId);
-  const { mutateAsync: removeUsnPackages } = removeUsnPackagesQuery;
+  const { mutateAsync: removeUsnPackages, isPending: isRemoving } =
+    removeUsnPackagesQuery;
 
   const handleActivityDetailsView = () => {
     navigate(
@@ -56,39 +55,32 @@ const UsnPackagesRemoveButton: FC<UsnPackagesRemoveButtonProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
-  const handleRemoveUsnPackagesDialog = () => {
-    confirmModal({
-      title: "Uninstall USN packages",
-      body: `This will uninstall packages affected by "${usn}" security issue from the "${instanceTitle}" instance.`,
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={handleRemoveUsnPackages}
-        >
-          Uninstall
-        </Button>,
-      ],
-    });
-  };
-
   return (
-    <Button
+    <ConfirmationButton
       type="button"
-      small
-      dense
-      hasIcon
-      onClick={handleRemoveUsnPackagesDialog}
+      key="remove"
+      className="is-small is-dense has-icon"
+      confirmationModalProps={{
+        title: "Uninstall USN packages",
+        children: (
+          <p>
+            This will uninstall packages affected by &quot;{usn}&quot; security
+            issue from the &quot;{instanceTitle}&quot; instance.
+          </p>
+        ),
+        confirmButtonLabel: "Uninstall",
+        confirmButtonAppearance: "negative",
+        confirmButtonDisabled: isRemoving,
+        confirmButtonLoading: isRemoving,
+        onConfirm: handleRemoveUsnPackages,
+      }}
     >
       <Icon name="delete" className="u-no-margin--left" />
       <span>Uninstall packages</span>
-    </Button>
+    </ConfirmationButton>
   );
 };
 

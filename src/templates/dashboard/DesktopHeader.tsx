@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/images/logo-white-full.svg";
 import LogoIcon from "../../assets/images/logo-white-icon.svg";
@@ -35,6 +35,7 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
       </Link>
       <div className="u-hide--large">
         <Button
+          type="button"
           className="p-button--base is-dark u-no-margin u-hide--medium"
           hasIcon
           onClick={(event) => {
@@ -43,7 +44,7 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
           }}
           aria-label="Close navigation"
         >
-          <i className="is-light p-icon--close-sidebar" />
+          <Icon name="close-sidebar" className="is-light" />
         </Button>
       </div>
     </div>

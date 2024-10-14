@@ -2,7 +2,15 @@ import { Buffer } from "buffer";
 import { useFormik } from "formik";
 import { FC, useEffect, useMemo } from "react";
 import * as Yup from "yup";
-import { Button, Form, Input, Select } from "@canonical/react-components";
+import {
+  Button,
+  Form,
+  Icon,
+  ICONS,
+  Input,
+  Select,
+  Tooltip,
+} from "@canonical/react-components";
 import CodeEditor from "@/components/form/CodeEditor";
 import { CreateScriptParams, useScripts } from "../../hooks";
 import { Script } from "../../types";
@@ -359,9 +367,10 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
           <div key={scriptAttachment}>
             <span>{scriptAttachment}</span>
             <Button
+              type="button"
               hasIcon
               appearance="base"
-              className="u-no-margin--bottom u-no-padding--left p-tooltip--top-center"
+              className="u-no-margin--bottom u-no-padding--left"
               aria-label={`Remove ${scriptAttachment} attachment`}
               onClick={() => {
                 formik.setFieldValue("attachmentsToRemove", [
@@ -370,8 +379,9 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
                 ]);
               }}
             >
-              <span className="p-tooltip__message">Remove</span>
-              <i className="p-icon--delete" />
+              <Tooltip message="Remove" position="top-center">
+                <Icon name={ICONS.delete} />
+              </Tooltip>
             </Button>
           </div>,
         );

@@ -6,9 +6,7 @@ import {
 } from "@canonical/react-components/node_modules/@types/react-table";
 import {
   Button,
-  ContextualMenu,
   Icon,
-  ICONS,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
@@ -22,13 +20,8 @@ import classes from "./WslProfilesList.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
-import { useWslProfiles } from "../../hooks";
-import useConfirm from "@/hooks/useConfirm";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
+import WslProfilesListContextualMenu from "../WslProfilesListContextualMenu";
 
-const WslProfileEditForm = lazy(() => import("../WslProfileEditForm"));
-const WslProfileInstallForm = lazy(() => import("../WslProfileInstallForm"));
 const WslProfileDetails = lazy(() => import("../WslProfileDetails"));
 
 interface WslProfileListProps {
@@ -37,14 +30,8 @@ interface WslProfileListProps {
 
 const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
   const { search } = usePageParams();
-  const debug = useDebug();
-  const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
-  const { removeWslProfileQuery } = useWslProfiles();
-  const { closeConfirmModal, confirmModal } = useConfirm();
-
-  const { mutateAsync: removeWslProfile } = removeWslProfileQuery;
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -64,66 +51,6 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
         />
       </Suspense>,
     );
-  };
-
-  const handleWslProfileEdit = (profile: WslProfile) => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <WslProfileEditForm profile={profile} />
-      </Suspense>,
-    );
-  };
-
-  const handleWslProfileDuplicate = (profile: WslProfile) => {
-    setSidePanelContent(
-      `Duplicate "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <WslProfileInstallForm action="duplicate" profile={profile} />
-      </Suspense>,
-    );
-  };
-
-  const handleRemoveWslProfile = async (name: string) => {
-    try {
-      await removeWslProfile({ name });
-
-      notify.success({
-        message: `WSL profile "${name}" removed successfully.`,
-        title: "WSL profile removed",
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      closeConfirmModal();
-    }
-  };
-
-  const handleRemoveWslProfileDialog = (
-    name: string,
-    affectedInstancesCount: number,
-  ) => {
-    confirmModal({
-      title: `Remove ${name}`,
-      body: (
-        <p>
-          Removing this profile will affect{" "}
-          <b>{affectedInstancesCount} instances</b>. This action is
-          irreversible.
-        </p>
-      ),
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={() => handleRemoveWslProfile(name)}
-          aria-label={`Remove ${name} profile`}
-        >
-          Remove
-        </Button>,
-      ],
-    });
   };
 
   const profiles = useMemo(() => {
@@ -218,61 +145,10 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
       },
       {
         accessor: "actions",
-        className: classNames("u-align-text--right", classes.actions),
+        className: classes.actions,
         Header: "Actions",
         Cell: ({ row: { original } }: CellProps<WslProfile>) => (
-          <ContextualMenu
-            position="left"
-            toggleClassName={classes.toggleButton}
-            toggleAppearance="base"
-            toggleLabel={<Icon name="contextual-menu" aria-hidden />}
-            toggleProps={{ "aria-label": `${original.name} profile actions` }}
-          >
-            <Button
-              type="button"
-              appearance="base"
-              hasIcon
-              className={classNames(
-                "u-no-margin--bottom u-no-margin--right",
-                classes.actionButton,
-              )}
-              onClick={() => handleWslProfileEdit(original)}
-              aria-label={`Edit ${original.name} profile`}
-            >
-              <Icon name="edit" />
-              <span>Edit</span>
-            </Button>
-            <Button
-              type="button"
-              appearance="base"
-              hasIcon
-              className={classNames(
-                "u-no-margin--bottom u-no-margin--right",
-                classes.actionButton,
-              )}
-              onClick={() => handleWslProfileDuplicate(original)}
-              aria-label={`Edit ${original.name} profile`}
-            >
-              <Icon name="canvas" />
-              <span>Duplicate</span>
-            </Button>
-            <Button
-              type="button"
-              appearance="base"
-              hasIcon
-              className="u-no-margin--bottom u-no-margin--right p-contextual-menu__link"
-              onClick={() =>
-                handleRemoveWslProfileDialog(
-                  original.name,
-                  original.computers.constrained.length,
-                )
-              }
-              aria-label={`Remove ${original.name} profile`}
-            >
-              <Icon name={ICONS.delete} />
-              <span>Remove</span>
-            </Button>
-          </ContextualMenu>
+          <WslProfilesListContextualMenu profile={original} />
         ),
       },
     ],

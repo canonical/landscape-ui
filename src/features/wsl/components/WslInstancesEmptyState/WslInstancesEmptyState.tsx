@@ -43,7 +43,7 @@ const WslInstancesEmptyState: FC = () => {
           type="button"
           onClick={handleWslInstanceInstall}
         >
-          <span>Install new WSL instance</span>
+          Install new WSL instance
         </Button>,
       ]}
     />

@@ -133,7 +133,7 @@ const AddRoleForm: FC = () => {
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Add"
+        submitButtonText="Add role"
       />
     </Form>
   );

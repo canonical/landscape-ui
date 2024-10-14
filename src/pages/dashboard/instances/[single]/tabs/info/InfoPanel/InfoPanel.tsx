@@ -1,23 +1,35 @@
 import classNames from "classnames";
 import { FC, lazy, Suspense, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
+import {
+  Button,
+  CheckboxInput,
+  Col,
+  ConfirmationButton,
+  Icon,
+  ICONS,
+  Row,
+  Input,
+  Form,
+} from "@canonical/react-components";
 import TagMultiSelect from "@/components/form/TagMultiSelect";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import { ROOT_PATH } from "@/constants";
 import { useWsl } from "@/features/wsl";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import ActivityConfirmation from "@/pages/dashboard/instances/[single]/tabs/info/ActivityConfirmation";
 import { Instance } from "@/types/Instance";
 import { SelectOption } from "@/types/SelectOption";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
+import { useFormik } from "formik";
+import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import { ModalConfirmationFormProps } from "./types";
+import { useActivities } from "@/features/activities";
 
 const EditInstance = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
@@ -33,22 +45,79 @@ interface InfoPanelProps {
 }
 
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
-  const [instanceAction, setInstanceAction] = useState<
-    "reboot" | "shutdown" | null
-  >(null);
   const [instanceTags, setInstanceTags] = useState(instance.tags);
 
   const navigate = useNavigate();
   const debug = useDebug();
+  const { openActivityDetails } = useActivities();
   const { notify } = useNotify();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelContent } = useSidePanel();
-  const { removeInstancesQuery } = useInstances();
   const { getAccessGroupQuery } = useRoles();
+  const { removeInstancesQuery, rebootInstancesQuery, shutdownInstancesQuery } =
+    useInstances();
   const { deleteChildInstancesQuery } = useWsl();
   const { editInstanceQuery } = useInstances();
 
   const { mutateAsync: editInstance } = editInstanceQuery;
+
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
+
+  const accessGroupOptions: SelectOption[] =
+    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
+      label: title,
+      value: name,
+    })) ?? [];
+
+  const { mutateAsync: removeInstances, isPending: isRemoving } =
+    removeInstancesQuery;
+  const { mutateAsync: rebootInstances, isPending: isRebooting } =
+    rebootInstancesQuery;
+  const { mutateAsync: shutdownInstances, isPending: isShuttingDown } =
+    shutdownInstancesQuery;
+  const { mutateAsync: deleteChildInstances, isPending: isDeleting } =
+    deleteChildInstancesQuery;
+
+  const handleSubmit = async (values: ModalConfirmationFormProps) => {
+    if (!values.action) {
+      return;
+    }
+
+    const valuesToSubmit = {
+      computer_ids: [instance.id],
+      deliver_after: values.deliverImmediately
+        ? undefined
+        : `${values.deliver_after}:00Z`,
+    };
+
+    try {
+      const { data: activity } =
+        values.action === "reboot"
+          ? await rebootInstances(valuesToSubmit)
+          : await shutdownInstances(valuesToSubmit);
+
+      const notificationVerb =
+        values.action === "reboot" ? "restarted" : "shut down";
+
+      notify.success({
+        title: `You queued "${instance.title}" to be ${notificationVerb}`,
+        message: `Instance "${instance.title}" will be ${notificationVerb} and is queued in Activities`,
+        actions: [
+          {
+            label: "View details",
+            onClick: () => openActivityDetails(activity),
+          },
+        ],
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const formik = useFormik({
+    initialValues: INITIAL_VALUES,
+    validationSchema: VALIDATION_SCHEMA,
+    onSubmit: handleSubmit,
+  });
 
   const handleTagsUpdate = async () => {
     try {
@@ -66,17 +135,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     }
   };
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupOptions: SelectOption[] =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
-
-  const { mutateAsync: removeInstances, isPending: removeInstancesLoading } =
-    removeInstancesQuery;
-
   const handleRemoveInstance = async () => {
     try {
       await removeInstances({
@@ -86,33 +144,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       navigate(`${ROOT_PATH}instances`, { replace: true });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleRemoveInstanceDialog = () => {
-    confirmModal({
-      title: "Remove instance from Landscape",
-      body: (
-        <p>
-          This will remove the instance <b>{instance.title}</b> from Landscape.
-          <br />
-          <br />
-          It will remain on the parent machine. You can re-register it to
-          Landscape at any time.
-        </p>
-      ),
-      buttons: [
-        <Button
-          key="remove"
-          appearance="negative"
-          onClick={handleRemoveInstance}
-        >
-          Remove
-        </Button>,
-      ],
-    });
   };
 
   const handleEditInstance = () => {
@@ -133,8 +165,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     );
   };
 
-  const { mutateAsync: deleteChildInstances } = deleteChildInstancesQuery;
-
   const handleDeleteChildInstances = async () => {
     try {
       await deleteChildInstances({
@@ -144,30 +174,12 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       navigate(`${ROOT_PATH}instances`, { replace: true });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
-  const handleDeleteChildInstancesDialog = async () => {
-    confirmModal({
-      title: "Delete instance",
-      body: (
-        <p>
-          This will permanently delete the instance <b>{instance.title}</b> from
-          both the Windows host machine and Landscape.
-        </p>
-      ),
-      buttons: [
-        <Button
-          key="delete"
-          appearance="negative"
-          onClick={handleDeleteChildInstances}
-        >
-          Delete
-        </Button>,
-      ],
-    });
+  const handleFormSubmit = async (action: "reboot" | "shutdown") => {
+    await formik.setFieldValue("action", action);
+    formik.handleSubmit();
   };
 
   return (
@@ -190,13 +202,27 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </div>
         <div className={classes.flexContainer}>
           {instance.is_wsl_instance && (
-            <Button
-              type="button"
+            <ConfirmationButton
               className="u-no-margin--bottom u-no-margin--right"
-              onClick={handleDeleteChildInstancesDialog}
+              type="button"
+              confirmationModalProps={{
+                title: "Delete instance",
+                children: (
+                  <p>
+                    This will permanently delete the instance{" "}
+                    <b>{instance.title}</b> from both the Windows host machine
+                    and Landscape.
+                  </p>
+                ),
+                confirmButtonLabel: "Delete",
+                confirmButtonAppearance: "negative",
+                confirmButtonDisabled: isDeleting,
+                confirmButtonLoading: isDeleting,
+                onConfirm: handleDeleteChildInstances,
+              }}
             >
               Delete instance
-            </Button>
+            </ConfirmationButton>
           )}
           <div key="buttons" className="p-segmented-control">
             <div className="p-segmented-control__list">
@@ -216,31 +242,126 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 <Icon name="code" />
                 <span>Run script</span>
               </Button>
-              <Button
-                className="p-segmented-control__button u-no-margin--bottom"
+
+              <ConfirmationButton
+                className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"
-                onClick={handleRemoveInstanceDialog}
-                disabled={removeInstancesLoading}
+                disabled={isRemoving}
+                confirmationModalProps={{
+                  title: "Remove instance from Landscape",
+                  children: (
+                    <p>
+                      This will remove the instance <b>{instance.title}</b> from
+                      Landscape.
+                      <br />
+                      <br />
+                      It will remain on the parent machine. You can re-register
+                      it to Landscape at any time.
+                    </p>
+                  ),
+                  confirmButtonLabel: "Remove",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled: isRemoving,
+                  confirmButtonLoading: isRemoving,
+                  onConfirm: handleRemoveInstance,
+                }}
               >
-                <Icon name="delete" />
+                <Icon name={ICONS.delete} />
                 <span>Remove from Landscape</span>
-              </Button>
-              <Button
-                className="p-segmented-control__button u-no-margin--bottom"
+              </ConfirmationButton>
+              <ConfirmationButton
+                className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"
-                onClick={() => setInstanceAction("reboot")}
+                disabled={isRemoving}
+                confirmationModalProps={{
+                  title: "Restart instance",
+                  children: (
+                    <Form
+                      onSubmit={() => handleFormSubmit("reboot")}
+                      noValidate
+                    >
+                      <CheckboxInput
+                        label="Deliver as soon as possible"
+                        {...formik.getFieldProps("deliverImmediately")}
+                        checked={formik.values.deliverImmediately}
+                      />
+                      <Input
+                        type="datetime-local"
+                        label="Schedule time"
+                        labelClassName="u-off-screen"
+                        className={classes.input}
+                        placeholder="Scheduled time"
+                        {...formik.getFieldProps("deliver_after")}
+                        disabled={formik.values.deliverImmediately}
+                        error={
+                          formik.touched.deliver_after &&
+                          formik.errors.deliver_after
+                            ? formik.errors.deliver_after
+                            : undefined
+                        }
+                      />
+                      <p>
+                        This will restart &quot;{instance.title}&quot; instance.
+                      </p>
+                    </Form>
+                  ),
+                  confirmButtonLabel: "Restart",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled: isRebooting,
+                  confirmButtonLoading: isRebooting,
+                  onConfirm: () => handleFormSubmit("reboot"),
+                }}
               >
                 <Icon name="restart" />
                 <span>Restart</span>
-              </Button>
-              <Button
-                className="p-segmented-control__button u-no-margin--bottom"
+              </ConfirmationButton>
+              <ConfirmationButton
+                className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"
-                onClick={() => setInstanceAction("shutdown")}
+                disabled={isRemoving}
+                confirmationModalProps={{
+                  title: "Shut down instance",
+                  children: (
+                    <Form
+                      onSubmit={() => handleFormSubmit("shutdown")}
+                      noValidate
+                    >
+                      <CheckboxInput
+                        label="Deliver as soon as possible"
+                        {...formik.getFieldProps("deliverImmediately")}
+                        checked={formik.values.deliverImmediately}
+                      />
+                      <Input
+                        type="datetime-local"
+                        label="Schedule time"
+                        labelClassName="u-off-screen"
+                        className={classes.input}
+                        placeholder="Scheduled time"
+                        {...formik.getFieldProps("deliver_after")}
+                        disabled={formik.values.deliverImmediately}
+                        error={
+                          formik.touched.deliver_after &&
+                          formik.errors.deliver_after
+                            ? formik.errors.deliver_after
+                            : undefined
+                        }
+                      />
+                      <p>
+                        This will shut down &quot;{instance.title}&quot;
+                        instance.
+                      </p>
+                    </Form>
+                  ),
+                  confirmButtonLabel: "Shutdown",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled: isShuttingDown,
+                  confirmButtonLoading: isShuttingDown,
+                  onConfirm: () => handleFormSubmit("shutdown"),
+                }}
               >
                 <Icon name="power-off" />
                 <span>Shutdown</span>
-              </Button>
+              </ConfirmationButton>
             </div>
           </div>
         </div>
@@ -275,14 +396,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           </Col>
         </Row>
       </div>
-
-      {instanceAction && (
-        <ActivityConfirmation
-          action={instanceAction}
-          instance={instance}
-          onClose={() => setInstanceAction(null)}
-        />
-      )}
     </>
   );
 };

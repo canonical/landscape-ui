@@ -35,6 +35,7 @@ const PackageProfilesEmptyState: FC = () => {
       }
       cta={[
         <Button
+          type="button"
           key="add"
           appearance="positive"
           onClick={handleCreatePackageProfile}

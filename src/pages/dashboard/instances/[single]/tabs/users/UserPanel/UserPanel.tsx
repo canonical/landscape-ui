@@ -63,6 +63,7 @@ const UserPanel: FC = () => {
             icon="connected"
             cta={[
               <Button
+                type="button"
                 key="empty-state-add-new-user"
                 appearance="positive"
                 onClick={handleEmptyStateAddUser}

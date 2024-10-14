@@ -1,6 +1,12 @@
 import { FormikContextType } from "formik";
 import { FC, lazy, Suspense } from "react";
-import { Button, Icon, Select } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationButton,
+  Icon,
+  ICONS,
+  Select,
+} from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { usePackageProfiles } from "../../hooks";
 import {
@@ -8,7 +14,6 @@ import {
   PackageProfile,
   PackageProfileConstraintType,
 } from "../../types";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -41,10 +46,9 @@ const PackageProfileConstraintsEditFormActions: FC<
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
-  const { closeConfirmModal, confirmModal } = useConfirm();
   const { removePackageProfileConstraintsQuery } = usePackageProfiles();
 
-  const { mutateAsync: removeConstraints } =
+  const { mutateAsync: removeConstraints, isPending: isRemoving } =
     removePackageProfileConstraintsQuery;
 
   const handleConstraintsRemove = async () => {
@@ -62,27 +66,7 @@ const PackageProfileConstraintsEditFormActions: FC<
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleConstraintsRemoveDialog = () => {
-    confirmModal({
-      title: `Remove ${selectedIds.length === 1 ? "constraint" : "constraints"}`,
-      body: `This will remove ${selectedIds.length} ${selectedIds.length === 1 ? "constraint" : "constraints"}`,
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={() => handleConstraintsRemove()}
-          aria-label={`Remove ${selectedIds.length === 1 ? "constraint" : "constraints"}`}
-        >
-          Remove
-        </Button>,
-      ],
-    });
   };
 
   const handleConstraintsAdd = () => {
@@ -109,24 +93,37 @@ const PackageProfileConstraintsEditFormActions: FC<
         }
       />
 
-      <Button
+      <ConfirmationButton
+        className="has-icon u-no-margin--right"
         type="button"
-        hasIcon
-        className="u-no-margin--right"
         disabled={selectedIds.length === 0 || formik.values.id !== 0}
-        onClick={handleConstraintsRemoveDialog}
         aria-label={`Remove selected ${selectedIds.length === 1 ? "constraint" : "constraints"}`}
+        confirmationModalProps={{
+          title: `Remove ${selectedIds.length === 1 ? "constraint" : "constraints"}`,
+          children: (
+            <p>
+              This will remove {selectedIds.length}{" "}
+              {selectedIds.length === 1 ? "constraint" : "constraints"}.
+            </p>
+          ),
+          confirmButtonLabel: "Remove",
+          confirmButtonAppearance: "negative",
+          confirmButtonDisabled: isRemoving,
+          confirmButtonLoading: isRemoving,
+          onConfirm: handleConstraintsRemove,
+        }}
       >
-        <Icon name="delete" />
+        <Icon name={ICONS.delete} />
         <span>Remove</span>
-      </Button>
+      </ConfirmationButton>
+
       <Button
         type="button"
         hasIcon
         onClick={handleConstraintsAdd}
         aria-label="Add new constraint"
       >
-        <Icon name="plus" />
+        <Icon name={ICONS.plus} />
         <span>Add constraints</span>
       </Button>
     </div>

@@ -1,13 +1,18 @@
 import { FC, lazy, Suspense, useEffect, useState } from "react";
 import SeriesPocketList from "@/pages/dashboard/repositories/mirrors/SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
-import { Button } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationButton,
+  ConfirmationModal,
+  ContextualMenu,
+  MenuLink,
+} from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Series } from "@/types/Series";
 import useSeries from "@/hooks/useSeries";
 import useDebug from "@/hooks/useDebug";
 import { Distribution } from "@/types/Distribution";
-import useConfirm from "@/hooks/useConfirm";
 import { useMediaQuery } from "usehooks-ts";
 import { DEFAULT_SNAPSHOT_URI, DISPLAY_DATE_FORMAT } from "@/constants";
 import moment from "moment";
@@ -32,7 +37,7 @@ const SeriesCard: FC<SeriesCardProps> = ({
   syncPocketRefAdd,
   syncPocketRefs,
 }) => {
-  const [openDropdown, setOpenDropdown] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [snapshotDate, setSnapshotDate] = useState("");
 
   useEffect(() => {
@@ -51,8 +56,6 @@ const SeriesCard: FC<SeriesCardProps> = ({
   }, [series]);
 
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
-
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { setSidePanelContent } = useSidePanel();
   const { removeSeriesQuery } = useSeries();
   const debug = useDebug();
@@ -60,154 +63,165 @@ const SeriesCard: FC<SeriesCardProps> = ({
   const { mutateAsync: removeSeries, isPending: isRemoving } =
     removeSeriesQuery;
 
-  const handleRemove = async () => {
-    confirmModal({
-      title: "Remove series",
-      body: "Are you sure? This action cannot be undone.",
-      buttons: [
-        <Button
-          key={`delete-${series.name}`}
-          appearance="negative"
-          hasIcon={true}
-          onClick={async () => {
-            try {
-              await removeSeries({
-                name: series.name,
-                distribution: distribution.name,
-              });
-            } catch (error: unknown) {
-              debug(error);
-            } finally {
-              closeConfirmModal();
-            }
-          }}
-          aria-label={`Remove ${series.name} from ${distribution.name}`}
-        >
-          Remove
-        </Button>,
-      ],
-    });
+  const handleRemoveSeries = async () => {
+    try {
+      await removeSeries({
+        name: series.name,
+        distribution: distribution.name,
+      });
+    } catch (error) {
+      debug(error);
+    } finally {
+      handleCloseModal();
+    }
   };
 
-  const DeriveSeriesButton = ({ className }: { className?: string }) => (
-    <Button
-      onClick={() => {
-        setSidePanelContent(
-          "Derive series",
-          <Suspense fallback={<LoadingState />}>
-            <DeriveSeriesForm
-              distribution={distribution}
-              origin={series.name}
-            />
-          </Suspense>,
-        );
-      }}
-      onMouseDown={(event) => {
-        event.preventDefault();
-      }}
-      aria-label={`Derive series ${distribution.name}/${series.name}`}
-      className={className ?? "is-small"}
-    >
-      Derive series
-    </Button>
-  );
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
 
-  const AddPocketButton = ({ className }: { className?: string }) => (
-    <Button
-      onClick={() => {
-        setSidePanelContent(
-          `New pocket for ${series.name}`,
-          <Suspense fallback={<LoadingState />}>
-            <NewPocketForm distribution={distribution} series={series} />
-          </Suspense>,
-        );
-      }}
-      onMouseDown={(event) => {
-        event.preventDefault();
-      }}
-      aria-label={`Add new pocket for ${distribution.name}/${series.name}`}
-      className={className ?? "is-small"}
-    >
-      New pocket
-    </Button>
-  );
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
 
-  const RemoveSeriesButton = ({ className }: { className?: string }) => (
+  const handleDeriveSeries = () => {
+    setSidePanelContent(
+      "Derive series",
+      <Suspense fallback={<LoadingState />}>
+        <DeriveSeriesForm distribution={distribution} origin={series.name} />
+      </Suspense>,
+    );
+  };
+
+  const handleAddPocket = () => {
+    setSidePanelContent(
+      `New pocket for ${series.name}`,
+      <Suspense fallback={<LoadingState />}>
+        <NewPocketForm distribution={distribution} series={series} />
+      </Suspense>,
+    );
+  };
+
+  const actionButtons = [
+    {
+      label: "Derive series",
+      ariaLabel: `Derive series ${distribution.name}/${series.name}`,
+      onClick: handleDeriveSeries,
+    },
+    {
+      label: "New pocket",
+      ariaLabel: `Add new pocket for ${distribution.name}/${series.name}`,
+      onClick: handleAddPocket,
+    },
+  ];
+
+  const modalButton = {
+    label: "Remove",
+    ariaLabel: `Remove ${distribution.name}/${series.name}`,
+    appearance: "negative",
+    modalTitle: "Remove series",
+    modalBody: <p>Are you sure? This action cannot be undone.</p>,
+    isLoading: isRemoving,
+    onClick: handleOpenModal,
+    onConfirm: handleRemoveSeries,
+  };
+
+  const buttons = [...actionButtons, modalButton];
+
+  const largeScreenActionButtons = actionButtons.map((item) => (
     <Button
-      onClick={handleRemove}
-      onMouseDown={(event) => {
-        event.preventDefault();
-      }}
-      disabled={isRemoving}
-      aria-label={`Remove ${distribution.name}/${series.name}`}
-      className={className ?? "is-small"}
+      key={`${item.label}-button`}
+      type="button"
+      className="is-small"
+      aria-label={item.ariaLabel}
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={item.onClick}
     >
-      Remove
+      {item.label}
     </Button>
-  );
+  ));
+
+  const largeScreenButtons = [
+    ...largeScreenActionButtons,
+    <ConfirmationButton
+      key={`${modalButton.label}-button`}
+      type="button"
+      className="is-small"
+      aria-label={modalButton.ariaLabel}
+      confirmationModalProps={{
+        title: modalButton.modalTitle,
+        children: modalButton.modalBody,
+        confirmButtonLabel: modalButton.label,
+        confirmButtonAppearance: modalButton.appearance,
+        confirmButtonLoading: modalButton.isLoading,
+        confirmButtonDisabled: modalButton.isLoading,
+        onConfirm: modalButton.onConfirm,
+      }}
+    >
+      {modalButton.label}
+    </ConfirmationButton>,
+  ];
+
+  const contextualMenuLinks: MenuLink[] = buttons
+    .map((item) => ({
+      children: item.label,
+      "aria-label": item.ariaLabel,
+      onClick: item.onClick,
+    }))
+    .filter(
+      (link) =>
+        !(
+          snapshotDate &&
+          (link.children === "Derive series" || link.children === "New pocket")
+        ),
+    );
 
   return (
-    <div className={classes.card}>
-      <div className={classes.header}>
-        <h3 className={classes.title}>{series.name}</h3>
-        {!!snapshotDate && (
-          <span
-            className={classNames("u-text--muted", classes.snapshot)}
-          >{`Snapshot from ${moment(snapshotDate).format(
-            DISPLAY_DATE_FORMAT,
-          )}`}</span>
-        )}
-        {isLargeScreen ? (
-          <div className={classes.cta}>
-            {!snapshotDate && (
-              <>
-                <DeriveSeriesButton />
-                <AddPocketButton />
-              </>
-            )}
-            <RemoveSeriesButton />
-          </div>
-        ) : (
-          <span className="p-contextual-menu">
-            <Button
-              className="p-contextual-menu__toggle u-no-margin--bottom"
-              aria-controls="series-cta"
-              aria-expanded={openDropdown}
-              aria-haspopup="true"
-              onClick={() => {
-                setOpenDropdown((prevState) => !prevState);
-              }}
-              onBlur={() => {
-                setOpenDropdown(false);
-              }}
-            >
-              Actions
-            </Button>
+    <>
+      <div className={classes.card}>
+        <div className={classes.header}>
+          <h3 className={classes.title}>{series.name}</h3>
+          {!!snapshotDate && (
             <span
-              className="p-contextual-menu__dropdown"
-              id="series-cta"
-              aria-hidden={!openDropdown}
-            >
-              {!snapshotDate && (
-                <>
-                  <DeriveSeriesButton className="p-contextual-menu__link" />
-                  <AddPocketButton className="p-contextual-menu__link" />
-                </>
-              )}
-              <RemoveSeriesButton className="p-contextual-menu__link" />
-            </span>
-          </span>
-        )}
+              className={classNames("u-text--muted", classes.snapshot)}
+            >{`Snapshot from ${moment(snapshotDate).format(
+              DISPLAY_DATE_FORMAT,
+            )}`}</span>
+          )}
+          {isLargeScreen ? (
+            <div className={classes.cta}>{largeScreenButtons}</div>
+          ) : (
+            <ContextualMenu
+              position="left"
+              toggleLabel="Actions"
+              toggleClassName="u-no-margin--bottom"
+              links={contextualMenuLinks}
+            />
+          )}
+        </div>
+        <div className={classes.content}>
+          <SeriesPocketList
+            distributionName={distribution.name}
+            series={series}
+            syncPocketRefAdd={syncPocketRefAdd}
+            syncPocketRefs={syncPocketRefs}
+          />
+        </div>
       </div>
-      <div className={classes.content}>
-        <SeriesPocketList
-          distributionName={distribution.name}
-          series={series}
-          syncPocketRefAdd={syncPocketRefAdd}
-          syncPocketRefs={syncPocketRefs}
-        />
-      </div>
-    </div>
+      {modalOpen && (
+        <ConfirmationModal
+          title={modalButton.modalTitle}
+          confirmButtonLabel={modalButton.label}
+          close={handleCloseModal}
+          confirmButtonAppearance={modalButton.appearance}
+          confirmButtonLoading={modalButton.isLoading}
+          confirmButtonDisabled={modalButton.isLoading}
+          onConfirm={modalButton.onConfirm}
+        >
+          {modalButton.modalBody}
+        </ConfirmationModal>
+      )}
+    </>
   );
 };
 

@@ -9,9 +9,7 @@
   padding: 0 $sph--x-small;
 }
 
-.actionButton {
-  align-items: center;
+.menu {
   display: flex;
-  justify-content: start;
-  width: 100%;
+  justify-content: flex-end;
 }

@@ -20,7 +20,12 @@ const MobileHeader: FC<MobileHeaderProps> = ({ toggleMenu }) => {
         />
       </Link>
       <div className="p-panel__controls u-no-padding--top">
-        <Button className="p-panel__toggle" dense onClick={toggleMenu}>
+        <Button
+          type="button"
+          className="p-panel__toggle"
+          dense
+          onClick={toggleMenu}
+        >
           Menu
         </Button>
       </div>

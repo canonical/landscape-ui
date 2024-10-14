@@ -1,9 +1,14 @@
 import { FC, useMemo } from "react";
-import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
-import { APTSource } from "../../../../types/APTSource";
-import useConfirm from "../../../../hooks/useConfirm";
-import useDebug from "../../../../hooks/useDebug";
-import useAPTSources from "../../../../hooks/useAPTSources";
+import {
+  ConfirmationButton,
+  Icon,
+  ICONS,
+  ModularTable,
+  Tooltip,
+} from "@canonical/react-components";
+import { APTSource } from "@/types/APTSource";
+import useDebug from "@/hooks/useDebug";
+import useAPTSources from "@/hooks/useAPTSources";
 import classes from "./APTSourcesList.module.scss";
 import {
   CellProps,
@@ -15,11 +20,19 @@ interface APTSourcesListProps {
 }
 
 const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { removeAPTSourceQuery } = useAPTSources();
   const debug = useDebug();
 
-  const { mutateAsync: removeAPTSource } = removeAPTSourceQuery;
+  const { mutateAsync: removeAPTSource, isPending: isRemoving } =
+    removeAPTSourceQuery;
+
+  const handleRemoveAptSource = async (aptSourceName: string) => {
+    try {
+      await removeAPTSource({ name: aptSourceName });
+    } catch (error) {
+      debug(error);
+    }
+  };
 
   const columns = useMemo<Column<APTSource>[]>(
     () => [
@@ -41,41 +54,29 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
         accessor: "id",
         className: classes.actions,
         Cell: ({ row }: CellProps<APTSource>) => (
-          <Button
-            small
-            hasIcon
+          <ConfirmationButton
+            className="u-no-margin--bottom u-no-padding--left is-small has-icon"
+            type="button"
             appearance="base"
-            className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
             aria-label={`Remove ${row.original.name} APT source`}
-            onClick={() => {
-              confirmModal({
-                body: "Are you sure? This action is permanent and can not be undone.",
-                title: `Deleting ${row.original.name} APT source`,
-                buttons: [
-                  <Button
-                    key={`delete-key-${row.original.id}`}
-                    appearance="negative"
-                    hasIcon={true}
-                    onClick={async () => {
-                      try {
-                        await removeAPTSource({ name: row.original.name });
-                      } catch (error: unknown) {
-                        debug(error);
-                      } finally {
-                        closeConfirmModal();
-                      }
-                    }}
-                    aria-label={`Delete ${row.original.name} APT source`}
-                  >
-                    Delete
-                  </Button>,
-                ],
-              });
+            confirmationModalProps={{
+              title: `Deleting ${row.original.name} APT source`,
+              children: (
+                <p>
+                  Are you sure? This action is permanent and cannot be undone.
+                </p>
+              ),
+              confirmButtonLabel: "Delete",
+              confirmButtonAppearance: "negative",
+              confirmButtonLoading: isRemoving,
+              confirmButtonDisabled: isRemoving,
+              onConfirm: () => handleRemoveAptSource(row.original.name),
             }}
           >
-            <span className="p-tooltip__message">Delete</span>
-            <Icon name={ICONS.delete} className="u-no-margin--left" />
-          </Button>
+            <Tooltip position="btm-center" message="Delete">
+              <Icon name={ICONS.delete} />
+            </Tooltip>
+          </ConfirmationButton>
         ),
       },
     ],

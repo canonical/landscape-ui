@@ -1,30 +1,18 @@
-import classNames from "classnames";
-import { FC, lazy, Suspense, useMemo } from "react";
+import LoadingState from "@/components/layout/LoadingState";
+import { usePageParams } from "@/hooks/usePageParams";
+import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
+import { SelectOption } from "@/types/SelectOption";
+import { Button, ModularTable } from "@canonical/react-components";
 import {
   CellProps,
   Column,
 } from "@canonical/react-components/node_modules/@types/react-table";
-import {
-  Button,
-  ContextualMenu,
-  Icon,
-  ModularTable,
-} from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import { useUpgradeProfiles } from "../../hooks";
+import { FC, lazy, Suspense, useMemo } from "react";
 import { UpgradeProfile } from "../../types";
-import useConfirm from "@/hooks/useConfirm";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
-import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import UpgradeProfileListContextualMenu from "../UpgradeProfileListContextualMenu";
 import classes from "./UpgradeProfileList.module.scss";
-import { usePageParams } from "@/hooks/usePageParams";
 
-const SingleUpgradeProfileForm = lazy(
-  () => import("../SingleUpgradeProfileForm"),
-);
 const UpgradeProfileDetails = lazy(() => import("../UpgradeProfileDetails"));
 
 interface UpgradeProfileListProps {
@@ -33,11 +21,7 @@ interface UpgradeProfileListProps {
 
 const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
   const { search } = usePageParams();
-  const debug = useDebug();
-  const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
-  const { confirmModal, closeConfirmModal } = useConfirm();
-  const { removeUpgradeProfileQuery } = useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -58,41 +42,6 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
     });
   }, [profiles, search]);
 
-  const { mutateAsync: removeUpgradeProfile } = removeUpgradeProfileQuery;
-
-  const handleRemoveUpgradeProfile = async (name: string) => {
-    try {
-      await removeUpgradeProfile({ name });
-
-      notify.success({
-        message: `Upgrade profile "${name}" removed successfully`,
-        title: "Upgrade profile removed",
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      closeConfirmModal();
-    }
-  };
-
-  const handleRemoveUpgradeProfileDialog = (name: string) => {
-    confirmModal({
-      title: "Remove upgrade profile",
-      body: `This will remove "${name}" profile.`,
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={() => handleRemoveUpgradeProfile(name)}
-          aria-label={`Remove ${name} profile`}
-        >
-          Remove
-        </Button>,
-      ],
-    });
-  };
-
   const handleUpgradeProfileDetailsOpen = (profile: UpgradeProfile) => {
     setSidePanelContent(
       profile.title,
@@ -101,15 +50,6 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
           accessGroupOptions={accessGroupOptions}
           profile={profile}
         />
-      </Suspense>,
-    );
-  };
-
-  const handleUpgradeProfileEdit = (profile: UpgradeProfile) => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <SingleUpgradeProfileForm action="edit" profile={profile} />
       </Suspense>,
     );
   };
@@ -155,45 +95,10 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
       },
       {
         accessor: "actions",
-        className: classNames("u-align-text--right", classes.actions),
+        className: classes.actions,
         Header: "Actions",
         Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
-          <ContextualMenu
-            position="left"
-            toggleClassName={classes.toggleButton}
-            toggleAppearance="base"
-            toggleLabel={<Icon name="contextual-menu" aria-hidden />}
-            toggleProps={{ "aria-label": `${original.name} profile actions` }}
-          >
-            <Button
-              type="button"
-              appearance="base"
-              hasIcon
-              className={classNames(
-                "u-no-margin--bottom u-no-margin--right",
-                classes.actionButton,
-              )}
-              onClick={() => handleUpgradeProfileEdit(original)}
-              aria-label={`Edit ${original.name} profile`}
-            >
-              <Icon name="edit" />
-              <span>Edit</span>
-            </Button>
-            <Button
-              type="button"
-              appearance="base"
-              hasIcon
-              className={classNames(
-                "u-no-margin--bottom u-no-margin--right",
-                classes.actionButton,
-              )}
-              onClick={() => handleRemoveUpgradeProfileDialog(original.name)}
-              aria-label={`Remove ${original.name} profile`}
-            >
-              <Icon name="delete" />
-              <span>Remove</span>
-            </Button>
-          </ContextualMenu>
+          <UpgradeProfileListContextualMenu profile={original} />
         ),
       },
     ],

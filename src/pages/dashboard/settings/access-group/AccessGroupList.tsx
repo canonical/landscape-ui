@@ -1,5 +1,5 @@
 import {
-  Button,
+  ConfirmationButton,
   Icon,
   ICONS,
   ModularTable,
@@ -12,7 +12,6 @@ import {
   Column,
 } from "@canonical/react-components/node_modules/@types/react-table";
 import useRoles from "@/hooks/useRoles";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import { AccessGroup } from "@/types/AccessGroup";
 import classes from "./AccessGroupsList.module.scss";
@@ -20,15 +19,18 @@ import classes from "./AccessGroupsList.module.scss";
 interface AccessGroupListProps {
   accessGroupData: AccessGroup[];
 }
+
 interface IndentedAccessGroup extends AccessGroup, Record<string, unknown> {
   indentLevel: number;
 }
 
 const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroupData }) => {
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { removeAccessGroupQuery } = useRoles();
-  const { mutateAsync: removeAccessGroup } = removeAccessGroupQuery;
   const debug = useDebug();
+
+  const { mutateAsync: removeAccessGroup, isPending: isRemoving } =
+    removeAccessGroupQuery;
+
   const prepareData = (data: AccessGroup[], parent = "", indentLevel = 0) => {
     let result: IndentedAccessGroup[] = [];
     data
@@ -43,36 +45,18 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroupData }) => {
   const indentedData = useMemo(() => {
     const sortedData =
       accessGroupData.sort((a, b) => a.name.localeCompare(b.name)) || [];
+
     return prepareData(sortedData);
   }, [accessGroupData.length]);
 
-  const handleAccessGroupDelete = async (accessGroup: string) => {
+  const handleRemoveAccessGroup = async (accessGroupName: string) => {
     try {
       await removeAccessGroup({
-        name: accessGroup,
+        name: accessGroupName,
       });
-    } catch (error: unknown) {
+    } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleAccessGroupDeleteDialog = (accessGroup: string) => {
-    confirmModal({
-      body: `This will delete '${accessGroup}' access group`,
-      title: "Delete access group",
-      buttons: [
-        <Button
-          key={`delete-access-group-${accessGroup}`}
-          appearance="negative"
-          onClick={() => handleAccessGroupDelete(accessGroup)}
-          aria-label={`Delete ${accessGroup} access group`}
-        >
-          Delete
-        </Button>,
-      ],
-    });
   };
 
   const columns = useMemo<Column<IndentedAccessGroup>[]>(
@@ -91,23 +75,32 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroupData }) => {
         accessor: "id",
         className: classes.actions,
         Cell: ({ row }: CellProps<IndentedAccessGroup>) => {
+          if (row.original.name === "global") {
+            return null;
+          }
+
           return (
             <div className="divided-blocks">
               <div className="divided-blocks__item">
-                <Tooltip message="Delete">
-                  <Button
-                    small
-                    hasIcon
-                    appearance="base"
-                    className="u-no-margin--bottom u-no-padding--left p-tooltip--btm-center"
-                    aria-label={`Remove ${row.original.name} access group`}
-                    onClick={() =>
-                      handleAccessGroupDeleteDialog(row.original.name)
-                    }
-                  >
-                    <Icon name={ICONS.delete} className="u-no-margin--left" />
-                  </Button>
-                </Tooltip>
+                <ConfirmationButton
+                  className="u-no-margin--bottom u-no-padding--left is-small has-icon"
+                  type="button"
+                  appearance="base"
+                  aria-label={`Remove ${row.original.name} access group`}
+                  confirmationModalProps={{
+                    title: `Deleting ${row.original.name} access group`,
+                    children: <p>Are you sure?</p>,
+                    confirmButtonLabel: "Delete",
+                    confirmButtonAppearance: "negative",
+                    confirmButtonDisabled: isRemoving,
+                    confirmButtonLoading: isRemoving,
+                    onConfirm: () => handleRemoveAccessGroup(row.original.name),
+                  }}
+                >
+                  <Tooltip position="btm-center" message="Delete">
+                    <Icon name={ICONS.delete} />
+                  </Tooltip>
+                </ConfirmationButton>
               </div>
             </div>
           );

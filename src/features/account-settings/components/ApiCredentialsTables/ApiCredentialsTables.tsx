@@ -1,11 +1,15 @@
 import InfoItem from "@/components/layout/InfoItem";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useUserDetails from "@/hooks/useUserDetails";
-import distributionCardClasses from "@/pages/dashboard/repositories/mirrors/DistributionCard.module.scss";
+import distributionCardClasses from "@/pages/dashboard/repositories/mirrors/DistributionCard/DistributionCard.module.scss";
 import seriesCardClasses from "@/pages/dashboard/repositories/mirrors/SeriesCard.module.scss";
 import { Credential, UserDetails } from "@/types/UserDetails";
-import { Button, Col, ModularTable, Row } from "@canonical/react-components";
+import {
+  Col,
+  ConfirmationButton,
+  ModularTable,
+  Row,
+} from "@canonical/react-components";
 import classNames from "classnames";
 import React, { FC, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
@@ -23,11 +27,11 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
   credentials,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const debug = useDebug();
   const { generateApiCredentials } = useUserDetails();
 
-  const { mutateAsync: mutateGenerateApiCredentials } = generateApiCredentials;
+  const { mutateAsync: mutateGenerateApiCredentials, isPending: isGenerating } =
+    generateApiCredentials;
 
   const handleGenerateKeysMutation = async (accountName: string) => {
     try {
@@ -36,39 +40,7 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleGenerateKeys = ({
-    accountName,
-    accountTitle,
-    action,
-  }: {
-    accountName: string;
-    accountTitle: string;
-    action: string;
-  }) => {
-    confirmModal({
-      title: `${action} API credentials for ${accountTitle}`,
-      body: `${
-        action === "Regenerate"
-          ? `${action.slice(0, -1)}ing your API credentials will make your previously used credentials obsolete and deauthenticate any clients using them. `
-          : ``
-      }This action will create new credentials for integrating with the ${accountTitle} organisation`,
-      buttons: [
-        <Button
-          key="confirm-generate-credentials"
-          appearance="negative"
-          hasIcon
-          onClick={() => handleGenerateKeysMutation(accountName)}
-          aria-label={`${action} API credentials confirmation for ${accountTitle}`}
-        >
-          {action} API credentials
-        </Button>,
-      ],
-    });
   };
 
   const columns = useMemo<Column<{ label: string; value: React.ReactNode }>[]>(
@@ -128,20 +100,30 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
         <div className={seriesCardClasses.card}>
           <div className={seriesCardClasses.header}>
             <p className={seriesCardClasses.title}>{account.title}</p>
-            <Button
+            <ConfirmationButton
               className={classNames("u-no-margin--bottom", {
                 "is-small": isLargeScreen,
               })}
-              onClick={() =>
-                handleGenerateKeys({
-                  accountName: account.name,
-                  accountTitle: account.title,
-                  action,
-                })
-              }
+              type="button"
+              confirmationModalProps={{
+                title: `${action} API credentials for ${account.title}`,
+                children: (
+                  <p>
+                    {action === "Regenerate"
+                      ? `${action.slice(0, -1)}ing your API credentials will make your previously used credentials obsolete and deauthenticate any clients using them. `
+                      : ""}
+                    This action will create new credentials for integrating with
+                    the {account.title} organisation
+                  </p>
+                ),
+                confirmButtonLabel: `${action} API credentials`,
+                confirmButtonDisabled: isGenerating,
+                confirmButtonLoading: isGenerating,
+                onConfirm: () => handleGenerateKeysMutation(account.name),
+              }}
             >
-              <span>{action} API credentials</span>
-            </Button>
+              {action} API credentials
+            </ConfirmationButton>
           </div>
           <div
             className={classNames(
