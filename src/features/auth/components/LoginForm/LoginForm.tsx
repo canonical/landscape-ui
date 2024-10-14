@@ -14,6 +14,7 @@ import useAuth from "@/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import classes from "./LoginForm.module.scss";
 import { useAuthHandle } from "../../hooks";
+import { redirectToExternalUrl } from "../../helpers";
 
 interface FormProps {
   email: string;
@@ -53,8 +54,8 @@ const LoginForm: FC = () => {
           password: values.password,
         });
 
-        if (isExternalRedirect) {
-          window.location.replace(redirectTo ?? ROOT_PATH);
+        if (isExternalRedirect && redirectTo) {
+          redirectToExternalUrl(redirectTo, { replace: true });
         } else {
           setUser(data, values.remember);
 

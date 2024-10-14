@@ -13,7 +13,7 @@ import {
 import { InvitationSummary } from "@/types/Invitation";
 import { API_URL } from "@/constants";
 
-interface LoginMethods {
+export interface LoginMethods {
   oidc: {
     available: boolean;
     configurations: IdentityProvider[];

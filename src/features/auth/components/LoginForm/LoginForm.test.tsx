@@ -1,28 +1,143 @@
-import { describe } from "vitest";
-import LoginForm from "./LoginForm";
-import { screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect } from "vitest";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/tests/render";
+import { authUser } from "@/tests/mocks/auth";
+import { ROOT_PATH } from "@/constants";
 
 const user = {
   email: "john@example.com",
   password: "123456789",
 };
 
+const navigate = vi.fn();
+const redirectToExternalUrl = vi.fn();
+const setUser = vi.fn();
+const signInWithEmailAndPassword = vi
+  .fn()
+  .mockResolvedValue({ data: authUser })
+  .mockRejectedValueOnce(new Error("Invalid credentials"));
+
+const mockTestParams = (searchParams?: Record<string, string>) => {
+  vi.doMock("react-router-dom", async () => ({
+    ...(await vi.importActual("react-router-dom")),
+    useSearchParams: () => [new URLSearchParams(searchParams)],
+    useNavigate: () => navigate,
+  }));
+
+  vi.doMock("@/hooks/useAuth", () => ({
+    default: () => ({ setUser }),
+  }));
+
+  vi.doMock("../../helpers", () => ({
+    redirectToExternalUrl,
+  }));
+
+  vi.doMock("../../hooks", () => ({
+    useAuthHandle: () => ({
+      signInWithEmailAndPasswordQuery: {
+        mutateAsync: signInWithEmailAndPassword,
+      },
+    }),
+  }));
+};
+
+const testSearchParams: Record<string, string>[] = [
+  {
+    "redirect-to": "/dashboard",
+  },
+  {
+    external: "true",
+    "redirect-to": "https://example.com",
+  },
+  {
+    external: "true",
+  },
+];
+
 describe("LoginForm", () => {
-  it("should log in", async () => {
-    renderWithProviders(<LoginForm />);
+  beforeEach(async ({ task: { id } }) => {
+    vi.doUnmock("react-router-dom");
+    vi.doUnmock("../../hooks");
+    vi.resetModules();
 
-    await waitFor(() => {
-      userEvent.type(screen.getByTestId("email"), user.email);
+    const taskId = Number(id.substring(id.length - 1));
 
-      userEvent.type(screen.getByTestId("password"), user.password);
+    if (taskId > 1 && taskId < 5) {
+      mockTestParams(testSearchParams[taskId - 2]);
+    } else {
+      mockTestParams();
+    }
 
-      userEvent.click(
-        screen.getByRole("button", {
-          name: /sign in/i,
-        }),
-      );
+    const { default: Component } = await import("./LoginForm");
+
+    renderWithProviders(<Component />);
+
+    await userEvent.type(
+      screen.getByTestId("email"),
+      taskId > 0 ? user.email : user.email.slice(1),
+    );
+
+    await userEvent.type(screen.getByTestId("password"), user.password);
+
+    if (taskId === 5) {
+      await userEvent.click(screen.getByText(/remember this device/i));
+    }
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /sign in/i,
+      }),
+    );
+
+    if (taskId > 0) {
+      expect(signInWithEmailAndPassword).toHaveBeenCalledWith(user);
+
+      expect(setUser).toHaveBeenCalledWith(authUser, taskId === 5);
+    }
+  });
+
+  it("should not sign in", async () => {
+    expect(signInWithEmailAndPassword).toHaveBeenCalledWith({
+      email: user.email.slice(1),
+      password: user.password,
     });
+
+    expect(navigate).not.toHaveBeenCalled();
+    expect(redirectToExternalUrl).not.toHaveBeenCalled();
+  });
+
+  it("should sign in and redirect to default url", async () => {
+    expect(navigate).toHaveBeenCalledWith(
+      new URL(ROOT_PATH, location.origin).pathname,
+      { replace: true },
+    );
+  });
+
+  it("should sign in and redirect to provided url", async () => {
+    expect(navigate).toHaveBeenCalledWith(testSearchParams[0]["redirect-to"], {
+      replace: true,
+    });
+  });
+
+  it("should sign in and redirect to provided url", async () => {
+    expect(redirectToExternalUrl).toHaveBeenCalledWith(
+      testSearchParams[1]["redirect-to"],
+      { replace: true },
+    );
+  });
+
+  it("should sign in and redirect to default url", async () => {
+    expect(navigate).toHaveBeenCalledWith(
+      new URL(ROOT_PATH, location.origin).pathname,
+      { replace: true },
+    );
+  });
+
+  it("should sign in, redirect to default url and store user to local storage", async () => {
+    expect(navigate).toHaveBeenCalledWith(
+      new URL(ROOT_PATH, location.origin).pathname,
+      { replace: true },
+    );
   });
 });

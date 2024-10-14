@@ -8,7 +8,7 @@ import {
   GetUbuntuOneUrlParams,
   useAuthHandle,
 } from "../../hooks";
-import { redirectToExternalUrl } from "./helpers";
+import { redirectToExternalUrl } from "../../helpers";
 import classes from "./AvailableProviderList.module.scss";
 
 interface AvailableProviderListProps {

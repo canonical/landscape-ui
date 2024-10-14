@@ -1,8 +1,7 @@
 import { FC, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "@canonical/react-components";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
-import { useAuthHandle } from "@/features/auth";
+import { redirectToExternalUrl, useAuthHandle } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import classes from "./OidcAuthPage.module.scss";
 
@@ -31,8 +30,9 @@ const OidcAuthPage: FC = () => {
     }
 
     if (getAuthStateQueryResult.data.return_to?.external) {
-      window.location.replace(
+      redirectToExternalUrl(
         getAuthStateQueryResult.data.return_to.url ?? ROOT_PATH,
+        { replace: true },
       );
     } else {
       setUser(getAuthStateQueryResult.data);
@@ -65,9 +65,9 @@ const OidcAuthPage: FC = () => {
             Oops! Something went wrong. Please try again or contact our support
             team.
           </p>
-          <Button type="button" onClick={() => navigate(`${ROOT_PATH}login`)}>
+          <Link to={`${ROOT_PATH}login`} className="p-button">
             Back to login
-          </Button>
+          </Link>
         </div>
       )}
     </div>

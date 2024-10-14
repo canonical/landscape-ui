@@ -3,5 +3,6 @@ export type {
   AddProviderParams,
   GetOidcUrlParams,
   GetUbuntuOneUrlParams,
+  LoginMethods,
   LoginRequestParams,
 } from "./useAuthHandle";

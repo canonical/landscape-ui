@@ -13,7 +13,7 @@ import userEvent from "@testing-library/user-event";
 const invitation_id = "1";
 const oidcProviders = identityProviders.filter(({ enabled }) => enabled);
 const onInvitation = vi.fn();
-const redirectTo = vi.fn();
+const redirectToExternalUrl = vi.hoisted(() => vi.fn());
 
 const props: ComponentProps<typeof AvailableProviderList> = {
   isUbuntuOneEnabled: false,
@@ -64,14 +64,14 @@ describe("AvailableProviderList", () => {
   });
 
   it("should redirect to an external url", async () => {
-    vi.mock("./helpers", () => ({
-      redirectToExternalUrl: (url: string) => redirectTo(url),
+    vi.mock("../../helpers", () => ({
+      redirectToExternalUrl,
     }));
 
     await userEvent.click(
       await screen.findByRole("button", { name: "Sign in with Okta Onward" }),
     );
 
-    expect(redirectTo).toHaveBeenCalledWith(locationToRedirectTo);
+    expect(redirectToExternalUrl).toHaveBeenCalledWith(locationToRedirectTo);
   });
 });
