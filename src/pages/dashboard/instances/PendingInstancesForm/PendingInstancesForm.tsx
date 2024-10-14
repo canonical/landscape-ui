@@ -1,9 +1,12 @@
 import { FC, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, Select } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationButton,
+  Select,
+} from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
@@ -27,7 +30,6 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const { user } = useAuth();
   const { notify } = useNotify();
   const { closeSidePanel, changeSidePanelSize } = useSidePanel();
-  const { closeConfirmModal, confirmModal } = useConfirm();
   const { getAccessGroupQuery } = useRoles();
   const { acceptPendingInstancesQuery, rejectPendingInstancesQuery } =
     useInstances();
@@ -46,8 +48,14 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
     changeSidePanelSize("large");
   };
 
-  const { mutateAsync: acceptPendingInstances } = acceptPendingInstancesQuery;
-  const { mutateAsync: rejectPendingInstances } = rejectPendingInstancesQuery;
+  const {
+    mutateAsync: acceptPendingInstances,
+    isPending: isAcceptingPendingInstances,
+  } = acceptPendingInstancesQuery;
+  const {
+    mutateAsync: rejectPendingInstances,
+    isPending: isRejectingPendingInstances,
+  } = rejectPendingInstancesQuery;
 
   const handlePendingInstancesReject = async () => {
     try {
@@ -64,24 +72,6 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
     } finally {
       closeConfirmModal();
     }
-  };
-
-  const handlePendingInstancesDialogReject = () => {
-    confirmModal({
-      title: "Reject pending instances",
-      body: `This will reject ${instanceIds.length} selected ${instanceIds.length === 1 ? "instance" : "instances"} to add to your ${userOrganisation} organisation.`,
-      buttons: [
-        <Button
-          key="reject"
-          type="button"
-          appearance="negative"
-          onClick={handlePendingInstancesReject}
-          aria-label={`Reject selected ${instanceIds.length === 1 ? "instance" : "instances"}`}
-        >
-          Reject
-        </Button>,
-      ],
-    });
   };
 
   const handlePendingInstancesApprove = async () => {
@@ -102,24 +92,6 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
     } finally {
       closeConfirmModal();
     }
-  };
-
-  const handlePendingInstancesApproveDialog = () => {
-    confirmModal({
-      title: "Approve pending instances",
-      body: `This will approve ${instanceIds.length} selected ${instanceIds.length === 1 ? "instance" : "instances"} to add to your ${userOrganisation} organisation.`,
-      buttons: [
-        <Button
-          key="approve"
-          type="button"
-          appearance="positive"
-          onClick={handlePendingInstancesApprove}
-          aria-label={`Approve selected ${instanceIds.length === 1 ? "instance" : "instances"}`}
-        >
-          Approve
-        </Button>,
-      ],
-    });
   };
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -173,30 +145,69 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
         <Button type="button" appearance="base" onClick={closeSidePanel}>
           Cancel
         </Button>
-        {isApproving ? (
-          <Button type="button" onClick={handleBackClick}>
-            Back
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            appearance="negative"
-            disabled={instanceIds.length === 0}
-            onClick={handlePendingInstancesDialogReject}
-          >
-            Reject
-          </Button>
+        {isApproving && (
+          <>
+            <Button type="button" onClick={handleBackClick}>
+              Back
+            </Button>
+            <ConfirmationButton
+              type="button"
+              appearance="positive"
+              disabled={instanceIds.length === 0}
+              confirmationModalProps={{
+                title: "Approve pending instances",
+                children: (
+                  <p>
+                    This will approve {instanceIds.length} selected{" "}
+                    {instanceIds.length === 1 ? "instance" : "instances"} to add
+                    to your {userOrganisation} organisation.
+                  </p>
+                ),
+                confirmButtonLabel: "Approve",
+                confirmButtonAppearance: "positive",
+                confirmButtonLoading: isAcceptingPendingInstances,
+                confirmButtonDisabled: isAcceptingPendingInstances,
+                onConfirm: handlePendingInstancesApprove,
+              }}
+            >
+              Approve
+            </ConfirmationButton>
+          </>
         )}
-        <Button
-          type="button"
-          appearance="positive"
-          disabled={instanceIds.length === 0}
-          onClick={
-            isApproving ? handlePendingInstancesApproveDialog : handleApproving
-          }
-        >
-          Approve
-        </Button>
+        {!isApproving && (
+          <>
+            <ConfirmationButton
+              type="button"
+              appearance="negative"
+              disabled={instanceIds.length === 0}
+              confirmationModalProps={{
+                title: "Reject pending instances",
+                children: (
+                  <p>
+                    This will reject {instanceIds.length} selected{" "}
+                    {instanceIds.length === 1 ? "instance" : "instances"} to add
+                    to your {userOrganisation} organisation.
+                  </p>
+                ),
+                confirmButtonLabel: "Reject",
+                confirmButtonAppearance: "negative",
+                confirmButtonLoading: isRejectingPendingInstances,
+                confirmButtonDisabled: isRejectingPendingInstances,
+                onConfirm: handlePendingInstancesReject,
+              }}
+            >
+              Reject
+            </ConfirmationButton>
+            <Button
+              type="button"
+              appearance="positive"
+              disabled={instanceIds.length === 0}
+              onClick={handleApproving}
+            >
+              Approve
+            </Button>
+          </>
+        )}
       </div>
     </>
   );

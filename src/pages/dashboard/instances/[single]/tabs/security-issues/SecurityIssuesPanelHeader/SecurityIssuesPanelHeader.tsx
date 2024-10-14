@@ -1,9 +1,12 @@
-import classNames from "classnames";
 import { FC, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Form, Icon, SearchBox } from "@canonical/react-components";
+import {
+  ConfirmationButton,
+  Form,
+  Icon,
+  SearchBox,
+} from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { useUsns } from "@/features/usns";
@@ -27,12 +30,12 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
   const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { upgradeInstanceUsnsQuery } = useUsns();
 
   const instanceId = Number(urlInstanceId);
 
-  const { mutateAsync: upgradeInstanceUsns } = upgradeInstanceUsnsQuery;
+  const { mutateAsync: upgradeInstanceUsns, isPending: isUpgrading } =
+    upgradeInstanceUsnsQuery;
 
   const handleActivityDetailsView = () => {
     navigate(
@@ -61,26 +64,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleUpgradePackagesDialog = () => {
-    confirmModal({
-      title: "Upgrade affected packages",
-      body: `This will upgrade affected packages for ${usns.length === 1 ? `"${usns[0]}" security issue` : `${usns.length} selected security issues`}.`,
-      buttons: [
-        <Button
-          key="upgrade"
-          appearance="positive"
-          onClick={handleUpgradePackages}
-          aria-label="Upgrade selected packages"
-        >
-          Upgrade
-        </Button>,
-      ],
-    });
   };
 
   return (
@@ -107,16 +91,32 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
           />
         </Form>
       </div>
-      <div className={classNames("p-segmented-control", classes.cta)}>
-        <Button
-          hasIcon
-          className="p-segmented-control__button"
-          onClick={handleUpgradePackagesDialog}
+      <div className="p-segmented-control">
+        <ConfirmationButton
+          className="p-segmented-control__button has-icon"
+          type="button"
           disabled={usns.length === 0}
+          confirmationModalProps={{
+            title: "Upgrade affected packages",
+            children: (
+              <p>
+                This will upgrade affected packages for{" "}
+                {usns.length === 1
+                  ? `"${usns[0]}" security issue`
+                  : `${usns.length} selected security issues`}
+                .
+              </p>
+            ),
+            confirmButtonLabel: "Upgrade",
+            confirmButtonAppearance: "positive",
+            confirmButtonLoading: isUpgrading,
+            confirmButtonDisabled: isUpgrading,
+            onConfirm: handleUpgradePackages,
+          }}
         >
           <Icon name="change-version" />
           <span>Upgrade</span>
-        </Button>
+        </ConfirmationButton>
       </div>
     </div>
   );

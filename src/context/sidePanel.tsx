@@ -10,6 +10,7 @@ import { useLocation } from "react-router-dom";
 import AppNotification from "@/components/layout/AppNotification";
 import useNotify from "@/hooks/useNotify";
 import classes from "./SidePanelProvider.module.scss";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 
 interface SidePanelContextProps {
   changeSidePanelSize: (size: "small" | "medium" | "large") => void;
@@ -104,13 +105,14 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
                 <i>{titleLabel}</i>
               </p>
               <div className="p-panel__controls">
-                <button
+                <Button
+                  type="button"
                   onClick={handleSidePanelClose}
                   className="p-button--base u-no-margin--bottom has-icon"
                   aria-label="Close side panel"
                 >
-                  <i className="p-icon--close" />
-                </button>
+                  <Icon name={ICONS.close} />
+                </Button>
               </div>
             </div>
             <div className={classNames("p-panel__content", classes.outerDiv)}>

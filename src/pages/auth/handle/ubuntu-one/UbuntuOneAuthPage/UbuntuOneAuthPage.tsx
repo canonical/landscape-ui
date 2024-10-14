@@ -61,7 +61,7 @@ const UbuntuOneAuthPage: FC = () => {
             Oops! Something went wrong. Please try again or contact our support
             team.
           </p>
-          <Button onClick={() => navigate(`${ROOT_PATH}login`)}>
+          <Button type="button" onClick={() => navigate(`${ROOT_PATH}login`)}>
             Back to login
           </Button>
         </div>

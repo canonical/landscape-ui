@@ -3,7 +3,7 @@ import Downshift from "downshift";
 import React, { FC, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDebounceCallback } from "usehooks-ts";
-import { Button, SearchBox } from "@canonical/react-components";
+import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import { usePackages } from "../../hooks";
@@ -207,11 +207,13 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                   </span>
                 </div>
                 <Button
+                  type="button"
+                  hasIcon
                   appearance="link"
                   className="u-no-margin--bottom u-no-padding--top"
                   onClick={() => handleDeleteSelectedItem(item.name)}
                 >
-                  <i className="p-icon--delete" />
+                  <Icon name={ICONS.delete} />
                 </Button>
               </li>
             ))

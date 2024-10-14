@@ -1,19 +1,14 @@
 import { FC, ReactNode } from "react";
 import classes from "./FieldDescription.module.scss";
-import classNames from "classnames";
+import { Icon, ICONS, Tooltip } from "@canonical/react-components";
+
+type TooltipProps = React.ComponentProps<typeof Tooltip>;
+type TooltipPosition = TooltipProps["position"];
 
 interface FieldDescriptionProps {
   description: ReactNode;
   label: string;
-  tooltipPosition?:
-    | "bottom-left"
-    | "bottom-center"
-    | "bottom-right"
-    | "left"
-    | "right"
-    | "top-left"
-    | "top-center"
-    | "top-right";
+  tooltipPosition?: TooltipPosition;
 }
 
 const FieldDescription: FC<FieldDescriptionProps> = ({
@@ -21,30 +16,12 @@ const FieldDescription: FC<FieldDescriptionProps> = ({
   label,
   tooltipPosition = "top-left",
 }) => {
-  const tooltipPositionClassName = classNames({
-    "p-tooltip": tooltipPosition === "bottom-left",
-    "p-tooltip--btm-center": tooltipPosition === "bottom-center",
-    "p-tooltip--btm-right": tooltipPosition === "bottom-right",
-    "p-tooltip--left": tooltipPosition === "left",
-    "p-tooltip--right": tooltipPosition === "right",
-    "p-tooltip--top-left": tooltipPosition === "top-left",
-    "p-tooltip--top-center": tooltipPosition === "top-center",
-    "p-tooltip--top-right": tooltipPosition === "top-right",
-  });
-
   return (
     <div className={classes.wrapper}>
       <span>{label}</span>
-      <div className={tooltipPositionClassName}>
-        <i className="p-icon--help" />
-        <div
-          className={classNames("p-tooltip__message", classes.tooltip)}
-          role="tooltip"
-        >
-          {description}
-          <div className={classes.angle} />
-        </div>
-      </div>
+      <Tooltip position={tooltipPosition} message={description}>
+        <Icon name={ICONS.help} />
+      </Tooltip>
     </div>
   );
 };

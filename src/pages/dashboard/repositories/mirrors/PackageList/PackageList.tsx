@@ -10,13 +10,14 @@ import {
   Button,
   CheckboxInput,
   Col,
+  ConfirmationButton,
   ModularTable,
   Row,
   SearchBox,
+  Tooltip,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
-import useConfirm from "@/hooks/useConfirm";
 import usePockets from "@/hooks/usePockets";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Distribution } from "@/types/Distribution";
@@ -58,7 +59,6 @@ const PackageList: FC<PackageListProps> = ({
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
 
   const debug = useDebug();
-  const { closeConfirmModal, confirmModal } = useConfirm();
   const { setSidePanelContent, closeSidePanel } = useSidePanel();
 
   const {
@@ -118,27 +118,7 @@ const PackageList: FC<PackageListProps> = ({
       closeSidePanel();
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleRemovePocketDialog = () => {
-    confirmModal({
-      body: `Do you really want to delete ${pocket.name} pocket from ${seriesName} series of ${distributionName} distribution?`,
-      title: "Deleting pocket",
-      buttons: [
-        <Button
-          key={`delete-${pocket.name}-pocket`}
-          appearance="negative"
-          disabled={isRemovingPocket}
-          onClick={handleRemovePocket}
-          aria-label={`Delete ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-        >
-          Delete
-        </Button>,
-      ],
-    });
   };
 
   const {
@@ -161,24 +141,6 @@ const PackageList: FC<PackageListProps> = ({
     } catch (error) {
       debug(error);
     }
-  };
-
-  const handleRemovePackagesDialog = () => {
-    confirmModal({
-      body: `This will delete ${selectedPackages.length} selected ${selectedPackages.length === 1 ? "package" : "packages"} from ${pocket.name} pocket ${seriesName} series of ${distributionName} distribution`,
-      title: "Deleting packages from pocket",
-      buttons: [
-        <Button
-          key={`delete-packages-from-pocket`}
-          appearance="negative"
-          disabled={isRemovingPackagesFromPocket}
-          onClick={handleRemovePackages}
-          aria-label={`Delete selected packages from ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-        >
-          Delete
-        </Button>,
-      ],
-    });
   };
 
   const { data: listPocketData, isLoading: listPocketLoading } =
@@ -374,14 +336,16 @@ const PackageList: FC<PackageListProps> = ({
         className: classes.version,
         Cell: ({ row }: CellProps<FormattedPackage>) =>
           row.original.difference ? (
-            <>
-              <span>{row.original.packageVersion}</span>
-              <span className="p-tooltip__message" role="tooltip">
-                {"delete" === row.original.difference
+            <Tooltip
+              position="top-center"
+              message={
+                "delete" === row.original.difference
                   ? "Package deleted"
-                  : `Version differs\nfrom parent pocket.\nParent version:\n${row.original?.newVersion}`}
-              </span>
-            </>
+                  : `Version differs\nfrom parent pocket.\nParent version:\n${row.original?.newVersion}`
+              }
+            >
+              <span>{row.original.packageVersion}</span>
+            </Tooltip>
           ) : (
             row.original.packageVersion
           ),
@@ -407,6 +371,7 @@ const PackageList: FC<PackageListProps> = ({
               {("mirror" == pocket.mode || "pull" == pocket.mode) && (
                 <Button
                   className="p-segmented-control__button"
+                  type="button"
                   onClick={handleSync}
                   disabled={
                     isSynchronizingMirrorPocket && isPullingPackagesToPocket
@@ -422,30 +387,61 @@ const PackageList: FC<PackageListProps> = ({
               )}
               <Button
                 className="p-segmented-control__button"
+                type="button"
                 onClick={handleEditPocket}
                 aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${seriesName}`}
               >
                 Edit
               </Button>
-              <Button
+              <ConfirmationButton
                 className="p-segmented-control__button"
-                onClick={handleRemovePocketDialog}
+                type="button"
                 aria-label={`Remove ${pocket.name} pocket of ${distributionName}/${seriesName}`}
+                confirmationModalProps={{
+                  title: "Deleting pocket",
+                  children: (
+                    <p>
+                      Do you really want to delete {pocket.name} pocket from{" "}
+                      {seriesName} series of {distributionName} distribution?
+                    </p>
+                  ),
+                  confirmButtonLabel: "Delete",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled: isRemovingPocket,
+                  confirmButtonLoading: isRemovingPocket,
+                  onConfirm: handleRemovePocket,
+                }}
               >
                 Remove
-              </Button>
+              </ConfirmationButton>
               {"upload" === pocket.mode && (
-                <Button
+                <ConfirmationButton
                   className="p-segmented-control__button"
+                  type="button"
                   disabled={
                     0 === selectedPackages.length ||
                     isRemovingPackagesFromPocket
                   }
-                  onClick={handleRemovePackagesDialog}
                   aria-label={`Remove selected packages from ${pocket.name} pocket of ${distributionName}/${seriesName}`}
+                  confirmationModalProps={{
+                    title: "Deleting packages from pocket",
+                    children: (
+                      <p>
+                        This will delete {selectedPackages.length} selected{" "}
+                        {selectedPackages.length === 1 ? "package" : "packages"}{" "}
+                        from {pocket.name} pocket {seriesName} series of{" "}
+                        {distributionName} distribution
+                      </p>
+                    ),
+                    confirmButtonLabel: "Delete",
+                    confirmButtonAppearance: "negative",
+                    confirmButtonDisabled: isRemovingPackagesFromPocket,
+                    confirmButtonLoading: isRemovingPackagesFromPocket,
+                    onConfirm: handleRemovePackages,
+                  }}
                 >
                   Remove packages
-                </Button>
+                </ConfirmationButton>
               )}
             </div>
           </div>
@@ -516,9 +512,6 @@ const PackageList: FC<PackageListProps> = ({
                   : undefined
               }
               className={classes.content}
-              getRowProps={({ original }) => ({
-                className: original.difference ? "p-tooltip--top-center" : "",
-              })}
               getCellProps={({ column }) => {
                 switch (column.id) {
                   case "packageName":

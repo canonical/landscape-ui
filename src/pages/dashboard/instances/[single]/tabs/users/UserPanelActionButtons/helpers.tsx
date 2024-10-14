@@ -14,9 +14,9 @@ const getSingleUserMessage = (userAction: UserAction): string => {
   switch (userAction) {
     case UserAction.Lock:
       return `This will prevent this user from logging into this account without
-      deleting the files belonging to the account`;
+      deleting the files belonging to the account.`;
     case UserAction.Unlock:
-      return "This will restore login access for the user";
+      return "This will restore login access for the user.";
     default:
       return "";
   }
@@ -25,9 +25,9 @@ const getSingleUserMessage = (userAction: UserAction): string => {
 const getUsersWithSameStateMessage = (userAction: UserAction): string => {
   switch (userAction) {
     case UserAction.Lock:
-      return "This will prevent users from logging into these accounts without deleting the files belonging to the accounts";
+      return "This will prevent users from logging into these accounts without deleting the files belonging to the accounts.";
     case UserAction.Unlock:
-      return "This will restore login access for the users of these accounts";
+      return "This will restore login access for the users of these accounts.";
     default:
       return "";
   }
@@ -76,16 +76,16 @@ export const renderModalBody = ({
     getUserLockStatusCounts(selectedUsers);
 
   if (user) {
-    return getSingleUserMessage(userAction);
+    return <p>{getSingleUserMessage(userAction)}</p>;
   } else if (
     (userAction === UserAction.Lock && lockedCount === 0) ||
     (userAction === UserAction.Unlock && unlockedCount === 0)
   ) {
-    return getUsersWithSameStateMessage(userAction);
+    return <p>{getUsersWithSameStateMessage(userAction)}</p>;
   } else {
     return (
       <>
-        <p>{capitalize(userAction)}ing users removes their login access</p>
+        <p>{capitalize(userAction)}ing users removes their login access.</p>
         You selected{" "}
         {formatCountableNoun({ count: selectedUsers.length, singular: "user" })}
         . This will:

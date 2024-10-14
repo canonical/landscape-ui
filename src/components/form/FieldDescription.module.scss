@@ -5,23 +5,3 @@
   column-gap: $sph--small;
   display: inline-flex;
 }
-
-.tooltip {
-  background-color: $color-x-light !important;
-  border: 1px solid $color-mid-dark !important;
-  color: $colors--light-theme--text-default !important;
-  min-width: 20rem;
-  white-space: normal !important;
-}
-
-.angle {
-  border-bottom: 0.5rem solid transparent;
-  border-left: 0.5rem solid transparent;
-  border-right: 0.5rem solid transparent;
-  border-top: 0.5rem solid $color-x-light;
-  bottom: calc(1px - 1rem);
-  height: 0;
-  left: 1rem;
-  position: absolute;
-  width: 0;
-}

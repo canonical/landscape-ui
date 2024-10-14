@@ -1,11 +1,8 @@
 .container {
   display: flex;
+  justify-content: space-between;
 }
 
 .searchContainer {
   flex-basis: 30rem;
-}
-
-.cta {
-  margin-left: auto;
 }

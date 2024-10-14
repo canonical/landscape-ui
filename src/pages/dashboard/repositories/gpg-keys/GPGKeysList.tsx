@@ -1,13 +1,12 @@
 import { FC, HTMLProps, useMemo } from "react";
 import {
-  Button,
+  ConfirmationButton,
   Icon,
   ICONS,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
 import { GPGKey } from "@/types/GPGKey";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useGPGKeys from "@/hooks/useGPGKeys";
 import classes from "./GPGKeysList.module.scss";
@@ -22,11 +21,11 @@ interface GPGKeysListProps {
 }
 
 const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { removeGPGKeyQuery } = useGPGKeys();
   const debug = useDebug();
 
-  const { mutateAsync: removeGPGKey } = removeGPGKeyQuery;
+  const { mutateAsync: removeGPGKey, isPending: isRemoving } =
+    removeGPGKeyQuery;
 
   const gpgKeys = useMemo(() => items, [items.length]);
 
@@ -35,27 +34,7 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
       await removeGPGKey({ name });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleRemoveGPGKeyDialog = (name: string) => {
-    confirmModal({
-      body: "Are you sure? This action is permanent and can not be undone.",
-      title: `Deleting ${name} GPG key`,
-      buttons: [
-        <Button
-          key={`delete-key-${name}`}
-          appearance="negative"
-          hasIcon={true}
-          onClick={() => handleRemoveGPGKey(name)}
-          aria-label={`Delete ${name} GPG key`}
-        >
-          Delete
-        </Button>,
-      ],
-    });
   };
 
   const columns = useMemo<Column<GPGKey>[]>(
@@ -82,18 +61,30 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
         Cell: ({ row }: CellProps<GPGKey>) => (
           <div className="divided-blocks">
             <div className="divided-blocks__item">
-              <Tooltip message="Delete" position="top-center">
-                <Button
-                  small
-                  hasIcon
-                  appearance="base"
-                  className="u-no-margin--bottom u-no-padding--left"
-                  aria-label={`Remove ${row.original.name} GPG key`}
-                  onClick={() => handleRemoveGPGKeyDialog(row.original.name)}
-                >
-                  <Icon name={ICONS.delete} className="u-no-margin--left" />
-                </Button>
-              </Tooltip>
+              <ConfirmationButton
+                className="u-no-margin--bottom u-no-padding--left is-small has-icon"
+                type="button"
+                appearance="base"
+                aria-label={`Remove ${row.original.name} GPG key`}
+                confirmationModalProps={{
+                  title: `Deleting ${row.original.name} GPG key`,
+                  children: (
+                    <p>
+                      Are you sure? This action is permanent and cannot be
+                      undone.
+                    </p>
+                  ),
+                  confirmButtonLabel: "Delete",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonLoading: isRemoving,
+                  confirmButtonDisabled: isRemoving,
+                  onConfirm: () => handleRemoveGPGKey(row.original.name),
+                }}
+              >
+                <Tooltip position="top-center" message="Delete">
+                  <Icon name={ICONS.delete} />
+                </Tooltip>
+              </ConfirmationButton>
             </div>
           </div>
         ),

@@ -58,6 +58,7 @@ const SnapsPanel: FC = () => {
             }
             cta={[
               <Button
+                type="button"
                 appearance="positive"
                 key="empty-state-install-snap"
                 onClick={handleEmptyStateInstall}

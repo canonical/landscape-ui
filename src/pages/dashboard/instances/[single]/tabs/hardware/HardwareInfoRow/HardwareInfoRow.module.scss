@@ -1,5 +1,6 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_breakpoints";
+@import "vanilla-framework/scss/settings_colors";
 
 .wrapper {
   display: flex;
@@ -23,4 +24,8 @@
 .infoRow {
   padding-bottom: $spv--large;
   padding-top: $spv--large;
+
+  &:not(:first-child) {
+    border-top: 1px solid $colors--light-theme--border-default;
+  }
 }

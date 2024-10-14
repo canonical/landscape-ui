@@ -1,12 +1,18 @@
 import classNames from "classnames";
 import { FC } from "react";
-import { Button, Col, Icon, Row, Tooltip } from "@canonical/react-components";
+import {
+  Button,
+  Col,
+  ConfirmationButton,
+  Icon,
+  Row,
+  Tooltip,
+} from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import { useSavedSearches } from "@/hooks/useSavedSearches";
 import { SavedSearch } from "@/types/SavedSearch";
 import classes from "./SavedSearchList.module.scss";
 import useNotify from "@/hooks/useNotify";
-import useConfirm from "@/hooks/useConfirm";
 
 interface SavedSearchListProps {
   onSavedSearchClick: (search: SavedSearch) => void;
@@ -25,10 +31,10 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeConfirmModal, confirmModal } = useConfirm();
   const { removeSavedSearchQuery } = useSavedSearches();
 
-  const { mutateAsync: removeSavedSearch } = removeSavedSearchQuery;
+  const { mutateAsync: removeSavedSearch, isPending: isRemoving } =
+    removeSavedSearchQuery;
 
   const handleSavedSearchRemove = async (name: string) => {
     try {
@@ -42,27 +48,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleSavedSearchRemoveDiaLog = (name: string) => {
-    confirmModal({
-      title: "Remove saved search",
-      body: `This will remove the saved search "${name}"`,
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={() => handleSavedSearchRemove(name)}
-          aria-label={`Remove ${name} search`}
-        >
-          Remove
-        </Button>,
-      ],
-    });
   };
 
   return (
@@ -80,6 +66,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
           <li key={savedSearch.name}>
             <div className={classes.listItem}>
               <Button
+                type="button"
                 appearance="base"
                 className={classes.search}
                 onClick={() => onSavedSearchClick(savedSearch)}
@@ -103,17 +90,27 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
                   </Col>
                 </Row>
               </Button>
-
-              <Button
+              <ConfirmationButton
+                className="has-icon u-no-margin--bottom u-no-padding--bottom u-no-padding--top"
                 type="button"
                 appearance="base"
-                hasIcon
-                className="u-no-margin--bottom u-no-padding--bottom u-no-padding--top"
-                onClick={() => handleSavedSearchRemoveDiaLog(savedSearch.name)}
-                aria-label={`Remove ${savedSearch.title} search`}
+                confirmationModalProps={{
+                  title: "Remove saved search",
+                  children: (
+                    <p>
+                      This will remove the saved search &quot;{savedSearch.name}
+                      &quot;.
+                    </p>
+                  ),
+                  confirmButtonLabel: "Remove",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled: isRemoving,
+                  confirmButtonLoading: isRemoving,
+                  onConfirm: () => handleSavedSearchRemove(savedSearch.name),
+                }}
               >
                 <Icon name="delete" />
-              </Button>
+              </ConfirmationButton>
             </div>
           </li>
         ))}

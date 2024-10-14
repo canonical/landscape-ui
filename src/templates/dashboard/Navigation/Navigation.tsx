@@ -5,6 +5,7 @@ import useEnv from "@/hooks/useEnv";
 import { getFilteredByEnvMenuItems, getPathToExpand } from "./helpers";
 import classes from "./Navigation.module.scss";
 import useAuth from "@/hooks/useAuth";
+import { Button } from "@canonical/react-components";
 
 const Navigation: FC = () => {
   const [expanded, setExpanded] = useState("");
@@ -33,7 +34,7 @@ const Navigation: FC = () => {
               })}
             >
               {item.items && item.items.length > 0 ? (
-                <button
+                <Button
                   className={classNames(
                     "p-side-navigation__accordion-button",
                     classes.accordionButton,
@@ -62,7 +63,7 @@ const Navigation: FC = () => {
                   >
                     {item.label}
                   </span>
-                </button>
+                </Button>
               ) : (
                 <Link
                   className={classNames(
@@ -97,11 +98,8 @@ const Navigation: FC = () => {
                 >
                   {item.items
                     .filter(
-                      ({ path, env }) =>
-                        (isOidcAvailable ||
-                          !path.includes("identity-providers")) &&
-                        ((!isSaas && env !== "saas") ||
-                          (!isSelfHosted && env !== "selfHosted")),
+                      ({ path }) =>
+                        isOidcAvailable || !path.includes("identity-providers"),
                     )
                     .map((subItem) => (
                       <li key={subItem.path}>

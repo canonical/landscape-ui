@@ -1,6 +1,6 @@
 import { FC } from "react";
 import classNames from "classnames";
-import { SearchBox } from "@canonical/react-components";
+import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classes from "./SearchBoxWithDescriptionButton.module.scss";
 
 interface SearchBoxWithDescriptionButtonProps {
@@ -33,13 +33,13 @@ const SearchBoxWithDescriptionButton: FC<
         className={classNames("u-no-margin--bottom", classes.search)}
       />
       <div className={classes.buttonContainer}>
-        <button
+        <Button
           type="button"
           onClick={onDescriptionClick}
           className={classes.button}
         >
-          <i className={classNames("p-icon--help", classes.icon)} />
-        </button>
+          <Icon name={ICONS.help} className={classes.icon} />
+        </Button>
       </div>
     </div>
   );

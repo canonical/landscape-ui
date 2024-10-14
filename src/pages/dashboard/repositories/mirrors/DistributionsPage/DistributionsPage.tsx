@@ -1,7 +1,6 @@
-import classNames from "classnames";
 import { FC, lazy, Suspense, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import { Button } from "@canonical/react-components";
+import { Button, ContextualMenu, MenuLink } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
@@ -18,53 +17,66 @@ const NewSeriesForm = lazy(
 
 const DistributionsPage: FC = () => {
   const [distributionsLength, setDistributionsLength] = useState(0);
-  const [openDropdown, setOpenDropdown] = useState(false);
 
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
-
   const { setSidePanelContent } = useSidePanel();
 
-  const AddDistributionButton = ({ className }: { className?: string }) => (
-    <Button
-      onClick={() => {
-        setSidePanelContent(
-          "Add distribution",
-          <Suspense fallback={<LoadingState />}>
-            <NewDistributionForm />
-          </Suspense>,
-        );
-      }}
-      onMouseDown={(event) => {
-        event.preventDefault();
-      }}
-      type="button"
-      className={classNames("u-no-margin--right", className)}
-    >
-      Add distribution
-    </Button>
-  );
+  const handleAddDistribution = () => {
+    setSidePanelContent(
+      "Add distribution",
+      <Suspense fallback={<LoadingState />}>
+        <NewDistributionForm />
+      </Suspense>,
+    );
+  };
 
-  const CreateMirrorButton = ({ className }: { className?: string }) => (
+  const handleCreateMirror = () => {
+    setSidePanelContent(
+      "Add new mirror",
+      <Suspense fallback={<LoadingState />}>
+        <NewSeriesForm />
+      </Suspense>,
+    );
+  };
+
+  const buttons = [
+    {
+      label: "Add distribution",
+      ariaLabel: "Add distribution",
+      onClick: handleAddDistribution,
+      disabled: false,
+      appearance: undefined,
+    },
+    {
+      label: "Add mirror",
+      ariaLabel: "Add mirror",
+      onClick: handleCreateMirror,
+      disabled: distributionsLength === 0,
+      appearance: "positive",
+    },
+  ];
+
+  const largeScreenButtons = buttons.map((item) => (
     <Button
-      appearance="positive"
-      onClick={() => {
-        setSidePanelContent(
-          "Add new mirror",
-          <Suspense fallback={<LoadingState />}>
-            <NewSeriesForm />
-          </Suspense>,
-        );
-      }}
-      onMouseDown={(event) => {
-        event.preventDefault();
-      }}
+      key={`${item.label}-button`}
       type="button"
-      className={classNames("u-no-margin--right", className)}
-      disabled={0 === distributionsLength}
+      className="u-no-margin--right"
+      aria-label={item.ariaLabel}
+      onMouseDown={(event) => event.preventDefault()}
+      appearance={item.appearance}
+      disabled={item.disabled}
+      onClick={item.onClick}
     >
-      Add mirror
+      {item.label}
     </Button>
-  );
+  ));
+
+  const contextualMenuLinks: MenuLink[] = buttons.map((item) => ({
+    children: item.label,
+    "aria-label": item.ariaLabel,
+    onClick: item.onClick,
+    disabled: item.disabled,
+  }));
 
   return (
     <PageMain>
@@ -72,35 +84,14 @@ const DistributionsPage: FC = () => {
         title="Repository Mirrors"
         actions={
           isLargeScreen
-            ? [
-                <AddDistributionButton key="add-distribution-button" />,
-                <CreateMirrorButton key="add-mirror-button" />,
-              ]
+            ? largeScreenButtons
             : [
-                <span className="p-contextual-menu" key="menu">
-                  <Button
-                    className="p-contextual-menu__toggle u-no-margin--bottom"
-                    aria-controls="menu"
-                    aria-expanded={openDropdown}
-                    aria-haspopup="true"
-                    onClick={() => {
-                      setOpenDropdown((prevState) => !prevState);
-                    }}
-                    onBlur={() => {
-                      setOpenDropdown(false);
-                    }}
-                  >
-                    Actions
-                  </Button>
-                  <span
-                    className="p-contextual-menu__dropdown"
-                    id="menu"
-                    aria-hidden={!openDropdown}
-                  >
-                    <AddDistributionButton className="p-contextual-menu__link" />
-                    <CreateMirrorButton className="p-contextual-menu__link" />
-                  </span>
-                </span>,
+                <ContextualMenu
+                  key="menu"
+                  toggleLabel="Actions"
+                  toggleClassName="u-no-margin--bottom"
+                  links={contextualMenuLinks}
+                />,
               ]
         }
       />

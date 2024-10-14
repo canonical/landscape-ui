@@ -30,10 +30,7 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
         {infoBlocksArray.map((infoBlocks, index) => (
           <div
             key={index}
-            className={classNames(
-              "p-strip is-bordered u-no-max-width",
-              classes.infoRow,
-            )}
+            className={classNames("p-strip u-no-max-width", classes.infoRow)}
           >
             <Row className="u-no-padding--left u-no-padding--right u-no-max-width">
               {infoBlocks.map(({ label, value }, index) => (

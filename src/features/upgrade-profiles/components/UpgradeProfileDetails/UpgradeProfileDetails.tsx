@@ -1,9 +1,15 @@
 import { FC, lazy, Suspense } from "react";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
+import {
+  Button,
+  Col,
+  ConfirmationButton,
+  Icon,
+  ICONS,
+  Row,
+} from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -29,10 +35,10 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
-  const { closeConfirmModal, confirmModal } = useConfirm();
   const { removeUpgradeProfileQuery } = useUpgradeProfiles();
 
-  const { mutateAsync: removeUpgradeProfile } = removeUpgradeProfileQuery;
+  const { mutateAsync: removeUpgradeProfile, isPending: isRemoving } =
+    removeUpgradeProfileQuery;
   const { scheduleMessage, nextRunMessage } = getScheduleInfo(profile);
 
   const handleRemoveUpgradeProfile = async () => {
@@ -47,26 +53,7 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleRemoveUpgradeProfileDialog = () => {
-    confirmModal({
-      body: `This will remove "${profile.name}" upgrade profile`,
-      title: "Remove upgrade profile",
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={handleRemoveUpgradeProfile}
-        >
-          Remove
-        </Button>,
-      ],
-    });
   };
 
   const handleEditUpgradeProfile = () => {
@@ -91,16 +78,27 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
           <Icon name="edit" />
           <span>Edit</span>
         </Button>
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          onClick={handleRemoveUpgradeProfileDialog}
+        <ConfirmationButton
+          className="has-icon p-segmented-control__button"
           aria-label={`Remove upgrade profile ${profile.name}`}
+          type="button"
+          confirmationModalProps={{
+            title: "Remove upgrade profile",
+            children: (
+              <p>
+                This will remove &quot;{profile.name}&quot; upgrade profile.
+              </p>
+            ),
+            confirmButtonAppearance: "negative",
+            confirmButtonLabel: "Remove",
+            confirmButtonDisabled: isRemoving,
+            confirmButtonLoading: isRemoving,
+            onConfirm: handleRemoveUpgradeProfile,
+          }}
         >
-          <Icon name="delete" />
+          <Icon name={ICONS.delete} />
           <span>Remove</span>
-        </Button>
+        </ConfirmationButton>
       </div>
 
       <Row className="u-no-padding--left u-no-padding--right">

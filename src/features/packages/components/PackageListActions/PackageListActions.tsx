@@ -1,5 +1,5 @@
-import { FC, Fragment, lazy, Suspense } from "react";
-import { Button, ContextualMenu, Icon } from "@canonical/react-components";
+import { FC, lazy, Suspense } from "react";
+import { ContextualMenu, Icon, MenuLink } from "@canonical/react-components";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import { InstalledPackageAction, InstancePackage } from "../../types";
 import classes from "./PackageListActions.module.scss";
@@ -35,6 +35,29 @@ const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {
     );
   };
 
+  const contextualMenuButtons: MenuLink[] = Object.keys(
+    INSTALLED_PACKAGE_ACTIONS,
+  )
+    .map((key) => key as InstalledPackageAction)
+    .filter((packageAction) => buttonRenderCondition[packageAction])
+    .sort(
+      (a, b) =>
+        INSTALLED_PACKAGE_ACTIONS[b].order - INSTALLED_PACKAGE_ACTIONS[a].order,
+    )
+    .map((packageAction) => {
+      return {
+        children: (
+          <>
+            <Icon name={INSTALLED_PACKAGE_ACTIONS[packageAction].icon} />
+            <span>{INSTALLED_PACKAGE_ACTIONS[packageAction].label}</span>
+          </>
+        ),
+        "aria-label": `${INSTALLED_PACKAGE_ACTIONS[packageAction].label} ${pkg.name} package`,
+        hasIcon: true,
+        onClick: () => handlePackageAction(packageAction),
+      };
+    });
+
   return (
     <ContextualMenu
       position="left"
@@ -42,32 +65,8 @@ const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {
       toggleAppearance="base"
       toggleLabel={<Icon name="contextual-menu" />}
       toggleProps={{ "aria-label": `${pkg.name} package actions` }}
-    >
-      {Object.keys(INSTALLED_PACKAGE_ACTIONS)
-        .map((key) => key as InstalledPackageAction)
-        .sort(
-          (a, b) =>
-            INSTALLED_PACKAGE_ACTIONS[b].order -
-            INSTALLED_PACKAGE_ACTIONS[a].order,
-        )
-        .map((packageAction) => (
-          <Fragment key={packageAction}>
-            {buttonRenderCondition[packageAction] && (
-              <Button
-                type="button"
-                appearance="base"
-                hasIcon
-                className="p-contextual-menu__link"
-                onClick={() => handlePackageAction(packageAction)}
-                aria-label={`${INSTALLED_PACKAGE_ACTIONS[packageAction].label} ${pkg.name} package`}
-              >
-                <Icon name={INSTALLED_PACKAGE_ACTIONS[packageAction].icon} />
-                <span>{INSTALLED_PACKAGE_ACTIONS[packageAction].label}</span>
-              </Button>
-            )}
-          </Fragment>
-        ))}
-    </ContextualMenu>
+      links={contextualMenuButtons}
+    />
   );
 };
 

@@ -1,10 +1,11 @@
-import { ActivityConfirmationFormProps } from "./types";
+import { ModalConfirmationFormProps } from "./types";
 import * as Yup from "yup";
 import moment from "moment";
 
-export const INITIAL_VALUES: ActivityConfirmationFormProps = {
+export const INITIAL_VALUES: ModalConfirmationFormProps = {
   deliver_after: "",
   deliverImmediately: true,
+  action: null,
 };
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
@@ -23,18 +24,5 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
         }),
   }),
   deliverImmediately: Yup.boolean(),
+  action: Yup.mixed().oneOf(["shutdown", "reboot"]).required(),
 });
-
-export const ACTIVITY_INFO = {
-  shutdown: {
-    ctaLabel: "Shutdown",
-    getDescription: (title: string) =>
-      `This will shut down "${title}" instance.`,
-    title: "Shut down instance",
-  },
-  reboot: {
-    ctaLabel: "Restart",
-    getDescription: (title: string) => `This will restart "${title}" instance.`,
-    title: "Restart instance",
-  },
-};

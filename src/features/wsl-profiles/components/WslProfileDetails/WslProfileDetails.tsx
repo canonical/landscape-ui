@@ -1,10 +1,17 @@
-import { FC, lazy, Suspense } from "react";
+import { FC, lazy, Suspense, useState } from "react";
 import { WslProfile } from "../../types";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
+import {
+  Button,
+  Col,
+  ConfirmationButton,
+  Icon,
+  ICONS,
+  Input,
+  Row,
+} from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import classes from "./WslProfileDetails.module.scss";
 import useNotify from "@/hooks/useNotify";
@@ -24,12 +31,14 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
   profile,
   accessGroupOptions,
 }) => {
+  const [confirmDeleteProfileText, setConfirmDeleteProfileText] = useState("");
+
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
-  const { closeConfirmModal, confirmModal } = useConfirm();
   const { removeWslProfileQuery } = useWslProfiles();
-  const { mutateAsync: removeWslProfile } = removeWslProfileQuery;
+  const { mutateAsync: removeWslProfile, isPending: isRemoving } =
+    removeWslProfileQuery;
 
   const handleRemoveWslProfile = async (name: string) => {
     try {
@@ -43,27 +52,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleRemoveWslProfileDialog = (name: string) => {
-    confirmModal({
-      title: "Remove WSL profile",
-      body: `This will remove "${name}" profile.`,
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={() => handleRemoveWslProfile(name)}
-          aria-label={`Remove ${name} profile`}
-        >
-          Remove
-        </Button>,
-      ],
-    });
   };
 
   const handleWslProfileEdit = () => {
@@ -82,6 +71,10 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
         <WslProfileInstallForm action="duplicate" profile={profile} />
       </Suspense>,
     );
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmDeleteProfileText(e.target.value);
   };
 
   return (
@@ -105,15 +98,40 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
           <Icon name="canvas" />
           <span>Duplicate</span>
         </Button>
-        <Button
+        <ConfirmationButton
           type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          onClick={() => handleRemoveWslProfileDialog(profile.name)}
+          className="p-segmented-control__button has-icon"
+          confirmationModalProps={{
+            title: "Remove WSL profile",
+            children: (
+              <>
+                <p>
+                  Removing this profile will affect{" "}
+                  <b>{profile.computers.constrained.length} instances</b>. This
+                  action is irreversible.
+                </p>
+                <div>
+                  Type <b>remove {profile.name}</b> to confirm.
+                </div>
+                <Input
+                  type="text"
+                  value={confirmDeleteProfileText}
+                  onChange={handleChange}
+                />
+              </>
+            ),
+            confirmButtonLabel: "Remove",
+            confirmButtonAppearance: "negative",
+            confirmButtonDisabled:
+              isRemoving ||
+              confirmDeleteProfileText !== `remove ${profile.name}`,
+            confirmButtonLoading: isRemoving,
+            onConfirm: () => handleRemoveWslProfile(profile.name),
+          }}
         >
-          <Icon name="delete" />
+          <Icon name={ICONS.delete} />
           <span>Remove</span>
-        </Button>
+        </ConfirmationButton>
       </div>
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>

@@ -3,10 +3,9 @@ import PageMain from "@/components/layout/PageMain";
 import PageHeader from "@/components/layout/PageHeader";
 import PageContent from "@/components/layout/PageContent";
 import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer/InstancesContainer";
-import { Button, Icon } from "@canonical/react-components";
+import { Button, ConfirmationButton, Icon } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import useConfirm from "@/hooks/useConfirm";
 import classes from "./InstancesPage.module.scss";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Instance } from "@/types/Instance";
@@ -29,7 +28,6 @@ const InstancesPage: FC = () => {
 
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
-  const { confirmModal, closeConfirmModal } = useConfirm();
 
   const { rebootInstancesQuery, shutdownInstancesQuery } = useInstances();
 
@@ -58,25 +56,7 @@ const InstancesPage: FC = () => {
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleShutdownInstanceDialog = () => {
-    confirmModal({
-      title: "Shutting down selected instances",
-      body: `Are you sure you want to shutdown ${selected.length} ${selected.length === 1 ? "instance" : "instances"}?`,
-      buttons: [
-        <Button
-          key="shutdown"
-          appearance="negative"
-          onClick={handleShutdownInstance}
-        >
-          Shutdown
-        </Button>,
-      ],
-    });
   };
 
   const handleRebootInstance = async () => {
@@ -86,25 +66,7 @@ const InstancesPage: FC = () => {
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleRebootInstanceDialog = () => {
-    confirmModal({
-      title: "Restarting selected instances",
-      body: `Are you sure you want to restart ${selected.length} ${selected.length === 1 ? "instance" : "instances"}?`,
-      buttons: [
-        <Button
-          key="restart"
-          appearance="negative"
-          onClick={handleRebootInstance}
-        >
-          Restart
-        </Button>,
-      ],
-    });
   };
 
   const handleUpgradesRequest = () => {
@@ -135,24 +97,50 @@ const InstancesPage: FC = () => {
         actions={[
           <div key="buttons" className="p-segmented-control">
             <div className="p-segmented-control__list">
-              <Button
-                className="p-segmented-control__button"
+              <ConfirmationButton
+                className="p-segmented-control__button has-icon"
                 type="button"
-                onClick={handleShutdownInstanceDialog}
                 disabled={shutdownInstancesLoading || 0 === selected.length}
+                confirmationModalProps={{
+                  title: "Shutting down selected instances",
+                  children: (
+                    <p>
+                      Are you sure you want to shutdown {selected.length}{" "}
+                      instance{selected.length === 1 ? "" : "s"}?
+                    </p>
+                  ),
+                  confirmButtonLabel: "Shutdown",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonLoading: shutdownInstancesLoading,
+                  confirmButtonDisabled: shutdownInstancesLoading,
+                  onConfirm: handleShutdownInstance,
+                }}
               >
                 <Icon name="power-off" />
                 <span>Shutdown</span>
-              </Button>
-              <Button
-                className="p-segmented-control__button"
+              </ConfirmationButton>
+              <ConfirmationButton
+                className="p-segmented-control__button has-icon"
                 type="button"
-                onClick={handleRebootInstanceDialog}
                 disabled={rebootInstancesLoading || 0 === selected.length}
+                confirmationModalProps={{
+                  title: "Restarting selected instances",
+                  children: (
+                    <p>
+                      Are you sure you want to restart {selected.length}{" "}
+                      instance{selected.length === 1 ? "" : "s"}?
+                    </p>
+                  ),
+                  confirmButtonLabel: "Restart",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonLoading: rebootInstancesLoading,
+                  confirmButtonDisabled: rebootInstancesLoading,
+                  onConfirm: handleRebootInstance,
+                }}
               >
                 <Icon name="restart" />
                 <span>Restart</span>
-              </Button>
+              </ConfirmationButton>
               <Button
                 className="p-segmented-control__button"
                 type="button"

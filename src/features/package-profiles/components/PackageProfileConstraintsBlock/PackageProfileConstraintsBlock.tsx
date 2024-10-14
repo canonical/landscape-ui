@@ -7,6 +7,7 @@ import {
 import {
   Button,
   Icon,
+  ICONS,
   ModularTable,
   Select,
 } from "@canonical/react-components";
@@ -149,7 +150,7 @@ const PackageProfileConstraintsBlock: FC<
             onClick={() => handleConstraintRowDelete(row.index)}
           >
             <Icon
-              name="delete"
+              name={ICONS.delete}
               className="u-no-margin--left u-no-margin--right"
             />
           </Button>
@@ -184,7 +185,7 @@ const PackageProfileConstraintsBlock: FC<
     <>
       <div className="u-align-text--right">
         <Button type="button" hasIcon onClick={handleConstraintAdd}>
-          <Icon name="plus" className="u-no-margin--left" />
+          <Icon name={ICONS.plus} className="u-no-margin--left" />
           <span>Add new constraint</span>
         </Button>
       </div>

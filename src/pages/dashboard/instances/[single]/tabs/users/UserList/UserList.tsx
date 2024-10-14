@@ -1,6 +1,7 @@
 import {
   Button,
   CheckboxInput,
+  Icon,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
@@ -93,6 +94,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
               onChange={() => handleSelectionChange(row.original.uid)}
             />
             <Button
+              type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top"
               onClick={() => handleShowUserDetails(row.original)}
@@ -111,12 +113,12 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
           <div className={classes.status}>
             {row.original.enabled ? (
               <>
-                <i className="p-icon--lock-unlock" />
+                <Icon name="lock-unlock" />
                 <span>Unlocked</span>
               </>
             ) : (
               <>
-                <i className="p-icon--lock-locked-active" />
+                <Icon name="lock-locked-active" />
                 <span>Locked</span>
               </>
             )}
@@ -140,6 +142,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
         Cell: ({ row }: CellProps<User>) => (
           <Tooltip message="Edit" position="btm-center">
             <Button
+              type="button"
               small
               hasIcon
               appearance="base"
@@ -147,7 +150,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
               aria-label={`Edit ${row.original.name} profile`}
               onClick={() => handleEditUser(row.original)}
             >
-              <i className="p-icon--edit u-no-margin--left" />
+              <Icon name="edit" className="u-no-margin--left" />
             </Button>
           </Tooltip>
         ),

@@ -6,10 +6,9 @@ import {
   Column,
   TableCellProps,
 } from "@canonical/react-components/node_modules/@types/react-table";
-import { Button, ModularTable } from "@canonical/react-components";
+import { ConfirmationButton, ModularTable } from "@canonical/react-components";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useInvitations from "@/hooks/useAdministrators";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { Invitation } from "@/types/Invitation";
@@ -17,7 +16,6 @@ import { Invitation } from "@/types/Invitation";
 const InvitesPanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { getInvitationsQuery, revokeInvitationQuery, resendInvitationQuery } =
     useInvitations();
 
@@ -31,8 +29,10 @@ const InvitesPanel: FC = () => {
     [getInvitationsQueryResult],
   );
 
-  const { mutateAsync: revokeInvitation } = revokeInvitationQuery;
-  const { mutateAsync: resendInvitation } = resendInvitationQuery;
+  const { mutateAsync: revokeInvitation, isPending: isRevokingInvitation } =
+    revokeInvitationQuery;
+  const { mutateAsync: resendInvitation, isPending: isResendingInvitation } =
+    resendInvitationQuery;
 
   const handleRevokeInvitation = async (invitation: Invitation) => {
     try {
@@ -44,28 +44,10 @@ const InvitesPanel: FC = () => {
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
-  const handleRevokeInvitationDialog = (invitation: Invitation) => {
-    confirmModal({
-      title: `Revoke invitation for ${invitation.name}`,
-      body: `This action will prevent ${invitation.name} from joining your Landscape organisation.`,
-      buttons: [
-        <Button
-          key="revoke"
-          appearance="negative"
-          onClick={() => handleRevokeInvitation(invitation)}
-        >
-          Revoke invitation
-        </Button>,
-      ],
-    });
-  };
-
-  const handleResentInvitation = async (invitation: Invitation) => {
+  const handleResendInvitation = async (invitation: Invitation) => {
     try {
       await resendInvitation({ id: invitation.id });
 
@@ -75,25 +57,7 @@ const InvitesPanel: FC = () => {
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleResentInvitationDialog = (invitation: Invitation) => {
-    confirmModal({
-      title: `Resend invitation for ${invitation.name}`,
-      body: `${invitation.name} will receive a new invitation email`,
-      buttons: [
-        <Button
-          key="resend"
-          appearance="positive"
-          onClick={() => handleResentInvitation(invitation)}
-        >
-          Resend invitation
-        </Button>,
-      ],
-    });
   };
 
   const columns = useMemo<Column<Invitation>[]>(
@@ -124,22 +88,45 @@ const InvitesPanel: FC = () => {
         accessor: "actions",
         Cell: ({ row }: CellProps<Invitation>) => (
           <div className="u-align-text--right">
-            <Button
-              dense
-              small
-              className="u-no-margin--bottom"
-              onClick={() => handleRevokeInvitationDialog(row.original)}
+            <ConfirmationButton
+              className="u-no-margin--bottom is-small is-dense"
+              type="button"
+              confirmationModalProps={{
+                title: `Revoke invitation for ${row.original.name}`,
+                children: (
+                  <p>
+                    This action will prevent {row.original.name} from joining
+                    your Landscape organisation.
+                  </p>
+                ),
+                confirmButtonLabel: "Revoke invitation",
+                confirmButtonAppearance: "negative",
+                confirmButtonDisabled: isRevokingInvitation,
+                confirmButtonLoading: isRevokingInvitation,
+                onConfirm: () => handleRevokeInvitation(row.original),
+              }}
             >
               Revoke
-            </Button>
-            <Button
-              dense
-              small
-              className="u-no-margin--bottom"
-              onClick={() => handleResentInvitationDialog(row.original)}
+            </ConfirmationButton>
+            <ConfirmationButton
+              className="u-no-margin--bottom is-small is-dense"
+              type="button"
+              confirmationModalProps={{
+                title: `Resend invitation for ${row.original.name}`,
+                children: (
+                  <p>
+                    {row.original.name} will receive a new invitation email.
+                  </p>
+                ),
+                confirmButtonLabel: "Resend invitation",
+                confirmButtonAppearance: "positive",
+                confirmButtonDisabled: isResendingInvitation,
+                confirmButtonLoading: isResendingInvitation,
+                onConfirm: () => handleResendInvitation(row.original),
+              }}
             >
               Resend
-            </Button>
+            </ConfirmationButton>
           </div>
         ),
       },

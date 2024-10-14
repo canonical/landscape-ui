@@ -1,4 +1,4 @@
-import { Button } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC, Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
@@ -63,7 +63,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
           hasIcon
           className={classes.noWrap}
         >
-          <i className="p-icon--plus" />
+          <Icon name={ICONS.plus} />
           <span>Install</span>
         </Button>
       )}
@@ -78,7 +78,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             disabled={0 === selectedSnapIds.length}
             onClick={() => handleEditSnap(EditSnapType.Switch)}
           >
-            <i className="p-icon--fork" />
+            <Icon name="fork" />
             <span>Switch channel</span>
           </Button>
         )}
@@ -90,7 +90,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             handleEditSnap(EditSnapType.Uninstall);
           }}
         >
-          <i className="p-icon--delete" />
+          <Icon name={ICONS.delete} />
           <span>Uninstall</span>
         </Button>
         {(singleSnap?.held_until === null || !sidePanel) && (
@@ -102,7 +102,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               handleEditSnap(EditSnapType.Hold);
             }}
           >
-            <i className="p-icon--pause" />
+            <Icon name="pause" />
             <span>Hold</span>
           </Button>
         )}
@@ -115,7 +115,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               handleEditSnap(EditSnapType.Unhold);
             }}
           >
-            <i className="p-icon--play" />
+            <Icon name="play" />
             <span>Unhold</span>
           </Button>
         )}
@@ -127,7 +127,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             handleEditSnap(EditSnapType.Refresh);
           }}
         >
-          <i className="p-icon--change-version" />
+          <Icon name="change-version" />
           <span>Refresh</span>
         </Button>
       </div>

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import classes from "./UbuntuProHeader.module.scss";
-import { Col, Link, Row } from "@canonical/react-components";
+import { Col, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import { UbuntuProInfo } from "@/types/Instance";
 import NoData from "@/components/layout/NoData";
@@ -45,14 +45,13 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => {
           }}
         >
           <span className="u-text--muted">listed from </span>
-          <Link
+          <a
             href="https://ubuntu.com/pro/dashboard"
             target="_blank"
             rel="nofollow noopener noreferrer"
           >
             Ubuntu Pro Dashboard
-            <i className="p-icon--external-link" />
-          </Link>
+          </a>
         </span>
       </div>
       <Row className="u-no-padding--left u-no-padding--right u-no-max-width">

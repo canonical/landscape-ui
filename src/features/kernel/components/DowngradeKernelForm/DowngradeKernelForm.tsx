@@ -24,11 +24,11 @@ import {
   DOWNGRADE_MESSAGE_WITH_REBOOT,
   DOWNGRADE_MESSAGE_WITHOUT_REBOOT,
   SECURITY_WARNING,
-  VALIDATION_SCHEMA,
 } from "./constants";
 import classes from "./DowngradeKernelForm.module.scss";
 import { FormProps } from "./types";
 import { UrlParams } from "@/types/UrlParams";
+import { KERNEL_ACTIONS_VALIDATION_SCHEMA } from "../../constants";
 
 interface DowngradeKernelFormProps {
   currentKernelVersion: string;
@@ -76,7 +76,7 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
 
   const formik = useFormik<FormProps>({
     initialValues: initialValues,
-    validationSchema: VALIDATION_SCHEMA,
+    validationSchema: KERNEL_ACTIONS_VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
         const { data: activity } = await downgradeKernel({

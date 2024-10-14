@@ -1,5 +1,3 @@
-@import "vanilla-framework/scss/settings_spacing";
-
 .truncated,
 .noWrap {
   white-space: nowrap;
@@ -14,18 +12,10 @@
   width: 4.5rem;
 }
 
+th.actions {
+  text-align: right;
+}
+
 .description {
   width: 20%;
-}
-
-.toggleButton {
-  margin-bottom: 0;
-  padding: 0 $sph--x-small;
-}
-
-.actionButton {
-  align-items: center;
-  display: flex;
-  justify-content: start;
-  width: 100%;
 }

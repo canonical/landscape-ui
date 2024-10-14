@@ -13,7 +13,7 @@ test("should remove GPG key", async ({ page }) => {
   ).toBeVisible();
   await expect(
     page.getByText(
-      "Are you sure? This action is permanent and can not be undone.",
+      "Are you sure? This action is permanent and cannot be undone.",
     ),
   ).toBeVisible();
   await page

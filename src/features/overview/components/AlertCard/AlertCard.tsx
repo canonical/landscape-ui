@@ -1,4 +1,4 @@
-import { FC, Suspense } from "react";
+import { FC, lazy, Suspense } from "react";
 import classes from "./AlertCard.module.scss";
 import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
@@ -7,8 +7,11 @@ import { ROOT_PATH } from "@/constants";
 import { Status } from "@/pages/dashboard/instances/InstanceList/constants";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import PendingInstancesForm from "@/pages/dashboard/instances/PendingInstancesForm";
-import { Button } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
+
+const PendingInstancesForm = lazy(
+  () => import("@/pages/dashboard/instances/PendingInstancesForm"),
+);
 
 const AlertCard: FC<Status> = ({
   alertType,
@@ -72,7 +75,7 @@ const AlertCard: FC<Status> = ({
   return (
     <div className={classes.container}>
       <div className={classes.title}>
-        <i className={classNames(`p-icon--${icon.gray}`, classes.icon)} />
+        <Icon name={icon.gray ?? ""} className={classes.icon} />
         <p className="p-heading--5 u-no-padding u-no-margin">
           {alternateLabel ?? label}
         </p>

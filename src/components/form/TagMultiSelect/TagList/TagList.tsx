@@ -26,6 +26,7 @@ const TagList: FC<TagListProps> = ({ onTagClick, tags }) => {
           <li key={tag}>
             <div className={classes.listItem}>
               <Button
+                type="button"
                 appearance="base"
                 className={classes.search}
                 onClick={() => onTagClick(tag)}

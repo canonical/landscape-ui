@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { useSnaps } from "@/hooks/useSnaps";
 import { SelectedSnaps } from "@/types/Snap";
-import { Button, Form, Select } from "@canonical/react-components";
+import { Button, Form, Icon, ICONS, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC, useEffect, useMemo, useState } from "react";
 import classes from "./AvailableSnapDetails.module.scss";
@@ -108,15 +108,14 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
                     selectedChannel,
                 )?.confinement === "classic" ? (
                   <span>
-                    <i className="p-icon--warning" />
+                    <Icon name={ICONS.warning} />
                     This release requires classic permission.{" "}
                     <a
                       href="https://snapcraft.io/docs"
                       target="_blank"
-                      rel="noreferrer"
+                      rel="nofollow noopener noreferrer"
                     >
                       Learn more
-                      <i className="p-icon--external-link" />
                     </a>
                   </span>
                 ) : undefined

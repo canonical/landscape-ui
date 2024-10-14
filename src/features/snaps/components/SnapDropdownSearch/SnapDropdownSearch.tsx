@@ -3,7 +3,7 @@ import AvailableSnapDetails from "../AvailableSnapDetails";
 import useDebug from "@/hooks/useDebug";
 import { useSnaps } from "@/hooks/useSnaps";
 import { AvailableSnap, SelectedSnaps } from "@/types/Snap";
-import { Button, SearchBox } from "@canonical/react-components";
+import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import React, { FC, useEffect, useRef, useState } from "react";
@@ -238,11 +238,12 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
                   </span>
                 </div>
                 <Button
+                  type="button"
                   appearance="link"
                   className="u-no-margin--bottom u-no-padding--top"
                   onClick={() => handleDeleteSelectedItem(item.name)}
                 >
-                  <i className="p-icon--delete" />
+                  <Icon name={ICONS.delete} />
                 </Button>
               </li>
             ))

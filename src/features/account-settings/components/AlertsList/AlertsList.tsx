@@ -1,5 +1,5 @@
 import useAuth from "@/hooks/useAuth";
-import distributionCardClasses from "@/pages/dashboard/repositories/mirrors/DistributionCard.module.scss";
+import distributionCardClasses from "@/pages/dashboard/repositories/mirrors/DistributionCard/DistributionCard.module.scss";
 import seriesCardClasses from "@/pages/dashboard/repositories/mirrors/SeriesCard.module.scss";
 import { FC } from "react";
 import AlertsTable from "../AlertsTable";

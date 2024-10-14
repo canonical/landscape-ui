@@ -1,11 +1,17 @@
-import { FC } from "react";
-import { Button, ContextualMenu, Icon } from "@canonical/react-components";
+import { FC, useState } from "react";
+import {
+  ConfirmationModal,
+  ContextualMenu,
+  Icon,
+  MenuLink,
+} from "@canonical/react-components";
 import { useWsl } from "@/features/wsl";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import { InstanceWithoutRelation } from "@/types/Instance";
 import classes from "./WslInstanceListActions.module.scss";
+import { getModalBody } from "./constants";
+import { Action } from "./types";
 
 interface WslInstanceListActionsProps {
   instance: InstanceWithoutRelation;
@@ -16,14 +22,21 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   instance,
   parentId,
 }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [action, setAction] = useState<Action>(null);
+
   const debug = useDebug();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { setDefaultChildInstanceQuery, deleteChildInstancesQuery } = useWsl();
   const { removeInstancesQuery } = useInstances();
 
-  const { mutateAsync: setDefaultChildInstance } = setDefaultChildInstanceQuery;
-  const { mutateAsync: deleteChildInstances } = deleteChildInstancesQuery;
-  const { mutateAsync: removeInstances } = removeInstancesQuery;
+  const {
+    mutateAsync: setDefaultChildInstance,
+    isPending: isSettingDefaultChildInstance,
+  } = setDefaultChildInstanceQuery;
+  const { mutateAsync: deleteChildInstances, isPending: isDeleting } =
+    deleteChildInstancesQuery;
+  const { mutateAsync: removeInstances, isPending: isRemoving } =
+    removeInstancesQuery;
 
   const handleSetDefaultChildInstance = async () => {
     try {
@@ -34,24 +47,8 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     } catch (error) {
       debug(error);
     } finally {
-      closeConfirmModal();
+      handleCloseModal();
     }
-  };
-
-  const handleSetDefaultChildInstanceDialog = () => {
-    confirmModal({
-      title: "Set default instance",
-      body: `Are you sure you want to set ${instance.title} as default instance?`,
-      buttons: [
-        <Button
-          key="set-default"
-          appearance="positive"
-          onClick={handleSetDefaultChildInstance}
-        >
-          Set default
-        </Button>,
-      ],
-    });
   };
 
   const handleDeleteChildInstance = async () => {
@@ -62,29 +59,8 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     } catch (error) {
       debug(error);
     } finally {
-      closeConfirmModal();
+      handleCloseModal();
     }
-  };
-
-  const handleDeleteChildInstanceDialog = () => {
-    confirmModal({
-      title: "Delete instance",
-      body: (
-        <p>
-          This will permanently delete the instance <b>{instance.title}</b> from
-          both the Windows host machine and Landscape.
-        </p>
-      ),
-      buttons: [
-        <Button
-          key="delete"
-          appearance="negative"
-          onClick={handleDeleteChildInstance}
-        >
-          Delete
-        </Button>,
-      ],
-    });
   };
 
   const handleRemoveInstanceFromLandscape = async () => {
@@ -95,72 +71,82 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     } catch (error) {
       debug(error);
     } finally {
-      closeConfirmModal();
+      handleCloseModal();
     }
   };
 
-  const handleRemoveInstanceFromLandscapeDialog = () => {
-    confirmModal({
-      title: "Remove instance from Landscape",
-      body: (
-        <p>
-          This will remove the instance <b>{instance.title}</b> from Landscape.
-          <br />
-          <br />
-          It will remain on the parent machine. You can re-register it to
-          Landscape at any time.
-        </p>
-      ),
-      buttons: [
-        <Button
-          key="remove"
-          appearance="negative"
-          onClick={handleRemoveInstanceFromLandscape}
-        >
-          Remove
-        </Button>,
-      ],
-    });
+  const handleModalAction = () => {
+    if (action === "setDefault") {
+      handleSetDefaultChildInstance();
+    } else if (action === "remove") {
+      handleRemoveInstanceFromLandscape();
+    } else if (action === "delete") {
+      handleDeleteChildInstance();
+    }
   };
 
+  const handleOpenModal = (action: Action) => {
+    setModalOpen(true);
+    setAction(action);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setAction(null);
+  };
+
+  const contextualMenuLinks: MenuLink[] = [
+    {
+      children: "Set default instance",
+      "aria-label": `Set ${instance.title} as default instance`,
+      onClick: () => handleOpenModal("setDefault"),
+    },
+    {
+      children: "Remove instance from Landscape",
+      "aria-label": `Remove ${instance.title} instance from Landscape`,
+      onClick: () => handleOpenModal("remove"),
+    },
+    {
+      children: "Delete instance",
+      "aria-label": `Delete ${instance.title} instance`,
+      onClick: () => handleOpenModal("delete"),
+    },
+  ].filter((link) => {
+    if (link.children === "Set default instance") {
+      return !instance.is_default_child;
+    }
+    return true;
+  });
+
+  const { body, appearance, title, label } = getModalBody(instance, action);
+  const isPerformingAction =
+    isSettingDefaultChildInstance || isRemoving || isDeleting;
+
   return (
-    <ContextualMenu
-      position="left"
-      toggleClassName={classes.toggleButton}
-      toggleAppearance="base"
-      toggleLabel={<Icon name="contextual-menu" />}
-      toggleProps={{ "aria-label": `${instance.title} instance actions` }}
-    >
-      {!instance.is_default_child && (
-        <Button
-          type="button"
-          appearance="base"
-          className={classes.actionButton}
-          onClick={handleSetDefaultChildInstanceDialog}
-          aria-label={`Set ${instance.title} as default instance`}
+    <>
+      <ContextualMenu
+        position="left"
+        className={classes.menu}
+        toggleClassName={classes.toggleButton}
+        toggleAppearance="base"
+        toggleLabel={<Icon name="contextual-menu" />}
+        toggleProps={{ "aria-label": `${instance.title} instance actions` }}
+        links={contextualMenuLinks}
+      />
+      {modalOpen && action && (
+        <ConfirmationModal
+          title={title}
+          confirmButtonLabel={label}
+          confirmButtonAppearance={appearance}
+          confirmButtonDisabled={isPerformingAction}
+          confirmButtonLoading={isPerformingAction}
+          onConfirm={handleModalAction}
+          close={handleCloseModal}
         >
-          Set default instance
-        </Button>
+          {body}
+        </ConfirmationModal>
       )}
-      <Button
-        type="button"
-        appearance="base"
-        className={classes.actionButton}
-        onClick={handleRemoveInstanceFromLandscapeDialog}
-        aria-label={`Remove ${instance.title} instance from Landscape`}
-      >
-        Remove from Landscape
-      </Button>
-      <Button
-        type="button"
-        appearance="base"
-        className={classes.actionButton}
-        onClick={handleDeleteChildInstanceDialog}
-        aria-label={`Delete ${instance.title} instance`}
-      >
-        Delete instance
-      </Button>
-    </ContextualMenu>
+    </>
   );
 };
 

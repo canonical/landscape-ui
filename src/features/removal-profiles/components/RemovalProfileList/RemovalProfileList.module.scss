@@ -1,5 +1,3 @@
-@import "vanilla-framework/scss/settings_spacing";
-
 .truncated {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -7,18 +5,9 @@
 }
 
 .actions {
-  text-align: right;
   width: 4.5rem;
 }
 
-.toggleButton {
-  margin-bottom: 0;
-  padding: 0 $sph--x-small;
-}
-
-.actionButton {
-  align-items: center;
-  display: flex;
-  justify-content: start;
-  width: 100%;
+th.actions {
+  text-align: right;
 }

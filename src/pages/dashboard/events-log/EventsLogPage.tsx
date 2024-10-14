@@ -39,6 +39,7 @@ const EventsLogPage: FC = () => {
         title="Events log"
         actions={[
           <Button
+            type="button"
             key="download-as-cv"
             onClick={() =>
               downloadCSV(

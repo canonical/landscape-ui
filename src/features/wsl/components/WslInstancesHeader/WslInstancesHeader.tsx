@@ -1,7 +1,6 @@
 import { FC, lazy, Suspense } from "react";
-import { Button } from "@canonical/react-components";
+import { Button, ConfirmationButton } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -23,12 +22,13 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
   const { setPageParams } = usePageParams();
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
-  const { confirmModal, closeConfirmModal } = useConfirm();
   const { deleteChildInstancesQuery } = useWsl();
   const { removeInstancesQuery } = useInstances();
 
-  const { mutateAsync: deleteChildInstances } = deleteChildInstancesQuery;
-  const { mutateAsync: removeInstances } = removeInstancesQuery;
+  const { mutateAsync: deleteChildInstances, isPending: isDeleting } =
+    deleteChildInstancesQuery;
+  const { mutateAsync: removeInstances, isPending: isRemoving } =
+    removeInstancesQuery;
 
   const handleDeleteChildInstances = async () => {
     try {
@@ -37,37 +37,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleDeleteChildInstancesDialog = () => {
-    const body =
-      selectedInstances.length !== 1 ? (
-        "This will permanently delete selected instances from both the Windows host machine and Landscape."
-      ) : (
-        <p>
-          This will permanently delete the instance{" "}
-          <b>{selectedInstances[0].title}</b> from both the Windows host machine
-          and Landscape.
-        </p>
-      );
-
-    confirmModal({
-      title:
-        selectedInstances.length !== 1 ? "Delete instances" : "Delete instance",
-      body,
-      buttons: [
-        <Button
-          key="delete"
-          appearance="negative"
-          onClick={handleDeleteChildInstances}
-        >
-          Delete
-        </Button>,
-      ],
-    });
   };
 
   const handleRemoveInstances = async () => {
@@ -77,52 +47,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
-  };
-
-  const handleRemoveInstancesDialog = () => {
-    const body =
-      selectedInstances.length !== 1 ? (
-        <>
-          <p>
-            This will remove the selected instances from Landscape.
-            <br />
-            <br />
-            They will remain on the parent machine. You can re-register them to
-            Landscape at any time.
-          </p>
-        </>
-      ) : (
-        <p>
-          This will remove the instance <b>{selectedInstances[0].title}</b> from
-          Landscape.
-          <br />
-          <br />
-          It will remain on the parent machine. You can re-register it to
-          Landscape at any time.
-        </p>
-      );
-
-    const title =
-      selectedInstances.length !== 1
-        ? "Remove instances from Landscape"
-        : "Remove instance from Landscape";
-
-    confirmModal({
-      title,
-      body,
-      buttons: [
-        <Button
-          key="remove"
-          appearance="negative"
-          onClick={handleRemoveInstances}
-        >
-          Remove
-        </Button>,
-      ],
-    });
   };
 
   const handleWslInstanceInstall = () => {
@@ -149,22 +74,78 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
 
           <div className="p-segmented-control">
             <div className="p-segmented-control__list">
-              <Button
+              <ConfirmationButton
                 type="button"
                 className="p-segmented-control__button"
-                onClick={handleDeleteChildInstancesDialog}
                 disabled={selectedInstances.length === 0}
+                confirmationModalProps={{
+                  title:
+                    selectedInstances.length !== 1
+                      ? "Delete instances"
+                      : "Delete instance",
+                  children:
+                    selectedInstances.length !== 1 ? (
+                      <p>
+                        This will permanently delete selected instances from
+                        both the Windows host machine and Landscape.
+                      </p>
+                    ) : (
+                      <p>
+                        This will permanently delete the instance{" "}
+                        <b>{selectedInstances[0].title}</b> from both the
+                        Windows host machine and Landscape.
+                      </p>
+                    ),
+                  confirmButtonLabel: "Delete",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled: isDeleting,
+                  confirmButtonLoading: isDeleting,
+                  onConfirm: handleDeleteChildInstances,
+                }}
               >
-                <span>Delete instance</span>
-              </Button>
-              <Button
+                Delete instance
+              </ConfirmationButton>
+
+              <ConfirmationButton
                 type="button"
                 className="p-segmented-control__button"
-                onClick={handleRemoveInstancesDialog}
                 disabled={selectedInstances.length === 0}
+                confirmationModalProps={{
+                  title:
+                    selectedInstances.length !== 1
+                      ? "Remove instances from Landscape"
+                      : "Remove instance from Landscape",
+                  children:
+                    selectedInstances.length !== 1 ? (
+                      <>
+                        <p>
+                          This will remove the selected instances from
+                          Landscape.
+                          <br />
+                          <br />
+                          They will remain on the parent machine. You can
+                          re-register them to Landscape at any time.
+                        </p>
+                      </>
+                    ) : (
+                      <p>
+                        This will remove the instance{" "}
+                        <b>{selectedInstances[0].title}</b> from Landscape.
+                        <br />
+                        <br />
+                        It will remain on the parent machine. You can
+                        re-register it to Landscape at any time.
+                      </p>
+                    ),
+                  confirmButtonLabel: "Remove",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled: isRemoving,
+                  confirmButtonLoading: isRemoving,
+                  onConfirm: handleRemoveInstances,
+                }}
               >
-                <span>Remove from Landscape</span>
-              </Button>
+                Remove from Landscape
+              </ConfirmationButton>
             </div>
           </div>
         </div>

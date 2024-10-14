@@ -1,10 +1,15 @@
-import classNames from "classnames";
-import { FC, lazy, Suspense } from "react";
-import { Button, ContextualMenu, Icon } from "@canonical/react-components";
+import { FC, lazy, Suspense, useState } from "react";
+import {
+  ConfirmationModal,
+  ContextualMenu,
+  Icon,
+  ICONS,
+  Input,
+  MenuLink,
+} from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { usePackageProfiles } from "../../hooks";
 import { PackageProfile } from "../../types";
-import useConfirm from "@/hooks/useConfirm";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -25,15 +30,18 @@ interface PackageProfileListContextualMenuProps {
 const PackageProfileListContextualMenu: FC<
   PackageProfileListContextualMenuProps
 > = ({ profile }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [confirmDeleteProfileText, setConfirmDeleteProfileText] = useState("");
+
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeConfirmModal, confirmModal } = useConfirm();
   const { setSidePanelContent } = useSidePanel();
   const { removePackageProfileQuery } = usePackageProfiles();
 
-  const { mutateAsync: removePackageProfile } = removePackageProfileQuery;
+  const { mutateAsync: removePackageProfile, isPending: isRemoving } =
+    removePackageProfileQuery;
 
-  const handleConstraintsChange = (profile: PackageProfile) => () => {
+  const handleConstraintsChange = () => {
     setSidePanelContent(
       `Change "${profile.title}" profile's constraints`,
       <Suspense fallback={<LoadingState />}>
@@ -43,7 +51,7 @@ const PackageProfileListContextualMenu: FC<
     );
   };
 
-  const handlePackageProfileEdit = (profile: PackageProfile) => {
+  const handlePackageProfileEdit = () => {
     setSidePanelContent(
       `Edit "${profile.title}" profile`,
       <Suspense fallback={<LoadingState />}>
@@ -52,7 +60,7 @@ const PackageProfileListContextualMenu: FC<
     );
   };
 
-  const handlePackageProfileDuplicate = (profile: PackageProfile) => {
+  const handlePackageProfileDuplicate = () => {
     setSidePanelContent(
       `Duplicate "${profile.title}" profile`,
       <Suspense fallback={<LoadingState />}>
@@ -61,7 +69,7 @@ const PackageProfileListContextualMenu: FC<
     );
   };
 
-  const handleRemovePackageProfile = async (profile: PackageProfile) => {
+  const handleRemovePackageProfile = async () => {
     try {
       await removePackageProfile({ name: profile.name });
 
@@ -72,93 +80,106 @@ const PackageProfileListContextualMenu: FC<
     } catch (error) {
       debug(error);
     } finally {
-      closeConfirmModal();
+      handleCloseModal();
     }
   };
 
-  const handleRemovePackageProfileDialog = (profile: PackageProfile) => {
-    confirmModal({
-      title: "Remove package profile",
-      body: `This will remove "${profile.title}" profile.`,
-      buttons: [
-        <Button
-          key="remove"
-          type="button"
-          appearance="negative"
-          onClick={() => handleRemovePackageProfile(profile)}
-          aria-label={`Remove ${profile.title} profile`}
-        >
-          Remove
-        </Button>,
-      ],
-    });
+  const handleOpenModal = () => {
+    setModalOpen(true);
   };
 
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmDeleteProfileText(e.target.value);
+  };
+
+  const contextualMenuButtons: MenuLink[] = [
+    {
+      children: (
+        <>
+          <Icon name="edit" />
+          <span>Edit</span>
+        </>
+      ),
+      "aria-label": `Edit ${profile.title} profile`,
+      hasIcon: true,
+      onClick: handlePackageProfileEdit,
+    },
+    {
+      children: (
+        <>
+          <Icon name="applications" />
+          <span className={classes.noWrap}>Change package constraints</span>
+        </>
+      ),
+      "aria-label": `Change ${profile.title} package constraints`,
+      hasIcon: true,
+      onClick: handleConstraintsChange,
+    },
+    {
+      children: (
+        <>
+          <Icon name="canvas" />
+          <span>Duplicate</span>
+        </>
+      ),
+      "aria-label": `Duplicate ${profile.title} profile`,
+      hasIcon: true,
+      onClick: handlePackageProfileDuplicate,
+    },
+    {
+      children: (
+        <>
+          <Icon name={ICONS.delete} />
+          <span>Remove</span>
+        </>
+      ),
+      "aria-label": `Remove ${profile.title} profile`,
+      hasIcon: true,
+      onClick: handleOpenModal,
+    },
+  ];
+
   return (
-    <ContextualMenu
-      position="left"
-      toggleClassName={classes.toggleButton}
-      toggleAppearance="base"
-      toggleLabel={<Icon name="contextual-menu" />}
-      toggleProps={{ "aria-label": `${profile.title} profile actions` }}
-    >
-      <Button
-        type="button"
-        appearance="base"
-        hasIcon
-        className={classNames(
-          "u-no-margin--bottom u-no-margin--right",
-          classes.actionButton,
-        )}
-        onClick={() => handlePackageProfileEdit(profile)}
-        aria-label={`Edit ${profile.title} profile`}
-      >
-        <Icon name="edit" />
-        <span>Edit</span>
-      </Button>
-      <Button
-        type="button"
-        appearance="base"
-        hasIcon
-        className={classNames(
-          "u-no-margin--bottom u-no-margin--right",
-          classes.actionButton,
-        )}
-        onClick={handleConstraintsChange(profile)}
-        aria-label={`Change ${profile.title} package constraints`}
-      >
-        <Icon name="applications" />
-        <span className={classes.noWrap}>Change package constraints</span>
-      </Button>
-      <Button
-        type="button"
-        appearance="base"
-        hasIcon
-        className={classNames(
-          "u-no-margin--bottom u-no-margin--right",
-          classes.actionButton,
-        )}
-        onClick={() => handlePackageProfileDuplicate(profile)}
-        aria-label={`Duplicate ${profile.title} profile`}
-      >
-        <Icon name="canvas" />
-        <span>Duplicate</span>
-      </Button>
-      <Button
-        type="button"
-        appearance="base"
-        hasIcon
-        className={classNames(
-          "u-no-margin--bottom u-no-margin--right",
-          classes.actionButton,
-        )}
-        onClick={() => handleRemovePackageProfileDialog(profile)}
-        aria-label={`Remove ${profile.title} profile`}
-      >
-        <Icon name="delete" />
-        <span>Remove</span>
-      </Button>
-    </ContextualMenu>
+    <>
+      <ContextualMenu
+        position="left"
+        className={classes.menu}
+        toggleClassName={classes.toggleButton}
+        toggleAppearance="base"
+        toggleLabel={<Icon name="contextual-menu" />}
+        toggleProps={{ "aria-label": `${profile.title} profile actions` }}
+        links={contextualMenuButtons}
+      />
+
+      {modalOpen && (
+        <ConfirmationModal
+          title="Remove package profile"
+          confirmButtonLabel="Remove"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={
+            isRemoving || confirmDeleteProfileText !== `remove ${profile.name}`
+          }
+          confirmButtonLoading={isRemoving}
+          onConfirm={handleRemovePackageProfile}
+          close={handleCloseModal}
+        >
+          <p>
+            This will remove &quot;{profile.title}&quot; profile. This action is
+            irreversible.
+          </p>
+          Type <b>remove {profile.name}</b> to confirm.
+          <Input
+            type="text"
+            value={confirmDeleteProfileText}
+            onChange={handleChange}
+          />
+        </ConfirmationModal>
+      )}
+    </>
   );
 };
 

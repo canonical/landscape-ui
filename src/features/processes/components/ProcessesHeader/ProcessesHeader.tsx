@@ -73,6 +73,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
         <div className={classNames("p-segmented-control", classes.actions)}>
           <div className="p-segmented-control__list">
             <Button
+              type="button"
               className="p-segmented-control__button"
               disabled={0 === selectedPids.length}
               onClick={handleEndProcess}
@@ -80,6 +81,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
               End process
             </Button>
             <Button
+              type="button"
               className="p-segmented-control__button"
               disabled={0 === selectedPids.length}
               onClick={handleKillProcess}

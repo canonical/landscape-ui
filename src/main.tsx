@@ -3,7 +3,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import AuthProvider from "@/context/auth";
-import ConfirmProvider from "@/context/confirm";
 import EnvProvider from "@/context/env";
 import NotifyProvider from "@/context/notify";
 import ReactQueryProvider from "@/context/reactQuery";
@@ -15,11 +14,9 @@ createRoot(document.getElementById("root") as HTMLElement).render(
       <EnvProvider>
         <NotifyProvider>
           <ReactQueryProvider>
-            <ConfirmProvider>
-              <AuthProvider>
-                <App />
-              </AuthProvider>
-            </ConfirmProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
           </ReactQueryProvider>
         </NotifyProvider>
       </EnvProvider>

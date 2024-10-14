@@ -2,13 +2,16 @@ import { ROOT_PATH } from "@/constants";
 import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
 import { AlertSummary } from "@/types/Alert";
 import { Button, Icon, Link, List } from "@canonical/react-components";
-import { FC, Suspense } from "react";
+import { FC, lazy, Suspense } from "react";
 import classes from "./AlertNotificationsList.module.scss";
 import classNames from "classnames";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
-import PendingInstancesForm from "@/pages/dashboard/instances/PendingInstancesForm";
 import { PendingInstance } from "@/types/Instance";
+
+const PendingInstancesForm = lazy(
+  () => import("@/pages/dashboard/instances/PendingInstancesForm"),
+);
 
 interface AlertNotificationsListProps {
   alerts: AlertSummary[];

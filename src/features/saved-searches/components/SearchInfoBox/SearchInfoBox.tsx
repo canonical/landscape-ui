@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { FC } from "react";
-import { Button, Icon } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import classes from "./SearchInfoBox.module.scss";
 
 interface SearchInfoBoxProps {
@@ -33,7 +33,7 @@ const SearchInfoBox: FC<SearchInfoBoxProps> = ({
             onHelpButtonClick();
           }}
         >
-          <Icon name="help" />
+          <Icon name={ICONS.help} />
         </Button>
       </div>
     </div>
