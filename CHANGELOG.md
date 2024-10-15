@@ -1,3 +1,17 @@
+# [1.5.0](https://github.com/canonical/landscape-dashboard/compare/v1.4.3...v1.5.0) (2024-10-15)
+
+
+### Bug Fixes
+
+* remove sign in form email validation, rename 'email' field into 'identity' ([9e529f9](https://github.com/canonical/landscape-dashboard/commit/9e529f975fb2da2f28caab6a13a48fdf74d43ddc))
+
+
+### Features
+
+* add availability zones to instances; change instance filters layout ([#104](https://github.com/canonical/landscape-dashboard/issues/104)) ([b2a8e1d](https://github.com/canonical/landscape-dashboard/commit/b2a8e1d3c36dac9bdb3ba9ea459d6b8b2c01625e))
+* add dev PPA build to build workflow ([#109](https://github.com/canonical/landscape-dashboard/issues/109)) ([75af5f9](https://github.com/canonical/landscape-dashboard/commit/75af5f95c7b00670827a4f7f443bccad757b01fb))
+* add Kernel tab in single instance view ([5244f93](https://github.com/canonical/landscape-dashboard/commit/5244f93b72dc91a48d9e98af6ee7e1261c70b3ed))
+
 ## [1.4.3](https://github.com/canonical/landscape-dashboard/compare/v1.4.2...v1.4.3) (2024-10-10)
 
 
