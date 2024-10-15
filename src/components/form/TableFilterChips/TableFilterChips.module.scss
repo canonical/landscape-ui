@@ -1,0 +1,45 @@
+@import "vanilla-framework/scss/base_icon-definitions";
+@import "vanilla-framework/scss/base_placeholders";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  align-items: baseline;
+  column-gap: $sph--small;
+  display: flex;
+  margin-bottom: $spv--x-large;
+}
+
+.chipsContainer {
+  align-items: baseline;
+  display: flex;
+  flex-shrink: 1;
+  flex-wrap: wrap;
+  gap: $sp-unit;
+}
+
+.collapsed {
+  max-height: $sp-x-large;
+  overflow-y: hidden;
+}
+
+.clearAllButton,
+.showLessButton,
+.showMoreButton {
+  margin-bottom: 0;
+  padding-top: 0;
+  white-space: nowrap;
+}
+
+.showLessButton {
+  margin-left: $sph--small;
+}
+
+.clearAllButton {
+  margin-right: $sph--small;
+  padding-left: $sph--large;
+}
+
+.clearAllIcon {
+  @include vf-icon-close($color-link);
+}

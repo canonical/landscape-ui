@@ -2,9 +2,11 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .top {
+  align-items: flex-start;
   background-color: $color-x-light;
   column-gap: $sph--x-large;
   display: flex;
+  justify-content: space-between;
   padding-bottom: $spv--large;
   position: sticky;
   top: 4.5rem;
@@ -19,6 +21,15 @@
 
 .searchContainer {
   flex-basis: 30rem;
+}
+
+.filters {
+  column-gap: $sph--small;
+  display: flex;
+}
+
+.divider {
+  border-left: 1px solid $colors--light-theme--border-low-contrast;
 }
 
 .widgets {

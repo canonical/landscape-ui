@@ -1,0 +1,50 @@
+import { FC, useState } from "react";
+import TableFilter, { GroupedOption } from "@/components/form/TableFilter";
+import { usePageParams } from "@/hooks/usePageParams";
+
+interface AvailabilityZoneFilterProps {
+  options: GroupedOption[];
+}
+
+const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
+  options,
+}) => {
+  const [searchText, setSearchText] = useState("");
+
+  const { availabilityZones, setPageParams } = usePageParams();
+
+  const filteredOptions =
+    options.length > 9 && searchText
+      ? options.filter(
+          ({ value }) => value !== "none" && value.includes(searchText),
+        )
+      : options;
+
+  const handleItemsSelect = (items: string[]) => {
+    if (items[items.length - 1] === "none") {
+      setPageParams({ availabilityZones: ["none"] });
+    } else {
+      setPageParams({
+        availabilityZones:
+          items[0] !== "none" ? items : items.filter((item) => item !== "none"),
+      });
+    }
+  };
+
+  return (
+    <TableFilter
+      multiple
+      label="Availability zone"
+      hasToggleIcon
+      hasBadge
+      onSearch={
+        options.length > 9 ? (search) => setSearchText(search) : undefined
+      }
+      options={filteredOptions}
+      onItemsSelect={handleItemsSelect}
+      selectedItems={availabilityZones}
+    />
+  );
+};
+
+export default AvailabilityZoneFilter;

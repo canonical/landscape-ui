@@ -1,5 +1,5 @@
 import { ROOT_PATH } from "@/constants";
-import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
+import { STATUSES } from "@/features/instances";
 import { AlertSummary } from "@/types/Alert";
 import { Button, Icon, Link, List } from "@canonical/react-components";
 import { FC, lazy, Suspense } from "react";

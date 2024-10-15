@@ -1,4 +1,4 @@
-import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
+import { STATUSES } from "@/features/instances";
 
 const overviewAlerts = [
   "ComputerOfflineAlert",

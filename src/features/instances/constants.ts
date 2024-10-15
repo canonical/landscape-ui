@@ -1,13 +1,5 @@
-type Icon = { gray: string; color?: string } | { gray?: string; color: string };
-
-export type Status = {
-  icon: Icon;
-  filterValue: string;
-  alertType: string;
-  label: string;
-  query: string;
-  alternateLabel?: string;
-};
+import { ListFilter } from "@/types/Filters";
+import { Status } from "./types/Status";
 
 export const STATUSES: { [keyof: string]: Status } = {
   Online: {
@@ -129,5 +121,63 @@ export const STATUSES: { [keyof: string]: Status } = {
     filterValue: "",
     query: "",
     icon: { color: "package-profiles-alert" },
+  },
+};
+
+const alertTypes = [
+  "UpToDate",
+  "PackageUpgradesAlert",
+  "SecurityUpgradesAlert",
+  "PackageProfilesAlert",
+  "PackageReporterAlert",
+  "EsmDisabledAlert",
+  "ComputerOfflineAlert",
+  "ComputerOnlineAlert",
+  "ComputerRebootAlert",
+  "ComputerDuplicateAlert",
+  "UnapprovedActivitiesAlert",
+  "ChildInstanceProfileAlert",
+];
+
+type FilterKey = "os" | "groupBy" | "status";
+
+export const FILTERS: { [key in FilterKey]: ListFilter } = {
+  os: {
+    slug: "os",
+    label: "OS",
+    type: "select",
+    options: [
+      { label: "All", value: "", query: "" },
+      { label: "Ubuntu", value: "ubuntu", query: "NOT distribution:windows" },
+      { label: "Windows", value: "windows", query: "distribution:windows" },
+    ],
+  },
+  groupBy: {
+    slug: "groupBy",
+    label: "Group by",
+    type: "select",
+    options: [
+      { label: "None", value: "" },
+      { label: "Parent", value: "parent" },
+    ],
+  },
+  status: {
+    slug: "status",
+    label: "Status",
+    type: "select",
+    options: [
+      { label: "All", value: "", query: "" },
+      ...Object.values(STATUSES)
+        .filter(({ alertType }) => alertTypes.includes(alertType))
+        .sort(
+          (a, b) =>
+            alertTypes.indexOf(a.alertType) - alertTypes.indexOf(b.alertType),
+        )
+        .map(({ label, filterValue, query }) => ({
+          label,
+          value: filterValue,
+          query,
+        })),
+    ],
   },
 };

@@ -9,9 +9,13 @@ interface ListFilterInput {
   type: "text" | "date" | "checkbox";
 }
 
+interface FilterOption extends SelectOption {
+  query?: string;
+}
+
 interface ListFilterSelect {
   type: "select" | "multi-select";
-  options: SelectOption[];
+  options: FilterOption[];
 }
 
 export type ListFilter = ListFilterBase & (ListFilterInput | ListFilterSelect);

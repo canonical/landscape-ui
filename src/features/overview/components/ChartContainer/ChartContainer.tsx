@@ -3,7 +3,7 @@ import { FC } from "react";
 import { Colors } from "../../helpers";
 import { getChartData } from "./helpers";
 import PieChart from "../PieChart";
-import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
+import { STATUSES } from "@/features/instances";
 
 const ChartContainer: FC = () => {
   const { getInstancesQuery } = useInstances();

@@ -1,4 +1,4 @@
-import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
+import { STATUSES } from "@/features/instances";
 import { alertsSummary } from "@/tests/mocks/alerts";
 import { pendingInstances } from "@/tests/mocks/instance";
 import { render, screen } from "@testing-library/react";

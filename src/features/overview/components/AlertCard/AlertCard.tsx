@@ -4,7 +4,7 @@ import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
 import { Link } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
-import { Status } from "@/pages/dashboard/instances/InstanceList/constants";
+import { Status } from "@/features/instances";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
