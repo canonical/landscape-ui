@@ -42,9 +42,7 @@ const LoginForm: FC = () => {
       remember: false,
     },
     validationSchema: Yup.object().shape({
-      email: Yup.string()
-        .email("Please provide a valid email address")
-        .required("This field is required"),
+      email: Yup.string().required("This field is required"),
       password: Yup.string().required("This field is required"),
       remember: Yup.boolean(),
     }),
@@ -74,7 +72,7 @@ const LoginForm: FC = () => {
     <Form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        label="Email"
+        label="Identity"
         error={
           formik.touched.email && formik.errors.email
             ? formik.errors.email
