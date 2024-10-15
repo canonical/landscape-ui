@@ -69,8 +69,6 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
@@ -89,8 +87,6 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       });
     } catch (error) {
       debug(error);
-    } finally {
-      closeConfirmModal();
     }
   };
 
