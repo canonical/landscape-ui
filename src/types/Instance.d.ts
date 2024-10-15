@@ -180,6 +180,9 @@ interface UbuntuProInfo {
 export interface InstanceWithoutRelation extends Record<string, unknown> {
   access_group: AccessGroup["name"];
   clone_id: number | null;
+  cloud_init: {
+    availability_zone?: string | null;
+  };
   cloud_instance_metadata: CloudInstanceMetadata;
   comment: string;
   container_info: string | null;

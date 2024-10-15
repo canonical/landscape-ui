@@ -1,6 +1,5 @@
 import { ReactElement } from "react";
-import { ListFilter } from "@/types/Filters";
-import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
+import { ColumnFilterOption } from "@/components/form/ColumnFilter";
 
 export const INSTANCE_SEARCH_HELP_TERMS: {
   term: string;
@@ -162,60 +161,16 @@ export const INSTANCE_SEARCH_HELP_TERMS: {
   },
 ];
 
-const alertTypes = [
-  "UpToDate",
-  "PackageUpgradesAlert",
-  "SecurityUpgradesAlert",
-  "PackageProfilesAlert",
-  "PackageReporterAlert",
-  "EsmDisabledAlert",
-  "ComputerOfflineAlert",
-  "ComputerOnlineAlert",
-  "ComputerRebootAlert",
-  "ComputerDuplicateAlert",
-  "UnapprovedActivitiesAlert",
-  "ChildInstanceProfileAlert",
+export const COLUMN_OPTIONS: ColumnFilterOption[] = [
+  { canBeHidden: false, label: "Instance name", value: "title" },
+  { canBeHidden: true, label: "Status", value: "alerts" },
+  { canBeHidden: true, label: "Upgrades", value: "upgrades" },
+  { canBeHidden: true, label: "OS", value: "distribution" },
+  {
+    canBeHidden: true,
+    label: "Availability zone",
+    value: "cloud_init.availability_zone",
+  },
+  { canBeHidden: true, label: "Ubuntu pro", value: "ubuntu_pro_info" },
+  { canBeHidden: true, label: "Last ping", value: "last_ping_time" },
 ];
-
-type FilterKey = "os" | "groupBy" | "status";
-
-export const FILTERS: { [key in FilterKey]: ListFilter } = {
-  os: {
-    slug: "os",
-    label: "OS",
-    type: "select",
-    options: [
-      { label: "All", value: "", query: "" },
-      { label: "Ubuntu", value: "ubuntu", query: "NOT distribution:windows" },
-      { label: "Windows", value: "windows", query: "distribution:windows" },
-    ],
-  },
-  groupBy: {
-    slug: "groupBy",
-    label: "Group by",
-    type: "select",
-    options: [
-      { label: "None", value: "", query: "" },
-      { label: "Parent", value: "parent", query: "parent" },
-    ],
-  },
-  status: {
-    slug: "status",
-    label: "Status",
-    type: "select",
-    options: [
-      { label: "All", value: "", query: "" },
-      ...Object.values(STATUSES)
-        .filter(({ alertType }) => alertTypes.includes(alertType))
-        .sort(
-          (a, b) =>
-            alertTypes.indexOf(a.alertType) - alertTypes.indexOf(b.alertType),
-        )
-        .map(({ label, filterValue, query }) => ({
-          label,
-          value: filterValue,
-          query,
-        })),
-    ],
-  },
-};

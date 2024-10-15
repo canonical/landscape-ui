@@ -4,7 +4,7 @@ import { FC } from "react";
 import { Link } from "react-router-dom";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./Legend.module.scss";
-import { STATUSES } from "@/pages/dashboard/instances/InstanceList/constants";
+import { STATUSES } from "@/features/instances";
 import { ROOT_PATH } from "@/constants";
 
 interface LegendProps {

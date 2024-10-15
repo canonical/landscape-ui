@@ -4,23 +4,27 @@ const ALLOWED_PAGE_SIZES = [20, 50, 100];
 
 const ALLOWED_DAY_OPTIONS = [1, 7, 30, 90, 180, 365];
 
-const PARAMS = {
-  SEARCH: "search",
+export const PARAMS = {
+  ACCESS_GROUPS: "accessGroups",
+  AVAILABILITY_ZONES: "availabilityZones",
   CURRENT_PAGE: "currentPage",
-  PAGE_SIZE: "pageSize",
-  TAB: "tab",
-  STATUS: "status",
-  OS: "os",
-  GROUP_BY: "groupBy",
   DAYS: "days",
+  DISABLED_COLUMNS: "disabledColumns",
+  GROUP_BY: "groupBy",
+  OS: "os",
+  PAGE_SIZE: "pageSize",
+  SEARCH: "search",
+  STATUS: "status",
+  TAB: "tab",
+  TAGS: "tags",
 };
 
 const modifyUrlParameters = (
   params: URLSearchParams,
   key: string,
-  value: string | number,
+  value: string | string[] | number | number[],
 ) => {
-  if (value === "") {
+  if (value === "" || (Array.isArray(value) && value.length === 0)) {
     params.delete(key);
   } else {
     params.set(key, String(value));
@@ -29,8 +33,20 @@ const modifyUrlParameters = (
 
 export const usePageParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { CURRENT_PAGE, PAGE_SIZE, SEARCH, TAB, STATUS, DAYS, GROUP_BY, OS } =
-    PARAMS;
+  const {
+    ACCESS_GROUPS,
+    AVAILABILITY_ZONES,
+    CURRENT_PAGE,
+    DAYS,
+    DISABLED_COLUMNS,
+    GROUP_BY,
+    OS,
+    PAGE_SIZE,
+    SEARCH,
+    STATUS,
+    TAB,
+    TAGS,
+  } = PARAMS;
 
   const tab = searchParams.get(TAB) ?? "";
   const status = searchParams.get(STATUS) ?? "";
@@ -45,29 +61,33 @@ export const usePageParams = () => {
     Number(searchParams.get(PAGE_SIZE)),
   )
     ? Number(searchParams.get(PAGE_SIZE))
-    : 20;
+    : ALLOWED_PAGE_SIZES[0];
+  const tags = searchParams.get(TAGS)?.split(",").filter(Boolean) ?? [];
+  const availabilityZones =
+    searchParams.get(AVAILABILITY_ZONES)?.split(",").filter(Boolean) ?? [];
+  const accessGroups =
+    searchParams.get(ACCESS_GROUPS)?.split(",").filter(Boolean) ?? [];
+  const disabledColumns =
+    searchParams.get(DISABLED_COLUMNS)?.split(",").filter(Boolean) ?? [];
 
   const setPageParams = (newParams: {
-    search?: string;
+    accessGroups?: string[];
+    availabilityZones?: string[];
     currentPage?: number;
-    pageSize?: number;
-    tab?: string;
-    status?: string;
-    os?: string;
-    groupBy?: string;
     days?: string;
+    disabledColumns?: string[];
+    groupBy?: string;
+    os?: string;
+    pageSize?: number;
+    search?: string;
+    status?: string;
+    tab?: string;
+    tags?: string[];
   }) => {
     setSearchParams(
       (prevSearchParams) => {
         const updatedSearchParams = new URLSearchParams(
           prevSearchParams.toString(),
-        );
-
-        const hasFilters = Boolean(
-          newParams.status ||
-            newParams.os ||
-            newParams.groupBy ||
-            newParams.days,
         );
 
         //reset params if tab has changed
@@ -79,9 +99,15 @@ export const usePageParams = () => {
 
         //reset current page
         if (
-          newParams.search !== "" ||
-          newParams.pageSize !== undefined ||
-          hasFilters
+          newParams.search ||
+          newParams.pageSize ||
+          newParams.status ||
+          newParams.os ||
+          newParams.groupBy ||
+          newParams.days ||
+          newParams.tags ||
+          newParams.availabilityZones ||
+          newParams.accessGroups
         ) {
           updatedSearchParams.delete(CURRENT_PAGE);
         }
@@ -100,14 +126,18 @@ export const usePageParams = () => {
   };
 
   return {
-    tab,
-    search,
+    accessGroups,
+    availabilityZones,
     currentPage,
+    days,
+    disabledColumns,
+    groupBy,
+    os,
     pageSize,
+    search,
     setPageParams,
     status,
-    os,
-    groupBy,
-    days,
+    tab,
+    tags,
   };
 };

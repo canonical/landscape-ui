@@ -15,9 +15,10 @@ import {
 } from "@canonical/react-components";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
+import { STATUSES } from "@/features/instances";
+import { usePageParams } from "@/hooks/usePageParams";
 import { Instance } from "@/types/Instance";
 import classes from "./InstanceList.module.scss";
-import { STATUSES } from "./constants";
 
 interface InstanceListProps {
   instances: Instance[];
@@ -32,6 +33,8 @@ const InstanceList: FC<InstanceListProps> = ({
   setSelectedInstances,
   groupBy,
 }) => {
+  const { disabledColumns } = usePageParams();
+
   const toggleAll = () => {
     setSelectedInstances(selectedInstances.length !== 0 ? [] : instances);
   };
@@ -191,133 +194,144 @@ const InstanceList: FC<InstanceListProps> = ({
   };
 
   const columns = useMemo<Column<Instance>[]>(
-    () => [
-      {
-        accessor: "title",
-        Header: (
-          <>
-            <CheckboxInput
-              label={<span className="u-off-screen">Toggle all instances</span>}
-              inline
-              onChange={toggleAll}
-              disabled={instances.length === 0}
-              checked={
-                selectedInstances.length === instances.length &&
-                instances.length !== 0
-              }
-              indeterminate={
-                selectedInstances.length !== 0 &&
-                selectedInstances.length < instances.length
-              }
-            />
-            <span>Name</span>
-          </>
-        ),
-        Cell: ({ row }: CellProps<Instance>) => (
-          <div
-            className={classNames(classes.rowHeader, {
-              [classes.nested]:
-                (row as Row<Instance> & { depth: number }).depth > 0,
-            })}
-          >
-            <CheckboxInput
-              label={<span className="u-off-screen">{row.original.title}</span>}
-              labelClassName="u-no-margin--bottom u-no-padding--top"
-              checked={figureCheckboxState(row.original) === "checked"}
-              indeterminate={
-                figureCheckboxState(row.original) === "indeterminate"
-              }
-              onChange={() => {
-                handleChange(row);
-              }}
-            />
-            <Link
-              to={
-                row.original.parent
-                  ? `${ROOT_PATH}instances/${row.original.parent.id}/${row.original.id}`
-                  : `${ROOT_PATH}instances/${row.original.id}`
-              }
+    () =>
+      [
+        {
+          accessor: "title",
+          Header: (
+            <>
+              <CheckboxInput
+                label={
+                  <span className="u-off-screen">Toggle all instances</span>
+                }
+                inline
+                onChange={toggleAll}
+                disabled={instances.length === 0}
+                checked={
+                  selectedInstances.length === instances.length &&
+                  instances.length !== 0
+                }
+                indeterminate={
+                  selectedInstances.length !== 0 &&
+                  selectedInstances.length < instances.length
+                }
+              />
+              <span>Name</span>
+            </>
+          ),
+          Cell: ({ row }: CellProps<Instance>) => (
+            <div
+              className={classNames(classes.rowHeader, {
+                [classes.nested]:
+                  (row as Row<Instance> & { depth: number }).depth > 0,
+              })}
             >
-              {row.original.title}
-            </Link>
-          </div>
-        ),
-      },
-      {
-        Header: "Status",
-        accessor: "alerts",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          const { label } = getStatusRowIconAndLabel(original);
-          return label;
+              <CheckboxInput
+                label={
+                  <span className="u-off-screen">{row.original.title}</span>
+                }
+                labelClassName="u-no-margin--bottom u-no-padding--top"
+                checked={figureCheckboxState(row.original) === "checked"}
+                indeterminate={
+                  figureCheckboxState(row.original) === "indeterminate"
+                }
+                onChange={() => {
+                  handleChange(row);
+                }}
+              />
+              <Link
+                to={
+                  row.original.parent
+                    ? `${ROOT_PATH}instances/${row.original.parent.id}/${row.original.id}`
+                    : `${ROOT_PATH}instances/${row.original.id}`
+                }
+              >
+                {row.original.title}
+              </Link>
+            </div>
+          ),
         },
-        getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
-          const { icon } = getStatusRowIconAndLabel(original);
-          return icon;
+        {
+          accessor: "alerts",
+          Header: "Status",
+          Cell: ({ row: { original } }: CellProps<Instance>) => {
+            const { label } = getStatusRowIconAndLabel(original);
+            return label;
+          },
+          getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
+            const { icon } = getStatusRowIconAndLabel(original);
+            return icon;
+          },
         },
-      },
-      {
-        Header: "Upgrades",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          const { label } = getUpgradesRowIconAndLabel(original);
-          return label;
+        {
+          accessor: "upgrades",
+          Header: "Upgrades",
+          Cell: ({ row: { original } }: CellProps<Instance>) => {
+            const { label } = getUpgradesRowIconAndLabel(original);
+            return label;
+          },
+          getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
+            const { icon } = getUpgradesRowIconAndLabel(original);
+            return icon;
+          },
         },
-        getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
-          const { icon } = getUpgradesRowIconAndLabel(original);
-          return icon;
-        },
-      },
-      {
-        accessor: "distribution",
-        Header: "OS",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          if (!original.distribution) {
-            return <NoData />;
-          }
+        {
+          accessor: "distribution",
+          Header: "OS",
+          Cell: ({ row: { original } }: CellProps<Instance>) => {
+            if (!original.distribution) {
+              return <NoData />;
+            }
 
-          if (/\d{1,2}\.\d{2}/.test(original.distribution)) {
-            return `${original.is_wsl_instance ? "WSL - " : ""}Ubuntu\xA0${original.distribution}`;
-          }
+            if (/\d{1,2}\.\d{2}/.test(original.distribution)) {
+              return `${original.is_wsl_instance ? "WSL - " : ""}Ubuntu\xA0${original.distribution}`;
+            }
 
-          return `Windows ${original.distribution}`;
+            return `Windows ${original.distribution}`;
+          },
         },
-      },
-      {
-        accessor: "ubuntu_pro_info",
-        Header: "Ubuntu pro",
-        Cell: ({ row }: CellProps<Instance>) => (
-          <>
-            {row.original.ubuntu_pro_info &&
-            moment(row.original.ubuntu_pro_info.expires).isValid() ? (
-              `Exp. ${moment(row.original.ubuntu_pro_info.expires).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )}`
-            ) : (
-              <NoData />
-            )}
-          </>
-        ),
-      },
-      {
-        Header: "Host name",
-        accessor: "hostname",
-      },
-      {
-        Header: "Last ping time",
-        accessor: "last_ping_time",
-        Cell: ({ row }: CellProps<Instance>) => (
-          <>
-            {moment(row.original.last_ping_time).isValid() ? (
-              moment(row.original.last_ping_time).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )
-            ) : (
-              <NoData />
-            )}
-          </>
-        ),
-      },
-    ],
-    [selectedInstances.length, instances, groupBy],
+        {
+          accessor: "cloud_init.availability_zone",
+          Header: "Availability zone",
+          Cell: ({ row: { original } }: CellProps<Instance>) => (
+            <>{original.cloud_init?.availability_zone ?? <NoData />}</>
+          ),
+        },
+        {
+          accessor: "ubuntu_pro_info",
+          Header: "Ubuntu pro",
+          Cell: ({ row }: CellProps<Instance>) => (
+            <>
+              {row.original.ubuntu_pro_info &&
+              moment(row.original.ubuntu_pro_info.expires).isValid() ? (
+                `Exp. ${moment(row.original.ubuntu_pro_info.expires).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}`
+              ) : (
+                <NoData />
+              )}
+            </>
+          ),
+        },
+        {
+          accessor: "last_ping_time",
+          Header: "Last ping time",
+          Cell: ({ row }: CellProps<Instance>) => (
+            <>
+              {moment(row.original.last_ping_time).isValid() ? (
+                moment(row.original.last_ping_time).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )
+              ) : (
+                <NoData />
+              )}
+            </>
+          ),
+        },
+      ].filter(
+        ({ accessor }) => accessor && !disabledColumns.includes(accessor),
+      ),
+    [disabledColumns.length, selectedInstances.length, instances, groupBy],
   );
 
   return (

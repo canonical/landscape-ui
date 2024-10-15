@@ -8,22 +8,17 @@ import SavedSearchList from "../SavedSearchList";
 import SearchChips from "../SearchChips";
 import SearchInfoBox from "../SearchInfoBox";
 import SearchPrompt from "../SearchPrompt";
-import { ExtendedSearchAndFilterChip } from "../../types";
 import { SavedSearch } from "@/types/SavedSearch";
 import classes from "./SearchBoxWithSavedSearches.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
-import { areChipArraysEqual, parseSearchToChips } from "./helpers";
+import { parseSearchToChips } from "./helpers";
 
 interface SearchBoxWithSavedSearchesProps {
   onHelpButtonClick: () => void;
-  returnSearchData: (searchData: ExtendedSearchAndFilterChip[]) => void;
-  existingSearchData: ExtendedSearchAndFilterChip[];
 }
 
 const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   onHelpButtonClick,
-  returnSearchData,
-  existingSearchData,
 }) => {
   const { search, setPageParams } = usePageParams();
   const [inputText, setInputText] = useState("");
@@ -56,14 +51,10 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
     isLoading: getSavedSearchesQueryLoading,
   } = getSavedSearchesQuery();
 
-  const searchData = parseSearchToChips(
-    search,
-    getSavedSearchesQueryResult?.data,
+  const searchData = useMemo(
+    () => parseSearchToChips(search, getSavedSearchesQueryResult?.data),
+    [search, getSavedSearchesQueryResult?.data],
   );
-
-  if (!areChipArraysEqual(existingSearchData, searchData)) {
-    returnSearchData(searchData);
-  }
 
   const filteredSearches = useMemo(() => {
     if (!getSavedSearchesQueryResult) {
@@ -75,7 +66,9 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
     }
 
     return getSavedSearchesQueryResult.data
-      .filter(({ search }) => searchData.every(({ value }) => value !== search))
+      .filter(({ name }) =>
+        searchData.every(({ value }) => value !== `search:${name}`),
+      )
       .filter(
         ({ title, search }) =>
           title.toLowerCase().includes(inputText.trim().toLowerCase()) ||
@@ -89,7 +82,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
     }
 
     setPageParams({
-      search: `${search}${search ? "," : ""}${inputText}`,
+      search: search ? `${search},${inputText}` : inputText,
     });
 
     setInputText("");
@@ -97,7 +90,9 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
 
   const handleSavedSearchClick = (savedSearch: SavedSearch) => {
     setPageParams({
-      search: `${search}${search ? "," : ""}${savedSearch.name}`,
+      search: search
+        ? `${search},search:${savedSearch.name}`
+        : `search:${savedSearch.name}`,
     });
   };
 

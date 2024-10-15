@@ -174,6 +174,10 @@ const App: FC = () => {
                   path="repositories/apt-sources"
                   element={<APTSourcesPage />}
                 />
+                <Route
+                  path="profiles/repositories"
+                  element={<RepositoryProfilesPage />}
+                />
               </Route>
               <Route
                 element={
@@ -215,10 +219,6 @@ const App: FC = () => {
                   />
                 )}
                 <Route path="profiles" element={<ProfilesPage />} />
-                <Route
-                  path="profiles/repositories"
-                  element={<RepositoryProfilesPage />}
-                />
                 <Route
                   path="profiles/package"
                   element={<PackageProfilesPage />}

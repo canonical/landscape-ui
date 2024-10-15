@@ -1,13 +1,10 @@
-import {
-  STATUSES,
-  Status,
-} from "@/pages/dashboard/instances/InstanceList/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectErrorNotification, expectLoadingState } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import AlertCard from "./AlertCard";
+import { Status, STATUSES } from "@/features/instances";
 
 const alert = Object.values(STATUSES).find((status) => status.alternateLabel)!;
 

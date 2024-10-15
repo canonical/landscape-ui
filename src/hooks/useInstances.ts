@@ -298,6 +298,19 @@ export default function useInstances() {
       },
     );
 
+  const getAvailabilityZonesQuery: QueryFnType<
+    AxiosResponse<{ values: string[] }>,
+    Record<never, unknown>
+  > = (queryParams = {}, config = {}) =>
+    useQuery({
+      queryKey: ["availabilityZones"],
+      queryFn: () =>
+        authFetch!.get<{ values: string[] }>("computers/availability-zones", {
+          params: queryParams,
+        }),
+      ...config,
+    });
+
   return {
     getInstancesQuery,
     getSingleInstanceQuery,
@@ -317,5 +330,6 @@ export default function useInstances() {
     shutdownInstancesQuery,
     renameInstancesQuery,
     getAllInstanceTagsQuery,
+    getAvailabilityZonesQuery,
   };
 }
