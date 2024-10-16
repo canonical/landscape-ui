@@ -16,6 +16,7 @@ const onInvitation = vi.fn();
 const redirectToExternalUrl = vi.hoisted(() => vi.fn());
 
 const props: ComponentProps<typeof AvailableProviderList> = {
+  isStandaloneOidcEnabled: false,
   isUbuntuOneEnabled: false,
   oidcProviders,
   onInvitation,
@@ -27,6 +28,7 @@ describe("AvailableProviderList", () => {
       <AvailableProviderList
         {...props}
         isUbuntuOneEnabled={id.endsWith("1")}
+        isStandaloneOidcEnabled={id.endsWith("2")}
       />,
     );
   });
@@ -44,6 +46,18 @@ describe("AvailableProviderList", () => {
   it("should render 'Ubuntu One' button within the list", async () => {
     expect(
       await screen.findByRole("button", { name: "Sign in with Ubuntu One" }),
+    ).toBeInTheDocument();
+
+    expect(await screen.findAllByRole("listitem")).toHaveLength(
+      oidcProviders.length + 1,
+    );
+  });
+
+  it("should render 'Enterprise Login' button within the list", async () => {
+    expect(
+      await screen.findByRole("button", {
+        name: "Sign in with Enterprise Login",
+      }),
     ).toBeInTheDocument();
 
     expect(await screen.findAllByRole("listitem")).toHaveLength(

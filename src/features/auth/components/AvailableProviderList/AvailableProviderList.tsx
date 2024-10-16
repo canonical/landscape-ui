@@ -12,12 +12,14 @@ import { redirectToExternalUrl } from "../../helpers";
 import classes from "./AvailableProviderList.module.scss";
 
 interface AvailableProviderListProps {
+  isStandaloneOidcEnabled: boolean;
   isUbuntuOneEnabled: boolean;
   oidcProviders: IdentityProvider[];
   onInvitation: (accountTitle: string) => void;
 }
 
 const AvailableProviderList: FC<AvailableProviderListProps> = ({
+  isStandaloneOidcEnabled,
   isUbuntuOneEnabled,
   oidcProviders,
   onInvitation,
@@ -45,7 +47,11 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
     onInvitation(getInvitationSummaryQueryResult.data.account_title);
   }, [getInvitationSummaryQueryResult]);
 
-  const params: GetOidcUrlParams = { id: providerId };
+  const params: GetOidcUrlParams = {};
+
+  if (providerId > 0) {
+    params.id = providerId;
+  }
 
   if (redirectTo) {
     params.return_to = redirectTo;
@@ -60,7 +66,7 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   }
 
   const { data: getOidcUrlQueryResult } = getOidcUrlQuery(params, {
-    enabled: providerId > 0,
+    enabled: providerId !== 0,
   });
 
   useEffect(() => {
@@ -85,10 +91,10 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
     ubuntuOneParams.external = true;
   }
 
-  const { data: getUbuntuOneUrlQueryResult } = getUbuntuOneUrlQuery(
-    ubuntuOneParams,
-    { enabled: providerId === -1 },
-  );
+  const {
+    data: getUbuntuOneUrlQueryResult,
+    refetch: refetchGetUbuntuOneUrlQuery,
+  } = getUbuntuOneUrlQuery(ubuntuOneParams, { enabled: false });
 
   useEffect(() => {
     if (!getUbuntuOneUrlQueryResult) {
@@ -105,11 +111,30 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
           <Button
             type="button"
             hasIcon
+            onClick={refetchGetUbuntuOneUrlQuery}
+            className={classes.button}
+          >
+            <Icon
+              name={SUPPORTED_PROVIDERS["ubuntu-one"].icon}
+              className={classes.icon}
+            />
+            <span>Sign in with Ubuntu One</span>
+          </Button>
+        </li>
+      )}
+      {isStandaloneOidcEnabled && (
+        <li className="p-list__item">
+          <Button
+            type="button"
+            hasIcon
             onClick={() => setProviderId(-1)}
             className={classes.button}
           >
-            <Icon name={SUPPORTED_PROVIDERS["ubuntu-one"].icon} />
-            <span>Sign in with Ubuntu One</span>
+            <Icon
+              name={SUPPORTED_PROVIDERS["standalone-oidc"].icon}
+              className={classes.icon}
+            />
+            <span>Sign in with Enterprise Login</span>
           </Button>
         </li>
       )}
@@ -121,7 +146,10 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
             onClick={() => setProviderId(provider.id)}
             className={classes.button}
           >
-            <Icon name={SUPPORTED_PROVIDERS[provider.provider].icon} />
+            <Icon
+              name={SUPPORTED_PROVIDERS[provider.provider].icon}
+              className={classes.icon}
+            />
             <span>{`Sign in with ${provider.name}`}</span>
           </Button>
         </li>

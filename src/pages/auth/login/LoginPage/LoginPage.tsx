@@ -21,6 +21,11 @@ const LoginPage: FC = () => {
       )
     : [];
 
+  const isStandaloneOidcEnabled = !!(
+    getLoginMethodsQueryResult?.data.standalone_oidc.available &&
+    getLoginMethodsQueryResult.data.standalone_oidc.enabled
+  );
+
   const isUbuntuOneEnabled = !!(
     getLoginMethodsQueryResult?.data.ubuntu_one.available &&
     getLoginMethodsQueryResult.data.ubuntu_one.enabled
@@ -39,8 +44,11 @@ const LoginPage: FC = () => {
       {isLoading && <LoadingState />}
       {!isLoading && isPasswordEnabled && <LoginForm />}
       {!isLoading &&
-        (isUbuntuOneEnabled || availableOidcProviders.length > 0) && (
+        (isUbuntuOneEnabled ||
+          isStandaloneOidcEnabled ||
+          availableOidcProviders.length > 0) && (
           <AvailableProviderList
+            isStandaloneOidcEnabled={isStandaloneOidcEnabled}
             isUbuntuOneEnabled={isUbuntuOneEnabled}
             oidcProviders={availableOidcProviders}
             onInvitation={(accountTitle) => setInvitationAccount(accountTitle)}

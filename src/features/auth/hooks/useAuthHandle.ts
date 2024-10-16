@@ -22,6 +22,10 @@ export interface LoginMethods {
     available: boolean;
     enabled: boolean;
   };
+  standalone_oidc: {
+    available: boolean;
+    enabled: boolean;
+  };
   ubuntu_one: {
     available: boolean;
     enabled: boolean;
@@ -46,7 +50,7 @@ export interface AddProviderParams {
 type UpdateProviderParams = SingleProviderParams & AddProviderParams;
 
 export interface GetOidcUrlParams {
-  id: number;
+  id?: number;
   external?: boolean;
   invitation_id?: string;
   return_to?: string;
@@ -154,10 +158,10 @@ export default function useAuthHandle() {
       queryClient.invalidateQueries({ queryKey: ["loginMethods"] }),
   });
 
-  const getOidcUrlQuery: QueryFnTypeWithRequiredParam<
+  const getOidcUrlQuery: QueryFnType<
     AxiosResponse<{ location: string }>,
     GetOidcUrlParams
-  > = (queryParams, config = {}) =>
+  > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<{ location: string }>, AxiosError<ApiError>>({
       queryKey: ["oidcUrl", queryParams],
       queryFn: () => authFetch!.get("/auth/start", { params: queryParams }),

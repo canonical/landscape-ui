@@ -50,6 +50,7 @@
 @include vf-p-icon-disconnect;
 @include vf-p-icon-profile;
 @include vf-p-icon-desktop;
+@include vf-p-icon-private-key;
 
 // Custom styles
 .p-panel {
@@ -337,13 +338,15 @@ a[target="_blank"] {
 }
 
 @mixin vf-icon-ubuntu-one($color) {
-  background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8' standalone='no'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' version='1.1'%0A%3E%3Cpath d='m 5.7942846,4.5131 0,4.9024 c 0,4.0767 0.1432005,5.0526 0.3026357,5.7203 0.5993851,2.5103 2.211879,3.9494 4.8104377,4.2968 1.406656,0.188 4.247652,-0.03 6.481955,-0.4965 l 0.816402,-0.1676 0,-14.2554 -4.137139,-0.013 0,11.377 -4.1371452,0 0,-8.0156 -1.551431,0 2.0685772,-3.3586 z' fill='#{vf-url-friendly-color($color)}' /%3E%3C/svg%3E%0A");
+  background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8' standalone='no'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' version='1.1'%0A%3E%3Cpath transform='translate(-4.5,-4.5)' d='m 5.7942846,4.5131 0,4.9024 c 0,4.0767 0.1432005,5.0526 0.3026357,5.7203 0.5993851,2.5103 2.211879,3.9494 4.8104377,4.2968 1.406656,0.188 4.247652,-0.03 6.481955,-0.4965 l 0.816402,-0.1676 0,-14.2554 -4.137139,-0.013 0,11.377 -4.1371452,0 0,-8.0156 -1.551431,0 2.0685772,-3.3586 z' fill='#{vf-url-friendly-color($color)}' /%3E%3C/svg%3E%0A");
 }
 
 .p-icon--ubuntu-one {
   @extend %icon;
   @include vf-icon-ubuntu-one($color-ubuntu);
+}
 
-  height: $sp-x-large;
-  width: $sp-x-large;
+.p-icon--private-key-gray {
+  @extend %icon;
+  @include vf-icon-private-key($color-mid-dark);
 }

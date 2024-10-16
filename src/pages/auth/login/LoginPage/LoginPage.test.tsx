@@ -25,6 +25,10 @@ const testResponses: LoginMethods[] = [
       available: false,
       enabled: true,
     },
+    standalone_oidc: {
+      available: false,
+      enabled: true,
+    },
     ubuntu_one: {
       available: false,
       enabled: true,
@@ -46,6 +50,10 @@ const testResponses: LoginMethods[] = [
       available: false,
       enabled: true,
     },
+    standalone_oidc: {
+      available: false,
+      enabled: true,
+    },
     ubuntu_one: {
       available: false,
       enabled: true,
@@ -57,6 +65,28 @@ const testResponses: LoginMethods[] = [
       configurations: [],
     },
     password: {
+      available: false,
+      enabled: true,
+    },
+    standalone_oidc: {
+      available: true,
+      enabled: true,
+    },
+    ubuntu_one: {
+      available: false,
+      enabled: true,
+    },
+  },
+  {
+    oidc: {
+      available: false,
+      configurations: [],
+    },
+    password: {
+      available: false,
+      enabled: true,
+    },
+    standalone_oidc: {
       available: false,
       enabled: true,
     },
@@ -72,6 +102,10 @@ const testResponses: LoginMethods[] = [
     },
     password: {
       available: true,
+      enabled: true,
+    },
+    standalone_oidc: {
+      available: false,
       enabled: true,
     },
     ubuntu_one: {
@@ -92,6 +126,10 @@ const testResponses: LoginMethods[] = [
       ],
     },
     password: {
+      available: true,
+      enabled: true,
+    },
+    standalone_oidc: {
       available: true,
       enabled: true,
     },
@@ -132,6 +170,14 @@ describe("LoginPage", () => {
     expect(screen.getAllByRole("button").length).toBe(1);
 
     expect(screen.getByRole("button")).toHaveTextContent("Sign in with Okta");
+  });
+
+  it("should render enterprise sign in method", async () => {
+    expect(screen.getAllByRole("button").length).toBe(1);
+
+    expect(screen.getByRole("button")).toHaveTextContent(
+      "Sign in with Enterprise Login",
+    );
   });
 
   it("should render ubuntu one sign in method", async () => {
