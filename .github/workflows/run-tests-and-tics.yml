@@ -40,8 +40,6 @@ jobs:
             name: playwright-report
             path: playwright-report
             retention-days: 30
-      - name: Display structure
-        run: ls ${{ github.workspace }}
 
   unit-tests:
     runs-on: [self-hosted, Linux, large]
