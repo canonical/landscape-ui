@@ -7,9 +7,9 @@ import {
 } from "@canonical/react-components/node_modules/@types/react-table";
 import { FC, useMemo } from "react";
 import { Fix } from "../../types";
+import { EMPTY_TABLE_MESSAGE } from "./constants";
 import { generateCveLink, handleCellProps } from "./helpers";
 import classes from "./KernelTableList.module.scss";
-import { EMPTY_TABLE_MESSAGE } from "./constants";
 
 interface KernelTableListProps {
   kernelData: Fix[];
@@ -66,18 +66,22 @@ const KernelTableList: FC<KernelTableListProps> = ({ kernelData }) => {
 
   return (
     <>
-      <ModularTable
-        columns={columns}
-        data={kernelData}
-        getCellProps={handleCellProps}
-        sortable
-        initialSortColumn="Name"
-        initialSortDirection="ascending"
-      />
-      {kernelData.length === 0 && (
+      <h3 className="p-heading--5 u-no-padding u-no-margin">
+        Patches discovered since last restart
+      </h3>
+      {kernelData.length === 0 ? (
         <EmptyState
           title="No outstanding kernel patches"
           body={EMPTY_TABLE_MESSAGE}
+        />
+      ) : (
+        <ModularTable
+          columns={columns}
+          data={kernelData}
+          getCellProps={handleCellProps}
+          sortable
+          initialSortColumn="Name"
+          initialSortDirection="ascending"
         />
       )}
     </>

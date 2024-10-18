@@ -1,8 +1,8 @@
 import { renderWithProviders } from "@/tests/render";
 import { ComponentProps } from "react";
-import KernelTableHeader from "./KernelTableHeader";
+import KernelHeader from "./KernelHeader";
 
-const props: ComponentProps<typeof KernelTableHeader> = {
+const props: ComponentProps<typeof KernelHeader> = {
   hasTableData: false,
   instanceName: "test-instance",
   kernelStatuses: {
@@ -19,11 +19,10 @@ const props: ComponentProps<typeof KernelTableHeader> = {
   },
 };
 
-describe("KernelTableHeader", () => {
-  it("renders KernelTableHeader", () => {
-    const { container } = renderWithProviders(<KernelTableHeader {...props} />);
+describe("KernelHeader", () => {
+  it("renders KernelHeader", () => {
+    const { container } = renderWithProviders(<KernelHeader {...props} />);
     expect(container).toHaveTexts([
-      "Patches discovered since last restart",
       "Restart instance",
       "Downgrade kernel",
       "Upgrade kernel",

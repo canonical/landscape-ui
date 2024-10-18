@@ -9,6 +9,8 @@ interface GetTabLabelProps {
   packagesLoading: boolean;
   usnCount: number | undefined;
   usnLoading: boolean;
+  kernelCount: number | undefined;
+  kernelLoading: boolean;
 }
 
 const getTabLabel = ({
@@ -18,10 +20,13 @@ const getTabLabel = ({
   packagesLoading,
   usnCount,
   usnLoading,
+  kernelCount,
+  kernelLoading,
 }: GetTabLabelProps) => {
   if (
     (id === "tab-link-packages" && packagesLoading) ||
-    (id === "tab-link-security-issues" && usnLoading)
+    (id === "tab-link-security-issues" && usnLoading) ||
+    (id === "tab-link-kernel" && kernelLoading)
   ) {
     return (
       <>
@@ -49,6 +54,15 @@ const getTabLabel = ({
     );
   }
 
+  if (id === "tab-link-kernel" && kernelCount) {
+    return (
+      <>
+        <span>{label}</span>
+        <Badge value={kernelCount} />
+      </>
+    );
+  }
+
   return label;
 };
 
@@ -60,6 +74,8 @@ interface GetTabLinksProps {
   packagesLoading: boolean;
   usnCount: number | undefined;
   usnLoading: boolean;
+  kernelCount: number | undefined;
+  kernelLoading: boolean;
 }
 
 export const getTabLinks = ({
@@ -70,6 +86,8 @@ export const getTabLinks = ({
   packagesLoading,
   usnCount,
   usnLoading,
+  kernelCount,
+  kernelLoading,
 }: GetTabLinksProps) => {
   return TAB_LINKS.filter(({ id }) =>
     !instance.distribution || /\d{1,2}\.\d{2}/.test(instance.distribution)
@@ -88,6 +106,8 @@ export const getTabLinks = ({
       packagesLoading,
       usnCount,
       usnLoading,
+      kernelCount,
+      kernelLoading,
     }),
     id,
     role: "tab",

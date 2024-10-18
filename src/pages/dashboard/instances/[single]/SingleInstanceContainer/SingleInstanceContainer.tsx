@@ -13,6 +13,7 @@ import SingleInstanceEmptyState from "@/pages/dashboard/instances/[single]/Singl
 import SingleInstanceTabs from "@/pages/dashboard/instances/[single]/SingleInstanceTabs";
 import { getBreadcrumbs } from "./helpers";
 import { UrlParams } from "@/types/UrlParams";
+import { useKernel } from "@/features/kernel";
 
 const SingleInstanceContainer: FC = () => {
   const { instanceId, childInstanceId } = useParams<UrlParams>();
@@ -21,6 +22,7 @@ const SingleInstanceContainer: FC = () => {
   const { getSingleInstanceQuery } = useInstances();
   const { getUsnsQuery } = useUsns();
   const { getInstancePackagesQuery } = usePackages();
+  const { getLivepatchInfoQuery } = useKernel();
 
   const userAccountRef = useRef("");
 
@@ -95,6 +97,22 @@ const SingleInstanceContainer: FC = () => {
     },
   );
 
+  const {
+    data: getLivepatchInfoQueryResult,
+    isLoading: getLivepatchInfoQueryResultLoading,
+  } = getLivepatchInfoQuery(
+    {
+      id: instance ? instance.id : 0,
+    },
+    {
+      enabled:
+        !!instance?.distribution &&
+        /\d{1,2}\.\d{2}/.test(instance.distribution) &&
+        (!childInstanceId ||
+          instance.parent?.id === parseInt(instanceId ?? "")),
+    },
+  );
+
   return (
     <PageMain>
       <PageHeader
@@ -130,6 +148,13 @@ const SingleInstanceContainer: FC = () => {
                 !instance.distribution ? 0 : getUsnsQueryResult?.data.count
               }
               usnLoading={getUsnsQueryLoading}
+              kernelCount={
+                !instance.distribution
+                  ? 0
+                  : getLivepatchInfoQueryResult?.data?.livepatch_info?.json
+                      .output.Status[0].Livepatch.Fixes?.length
+              }
+              kernelLoading={getLivepatchInfoQueryResultLoading}
             />
           )}
       </PageContent>

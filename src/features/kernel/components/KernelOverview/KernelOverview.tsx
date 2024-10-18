@@ -25,7 +25,7 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
       value: kernelOverview.currentVersion || <NoData />,
     },
     {
-      label: "status",
+      label: "kernel status",
       value: (
         <>
           <span>

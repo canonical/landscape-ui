@@ -4,7 +4,7 @@ import { TablePagination } from "@/components/layout/TablePagination";
 import {
   KernelOverview,
   KernelOverviewInfo,
-  KernelTableHeader,
+  KernelHeader,
   KernelTableList,
   useKernel,
 } from "@/features/kernel";
@@ -18,17 +18,18 @@ interface KernelPanelProps {
 }
 
 const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
-  const { instanceId } = useParams<UrlParams>();
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
+
   const { pageSize, currentPage } = usePageParams();
   const { getKernelQuery, getLivepatchInfoQuery } = useKernel();
 
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
+
   const { data: kernelStatuses, isPending: isLoadingKernelStatuses } =
-    getKernelQuery({
-      id: parseInt(instanceId ?? ""),
-    });
+    getKernelQuery({ id: instanceId });
 
   const { data: getLivepatchInfoResult } = getLivepatchInfoQuery({
-    id: parseInt(instanceId ?? ""),
+    id: instanceId,
   });
 
   const allLivepatchFixes =
@@ -69,12 +70,12 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
       )}
       {!isLoadingKernelStatuses && kernelStatuses?.data.installed && (
         <>
-          <KernelOverview kernelOverview={kernelOverviewData} />
-          <KernelTableHeader
+          <KernelHeader
             instanceName={instanceTitle}
             hasTableData={livepatchFixes.length > 0}
             kernelStatuses={kernelStatuses.data}
           />
+          <KernelOverview kernelOverview={kernelOverviewData} />
           <KernelTableList kernelData={livepatchFixes} />
           <TablePagination
             totalItems={allLivepatchFixes.length}

@@ -25,7 +25,9 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
         classes.wrapper,
       )}
     >
-      <h4 className={classes.blockTitle}>{infoRowLabel}</h4>
+      <h3 className={classNames("p-heading--4", classes.blockTitle)}>
+        {infoRowLabel}
+      </h3>
       <div className={classes.infoRows}>
         {infoBlocksArray.map((infoBlocks, index) => (
           <div

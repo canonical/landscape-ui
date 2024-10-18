@@ -3,19 +3,19 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import { FC, lazy, Suspense } from "react";
 import { KernelManagementInfo } from "../../types";
-import classes from "./KernelTableHeader.module.scss";
+import classes from "./KernelHeader.module.scss";
 
 const DowngradeKernelForm = lazy(() => import("../DowngradeKernelForm"));
 const UpgradeKernelForm = lazy(() => import("../UpgradeKernelForm"));
 const RestartInstanceForm = lazy(() => import("../RestartInstanceForm"));
 
-interface KernelTableHeaderProps {
+interface KernelHeaderProps {
   instanceName: string;
   hasTableData: boolean;
   kernelStatuses: KernelManagementInfo;
 }
 
-const KernelTableHeader: FC<KernelTableHeaderProps> = ({
+const KernelHeader: FC<KernelHeaderProps> = ({
   instanceName,
   hasTableData,
   kernelStatuses,
@@ -67,9 +67,6 @@ const KernelTableHeader: FC<KernelTableHeaderProps> = ({
 
   return (
     <div className={classes.container}>
-      <h5 className="u-no-padding u-no-margin">
-        Patches discovered since last restart
-      </h5>
       <div key="buttons" className="p-segmented-control">
         <div className="p-segmented-control__list">
           <Button
@@ -108,4 +105,4 @@ const KernelTableHeader: FC<KernelTableHeaderProps> = ({
   );
 };
 
-export default KernelTableHeader;
+export default KernelHeader;

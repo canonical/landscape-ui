@@ -47,6 +47,8 @@ interface SingleInstanceTabsProps {
   packagesLoading: boolean;
   usnCount: number | undefined;
   usnLoading: boolean;
+  kernelCount: number | undefined;
+  kernelLoading: boolean;
 }
 
 const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
@@ -55,6 +57,8 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
   packagesLoading,
   usnCount,
   usnLoading,
+  kernelCount,
+  kernelLoading,
 }) => {
   const { closeSidePanel } = useSidePanel();
   const { tab, setPageParams } = usePageParams();
@@ -72,6 +76,8 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
     packagesLoading,
     usnCount,
     usnLoading,
+    kernelCount,
+    kernelLoading,
   });
 
   return (

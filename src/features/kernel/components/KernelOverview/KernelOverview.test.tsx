@@ -27,7 +27,7 @@ describe("KernelHeader", () => {
         value: props.kernelOverview.currentVersion ?? <NoData />,
       },
       {
-        label: "status",
+        label: "kernel status",
         value: (
           <>
             <span>
