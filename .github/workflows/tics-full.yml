@@ -1,8 +1,8 @@
-name: Full TICS report
+name: Full TICS report (2x per month)
 
 on:
-  push:
-    branches: [main]
+  schedule:
+    - cron: '0 0 1,15 * *'  # At 00:00 on the 1st and 15th of every month
 
 env:
   VITE_API_URL: http://onward.landscape.yuriy.works:9091/api/v2/
