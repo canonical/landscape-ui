@@ -186,9 +186,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     <>
       <div className={classes.titleRow}>
         <div className={classes.flexContainer}>
-          <p className="p-heading--4 u-no-padding--top u-no-margin--bottom">
+          <h2 className="p-heading--4 u-no-padding--top u-no-margin--bottom">
             {instance.title}
-          </p>
+          </h2>
           {instance.is_wsl_instance && (
             <p
               className={classNames(
