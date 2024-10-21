@@ -36,13 +36,20 @@ const LoginPage: FC = () => {
     getLoginMethodsQueryResult.data.password.enabled
   );
 
+  const isEmailIdentityOnly = !!(
+    getLoginMethodsQueryResult?.data.pam.available &&
+    getLoginMethodsQueryResult.data.pam.enabled
+  );
+
   return (
     <AuthTemplate
       invitationAccount={invitationAccount}
       title="Sign in to Landscape"
     >
       {isLoading && <LoadingState />}
-      {!isLoading && isPasswordEnabled && <LoginForm />}
+      {!isLoading && (isPasswordEnabled || isEmailIdentityOnly) && (
+        <LoginForm isEmailIdentityOnly={isEmailIdentityOnly} />
+      )}
       {!isLoading &&
         (isUbuntuOneEnabled ||
           isStandaloneOidcEnabled ||
