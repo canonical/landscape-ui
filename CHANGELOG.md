@@ -1,3 +1,17 @@
+# [1.6.0](https://github.com/canonical/landscape-dashboard/compare/v1.5.0...v1.6.0) (2024-10-23)
+
+
+### Bug Fixes
+
+* change sign in form identity validation ([24f60ab](https://github.com/canonical/landscape-dashboard/commit/24f60aba52067c128ed631611afd91e543440fd0))
+* handle trailing slash in root path, change default page redirect after signing in ([e8ac8e3](https://github.com/canonical/landscape-dashboard/commit/e8ac8e309cab6334f3f1d238cc1e0ab10079f484))
+
+
+### Features
+
+* add badge to Kernel tab ([#120](https://github.com/canonical/landscape-dashboard/issues/120)) ([103b45d](https://github.com/canonical/landscape-dashboard/commit/103b45dc54f88571262c0796981cedec1b8dd5c1))
+* add standalone OIDC ([00ddfd6](https://github.com/canonical/landscape-dashboard/commit/00ddfd6ed3387332488e229350f3d90648593006))
+
 # [1.5.0](https://github.com/canonical/landscape-dashboard/compare/v1.4.3...v1.5.0) (2024-10-15)
 
 
