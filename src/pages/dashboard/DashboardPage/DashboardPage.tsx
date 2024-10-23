@@ -1,15 +1,16 @@
 import { FC, Suspense, useEffect } from "react";
-import DashboardTemplate from "../../templates/dashboard";
+import DashboardTemplate from "@/templates/dashboard";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import LoadingState from "../../components/layout/LoadingState";
-import { ROOT_PATH } from "../../constants";
+import LoadingState from "@/components/layout/LoadingState";
+import { ROOT_PATH } from "@/constants";
+import { maybeRemoveTrailingSlash } from "./helpers";
 
 const DashboardPage: FC = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (ROOT_PATH !== pathname) {
+    if (maybeRemoveTrailingSlash(ROOT_PATH) !== pathname) {
       return;
     }
 

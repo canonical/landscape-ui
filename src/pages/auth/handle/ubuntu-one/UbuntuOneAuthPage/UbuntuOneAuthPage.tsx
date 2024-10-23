@@ -26,16 +26,19 @@ const UbuntuOneAuthPage: FC = () => {
       return;
     }
 
-    if (getUbuntuOneStateQueryResult.data.return_to?.external) {
-      redirectToExternalUrl(
-        getUbuntuOneStateQueryResult.data.return_to.url ?? ROOT_PATH,
-        { replace: true },
-      );
+    if (
+      getUbuntuOneStateQueryResult.data.return_to?.external &&
+      getUbuntuOneStateQueryResult.data.return_to.url
+    ) {
+      redirectToExternalUrl(getUbuntuOneStateQueryResult.data.return_to.url, {
+        replace: true,
+      });
     } else {
       setUser(getUbuntuOneStateQueryResult.data);
 
       const url = new URL(
-        getUbuntuOneStateQueryResult.data.return_to?.url ?? ROOT_PATH,
+        getUbuntuOneStateQueryResult.data.return_to?.url ??
+          `${ROOT_PATH}overview`,
         location.origin,
       );
 

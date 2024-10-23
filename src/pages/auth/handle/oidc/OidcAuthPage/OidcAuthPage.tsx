@@ -29,16 +29,18 @@ const OidcAuthPage: FC = () => {
       return;
     }
 
-    if (getAuthStateQueryResult.data.return_to?.external) {
-      redirectToExternalUrl(
-        getAuthStateQueryResult.data.return_to.url ?? ROOT_PATH,
-        { replace: true },
-      );
+    if (
+      getAuthStateQueryResult.data.return_to?.external &&
+      getAuthStateQueryResult.data.return_to.url
+    ) {
+      redirectToExternalUrl(getAuthStateQueryResult.data.return_to.url, {
+        replace: true,
+      });
     } else {
       setUser(getAuthStateQueryResult.data);
 
       const url = new URL(
-        getAuthStateQueryResult.data.return_to?.url ?? ROOT_PATH,
+        getAuthStateQueryResult.data.return_to?.url ?? `${ROOT_PATH}overview`,
         location.origin,
       );
 

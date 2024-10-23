@@ -59,7 +59,10 @@ const LoginForm: FC = () => {
         } else {
           setUser(data, values.remember);
 
-          const url = new URL(redirectTo ?? ROOT_PATH, location.origin);
+          const url = new URL(
+            redirectTo ?? `${ROOT_PATH}overview`,
+            location.origin,
+          );
 
           navigate(url.toString().replace(url.origin, ""), { replace: true });
         }
