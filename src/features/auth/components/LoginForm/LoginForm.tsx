@@ -22,7 +22,11 @@ interface FormProps {
   remember: boolean;
 }
 
-const LoginForm: FC = () => {
+interface LoginFormProps {
+  isEmailIdentityOnly: boolean;
+}
+
+const LoginForm: FC<LoginFormProps> = ({ isEmailIdentityOnly }) => {
   const [searchParams] = useSearchParams();
 
   const debug = useDebug();
@@ -43,7 +47,11 @@ const LoginForm: FC = () => {
       remember: false,
     },
     validationSchema: Yup.object().shape({
-      email: Yup.string().required("This field is required"),
+      email: isEmailIdentityOnly
+        ? Yup.string()
+            .required("This field is required")
+            .email("Please provide a valid email address")
+        : Yup.string().required("This field is required"),
       password: Yup.string().required("This field is required"),
       remember: Yup.boolean(),
     }),
@@ -76,7 +84,7 @@ const LoginForm: FC = () => {
     <Form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        label="Identity"
+        label={isEmailIdentityOnly ? "Email" : "Identity"}
         error={
           formik.touched.email && formik.errors.email
             ? formik.errors.email

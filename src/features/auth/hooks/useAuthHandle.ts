@@ -18,6 +18,10 @@ export interface LoginMethods {
     available: boolean;
     configurations: IdentityProvider[];
   };
+  pam: {
+    available: boolean;
+    enabled: boolean;
+  };
   password: {
     available: boolean;
     enabled: boolean;
