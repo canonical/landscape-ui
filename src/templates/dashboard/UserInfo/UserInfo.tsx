@@ -36,9 +36,9 @@ const UserInfo: FC = () => {
 
   const handleLogout = async () => {
     try {
-      logout();
-
       await deleteSessionCookies();
+
+      logout();
     } catch (error) {
       debug(error);
     }

@@ -34,7 +34,7 @@ const mockTestParams = (searchParams?: Record<string, string>) => {
   }));
 
   vi.doMock("../../hooks", () => ({
-    useAuthHandle: () => ({
+    useUnsigned: () => ({
       signInWithEmailAndPasswordQuery: {
         mutateAsync: signInWithEmailAndPassword,
       },
@@ -63,7 +63,7 @@ describe("LoginForm", () => {
 
     const taskId = Number(id.substring(id.length - 1));
 
-    if (taskId > 1 && taskId < 5) {
+    if (taskId > 1) {
       mockTestParams(testSearchParams[taskId - 2]);
     } else {
       mockTestParams();
@@ -71,7 +71,7 @@ describe("LoginForm", () => {
 
     const { default: Component } = await import("./LoginForm");
 
-    renderWithProviders(<Component />);
+    renderWithProviders(<Component isEmailIdentityOnly={false} />);
 
     await userEvent.type(
       screen.getByTestId("email"),
@@ -79,10 +79,6 @@ describe("LoginForm", () => {
     );
 
     await userEvent.type(screen.getByTestId("password"), user.password);
-
-    if (taskId === 5) {
-      await userEvent.click(screen.getByText(/remember this device/i));
-    }
 
     await userEvent.click(
       screen.getByRole("button", {
@@ -93,7 +89,7 @@ describe("LoginForm", () => {
     if (taskId > 0) {
       expect(signInWithEmailAndPassword).toHaveBeenCalledWith(user);
 
-      expect(setUser).toHaveBeenCalledWith(authUser, taskId === 5);
+      expect(setUser).toHaveBeenCalledWith(authUser);
     }
   });
 
@@ -109,7 +105,7 @@ describe("LoginForm", () => {
 
   it("should sign in and redirect to default url", async () => {
     expect(navigate).toHaveBeenCalledWith(
-      new URL(ROOT_PATH, location.origin).pathname,
+      new URL(`${ROOT_PATH}overview`, location.origin).pathname,
       { replace: true },
     );
   });
@@ -129,14 +125,7 @@ describe("LoginForm", () => {
 
   it("should sign in and redirect to default url", async () => {
     expect(navigate).toHaveBeenCalledWith(
-      new URL(ROOT_PATH, location.origin).pathname,
-      { replace: true },
-    );
-  });
-
-  it("should sign in, redirect to default url and store user to local storage", async () => {
-    expect(navigate).toHaveBeenCalledWith(
-      new URL(ROOT_PATH, location.origin).pathname,
+      new URL(`${ROOT_PATH}overview`, location.origin).pathname,
       { replace: true },
     );
   });

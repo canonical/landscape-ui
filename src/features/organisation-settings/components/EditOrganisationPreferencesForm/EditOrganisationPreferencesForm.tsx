@@ -24,7 +24,7 @@ interface EditOrganisationPreferencesFormProps {
 const EditOrganisationPreferencesForm: FC<
   EditOrganisationPreferencesFormProps
 > = ({ organisationPreferences }) => {
-  const { updateUser, user } = useAuth();
+  const { setUser, user } = useAuth();
   const debug = useDebug();
   const { notify } = useNotify();
   const { changeOrganisationPreferences } = useOrgSettings();
@@ -53,7 +53,7 @@ const EditOrganisationPreferencesForm: FC<
         });
 
         if (values.title !== organisationPreferences.title) {
-          updateUser({
+          setUser({
             ...user!,
             current_account: values.title,
             accounts: user!.accounts.map((account) =>

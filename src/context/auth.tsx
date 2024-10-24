@@ -1,33 +1,11 @@
 import { isAxiosError } from "axios";
 import React, { FC, ReactNode, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { ROOT_PATH } from "@/constants";
 import useNotify from "@/hooks/useNotify";
-import { AuthUser, useAuthHandle } from "@/features/auth";
+import { AuthUser, useUnsigned } from "@/features/auth";
 import { SelectOption } from "@/types/SelectOption";
-
-const AUTH_STORAGE_KEY = "_landscape_auth";
-
-function getFromLocalStorage(key: string) {
-  const item = localStorage.getItem(key);
-
-  if (!item) {
-    return null;
-  }
-
-  try {
-    const parsed: AuthUser = JSON.parse(item);
-
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
-function setToLocalStorage(key: string, value: AuthUser) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
 
 export interface AuthContextProps {
   account:
@@ -44,8 +22,7 @@ export interface AuthContextProps {
   authorized: boolean;
   isOidcAvailable: boolean;
   logout: () => void;
-  setUser: (user: AuthUser, remember?: boolean) => void;
-  updateUser: (user: AuthUser) => void;
+  setUser: (user: AuthUser) => void;
   user: AuthUser | null;
 }
 
@@ -58,7 +35,6 @@ const initialState: AuthContextProps = {
   isOidcAvailable: false,
   logout: () => undefined,
   setUser: () => undefined,
-  updateUser: () => undefined,
   user: null,
 };
 
@@ -73,10 +49,38 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { notify } = useNotify();
-  const { getLoginMethodsQuery } = useAuthHandle();
+  const { getLoginMethodsQuery, getAuthStateQuery } = useUnsigned();
 
   const { data: getLoginMethodsQueryResult } = getLoginMethodsQuery();
+
+  const isGetAuthStateQueryEnabled = !pathname.includes("handle-auth");
+
+  useEffect(() => {
+    if (isGetAuthStateQueryEnabled) {
+      return;
+    }
+
+    setLoading(false);
+  }, [isGetAuthStateQueryEnabled]);
+
+  const { data: getAuthStateQueryResult } = getAuthStateQuery(
+    {},
+    { enabled: isGetAuthStateQueryEnabled },
+  );
+
+  useEffect(() => {
+    if (!getAuthStateQueryResult) {
+      return;
+    }
+
+    if ("current_account" in getAuthStateQueryResult.data) {
+      setUser(getAuthStateQueryResult.data);
+    }
+
+    setLoading(false);
+  }, [getAuthStateQueryResult]);
 
   const isAuthError = useMemo(
     () =>
@@ -86,18 +90,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   );
 
   useEffect(() => {
-    const maybeSavedState = getFromLocalStorage(AUTH_STORAGE_KEY);
-
-    if (maybeSavedState) {
-      setUser(maybeSavedState);
-    } else {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
-    }
-
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
     if (!isAuthError) {
       return;
     }
@@ -105,20 +97,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     handleLogout();
   }, [isAuthError]);
 
-  const handleSetUser = (user: AuthUser, remember?: boolean) => {
+  const handleSetUser = (user: AuthUser) => {
     setUser(user);
-    if (remember) {
-      setToLocalStorage(AUTH_STORAGE_KEY, user);
-    }
-  };
-
-  const handleUpdateUser = (user: AuthUser) => {
-    setUser(user);
-    setToLocalStorage(AUTH_STORAGE_KEY, user);
   };
 
   const handleSwitchAccount = (newToken: string, newAccount: string) => {
-    const maybeSavedState = getFromLocalStorage(AUTH_STORAGE_KEY);
     const newUser = {
       ...user!,
       current_account: newAccount,
@@ -126,10 +109,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     };
 
     setUser(newUser);
-
-    if (maybeSavedState) {
-      setToLocalStorage(AUTH_STORAGE_KEY, newUser);
-    }
   };
 
   const account = useMemo<AuthContextProps["account"]>(() => {
@@ -168,9 +147,10 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem(AUTH_STORAGE_KEY);
     navigate(`${ROOT_PATH}login`, { replace: true });
-    queryClient.clear();
+    queryClient.removeQueries({
+      predicate: (query) => query.queryKey[0] !== "authUser",
+    });
   };
 
   return (
@@ -181,7 +161,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         authorized: null !== user,
         logout: handleLogout,
         setUser: handleSetUser,
-        updateUser: handleUpdateUser,
         isOidcAvailable: !!getLoginMethodsQueryResult?.data.oidc.available,
         user,
       }}

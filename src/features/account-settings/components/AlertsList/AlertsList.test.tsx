@@ -25,7 +25,6 @@ const authProps: AuthContextProps = {
   authLoading: false,
   setUser: vi.fn(),
   account: { switchable: false },
-  updateUser: vi.fn(),
   user: authUser,
   isOidcAvailable: true,
 };

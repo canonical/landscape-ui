@@ -6,12 +6,15 @@ export { default as LoginForm } from "./components/LoginForm";
 export { default as ProvidersEmptyState } from "./components/ProvidersEmptyState";
 export { default as ProviderList } from "./components/ProviderList";
 export { redirectToExternalUrl } from "./helpers";
-export { useAuthHandle } from "./hooks";
-export type { LoginMethods, LoginRequestParams } from "./hooks";
+export { useAuthHandle, useUnsigned } from "./hooks";
+export type {
+  AuthStateResponse,
+  LoginMethods,
+  LoginRequestParams,
+} from "./hooks";
 export type {
   Account,
   AuthUser,
-  AuthStateResponse,
   IdentityProvider,
   SingleIdentityProvider,
   SupportedIdentityProvider,

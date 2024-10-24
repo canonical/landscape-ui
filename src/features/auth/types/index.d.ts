@@ -6,4 +6,4 @@ export {
   SupportedIdentityProvider,
 } from "./IdentityProvider";
 
-export { Account, AuthStateResponse, AuthUser } from "./AuthUser";
+export { Account, AuthUser } from "./AuthUser";

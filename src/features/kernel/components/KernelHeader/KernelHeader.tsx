@@ -67,6 +67,9 @@ const KernelHeader: FC<KernelHeaderProps> = ({
 
   return (
     <div className={classes.container}>
+      <h2 className="p-heading--4 u-no-padding--top u-no-margin--bottom">
+        Kernel overview
+      </h2>
       <div key="buttons" className="p-segmented-control">
         <div className="p-segmented-control__list">
           <Button

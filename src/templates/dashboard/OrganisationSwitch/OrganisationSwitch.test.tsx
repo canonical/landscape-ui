@@ -17,7 +17,6 @@ const authProps: AuthContextProps = {
   authorized: true,
   authLoading: false,
   setUser: vi.fn(),
-  updateUser: vi.fn(),
   user: authUser,
   isOidcAvailable: true,
 };

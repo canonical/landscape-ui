@@ -1,16 +1,12 @@
 import { FC, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import {
-  AvailableProviderList,
-  LoginForm,
-  useAuthHandle,
-} from "@/features/auth";
+import { AvailableProviderList, LoginForm, useUnsigned } from "@/features/auth";
 import AuthTemplate from "@/templates/auth";
 
 const LoginPage: FC = () => {
   const [invitationAccount, setInvitationAccount] = useState("");
 
-  const { getLoginMethodsQuery } = useAuthHandle();
+  const { getLoginMethodsQuery } = useUnsigned();
 
   const { data: getLoginMethodsQueryResult, isLoading } =
     getLoginMethodsQuery();

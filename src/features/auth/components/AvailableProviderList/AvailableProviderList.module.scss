@@ -2,10 +2,13 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .list {
+  border-top: 1px solid $colors--light-theme--border-low-contrast;
   list-style: none;
   margin-bottom: 0;
   margin-left: 0;
+  margin-top: $spv--large;
   padding-left: 0;
+  padding-top: $spv--x-large;
 
   &:not(:first-child) {
     margin-top: $spv--x-large;
