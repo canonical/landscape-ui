@@ -109,7 +109,7 @@ describe("UbuntuOneAuthPage", () => {
 
   it("should redirect to internal URL when return_to is not provided", async () => {
     expect(navigate).toHaveBeenCalledWith(
-      new URL(ROOT_PATH, location.origin).pathname,
+      new URL(`${ROOT_PATH}overview`, location.origin).pathname,
       { replace: true },
     );
   });

@@ -71,7 +71,7 @@ describe("LoginForm", () => {
 
     const { default: Component } = await import("./LoginForm");
 
-    renderWithProviders(<Component />);
+    renderWithProviders(<Component isEmailIdentityOnly={false} />);
 
     await userEvent.type(
       screen.getByTestId("email"),
@@ -109,7 +109,7 @@ describe("LoginForm", () => {
 
   it("should sign in and redirect to default url", async () => {
     expect(navigate).toHaveBeenCalledWith(
-      new URL(ROOT_PATH, location.origin).pathname,
+      new URL(`${ROOT_PATH}overview`, location.origin).pathname,
       { replace: true },
     );
   });
@@ -129,14 +129,14 @@ describe("LoginForm", () => {
 
   it("should sign in and redirect to default url", async () => {
     expect(navigate).toHaveBeenCalledWith(
-      new URL(ROOT_PATH, location.origin).pathname,
+      new URL(`${ROOT_PATH}overview`, location.origin).pathname,
       { replace: true },
     );
   });
 
   it("should sign in, redirect to default url and store user to local storage", async () => {
     expect(navigate).toHaveBeenCalledWith(
-      new URL(ROOT_PATH, location.origin).pathname,
+      new URL(`${ROOT_PATH}overview`, location.origin).pathname,
       { replace: true },
     );
   });
