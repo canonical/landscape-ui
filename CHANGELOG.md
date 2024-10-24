@@ -1,3 +1,15 @@
+# [1.7.0](https://github.com/canonical/landscape-dashboard/compare/v1.6.0...v1.7.0) (2024-10-24)
+
+
+### Bug Fixes
+
+* add Kernel tab title and border above table section ([#122](https://github.com/canonical/landscape-dashboard/issues/122)) ([9bffb93](https://github.com/canonical/landscape-dashboard/commit/9bffb93b60f64659df9379f9049db38000fe444d))
+
+
+### Features
+
+* add endpoint to get auth state using http cookie, drop local storage using to store auth user ([eebf9db](https://github.com/canonical/landscape-dashboard/commit/eebf9dbb4895523ccbb2899077f39b4f0479fd11))
+
 # [1.6.0](https://github.com/canonical/landscape-dashboard/compare/v1.5.0...v1.6.0) (2024-10-23)
 
 
