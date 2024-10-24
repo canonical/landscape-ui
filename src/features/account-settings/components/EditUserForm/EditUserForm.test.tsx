@@ -43,7 +43,6 @@ const authContextValues: AuthContextProps = {
     ],
     switch: vi.fn(),
   },
-  updateUser: vi.fn(),
   user: authUser,
   isOidcAvailable: true,
 };

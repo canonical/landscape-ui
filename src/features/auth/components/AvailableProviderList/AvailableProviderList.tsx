@@ -6,7 +6,7 @@ import { SUPPORTED_PROVIDERS } from "../../constants";
 import {
   GetOidcUrlParams,
   GetUbuntuOneUrlParams,
-  useAuthHandle,
+  useUnsigned,
 } from "../../hooks";
 import { redirectToExternalUrl } from "../../helpers";
 import classes from "./AvailableProviderList.module.scss";
@@ -28,7 +28,7 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   const [searchParams] = useSearchParams();
 
   const { getOidcUrlQuery, getUbuntuOneUrlQuery, getInvitationSummaryQuery } =
-    useAuthHandle();
+    useUnsigned();
 
   const redirectTo = searchParams.get("redirect-to");
   const invitationId = searchParams.get("invitation_id");

@@ -31,7 +31,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   const { notify } = useNotify();
   const { isSaas, isSelfHosted } = useEnv();
   const { setSidePanelContent } = useSidePanel();
-  const { user: authUser, updateUser, account } = useAuth();
+  const { user: authUser, setUser, account } = useAuth();
   const { editUserDetails } = useUserDetails();
 
   const { mutateAsync: editUserMutation } = editUserDetails;
@@ -61,7 +61,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           preferred_account: values.defaultOrganisation,
         });
 
-        updateUser({
+        setUser({
           ...authUser!,
           email: values.email,
           name: values.name,

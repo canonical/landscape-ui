@@ -6,7 +6,7 @@ import { LoginMethods } from "@/features/auth";
 const mockTestParams = (loginMethods: LoginMethods) => {
   vi.doMock("@/features/auth", async () => ({
     ...(await vi.importActual("@/features/auth")),
-    useAuthHandle: () => ({
+    useUnsigned: () => ({
       getLoginMethodsQuery: () => ({
         data: { data: loginMethods },
         isLoading: false,
@@ -21,6 +21,10 @@ const testResponses: LoginMethods[] = [
       available: false,
       configurations: [],
     },
+    pam: {
+      available: false,
+      enabled: true,
+    },
     password: {
       available: false,
       enabled: true,
@@ -46,6 +50,10 @@ const testResponses: LoginMethods[] = [
         },
       ],
     },
+    pam: {
+      available: false,
+      enabled: true,
+    },
     password: {
       available: false,
       enabled: true,
@@ -63,6 +71,10 @@ const testResponses: LoginMethods[] = [
     oidc: {
       available: false,
       configurations: [],
+    },
+    pam: {
+      available: false,
+      enabled: true,
     },
     password: {
       available: false,
@@ -82,6 +94,10 @@ const testResponses: LoginMethods[] = [
       available: false,
       configurations: [],
     },
+    pam: {
+      available: false,
+      enabled: true,
+    },
     password: {
       available: false,
       enabled: true,
@@ -99,6 +115,10 @@ const testResponses: LoginMethods[] = [
     oidc: {
       available: false,
       configurations: [],
+    },
+    pam: {
+      available: false,
+      enabled: true,
     },
     password: {
       available: true,
@@ -124,6 +144,10 @@ const testResponses: LoginMethods[] = [
           name: "Okta",
         },
       ],
+    },
+    pam: {
+      available: false,
+      enabled: true,
     },
     password: {
       available: true,
@@ -200,7 +224,6 @@ describe("LoginPage", () => {
       screen.getByRole("textbox", { name: /identity/i }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/remember this device/i)).toBeInTheDocument();
   });
 
   it("should render all sign in method", async () => {
@@ -208,7 +231,6 @@ describe("LoginPage", () => {
       screen.getByRole("textbox", { name: /identity/i }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/remember this device/i)).toBeInTheDocument();
 
     expect(
       screen.getByRole("button", { name: "Sign in with Okta" }),
