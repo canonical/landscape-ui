@@ -13,9 +13,3 @@ export interface AuthUser {
   accounts: Account[];
   current_account: string;
 }
-export interface AuthStateResponse extends AuthUser {
-  return_to: {
-    url: string | null;
-    external: boolean;
-  } | null;
-}

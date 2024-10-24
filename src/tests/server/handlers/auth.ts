@@ -92,4 +92,8 @@ export default [
   http.get(`${API_URL}auth/start`, () => {
     return HttpResponse.json({ location: locationToRedirectTo });
   }),
+
+  http.get(`${API_URL}me`, () => {
+    return HttpResponse.json(authResponse);
+  }),
 ];

@@ -45,6 +45,8 @@ describe("UserPanel", () => {
   it("renders filtered list of users", async () => {
     renderWithProviders(<UserPanel />);
 
+    await expectLoadingState();
+
     for (let i = 0; i < users.length; i++) {
       const user = await screen.findByRole("button", {
         name: `Show details of user ${users[i].username}`,

@@ -16,7 +16,7 @@ const mockTestParams = (response: AuthStateResponse | Error) => {
   }));
 
   vi.doMock("@/features/auth", () => ({
-    useAuthHandle: () => ({
+    useUnsigned: () => ({
       getAuthStateWithOidcQuery: () =>
         response instanceof Error
           ? {

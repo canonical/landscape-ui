@@ -3,11 +3,11 @@ import LoadingState from "@/components/layout/LoadingState";
 import {
   ProviderList,
   ProvidersEmptyState,
-  useAuthHandle,
+  useUnsigned,
 } from "@/features/auth";
 
 const IdentityProvidersContainer: FC = () => {
-  const { getLoginMethodsQuery } = useAuthHandle();
+  const { getLoginMethodsQuery } = useUnsigned();
 
   const { data: getLoginMethodsQueryResult, isLoading } =
     getLoginMethodsQuery();

@@ -100,7 +100,9 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
     navigate(`${ROOT_PATH}login?redirect-to=${pathname}${search}`, {
       replace: true,
     });
-    queryClient.clear();
+    queryClient.removeQueries({
+      predicate: (query) => query.queryKey[0] !== "authUser",
+    });
   }, [authorized, authLoading]);
 
   return <>{children}</>;

@@ -4,7 +4,6 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
   Button,
-  CheckboxInput,
   Form,
   Input,
   PasswordToggle,
@@ -13,13 +12,12 @@ import { ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import classes from "./LoginForm.module.scss";
-import { useAuthHandle } from "../../hooks";
+import { useUnsigned } from "../../hooks";
 import { redirectToExternalUrl } from "../../helpers";
 
 interface FormProps {
   email: string;
   password: string;
-  remember: boolean;
 }
 
 interface LoginFormProps {
@@ -30,7 +28,7 @@ const LoginForm: FC<LoginFormProps> = ({ isEmailIdentityOnly }) => {
   const [searchParams] = useSearchParams();
 
   const debug = useDebug();
-  const { signInWithEmailAndPasswordQuery } = useAuthHandle();
+  const { signInWithEmailAndPasswordQuery } = useUnsigned();
   const { setUser } = useAuth();
   const navigate = useNavigate();
 
@@ -44,7 +42,6 @@ const LoginForm: FC<LoginFormProps> = ({ isEmailIdentityOnly }) => {
     initialValues: {
       email: "",
       password: "",
-      remember: false,
     },
     validationSchema: Yup.object().shape({
       email: isEmailIdentityOnly
@@ -53,7 +50,6 @@ const LoginForm: FC<LoginFormProps> = ({ isEmailIdentityOnly }) => {
             .email("Please provide a valid email address")
         : Yup.string().required("This field is required"),
       password: Yup.string().required("This field is required"),
-      remember: Yup.boolean(),
     }),
     onSubmit: async (values) => {
       try {
@@ -65,7 +61,9 @@ const LoginForm: FC<LoginFormProps> = ({ isEmailIdentityOnly }) => {
         if (isExternalRedirect && redirectTo) {
           redirectToExternalUrl(redirectTo, { replace: true });
         } else {
-          setUser(data, values.remember);
+          if ("current_account" in data) {
+            setUser(data);
+          }
 
           const url = new URL(
             redirectTo ?? `${ROOT_PATH}overview`,
@@ -104,11 +102,6 @@ const LoginForm: FC<LoginFormProps> = ({ isEmailIdentityOnly }) => {
         }
         {...formik.getFieldProps("password")}
         data-testid="password"
-      />
-
-      <CheckboxInput
-        label="Remember this device"
-        {...formik.getFieldProps("remember")}
       />
 
       <div className={classes.buttonRow}>
