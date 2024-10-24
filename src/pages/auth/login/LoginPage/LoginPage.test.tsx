@@ -33,82 +33,7 @@ const testResponses: LoginMethods[] = [
       available: false,
       enabled: true,
     },
-  },
-  {
-    oidc: {
-      available: true,
-      configurations: [
-        {
-          id: 1,
-          provider: "okta",
-          enabled: true,
-          name: "Okta",
-        },
-      ],
-    },
-    password: {
-      available: false,
-      enabled: true,
-    },
-    standalone_oidc: {
-      available: false,
-      enabled: true,
-    },
-    ubuntu_one: {
-      available: false,
-      enabled: true,
-    },
-  },
-  {
-    oidc: {
-      available: false,
-      configurations: [],
-    },
-    password: {
-      available: false,
-      enabled: true,
-    },
-    standalone_oidc: {
-      available: true,
-      enabled: true,
-    },
-    ubuntu_one: {
-      available: false,
-      enabled: true,
-    },
-  },
-  {
-    oidc: {
-      available: false,
-      configurations: [],
-    },
-    password: {
-      available: false,
-      enabled: true,
-    },
-    standalone_oidc: {
-      available: false,
-      enabled: true,
-    },
-    ubuntu_one: {
-      available: true,
-      enabled: true,
-    },
-  },
-  {
-    oidc: {
-      available: false,
-      configurations: [],
-    },
-    password: {
-      available: true,
-      enabled: true,
-    },
-    standalone_oidc: {
-      available: false,
-      enabled: true,
-    },
-    ubuntu_one: {
+    pam: {
       available: false,
       enabled: true,
     },
@@ -126,6 +51,101 @@ const testResponses: LoginMethods[] = [
       ],
     },
     password: {
+      available: false,
+      enabled: true,
+    },
+    standalone_oidc: {
+      available: false,
+      enabled: true,
+    },
+    ubuntu_one: {
+      available: false,
+      enabled: true,
+    },
+    pam: {
+      available: false,
+      enabled: true,
+    },
+  },
+  {
+    oidc: {
+      available: false,
+      configurations: [],
+    },
+    password: {
+      available: false,
+      enabled: true,
+    },
+    standalone_oidc: {
+      available: true,
+      enabled: true,
+    },
+    ubuntu_one: {
+      available: false,
+      enabled: true,
+    },
+    pam: {
+      available: false,
+      enabled: true,
+    },
+  },
+  {
+    oidc: {
+      available: false,
+      configurations: [],
+    },
+    password: {
+      available: false,
+      enabled: true,
+    },
+    standalone_oidc: {
+      available: false,
+      enabled: true,
+    },
+    ubuntu_one: {
+      available: true,
+      enabled: true,
+    },
+    pam: {
+      available: false,
+      enabled: true,
+    },
+  },
+  {
+    oidc: {
+      available: false,
+      configurations: [],
+    },
+    password: {
+      available: true,
+      enabled: true,
+    },
+    standalone_oidc: {
+      available: false,
+      enabled: true,
+    },
+    ubuntu_one: {
+      available: false,
+      enabled: true,
+    },
+    pam: {
+      available: false,
+      enabled: true,
+    },
+  },
+  {
+    oidc: {
+      available: true,
+      configurations: [
+        {
+          id: 1,
+          provider: "okta",
+          enabled: true,
+          name: "Okta",
+        },
+      ],
+    },
+    password: {
       available: true,
       enabled: true,
     },
@@ -135,6 +155,10 @@ const testResponses: LoginMethods[] = [
     },
     ubuntu_one: {
       available: true,
+      enabled: true,
+    },
+    pam: {
+      available: false,
       enabled: true,
     },
   },
