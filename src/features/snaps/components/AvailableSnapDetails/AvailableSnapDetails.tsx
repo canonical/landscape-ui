@@ -64,18 +64,20 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
               "snap-id": item["snap-id"],
               name: item.name,
               snap: item.snap,
-              revision: item["channel-map"]
-                .find(
+              revision:
+                item["channel-map"]
+                  .find(
+                    (channel) =>
+                      `${channel.channel.name} - ${channel.channel.architecture}` ===
+                      selectedChannel,
+                  )
+                  ?.revision.toString() ?? "Unknown revision",
+              channel:
+                item["channel-map"].find(
                   (channel) =>
                     `${channel.channel.name} - ${channel.channel.architecture}` ===
                     selectedChannel,
-                )!
-                .revision.toString(),
-              channel: item["channel-map"].find(
-                (channel) =>
-                  `${channel.channel.name} - ${channel.channel.architecture}` ===
-                  selectedChannel,
-              )!.channel.name,
+                )?.channel.name ?? "Unknown channel",
             });
           }}
         >

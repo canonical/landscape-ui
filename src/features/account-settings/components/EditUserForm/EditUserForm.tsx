@@ -54,6 +54,10 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
+        if (!authUser) {
+          return;
+        }
+
         await editUserMutation({
           name: values.name,
           email: values.email,
@@ -62,7 +66,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         });
 
         setUser({
-          ...authUser!,
+          ...authUser,
           email: values.email,
           name: values.name,
         });

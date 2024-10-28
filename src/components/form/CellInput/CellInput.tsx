@@ -4,7 +4,7 @@ import { FormikErrors } from "formik";
 
 interface CellInputProps extends Omit<InputProps, "onBlur" | "onChange"> {
   value: string;
-  onChange: (value: string) => Promise<void | FormikErrors<unknown>>;
+  onChange: (value: string) => Promise<void> | Promise<FormikErrors<unknown>>;
 }
 
 const CellInput: FC<CellInputProps> = ({

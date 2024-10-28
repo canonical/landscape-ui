@@ -46,7 +46,11 @@ export const useSnaps = () => {
     AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,
     GetSnapsParams
   > = (queryParams, config = {}) => {
-    const { instance_id, ...params } = queryParams!;
+    if (!queryParams) {
+      throw new Error("Missing required parameters");
+    }
+
+    const { instance_id, ...params } = queryParams;
 
     return useQuery<
       AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,
@@ -54,7 +58,7 @@ export const useSnaps = () => {
     >({
       queryKey: ["snaps", { ...queryParams }],
       queryFn: () =>
-        authFetch!.get(`computers/${instance_id}/snaps/installed`, {
+        authFetch.get(`computers/${instance_id}/snaps/installed`, {
           params: params,
         }),
       ...config,
@@ -70,10 +74,15 @@ export const useSnaps = () => {
       AxiosError<ApiError>
     >({
       queryKey: ["snaps", { ...queryParams }],
-      queryFn: () =>
-        authFetch!.get(
-          `computers/${queryParams!.instance_id}/snaps/available?name_startswith=${queryParams!.query}`,
-        ),
+      queryFn: () => {
+        if (!queryParams) {
+          throw new Error("Missing required parameters");
+        }
+
+        return authFetch.get(
+          `computers/${queryParams.instance_id}/snaps/available?name_startswith=${queryParams.query}`,
+        );
+      },
       ...config,
     });
 
@@ -83,10 +92,15 @@ export const useSnaps = () => {
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<AvailableSnapInfo>, AxiosError<ApiError>>({
       queryKey: ["snaps", { ...queryParams }],
-      queryFn: () =>
-        authFetch!.get(
-          `computers/${queryParams!.instance_id}/snaps/${queryParams!.name}/info`,
-        ),
+      queryFn: () => {
+        if (!queryParams) {
+          throw new Error("Missing required parameters");
+        }
+
+        return authFetch.get(
+          `computers/${queryParams.instance_id}/snaps/${queryParams.name}/info`,
+        );
+      },
       ...config,
     });
 
@@ -96,7 +110,7 @@ export const useSnaps = () => {
     SnapActionParams
   >({
     mutationKey: ["snaps", "action"],
-    mutationFn: (params) => authFetch!.post("snaps", params),
+    mutationFn: (params) => authFetch.post("snaps", params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["snaps"] }),
   });
 

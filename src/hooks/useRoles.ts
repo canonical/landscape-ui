@@ -61,7 +61,7 @@ export default function useRoles() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<AccessGroup[]>, AxiosError<ApiError>>({
       queryKey: ["accessGroups"],
-      queryFn: () => authFetch!.get("GetAccessGroups", { params: queryParams }),
+      queryFn: () => authFetch.get("GetAccessGroups", { params: queryParams }),
       ...config,
     });
 
@@ -70,7 +70,7 @@ export default function useRoles() {
     AxiosError<ApiError>,
     CreateAccessGroupParams
   >({
-    mutationFn: (params) => authFetch!.get("CreateAccessGroup", { params }),
+    mutationFn: (params) => authFetch.get("CreateAccessGroup", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["accessGroups"] }),
   });
@@ -80,7 +80,7 @@ export default function useRoles() {
     AxiosError<ApiError>,
     RemoveAccessGroupParams
   >({
-    mutationFn: (params) => authFetch!.get("RemoveAccessGroup", { params }),
+    mutationFn: (params) => authFetch.get("RemoveAccessGroup", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["accessGroups"] }),
   });
@@ -91,7 +91,7 @@ export default function useRoles() {
   ) =>
     useQuery<AxiosResponse<Role[]>, AxiosError<ApiError>>({
       queryKey: ["roles"],
-      queryFn: () => authFetch!.get("GetRoles", { params: queryParams }),
+      queryFn: () => authFetch.get("GetRoles", { params: queryParams }),
       ...config,
     });
 
@@ -100,7 +100,7 @@ export default function useRoles() {
     AxiosError<ApiError>,
     CreateRoleParams
   >({
-    mutationFn: (params) => authFetch!.get("CreateRole", { params }),
+    mutationFn: (params) => authFetch.get("CreateRole", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["roles"] }),
   });
 
@@ -109,7 +109,7 @@ export default function useRoles() {
     AxiosError<ApiError>,
     CopyRoleParams
   >({
-    mutationFn: (params) => authFetch!.get("CopyRole", { params }),
+    mutationFn: (params) => authFetch.get("CopyRole", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["roles"] }),
   });
 
@@ -118,7 +118,7 @@ export default function useRoles() {
     AxiosError<ApiError>,
     RemoveRoleParams
   >({
-    mutationFn: (params) => authFetch!.get("RemoveRole", { params }),
+    mutationFn: (params) => authFetch.get("RemoveRole", { params }),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["roles"] }),
@@ -131,7 +131,7 @@ export default function useRoles() {
     AxiosError<ApiError>,
     ChangeRoleAccessGroupsParams
   >({
-    mutationFn: (params) => authFetch!.get("AddAccessGroupsToRole", { params }),
+    mutationFn: (params) => authFetch.get("AddAccessGroupsToRole", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["roles"] }),
   });
 
@@ -141,7 +141,7 @@ export default function useRoles() {
     ChangeRoleAccessGroupsParams
   >({
     mutationFn: (params) =>
-      authFetch!.get("RemoveAccessGroupsFromRole", { params }),
+      authFetch.get("RemoveAccessGroupsFromRole", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["roles"] }),
   });
 
@@ -151,7 +151,7 @@ export default function useRoles() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<Permission[]>, AxiosError<ApiError>>({
       queryKey: ["permissions"],
-      queryFn: () => authFetch!.get("GetPermissions", { params: queryParams }),
+      queryFn: () => authFetch.get("GetPermissions", { params: queryParams }),
       ...config,
     });
 
@@ -160,7 +160,7 @@ export default function useRoles() {
     AxiosError<ApiError>,
     ChangeRolePermissionsParams
   >({
-    mutationFn: (params) => authFetch!.get("AddPermissionsToRole", { params }),
+    mutationFn: (params) => authFetch.get("AddPermissionsToRole", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["roles"] }),
   });
 
@@ -170,7 +170,7 @@ export default function useRoles() {
     ChangeRolePermissionsParams
   >({
     mutationFn: (params) =>
-      authFetch!.get("RemovePermissionsFromRole", { params }),
+      authFetch.get("RemovePermissionsFromRole", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["roles"] }),
   });
 
@@ -179,7 +179,7 @@ export default function useRoles() {
     AxiosError<ApiError>,
     ChangeRolePersonsParams
   >({
-    mutationFn: (params) => authFetch!.get("AddPersonsToRole", { params }),
+    mutationFn: (params) => authFetch.get("AddPersonsToRole", { params }),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["roles"] }),
@@ -192,7 +192,7 @@ export default function useRoles() {
     AxiosError<ApiError>,
     ChangeRolePersonsParams
   >({
-    mutationFn: (params) => authFetch!.get("RemovePersonsFromRole", { params }),
+    mutationFn: (params) => authFetch.get("RemovePersonsFromRole", { params }),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["roles"] }),

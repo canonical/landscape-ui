@@ -55,7 +55,7 @@ export default function useActivities() {
     >({
       queryKey: ["activities", queryParams],
       queryFn: () =>
-        authFetch!.get("activities", {
+        authFetch.get("activities", {
           params: queryParams,
         }),
       ...config,
@@ -72,7 +72,7 @@ export default function useActivities() {
     return useQuery<AxiosResponse<Activity>, AxiosError<ApiError>>({
       queryKey: ["activities", { activityId, ...queryParams }],
       queryFn: () =>
-        authFetch!.get(`activities/${activityId}`, { params: queryParams }),
+        authFetch.get(`activities/${activityId}`, { params: queryParams }),
       ...config,
     });
   };
@@ -84,7 +84,7 @@ export default function useActivities() {
     return useQuery<AxiosResponse<string[]>, AxiosError<ApiError>>({
       queryKey: ["activityTypes"],
       queryFn: () =>
-        authFetchOld!.get("GetActivityTypes", { params: queryParams }),
+        authFetchOld.get("GetActivityTypes", { params: queryParams }),
       ...config,
     });
   };
@@ -95,7 +95,7 @@ export default function useActivities() {
     CancelActivitiesParams
   >({
     mutationKey: ["activities", "cancel"],
-    mutationFn: (params) => authFetchOld!.get("CancelActivities", { params }),
+    mutationFn: (params) => authFetchOld.get("CancelActivities", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
@@ -106,7 +106,7 @@ export default function useActivities() {
     ApproveActivitiesParams
   >({
     mutationKey: ["activities", "approve"],
-    mutationFn: (params) => authFetchOld!.get("ApproveActivities", { params }),
+    mutationFn: (params) => authFetchOld.get("ApproveActivities", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
@@ -116,7 +116,7 @@ export default function useActivities() {
     AxiosError<ApiError>,
     RedoUndoActivitiesParams
   >({
-    mutationFn: (params) => authFetch!.post("activities/reapply", params),
+    mutationFn: (params) => authFetch.post("activities/reapply", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
@@ -126,7 +126,7 @@ export default function useActivities() {
     AxiosError<ApiError>,
     RedoUndoActivitiesParams
   >({
-    mutationFn: (params) => authFetch!.post("activities/revert", params),
+    mutationFn: (params) => authFetch.post("activities/revert", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });

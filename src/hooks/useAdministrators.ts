@@ -43,7 +43,7 @@ export default function useAdministrators() {
   > = (_, config = {}) =>
     useQuery<AxiosResponse<Administrator[]>, AxiosError<ApiError>>({
       queryKey: ["administrators"],
-      queryFn: () => authFetchOld!.get("GetAdministrators"),
+      queryFn: () => authFetchOld.get("GetAdministrators"),
       ...config,
     });
 
@@ -52,8 +52,7 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     InviteAdministratorParams
   >({
-    mutationFn: (params) =>
-      authFetchOld!.get("InviteAdministrator", { params }),
+    mutationFn: (params) => authFetchOld.get("InviteAdministrator", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["invitations"] }),
   });
@@ -64,7 +63,7 @@ export default function useAdministrators() {
     DisableAdministratorParams
   >({
     mutationFn: (params) =>
-      authFetchOld!.get("DisableAdministrator", { params }),
+      authFetchOld.get("DisableAdministrator", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["administrators"] }),
   });
@@ -75,7 +74,7 @@ export default function useAdministrators() {
     EditAdministratorParams
   >({
     mutationFn: ({ id, ...params }) =>
-      authFetch!.put(`administrators/${id}`, params),
+      authFetch.put(`administrators/${id}`, params),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["administrators"] }),
@@ -92,7 +91,7 @@ export default function useAdministrators() {
       AxiosError<ApiError>
     >({
       queryKey: ["invitations", queryParams],
-      queryFn: () => authFetch!.get("/invitations", { params: queryParams }),
+      queryFn: () => authFetch.get("/invitations", { params: queryParams }),
       ...config,
     });
 
@@ -101,7 +100,7 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     InvitationActionParams
   >({
-    mutationFn: (params) => authFetch!.delete(`/invitations/${params.id}`),
+    mutationFn: (params) => authFetch.delete(`/invitations/${params.id}`),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["invitations"] }),
   });
@@ -111,7 +110,7 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     InvitationActionParams
   >({
-    mutationFn: (params) => authFetch!.post(`/invitations/${params.id}`),
+    mutationFn: (params) => authFetch.post(`/invitations/${params.id}`),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["invitations"] }),
   });

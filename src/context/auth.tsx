@@ -102,8 +102,12 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   };
 
   const handleSwitchAccount = (newToken: string, newAccount: string) => {
+    if (!user) {
+      return;
+    }
+
     const newUser = {
-      ...user!,
+      ...user,
       current_account: newAccount,
       token: newToken,
     };

@@ -37,8 +37,7 @@ export const useSavedSearches = () => {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<SavedSearch[]>, AxiosError<ApiError>>({
       queryKey: ["savedSearches", queryParams],
-      queryFn: () =>
-        authFetch!.get("GetSavedSearches", { params: queryParams }),
+      queryFn: () => authFetch.get("GetSavedSearches", { params: queryParams }),
       ...config,
     });
 
@@ -47,7 +46,7 @@ export const useSavedSearches = () => {
     AxiosError<ApiError>,
     CreateSavedSearchParams
   >({
-    mutationFn: (params) => authFetch!.get("CreateSavedSearch", { params }),
+    mutationFn: (params) => authFetch.get("CreateSavedSearch", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["savedSearches"] }),
   });
@@ -57,7 +56,7 @@ export const useSavedSearches = () => {
     AxiosError<ApiError>,
     EditSavedSearchParams
   >({
-    mutationFn: (params) => authFetch!.get("EditSavedSearch", { params }),
+    mutationFn: (params) => authFetch.get("EditSavedSearch", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["savedSearches"] }),
   });
@@ -67,7 +66,7 @@ export const useSavedSearches = () => {
     AxiosError<ApiError>,
     RemoveSavedSearchParams
   >({
-    mutationFn: (params) => authFetch!.get("RemoveSavedSearch", { params }),
+    mutationFn: (params) => authFetch.get("RemoveSavedSearch", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["savedSearches"] }),
   });

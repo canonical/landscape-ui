@@ -139,7 +139,7 @@ export default function usePockets() {
     CreateMirrorPocketParams | CreatePullPocketParams | CreateUploadPocketParams
   >({
     mutationKey: ["pockets", "create"],
-    mutationFn: (params) => authFetch!.get("CreatePocket", { params }),
+    mutationFn: (params) => authFetch.get("CreatePocket", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
@@ -150,7 +150,7 @@ export default function usePockets() {
     EditMirrorPocketParams | EditPullPocketParams | EditUploadPocketParams
   >({
     mutationKey: ["pockets", "edit"],
-    mutationFn: (params) => authFetch!.get("EditPocket", { params }),
+    mutationFn: (params) => authFetch.get("EditPocket", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
@@ -161,7 +161,7 @@ export default function usePockets() {
     RemovePocketParams
   >({
     mutationKey: ["pockets", "remove"],
-    mutationFn: (params) => authFetch!.get("RemovePocket", { params }),
+    mutationFn: (params) => authFetch.get("RemovePocket", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
@@ -172,7 +172,7 @@ export default function usePockets() {
     SyncMirrorPocketParams
   >({
     mutationKey: ["pocketPackages", "sync"],
-    mutationFn: (params) => authFetch!.get("SyncMirrorPocket", { params }),
+    mutationFn: (params) => authFetch.get("SyncMirrorPocket", { params }),
     onSuccess: (_, variables) =>
       Promise.all([
         queryClient.invalidateQueries({
@@ -188,7 +188,7 @@ export default function usePockets() {
     PullPackagesToPocketParams
   >({
     mutationKey: ["pocketPackages", "pull"],
-    mutationFn: (params) => authFetch!.get("PullPackagesToPocket", { params }),
+    mutationFn: (params) => authFetch.get("PullPackagesToPocket", { params }),
     onSuccess: (_, variables) =>
       Promise.all([
         queryClient.invalidateQueries({
@@ -205,7 +205,7 @@ export default function usePockets() {
   >({
     mutationKey: ["pocketPackages", "remove"],
     mutationFn: (params) =>
-      authFetch!.get("RemovePackagesFromPocket", { params }),
+      authFetch.get("RemovePackagesFromPocket", { params }),
     onSuccess: (_, variables) =>
       queryClient.invalidateQueries({
         queryKey: ["pocketPackages", { ...variables }, "list"],
@@ -218,7 +218,7 @@ export default function usePockets() {
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<PackageDiff>, AxiosError<ApiError>>({
       queryKey: ["pocketPackages", { ...queryParams }, "difference"],
-      queryFn: () => authFetch!.get("DiffPullPocket", { params: queryParams }),
+      queryFn: () => authFetch.get("DiffPullPocket", { params: queryParams }),
       ...config,
     });
 
@@ -231,7 +231,7 @@ export default function usePockets() {
       AxiosError<ApiError>
     >({
       queryKey: ["pocketPackages", { ...queryParams }, "list"],
-      queryFn: () => authFetch!.get("ListPocket", { params: queryParams }),
+      queryFn: () => authFetch.get("ListPocket", { params: queryParams }),
       ...config,
     });
 
@@ -242,7 +242,7 @@ export default function usePockets() {
   >({
     mutationKey: ["packageFilters", "add"],
     mutationFn: (params) =>
-      authFetch!.get("AddPackageFiltersToPocket", { params }),
+      authFetch.get("AddPackageFiltersToPocket", { params }),
     onSuccess: (_, variables) =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["distributions"] }),
@@ -259,7 +259,7 @@ export default function usePockets() {
   >({
     mutationKey: ["packageFilters", "remove"],
     mutationFn: (params) =>
-      authFetch!.get("RemovePackageFiltersFromPocket", { params }),
+      authFetch.get("RemovePackageFiltersFromPocket", { params }),
     onSuccess: (_, variables) =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["distributions"] }),
@@ -276,7 +276,7 @@ export default function usePockets() {
   >({
     mutationKey: ["uploaderGPGKeys", "add"],
     mutationFn: (params) =>
-      authFetch!.get("AddUploaderGPGKeysToPocket", { params }),
+      authFetch.get("AddUploaderGPGKeysToPocket", { params }),
     onSuccess: (_, variables) =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["distributions"] }),
@@ -293,7 +293,7 @@ export default function usePockets() {
   >({
     mutationKey: ["uploaderGPGKeys", "remove"],
     mutationFn: (params) =>
-      authFetch!.get("RemoveUploaderGPGKeysFromPocket", { params }),
+      authFetch.get("RemoveUploaderGPGKeysFromPocket", { params }),
     onSuccess: (_, variables) =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["distributions"] }),

@@ -62,7 +62,7 @@ export default function useUsns() {
       AxiosError<ApiError>
     >({
       queryKey: ["usns", queryParams],
-      queryFn: () => authFetch!.get("usns", { params: queryParams }),
+      queryFn: () => authFetch.get("usns", { params: queryParams }),
       ...config,
     });
   };
@@ -76,7 +76,7 @@ export default function useUsns() {
   ) => {
     return useQuery<AxiosResponse<UsnPackage[]>, AxiosError<ApiError>>({
       queryKey: ["usnPackages", { usn, ...queryParams }],
-      queryFn: () => authFetch!.get(`usns/${usn}`, { params: queryParams }),
+      queryFn: () => authFetch.get(`usns/${usn}`, { params: queryParams }),
       ...config,
     });
   };
@@ -87,7 +87,7 @@ export default function useUsns() {
     UpgradeInstanceUsnsParams
   >({
     mutationFn: ({ instanceId, ...params }) =>
-      authFetch!.post(`/computers/${instanceId}/usns/upgrade-packages`, params),
+      authFetch.post(`/computers/${instanceId}/usns/upgrade-packages`, params),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["usns"] }),
@@ -101,7 +101,7 @@ export default function useUsns() {
     RemoveUsnPackagesParams
   >({
     mutationFn: ({ instanceId, ...params }) =>
-      authFetch!.post(`/computers/${instanceId}/usns/remove-packages`, params),
+      authFetch.post(`/computers/${instanceId}/usns/remove-packages`, params),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["usns"] }),
@@ -115,7 +115,7 @@ export default function useUsns() {
     UpgradeUsnsParams
   >({
     mutationFn: (params) =>
-      authFetch!.post("/computers/usns/upgrade-packages", params),
+      authFetch.post("/computers/usns/upgrade-packages", params),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["usns"] }),

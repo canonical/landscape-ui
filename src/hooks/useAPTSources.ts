@@ -53,7 +53,7 @@ export default function useAPTSources(): UseAPTSourcesResult {
     useQuery<AxiosResponse<APTSource[]>, AxiosError<ApiError>>({
       queryKey: ["aptSources"],
       queryFn: () =>
-        authFetch!.get("GetAPTSources", {
+        authFetch.get("GetAPTSources", {
           params: queryParams,
         }),
       ...config,
@@ -65,7 +65,7 @@ export default function useAPTSources(): UseAPTSourcesResult {
     CreateAPTSourceParams
   >({
     mutationKey: ["aptSources", "new"],
-    mutationFn: (params) => authFetch!.get("CreateAPTSource", { params }),
+    mutationFn: (params) => authFetch.get("CreateAPTSource", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["aptSources"] }),
   });
@@ -76,7 +76,7 @@ export default function useAPTSources(): UseAPTSourcesResult {
     RemoveAPTSourceParams
   >({
     mutationKey: ["aptSources", "remove"],
-    mutationFn: (params) => authFetch!.get("RemoveAPTSource", { params }),
+    mutationFn: (params) => authFetch.get("RemoveAPTSource", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["aptSources"] }),
   });

@@ -50,7 +50,7 @@ export default function useUpgradeProfiles() {
     CreateUpgradeProfileParams
   >({
     mutationFn: (params) => {
-      return authFetchOld!.get("CreateUpgradeProfile", { params });
+      return authFetchOld.get("CreateUpgradeProfile", { params });
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
@@ -62,7 +62,7 @@ export default function useUpgradeProfiles() {
     EditUpgradeProfileParams
   >({
     mutationFn: (params) => {
-      return authFetchOld!.get("EditUpgradeProfile", { params });
+      return authFetchOld.get("EditUpgradeProfile", { params });
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
@@ -74,7 +74,7 @@ export default function useUpgradeProfiles() {
     RemoveUpgradeProfileParams
   >({
     mutationFn: (params) => {
-      return authFetchOld!.get("RemoveUpgradeProfile", { params });
+      return authFetchOld.get("RemoveUpgradeProfile", { params });
     },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
@@ -86,7 +86,7 @@ export default function useUpgradeProfiles() {
   > = (params = {}, config = {}) =>
     useQuery<AxiosResponse<UpgradeProfile[]>, AxiosError<ApiError>>({
       queryKey: ["upgradeProfiles", params],
-      queryFn: () => authFetchOld!.get("GetUpgradeProfiles", { params }),
+      queryFn: () => authFetchOld.get("GetUpgradeProfiles", { params }),
       ...config,
     });
 

@@ -42,7 +42,7 @@ export default function useKernel() {
   ) => {
     return useQuery<AxiosResponse<KernelManagementInfo>, AxiosError<ApiError>>({
       queryKey: ["kernel", id],
-      queryFn: () => authFetch!.get(`computers/${id}/livepatch/kernel`),
+      queryFn: () => authFetch.get(`computers/${id}/livepatch/kernel`),
       ...config,
     });
   };
@@ -60,7 +60,7 @@ export default function useKernel() {
     return useQuery<AxiosResponse<LivepatchInformation>, AxiosError<ApiError>>({
       queryKey: ["kernel", { id, ...queryParams }],
       queryFn: () =>
-        authFetch!.get(`computers/${id}/livepatch/info`, {
+        authFetch.get(`computers/${id}/livepatch/info`, {
           params: queryParams,
         }),
       ...config,
@@ -74,7 +74,7 @@ export default function useKernel() {
   >({
     mutationKey: ["kernel", "downgrade"],
     mutationFn: ({ id, ...queryParams }) =>
-      authFetch!.post(`computers/${id}/kernel/downgrade`, queryParams),
+      authFetch.post(`computers/${id}/kernel/downgrade`, queryParams),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kernel"] }),
   });
 
@@ -85,7 +85,7 @@ export default function useKernel() {
   >({
     mutationKey: ["kernel", "upgrade"],
     mutationFn: ({ id, ...queryParams }) =>
-      authFetch!.post(`computers/${id}/kernel/upgrade`, queryParams),
+      authFetch.post(`computers/${id}/kernel/upgrade`, queryParams),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kernel"] }),
   });
 

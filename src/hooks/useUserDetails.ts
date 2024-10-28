@@ -35,7 +35,7 @@ export default function useUserDetails() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<UserDetails>, AxiosError<ApiError>>({
       queryKey: ["userDetails", "get"],
-      queryFn: () => authFetch!.get("person", { params: queryParams }),
+      queryFn: () => authFetch.get("person", { params: queryParams }),
       ...config,
     });
 
@@ -45,7 +45,7 @@ export default function useUserDetails() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<UserCredentials>, AxiosError<ApiError>>({
       queryKey: ["userDetails", "getCredentials"],
-      queryFn: () => authFetch!.get("credentials", { params: queryParams }),
+      queryFn: () => authFetch.get("credentials", { params: queryParams }),
       ...config,
     });
 
@@ -55,7 +55,7 @@ export default function useUserDetails() {
     GenerateApiCredentialsParams
   >({
     mutationKey: ["userDetails", "generate"],
-    mutationFn: (params) => authFetch!.post("credentials", params),
+    mutationFn: (params) => authFetch.post("credentials", params),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: ["userDetails", "getCredentials"],
@@ -68,7 +68,7 @@ export default function useUserDetails() {
     EditUserDetailsParams
   >({
     mutationKey: ["userDetails", "edit"],
-    mutationFn: (params) => authFetch!.post("person", params),
+    mutationFn: (params) => authFetch.post("person", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["userDetails", "get"] }),
   });
@@ -79,7 +79,7 @@ export default function useUserDetails() {
     ChangePasswordParamms
   >({
     mutationKey: ["userDetails", "changePassword"],
-    mutationFn: (params) => authFetch!.put("password", params),
+    mutationFn: (params) => authFetch.put("password", params),
   });
 
   return {

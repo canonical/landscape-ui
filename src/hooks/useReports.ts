@@ -28,7 +28,7 @@ export default function useReports() {
     useQuery<AxiosResponse<string>, AxiosError<ApiError>>({
       queryKey: ["csvComplianceData", queryParams],
       queryFn: () =>
-        authFetchOld!.get("GetCSVComplianceData", {
+        authFetchOld.get("GetCSVComplianceData", {
           params: queryParams,
         }),
       ...config,
@@ -41,7 +41,7 @@ export default function useReports() {
     useQuery<AxiosResponse<number[]>, AxiosError<ApiError>>({
       queryKey: ["instancesNotUpgraded", queryParams],
       queryFn: () =>
-        authFetchOld!.get("GetComputersNotUpgraded", {
+        authFetchOld.get("GetComputersNotUpgraded", {
           params: queryParams,
         }),
       ...config,
@@ -57,7 +57,7 @@ export default function useReports() {
     useQuery<AxiosResponse<number[]>, AxiosError<ApiError>>({
       queryKey: ["notPingingInstances", queryParams],
       queryFn: () =>
-        authFetchOld!.get("GetNotPingingComputers", {
+        authFetchOld.get("GetNotPingingComputers", {
           params: queryParams,
         }),
       ...config,
@@ -73,7 +73,7 @@ export default function useReports() {
     >({
       queryKey: ["usnTimeToFix", queryParams],
       queryFn: () =>
-        authFetchOld!.get("GetUSNTimeToFix", {
+        authFetchOld.get("GetUSNTimeToFix", {
           params: queryParams,
         }),
       ...config,
@@ -89,7 +89,7 @@ export default function useReports() {
     >({
       queryKey: ["upgradedInstancesByFrequency", queryParams],
       queryFn: () =>
-        authFetchOld!.get("GetUpgradedComputersByFrequency", {
+        authFetchOld.get("GetUpgradedComputersByFrequency", {
           params: queryParams,
         }),
       ...config,

@@ -95,7 +95,7 @@ export default function usePackageProfiles() {
       AxiosError<ApiError>
     >({
       queryKey: ["packageProfiles", queryParams],
-      queryFn: () => authFetch!.get("packageprofiles", { params: queryParams }),
+      queryFn: () => authFetch.get("packageprofiles", { params: queryParams }),
       ...config,
     });
   };
@@ -105,7 +105,7 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     CopyPackageProfileParams
   >({
-    mutationFn: (params) => authFetch!.post("packageprofiles", params),
+    mutationFn: (params) => authFetch.post("packageprofiles", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
@@ -115,7 +115,7 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     CreatePackageProfileParams
   >({
-    mutationFn: (params) => authFetch!.post("packageprofiles", params),
+    mutationFn: (params) => authFetch.post("packageprofiles", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
@@ -126,7 +126,7 @@ export default function usePackageProfiles() {
     RemovePackageProfileParams
   >({
     mutationFn: (params) =>
-      authFetchOld!.get("RemovePackageProfile", { params }),
+      authFetchOld.get("RemovePackageProfile", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
@@ -137,7 +137,7 @@ export default function usePackageProfiles() {
     EditPackageProfileParams
   >({
     mutationFn: ({ name, ...params }) =>
-      authFetch!.put(`packageprofiles/${name}`, params),
+      authFetch.put(`packageprofiles/${name}`, params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
@@ -152,7 +152,7 @@ export default function usePackageProfiles() {
     useQuery<AxiosResponse<PackageProfile[]>, AxiosError<ApiError>>({
       queryKey: ["instancePackageProfiles", { instanceId, ...queryParams }],
       queryFn: () =>
-        authFetch!.get(`computers/${instanceId}/packages/profile`, {
+        authFetch.get(`computers/${instanceId}/packages/profile`, {
           params: queryParams,
         }),
       ...config,
@@ -174,7 +174,7 @@ export default function usePackageProfiles() {
     >({
       queryKey: ["packageProfileConstraints", { name, ...queryParams }],
       queryFn: () =>
-        authFetch!.get(`packageprofiles/${name}/constraints`, {
+        authFetch.get(`packageprofiles/${name}/constraints`, {
           params: queryParams,
         }),
       ...config,
@@ -186,7 +186,7 @@ export default function usePackageProfiles() {
     AddPackageProfileConstraintsParams
   >({
     mutationFn: ({ name, ...params }) =>
-      authFetch!.post(`packageprofiles/${name}/constraints`, params),
+      authFetch.post(`packageprofiles/${name}/constraints`, params),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
@@ -202,7 +202,7 @@ export default function usePackageProfiles() {
     EditPackageProfileConstraintParams
   >({
     mutationFn: ({ id, name, ...params }) =>
-      authFetch!.put(`packageprofiles/${name}/constraints/${id}`, params),
+      authFetch.put(`packageprofiles/${name}/constraints/${id}`, params),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
@@ -218,7 +218,7 @@ export default function usePackageProfiles() {
     RemovePackageProfileConstraintsParams
   >({
     mutationFn: ({ name, ...params }) =>
-      authFetch!.delete(`packageprofiles/${name}/constraints`, { params }),
+      authFetch.delete(`packageprofiles/${name}/constraints`, { params }),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),

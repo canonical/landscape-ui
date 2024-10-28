@@ -90,7 +90,7 @@ export default function usePackages() {
     >({
       queryKey: ["packages", queryParams],
       queryFn: () =>
-        authFetch!.get("packages", {
+        authFetch.get("packages", {
           params: queryParams,
         }),
       ...config,
@@ -113,7 +113,7 @@ export default function usePackages() {
     >({
       queryKey: ["packages", { instance_id, ...queryParams }],
       queryFn: () =>
-        authFetch!.get(`computers/${instance_id}/packages`, {
+        authFetch.get(`computers/${instance_id}/packages`, {
           params: queryParams,
         }),
       ...config,
@@ -125,7 +125,7 @@ export default function usePackages() {
     AxiosError<ApiError>,
     UpgradePackagesParams
   >({
-    mutationFn: (params) => authFetchOld!.get("UpgradePackages", { params }),
+    mutationFn: (params) => authFetchOld.get("UpgradePackages", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["packages"] }),
   });
 
@@ -135,7 +135,7 @@ export default function usePackages() {
     UpgradeInstancePackagesParams
   >({
     mutationFn: (params) =>
-      authFetch!.post("/computers/upgrade-packages", params),
+      authFetch.post("/computers/upgrade-packages", params),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packages"] }),
@@ -159,7 +159,7 @@ export default function usePackages() {
     >({
       queryKey: ["packageDowngradeVersion", { instanceId, packageName }],
       queryFn: () =>
-        authFetch!.get(
+        authFetch.get(
           `computers/${instanceId}/packages/installed/${packageName}/downgrades`,
         ),
       ...config,
@@ -171,7 +171,7 @@ export default function usePackages() {
     DowngradePackageVersionParams
   >({
     mutationFn: ({ instanceId, ...params }) =>
-      authFetch!.post(`computers/${instanceId}/packages/installed`, params),
+      authFetch.post(`computers/${instanceId}/packages/installed`, params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["packages"] }),
   });
 
@@ -180,7 +180,7 @@ export default function usePackages() {
     AxiosError<ApiError>,
     PackagesActionParams
   >({
-    mutationFn: (params) => authFetch!.post("packages", params),
+    mutationFn: (params) => authFetch.post("packages", params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["packages"] }),
   });
 

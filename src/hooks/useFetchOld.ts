@@ -1,6 +1,12 @@
 import { useContext } from "react";
-import { FetchContext } from "../context/fetchOld";
+import { FetchContext } from "@/context/fetchOld";
 
 export default function useFetchOld() {
-  return useContext(FetchContext);
+  const fetch = useContext(FetchContext);
+
+  if (!fetch) {
+    throw new Error("useFetchOld must be used within FetchOldProvider");
+  }
+
+  return fetch;
 }

@@ -26,7 +26,7 @@ export default function useEventsLog() {
     >({
       queryKey: ["events", queryParams],
       queryFn: () =>
-        authFetch!.get("events", {
+        authFetch.get("events", {
           params: queryParams,
         }),
       ...config,

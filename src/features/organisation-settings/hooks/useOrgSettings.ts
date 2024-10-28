@@ -21,7 +21,7 @@ export default function useOrgSettings() {
   > = (_, config = {}) =>
     useQuery<AxiosResponse<Preferences>, AxiosError<ApiError>>({
       queryKey: ["preferences"],
-      queryFn: () => authFetch!.get("preferences"),
+      queryFn: () => authFetch.get("preferences"),
       ...config,
     });
 
@@ -31,7 +31,7 @@ export default function useOrgSettings() {
     ChangeOrganisationPreferencesParams
   >({
     mutationKey: ["preferences", "change"],
-    mutationFn: (params) => authFetch!.put("preferences", params),
+    mutationFn: (params) => authFetch.put("preferences", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["preferences"] }),
   });

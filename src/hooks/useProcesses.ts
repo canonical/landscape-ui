@@ -27,14 +27,18 @@ export const useProcesses = () => {
     AxiosResponse<ApiPaginatedResponse<Process>>,
     GetProcessesParams
   > = (queryParams, config = {}) => {
-    const { computer_id, ...params } = queryParams!;
+    if (!queryParams) {
+      throw new Error("Missing required parameters");
+    }
+
+    const { computer_id, ...params } = queryParams;
     return useQuery<
       AxiosResponse<ApiPaginatedResponse<Process>>,
       AxiosError<ApiError>
     >({
       queryKey: ["processes", queryParams],
       queryFn: () =>
-        authFetch!.get(`/computers/${computer_id}/processes`, { params }),
+        authFetch.get(`/computers/${computer_id}/processes`, { params }),
       ...config,
     });
   };
@@ -44,7 +48,7 @@ export const useProcesses = () => {
     AxiosError<ApiError>,
     ProcessesSignalParams
   >({
-    mutationFn: (params) => authFetch!.post("processes/terminate", params),
+    mutationFn: (params) => authFetch.post("processes/terminate", params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["processes"] }),
   });
 
@@ -53,7 +57,7 @@ export const useProcesses = () => {
     AxiosError<ApiError>,
     ProcessesSignalParams
   >({
-    mutationFn: (params) => authFetch!.post("processes/kill", params),
+    mutationFn: (params) => authFetch.post("processes/kill", params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["processes"] }),
   });
 

@@ -74,7 +74,7 @@ export default function useScripts() {
     useQuery<AxiosResponse<ApiPaginatedResponse<Script>>, AxiosError<ApiError>>(
       {
         queryKey: ["scripts", queryParams],
-        queryFn: () => authFetch!.get("scripts", { params: queryParams }),
+        queryFn: () => authFetch.get("scripts", { params: queryParams }),
         ...config,
       },
     );
@@ -85,8 +85,7 @@ export default function useScripts() {
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<string>, AxiosError<ApiError>>({
       queryKey: ["scriptCode", queryParams],
-      queryFn: () =>
-        authFetchOld!.get("GetScriptCode", { params: queryParams }),
+      queryFn: () => authFetchOld.get("GetScriptCode", { params: queryParams }),
       ...config,
     });
 
@@ -96,7 +95,7 @@ export default function useScripts() {
     ExecuteScriptParams
   >({
     mutationKey: ["scripts", "execute"],
-    mutationFn: (params) => authFetchOld!.get("ExecuteScript", { params }),
+    mutationFn: (params) => authFetchOld.get("ExecuteScript", { params }),
   });
 
   const removeScriptQuery = useMutation<
@@ -105,7 +104,7 @@ export default function useScripts() {
     RemoveScriptParams
   >({
     mutationKey: ["scripts", "remove"],
-    mutationFn: (params) => authFetchOld!.get("RemoveScript", { params }),
+    mutationFn: (params) => authFetchOld.get("RemoveScript", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
@@ -115,7 +114,7 @@ export default function useScripts() {
     CreateScriptParams
   >({
     mutationKey: ["scripts", "create"],
-    mutationFn: (params) => authFetchOld!.get("CreateScript", { params }),
+    mutationFn: (params) => authFetchOld.get("CreateScript", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
@@ -125,7 +124,7 @@ export default function useScripts() {
     EditScriptParams
   >({
     mutationKey: ["scripts", "edit"],
-    mutationFn: (params) => authFetchOld!.get("EditScript", { params }),
+    mutationFn: (params) => authFetchOld.get("EditScript", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
@@ -135,7 +134,7 @@ export default function useScripts() {
     CopyScriptParams
   >({
     mutationKey: ["scripts", "copy"],
-    mutationFn: (params) => authFetchOld!.get("CopyScript", { params }),
+    mutationFn: (params) => authFetchOld.get("CopyScript", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
@@ -146,7 +145,7 @@ export default function useScripts() {
   >({
     mutationKey: ["scripts", "removeAttachment"],
     mutationFn: (params) =>
-      authFetchOld!.get("RemoveScriptAttachment", { params }),
+      authFetchOld.get("RemoveScriptAttachment", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 
@@ -157,7 +156,7 @@ export default function useScripts() {
   >({
     mutationKey: ["scripts", "createAttachment"],
     mutationFn: (params) =>
-      authFetchOld!.get("CreateScriptAttachment", { params }),
+      authFetchOld.get("CreateScriptAttachment", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
 

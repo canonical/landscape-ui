@@ -46,6 +46,10 @@ const EditOrganisationPreferencesForm: FC<
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
+        if (!user) {
+          return;
+        }
+
         await mutateAsync({
           title: values.title,
           registration_password: values.registration_password,
@@ -54,9 +58,9 @@ const EditOrganisationPreferencesForm: FC<
 
         if (values.title !== organisationPreferences.title) {
           setUser({
-            ...user!,
+            ...user,
             current_account: values.title,
-            accounts: user!.accounts.map((account) =>
+            accounts: user.accounts.map((account) =>
               account.title === organisationPreferences.title
                 ? { ...account, title: values.title }
                 : account,

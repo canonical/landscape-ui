@@ -63,7 +63,7 @@ export default function useAlerts(): UseAlertsResult {
   const getAlertsQuery: QueryFnType<AxiosResponse<Alert[]>, undefined> = () =>
     useQuery<AxiosResponse<Alert[]>, AxiosError<ApiError>>({
       queryKey: ["alert"],
-      queryFn: () => authFetch!.get("alerts"),
+      queryFn: () => authFetch.get("alerts"),
     });
 
   const getAlertsSummaryQuery: QueryFnType<
@@ -72,7 +72,7 @@ export default function useAlerts(): UseAlertsResult {
   > = () =>
     useQuery<AxiosResponse<AlertSummaryResponse>, AxiosError<ApiError>>({
       queryKey: ["alert", "summary"],
-      queryFn: () => authFetch!.get("alerts/summary"),
+      queryFn: () => authFetch.get("alerts/summary"),
     });
 
   const subscribeQuery = useMutation<
@@ -81,7 +81,7 @@ export default function useAlerts(): UseAlertsResult {
     SubscriptionParams
   >({
     mutationKey: ["alert", "subscribe"],
-    mutationFn: (params) => authFetchOld!.get("SubscribeToAlert", { params }),
+    mutationFn: (params) => authFetchOld.get("SubscribeToAlert", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
@@ -92,7 +92,7 @@ export default function useAlerts(): UseAlertsResult {
   >({
     mutationKey: ["alert", "unsubscribe"],
     mutationFn: (params) =>
-      authFetchOld!.get("UnsubscribeFromAlert", { params }),
+      authFetchOld.get("UnsubscribeFromAlert", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
@@ -102,7 +102,7 @@ export default function useAlerts(): UseAlertsResult {
     AssociateAlertParams
   >({
     mutationKey: ["alert", "associate"],
-    mutationFn: (params) => authFetchOld!.get("AssociateAlert", { params }),
+    mutationFn: (params) => authFetchOld.get("AssociateAlert", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
@@ -112,7 +112,7 @@ export default function useAlerts(): UseAlertsResult {
     DisassociateAlertParams
   >({
     mutationKey: ["alert", "disassociate"],
-    mutationFn: (params) => authFetchOld!.get("DisassociateAlert", { params }),
+    mutationFn: (params) => authFetchOld.get("DisassociateAlert", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 

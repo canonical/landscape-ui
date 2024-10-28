@@ -12,14 +12,11 @@ const OidcAuthPage: FC = () => {
   const { getAuthStateWithOidcQuery } = useUnsigned();
   const navigate = useNavigate();
 
-  const code = searchParams.get("code");
-  const state = searchParams.get("state");
+  const code = searchParams.get("code") ?? "";
+  const state = searchParams.get("state") ?? "";
 
   const { data: getAuthStateQueryResult, isLoading: getAuthStateQueryLoading } =
-    getAuthStateWithOidcQuery(
-      { code: code!, state: state! },
-      { enabled: !!code && !!state },
-    );
+    getAuthStateWithOidcQuery({ code, state }, { enabled: !!code && !!state });
 
   useEffect(() => {
     if (

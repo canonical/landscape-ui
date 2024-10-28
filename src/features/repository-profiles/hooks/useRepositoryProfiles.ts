@@ -52,7 +52,7 @@ export default function useRepositoryProfiles() {
     >({
       queryKey: ["repositoryProfiles", queryParams],
       queryFn: () =>
-        authFetch!.get("repositoryprofiles", {
+        authFetch.get("repositoryprofiles", {
           params: queryParams,
         }),
       ...config,
@@ -63,7 +63,7 @@ export default function useRepositoryProfiles() {
     AxiosError<ApiError>,
     CreateRepositoryProfileParams
   >({
-    mutationFn: (params) => authFetch!.post("repositoryprofiles", params),
+    mutationFn: (params) => authFetch.post("repositoryprofiles", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
   });
@@ -74,7 +74,7 @@ export default function useRepositoryProfiles() {
     EditRepositoryProfileParams
   >({
     mutationFn: ({ name, ...params }) =>
-      authFetch!.put(`repositoryprofiles/${name}`, params),
+      authFetch.put(`repositoryprofiles/${name}`, params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
   });
@@ -86,7 +86,7 @@ export default function useRepositoryProfiles() {
   >({
     mutationKey: ["repositoryProfiles"],
     mutationFn: (params) =>
-      authFetchOld!.get("RemoveRepositoryProfile", { params }),
+      authFetchOld.get("RemoveRepositoryProfile", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
   });

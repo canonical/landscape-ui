@@ -79,7 +79,7 @@ export default function useUsers() {
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<ApiPaginatedResponse<User>>, AxiosError<ApiError>>({
       queryKey: ["users", { ...queryParams }],
-      queryFn: () => authFetch!.get("users", { params: queryParams }),
+      queryFn: () => authFetch.get("users", { params: queryParams }),
       ...config,
     });
 
@@ -89,7 +89,7 @@ export default function useUsers() {
     CreateUserParams
   >({
     mutationKey: ["users", "new"],
-    mutationFn: (params) => authFetch!.post("users", params),
+    mutationFn: (params) => authFetch.post("users", params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
@@ -99,7 +99,7 @@ export default function useUsers() {
     EditUserParams
   >({
     mutationKey: ["users", "edit"],
-    mutationFn: (params) => authFetch!.put("users", params),
+    mutationFn: (params) => authFetch.put("users", params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
@@ -109,7 +109,7 @@ export default function useUsers() {
     RemoveUserParams
   >({
     mutationKey: ["users", "remove"],
-    mutationFn: (params) => authFetch!.delete("users", { params }),
+    mutationFn: (params) => authFetch.delete("users", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
@@ -119,7 +119,7 @@ export default function useUsers() {
     LockUserParams
   >({
     mutationKey: ["users", "lock"],
-    mutationFn: (params) => authFetch!.post("users/lock", params),
+    mutationFn: (params) => authFetch.post("users/lock", params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
@@ -129,7 +129,7 @@ export default function useUsers() {
     UnlockUserParams
   >({
     mutationKey: ["users", "unlock"],
-    mutationFn: (params) => authFetch!.post("users/unlock", params),
+    mutationFn: (params) => authFetch.post("users/unlock", params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
@@ -138,9 +138,14 @@ export default function useUsers() {
     GetGroupsParams
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<GroupsResponse>, AxiosError<ApiError>>({
-      queryKey: ["groups", queryParams!.computer_id],
-      queryFn: () =>
-        authFetch!.get(`computers/${queryParams!.computer_id}/groups`),
+      queryKey: ["groups", queryParams?.computer_id ?? ""],
+      queryFn: () => {
+        if (!queryParams) {
+          throw new Error("Missing required parameters");
+        }
+
+        return authFetch.get(`computers/${queryParams.computer_id}/groups`);
+      },
       ...config,
     });
 
@@ -149,11 +154,20 @@ export default function useUsers() {
     GetUserGroupsParams
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<GroupsResponse>, AxiosError<ApiError>>({
-      queryKey: ["userGroups", queryParams!.computer_id, queryParams!.username],
-      queryFn: () =>
-        authFetch!.get(
-          `computers/${queryParams!.computer_id}/users/${queryParams!.username}/groups`,
-        ),
+      queryKey: [
+        "userGroups",
+        queryParams?.computer_id ?? "",
+        queryParams?.username ?? "",
+      ],
+      queryFn: () => {
+        if (!queryParams) {
+          throw new Error("Missing required parameters");
+        }
+
+        return authFetch.get(
+          `computers/${queryParams.computer_id}/users/${queryParams.username}/groups`,
+        );
+      },
       ...config,
     });
 
@@ -164,7 +178,7 @@ export default function useUsers() {
   >({
     mutationKey: ["groups", "add"],
     mutationFn: (params) => {
-      return authFetch!.post(
+      return authFetch.post(
         `computers/${params.computer_id}/usergroups/update_bulk`,
         params,
       );
@@ -179,7 +193,7 @@ export default function useUsers() {
   >({
     mutationKey: ["groups", "remove"],
     mutationFn: (params) => {
-      return authFetch!.post(
+      return authFetch.post(
         `computers/${params.computer_id}/usergroups/update_bulk`,
         params,
       );

@@ -44,7 +44,7 @@ export default function useWslProfiles() {
       AxiosError<ApiError>
     >({
       queryKey: ["wslProfiles"],
-      queryFn: () => authFetch!.get("child-instance-profiles"),
+      queryFn: () => authFetch.get("child-instance-profiles"),
       ...config,
     });
   };
@@ -54,7 +54,7 @@ export default function useWslProfiles() {
     AxiosError<ApiError>,
     CreateWslProfileParams
   >({
-    mutationFn: (params) => authFetch!.post("child-instance-profiles", params),
+    mutationFn: (params) => authFetch.post("child-instance-profiles", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
   });
@@ -65,7 +65,7 @@ export default function useWslProfiles() {
     RemoveWslProfileParams
   >({
     mutationFn: ({ name }) =>
-      authFetch!.delete(`child-instance-profiles/${name}`),
+      authFetch.delete(`child-instance-profiles/${name}`),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
   });
@@ -76,7 +76,7 @@ export default function useWslProfiles() {
     EditWslProfileParams
   >({
     mutationFn: ({ name, ...params }) =>
-      authFetch!.patch(`child-instance-profiles/${name}`, params),
+      authFetch.patch(`child-instance-profiles/${name}`, params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
   });

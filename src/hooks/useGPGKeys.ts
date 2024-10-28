@@ -29,7 +29,7 @@ export default function useGPGKeys() {
     useQuery<AxiosResponse<GPGKey[]>, AxiosError<ApiError>>({
       queryKey: ["gpgKeys"],
       queryFn: () =>
-        authFetch!.get("GetGPGKeys", {
+        authFetch.get("GetGPGKeys", {
           params: queryParams,
         }),
       ...config,
@@ -41,7 +41,7 @@ export default function useGPGKeys() {
     ImportGPGKeyParams
   >({
     mutationKey: ["gpgKeys", "new"],
-    mutationFn: (params) => authFetch!.get("ImportGPGKey", { params }),
+    mutationFn: (params) => authFetch.get("ImportGPGKey", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gpgKeys"] }),
   });
 
@@ -51,7 +51,7 @@ export default function useGPGKeys() {
     RemoveGPGKeyParams
   >({
     mutationKey: ["gpgKeys", "remove"],
-    mutationFn: (params) => authFetch!.get("RemoveGPGKey", { params }),
+    mutationFn: (params) => authFetch.get("RemoveGPGKey", { params }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gpgKeys"] }),
   });
 

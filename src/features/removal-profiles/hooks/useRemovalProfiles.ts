@@ -31,7 +31,7 @@ export default function useRemovalProfiles() {
     CreateRemovalProfileParams
   >({
     mutationFn: (params) =>
-      authFetchOld!.get("CreateRemovalProfile", { params }),
+      authFetchOld.get("CreateRemovalProfile", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
@@ -41,7 +41,7 @@ export default function useRemovalProfiles() {
     AxiosError<ApiError>,
     EditRemovalProfileParams
   >({
-    mutationFn: (params) => authFetchOld!.get(`EditRemovalProfile`, { params }),
+    mutationFn: (params) => authFetchOld.get(`EditRemovalProfile`, { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
@@ -52,7 +52,7 @@ export default function useRemovalProfiles() {
     RemoveRemovalProfileParams
   >({
     mutationFn: (params) =>
-      authFetchOld!.get(`RemoveRemovalProfile`, { params }),
+      authFetchOld.get(`RemoveRemovalProfile`, { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
@@ -64,7 +64,7 @@ export default function useRemovalProfiles() {
     useQuery<AxiosResponse<RemovalProfile[]>, AxiosError<ApiError>>({
       queryKey: ["removalProfiles"],
       queryFn: () =>
-        authFetchOld!.get("GetRemovalProfiles", { params: queryParams }),
+        authFetchOld.get("GetRemovalProfiles", { params: queryParams }),
       ...config,
     });
 

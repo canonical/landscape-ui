@@ -30,7 +30,7 @@ export default function useDistributions() {
     useQuery<AxiosResponse<Distribution[]>, AxiosError<ApiError>>({
       queryKey: ["distributions"],
       queryFn: () =>
-        authFetch!.get("GetDistributions", {
+        authFetch.get("GetDistributions", {
           params: queryParams,
         }),
       ...config,
@@ -42,7 +42,7 @@ export default function useDistributions() {
     CreateDistributionParams
   >({
     mutationKey: ["distributions", "new"],
-    mutationFn: (params) => authFetch!.get("CreateDistribution", { params }),
+    mutationFn: (params) => authFetch.get("CreateDistribution", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
@@ -53,7 +53,7 @@ export default function useDistributions() {
     RemoveDistributionParams
   >({
     mutationKey: ["distributions", "remove"],
-    mutationFn: (params) => authFetch!.get("RemoveDistribution", { params }),
+    mutationFn: (params) => authFetch.get("RemoveDistribution", { params }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
