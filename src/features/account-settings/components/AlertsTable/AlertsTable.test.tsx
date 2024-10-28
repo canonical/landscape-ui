@@ -60,7 +60,29 @@ describe("AlertsTable", () => {
     });
   });
 
-  it("handles switch change correctly", async () => {
+  it("handles alert subscription action", async () => {
+    vi.mocked(useMediaQuery).mockReturnValue(true);
+
+    renderWithProviders(
+      <AlertsTable
+        alerts={alerts}
+        availableTagOptions={mockAvailableTagOptions}
+      />,
+    );
+
+    const disabledSwitches = screen.getAllByRole("switch", {
+      name: /no/i,
+    });
+
+    const disabledSwitch = disabledSwitches[0];
+
+    expect(disabledSwitch).not.toBeChecked();
+
+    await userEvent.click(disabledSwitch);
+    expect(disabledSwitch).toBeChecked();
+  });
+
+  it("handles alert unsubscribe action", async () => {
     vi.mocked(useMediaQuery).mockReturnValue(true);
 
     renderWithProviders(
@@ -73,18 +95,10 @@ describe("AlertsTable", () => {
     const enabledSwitches = screen.getAllByRole("switch", {
       name: /yes/i,
     });
-    const disabledSwitches = screen.getAllByRole("switch", {
-      name: /no/i,
-    });
 
     const enabledSwitch = enabledSwitches[0];
-    const disabledSwitch = disabledSwitches[0];
 
     expect(enabledSwitch).toBeChecked();
-    expect(disabledSwitch).not.toBeChecked();
-
-    await userEvent.click(disabledSwitch);
-    expect(disabledSwitch).toBeChecked();
 
     await userEvent.click(enabledSwitch);
     expect(enabledSwitch).not.toBeChecked();

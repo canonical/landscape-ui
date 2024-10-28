@@ -1,6 +1,6 @@
 import { describe, expect } from "vitest";
 import InfoPanel from "./InfoPanel";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
 import { instances } from "@/tests/mocks/instance";
 import { Instance } from "@/types/Instance";
@@ -38,12 +38,10 @@ describe("InfoPanel", () => {
       }),
     ).toBeVisible();
 
-    await waitFor(() =>
-      expect(
-        screen.getByRole("textbox", {
-          name: /title/i,
-        }),
-      ).toHaveValue(instances[0].title),
-    );
+    expect(
+      await screen.findByRole("textbox", {
+        name: /title/i,
+      }),
+    ).toHaveValue(instances[0].title);
   });
 });

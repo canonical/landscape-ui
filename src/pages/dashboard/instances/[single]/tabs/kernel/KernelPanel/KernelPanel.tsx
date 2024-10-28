@@ -10,6 +10,7 @@ import {
 } from "@/features/kernel";
 import { usePageParams } from "@/hooks/usePageParams";
 import { UrlParams } from "@/types/UrlParams";
+import moment from "moment";
 import { FC, useMemo } from "react";
 import { useParams } from "react-router-dom";
 
@@ -32,9 +33,13 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
     id: instanceId,
   });
 
-  const allLivepatchFixes =
-    getLivepatchInfoResult?.data.livepatch_info?.json.output.Status[0].Livepatch
-      .Fixes ?? [];
+  const kernelInfo =
+    getLivepatchInfoResult?.data.livepatch_info?.json?.output?.Status &&
+    getLivepatchInfoResult?.data.livepatch_info?.json?.output?.Status.length > 0
+      ? getLivepatchInfoResult?.data.livepatch_info?.json?.output?.Status[0]
+      : undefined;
+
+  const allLivepatchFixes = kernelInfo?.Livepatch.Fixes ?? [];
 
   const getLivepatchFixes = (limit: number, offset: number) => {
     return allLivepatchFixes.slice(offset, offset + limit);
@@ -47,13 +52,13 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
 
   const kernelOverviewData: KernelOverviewInfo = {
     currentVersion:
-      getLivepatchInfoResult?.data.livepatch_info?.json.output.Status[0]
-        .Kernel ??
+      kernelInfo?.Kernel ??
       kernelStatuses?.data.installed?.version_rounded ??
       "",
     expirationDate:
-      getLivepatchInfoResult?.data.livepatch_info?.json.output.Status[0]
-        .UpgradeRequiredDate ?? "",
+      kernelInfo && moment(kernelInfo?.UpgradeRequiredDate).isValid()
+        ? kernelInfo.UpgradeRequiredDate
+        : "",
     status: kernelStatuses?.data.smart_status ?? "",
   };
 

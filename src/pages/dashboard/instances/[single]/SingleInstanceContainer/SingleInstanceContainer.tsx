@@ -11,7 +11,7 @@ import useInstances from "@/hooks/useInstances";
 import { useUsns } from "@/features/usns";
 import SingleInstanceEmptyState from "@/pages/dashboard/instances/[single]/SingleInstanceEmptyState";
 import SingleInstanceTabs from "@/pages/dashboard/instances/[single]/SingleInstanceTabs";
-import { getBreadcrumbs } from "./helpers";
+import { getBreadcrumbs, getKernelCount } from "./helpers";
 import { UrlParams } from "@/types/UrlParams";
 import { useKernel } from "@/features/kernel";
 
@@ -113,6 +113,10 @@ const SingleInstanceContainer: FC = () => {
     },
   );
 
+  const kernelTabFixes = getKernelCount(
+    getLivepatchInfoQueryResult?.data.livepatch_info?.json?.output?.Status,
+  );
+
   return (
     <PageMain>
       <PageHeader
@@ -148,12 +152,7 @@ const SingleInstanceContainer: FC = () => {
                 !instance.distribution ? 0 : getUsnsQueryResult?.data.count
               }
               usnLoading={getUsnsQueryLoading}
-              kernelCount={
-                !instance.distribution
-                  ? 0
-                  : getLivepatchInfoQueryResult?.data?.livepatch_info?.json
-                      .output.Status[0].Livepatch.Fixes?.length
-              }
+              kernelCount={!instance.distribution ? 0 : kernelTabFixes}
               kernelLoading={getLivepatchInfoQueryResultLoading}
             />
           )}

@@ -1,3 +1,7 @@
 export { Kernel, KernelManagementInfo, KernelOverviewInfo } from "./Kernel";
 
-export { Fix, LivepatchInformation } from "./LivepatchInformation";
+export {
+  Fix,
+  KernelStatus,
+  LivepatchInformation,
+} from "./LivepatchInformation";
