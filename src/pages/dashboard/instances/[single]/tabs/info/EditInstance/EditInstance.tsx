@@ -1,11 +1,11 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { useFormik } from "formik";
 import { Form, Input, Select, Textarea } from "@canonical/react-components";
 import { InstanceWithoutRelation } from "@/types/Instance";
 import useSidePanel from "@/hooks/useSidePanel";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import { VALIDATION_SCHEMA } from "./constants";
 import { FormProps } from "./types";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useRoles from "@/hooks/useRoles";
@@ -37,22 +37,14 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
   };
 
   const formik = useFormik({
-    initialValues: INITIAL_VALUES,
+    initialValues: {
+      title: instance.title,
+      comment: instance.comment,
+      access_group: instance.access_group,
+    },
     onSubmit: handleSubmit,
     validationSchema: VALIDATION_SCHEMA,
   });
-
-  useEffect(() => {
-    if (!instance) {
-      return;
-    }
-
-    formik.setValues({
-      access_group: instance.access_group,
-      comment: instance.comment,
-      title: instance.title,
-    });
-  }, [instance]);
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 

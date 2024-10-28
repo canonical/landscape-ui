@@ -5,21 +5,21 @@ export interface LivepatchInformation {
 }
 
 interface LivepatchInfo {
-  json: LivepatchContainer;
+  json?: LivepatchContainer;
 }
 
 interface LivepatchContainer {
   error: string;
-  output: InstanceInformation;
   return_code: number;
+  output?: InstanceInformation;
 }
 
 interface InstanceInformation {
-  Status: Status[];
+  Status: KernelStatus[];
   tier: string;
 }
 
-interface Status {
+export interface KernelStatus {
   Kernel: string;
   Livepatch: Livepatch;
   Running: boolean;

@@ -37,10 +37,6 @@ const testResponses: LoginMethods[] = [
       available: false,
       enabled: true,
     },
-    pam: {
-      available: false,
-      enabled: true,
-    },
   },
   {
     oidc: {
@@ -70,10 +66,6 @@ const testResponses: LoginMethods[] = [
       available: false,
       enabled: true,
     },
-    pam: {
-      available: false,
-      enabled: true,
-    },
   },
   {
     oidc: {
@@ -93,10 +85,6 @@ const testResponses: LoginMethods[] = [
       enabled: true,
     },
     ubuntu_one: {
-      available: false,
-      enabled: true,
-    },
-    pam: {
       available: false,
       enabled: true,
     },
@@ -122,10 +110,6 @@ const testResponses: LoginMethods[] = [
       available: true,
       enabled: true,
     },
-    pam: {
-      available: false,
-      enabled: true,
-    },
   },
   {
     oidc: {
@@ -145,10 +129,6 @@ const testResponses: LoginMethods[] = [
       enabled: true,
     },
     ubuntu_one: {
-      available: false,
-      enabled: true,
-    },
-    pam: {
       available: false,
       enabled: true,
     },
@@ -179,10 +159,6 @@ const testResponses: LoginMethods[] = [
     },
     ubuntu_one: {
       available: true,
-      enabled: true,
-    },
-    pam: {
-      available: false,
       enabled: true,
     },
   },

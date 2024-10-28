@@ -41,7 +41,7 @@ export const getLivepatchCoverageIcon = (
   const today = moment();
   const diffDays = expiry.diff(today, "days");
 
-  if (diffDays < 0 || !livepatchEnabled) {
+  if (diffDays < 0 || !livepatchEnabled || !moment(expiryDate).isValid()) {
     return "status-failed-small";
   } else if (diffDays < 7) {
     return "status-waiting-small";
