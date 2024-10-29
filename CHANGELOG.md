@@ -1,3 +1,11 @@
+## [1.7.1](https://github.com/canonical/landscape-dashboard/compare/v1.7.0...v1.7.1) (2024-10-29)
+
+
+### Bug Fixes
+
+* allow selecting public GPG keys when adding a new APT source ([2b6a979](https://github.com/canonical/landscape-dashboard/commit/2b6a979c5c083263b240de023cf446d7be366494))
+* kernel panel error when kernel status is undefined ([#123](https://github.com/canonical/landscape-dashboard/issues/123)) ([5ee63b4](https://github.com/canonical/landscape-dashboard/commit/5ee63b47410cb7e3d9fc1c5da9e6e8320f320c7b))
+
 # [1.7.0](https://github.com/canonical/landscape-dashboard/compare/v1.6.0...v1.7.0) (2024-10-24)
 
 
