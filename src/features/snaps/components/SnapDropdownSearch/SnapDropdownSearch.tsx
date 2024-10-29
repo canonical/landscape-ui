@@ -205,11 +205,9 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
                       <div className="u-truncate" data-testid="dropdownElement">
                         {boldSubstring(item.name, search)}
                       </div>
-                      <div>
-                        <small className="u-text-muted">
-                          {item.snap.publisher["display-name"]}
-                        </small>
-                      </div>
+                      <small className="u-text-muted">
+                        {item.snap.publisher["display-name"]}
+                      </small>
                     </li>
                   ))
                 )}
@@ -240,7 +238,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
                 <Button
                   type="button"
                   appearance="link"
-                  className="u-no-margin--bottom u-no-padding--top"
+                  className="u-no-margin--bottom"
                   onClick={() => handleDeleteSelectedItem(item.name)}
                 >
                   <Icon name={ICONS.delete} />

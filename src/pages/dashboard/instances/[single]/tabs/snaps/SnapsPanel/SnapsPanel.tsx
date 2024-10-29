@@ -53,7 +53,7 @@ const SnapsPanel: FC = () => {
             title="You haven't installed any snaps yet"
             body={
               <p className="u-no-margin--bottom">
-                Install Snaps by clicking the button below.
+                Install snaps by clicking the button below.
               </p>
             }
             cta={[

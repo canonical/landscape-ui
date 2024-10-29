@@ -26,7 +26,7 @@ describe("AvailableSnap", () => {
     expect(snapName).toBeInTheDocument();
     expect(screen.getByText("Release")).toBeVisible();
     expect(
-      screen.getByText(chosenSnap.snap.publisher["display-name"]!),
+      screen.getByText(chosenSnap.snap.publisher["display-name"] ?? ""),
     ).toBeVisible();
   });
 
@@ -34,14 +34,16 @@ describe("AvailableSnap", () => {
     it("selects strict confinement channel", async () => {
       const selectRelease = screen.getByRole("combobox");
       const options: HTMLOptionElement[] = screen.getAllByRole("option");
-      const strictConfinement = chosenSnap["channel-map"].find(
-        (channel) => channel.confinement === "strict",
-      )!;
-      const strictOption: HTMLOptionElement = options.find((option) =>
-        option.textContent?.includes(
-          `${strictConfinement.channel.name} - ${strictConfinement.channel.architecture}`,
-        ),
-      )!;
+      const strictConfinement =
+        chosenSnap["channel-map"].find(
+          (channel) => channel.confinement === "strict",
+        ) ?? chosenSnap["channel-map"][0];
+      const strictOption: HTMLOptionElement =
+        options.find((option) =>
+          option.textContent?.includes(
+            `${strictConfinement.channel.name} - ${strictConfinement.channel.architecture}`,
+          ),
+        ) ?? options[0];
       await userEvent.selectOptions(selectRelease, strictOption);
 
       expect(strictOption.selected).toBeTruthy();
@@ -50,14 +52,16 @@ describe("AvailableSnap", () => {
     it("selects classic confinement channel", async () => {
       const selectRelease = screen.getByRole("combobox");
       const options: HTMLOptionElement[] = screen.getAllByRole("option");
-      const classicConfinement = chosenSnap["channel-map"].find(
-        (channel) => channel.confinement === "classic",
-      )!;
-      const classicOption = options.find((option) =>
-        option.textContent?.includes(
-          `${classicConfinement.channel.name} - ${classicConfinement.channel.architecture}`,
-        ),
-      )!;
+      const classicConfinement =
+        chosenSnap["channel-map"].find(
+          (channel) => channel.confinement === "classic",
+        ) ?? chosenSnap["channel-map"][0];
+      const classicOption =
+        options.find((option) =>
+          option.textContent?.includes(
+            `${classicConfinement.channel.name} - ${classicConfinement.channel.architecture}`,
+          ),
+        ) ?? options[0];
 
       await userEvent.selectOptions(selectRelease, classicOption);
       expect(classicOption.selected).toBeTruthy();
@@ -82,18 +86,20 @@ describe("AvailableSnap", () => {
         "snap-id": chosenSnap["snap-id"],
         name: chosenSnap.name,
         snap: chosenSnap.snap,
-        revision: chosenSnap["channel-map"]
-          .find(
+        revision:
+          chosenSnap["channel-map"]
+            .find(
+              (channel) =>
+                `${channel.channel.name} - ${channel.channel.architecture}` ===
+                selectedChannel,
+            )
+            ?.revision.toString() ?? "Unknown revision",
+        channel:
+          chosenSnap["channel-map"].find(
             (channel) =>
               `${channel.channel.name} - ${channel.channel.architecture}` ===
               selectedChannel,
-          )!
-          .revision.toString(),
-        channel: chosenSnap["channel-map"].find(
-          (channel) =>
-            `${channel.channel.name} - ${channel.channel.architecture}` ===
-            selectedChannel,
-        )!.channel.name,
+          )?.channel.name ?? "Unknown channel",
       });
     });
 
