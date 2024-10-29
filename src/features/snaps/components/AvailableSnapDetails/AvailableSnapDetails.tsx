@@ -126,19 +126,19 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
             <div className={classes.toBeConfirmedCard__buttons}>
               <Button
                 small
-                className={classes.toBeConfirmedCard__confirmButton}
-                type="submit"
-                appearance="positive"
-              >
-                Add
-              </Button>
-              <Button
-                small
                 type="button"
                 appearance="base"
                 onClick={() => handleDeleteToBeConfirmedItem()}
               >
                 Cancel
+              </Button>
+              <Button
+                small
+                className={classes.toBeConfirmedCard__confirmButton}
+                type="submit"
+                appearance="positive"
+              >
+                Add
               </Button>
             </div>
           </li>

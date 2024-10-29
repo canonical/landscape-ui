@@ -176,7 +176,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                       </div>
                       <div>
                         <small className="u-text-muted">
-                          {item.current_version}
+                          {item.available_version}
                         </small>
                       </div>
                     </li>
@@ -200,17 +200,14 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
               >
                 <div>
                   <div>{item.name}</div>
-                  <span>
-                    <small className="u-text--muted p-text--small">
-                      {item.current_version}
-                    </small>
-                  </span>
+                  <small className="u-text--muted p-text--small">
+                    {item.available_version}
+                  </small>
                 </div>
                 <Button
                   type="button"
-                  hasIcon
                   appearance="link"
-                  className="u-no-margin--bottom u-no-padding--top"
+                  className="u-no-margin--bottom"
                   onClick={() => handleDeleteSelectedItem(item.name)}
                 >
                   <Icon name={ICONS.delete} />
