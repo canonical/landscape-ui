@@ -48,7 +48,7 @@ const ChartContainer: FC = () => {
 
   const totalInstances = upToDateInstancesCount + packageUpgradesCount;
 
-  const chartColors: { [key: number]: Colors } = {
+  const chartColors: Record<number, Colors> = {
     0: Colors.GREEN,
     1: Colors.ORANGE,
     2: Colors.RED,

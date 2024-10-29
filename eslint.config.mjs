@@ -13,6 +13,7 @@ export default tseslint.config(
 
   eslint.configs.recommended,
   ...tseslint.configs.strict,
+  ...tseslint.configs.stylistic,
 
   {
     ...reactPlugin.configs.flat.recommended,

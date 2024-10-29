@@ -1,16 +1,16 @@
 import { FC, FocusEventHandler, ReactNode } from "react";
 import classNames from "classnames";
-import { SelectOption } from "../../types/SelectOption";
+import { SelectOption } from "@/types/SelectOption";
 
-type EmptyOption = {
+interface EmptyOption {
   enabled: boolean;
   label?: string;
-};
+}
 
-export type groupedOption = {
+export interface groupedOption {
   options: SelectOption[];
   optGroup: string;
-};
+}
 
 interface SelectGroupedProps {
   groupedOptions: groupedOption[];

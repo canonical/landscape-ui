@@ -7,9 +7,9 @@ import { generateRequestParams } from "@/utils/api";
 
 export const FetchContext = React.createContext<AxiosInstance | null>(null);
 
-type FetchProviderProps = {
+interface FetchProviderProps {
   children: ReactNode;
-};
+}
 
 const FetchProvider: FC<FetchProviderProps> = ({ children }) => {
   const { user } = useAuth();

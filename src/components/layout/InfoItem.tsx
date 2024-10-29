@@ -63,24 +63,23 @@ interface InfoItemBaseProps {
   className?: string;
 }
 
-type TruncatedInfoItemProps = {
+interface TruncatedInfoItemProps {
   type: "truncated";
   value: string;
-};
+}
 
-type RegularInfoItemProps = {
+interface RegularInfoItemProps {
   type?: "regular";
   value: ReactNode;
-};
+}
 
-type PasswordInfoItemProps = {
+interface PasswordInfoItemProps {
   type: "password";
-};
-
-type SnippetInfoItemProps = {
+}
+interface SnippetInfoItemProps {
   type: "snippet";
   value: string;
-};
+}
 
 type InfoItemMode =
   | TruncatedInfoItemProps

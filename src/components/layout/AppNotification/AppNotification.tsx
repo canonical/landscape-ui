@@ -4,10 +4,10 @@ import { NotificationHelper } from "@/types/Notification";
 import classes from "./AppNotification.module.scss";
 import classNames from "classnames";
 
-type AppNotificationProps = {
+interface AppNotificationProps {
   notify: NotificationHelper;
   isSidePanelOpen?: boolean;
-};
+}
 
 const AppNotification: FC<AppNotificationProps> = ({
   notify,

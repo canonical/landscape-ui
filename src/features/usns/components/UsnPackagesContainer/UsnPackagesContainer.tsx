@@ -7,12 +7,12 @@ import UsnInstanceList from "../UsnInstanceList";
 import UsnPackageList from "../UsnPackageList";
 import { UrlParams } from "@/types/UrlParams";
 
-type UsnPackagesContainerProps = {
+interface UsnPackagesContainerProps {
   instances: Instance[];
   isRemovable: boolean;
   listType: "packages" | "instances";
   usn: string;
-};
+}
 
 const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
   instances,

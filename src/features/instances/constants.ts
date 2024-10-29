@@ -1,7 +1,7 @@
 import { ListFilter } from "@/types/Filters";
 import { Status } from "./types/Status";
 
-export const STATUSES: { [keyof: string]: Status } = {
+export const STATUSES: Record<string, Status> = {
   Online: {
     alertType: "ComputerOnlineAlert",
     label: "Computers online",

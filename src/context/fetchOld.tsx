@@ -7,9 +7,9 @@ import useAuth from "../hooks/useAuth";
 
 export const FetchContext = React.createContext<AxiosInstance | null>(null);
 
-type FetchProviderProps = {
+interface FetchProviderProps {
   children: ReactNode;
-};
+}
 
 const FetchOldProvider: FC<FetchProviderProps> = ({ children }) => {
   const { user } = useAuth();
