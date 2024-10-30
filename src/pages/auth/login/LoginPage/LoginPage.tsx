@@ -37,35 +37,45 @@ const LoginPage: FC = () => {
     getLoginMethodsQueryResult.data.pam.enabled
   );
 
+  const noMethodsAvailable =
+    !isLoading &&
+    !isPasswordEnabled &&
+    !isUbuntuOneEnabled &&
+    !isStandaloneOidcEnabled &&
+    !availableOidcProviders.length;
+
+  const providersAvailable =
+    !isLoading &&
+    (isUbuntuOneEnabled ||
+      isStandaloneOidcEnabled ||
+      availableOidcProviders.length > 0);
+
+  const loginFormAvailable =
+    !isLoading && (isPasswordEnabled || isEmailIdentityOnly);
+
   return (
     <AuthTemplate
       invitationAccount={invitationAccount}
       title="Sign in to Landscape"
     >
       {isLoading && <LoadingState />}
-      {!isLoading && (isPasswordEnabled || isEmailIdentityOnly) && (
+      {loginFormAvailable && (
         <LoginForm isEmailIdentityOnly={isEmailIdentityOnly} />
       )}
-      {!isLoading &&
-        (isUbuntuOneEnabled ||
-          isStandaloneOidcEnabled ||
-          availableOidcProviders.length > 0) && (
-          <AvailableProviderList
-            isStandaloneOidcEnabled={isStandaloneOidcEnabled}
-            isUbuntuOneEnabled={isUbuntuOneEnabled}
-            oidcProviders={availableOidcProviders}
-            onInvitation={(accountTitle) => setInvitationAccount(accountTitle)}
-          />
-        )}
-      {!isLoading &&
-        !isPasswordEnabled &&
-        !isUbuntuOneEnabled &&
-        !availableOidcProviders.length && (
-          <span>
-            It seems like you have no way to get in. Please contact our support
-            team.
-          </span>
-        )}
+      {providersAvailable && (
+        <AvailableProviderList
+          isStandaloneOidcEnabled={isStandaloneOidcEnabled}
+          isUbuntuOneEnabled={isUbuntuOneEnabled}
+          oidcProviders={availableOidcProviders}
+          onInvitation={(accountTitle) => setInvitationAccount(accountTitle)}
+        />
+      )}
+      {noMethodsAvailable && (
+        <span>
+          It seems like you have no way to get in. Please contact our support
+          team.
+        </span>
+      )}
     </AuthTemplate>
   );
 };

@@ -350,3 +350,9 @@ a[target="_blank"] {
   @extend %icon;
   @include vf-icon-private-key($color-mid-dark);
 }
+
+thead {
+  th {
+    vertical-align: middle;
+  }
+}

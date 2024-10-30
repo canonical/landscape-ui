@@ -1,5 +1,11 @@
 import { FC } from "react";
-import { Form, Input, Select } from "@canonical/react-components";
+import {
+  Form,
+  Icon,
+  Input,
+  Select,
+  Tooltip,
+} from "@canonical/react-components";
 import { useFormik } from "formik";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -10,6 +16,8 @@ import { SelectOption } from "@/types/SelectOption";
 import useRoles from "@/hooks/useRoles";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { APT_LINE_TOOLTIP } from "@/pages/dashboard/repositories/apt-sources/constants";
+import classes from "./NewAPTSourceForm.module.scss";
 
 interface FormProps {
   name: string;
@@ -102,7 +110,18 @@ const NewAPTSourceForm: FC = () => {
 
       <Input
         type="text"
-        label="APT Line"
+        label={
+          <>
+            <span>APT Line</span>
+            <Tooltip
+              message={APT_LINE_TOOLTIP}
+              positionElementClassName={classes.tooltipPositionElement}
+            >
+              <Icon name="help" aria-hidden />
+              <span className="u-off-screen">Help</span>
+            </Tooltip>
+          </>
+        }
         required
         error={
           formik.touched.apt_line && formik.errors.apt_line
