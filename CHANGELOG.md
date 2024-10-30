@@ -1,3 +1,11 @@
+## [1.7.2](https://github.com/canonical/landscape-dashboard/compare/v1.7.1...v1.7.2) (2024-10-30)
+
+
+### Bug Fixes
+
+* available package version not showing in package install form ([#124](https://github.com/canonical/landscape-dashboard/issues/124)) ([092fee0](https://github.com/canonical/landscape-dashboard/commit/092fee0abbc1cb9feb8d5383ab17417a84522b69))
+* show 'no login methods' only when appropriate ([a1d4417](https://github.com/canonical/landscape-dashboard/commit/a1d4417bbfdf1638b0f914cd679d992640346341))
+
 ## [1.7.1](https://github.com/canonical/landscape-dashboard/compare/v1.7.0...v1.7.1) (2024-10-29)
 
 
