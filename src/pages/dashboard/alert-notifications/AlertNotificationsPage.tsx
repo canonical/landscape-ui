@@ -23,7 +23,7 @@ const AlertNotificationsPage: FC = () => {
 
   const {
     data: getPendingInstancesQueryResult,
-    isInitialLoading: getPendingInstancesQueryLoading,
+    isLoading: getPendingInstancesQueryLoading,
   } = getPendingInstancesQuery(undefined, {
     enabled: !!getAlertsSummaryQueryResult?.data.alerts_summary.find(
       (alert) => alert.alert_type === "PendingComputersAlert",

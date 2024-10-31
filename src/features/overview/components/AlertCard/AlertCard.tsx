@@ -28,7 +28,7 @@ const AlertCard: FC<Status> = ({
 
   const {
     data: getAlertsQueryResult,
-    isInitialLoading: getAlertsQueryLoading,
+    isLoading: getAlertsQueryLoading,
     isError: getAlertsQueryError,
   } = getInstancesQuery(
     {
@@ -43,7 +43,7 @@ const AlertCard: FC<Status> = ({
 
   const {
     data: getPendingInstancesQueryResult,
-    isInitialLoading: getPendingInstancesQueryLoading,
+    isLoading: getPendingInstancesQueryLoading,
     error: getPendingInstancesQueryError,
   } = getPendingInstancesQuery(undefined, {
     enabled: isPendingComputersAlert,
