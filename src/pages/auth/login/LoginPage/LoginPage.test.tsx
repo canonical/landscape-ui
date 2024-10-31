@@ -3,6 +3,15 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { LoginMethods } from "@/features/auth";
 
+const EMPTY_MESSAGE =
+  "It seems like you have no way to get in. Please contact our support team.";
+
+const emptyMessageNotBeInTheDocument = () => {
+  const emptyMessage = screen.queryByText(EMPTY_MESSAGE);
+
+  expect(emptyMessage).not.toBeInTheDocument();
+};
+
 const mockTestParams = (loginMethods: LoginMethods) => {
   vi.doMock("@/features/auth", async () => ({
     ...(await vi.importActual("@/features/auth")),
@@ -183,17 +192,15 @@ describe("LoginPage", () => {
   it("should render no sign in methods", async () => {
     expect(screen.queryAllByRole("button").length).toBe(0);
 
-    expect(
-      screen.getByText(
-        "It seems like you have no way to get in. Please contact our support team.",
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText(EMPTY_MESSAGE)).toBeInTheDocument();
   });
 
   it("should render okta sign in method", async () => {
     expect(screen.getAllByRole("button").length).toBe(1);
 
     expect(screen.getByRole("button")).toHaveTextContent("Sign in with Okta");
+
+    emptyMessageNotBeInTheDocument();
   });
 
   it("should render enterprise sign in method", async () => {
@@ -202,6 +209,8 @@ describe("LoginPage", () => {
     expect(screen.getByRole("button")).toHaveTextContent(
       "Sign in with Enterprise Login",
     );
+
+    emptyMessageNotBeInTheDocument();
   });
 
   it("should render ubuntu one sign in method", async () => {
@@ -210,6 +219,8 @@ describe("LoginPage", () => {
     expect(screen.getByRole("button")).toHaveTextContent(
       "Sign in with Ubuntu One",
     );
+
+    emptyMessageNotBeInTheDocument();
   });
 
   it("should render email and password sign in method", async () => {
@@ -224,6 +235,8 @@ describe("LoginPage", () => {
       screen.getByRole("textbox", { name: /identity/i }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+
+    emptyMessageNotBeInTheDocument();
   });
 
   it("should render all sign in method", async () => {
@@ -238,5 +251,7 @@ describe("LoginPage", () => {
     expect(
       screen.getByRole("button", { name: "Sign in with Ubuntu One" }),
     ).toBeInTheDocument();
+
+    emptyMessageNotBeInTheDocument();
   });
 });
