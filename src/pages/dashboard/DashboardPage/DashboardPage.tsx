@@ -10,7 +10,9 @@ const DashboardPage: FC = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (maybeRemoveTrailingSlash(ROOT_PATH) !== pathname) {
+    if (
+      maybeRemoveTrailingSlash(ROOT_PATH) !== maybeRemoveTrailingSlash(pathname)
+    ) {
       return;
     }
 

@@ -41,12 +41,6 @@ const LoginMethodsLayout: FC<LoginMethodsProps> = ({ methods }) => {
     isStandaloneOidcEnabled ||
     methods.oidc.configurations.length > 0;
 
-  const noMethodsAvailable =
-    !loginFormAvailable &&
-    !isUbuntuOneEnabled &&
-    !isStandaloneOidcEnabled &&
-    !availableOidcProviders.length;
-
   return (
     <>
       {loginFormAvailable && (
@@ -59,7 +53,7 @@ const LoginMethodsLayout: FC<LoginMethodsProps> = ({ methods }) => {
           oidcProviders={availableOidcProviders}
         />
       )}
-      {noMethodsAvailable && (
+      {!loginFormAvailable && !providersAvailable && (
         <span>
           It seems like you have no way to get in. Please contact our support
           team.
