@@ -1,13 +1,14 @@
 import { ROOT_PATH } from "@/constants";
 import { STATUSES } from "@/features/instances";
 import { AlertSummary } from "@/types/Alert";
-import { Button, Icon, Link, List } from "@canonical/react-components";
+import { Button, Icon, List } from "@canonical/react-components";
 import { FC, lazy, Suspense } from "react";
 import classes from "./AlertNotificationsList.module.scss";
 import classNames from "classnames";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import { PendingInstance } from "@/types/Instance";
+import { Link } from "react-router-dom";
 
 const PendingInstancesForm = lazy(
   () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -55,7 +56,7 @@ const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
           </Button>
         ) : (
           <Link
-            href={`${ROOT_PATH}instances?status=${status.filterValue}`}
+            to={`${ROOT_PATH}instances?status=${status.filterValue}`}
             className={classNames(
               "u-no-margin u-no-padding",
               classes.listItem__link,
