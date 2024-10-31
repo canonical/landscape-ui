@@ -1,3 +1,10 @@
+## [1.7.3](https://github.com/canonical/landscape-dashboard/compare/v1.7.2...v1.7.3) (2024-10-31)
+
+
+### Bug Fixes
+
+* change link component import in alert notifications ([#125](https://github.com/canonical/landscape-dashboard/issues/125)) ([13726aa](https://github.com/canonical/landscape-dashboard/commit/13726aa8d2903e09a96cdaafffb156a81642769c))
+
 ## [1.7.2](https://github.com/canonical/landscape-dashboard/compare/v1.7.1...v1.7.2) (2024-10-30)
 
 
