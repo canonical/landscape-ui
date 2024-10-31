@@ -6,11 +6,11 @@ import { SUPPORTED_PROVIDERS } from "../../constants";
 import {
   GetOidcUrlParams,
   GetUbuntuOneUrlParams,
+  useInvitation,
   useUnsigned,
 } from "../../hooks";
 import { redirectToExternalUrl } from "../../helpers";
 import classes from "./AvailableProviderList.module.scss";
-import { useInvitation } from "@/features/auth";
 
 interface AvailableProviderListProps {
   isStandaloneOidcEnabled: boolean;

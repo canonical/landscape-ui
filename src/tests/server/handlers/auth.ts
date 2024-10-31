@@ -15,6 +15,7 @@ import {
   supportedProviders,
 } from "@/tests/mocks/identityProviders";
 import { InvitationSummary } from "@/types/Invitation";
+import { allLoginMethods } from "@/tests/mocks/loginMethods";
 
 interface SwitchAccountParams {
   account_name: string;
@@ -33,20 +34,7 @@ export default [
   ),
 
   http.get(`${API_URL}login/methods`, () => {
-    return HttpResponse.json({
-      oidc: {
-        available: false,
-        configurations: [],
-      },
-      ubuntu_one: {
-        available: true,
-        enabled: true,
-      },
-      password: {
-        available: true,
-        enabled: true,
-      },
-    });
+    return HttpResponse.json(allLoginMethods);
   }),
 
   http.post<never, SwitchAccountParams, SwitchAccountResponse>(

@@ -7,28 +7,16 @@ import { InvitationSummary } from "@/types/Invitation";
 
 export const identityProviders: IdentityProvider[] = [
   {
-    name: "Okta test",
-    provider: "okta",
-    enabled: false,
-    id: 16,
-  },
-  {
-    name: "Okta Onward",
+    name: "Okta Enabled",
     provider: "okta",
     enabled: true,
-    id: 19,
+    id: 1,
   },
   {
-    name: "Okta Auth0 Dev",
-    provider: "okta",
-    enabled: true,
-    id: 22,
-  },
-  {
-    name: "Test Okta",
+    name: "Okta Disabled",
     provider: "okta",
     enabled: false,
-    id: 18,
+    id: 2,
   },
 ];
 

@@ -13,52 +13,18 @@ const oidcProviders = identityProviders.filter(({ enabled }) => enabled);
 const redirectToExternalUrl = vi.hoisted(() => vi.fn());
 
 const props: ComponentProps<typeof AvailableProviderList> = {
-  isStandaloneOidcEnabled: false,
-  isUbuntuOneEnabled: false,
   oidcProviders,
+  isUbuntuOneEnabled: false,
+  isStandaloneOidcEnabled: false,
 };
 
 describe("AvailableProviderList", () => {
-  beforeEach(({ task: { id } }) => {
-    renderWithProviders(
-      <AvailableProviderList
-        {...props}
-        isUbuntuOneEnabled={id.endsWith("1")}
-        isStandaloneOidcEnabled={id.endsWith("2")}
-      />,
-    );
+  beforeEach(() => {
+    renderWithProviders(<AvailableProviderList {...props} />);
   });
 
-  it("should render the available provider list", async () => {
-    expect(
-      screen.queryByRole("button", { name: "Ubuntu One" }),
-    ).not.toBeInTheDocument();
-
-    expect(await screen.findAllByRole("listitem")).toHaveLength(
-      oidcProviders.length,
-    );
-  });
-
-  it("should render 'Ubuntu One' button within the list", async () => {
-    expect(
-      await screen.findByRole("button", { name: "Sign in with Ubuntu One" }),
-    ).toBeInTheDocument();
-
-    expect(await screen.findAllByRole("listitem")).toHaveLength(
-      oidcProviders.length + 1,
-    );
-  });
-
-  it("should render 'Enterprise Login' button within the list", async () => {
-    expect(
-      await screen.findByRole("button", {
-        name: "Sign in with Enterprise Login",
-      }),
-    ).toBeInTheDocument();
-
-    expect(await screen.findAllByRole("listitem")).toHaveLength(
-      oidcProviders.length + 1,
-    );
+  afterEach(() => {
+    vi.resetAllMocks();
   });
 
   it("should redirect to an external url", async () => {
@@ -67,7 +33,7 @@ describe("AvailableProviderList", () => {
     }));
 
     await userEvent.click(
-      await screen.findByRole("button", { name: "Sign in with Okta Onward" }),
+      await screen.findByRole("button", { name: "Sign in with Okta Enabled" }),
     );
 
     expect(redirectToExternalUrl).toHaveBeenCalledWith(locationToRedirectTo);

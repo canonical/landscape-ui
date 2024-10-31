@@ -1,22 +1,10 @@
 import { LoginMethods } from "@/features/auth";
+import { identityProviders } from "@/tests/mocks/identityProviders";
 
 export const allLoginMethods: LoginMethods = {
   oidc: {
     available: true,
-    configurations: [
-      {
-        name: "Okta Enabled",
-        provider: "okta",
-        enabled: true,
-        id: 1,
-      },
-      {
-        name: "Okta Disabled",
-        provider: "okta",
-        enabled: false,
-        id: 2,
-      },
-    ],
+    configurations: identityProviders,
   },
   standalone_oidc: {
     available: true,
