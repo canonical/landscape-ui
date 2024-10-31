@@ -3,18 +3,16 @@ import { LoginPageLayout, Notification } from "@canonical/react-components";
 import Logo from "@/assets/images/logo-white-character.svg";
 import { APP_TITLE, ROOT_PATH } from "@/constants";
 import classes from "./AuthTemplate.module.scss";
+import { useInvitation } from "@/features/auth";
 
 interface AuthTemplateProps {
   children: ReactNode;
   title: string;
-  invitationAccount?: string;
 }
 
-const AuthTemplate: FC<AuthTemplateProps> = ({
-  title,
-  children,
-  invitationAccount,
-}) => {
+const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
+  const { invitationAccount } = useInvitation();
+
   return (
     <div className={classes.root}>
       <LoginPageLayout
@@ -25,9 +23,9 @@ const AuthTemplate: FC<AuthTemplateProps> = ({
           url: ROOT_PATH,
         }}
       >
-        {invitationAccount && (
+        {invitationAccount?.account_title && (
           <Notification severity="information">
-            {`You've been invited to ${invitationAccount}`}
+            {`You've been invited to ${invitationAccount?.account_title}`}
           </Notification>
         )}
         {children}

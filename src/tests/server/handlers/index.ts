@@ -17,6 +17,8 @@ import wsl from "./wsl";
 import alerts from "./alerts";
 import organisationPreferences from "./organisationPreferences";
 import userSettings from "./userSettings";
+import methods from "./methods";
+import invitations from "./invitations";
 
 export default [
   ...auth,
@@ -38,4 +40,6 @@ export default [
   ...alerts,
   ...organisationPreferences,
   ...userSettings,
+  ...invitations,
+  ...methods,
 ];

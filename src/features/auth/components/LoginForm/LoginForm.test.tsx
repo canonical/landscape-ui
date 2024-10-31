@@ -71,7 +71,7 @@ describe("LoginForm", () => {
 
     const { default: Component } = await import("./LoginForm");
 
-    renderWithProviders(<Component isEmailIdentityOnly={false} />);
+    renderWithProviders(<Component isIdentityAvailable={false} />);
 
     await userEvent.type(
       screen.getByTestId("email"),

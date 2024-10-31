@@ -10,42 +10,27 @@ import {
 } from "../../hooks";
 import { redirectToExternalUrl } from "../../helpers";
 import classes from "./AvailableProviderList.module.scss";
+import { useInvitation } from "@/features/auth";
 
 interface AvailableProviderListProps {
   isStandaloneOidcEnabled: boolean;
   isUbuntuOneEnabled: boolean;
   oidcProviders: IdentityProvider[];
-  onInvitation: (accountTitle: string) => void;
 }
 
 const AvailableProviderList: FC<AvailableProviderListProps> = ({
   isStandaloneOidcEnabled,
   isUbuntuOneEnabled,
   oidcProviders,
-  onInvitation,
 }) => {
   const [providerId, setProviderId] = useState(0);
   const [searchParams] = useSearchParams();
+  const { invitationId } = useInvitation();
 
-  const { getOidcUrlQuery, getUbuntuOneUrlQuery, getInvitationSummaryQuery } =
-    useUnsigned();
+  const { getOidcUrlQuery, getUbuntuOneUrlQuery } = useUnsigned();
 
   const redirectTo = searchParams.get("redirect-to");
-  const invitationId = searchParams.get("invitation_id");
   const external = searchParams.has("external");
-
-  const { data: getInvitationSummaryQueryResult } = getInvitationSummaryQuery(
-    { invitationId: invitationId ?? "" },
-    { enabled: !!invitationId },
-  );
-
-  useEffect(() => {
-    if (!getInvitationSummaryQueryResult) {
-      return;
-    }
-
-    onInvitation(getInvitationSummaryQueryResult.data.account_title);
-  }, [getInvitationSummaryQueryResult]);
 
   const params: GetOidcUrlParams = {};
 

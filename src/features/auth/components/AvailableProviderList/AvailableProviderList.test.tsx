@@ -5,21 +5,17 @@ import { ComponentProps } from "react";
 import { screen } from "@testing-library/react";
 import {
   identityProviders,
-  invitations,
   locationToRedirectTo,
 } from "@/tests/mocks/identityProviders";
 import userEvent from "@testing-library/user-event";
 
-const invitation_id = "1";
 const oidcProviders = identityProviders.filter(({ enabled }) => enabled);
-const onInvitation = vi.fn();
 const redirectToExternalUrl = vi.hoisted(() => vi.fn());
 
 const props: ComponentProps<typeof AvailableProviderList> = {
   isStandaloneOidcEnabled: false,
   isUbuntuOneEnabled: false,
   oidcProviders,
-  onInvitation,
 };
 
 describe("AvailableProviderList", () => {
@@ -62,18 +58,6 @@ describe("AvailableProviderList", () => {
 
     expect(await screen.findAllByRole("listitem")).toHaveLength(
       oidcProviders.length + 1,
-    );
-  });
-
-  it("should handle invitation", async () => {
-    vi.mock("react-router-dom", async () => ({
-      ...(await vi.importActual("react-router-dom")),
-      useSearchParams: () => [new URLSearchParams({ invitation_id })],
-    }));
-
-    expect(onInvitation).toHaveBeenCalledWith(
-      invitations.find(({ secure_id }) => secure_id === invitation_id)
-        ?.account_title,
     );
   });
 

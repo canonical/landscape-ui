@@ -68,7 +68,7 @@ interface GetUbuntuOneStateParams {
   url: string;
 }
 
-interface GetInvitationSummaryParams {
+export interface GetInvitationSummaryParams {
   invitationId: string;
 }
 

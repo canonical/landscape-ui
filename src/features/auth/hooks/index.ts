@@ -9,3 +9,4 @@ export type {
   LoginMethods,
   LoginRequestParams,
 } from "./useUnsigned";
+export { default as useInvitation } from "./useInvitation";

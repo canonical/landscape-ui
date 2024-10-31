@@ -21,10 +21,10 @@ interface FormProps {
 }
 
 interface LoginFormProps {
-  isEmailIdentityOnly: boolean;
+  isIdentityAvailable: boolean;
 }
 
-const LoginForm: FC<LoginFormProps> = ({ isEmailIdentityOnly }) => {
+const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
   const [searchParams] = useSearchParams();
 
   const debug = useDebug();
@@ -44,11 +44,11 @@ const LoginForm: FC<LoginFormProps> = ({ isEmailIdentityOnly }) => {
       password: "",
     },
     validationSchema: Yup.object().shape({
-      email: isEmailIdentityOnly
-        ? Yup.string()
+      email: isIdentityAvailable
+        ? Yup.string().required("This field is required")
+        : Yup.string()
             .required("This field is required")
-            .email("Please provide a valid email address")
-        : Yup.string().required("This field is required"),
+            .email("Please provide a valid email address"),
       password: Yup.string().required("This field is required"),
     }),
     onSubmit: async (values) => {
@@ -82,7 +82,7 @@ const LoginForm: FC<LoginFormProps> = ({ isEmailIdentityOnly }) => {
     <Form onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        label={isEmailIdentityOnly ? "Email" : "Identity"}
+        label={isIdentityAvailable ? "Identity" : "Email"}
         error={
           formik.touched.email && formik.errors.email
             ? formik.errors.email
