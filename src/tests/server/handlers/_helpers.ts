@@ -54,3 +54,12 @@ export function generateFilteredResponse<D>(
     return false;
   });
 }
+
+export const isAction = (request: Request, actionName: string | string[]) => {
+  const url = new URL(request.url);
+  const action = url.searchParams.get("action") ?? "";
+
+  return "string" === typeof actionName
+    ? action === actionName
+    : actionName.includes(action);
+};

@@ -4,6 +4,7 @@ import { Alert, AlertSummaryResponse } from "@/types/Alert";
 import { alerts, alertsSummary } from "@/tests/mocks/alerts";
 import { SubscriptionParams } from "@/hooks/useAlerts";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { isAction } from "@/tests/server/handlers/_helpers";
 
 export default [
   http.get<never, never, Alert[]>(`${API_URL}alerts`, () => {
@@ -27,17 +28,19 @@ export default [
     },
   ),
 
-  http.get<never, SubscriptionParams, undefined>(
-    `${API_URL_OLD}SubscribeToAlert`,
-    () => {
-      return HttpResponse.json();
-    },
-  ),
+  http.get<never, SubscriptionParams, undefined>(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "SubscribeToAlert")) {
+      return;
+    }
 
-  http.get<never, SubscriptionParams, undefined>(
-    `${API_URL_OLD}UnsubscribeFromAlert`,
-    () => {
-      return HttpResponse.json();
-    },
-  ),
+    return HttpResponse.json();
+  }),
+
+  http.get<never, SubscriptionParams, undefined>(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "UnsubscribeFromAlert")) {
+      return;
+    }
+
+    return HttpResponse.json();
+  }),
 ];

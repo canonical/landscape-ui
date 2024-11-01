@@ -6,7 +6,7 @@ import { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
 import { GetInstancesParams } from "@/hooks/useInstances";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { Instance, PendingInstance } from "@/types/Instance";
-import { generatePaginatedResponse } from "./_helpers";
+import { generatePaginatedResponse, isAction } from "./_helpers";
 import { instances, pendingInstances } from "@/tests/mocks/instance";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
@@ -49,10 +49,11 @@ export default [
     return HttpResponse.json({ groups: userGroups });
   }),
 
-  http.get<never, never, PendingInstance[]>(
-    `${API_URL_OLD}GetPendingComputers`,
-    () => {
-      return HttpResponse.json(pendingInstances);
-    },
-  ),
+  http.get<never, never, PendingInstance[]>(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "GetPendingComputers")) {
+      return;
+    }
+
+    return HttpResponse.json(pendingInstances);
+  }),
 ];
