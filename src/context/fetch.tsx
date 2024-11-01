@@ -20,7 +20,7 @@ const FetchProvider: FC<FetchProviderProps> = ({ children }) => {
 
   authFetch.interceptors.request.use(
     (config) => {
-      if (user && user.token) {
+      if (user?.token) {
         config.headers["Authorization"] = `Bearer ${user.token}`;
       }
 

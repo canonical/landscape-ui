@@ -17,18 +17,18 @@ const FetchOldProvider: FC<FetchProviderProps> = ({ children }) => {
     baseURL: API_URL_OLD,
   });
 
-  if (user && user.token) {
-    authFetch.interceptors.request.use(
-      (config) => {
+  authFetch.interceptors.request.use(
+    (config) => {
+      if (user?.token) {
         config.headers["Authorization"] = `Bearer ${user.token}`;
+      }
 
-        return generateRequestParams({ config, isOld: true });
-      },
-      (error: AxiosError) => {
-        Promise.reject(error);
-      },
-    );
-  }
+      return generateRequestParams({ config, isOld: true });
+    },
+    (error: AxiosError) => {
+      Promise.reject(error);
+    },
+  );
 
   return (
     <FetchContext.Provider value={authFetch}>{children}</FetchContext.Provider>
