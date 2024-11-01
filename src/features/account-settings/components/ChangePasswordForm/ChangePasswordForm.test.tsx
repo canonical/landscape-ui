@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import ChangePasswordForm from "./ChangePasswordForm";
 
 describe("ChangePasswordForm", () => {
@@ -23,6 +23,7 @@ describe("ChangePasswordForm", () => {
     renderWithProviders(<ChangePasswordForm />);
 
     const saveButton = screen.getByRole("button", { name: /save changes/i });
+
     await userEvent.click(saveButton);
 
     expect(screen.getAllByText("This field is required")).toHaveLength(2);

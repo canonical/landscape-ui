@@ -11,7 +11,21 @@ import useInstances from "@/hooks/useInstances";
 import { useUsns } from "@/features/usns";
 import SingleInstanceEmptyState from "@/pages/dashboard/instances/[single]/SingleInstanceEmptyState";
 import SingleInstanceTabs from "@/pages/dashboard/instances/[single]/SingleInstanceTabs";
-import { getBreadcrumbs, getKernelCount } from "./helpers";
+import {
+  getBreadcrumbs,
+  getInstanceRequestId,
+  getInstanceTitle,
+  getKernelCount,
+  getPackageCount,
+  getQueryComputerIdsParam,
+  getQueryInstanceIdParam,
+  getUsnCount,
+  isInstanceFound,
+  isInstancePackagesQueryEnabled,
+  isInstanceQueryEnabled,
+  isLivepatchInfoQueryEnabled,
+  isUsnQueryEnabled,
+} from "./helpers";
 import { UrlParams } from "@/types/UrlParams";
 import { useKernel } from "@/features/kernel";
 
@@ -47,17 +61,16 @@ const SingleInstanceContainer: FC = () => {
     isLoading: getSingleInstanceQueryLoading,
   } = getSingleInstanceQuery(
     {
-      instanceId: childInstanceId
-        ? parseInt(childInstanceId)
-        : parseInt(instanceId ?? ""),
+      instanceId: getInstanceRequestId(instanceId, childInstanceId),
       with_annotations: true,
       with_grouped_hardware: true,
     },
     {
-      enabled:
-        !!instanceId &&
-        (!userAccountRef.current ||
-          userAccountRef.current === user?.current_account),
+      enabled: isInstanceQueryEnabled(
+        instanceId,
+        userAccountRef.current,
+        user?.current_account,
+      ),
     },
   );
 
@@ -66,15 +79,11 @@ const SingleInstanceContainer: FC = () => {
   const { data: getUsnsQueryResult, isLoading: getUsnsQueryLoading } =
     getUsnsQuery(
       {
-        computer_ids: instance ? [instance.id] : [],
+        computer_ids: getQueryComputerIdsParam(instance),
         limit: 1,
       },
       {
-        enabled:
-          !!instance?.distribution &&
-          /\d{1,2}\.\d{2}/.test(instance.distribution) &&
-          (!childInstanceId ||
-            instance.parent?.id === parseInt(instanceId ?? "")),
+        enabled: isUsnQueryEnabled(instance, instanceId, childInstanceId),
       },
     );
 
@@ -85,15 +94,15 @@ const SingleInstanceContainer: FC = () => {
     {
       available: false,
       upgrade: true,
-      instance_id: instance ? instance.id : 0,
+      instance_id: getQueryInstanceIdParam(instance),
       limit: 1,
     },
     {
-      enabled:
-        !!instance?.distribution &&
-        /\d{1,2}\.\d{2}/.test(instance.distribution) &&
-        (!childInstanceId ||
-          instance.parent?.id === parseInt(instanceId ?? "")),
+      enabled: isInstancePackagesQueryEnabled(
+        instance,
+        instanceId,
+        childInstanceId,
+      ),
     },
   );
 
@@ -102,14 +111,14 @@ const SingleInstanceContainer: FC = () => {
     isLoading: getLivepatchInfoQueryResultLoading,
   } = getLivepatchInfoQuery(
     {
-      id: instance ? instance.id : 0,
+      id: getQueryInstanceIdParam(instance),
     },
     {
-      enabled:
-        !!instance?.distribution &&
-        /\d{1,2}\.\d{2}/.test(instance.distribution) &&
-        (!childInstanceId ||
-          instance.parent?.id === parseInt(instanceId ?? "")),
+      enabled: isLivepatchInfoQueryEnabled(
+        instance,
+        instanceId,
+        childInstanceId,
+      ),
     },
   );
 
@@ -117,45 +126,45 @@ const SingleInstanceContainer: FC = () => {
     getLivepatchInfoQueryResult?.data.livepatch_info?.json?.output?.Status,
   );
 
+  const isFound = isInstanceFound(instance, instanceId, childInstanceId);
+
   return (
     <PageMain>
       <PageHeader
-        title={instance?.title ?? ""}
+        title={getInstanceTitle(instance)}
         hideTitle
         breadcrumbs={getBreadcrumbs(instance)}
       />
       <PageContent>
-        {getSingleInstanceQueryLoading && <LoadingState />}
-        {!getSingleInstanceQueryLoading &&
-          (!instance ||
-            (childInstanceId &&
-              instance?.parent?.id !== parseInt(instanceId ?? ""))) && (
-            <SingleInstanceEmptyState
-              childInstanceId={childInstanceId}
-              instanceId={instanceId}
-            />
-          )}
-        {!getSingleInstanceQueryLoading &&
-          instance &&
-          (!childInstanceId ||
-            (instance.parent &&
-              instance.parent.id === parseInt(instanceId ?? ""))) && (
-            <SingleInstanceTabs
-              instance={instance}
-              packageCount={
-                !instance.distribution
-                  ? 0
-                  : getInstancePackagesQueryResult?.data.count
-              }
-              packagesLoading={getInstancePackagesQueryLoading}
-              usnCount={
-                !instance.distribution ? 0 : getUsnsQueryResult?.data.count
-              }
-              usnLoading={getUsnsQueryLoading}
-              kernelCount={!instance.distribution ? 0 : kernelTabFixes}
-              kernelLoading={getLivepatchInfoQueryResultLoading}
-            />
-          )}
+        {getSingleInstanceQueryLoading ? (
+          <LoadingState />
+        ) : (
+          <>
+            {!isFound && (
+              <SingleInstanceEmptyState
+                childInstanceId={childInstanceId}
+                instanceId={instanceId}
+              />
+            )}
+            {instance && isFound && (
+              <SingleInstanceTabs
+                instance={instance}
+                packageCount={getPackageCount(
+                  instance,
+                  Number(getInstancePackagesQueryResult?.data.count),
+                )}
+                packagesLoading={getInstancePackagesQueryLoading}
+                usnCount={getUsnCount(
+                  instance,
+                  Number(getUsnsQueryResult?.data.count),
+                )}
+                usnLoading={getUsnsQueryLoading}
+                kernelCount={!instance.distribution ? 0 : kernelTabFixes}
+                kernelLoading={getLivepatchInfoQueryResultLoading}
+              />
+            )}
+          </>
+        )}
       </PageContent>
     </PageMain>
   );
