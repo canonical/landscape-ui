@@ -1,3 +1,9 @@
+landscape-dashboard (1.7.4-0landscape0) jammy; urgency=medium
+
+  * Release 1.7.4 for jammy
+
+ -- Bill Kronholm <bill.kronholm@canonical.com>  Fri, 01 Nov 2024 05:58:31 -0700
+
 landscape-dashboard (1.4.2-0landscape0) jammy; urgency=medium
 
   * Release 1.4.2 for jammy
