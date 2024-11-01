@@ -1,10 +1,10 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useMediaQuery } from "usehooks-ts";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import ApiCredentialsTables from "./ApiCredentialsTables";
 import { Credential, UserDetails } from "@/types/UserDetails";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 const mockUser: UserDetails = {
   name: "test-name",
@@ -49,17 +49,14 @@ const mockCredentials: Credential[] = [
   },
 ];
 
-vi.mock("usehooks-ts", () => ({
-  useMediaQuery: vi.fn(),
-}));
-
 describe("ApiCredentialsTables", () => {
-  beforeEach(() => {
-    vi.mocked(useMediaQuery).mockReset();
+  afterEach(() => {
+    resetScreenSize();
   });
 
   it("renders the table in desktop view", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
+
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
     );
@@ -72,7 +69,8 @@ describe("ApiCredentialsTables", () => {
   });
 
   it("renders the mobile view when screen is small", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(false);
+    setScreenSize("small");
+
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
     );
@@ -87,7 +85,8 @@ describe("ApiCredentialsTables", () => {
   });
 
   it("displays 'Generate API credentials' button when no credentials exist", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
+
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
     );
@@ -97,7 +96,8 @@ describe("ApiCredentialsTables", () => {
   });
 
   it("displays 'Regenerate API credentials' button when credentials exist", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
+
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
     );
@@ -107,7 +107,8 @@ describe("ApiCredentialsTables", () => {
   });
 
   it("handles generate/regenerate button click", async () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
+
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
     );

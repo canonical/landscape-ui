@@ -3,13 +3,11 @@ import { renderWithProviders } from "@/tests/render";
 import UbuntuProPanel from "./UbuntuProPanel";
 import { screen } from "@testing-library/react";
 
-const instanceWithUbuntuPro = instances.find(
-  (instance) => instance.ubuntu_pro_info,
-)!;
+const instanceWithUbuntuPro =
+  instances.find((instance) => instance.ubuntu_pro_info) ?? instances[0];
 
-const instanceWithoutUbuntuPro = instances.find(
-  (instance) => !instance.ubuntu_pro_info,
-)!;
+const instanceWithoutUbuntuPro =
+  instances.find((instance) => !instance.ubuntu_pro_info) ?? instances[0];
 
 describe("renders Ubuntu Pro Panel", () => {
   it("renders Ubuntu Pro Panel with Ubuntu Pro entitlement", () => {

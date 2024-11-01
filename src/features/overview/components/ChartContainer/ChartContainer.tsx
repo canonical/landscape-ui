@@ -36,13 +36,13 @@ const ChartContainer: FC = () => {
       count: packageUpgradesCount,
       title:
         STATUSES["PackageUpgradesAlert"].alternateLabel ??
-        STATUSES["UpToDate"].label,
+        STATUSES["PackageUpgradesAlert"].label,
     },
     {
       count: securityUpgradesCount,
       title:
         STATUSES["SecurityUpgradesAlert"].alternateLabel ??
-        STATUSES["UpToDate"].label,
+        STATUSES["SecurityUpgradesAlert"].label,
     },
   ];
 

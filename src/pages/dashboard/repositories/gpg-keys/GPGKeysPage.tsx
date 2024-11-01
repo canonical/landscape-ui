@@ -1,15 +1,18 @@
 import { FC, lazy, Suspense } from "react";
-import PageHeader from "../../../../components/layout/PageHeader";
-import PageMain from "../../../../components/layout/PageMain";
-import PageContent from "../../../../components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
+import PageMain from "@/components/layout/PageMain";
+import PageContent from "@/components/layout/PageContent";
 import { Button } from "@canonical/react-components";
-import LoadingState from "../../../../components/layout/LoadingState";
-import EmptyState from "../../../../components/layout/EmptyState";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import GPGKeysList from "./GPGKeysList";
-import useGPGKeys from "../../../../hooks/useGPGKeys";
+import LoadingState from "@/components/layout/LoadingState";
+import EmptyState from "@/components/layout/EmptyState";
+import useSidePanel from "@/hooks/useSidePanel";
+import { GPGKeysList, useGPGKeys } from "@/features/gpg-keys";
 
-const NewGPGKeyForm = lazy(() => import("./NewGPGKeyForm"));
+const NewGPGKeyForm = lazy(() =>
+  import("@/features/gpg-keys").then((module) => ({
+    default: module.NewGPGKeyForm,
+  })),
+);
 
 const GPGKeysPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();

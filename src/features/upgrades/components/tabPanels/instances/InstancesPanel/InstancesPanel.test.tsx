@@ -36,9 +36,7 @@ describe("InstancesPanel", () => {
         firstChild?.textContent === affectedInstances[0].title,
     );
 
-    if (!firstInstanceRow) {
-      throw new Error("Row not found");
-    }
+    assert(firstInstanceRow);
 
     await userEvent.click(within(firstInstanceRow).getByRole("button"));
 

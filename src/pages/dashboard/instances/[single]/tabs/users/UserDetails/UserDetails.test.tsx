@@ -8,16 +8,17 @@ import { userGroups } from "@/tests/mocks/userGroup";
 import { screen } from "@testing-library/react";
 import NoData from "@/components/layout/NoData";
 
-const unlockedUser = users.find((user) => user.enabled)!;
+const unlockedUser = users.find((user) => user.enabled);
 
 describe("user details", () => {
   it("should show correct side panel details for a user", async () => {
+    assert(unlockedUser);
+
     const user = unlockedUser;
     const { container } = renderWithProviders(<UserDetails user={user} />);
 
-    const primaryGroup = userGroups.find(
-      (group) => group.gid === user.primary_gid,
-    )!.name;
+    const primaryGroup =
+      userGroups.find((group) => group.gid === user.primary_gid)?.name ?? "";
 
     const groupsData = userGroups.map((group) => group.name).join(", ");
     const loaded = await screen.findByText(primaryGroup);

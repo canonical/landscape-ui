@@ -1,41 +1,49 @@
-import auth from "./auth";
-import instance from "./instance";
-import usn from "./usn";
-import user from "./user";
-import snap from "./snap";
-import gpgKey from "./gpgKey";
-import repo from "./repo";
 import accessGroup from "./accessGroup";
+import activity from "./activity";
+import alerts from "./alerts";
+import aptSource from "./aptSource";
+import auth from "./auth";
+import distributions from "./distributions";
+import eventLogs from "./eventLogs";
+import gpgKey from "./gpgKey";
+import instance from "./instance";
+import organisationPreferences from "./organisationPreferences";
+import packageProfile from "./packageProfile";
+import packages from "./packages";
+import pockets from "./pockets";
+import process from "./process";
+import repo from "./repo";
+import snap from "./snap";
 import tag from "./tag";
 import upgradeProfile from "./upgradeProfile";
-import activity from "./activity";
-import packages from "./packages";
-import process from "./process";
-import packageProfile from "./packageProfile";
-import eventLogs from "./eventLogs";
-import wsl from "./wsl";
-import alerts from "./alerts";
-import organisationPreferences from "./organisationPreferences";
+import user from "./user";
 import userSettings from "./userSettings";
+import usn from "./usn";
+import wsl from "./wsl";
 
 export default [
-  ...auth,
-  ...instance,
-  ...usn,
-  ...snap,
-  ...user,
-  ...activity,
-  ...process,
-  ...packages,
-  ...gpgKey,
-  ...repo,
   ...accessGroup,
-  ...tag,
-  ...upgradeProfile,
-  ...packageProfile,
-  ...eventLogs,
-  ...wsl,
+  ...activity,
   ...alerts,
   ...organisationPreferences,
   ...userSettings,
+  ...aptSource,
+  ...auth,
+  ...distributions,
+  ...eventLogs,
+  ...gpgKey,
+  ...instance,
+  ...organisationPreferences,
+  ...packageProfile,
+  ...packages,
+  ...pockets,
+  ...process,
+  ...repo,
+  ...snap,
+  ...tag,
+  ...upgradeProfile,
+  ...user,
+  ...userSettings,
+  ...usn,
+  ...wsl,
 ];

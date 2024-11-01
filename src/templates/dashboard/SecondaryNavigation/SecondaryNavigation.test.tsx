@@ -11,7 +11,7 @@ describe("SecondaryNavigation", () => {
     expect(
       screen.getByRole("heading", { name: ACCOUNT_SETTINGS.label }),
     ).toBeInTheDocument();
-    ACCOUNT_SETTINGS.items!.forEach((item) => {
+    ACCOUNT_SETTINGS.items?.forEach((item) => {
       expect(
         screen.getByRole("link", { name: item.label }),
       ).toBeInTheDocument();
@@ -19,6 +19,8 @@ describe("SecondaryNavigation", () => {
   });
 
   it("can set an active item", () => {
+    assert(ACCOUNT_SETTINGS.items);
+
     renderWithProviders(
       <SecondaryNavigation />,
       {},
@@ -27,12 +29,12 @@ describe("SecondaryNavigation", () => {
     );
 
     const activeLink = screen.getByRole("link", {
-      name: ACCOUNT_SETTINGS.items![0].label,
+      name: ACCOUNT_SETTINGS.items[0].label,
     });
     expect(activeLink.className).toContain("isActive");
 
     expect(
-      screen.getByRole("link", { name: ACCOUNT_SETTINGS.items![1].label }),
+      screen.getByRole("link", { name: ACCOUNT_SETTINGS.items[1].label }),
     ).not.toHaveClass("isActive");
   });
 });

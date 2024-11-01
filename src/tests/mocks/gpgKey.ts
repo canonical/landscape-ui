@@ -1,4 +1,4 @@
-import { GPGKey } from "@/types/GPGKey";
+import { GPGKey } from "@/features/gpg-keys";
 
 export const gpgKeys: GPGKey[] = [
   {

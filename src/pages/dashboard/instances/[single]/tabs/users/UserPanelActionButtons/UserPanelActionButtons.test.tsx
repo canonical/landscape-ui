@@ -9,8 +9,8 @@ import { getSelectedUsers } from "../UserPanelHeader/helpers";
 const userData = {
   empty: [],
   single: {
-    unlockedUser: users.find((user) => user.enabled)!.uid,
-    lockedUser: users.find((user) => !user.enabled)!.uid,
+    unlockedUser: users.find((user) => user.enabled)?.uid ?? 0,
+    lockedUser: users.find((user) => !user.enabled)?.uid ?? 0,
   },
   multiple: {
     unlockedUsers: users.filter((user) => user.enabled).map((user) => user.uid),

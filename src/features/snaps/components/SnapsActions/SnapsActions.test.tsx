@@ -9,9 +9,10 @@ import { getSelectedSnaps } from "../../helpers";
 const snapData = {
   empty: [],
   single: {
-    unheldSnap: installedSnaps.find((snap) => snap.held_until === null)!.snap
-      .id,
-    heldSnap: installedSnaps.find((snap) => snap.held_until !== null)!.snap.id,
+    unheldSnap:
+      installedSnaps.find((snap) => snap.held_until === null)?.snap.id ?? "",
+    heldSnap:
+      installedSnaps.find((snap) => snap.held_until !== null)?.snap.id ?? "",
   },
   multiple: {
     unheldSnaps: installedSnaps

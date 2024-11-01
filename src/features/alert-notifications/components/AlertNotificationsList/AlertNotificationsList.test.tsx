@@ -1,10 +1,11 @@
 import { STATUSES } from "@/features/instances";
 import { alertsSummary } from "@/tests/mocks/alerts";
 import { pendingInstances } from "@/tests/mocks/instance";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import AlertNotificationsList from "./AlertNotificationsList";
 import { ROOT_PATH } from "@/constants";
+import { renderWithProviders } from "@/tests/render";
 
 const alertsWithoutPending = alertsSummary.filter(
   (alert) => alert.alert_type !== "PendingComputersAlert",
@@ -12,7 +13,7 @@ const alertsWithoutPending = alertsSummary.filter(
 
 describe("AlertNotificationsList", () => {
   it("renders the correct number of alerts", () => {
-    render(
+    renderWithProviders(
       <AlertNotificationsList
         alerts={alertsSummary}
         pendingInstances={pendingInstances}
@@ -23,7 +24,7 @@ describe("AlertNotificationsList", () => {
   });
 
   it("renders the correct icon for each alert", () => {
-    render(
+    renderWithProviders(
       <AlertNotificationsList
         alerts={alertsSummary}
         pendingInstances={pendingInstances}
@@ -52,13 +53,13 @@ describe("AlertNotificationsList", () => {
     const icon = pendingAlert.previousElementSibling;
     expect(icon).toBeInTheDocument();
 
-    expect(icon!.className).toContain(
+    expect(icon?.className).toContain(
       `p-icon--${STATUSES.PendingComputersAlert.icon.color}`,
     );
   });
 
   it("renders a button for PendingComputersAlert", () => {
-    render(
+    renderWithProviders(
       <AlertNotificationsList
         alerts={alertsSummary}
         pendingInstances={pendingInstances}
@@ -71,7 +72,7 @@ describe("AlertNotificationsList", () => {
   });
 
   it("renders links for non-PendingComputersAlert alerts", () => {
-    render(
+    renderWithProviders(
       <AlertNotificationsList
         alerts={alertsSummary}
         pendingInstances={pendingInstances}
@@ -83,11 +84,10 @@ describe("AlertNotificationsList", () => {
     links.forEach((link) => {
       const alert = alertsWithoutPending.find(
         (alert) => alert.summary === link.textContent,
-      )!;
-
+      );
       expect(link).toHaveAttribute(
         "href",
-        `${ROOT_PATH}instances?status=${STATUSES[alert.alert_type].filterValue}`,
+        `${ROOT_PATH}instances?status=${STATUSES[alert?.alert_type ?? "Unknown"].filterValue}`,
       );
     });
   });

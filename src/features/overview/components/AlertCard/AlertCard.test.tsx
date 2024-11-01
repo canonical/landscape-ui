@@ -6,7 +6,9 @@ import { describe, expect } from "vitest";
 import AlertCard from "./AlertCard";
 import { Status, STATUSES } from "@/features/instances";
 
-const alert = Object.values(STATUSES).find((status) => status.alternateLabel)!;
+const alert =
+  Object.values(STATUSES).find((status) => status.alternateLabel) ??
+  STATUSES["Unknown"];
 
 const props: Required<Status> = {
   alertType: alert.alertType,
@@ -14,7 +16,7 @@ const props: Required<Status> = {
   filterValue: alert.filterValue,
   icon: alert.icon,
   query: alert.query,
-  alternateLabel: alert.alternateLabel!,
+  alternateLabel: alert.alternateLabel ?? alert.label,
 };
 
 describe("AlertCard", () => {

@@ -1,8 +1,8 @@
 import InfoItem from "@/components/layout/InfoItem";
+import { NOT_AVAILABLE } from "@/constants";
+import { distributionCardClasses, seriesCardClasses } from "@/features/mirrors";
 import useDebug from "@/hooks/useDebug";
 import useUserDetails from "@/hooks/useUserDetails";
-import distributionCardClasses from "@/pages/dashboard/repositories/mirrors/DistributionCard/DistributionCard.module.scss";
-import seriesCardClasses from "@/pages/dashboard/repositories/mirrors/SeriesCard.module.scss";
 import { Credential, UserDetails } from "@/types/UserDetails";
 import {
   Col,
@@ -10,12 +10,11 @@ import {
   ModularTable,
   Row,
 } from "@canonical/react-components";
+import { Column } from "@canonical/react-components/node_modules/@types/react-table";
 import classNames from "classnames";
 import React, { FC, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classes from "./ApiCredentialsTables.module.scss";
-import { Column } from "@canonical/react-components/node_modules/@types/react-table";
-import { NOT_AVAILABLE } from "@/constants";
 
 interface ApiCredentialsTablesProps {
   user: UserDetails;

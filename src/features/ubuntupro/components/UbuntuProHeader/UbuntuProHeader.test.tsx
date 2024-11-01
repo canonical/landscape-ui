@@ -8,16 +8,18 @@ import NoData from "@/components/layout/NoData";
 
 const ubuntuProDataWithAccountInfo = instances.find(
   (instance) => instance.ubuntu_pro_info && instance.ubuntu_pro_info?.account,
-)!.ubuntu_pro_info!;
+)?.ubuntu_pro_info;
 
 const ubuntuProDataWithoutAccountInfo = instances.find(
   (instance) => instance.ubuntu_pro_info && !instance.ubuntu_pro_info?.account,
-)!.ubuntu_pro_info!;
+)?.ubuntu_pro_info;
 
 describe("renders Ubuntu Pro Panel", () => {
   it.each([ubuntuProDataWithAccountInfo, ubuntuProDataWithoutAccountInfo])(
     "renders Ubuntu Pro Panel with Ubuntu Pro entitlement",
     (data) => {
+      assert(data);
+
       const { container } = renderWithProviders(
         <UbuntuProHeader ubuntuProData={data} />,
       );

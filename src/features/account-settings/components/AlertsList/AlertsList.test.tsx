@@ -4,14 +4,11 @@ import AlertsList from "./AlertsList";
 import { alerts } from "@/tests/mocks/alerts";
 import { renderWithProviders } from "@/tests/render";
 import useAuth from "@/hooks/useAuth";
-import { useMediaQuery } from "usehooks-ts";
 import { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 vi.mock("@/hooks/useAuth");
-vi.mock("usehooks-ts", () => ({
-  useMediaQuery: vi.fn(),
-}));
 
 const mockAvailableTagOptions = [
   { value: "All", label: "All instances" },
@@ -31,13 +28,13 @@ const authProps: AuthContextProps = {
 
 describe("AlertsList", () => {
   beforeEach(() => {
-    vi.mocked(useMediaQuery).mockReset();
     vi.mocked(useAuth).mockReturnValue(authProps);
+  });
+  afterEach(() => {
+    resetScreenSize();
   });
 
   it("renders the component with correct title", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
-
     renderWithProviders(
       <AlertsList
         alerts={alerts}
@@ -49,7 +46,7 @@ describe("AlertsList", () => {
   });
 
   it("renders AlertsTable component", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
 
     renderWithProviders(
       <AlertsList
@@ -66,7 +63,7 @@ describe("AlertsList", () => {
       ...authProps,
       user: { ...authUser, current_account: "non-existent" },
     });
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
 
     renderWithProviders(
       <AlertsList
@@ -79,7 +76,7 @@ describe("AlertsList", () => {
   });
 
   it("renders correctly when there are no alerts", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
 
     renderWithProviders(
       <AlertsList alerts={[]} availableTagOptions={mockAvailableTagOptions} />,
@@ -89,17 +86,17 @@ describe("AlertsList", () => {
   });
 
   it("renders mobile view when screen is small", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(false);
+    setScreenSize("small");
 
-    const { container } = renderWithProviders(
+    renderWithProviders(
       <AlertsList
         alerts={alerts}
         availableTagOptions={mockAvailableTagOptions}
       />,
     );
 
-    const table = container.querySelector("table");
-    expect(table).toBeNull();
+    const table = screen.queryByRole("table");
+    expect(table).not.toBeInTheDocument();
 
     alerts.forEach((alert) => {
       expect(screen.getByText(alert.label)).toBeInTheDocument();
