@@ -1,3 +1,10 @@
+## [1.7.4](https://github.com/canonical/landscape-dashboard/compare/v1.7.3...v1.7.4) (2024-11-01)
+
+
+### Bug Fixes
+
+* handle request params for the old fetch if user is not presented ([c021434](https://github.com/canonical/landscape-dashboard/commit/c02143427304f77febad9cbacf65329aefac68ee))
+
 ## [1.7.3](https://github.com/canonical/landscape-dashboard/compare/v1.7.2...v1.7.3) (2024-10-31)
 
 
