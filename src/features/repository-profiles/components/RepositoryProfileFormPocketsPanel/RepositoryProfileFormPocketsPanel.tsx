@@ -4,7 +4,7 @@ import { FC, useState } from "react";
 import { CheckboxInput, Col, Row } from "@canonical/react-components";
 import { RepositoryProfileFormValues } from "../../types";
 import RepositoryProfileFormSearch from "../RepositoryProfileFormSearch";
-import { Distribution } from "@/types/Distribution";
+import { Distribution } from "@/features/mirrors";
 import { getFilteredDistributionPocketOptions } from "./helpers";
 import classes from "./RepositoryProfileFormPocketsPanel.module.scss";
 

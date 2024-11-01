@@ -1,4 +1,4 @@
-import { APTSource } from "@/types/APTSource";
+import { APTSource } from "@/features/apt-sources";
 
 export const getFilteredAptSources = (
   aptSources: APTSource[],

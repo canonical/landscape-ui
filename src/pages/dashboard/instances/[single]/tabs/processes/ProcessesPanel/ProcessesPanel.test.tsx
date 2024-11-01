@@ -18,12 +18,11 @@ describe("ProcessesPanel", () => {
   it("renders filtered list of processes", async () => {
     renderWithProviders(<ProcessesPanel />);
 
-    for (let i = 0; i < processes.length; i++) {
-      const chosenProcess = processes[i];
-      const process = await screen.findByRole("row", {
-        name: `Select process ${chosenProcess.name} ${chosenProcess.name} ${chosenProcess.state} ${chosenProcess.vm_size} ${(100 * chosenProcess.cpu_utilisation).toFixed(1)}% ${chosenProcess.pid} ${chosenProcess.start_time} ${chosenProcess.gid}`,
+    for (const process of processes) {
+      const listProcess = await screen.findByRole("row", {
+        name: `Select process ${process.name} ${process.name} ${process.state} ${process.vm_size} ${(100 * process.cpu_utilisation).toFixed(1)}% ${process.pid} ${process.start_time} ${process.gid}`,
       });
-      expect(process).toBeInTheDocument();
+      expect(listProcess).toBeInTheDocument();
     }
     const searchBox = await screen.findByRole("searchbox");
     await userEvent.type(searchBox, `${processes[0].name}{enter}`);

@@ -7,9 +7,13 @@ import { EditSnapType } from "../../helpers";
 import EditSnap from "./EditSnap";
 
 const snapData = {
-  snap2: installedSnaps.find((snap) => snap.snap.name === "Snap 2")!,
+  snap2:
+    installedSnaps.find((snap) => snap.snap.name === "Snap 2") ??
+    installedSnaps[0],
   single: {
-    unheldSnap: installedSnaps.find((snap) => snap.held_until === null)!,
+    unheldSnap:
+      installedSnaps.find((snap) => snap.held_until === null) ??
+      installedSnaps[0],
   },
   multiple: {
     unheldSnaps: installedSnaps.filter((snap) => snap.held_until === null),

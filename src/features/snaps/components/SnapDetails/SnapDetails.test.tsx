@@ -8,8 +8,10 @@ import { describe } from "vitest";
 import SnapDetails from "./SnapDetails";
 import NoData from "@/components/layout/NoData";
 
-const heldSnap = installedSnaps.find((snap) => snap.held_until !== null)!;
-const unheldSnap = installedSnaps.find((snap) => snap.held_until === null)!;
+const heldSnap =
+  installedSnaps.find((snap) => snap.held_until !== null) ?? installedSnaps[0];
+const unheldSnap =
+  installedSnaps.find((snap) => snap.held_until === null) ?? installedSnaps[0];
 
 describe("Snap details", () => {
   it.each([heldSnap, unheldSnap])(

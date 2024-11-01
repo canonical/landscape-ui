@@ -11,9 +11,9 @@ import {
   useRepositoryProfiles,
 } from "../../hooks";
 import { RepositoryProfile, RepositoryProfileFormValues } from "../../types";
-import useAPTSources from "@/hooks/useAPTSources";
+import { useAPTSources } from "@/features/apt-sources";
 import useDebug from "@/hooks/useDebug";
-import useDistributions from "@/hooks/useDistributions";
+import { useDistributions } from "@/features/mirrors";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { CTA_INFO, INITIAL_VALUES } from "./constants";

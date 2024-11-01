@@ -5,7 +5,8 @@ import WslProfileDetails from "./WslProfileDetails";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 
 describe("WslProfileDetails", () => {
-  const testProfile = wslProfiles.find((profile) => profile.image_source)!;
+  const testProfile =
+    wslProfiles.find((profile) => profile.image_source) ?? wslProfiles[0];
 
   const itemsToCheck = [
     {
@@ -24,7 +25,7 @@ describe("WslProfileDetails", () => {
     },
     {
       label: "rootfs image source",
-      value: testProfile.image_source!,
+      value: testProfile.image_source || "N/A",
     },
     {
       label: "cloud init",

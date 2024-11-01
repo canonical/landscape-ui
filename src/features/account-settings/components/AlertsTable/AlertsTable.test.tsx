@@ -2,9 +2,9 @@ import { alerts } from "@/tests/mocks/alerts";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useMediaQuery } from "usehooks-ts";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import AlertsTable from "./AlertsTable";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 const mockAvailableTagOptions = [
   { value: "All", label: "All instances" },
@@ -12,17 +12,13 @@ const mockAvailableTagOptions = [
   { value: "tag2", label: "Tag 2", group: "Tags" },
 ];
 
-vi.mock("usehooks-ts", () => ({
-  useMediaQuery: vi.fn(),
-}));
-
 describe("AlertsTable", () => {
-  beforeEach(() => {
-    vi.mocked(useMediaQuery).mockReset();
+  afterEach(() => {
+    resetScreenSize();
   });
 
   it("renders the table in desktop view", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
 
     renderWithProviders(
       <AlertsTable
@@ -42,7 +38,7 @@ describe("AlertsTable", () => {
   });
 
   it("renders the mobile view when screen is small", () => {
-    vi.mocked(useMediaQuery).mockReturnValue(false);
+    setScreenSize("small");
 
     renderWithProviders(
       <AlertsTable
@@ -61,7 +57,7 @@ describe("AlertsTable", () => {
   });
 
   it("handles alert subscription action", async () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
 
     renderWithProviders(
       <AlertsTable
@@ -83,7 +79,7 @@ describe("AlertsTable", () => {
   });
 
   it("handles alert unsubscribe action", async () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
 
     renderWithProviders(
       <AlertsTable
@@ -105,7 +101,7 @@ describe("AlertsTable", () => {
   });
 
   it('displays "No data available" when there are no alerts', () => {
-    vi.mocked(useMediaQuery).mockReturnValue(true);
+    setScreenSize("large");
 
     renderWithProviders(
       <AlertsTable alerts={[]} availableTagOptions={mockAvailableTagOptions} />,

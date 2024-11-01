@@ -147,9 +147,7 @@ describe("AffectedPackages", () => {
       ({ childNodes }) => childNodes.item(1).textContent === packages[0].name,
     );
 
-    if (!firstPackageRow) {
-      throw new Error("Row not found");
-    }
+    assert(firstPackageRow);
 
     await userEvent.click(within(firstPackageRow).getByRole("button"));
 

@@ -35,9 +35,9 @@ describe("SnapsList", () => {
   });
 
   it("renders a list of installed snaps", async () => {
-    for (let i = 0; i < installedSnaps.length; i++) {
+    for (const installedSnap of installedSnaps) {
       const snap = await screen.findByRole("button", {
-        name: `Show details of snap ${installedSnaps[i].snap.name}`,
+        name: `Show details of snap ${installedSnap.snap.name}`,
       });
 
       expect(snap).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe("SnapsList", () => {
       expect(heldSnap).toBeDefined();
 
       const cellWithVersion = screen.getByRole("cell", {
-        name: heldSnap!.version,
+        name: heldSnap?.version,
       });
       const iconElement = cellWithVersion.querySelector("i");
 
@@ -69,7 +69,9 @@ describe("SnapsList", () => {
         const versionInfo = cellWithVersion.querySelector("span");
         expect(versionInfo).toBeInTheDocument();
 
-        await userEvent.hover(versionInfo!);
+        assert(versionInfo);
+
+        await userEvent.hover(versionInfo);
         const tooltip = await screen.findByText("This snap is held");
         expect(tooltip).toBeVisible();
       }

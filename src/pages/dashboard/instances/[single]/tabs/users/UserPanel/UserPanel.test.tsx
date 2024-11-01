@@ -47,11 +47,11 @@ describe("UserPanel", () => {
 
     await expectLoadingState();
 
-    for (let i = 0; i < users.length; i++) {
-      const user = await screen.findByRole("button", {
-        name: `Show details of user ${users[i].username}`,
+    for (const user of users) {
+      const listUser = await screen.findByRole("button", {
+        name: `Show details of user ${user.username}`,
       });
-      expect(user).toBeInTheDocument();
+      expect(listUser).toBeInTheDocument();
     }
     const searchBox = await screen.findByRole("searchbox");
     await userEvent.type(searchBox, `user1{enter}`);

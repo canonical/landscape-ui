@@ -1,10 +1,9 @@
+import { distributionCardClasses, seriesCardClasses } from "@/features/mirrors";
 import useAuth from "@/hooks/useAuth";
-import distributionCardClasses from "@/pages/dashboard/repositories/mirrors/DistributionCard/DistributionCard.module.scss";
-import seriesCardClasses from "@/pages/dashboard/repositories/mirrors/SeriesCard.module.scss";
-import { FC } from "react";
-import AlertsTable from "../AlertsTable";
 import { Alert } from "@/types/Alert";
 import { MultiSelectItem } from "@canonical/react-components";
+import { FC } from "react";
+import AlertsTable from "../AlertsTable";
 
 interface AlertsListProps {
   alerts: Alert[];

@@ -10,8 +10,8 @@ import NoData from "@/components/layout/NoData";
 import { expectLoadingState } from "@/tests/helpers";
 
 const userIds = users.map((user) => user.uid);
-const unlockedUser = users.find((user) => user.enabled)!;
-const lockedUser = users.find((user) => !user.enabled)!;
+const unlockedUser = users.find((user) => user.enabled);
+const lockedUser = users.find((user) => !user.enabled);
 
 const props = {
   instanceId: 21,
@@ -25,12 +25,12 @@ describe("UserList", () => {
     renderWithProviders(<UserList {...props} />);
   });
   it("renders a list of users", async () => {
-    for (let i = 0; i < users.length; i++) {
-      const user = await screen.findByRole("button", {
-        name: `Show details of user ${users[i].username}`,
+    for (const user of users) {
+      const listUser = await screen.findByRole("button", {
+        name: `Show details of user ${user.username}`,
       });
 
-      expect(user).toBeInTheDocument();
+      expect(listUser).toBeInTheDocument();
     }
   });
 
@@ -92,6 +92,7 @@ describe("UserList", () => {
     });
 
     it("should show correct locked user side panel action buttons", async () => {
+      assert(lockedUser);
       const user = lockedUser;
       const buttonNames = ["Unlock", "Edit", "Delete"];
 
@@ -111,7 +112,9 @@ describe("UserList", () => {
     });
 
     it("should show correct unlocked user side panel action buttons", async () => {
+      assert(unlockedUser);
       const user = unlockedUser;
+
       const userTableButton = await screen.findByRole("button", {
         name: `Show details of user ${user.username}`,
       });
@@ -126,6 +129,7 @@ describe("UserList", () => {
     });
 
     it("should show correct side panel details for a user", async () => {
+      assert(unlockedUser);
       const user = unlockedUser;
 
       const tableUserButton = await screen.findByRole("button", {
@@ -134,9 +138,8 @@ describe("UserList", () => {
       await userEvent.click(tableUserButton);
 
       const form = await screen.findByRole("complementary");
-      const primaryGroup = userGroups.find(
-        (group) => group.gid === user.primary_gid,
-      )!.name;
+      const primaryGroup =
+        userGroups.find((group) => group.gid === user.primary_gid)?.name ?? "";
 
       const groupsData = userGroups.map((group) => group.name).join(", ");
       const loaded = await screen.findByText(primaryGroup);

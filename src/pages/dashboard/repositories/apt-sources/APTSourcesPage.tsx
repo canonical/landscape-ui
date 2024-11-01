@@ -1,15 +1,18 @@
-import { FC, lazy, Suspense } from "react";
-import PageHeader from "../../../../components/layout/PageHeader";
-import PageMain from "../../../../components/layout/PageMain";
-import PageContent from "../../../../components/layout/PageContent";
+import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
+import PageContent from "@/components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
+import PageMain from "@/components/layout/PageMain";
+import { APTSourcesList, useAPTSources } from "@/features/apt-sources";
+import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-import LoadingState from "../../../../components/layout/LoadingState";
-import EmptyState from "../../../../components/layout/EmptyState";
-import useSidePanel from "../../../../hooks/useSidePanel";
-import APTSourcesList from "./APTSourcesList";
-import useAPTSources from "../../../../hooks/useAPTSources";
+import { FC, lazy, Suspense } from "react";
 
-const NewAPTSourceForm = lazy(() => import("./NewAPTSourceForm"));
+const NewAPTSourceForm = lazy(() =>
+  import("@/features/apt-sources").then((module) => ({
+    default: module.NewAPTSourceForm,
+  })),
+);
 
 const APTSourcesPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();

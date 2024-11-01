@@ -1,4 +1,4 @@
-import { RepoInfo } from "@/hooks/useSeries";
+import { RepoInfo } from "@/features/mirrors";
 
 export const repoInfo: RepoInfo = {
   flat: false,

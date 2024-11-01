@@ -118,7 +118,7 @@ describe("Legend", () => {
 
   it("renders legend items", () => {
     renderWithProviders(<Legend {...props} />);
-    const legendItems = mockChartInstance.data.labels! as string[];
+    const legendItems = mockChartInstance.data.labels as string[];
     legendItems.forEach((item) => {
       expect(screen.getByText(item)).toBeInTheDocument();
     });
@@ -139,7 +139,13 @@ describe("Legend", () => {
 
   it("calls setSelectedArc when a legend item is moused over", async () => {
     renderWithProviders(<Legend {...props} />);
-    const chosenLegendItem = mockChartInstance.data.labels![0] as string;
+
+    const chosenLegendItem =
+      mockChartInstance?.data?.labels &&
+      mockChartInstance.data.labels.length > 0
+        ? (mockChartInstance.data.labels[0] as string)
+        : "";
+
     const legendItem = screen.getByText(chosenLegendItem);
     await userEvent.hover(legendItem);
     expect(mockSetSelectedArc).toHaveBeenCalled();
