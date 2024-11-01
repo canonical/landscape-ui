@@ -1,4 +1,4 @@
-name: Full TICS report (2x per month)
+name: Full TICS report
 
 on: workflow_dispatch
 
