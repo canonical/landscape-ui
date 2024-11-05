@@ -1,3 +1,10 @@
+## [1.7.5](https://github.com/canonical/landscape-dashboard/compare/v1.7.4...v1.7.5) (2024-11-05)
+
+
+### Bug Fixes
+
+* update support link ([2d36c12](https://github.com/canonical/landscape-dashboard/commit/2d36c12c9fc4268497fc84d420a92b63b0671e96))
+
 ## [1.7.4](https://github.com/canonical/landscape-dashboard/compare/v1.7.3...v1.7.4) (2024-11-01)
 
 
