@@ -117,7 +117,7 @@ export const MENU_ITEMS: MenuItem[] = [
       },
       {
         label: "Support",
-        path: "https://portal.support.canonical.com/staff/s/",
+        path: "https://support-portal.canonical.com/",
       },
     ],
   },
