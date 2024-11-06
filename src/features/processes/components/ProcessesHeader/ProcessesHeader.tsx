@@ -1,14 +1,14 @@
-import { FC } from "react";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import useDebug from "@/hooks/useDebug";
-import { useProcesses } from "@/hooks/useProcesses";
-import { Button } from "@canonical/react-components";
-import classes from "./ProcessesHeader.module.scss";
 import useNotify from "@/hooks/useNotify";
 import { usePageParams } from "@/hooks/usePageParams";
-import { useParams } from "react-router-dom";
-import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import classNames from "classnames";
+import { useProcesses } from "../../hooks";
 import { UrlParams } from "@/types/UrlParams";
+import { Button } from "@canonical/react-components";
+import classNames from "classnames";
+import { FC } from "react";
+import { useParams } from "react-router-dom";
+import classes from "./ProcessesHeader.module.scss";
 
 interface ProcessesHeaderProps {
   handleClearSelection: () => void;

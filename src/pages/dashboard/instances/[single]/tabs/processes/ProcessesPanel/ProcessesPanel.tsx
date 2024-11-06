@@ -1,9 +1,12 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { ProcessesHeader, ProcessesList } from "@/features/processes";
+import {
+  ProcessesHeader,
+  ProcessesList,
+  useProcesses,
+} from "@/features/processes";
 import { usePageParams } from "@/hooks/usePageParams";
-import { useProcesses } from "@/hooks/useProcesses";
 import { UrlParams } from "@/types/UrlParams";
 import { FC, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";

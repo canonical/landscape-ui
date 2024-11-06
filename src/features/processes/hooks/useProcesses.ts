@@ -1,25 +1,13 @@
-import useFetch from "./useFetch";
+import useFetch from "@/hooks/useFetch";
 import { QueryFnType } from "@/types/QueryFnType";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@/types/ApiError";
 import { Activity } from "@/features/activities";
-import { Process } from "@/types/Process";
+import { GetProcessesParams, Process, ProcessesSignalParams } from "../types";
 
-export interface GetProcessesParams {
-  computer_id: number;
-  limit?: number;
-  offset?: number;
-  search?: string;
-}
-
-interface ProcessesSignalParams {
-  computer_id: number;
-  pids: number[];
-}
-
-export const useProcesses = () => {
+export default function useProcesses() {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
@@ -62,4 +50,4 @@ export const useProcesses = () => {
   });
 
   return { getProcessesQuery, killProcessQuery, terminateProcessQuery };
-};
+}
