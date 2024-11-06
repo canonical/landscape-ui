@@ -1,16 +1,16 @@
+import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { EventLog } from "@/types/EventLogs";
+import { getTableRows } from "@/features/usns";
 import { ModularTable } from "@canonical/react-components";
-import moment from "moment";
-import { FC, useMemo, useRef, useState } from "react";
 import {
   CellProps,
   Column,
 } from "@canonical/react-components/node_modules/@types/react-table";
-import classes from "./EventsLogList.module.scss";
-import TruncatedCell from "@/components/layout/TruncatedCell";
+import moment from "moment";
+import { FC, useMemo, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
-import { getTableRows } from "@/features/usns";
+import { EventLog } from "../../types";
+import classes from "./EventsLogList.module.scss";
 import { handleEventLogsCellProps, handleRowProps } from "./helpers";
 
 interface EventsLogListProps {

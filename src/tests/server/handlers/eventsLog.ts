@@ -1,11 +1,10 @@
-import { http, HttpResponse } from "msw";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { API_URL } from "@/constants";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { EventLog, GetEventsLogParams } from "@/features/events-log";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { eventsLog } from "@/tests/mocks/eventslog";
-import { EventLog } from "@/types/EventLogs";
-import { GetEventsLogParams } from "@/hooks/useEventLogs";
+import { eventsLog } from "@/tests/mocks/eventsLog";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import { http, HttpResponse } from "msw";
 
 export default [
   http.get<never, GetEventsLogParams, ApiPaginatedResponse<EventLog>>(

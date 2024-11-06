@@ -4,7 +4,7 @@ import alerts from "./alerts";
 import aptSource from "./aptSource";
 import auth from "./auth";
 import distributions from "./distributions";
-import eventLogs from "./eventLogs";
+import eventsLog from "./eventsLog";
 import gpgKey from "./gpgKey";
 import instance from "./instance";
 import organisationPreferences from "./organisationPreferences";
@@ -30,7 +30,7 @@ export default [
   ...aptSource,
   ...auth,
   ...distributions,
-  ...eventLogs,
+  ...eventsLog,
   ...gpgKey,
   ...instance,
   ...organisationPreferences,

@@ -2,8 +2,11 @@ import { FC, useMemo } from "react";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { EventsLogHeader, EventsLogList } from "@/features/events-log";
-import useEventsLog from "@/hooks/useEventLogs";
+import {
+  EventsLogHeader,
+  EventsLogList,
+  useEventsLog,
+} from "@/features/events-log";
 import { Button } from "@canonical/react-components";
 import { TablePagination } from "@/components/layout/TablePagination";
 import useAuth from "@/hooks/useAuth";

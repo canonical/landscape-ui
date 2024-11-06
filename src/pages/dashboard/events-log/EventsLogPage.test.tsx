@@ -4,7 +4,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
 import EventsLogPage from "./EventsLogPage";
-import { eventsLog } from "@/tests/mocks/eventslog";
+import { eventsLog } from "@/tests/mocks/eventsLog";
 
 describe("EventsLogPage", () => {
   it("renders empty state", async () => {
