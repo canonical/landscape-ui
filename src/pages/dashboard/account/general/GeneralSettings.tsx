@@ -2,19 +2,21 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import useUserDetails from "@/hooks/useUserDetails";
-import { FC } from "react";
-import { Link } from "@canonical/react-components";
-import { useMediaQuery } from "usehooks-ts";
-import { EditUserForm } from "@/features/account-settings";
-import classes from "./GeneralSettings.module.scss";
-import classNames from "classnames";
+import {
+  EditUserForm,
+  useUserGeneralSettings,
+} from "@/features/general-settings";
 import useEnv from "@/hooks/useEnv";
+import { Link } from "@canonical/react-components";
+import classNames from "classnames";
+import { FC } from "react";
+import { useMediaQuery } from "usehooks-ts";
+import classes from "./GeneralSettings.module.scss";
 
 const GeneralSettings: FC = () => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const { isSaas } = useEnv();
-  const { getUserDetails } = useUserDetails();
+  const { getUserDetails } = useUserGeneralSettings();
   const { data: userData, isLoading } = getUserDetails();
 
   const user = userData?.data;

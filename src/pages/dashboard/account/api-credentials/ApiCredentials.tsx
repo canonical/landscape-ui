@@ -2,12 +2,17 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import ApiCredentialsTables from "@/features/account-settings";
-import useUserDetails from "@/hooks/useUserDetails";
+import {
+  ApiCredentialsTables,
+  useApiCredentials,
+} from "@/features/api-credentials";
+import { useUserGeneralSettings } from "@/features/general-settings";
 import { FC } from "react";
 
 const ApiCredentials: FC = () => {
-  const { getUserDetails, getUserApiCredentials } = useUserDetails();
+  const { getUserDetails } = useUserGeneralSettings();
+  const { getUserApiCredentials } = useApiCredentials();
+
   const { data: userData, isLoading: isLoadingUserData } = getUserDetails();
   const { data: credentialsData, isLoading: isLoadingCredentialsData } =
     getUserApiCredentials();

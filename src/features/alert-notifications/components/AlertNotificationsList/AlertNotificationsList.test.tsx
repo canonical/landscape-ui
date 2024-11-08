@@ -1,11 +1,11 @@
+import { ROOT_PATH } from "@/constants";
 import { STATUSES } from "@/features/instances";
 import { alertsSummary } from "@/tests/mocks/alerts";
 import { pendingInstances } from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import AlertNotificationsList from "./AlertNotificationsList";
-import { ROOT_PATH } from "@/constants";
-import { renderWithProviders } from "@/tests/render";
 
 const alertsWithoutPending = alertsSummary.filter(
   (alert) => alert.alert_type !== "PendingComputersAlert",
