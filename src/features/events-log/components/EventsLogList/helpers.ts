@@ -1,4 +1,3 @@
-import { EventLog } from "@/types/EventLogs";
 import {
   Cell,
   Row,
@@ -7,6 +6,7 @@ import {
 } from "@canonical/react-components/node_modules/@types/react-table";
 
 import { HTMLProps } from "react";
+import { EventLog } from "../../types";
 import classes from "./EventsLogList.module.scss";
 
 export const handleRowProps =

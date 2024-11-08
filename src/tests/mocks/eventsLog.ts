@@ -1,4 +1,4 @@
-import { EventLog } from "@/types/EventLogs";
+import { EventLog } from "@/features/events-log";
 
 export const eventsLog: EventLog[] = [
   {
