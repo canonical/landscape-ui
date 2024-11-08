@@ -52,6 +52,7 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "WSL profiles",
         path: `${ROOT_PATH}profiles/wsl`,
+        env: "selfHosted",
       },
     ],
   },

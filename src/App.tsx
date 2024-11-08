@@ -180,6 +180,7 @@ const App: FC = () => {
                   path="profiles/repositories"
                   element={<RepositoryProfilesPage />}
                 />
+                <Route path="profiles/wsl" element={<WslProfilesPage />} />
               </Route>
               <Route
                 element={
@@ -233,7 +234,6 @@ const App: FC = () => {
                   path="profiles/upgrade"
                   element={<UpgradeProfilesPage />}
                 />
-                <Route path="profiles/wsl" element={<WslProfilesPage />} />
                 <Route path="account" element={<AccountPage />} />
                 <Route path="account/general" element={<GeneralSettings />} />
                 <Route path="account/alerts" element={<Alerts />} />

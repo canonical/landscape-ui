@@ -25,7 +25,7 @@ const WslProfilesEmptyState: FC = () => {
         <>
           <p>
             WSL profiles allow you to create and apply configurations for
-            Windows Subsystem for Linux &lpar;WSL&rpar; instances, in bulk.
+            Windows Subsystem for Linux (WSL) instances, in bulk.
           </p>
           <a
             href="https://ubuntu.com/landscape/docs/manage-wsl-instances-in-landscape"
