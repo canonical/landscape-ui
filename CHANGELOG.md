@@ -1,3 +1,11 @@
+## [1.7.6](https://github.com/canonical/landscape-dashboard/compare/v1.7.5...v1.7.6) (2024-11-08)
+
+
+### Bug Fixes
+
+* get instance OS from distribution info property ([cb4eedb](https://github.com/canonical/landscape-dashboard/commit/cb4eedb302a403d6d670bd174d2ffb0398d443da))
+* show wsl profiles for self hosted only ([#130](https://github.com/canonical/landscape-dashboard/issues/130)) ([8bbf5f6](https://github.com/canonical/landscape-dashboard/commit/8bbf5f69f838bdfe2429ca5b687a1749adbf7ee5))
+
 ## [1.7.5](https://github.com/canonical/landscape-dashboard/compare/v1.7.4...v1.7.5) (2024-11-05)
 
 
