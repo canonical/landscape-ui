@@ -276,19 +276,8 @@ const InstanceList: FC<InstanceListProps> = ({
           },
         },
         {
-          accessor: "distribution",
+          accessor: "distribution_info.description",
           Header: "OS",
-          Cell: ({ row: { original } }: CellProps<Instance>) => {
-            if (!original.distribution) {
-              return <NoData />;
-            }
-
-            if (/\d{1,2}\.\d{2}/.test(original.distribution)) {
-              return `${original.is_wsl_instance ? "WSL - " : ""}Ubuntu\xA0${original.distribution}`;
-            }
-
-            return `Windows ${original.distribution}`;
-          },
         },
         {
           accessor: "cloud_init.availability_zone",
@@ -335,13 +324,11 @@ const InstanceList: FC<InstanceListProps> = ({
   );
 
   return (
-    <>
-      <ModularTable
-        emptyMsg="No instances found"
-        columns={columns}
-        data={instancesData}
-      />
-    </>
+    <ModularTable
+      emptyMsg="No instances found"
+      columns={columns}
+      data={instancesData}
+    />
   );
 };
 

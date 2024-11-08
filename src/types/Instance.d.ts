@@ -132,16 +132,16 @@ type HardwareDescription = [
   value: number | null,
 ];
 
-type InstanceAlert = {
+interface InstanceAlert {
   type: string;
   summary: string;
   severity: "warning" | "danger" | "info";
-};
+}
 
-type InstanceUpgrades = {
+interface InstanceUpgrades {
   regular: number;
   security: number;
-};
+}
 
 interface UbuntuProAccount {
   created_at: string;
@@ -177,6 +177,13 @@ interface UbuntuProInfo {
   account?: UbuntuProAccount;
 }
 
+interface DistributionInfo {
+  code_name: string;
+  description: string;
+  distributor: string;
+  release: string;
+}
+
 export interface InstanceWithoutRelation extends Record<string, unknown> {
   access_group: AccessGroup["name"];
   clone_id: number | null;
@@ -187,6 +194,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   comment: string;
   container_info: string | null;
   distribution: string | null;
+  distribution_info: DistributionInfo;
   hostname: string | null;
   id: number;
   is_default_child: boolean | null;
