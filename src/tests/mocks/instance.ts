@@ -30,6 +30,12 @@ export const instances: Instance[] = [
       regular: 7,
       security: 0,
     },
+    distribution_info: {
+      code_name: "lucid",
+      description: "Ubuntu 10.04 LTS",
+      distributor: "Canonical",
+      release: "10.04",
+    },
   },
   {
     id: 2,
@@ -60,6 +66,12 @@ export const instances: Instance[] = [
       regular: 7,
       security: 0,
     },
+    distribution_info: {
+      code_name: "precise",
+      description: "Ubuntu 12.04 LTS",
+      distributor: "Canonical",
+      release: "12.04",
+    },
   },
   {
     id: 11,
@@ -85,6 +97,12 @@ export const instances: Instance[] = [
     ubuntu_pro_info: null,
     is_wsl_instance: true,
     children: [],
+    distribution_info: {
+      code_name: "bionic",
+      description: "Ubuntu 18.04 LTS",
+      distributor: "Canonical",
+      release: "18.04",
+    },
     parent: {
       id: 6,
       title: "Noel's Windows Laptop",
@@ -108,6 +126,12 @@ export const instances: Instance[] = [
       container_info: null,
       ubuntu_pro_info: null,
       is_wsl_instance: false,
+      distribution_info: {
+        description: "Windows 10 / Windows 11",
+        distributor: "Microsoft",
+        release: "10 / 11",
+        code_name: "windows",
+      },
     },
   },
   {
@@ -135,6 +159,12 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    distribution_info: {
+      code_name: "precise",
+      description: "Ubuntu 12.04 LTS",
+      distributor: "Canonical",
+      release: "12.04",
+    },
   },
   {
     id: 3,
@@ -165,6 +195,12 @@ export const instances: Instance[] = [
       regular: 7,
       security: 0,
     },
+    distribution_info: {
+      code_name: "lucid",
+      description: "Ubuntu 10.04 LTS",
+      distributor: "Canonical",
+      release: "10.04",
+    },
   },
   {
     id: 8,
@@ -191,6 +227,12 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    distribution_info: {
+      code_name: "oneiric",
+      description: "Ubuntu 11.10",
+      distributor: "Canonical",
+      release: "11.10",
+    },
   },
   {
     id: 5,
@@ -220,6 +262,12 @@ export const instances: Instance[] = [
     upgrades: {
       regular: 7,
       security: 0,
+    },
+    distribution_info: {
+      code_name: "lucid",
+      description: "Ubuntu 10.04 LTS",
+      distributor: "Canonical",
+      release: "10.04",
     },
   },
   {
@@ -251,6 +299,12 @@ export const instances: Instance[] = [
       regular: 7,
       security: 0,
     },
+    distribution_info: {
+      code_name: "natty",
+      description: "Ubuntu 11.04",
+      distributor: "Canonical",
+      release: "11.04",
+    },
   },
   {
     id: 9,
@@ -281,6 +335,12 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    distribution_info: {
+      code_name: "precise",
+      description: "Ubuntu 12.04 LTS",
+      distributor: "Canonical",
+      release: "12.04",
+    },
   },
   {
     id: 10,
@@ -307,6 +367,12 @@ export const instances: Instance[] = [
     is_wsl_instance: false,
     children: [],
     parent: null,
+    distribution_info: {
+      code_name: "precise",
+      description: "Ubuntu 12.04 LTS",
+      distributor: "Canonical",
+      release: "12.04",
+    },
   },
   {
     id: 6,
@@ -355,9 +421,21 @@ export const instances: Instance[] = [
         container_info: null,
         ubuntu_pro_info: null,
         is_wsl_instance: true,
+        distribution_info: {
+          code_name: "bionic",
+          description: "Ubuntu 18.04 LTS",
+          distributor: "Canonical",
+          release: "18.04",
+        },
       },
     ],
     parent: null,
+    distribution_info: {
+      code_name: "windows",
+      description: "Windows 10 / Windows 11",
+      distributor: "Microsoft",
+      release: "10 / 11",
+    },
   },
   {
     id: 20,
@@ -485,6 +563,12 @@ export const instances: Instance[] = [
       regular: 6,
       security: 6,
     },
+    distribution_info: {
+      code_name: "jammy",
+      description: "Ubuntu 22.04 LTS",
+      distributor: "Canonical",
+      release: "22.04",
+    },
   },
   {
     id: 21,
@@ -550,6 +634,12 @@ export const instances: Instance[] = [
     upgrades: {
       regular: 333,
       security: 208,
+    },
+    distribution_info: {
+      code_name: "focal",
+      description: "Ubuntu 20.04 LTS",
+      distributor: "Canonical",
+      release: "20.04",
     },
   },
 ];
