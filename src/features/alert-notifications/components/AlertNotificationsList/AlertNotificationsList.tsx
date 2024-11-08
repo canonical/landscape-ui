@@ -1,14 +1,14 @@
+import LoadingState from "@/components/layout/LoadingState";
 import { ROOT_PATH } from "@/constants";
 import { STATUSES } from "@/features/instances";
-import { AlertSummary } from "@/types/Alert";
-import { Button, Icon, List } from "@canonical/react-components";
-import { FC, lazy, Suspense } from "react";
-import classes from "./AlertNotificationsList.module.scss";
-import classNames from "classnames";
 import useSidePanel from "@/hooks/useSidePanel";
-import LoadingState from "@/components/layout/LoadingState";
 import { PendingInstance } from "@/types/Instance";
+import { Button, Icon, List } from "@canonical/react-components";
+import classNames from "classnames";
+import { FC, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
+import { AlertSummary } from "../../types";
+import classes from "./AlertNotificationsList.module.scss";
 
 const PendingInstancesForm = lazy(
   () => import("@/pages/dashboard/instances/PendingInstancesForm"),

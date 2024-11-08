@@ -1,10 +1,10 @@
-import { http, HttpResponse } from "msw";
 import { API_URL, API_URL_OLD } from "@/constants";
-import { Alert, AlertSummaryResponse } from "@/types/Alert";
-import { alerts, alertsSummary } from "@/tests/mocks/alerts";
-import { SubscriptionParams } from "@/hooks/useAlerts";
+import { AlertSummaryResponse } from "@/features/alert-notifications";
+import { Alert, SubscriptionParams } from "@/features/alerts";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { alerts, alertsSummary } from "@/tests/mocks/alerts";
 import { isAction } from "@/tests/server/handlers/_helpers";
+import { http, HttpResponse } from "msw";
 
 export default [
   http.get<never, never, Alert[]>(`${API_URL}alerts`, () => {

@@ -1,12 +1,11 @@
-import { FC, useMemo } from "react";
-import useAlerts from "@/hooks/useAlerts";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { AlertsList } from "@/features/account-settings";
+import { AlertsList, useAlerts } from "@/features/alerts";
 import useInstances from "@/hooks/useInstances";
 import { MultiSelectItem } from "@canonical/react-components";
+import { FC, useMemo } from "react";
 
 const AlertsPage: FC = () => {
   const { getAlertsQuery } = useAlerts();

@@ -1,4 +1,5 @@
-import { Alert, AlertSummary } from "@/types/Alert";
+import { AlertSummary } from "@/features/alert-notifications";
+import { Alert } from "@/features/alerts";
 
 export const alerts: Alert[] = [
   {

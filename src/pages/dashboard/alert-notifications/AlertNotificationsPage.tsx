@@ -1,19 +1,21 @@
-import { FC } from "react";
+import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { AlertNotificationsList } from "@/features/alert-notifications";
-import useAlerts from "@/hooks/useAlerts";
-import LoadingState from "@/components/layout/LoadingState";
-import EmptyState from "@/components/layout/EmptyState";
-import { Button } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
-import { useNavigate } from "react-router-dom";
+import {
+  AlertNotificationsList,
+  useAlertsSummary,
+} from "@/features/alert-notifications";
 import useInstances from "@/hooks/useInstances";
+import { Button } from "@canonical/react-components";
+import { FC } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AlertNotificationsPage: FC = () => {
   const navigate = useNavigate();
-  const { getAlertsSummaryQuery } = useAlerts();
+  const { getAlertsSummaryQuery } = useAlertsSummary();
   const { getPendingInstancesQuery } = useInstances();
 
   const {
