@@ -1,10 +1,10 @@
-import { Process } from "@/types/Process";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
-import React, { FC, useMemo } from "react";
 import {
   CellProps,
   Column,
 } from "@canonical/react-components/node_modules/@types/react-table";
+import { FC, useMemo } from "react";
+import { Process } from "../../types";
 
 interface ProcessesListProps {
   processes: Process[];

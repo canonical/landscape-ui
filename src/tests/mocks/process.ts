@@ -1,4 +1,4 @@
-import { Process } from "@/types/Process";
+import { Process } from "@/features/processes";
 
 export const processes: Process[] = [
   {
