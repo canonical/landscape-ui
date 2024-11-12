@@ -35,7 +35,6 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "Repository profiles",
         path: `${ROOT_PATH}profiles/repositories`,
-        env: "selfHosted",
       },
       {
         label: "Package profiles",
@@ -59,12 +58,12 @@ export const MENU_ITEMS: MenuItem[] = [
   {
     label: "Repositories",
     path: `${ROOT_PATH}repositories`,
-    env: "selfHosted",
     icon: "fork",
     items: [
       {
         label: "Mirrors",
         path: `${ROOT_PATH}repositories/mirrors`,
+        env: "selfHosted",
       },
       {
         label: "GPG Keys",

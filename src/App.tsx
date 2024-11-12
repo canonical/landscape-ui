@@ -166,19 +166,9 @@ const App: FC = () => {
                   </SelfHostedRoute>
                 }
               >
-                <Route path="repositories" element={<RepositoryPage />} />
                 <Route
                   path="repositories/mirrors"
                   element={<DistributionsPage />}
-                />
-                <Route path="repositories/gpg-keys" element={<GPGKeysPage />} />
-                <Route
-                  path="repositories/apt-sources"
-                  element={<APTSourcesPage />}
-                />
-                <Route
-                  path="profiles/repositories"
-                  element={<RepositoryProfilesPage />}
                 />
                 <Route path="profiles/wsl" element={<WslProfilesPage />} />
               </Route>
@@ -189,6 +179,16 @@ const App: FC = () => {
                   </Suspense>
                 }
               >
+                <Route path="repositories" element={<RepositoryPage />} />
+                <Route
+                  path="profiles/repositories"
+                  element={<RepositoryProfilesPage />}
+                />
+                <Route path="repositories/gpg-keys" element={<GPGKeysPage />} />
+                <Route
+                  path="repositories/apt-sources"
+                  element={<APTSourcesPage />}
+                />
                 <Route path="instances" element={<InstancesPage />} />
                 <Route
                   path="instances/:instanceId"
