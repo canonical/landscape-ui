@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/canonical/landscape-dashboard/compare/v1.7.6...v1.8.0) (2024-11-12)
+
+
+### Features
+
+* enable repository profiles, GPG keys and APT sources for SaaS ([b8ff2b1](https://github.com/canonical/landscape-dashboard/commit/b8ff2b1f6bbdc79d091ac73cdd4e91dc540ebef3))
+
 ## [1.7.6](https://github.com/canonical/landscape-dashboard/compare/v1.7.5...v1.7.6) (2024-11-08)
 
 
