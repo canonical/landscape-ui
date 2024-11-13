@@ -6,18 +6,22 @@ This branch is intended for use when building the `landscape-dashboard` package 
 
          git switch ppa-build
 
-  2. copy the `assets` directory
+  2. copy the `assets` directory, `index.html`, and `favicon.svg`.
 
          cp -r ./assets ..
+         cp ./index.html ..
+         cp ./favicon.svg ..
 
-  3. check out this branch
+  4. check out this branch
 
          git switch ppa-build-debian
 
-  4. delete the `assets` directory and replace it with the one you copied
+  5. delete the `assets` directory and replace it with the one you copied. Also bring back the `index.html` and `favicon.svg`
 
          rm -r ./assets
          mv ../assets ./
+         mv ../index.html ./
+         mv ../favicon.svg ./
 
   3. update the changelog for new `<VERSION>`
 
