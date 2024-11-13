@@ -2,13 +2,22 @@
 
 This branch is intended for use when building the `landscape-dashboard` package for distribution. The basic steps are as follows:
 
-  1. check out this branch
+  1. check out the `ppa-build` branch
+
+         git switch ppa-build
+
+  2. copy the `assets` directory
+
+         cp -r ./assets ..
+
+  3. check out this branch
 
          git switch ppa-build-debian
 
-  2. merge the latest changes from `ppa-build`, resolving all conflicts with that branch's version
+  4. delete the `assets` directory and replace it with the one you copied
 
-         git merge -X theirs origin/ppa-build
+         rm -r ./assets
+         mv ../assets ./
 
   3. update the changelog for new `<VERSION>`
 
