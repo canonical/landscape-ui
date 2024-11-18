@@ -1,8 +1,8 @@
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
 import { generatePaginatedResponse } from "./_helpers";
 import { User } from "@/types/User";
-import { users } from "@/tests/mocks/user";
+import { userDetails, users } from "@/tests/mocks/user";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
@@ -18,5 +18,11 @@ export default [
         offset,
       }),
     );
+  }),
+
+  http.get(`${API_URL}person`, async () => {
+    await delay();
+
+    return HttpResponse.json(userDetails);
   }),
 ];

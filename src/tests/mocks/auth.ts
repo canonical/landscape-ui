@@ -14,6 +14,7 @@ export const authUser: AuthUser = {
   ],
   current_account: testAccount,
   email: "example@mail.com",
+  has_password: true,
   name: "Test User",
   token: "test-account-token",
 };
