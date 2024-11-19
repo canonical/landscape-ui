@@ -48,9 +48,13 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
     },
     {
       label: "livepatch coverage",
-      value: getLivepatchCoverageDisplayValue(
-        livepatchEnabled,
-        kernelOverview.expirationDate,
+      value: kernelOverview.expirationDate ? (
+        getLivepatchCoverageDisplayValue(
+          livepatchEnabled,
+          kernelOverview.expirationDate,
+        )
+      ) : (
+        <NoData />
       ),
     },
   ];
@@ -71,7 +75,7 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
               className={classes.statusIcon}
             />
           )}
-          {label === "livepatch coverage" && (
+          {label === "livepatch coverage" && kernelOverview.expirationDate && (
             <Icon
               name={getLivepatchCoverageIcon(
                 livepatchEnabled,

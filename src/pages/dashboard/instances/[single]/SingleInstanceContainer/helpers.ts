@@ -34,7 +34,11 @@ export const getBreadcrumbs = (
 };
 
 export const getKernelCount = (kernelStatus?: KernelStatus[]) => {
-  if (!kernelStatus || kernelStatus.length === 0) {
+  if (
+    !kernelStatus ||
+    kernelStatus.length === 0 ||
+    !kernelStatus[0].Livepatch.Fixes
+  ) {
     return undefined;
   }
 

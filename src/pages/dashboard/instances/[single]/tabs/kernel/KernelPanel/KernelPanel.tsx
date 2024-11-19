@@ -56,7 +56,8 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
       kernelStatuses?.data.installed?.version_rounded ??
       "",
     expirationDate:
-      kernelInfo && moment(kernelInfo?.UpgradeRequiredDate).isValid()
+      kernelInfo?.UpgradeRequiredDate &&
+      moment(kernelInfo?.UpgradeRequiredDate).isValid()
         ? kernelInfo.UpgradeRequiredDate
         : "",
     status: kernelStatuses?.data.smart_status ?? "",

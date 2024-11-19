@@ -24,14 +24,14 @@ export interface KernelStatus {
   Livepatch: Livepatch;
   Running: boolean;
   Supported: string;
-  UpgradeRequiredDate: string;
+  UpgradeRequiredDate: string | null;
 }
 
 interface Livepatch {
   CheckState: string;
-  Fixes: Fix[];
   State: string;
   Version: string;
+  Fixes?: Fix[];
 }
 
 export interface Fix extends Record<string, unknown> {
