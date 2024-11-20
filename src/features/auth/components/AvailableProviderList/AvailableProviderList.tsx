@@ -2,14 +2,13 @@ import { FC, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button, Icon } from "@canonical/react-components";
 import { IdentityProvider } from "../../types";
-import { SUPPORTED_PROVIDERS } from "../../constants";
 import {
   GetOidcUrlParams,
   GetUbuntuOneUrlParams,
   useInvitation,
   useUnsigned,
 } from "../../hooks";
-import { redirectToExternalUrl } from "../../helpers";
+import { getProviderIcon, redirectToExternalUrl } from "../../helpers";
 import classes from "./AvailableProviderList.module.scss";
 
 interface AvailableProviderListProps {
@@ -100,7 +99,7 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
             className={classes.button}
           >
             <Icon
-              name={SUPPORTED_PROVIDERS["ubuntu-one"].icon}
+              name={getProviderIcon("ubuntu-one")}
               className={classes.icon}
             />
             <span>Sign in with Ubuntu One</span>
@@ -116,7 +115,7 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
             className={classes.button}
           >
             <Icon
-              name={SUPPORTED_PROVIDERS["standalone-oidc"].icon}
+              name={getProviderIcon("standalone")}
               className={classes.icon}
             />
             <span>Sign in with Enterprise Login</span>
@@ -132,7 +131,7 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
             className={classes.button}
           >
             <Icon
-              name={SUPPORTED_PROVIDERS[provider.provider].icon}
+              name={getProviderIcon(provider.provider)}
               className={classes.icon}
             />
             <span>{`Sign in with ${provider.name}`}</span>

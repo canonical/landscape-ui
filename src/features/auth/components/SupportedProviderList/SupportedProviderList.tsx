@@ -2,10 +2,10 @@ import { FC, lazy, Suspense } from "react";
 import { Button, Icon } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SUPPORTED_PROVIDERS } from "../../constants";
 import { useAuthHandle } from "../../hooks";
 import { SupportedIdentityProvider } from "../../types";
 import classes from "./SupportedProviderList.module.scss";
+import { getProviderIcon } from "../../helpers";
 
 const ProviderForm = lazy(() => import("../ProviderForm"));
 
@@ -47,7 +47,7 @@ const SupportedProviderList: FC = () => {
                   >
                     <span className={classes.iconContainer}>
                       <Icon
-                        name={SUPPORTED_PROVIDERS[provider.provider_slug].icon}
+                        name={getProviderIcon(provider.provider_slug)}
                         className={classes.icon}
                       />
                       <span>{provider.provider_label}</span>
