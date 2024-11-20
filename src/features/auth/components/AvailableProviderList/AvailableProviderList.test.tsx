@@ -28,7 +28,8 @@ describe("AvailableProviderList", () => {
   });
 
   it("should redirect to an external url", async () => {
-    vi.mock("../../helpers", () => ({
+    vi.mock("../../helpers", async (importOriginal) => ({
+      ...(await importOriginal()),
       redirectToExternalUrl,
     }));
 
