@@ -1,3 +1,12 @@
+## [1.8.1](https://github.com/canonical/landscape-dashboard/compare/v1.8.0...v1.8.1) (2024-11-20)
+
+
+### Bug Fixes
+
+* add default supported provider ([aaece65](https://github.com/canonical/landscape-dashboard/commit/aaece65773c0337076ff610dd59460513b31fa2a))
+* add environment context loading state ([62263fd](https://github.com/canonical/landscape-dashboard/commit/62263fd4a3b2d5ba53b6573bfa954bf1b7704550))
+* kernel tab page crash for machines with no cve fixes, improve livepatch coverage info text ([c87d1d8](https://github.com/canonical/landscape-dashboard/commit/c87d1d8c85d4cea5dba573554e17cdfeb3cf83f9))
+
 # [1.8.0](https://github.com/canonical/landscape-dashboard/compare/v1.7.6...v1.8.0) (2024-11-12)
 
 
