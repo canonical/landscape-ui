@@ -9,6 +9,7 @@ interface AboutResponse {
 }
 
 const initialState = {
+  envLoading: true,
   isSaas: false,
   isSelfHosted: false,
   packageVersion: "",
@@ -28,6 +29,7 @@ const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
     (async () => {
       const { data } = await axios.get<AboutResponse>(`${API_URL}about`);
       setState({
+        envLoading: false,
         isSaas:
           undefined !== IS_SELF_HOSTED_ENV
             ? ["false", "0"].includes(IS_SELF_HOSTED_ENV)

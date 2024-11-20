@@ -124,16 +124,16 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
 };
 
 const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
-  const { isSelfHosted } = useEnv();
+  const { isSelfHosted, envLoading } = useEnv();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isSelfHosted) {
+    if (isSelfHosted || envLoading) {
       return;
     }
 
     navigate(`${ROOT_PATH}env-error`, { replace: true });
-  }, [isSelfHosted]);
+  }, [isSelfHosted, envLoading]);
 
   return <>{children}</>;
 };
