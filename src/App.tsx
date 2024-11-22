@@ -97,7 +97,9 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
       return;
     }
 
-    navigate(`${ROOT_PATH}login?redirect-to=${pathname}${search}`, {
+    const redirectTo = encodeURIComponent(`${pathname}${search}`);
+
+    navigate(`${ROOT_PATH}login?redirect-to=${redirectTo}`, {
       replace: true,
     });
     queryClient.removeQueries({
