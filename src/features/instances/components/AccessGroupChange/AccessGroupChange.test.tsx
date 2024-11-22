@@ -15,7 +15,7 @@ describe("AccessGroupChange", () => {
       screen.queryByText("This field is required"),
     ).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /change/i }));
+    await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
     expect(screen.getByText("This field is required")).toBeInTheDocument();
 
@@ -27,7 +27,7 @@ describe("AccessGroupChange", () => {
       screen.queryByText("This field is required"),
     ).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /change/i }));
+    await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
     expect(screen.getByText("Access group changed")).toBeInTheDocument();
     expect(

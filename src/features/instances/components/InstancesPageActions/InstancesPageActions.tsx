@@ -46,7 +46,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
       "Run script",
       <Suspense fallback={<LoadingState />}>
         <RunInstanceScriptForm
-          query={`id:${selected.map(({ id }) => id).join(" id:")}`}
+          query={selected.map(({ id }) => `id:${id}`).join(" OR ")}
         />
       </Suspense>,
     );

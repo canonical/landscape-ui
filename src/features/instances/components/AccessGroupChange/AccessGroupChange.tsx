@@ -60,6 +60,7 @@ const AccessGroupChange: FC<AccessGroupChangeProps> = ({ selected }) => {
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Select
         label="Access group"
+        required
         options={getAccessGroupOptions(getAccessGroupQueryResult?.data)}
         {...formik.getFieldProps("access_group")}
         error={
