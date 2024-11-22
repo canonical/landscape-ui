@@ -252,7 +252,7 @@ const InstanceList: FC<InstanceListProps> = ({
           ),
         },
         {
-          accessor: "alerts",
+          accessor: "status",
           Header: "Status",
           Cell: ({ row: { original } }: CellProps<Instance>) => {
             const { label } = getStatusRowIconAndLabel(original);
@@ -276,18 +276,21 @@ const InstanceList: FC<InstanceListProps> = ({
           },
         },
         {
-          accessor: "distribution_info.description",
+          accessor: "os",
           Header: "OS",
+          Cell: ({ row: { original } }: CellProps<Instance>) => (
+            <>{original.distribution_info.description ?? <NoData />}</>
+          ),
         },
         {
-          accessor: "cloud_init.availability_zone",
+          accessor: "availability_zone",
           Header: "Availability zone",
           Cell: ({ row: { original } }: CellProps<Instance>) => (
             <>{original.cloud_init?.availability_zone ?? <NoData />}</>
           ),
         },
         {
-          accessor: "ubuntu_pro_info",
+          accessor: "ubuntu_pro",
           Header: "Ubuntu pro",
           Cell: ({ row }: CellProps<Instance>) => (
             <>
@@ -303,7 +306,7 @@ const InstanceList: FC<InstanceListProps> = ({
           ),
         },
         {
-          accessor: "last_ping_time",
+          accessor: "last_ping",
           Header: "Last ping time",
           Cell: ({ row }: CellProps<Instance>) => (
             <>

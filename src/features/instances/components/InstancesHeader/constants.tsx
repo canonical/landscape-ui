@@ -163,14 +163,10 @@ export const INSTANCE_SEARCH_HELP_TERMS: {
 
 export const COLUMN_OPTIONS: ColumnFilterOption[] = [
   { canBeHidden: false, label: "Instance name", value: "title" },
-  { canBeHidden: true, label: "Status", value: "alerts" },
+  { canBeHidden: true, label: "Status", value: "status" },
   { canBeHidden: true, label: "Upgrades", value: "upgrades" },
-  { canBeHidden: true, label: "OS", value: "distribution" },
-  {
-    canBeHidden: true,
-    label: "Availability zone",
-    value: "cloud_init.availability_zone",
-  },
-  { canBeHidden: true, label: "Ubuntu pro", value: "ubuntu_pro_info" },
-  { canBeHidden: true, label: "Last ping", value: "last_ping_time" },
+  { canBeHidden: true, label: "OS", value: "os" },
+  { canBeHidden: true, label: "Availability zone", value: "availability_zone" },
+  { canBeHidden: true, label: "Ubuntu pro", value: "ubuntu_pro" },
+  { canBeHidden: true, label: "Last ping", value: "last_ping" },
 ];
