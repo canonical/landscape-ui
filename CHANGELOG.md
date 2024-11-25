@@ -1,3 +1,18 @@
+# [1.9.0](https://github.com/canonical/landscape-dashboard/compare/v1.8.1...v1.9.0) (2024-11-25)
+
+
+### Bug Fixes
+
+* change instance column filter ([f81e6b8](https://github.com/canonical/landscape-dashboard/commit/f81e6b822e6b40f11938b35fd57753eb241b5a0e))
+* encode redirection path URL param ([2f31515](https://github.com/canonical/landscape-dashboard/commit/2f31515cd4b22bc0fb17cf567fe63e7c3683072f))
+
+
+### Features
+
+* add ability to assign access group for multiple instances ([#138](https://github.com/canonical/landscape-dashboard/issues/138)) ([a899f6d](https://github.com/canonical/landscape-dashboard/commit/a899f6d0a43007cff190d5e1fe63d46f3660f03e))
+* add activities page filters ([#132](https://github.com/canonical/landscape-dashboard/issues/132)) ([e38c721](https://github.com/canonical/landscape-dashboard/commit/e38c721efadd136f300cc77e6bf4bf2a4161f6d3))
+* add version number to sidebar ([7de1392](https://github.com/canonical/landscape-dashboard/commit/7de1392de85b148a16af0fa68a2c4b071395e6d0))
+
 ## [1.8.1](https://github.com/canonical/landscape-dashboard/compare/v1.8.0...v1.8.1) (2024-11-20)
 
 
