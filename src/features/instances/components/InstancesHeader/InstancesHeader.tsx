@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import ColumnFilter from "@/components/form/ColumnFilter";
-import TableFilterChips from "@/components/form/TableFilterChips";
+import { TableFilterChips } from "@/components/filter";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import { SearchBoxWithSavedSearches } from "@/features/saved-searches";
 import useInstances from "@/hooks/useInstances";
@@ -11,11 +11,10 @@ import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
 import GroupFilter from "../GroupFilter";
 import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
-import StatusFilter from "../StatusFilter";
 import TagFilter from "../TagFilter";
 import { COLUMN_OPTIONS, INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesHeader.module.scss";
-import { GroupedOption } from "@/components/form/TableFilter";
+import { GroupedOption, StatusFilter } from "@/components/filter";
 
 const InstancesHeader: FC = () => {
   const [showSearchHelp, setShowSearchHelp] = useState(false);

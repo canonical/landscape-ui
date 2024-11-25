@@ -95,6 +95,7 @@ const TableFilter: FC<TableFilterProps> = ({
       <span
         className={classNames(classes.container, {
           [classes.multiple]: otherProps.multiple,
+          [classes.horizontalPadding]: otherProps.multiple || onSearch,
         })}
       >
         {onSearch && <SearchBoxWithForm onSearch={onSearch} />}

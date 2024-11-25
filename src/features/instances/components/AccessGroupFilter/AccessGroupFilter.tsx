@@ -1,5 +1,5 @@
 import { FC } from "react";
-import TableFilter, { GroupedOption } from "@/components/form/TableFilter";
+import { GroupedOption, TableFilter } from "@/components/filter";
 import { usePageParams } from "@/hooks/usePageParams";
 
 interface AccessGroupFilterProps {

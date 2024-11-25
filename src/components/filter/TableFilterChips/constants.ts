@@ -1,4 +1,4 @@
-import { FilterKey } from "@/components/form/TableFilterChips/types";
+import { FilterKey } from "./types";
 
 export const defaultFiltersToDisplay: FilterKey[] = [
   "accessGroups",

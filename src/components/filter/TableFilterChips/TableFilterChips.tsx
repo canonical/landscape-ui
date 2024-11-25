@@ -14,6 +14,7 @@ interface TableFilterChipsProps {
   osOptions?: SelectOption[];
   statusOptions?: SelectOption[];
   tagOptions?: SelectOption[];
+  typeOptions?: SelectOption[];
 }
 
 const TableFilterChips: FC<TableFilterChipsProps> = ({
@@ -23,6 +24,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   osOptions,
   statusOptions,
   tagOptions,
+  typeOptions,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [hiddenChipCount, setHiddenChipCount] = useState(0);
@@ -31,16 +33,28 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { setPageParams, accessGroups, availabilityZones, os, status, tags } =
-    usePageParams();
+  const {
+    setPageParams,
+    accessGroups,
+    availabilityZones,
+    fromDate,
+    os,
+    status,
+    tags,
+    toDate,
+    type,
+  } = usePageParams();
 
   const handleClearAllFilters = () => {
     setPageParams({
       accessGroups: [],
       availabilityZones: [],
+      fromDate: "",
       os: "",
       status: "",
       tags: [],
+      toDate: "",
+      type: "",
     });
     setIsExpanded(false);
   };
@@ -85,10 +99,13 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   }, [
     accessGroups.length,
     availabilityZones.length,
+    fromDate,
     hiddenChipCount,
     os,
     status,
     tags.length,
+    toDate,
+    type,
   ]);
 
   const showClearAllButton =
@@ -104,6 +121,9 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         filtersToMonitor.includes("accessGroups") ? 0 : accessGroups.length,
       ),
       ...tags.slice(filtersToMonitor.includes("tags") ? 0 : tags.length),
+      ...[fromDate].slice(filtersToMonitor.includes("fromDate") ? 0 : 1),
+      ...[toDate].slice(filtersToMonitor.includes("toDate") ? 0 : 1),
+      ...[type].slice(filtersToMonitor.includes("type") ? 0 : 1),
     ].filter(Boolean).length > 1;
 
   return (
@@ -179,6 +199,27 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
+        {filtersToMonitor.includes("fromDate") && fromDate && (
+          <Chip
+            value={`From: ${fromDate}`}
+            onDismiss={() => setPageParams({ fromDate: "" })}
+            className="u-no-margin--bottom u-no-margin--right"
+          />
+        )}
+        {filtersToMonitor.includes("toDate") && toDate && (
+          <Chip
+            value={`To: ${toDate}`}
+            onDismiss={() => setPageParams({ toDate: "" })}
+            className="u-no-margin--bottom u-no-margin--right"
+          />
+        )}
+        {filtersToMonitor.includes("type") && type && (
+          <Chip
+            value={`Type: ${typeOptions?.find(({ value }) => value === type)?.label ?? type}`}
+            onDismiss={() => setPageParams({ type: "" })}
+            className="u-no-margin--bottom u-no-margin--right"
+          />
+        )}
         {isExpanded && (
           <Button
             type="button"

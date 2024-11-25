@@ -1,5 +1,5 @@
 import moment from "moment/moment";
-import { FC, lazy, Suspense, useMemo, useState } from "react";
+import { FC, lazy, Suspense, useMemo } from "react";
 import {
   CellProps,
   Column,
@@ -11,7 +11,7 @@ import {
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
 import ActivitiesEmptyState from "../ActivitiesEmptyState";
 import ActivitiesHeader from "../ActivitiesHeader";
 import { ACTIVITY_STATUSES } from "../../constants";
@@ -21,23 +21,33 @@ import { ActivityCommon } from "../../types";
 import classes from "./Activities.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
 import NoData from "@/components/layout/NoData";
+import { Link } from "react-router-dom";
+import { getDateQuery, getStatusQuery, getTypeQuery } from "./helpers";
 
 const ActivityDetails = lazy(
   () => import("@/features/activities/components/ActivityDetails"),
 );
 
 interface ActivitiesProps {
+  selectedIds: number[];
+  setSelectedIds: (ids: number[]) => void;
   instanceId?: number;
 }
 
-const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
-
-  const { search, status, currentPage, pageSize } = usePageParams();
+const Activities: FC<ActivitiesProps> = ({
+  instanceId,
+  selectedIds,
+  setSelectedIds,
+}) => {
+  const { search, status, fromDate, toDate, type, currentPage, pageSize } =
+    usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getActivitiesQuery } = useActivities();
 
-  const searchQuery = `${search}${status ? ` status:${status}` : ""}`;
+  const dateQuery = getDateQuery(fromDate, toDate);
+  const typeQuery = getTypeQuery(type);
+  const statusQuery = getStatusQuery(status);
+  const searchQuery = `${search}${statusQuery}${dateQuery}${typeQuery}`;
 
   const handleActivityDetailsOpen = (activity: ActivityCommon) => {
     setSidePanelContent(
@@ -56,7 +66,7 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
 
   const {
     data: getActivitiesQueryResult,
-    isLoading: getActivitiesQueryLoading,
+    isPending: getActivitiesQueryLoading,
   } = getActivitiesQuery({
     query:
       `${instanceId ? `computer:id:${instanceId}` : ""} ${searchQuery ?? ""}`.trim(),
@@ -70,99 +80,115 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
   );
 
   const toggleAll = () => {
-    setSelectedIds((prevState) =>
-      prevState.length ? [] : activities.map(({ id }) => id),
+    setSelectedIds(
+      selectedIds.length !== 0 ? [] : activities.map(({ id }) => id),
     );
   };
 
   const handleToggleActivity = (activityId: number) => {
-    setSelectedIds((prevState) =>
-      prevState.includes(activityId)
-        ? prevState.filter((selectedId) => selectedId !== activityId)
-        : [...prevState, activityId],
+    setSelectedIds(
+      selectedIds.includes(activityId)
+        ? selectedIds.filter((selectedId) => selectedId !== activityId)
+        : [...selectedIds, activityId],
     );
   };
 
   const columns = useMemo<Column<ActivityCommon>[]>(
-    () => [
-      {
-        accessor: "checkbox",
-        className: classes.checkbox,
-        Header: (
-          <CheckboxInput
-            label={<span className="u-off-screen">Toggle all</span>}
-            inline
-            onChange={toggleAll}
-            checked={
-              activities.length > 0 && selectedIds.length === activities.length
-            }
-            indeterminate={
-              selectedIds.length > 0 && selectedIds.length < activities.length
-            }
-          />
-        ),
-        Cell: ({ row }: CellProps<ActivityCommon>) => (
-          <CheckboxInput
-            label={<span className="u-off-screen">{row.original.summary}</span>}
-            inline
-            labelClassName="u-no-margin--bottom u-no-padding--top"
-            checked={selectedIds.includes(row.original.id)}
-            onChange={() => {
-              handleToggleActivity(row.original.id);
-            }}
-          />
-        ),
-      },
-      {
-        accessor: "summary",
-        className: classes.description,
-        Header: "Description",
-        Cell: ({ row }: CellProps<ActivityCommon>) => (
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => handleActivityDetailsOpen(row.original)}
-          >
-            {row.original.summary}
-          </Button>
-        ),
-      },
-      {
-        accessor: "activity_status",
-        Header: "Status",
-        Cell: ({
-          row: {
-            original: { activity_status },
-          },
-        }: CellProps<ActivityCommon>) =>
-          ACTIVITY_STATUSES[activity_status].label,
-        getCellIcon: ({
-          row: {
-            original: { activity_status },
-          },
-        }: CellProps<ActivityCommon>) =>
-          ACTIVITY_STATUSES[activity_status].icon,
-      },
-      {
-        accessor: "creation_time",
-        Header: "Created at",
-        Cell: ({ row }: CellProps<ActivityCommon>) => (
-          <>
-            {moment(row.original.creation_time).format(
-              DISPLAY_DATE_TIME_FORMAT,
-            )}
-          </>
-        ),
-      },
-      {
-        accessor: "creator.name",
-        Header: "Creator",
-        Cell: ({ row }: CellProps<ActivityCommon>) => (
-          <>{row.original.creator?.name ?? <NoData />}</>
-        ),
-      },
-    ],
+    () =>
+      [
+        {
+          accessor: "checkbox",
+          className: classes.checkbox,
+          Header: (
+            <CheckboxInput
+              label={<span className="u-off-screen">Toggle all</span>}
+              inline
+              onChange={toggleAll}
+              checked={
+                activities.length > 0 &&
+                selectedIds.length === activities.length
+              }
+              indeterminate={
+                selectedIds.length > 0 && selectedIds.length < activities.length
+              }
+            />
+          ),
+          Cell: ({ row }: CellProps<ActivityCommon>) => (
+            <CheckboxInput
+              label={
+                <span className="u-off-screen">{row.original.summary}</span>
+              }
+              inline
+              labelClassName="u-no-margin--bottom u-no-padding--top"
+              checked={selectedIds.includes(row.original.id)}
+              onChange={() => {
+                handleToggleActivity(row.original.id);
+              }}
+            />
+          ),
+        },
+        {
+          accessor: "summary",
+          className: classes.description,
+          Header: "Description",
+          Cell: ({ row }: CellProps<ActivityCommon>) => (
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              onClick={() => handleActivityDetailsOpen(row.original)}
+            >
+              {row.original.summary}
+            </Button>
+          ),
+        },
+        {
+          accessor: "activity_status",
+          Header: "Status",
+          Cell: ({
+            row: {
+              original: { activity_status },
+            },
+          }: CellProps<ActivityCommon>) =>
+            ACTIVITY_STATUSES[activity_status].label,
+          getCellIcon: ({
+            row: {
+              original: { activity_status },
+            },
+          }: CellProps<ActivityCommon>) =>
+            ACTIVITY_STATUSES[activity_status].icon,
+        },
+        {
+          accessor: "computer_id",
+          Header: "Instance",
+          Cell: ({ row }: CellProps<ActivityCommon>) => (
+            <Link
+              className={classes.link}
+              to={`${ROOT_PATH}instances/${row.original.computer_id}`}
+            >
+              ID: {row.original.computer_id}
+            </Link>
+          ),
+        },
+        {
+          accessor: "creation_time",
+          Header: "Created at",
+          Cell: ({ row }: CellProps<ActivityCommon>) => (
+            <>
+              {moment(row.original.creation_time).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )}
+            </>
+          ),
+        },
+        {
+          accessor: "creator.name",
+          Header: "Creator",
+          Cell: ({ row }: CellProps<ActivityCommon>) => (
+            <>{row.original.creator?.name ?? <NoData />}</>
+          ),
+        },
+      ].filter((col) => !instanceId || col.accessor !== "computer_id"),
     [activities, selectedIds],
   );
 
@@ -183,17 +209,18 @@ const Activities: FC<ActivitiesProps> = ({ instanceId }) => {
 
       {(!!searchQuery ||
         currentPage !== 1 ||
-        pageSize !== 50 ||
+        pageSize !== 20 ||
         (!getActivitiesQueryLoading &&
           getActivitiesQueryResult &&
           getActivitiesQueryResult.data.count > 0)) && (
         <>
-          <ActivitiesHeader
-            resetSelectedIds={handleClearSelection}
-            selectedIds={selectedIds}
-          />
+          <ActivitiesHeader resetSelectedIds={handleClearSelection} />
           <ModularTable
-            emptyMsg={`No activities found with the search ${searchQuery}`}
+            emptyMsg={
+              getActivitiesQueryLoading
+                ? "Loading..."
+                : `No activities found with the search ${searchQuery}`
+            }
             columns={columns}
             data={activities}
           />
