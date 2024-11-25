@@ -1,7 +1,7 @@
-import { FC } from "react";
-import { SelectOption } from "@/types/SelectOption";
-import TableFilter from "@/components/form/TableFilter";
 import { usePageParams } from "@/hooks/usePageParams";
+import { SelectOption } from "@/types/SelectOption";
+import { FC } from "react";
+import TableFilter from "../TableFilter";
 
 interface StatusFilterProps {
   options: SelectOption[];

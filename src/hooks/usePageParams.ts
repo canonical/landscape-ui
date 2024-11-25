@@ -10,6 +10,7 @@ export const PARAMS = {
   CURRENT_PAGE: "currentPage",
   DAYS: "days",
   DISABLED_COLUMNS: "disabledColumns",
+  FROM_DATE: "fromDate",
   GROUP_BY: "groupBy",
   OS: "os",
   PAGE_SIZE: "pageSize",
@@ -17,6 +18,8 @@ export const PARAMS = {
   STATUS: "status",
   TAB: "tab",
   TAGS: "tags",
+  TO_DATE: "toDate",
+  TYPE: "type",
 };
 
 const modifyUrlParameters = (
@@ -39,6 +42,7 @@ export const usePageParams = () => {
     CURRENT_PAGE,
     DAYS,
     DISABLED_COLUMNS,
+    FROM_DATE,
     GROUP_BY,
     OS,
     PAGE_SIZE,
@@ -46,6 +50,8 @@ export const usePageParams = () => {
     STATUS,
     TAB,
     TAGS,
+    TO_DATE,
+    TYPE,
   } = PARAMS;
 
   const tab = searchParams.get(TAB) ?? "";
@@ -69,6 +75,9 @@ export const usePageParams = () => {
     searchParams.get(ACCESS_GROUPS)?.split(",").filter(Boolean) ?? [];
   const disabledColumns =
     searchParams.get(DISABLED_COLUMNS)?.split(",").filter(Boolean) ?? [];
+  const type = searchParams.get(TYPE) ?? "";
+  const fromDate = searchParams.get(FROM_DATE) ?? "";
+  const toDate = searchParams.get(TO_DATE) ?? "";
 
   const setPageParams = (newParams: {
     accessGroups?: string[];
@@ -76,6 +85,7 @@ export const usePageParams = () => {
     currentPage?: number;
     days?: string;
     disabledColumns?: string[];
+    fromDate?: string;
     groupBy?: string;
     os?: string;
     pageSize?: number;
@@ -83,6 +93,8 @@ export const usePageParams = () => {
     status?: string;
     tab?: string;
     tags?: string[];
+    toDate?: string;
+    type?: string;
   }) => {
     setSearchParams(
       (prevSearchParams) => {
@@ -107,7 +119,10 @@ export const usePageParams = () => {
           newParams.days ||
           newParams.tags ||
           newParams.availabilityZones ||
-          newParams.accessGroups
+          newParams.accessGroups ||
+          newParams.type ||
+          newParams.fromDate ||
+          newParams.toDate
         ) {
           updatedSearchParams.delete(CURRENT_PAGE);
         }
@@ -131,6 +146,7 @@ export const usePageParams = () => {
     currentPage,
     days,
     disabledColumns,
+    fromDate,
     groupBy,
     os,
     pageSize,
@@ -139,5 +155,7 @@ export const usePageParams = () => {
     status,
     tab,
     tags,
+    toDate,
+    type,
   };
 };

@@ -1,4 +1,5 @@
 @import "node_modules/vanilla-framework/scss/settings_spacing";
+@import "node_modules/vanilla-framework/scss/settings_colors";
 
 .checkbox {
   width: $sp-x-large;
@@ -6,4 +7,10 @@
 
 .description {
   width: 40%;
+}
+
+.link {
+  &:visited {
+    color: $color-link;
+  }
 }

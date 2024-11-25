@@ -21,6 +21,7 @@ interface ActivityActions {
 export interface ActivityCommon extends Record<string, unknown> {
   activity_status: ActivityStatus;
   completion_time: string | null;
+  computer_id: number;
   creation_time: string;
   creator: Creator;
   id: number;

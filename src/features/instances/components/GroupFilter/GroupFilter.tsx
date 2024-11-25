@@ -1,5 +1,5 @@
 import { FC } from "react";
-import TableFilter from "@/components/form/TableFilter";
+import { TableFilter } from "@/components/filter";
 import { usePageParams } from "@/hooks/usePageParams";
 import { SelectOption } from "@/types/SelectOption";
 

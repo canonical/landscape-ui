@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Activities } from "@/features/activities";
 
 interface ActivityPanelProps {
@@ -6,7 +6,15 @@ interface ActivityPanelProps {
 }
 
 const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
-  return <Activities instanceId={instanceId} />;
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  return (
+    <Activities
+      instanceId={instanceId}
+      selectedIds={selectedIds}
+      setSelectedIds={(items) => setSelectedIds(items)}
+    />
+  );
 };
 
 export default ActivityPanel;

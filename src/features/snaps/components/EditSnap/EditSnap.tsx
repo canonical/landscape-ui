@@ -235,7 +235,11 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
           label="Deliver after"
           labelClassName="u-off-screen"
           {...formik.getFieldProps("deliver_after")}
-          error={formik.touched.deliver_after && formik.errors.deliver_after}
+          error={
+            formik.touched.deliver_after && formik.errors.deliver_after
+              ? formik.errors.deliver_after
+              : undefined
+          }
         />
       )}
       <span className={classNames(classes.bold, classes.marginTop)}>
