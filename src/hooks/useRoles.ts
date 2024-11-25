@@ -7,6 +7,7 @@ import { AccessGroup } from "@/types/AccessGroup";
 import { Role } from "@/types/Role";
 import { Permission } from "@/types/Permission";
 import { Activity } from "@/features/activities";
+import { Instance } from "@/types/Instance";
 
 export interface CreateAccessGroupParams {
   parent: string;
@@ -49,6 +50,11 @@ export interface ChangeRolePermissionsParams {
 export interface ChangeRolePersonsParams {
   name: string;
   persons: string[];
+}
+
+interface ChangeComputersAccessGroupParams {
+  access_group: string;
+  query: string;
 }
 
 export default function useRoles() {
@@ -200,6 +206,16 @@ export default function useRoles() {
       ]),
   });
 
+  const changeComputersAccessGroupQuery = useMutation<
+    AxiosResponse<Instance[]>,
+    AxiosError<ApiError>,
+    ChangeComputersAccessGroupParams
+  >({
+    mutationFn: (params) =>
+      authFetch.get("ChangeComputersAccessGroup", { params }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+  });
+
   return {
     getAccessGroupQuery,
     createAccessGroupQuery,
@@ -215,5 +231,6 @@ export default function useRoles() {
     removePermissionsFromRoleQuery,
     addPersonsToRoleQuery,
     removePersonsFromRoleQuery,
+    changeComputersAccessGroupQuery,
   };
 }

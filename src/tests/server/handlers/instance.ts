@@ -9,6 +9,7 @@ import { Instance, PendingInstance } from "@/types/Instance";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 import { instances, pendingInstances } from "@/tests/mocks/instance";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { activities } from "@/tests/mocks/activity";
 
 export default [
   http.get<never, GetInstancesParams, ApiPaginatedResponse<Instance>>(
@@ -55,5 +56,13 @@ export default [
     }
 
     return HttpResponse.json(pendingInstances);
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, ["RebootComputers", "ShutdownComputers"])) {
+      return;
+    }
+
+    return HttpResponse.json(activities[0]);
   }),
 ];
