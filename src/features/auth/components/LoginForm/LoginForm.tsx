@@ -13,7 +13,6 @@ import useAuth from "@/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import classes from "./LoginForm.module.scss";
 import { useUnsigned } from "../../hooks";
-import { redirectToExternalUrl } from "../../helpers";
 
 interface FormProps {
   email: string;
@@ -29,7 +28,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
   const debug = useDebug();
   const { signInWithEmailAndPasswordQuery } = useUnsigned();
-  const { setUser } = useAuth();
+  const { setUser, redirectToExternalUrl } = useAuth();
   const navigate = useNavigate();
 
   const redirectTo = searchParams.get("redirect-to");

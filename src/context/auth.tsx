@@ -1,11 +1,19 @@
 import { isAxiosError } from "axios";
-import React, { FC, ReactNode, useEffect, useMemo, useState } from "react";
+import React, {
+  FC,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { ROOT_PATH } from "@/constants";
 import useNotify from "@/hooks/useNotify";
-import { AuthUser, useUnsigned } from "@/features/auth";
+import { AuthUser, redirectToExternalUrl, useUnsigned } from "@/features/auth";
 import { SelectOption } from "@/types/SelectOption";
+import Redirecting from "@/components/layout/Redirecting";
 
 export interface AuthContextProps {
   account:
@@ -22,6 +30,7 @@ export interface AuthContextProps {
   authorized: boolean;
   isOidcAvailable: boolean;
   logout: () => void;
+  redirectToExternalUrl: (url: string, options?: { replace: boolean }) => void;
   setUser: (user: AuthUser) => void;
   user: AuthUser | null;
 }
@@ -34,6 +43,7 @@ const initialState: AuthContextProps = {
   authorized: false,
   isOidcAvailable: false,
   logout: () => undefined,
+  redirectToExternalUrl: () => undefined,
   setUser: () => undefined,
   user: null,
 };
@@ -48,6 +58,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const queryClient = useQueryClient();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { notify } = useNotify();
@@ -157,15 +168,28 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     });
   };
 
+  const handleExternalRedirect = useCallback(
+    (url: string, options?: { replace: boolean }) => {
+      setIsRedirecting(true);
+      redirectToExternalUrl(url, options);
+    },
+    [],
+  );
+
+  if (isRedirecting) {
+    return <Redirecting />;
+  }
+
   return (
     <AuthContext.Provider
       value={{
         account,
         authLoading: loading,
         authorized: null !== user,
-        logout: handleLogout,
-        setUser: handleSetUser,
         isOidcAvailable: !!getLoginMethodsQueryResult?.data.oidc.available,
+        logout: handleLogout,
+        redirectToExternalUrl: handleExternalRedirect,
+        setUser: handleSetUser,
         user,
       }}
     >

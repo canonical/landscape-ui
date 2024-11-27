@@ -16,6 +16,7 @@ import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
 import DashboardPage from "@/pages/dashboard";
+import Redirecting from "@/components/layout/Redirecting";
 
 const OidcAuthPage = lazy(() => import("@/pages/auth/handle/oidc"));
 const UbuntuOneAuthPage = lazy(() => import("@/pages/auth/handle/ubuntu-one"));
@@ -107,7 +108,11 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
     });
   }, [authorized, authLoading]);
 
-  return <>{children}</>;
+  if (authLoading) {
+    return <LoadingState />;
+  }
+
+  return authorized ? <>{children}</> : <Redirecting />;
 };
 
 const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
@@ -122,7 +127,11 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
     navigate(ROOT_PATH, { replace: true });
   }, [authorized, authLoading]);
 
-  return <>{children}</>;
+  if (authLoading) {
+    return <LoadingState />;
+  }
+
+  return !authorized ? <>{children}</> : <Redirecting />;
 };
 
 const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
@@ -137,7 +146,11 @@ const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
     navigate(`${ROOT_PATH}env-error`, { replace: true });
   }, [isSelfHosted, envLoading]);
 
-  return <>{children}</>;
+  if (envLoading) {
+    return <LoadingState />;
+  }
+
+  return isSelfHosted ? <>{children}</> : <Redirecting />;
 };
 
 const App: FC = () => {

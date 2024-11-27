@@ -19,6 +19,7 @@ const authProps: AuthContextProps = {
   setUser: vi.fn(),
   user: authUser,
   isOidcAvailable: true,
+  redirectToExternalUrl: vi.fn(),
 };
 
 const authWithMultipleAccounts: AuthContextProps = {

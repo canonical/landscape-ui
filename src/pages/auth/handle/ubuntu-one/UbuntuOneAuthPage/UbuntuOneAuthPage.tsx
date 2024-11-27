@@ -1,14 +1,14 @@
 import { FC, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ROOT_PATH } from "@/constants";
-import { redirectToExternalUrl, useUnsigned } from "@/features/auth";
+import { useUnsigned } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import classes from "./UbuntuOneAuthPage.module.scss";
 
 const UbuntuOneAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
 
-  const { setUser } = useAuth();
+  const { setUser, redirectToExternalUrl } = useAuth();
   const { getAuthStateWithUbuntuOneQuery } = useUnsigned();
   const navigate = useNavigate();
 
@@ -46,7 +46,7 @@ const UbuntuOneAuthPage: FC = () => {
 
       navigate(url.toString().replace(url.origin, ""), { replace: true });
     }
-  }, [getUbuntuOneStateQueryResult]);
+  }, [getUbuntuOneStateQueryResult, redirectToExternalUrl]);
 
   return (
     <div className={classes.container}>
