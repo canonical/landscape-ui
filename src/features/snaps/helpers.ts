@@ -1,4 +1,4 @@
-import { InstalledSnap } from "@/types/Snap";
+import { InstalledSnap } from "./types";
 
 export enum EditSnapType {
   Switch = "Switch",

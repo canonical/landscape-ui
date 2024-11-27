@@ -1,23 +1,24 @@
+import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
   CheckboxInput,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import { FC, Suspense, useMemo } from "react";
 import {
   CellProps,
   Column,
   Row,
 } from "@canonical/react-components/node_modules/@types/react-table";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-import { InstalledSnap } from "@/types/Snap";
+import moment from "moment";
+import { FC, Suspense, useMemo } from "react";
+import { InstalledSnap } from "../../types";
 import SnapDetails from "../SnapDetails";
 import classes from "./SnapsList.module.scss";
-import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import NoData from "@/components/layout/NoData";
+import { handleCellProps } from "./helpers";
 
 interface SnapsListProps {
   installedSnaps: InstalledSnap[];
@@ -110,14 +111,14 @@ const SnapsList: FC<SnapsListProps> = ({
         ),
       },
       {
-        Header: "Channel",
+        Header: "channel",
         accessor: "channel",
         Cell: ({ row }: CellProps<InstalledSnap>) => (
           <>{row.original.tracking_channel}</>
         ),
       },
       {
-        Header: "Held until",
+        Header: "held until",
         accessor: "held_until",
         Cell: ({ row }: CellProps<InstalledSnap>) => (
           <>
@@ -130,7 +131,7 @@ const SnapsList: FC<SnapsListProps> = ({
         ),
       },
       {
-        Header: "Version",
+        Header: "version",
         accessor: "version",
         Cell: ({ row }: CellProps<InstalledSnap>) => (
           <>
@@ -151,7 +152,7 @@ const SnapsList: FC<SnapsListProps> = ({
         },
       },
       {
-        Header: "Summary",
+        Header: "summary",
         accessor: "summary",
         className: classes.details,
         Cell: ({ row }: CellProps<InstalledSnap>) => (
@@ -163,15 +164,14 @@ const SnapsList: FC<SnapsListProps> = ({
   );
 
   return (
-    <>
-      <ModularTable
-        columns={columns}
-        data={installedSnaps}
-        emptyMsg={
-          isSnapsLoading ? "Loading..." : "No snaps found from the search"
-        }
-      />
-    </>
+    <ModularTable
+      columns={columns}
+      data={installedSnaps}
+      getCellProps={handleCellProps}
+      emptyMsg={
+        isSnapsLoading ? "Loading..." : "No snaps found from the search"
+      }
+    />
   );
 };
 

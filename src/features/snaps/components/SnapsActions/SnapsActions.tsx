@@ -1,17 +1,17 @@
+import LoadingState from "@/components/layout/LoadingState";
+import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC, Suspense } from "react";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-import EditSnap from "../EditSnap";
-import classes from "./SnapActions.module.scss";
-import InstallSnaps from "../InstallSnaps";
 import {
   EditSnapType,
   getSelectedSnaps,
   getSnapUpgradeCounts,
 } from "../../helpers";
-import { InstalledSnap } from "@/types/Snap";
+import { InstalledSnap } from "../../types";
+import EditSnap from "../EditSnap";
+import InstallSnaps from "../InstallSnaps";
+import classes from "./SnapActions.module.scss";
 
 interface SnapsActionProps {
   selectedSnapIds: string[];

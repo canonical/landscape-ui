@@ -1,11 +1,11 @@
-import { FC } from "react";
-import InfoItem from "../../../../components/layout/InfoItem";
-import SnapsActions from "../SnapsActions";
-import { InstalledSnap } from "@/types/Snap";
-import { Col, Row } from "@canonical/react-components";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import InfoItem from "@/components/layout/InfoItem";
 import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { Col, Row } from "@canonical/react-components";
+import moment from "moment";
+import { FC } from "react";
+import { InstalledSnap } from "../../types";
+import SnapsActions from "../SnapsActions";
 
 interface SnapDetailsProps {
   installedSnap: InstalledSnap;

@@ -1,17 +1,17 @@
 import LoadingState from "@/components/layout/LoadingState";
-import AvailableSnapDetails from "../AvailableSnapDetails";
 import useDebug from "@/hooks/useDebug";
-import { useSnaps } from "@/hooks/useSnaps";
-import { AvailableSnap, SelectedSnaps } from "@/types/Snap";
+import { UrlParams } from "@/types/UrlParams";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import React, { FC, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useDebounceCallback } from "usehooks-ts";
+import { useSnaps } from "../../hooks";
+import { AvailableSnap, SelectedSnaps } from "../../types";
+import AvailableSnapDetails from "../AvailableSnapDetails";
 import classes from "./SnapDropdownSearch.module.scss";
 import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
-import { useParams } from "react-router-dom";
-import { UrlParams } from "@/types/UrlParams";
 
 interface SnapDropdownSearchProps {
   selectedItems: SelectedSnaps[];

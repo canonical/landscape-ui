@@ -1,22 +1,9 @@
+import { formatCountableNoun } from "@/pages/dashboard/instances/[single]/tabs/users/UserPanelActionButtons/helpers";
 import moment from "moment";
 import * as Yup from "yup";
-import { InstalledSnap } from "@/types/Snap";
 import { EditSnapType, getSnapUpgradeCounts } from "../../helpers";
-import { formatCountableNoun } from "@/pages/dashboard/instances/[single]/tabs/users/UserPanelActionButtons/helpers";
-
-export interface SnapFormProps {
-  deliver_immediately: boolean;
-  randomize_delivery: boolean;
-  release?: string;
-  hold?: string;
-  hold_until?: string;
-  deliver_delay_window?: number;
-  deliver_after?: string;
-}
-
-type FormValidationSchemaShape = {
-  [K in keyof SnapFormProps]?: Yup.AnySchema;
-};
+import { InstalledSnap } from "../../types";
+import { FormValidationSchemaShape } from "./types";
 
 const commonValidationSchema = {
   deliver_immediately: Yup.string(),

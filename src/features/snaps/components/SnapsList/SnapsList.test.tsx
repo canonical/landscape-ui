@@ -47,34 +47,45 @@ describe("SnapsList", () => {
   describe("Table Interactions", () => {
     it("shows held snap icon in the snaps table", async () => {
       const heldSnap = installedSnaps.find((snap) => snap.held_until !== null);
-      expect(heldSnap).toBeDefined();
+      assert(heldSnap);
 
-      const cellWithVersion = screen.getByRole("cell", {
-        name: heldSnap?.version,
+      const cells = screen.getAllByRole("cell", {
+        name: /version/i,
       });
-      const iconElement = cellWithVersion.querySelector("i");
 
+      const cellWithVersion = cells.find((cell) => {
+        return cell.textContent === heldSnap.version;
+      });
+
+      assert(cellWithVersion);
+
+      const iconElement = cellWithVersion.querySelector("i");
       expect(iconElement).toBeInTheDocument();
       expect(iconElement).toHaveClass("p-icon--pause");
     });
 
     it("shows version tooltip when hovering on held snap", async () => {
       const heldSnap = installedSnaps.find((snap) => snap.held_until !== null);
-      expect(heldSnap).toBeDefined();
+      assert(heldSnap);
 
-      if (heldSnap) {
-        const cellWithVersion = await screen.findByRole("cell", {
-          name: heldSnap.version,
-        });
-        const versionInfo = cellWithVersion.querySelector("span");
-        expect(versionInfo).toBeInTheDocument();
+      const cells = screen.getAllByRole("cell", {
+        name: /version/i,
+      });
 
-        assert(versionInfo);
+      const cellWithVersion = cells.find((cell) => {
+        return cell.textContent === heldSnap.version;
+      });
 
-        await userEvent.hover(versionInfo);
-        const tooltip = await screen.findByText("This snap is held");
-        expect(tooltip).toBeVisible();
-      }
+      assert(cellWithVersion);
+
+      const versionInfo = cellWithVersion.querySelector("span");
+      expect(versionInfo).toBeInTheDocument();
+
+      assert(versionInfo);
+
+      await userEvent.hover(versionInfo);
+      const tooltip = await screen.findByText("This snap is held");
+      expect(tooltip).toBeVisible();
     });
 
     it("should select all snaps when clicking ToggleAll checkbox", async () => {

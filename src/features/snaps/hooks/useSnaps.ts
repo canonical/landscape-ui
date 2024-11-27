@@ -1,44 +1,20 @@
+import useFetch from "@/hooks/useFetch";
 import { ApiError } from "@/types/ApiError";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { QueryFnType } from "@/types/QueryFnType";
-import { AvailableSnap, AvailableSnapInfo, InstalledSnap } from "@/types/Snap";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
-import useFetch from "./useFetch";
+import {
+  AvailableSnap,
+  AvailableSnapInfo,
+  GetAvailableSnapInfoParams,
+  GetAvailableSnapsParams,
+  GetSnapsParams,
+  InstalledSnap,
+  SnapActionParams,
+} from "../types";
 
-interface AffectedSnap {
-  name: string;
-  channel?: string;
-  revision?: string;
-  time?: string;
-}
-
-export interface SnapActionParams {
-  action: string;
-  computer_ids: number[];
-  snaps: AffectedSnap[];
-  deliver_after?: string;
-  deliver_after_window?: number;
-}
-
-export interface GetSnapsParams {
-  instance_id: number;
-  limit?: number;
-  offset?: number;
-  search?: string;
-}
-
-export interface GetAvailableSnapsParams {
-  instance_id: number;
-  query: string;
-}
-
-interface GetAvailableSnapInfoParams {
-  instance_id: number;
-  name: string;
-}
-
-export const useSnaps = () => {
+const useSnaps = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
@@ -121,3 +97,5 @@ export const useSnaps = () => {
     snapsActionQuery,
   };
 };
+
+export default useSnaps;

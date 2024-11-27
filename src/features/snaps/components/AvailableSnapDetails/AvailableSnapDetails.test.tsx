@@ -1,10 +1,10 @@
-import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import AvailableSnapDetails from "./AvailableSnapDetails";
 import { expectLoadingState } from "@/tests/helpers";
 import { availableSnapInfo } from "@/tests/mocks/snap";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, vi } from "vitest";
+import AvailableSnapDetails from "./AvailableSnapDetails";
 
 const chosenSnap = availableSnapInfo[0];
 
