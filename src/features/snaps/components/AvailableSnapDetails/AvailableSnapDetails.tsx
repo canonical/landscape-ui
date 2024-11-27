@@ -1,9 +1,9 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { useSnaps } from "@/hooks/useSnaps";
-import { SelectedSnaps } from "@/types/Snap";
 import { Button, Form, Icon, ICONS, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC, useEffect, useMemo, useState } from "react";
+import { useSnaps } from "../../hooks";
+import { SelectedSnaps } from "../../types";
 import classes from "./AvailableSnapDetails.module.scss";
 
 interface AvailableSnapDetailsProps {

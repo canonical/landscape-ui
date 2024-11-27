@@ -1,13 +1,13 @@
-import { useSnaps } from "@/hooks/useSnaps";
-import { FC, useState } from "react";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
-import { SelectedSnaps } from "@/types/Snap";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import SnapDropdownSearch from "../SnapDropdownSearch";
-import { useParams } from "react-router-dom";
 import { UrlParams } from "@/types/UrlParams";
+import { FC, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useSnaps } from "../../hooks";
+import { SelectedSnaps } from "../../types";
+import SnapDropdownSearch from "../SnapDropdownSearch";
 
 const InstallSnaps: FC = () => {
   const [selectedSnaps, setSelectedSnaps] = useState<SelectedSnaps[]>([]);

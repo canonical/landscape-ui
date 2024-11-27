@@ -1,14 +1,18 @@
-import { useSnaps } from "@/hooks/useSnaps";
-import { Button } from "@canonical/react-components";
-import { FC, useMemo, useState } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import useSidePanel from "@/hooks/useSidePanel";
-import { InstallSnaps, SnapsHeader, SnapsList } from "@/features/snaps";
+import {
+  InstallSnaps,
+  SnapsHeader,
+  SnapsList,
+  useSnaps,
+} from "@/features/snaps";
 import { usePageParams } from "@/hooks/usePageParams";
-import { useParams } from "react-router-dom";
+import useSidePanel from "@/hooks/useSidePanel";
 import { UrlParams } from "@/types/UrlParams";
+import { Button } from "@canonical/react-components";
+import { FC, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 
 const SnapsPanel: FC = () => {
   const [selectedSnapIds, setSelectedSnapIds] = useState<string[]>([]);

@@ -1,4 +1,8 @@
-import { AvailableSnap, AvailableSnapInfo, InstalledSnap } from "@/types/Snap";
+import {
+  AvailableSnap,
+  AvailableSnapInfo,
+  InstalledSnap,
+} from "@/features/snaps";
 
 export const availableSnaps: AvailableSnap[] = [
   {

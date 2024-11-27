@@ -1,12 +1,12 @@
+import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import "@/tests/matcher";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import { InstalledSnap } from "@/types/Snap";
 import moment from "moment";
 import { describe } from "vitest";
+import { InstalledSnap } from "../../types";
 import SnapDetails from "./SnapDetails";
-import NoData from "@/components/layout/NoData";
 
 const heldSnap =
   installedSnaps.find((snap) => snap.held_until !== null) ?? installedSnaps[0];

@@ -1,24 +1,21 @@
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import { UrlParams } from "@/types/UrlParams";
 import { Form, Input, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
 import { ChangeEvent, FC, useEffect, useMemo } from "react";
-import * as Yup from "yup";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
-import classes from "./EditSnap.module.scss";
-import {
-  getEditSnapValidationSchema,
-  getSnapMessage,
-  SnapFormProps,
-} from "./helpers";
-import { useSnaps } from "@/hooks/useSnaps";
-import { InstalledSnap } from "@/types/Snap";
-import { EditSnapType } from "../../helpers";
-import useSidePanel from "@/hooks/useSidePanel";
 import { useParams } from "react-router-dom";
-import { UrlParams } from "@/types/UrlParams";
+import * as Yup from "yup";
+import { EditSnapType } from "../../helpers";
+import { useSnaps } from "../../hooks";
+import { InstalledSnap } from "../../types";
+import classes from "./EditSnap.module.scss";
+import { getEditSnapValidationSchema, getSnapMessage } from "./helpers";
+import { SnapFormProps } from "./types";
 
 interface EditSnapProps {
   type: EditSnapType;

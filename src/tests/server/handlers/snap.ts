@@ -1,5 +1,6 @@
 import { API_URL } from "@/constants";
-import { GetSnapsParams } from "@/hooks/useSnaps";
+import { GetSnapsParams, InstalledSnap } from "@/features/snaps";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   availableSnapInfo,
   availableSnaps,
@@ -7,13 +8,11 @@ import {
   successfulSnapInstallResponse,
 } from "@/tests/mocks/snap";
 import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { InstalledSnap } from "@/types/Snap";
 import { http, HttpResponse } from "msw";
 import {
   generateFilteredResponse,
   generatePaginatedResponse,
 } from "./_helpers";
-import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
   http.get(
