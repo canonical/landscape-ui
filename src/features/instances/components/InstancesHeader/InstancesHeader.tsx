@@ -1,6 +1,12 @@
 import { FC, useState } from "react";
-import ColumnFilter from "@/components/form/ColumnFilter";
-import { TableFilterChips } from "@/components/filter";
+import ColumnFilter, {
+  ColumnFilterOption,
+} from "@/components/form/ColumnFilter";
+import {
+  GroupedOption,
+  StatusFilter,
+  TableFilterChips,
+} from "@/components/filter";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import { SearchBoxWithSavedSearches } from "@/features/saved-searches";
 import useInstances from "@/hooks/useInstances";
@@ -12,11 +18,14 @@ import GroupFilter from "../GroupFilter";
 import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
-import { COLUMN_OPTIONS, INSTANCE_SEARCH_HELP_TERMS } from "./constants";
+import { INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesHeader.module.scss";
-import { GroupedOption, StatusFilter } from "@/components/filter";
 
-const InstancesHeader: FC = () => {
+interface InstancesHeaderProps {
+  columnFilterOptions: ColumnFilterOption[];
+}
+
+const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
   const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const { getAccessGroupQuery } = useRoles();
@@ -77,7 +86,7 @@ const InstancesHeader: FC = () => {
           <AccessGroupFilter options={accessGroupOptions} />
           <TagFilter options={tagOptions} />
           <span className={classes.divider} />
-          <ColumnFilter options={COLUMN_OPTIONS} />
+          <ColumnFilter options={columnFilterOptions} />
         </div>
       </div>
 

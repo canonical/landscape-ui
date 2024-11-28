@@ -1,5 +1,4 @@
 import { ReactElement } from "react";
-import { ColumnFilterOption } from "@/components/form/ColumnFilter";
 
 export const INSTANCE_SEARCH_HELP_TERMS: {
   term: string;
@@ -159,14 +158,4 @@ export const INSTANCE_SEARCH_HELP_TERMS: {
       </span>
     ),
   },
-];
-
-export const COLUMN_OPTIONS: ColumnFilterOption[] = [
-  { canBeHidden: false, label: "Instance name", value: "title" },
-  { canBeHidden: true, label: "Status", value: "status" },
-  { canBeHidden: true, label: "Upgrades", value: "upgrades" },
-  { canBeHidden: true, label: "OS", value: "os" },
-  { canBeHidden: true, label: "Availability zone", value: "availability_zone" },
-  { canBeHidden: true, label: "Ubuntu pro", value: "ubuntu_pro" },
-  { canBeHidden: true, label: "Last ping", value: "last_ping" },
 ];
