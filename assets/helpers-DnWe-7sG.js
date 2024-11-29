@@ -1,0 +1,1 @@
+const c={okta:{icon:"okta"},"ubuntu-one":{icon:"ubuntu-one"},standalone:{icon:"private-key-gray"},default:{icon:"connected"}},o=(e,n)=>{n!=null&&n.replace?window.location.replace(e):window.location.assign(e)},a=e=>e in c?c[e].icon:c.default.icon;export{a as g,o as r};
