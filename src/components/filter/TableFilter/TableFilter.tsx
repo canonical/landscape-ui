@@ -44,17 +44,21 @@ const TableFilter: FC<TableFilterProps> = ({
   position = "left",
   ...otherProps
 }) => {
-  const handleToggle = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!otherProps.multiple) {
-      return;
-    }
-
-    otherProps.onItemsSelect(
-      otherProps.selectedItems.includes(event.target.value)
-        ? otherProps.selectedItems.filter((item) => item !== event.target.value)
-        : [...otherProps.selectedItems, event.target.value],
-    );
-  };
+  const handleToggle =
+    ({
+      onItemsSelect,
+      selectedItems,
+    }: {
+      onItemsSelect: (items: string[]) => void;
+      selectedItems: string[];
+    }) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      onItemsSelect(
+        selectedItems.includes(event.target.value)
+          ? selectedItems.filter((item) => item !== event.target.value)
+          : [...selectedItems, event.target.value],
+      );
+    };
 
   return (
     <ContextualMenu
@@ -117,7 +121,7 @@ const TableFilter: FC<TableFilterProps> = ({
                   label={label}
                   labelClassName="u-no-padding--top u-no-margin--bottom"
                   value={value}
-                  onChange={handleToggle}
+                  onChange={handleToggle(otherProps)}
                   checked={otherProps.selectedItems.includes(value)}
                   disabled={disabledOptions?.some(
                     (option) => option.value === value,
@@ -130,6 +134,9 @@ const TableFilter: FC<TableFilterProps> = ({
                   appearance="base"
                   className={classes.button}
                   onClick={() => otherProps.onItemSelect(value)}
+                  disabled={disabledOptions?.some(
+                    (option) => option.value === value,
+                  )}
                 >
                   {label}
                 </Button>
