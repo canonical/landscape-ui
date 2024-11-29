@@ -30,50 +30,22 @@ const mockTestParams = (response: AuthStateResponse | Error) => {
               isLoading: false,
             },
     }),
-    redirectToExternalUrl,
+  }));
+
+  vi.doMock("@/hooks/useAuth", async () => ({
+    default: () => ({
+      setUser: vi.fn(),
+      redirectToExternalUrl,
+    }),
   }));
 };
 
-const responsesToMock: (AuthStateResponse | Error)[] = [
-  new Error("Test error"),
-  {
-    ...authUser,
-    return_to: {
-      external: true,
-      url: "https://example.com",
-    },
-  },
-  {
-    ...authUser,
-    return_to: {
-      external: false,
-      url: "/dashboard",
-    },
-  },
-  {
-    ...authUser,
-    return_to: null,
-  },
-];
-
 describe("OidcAuthPage", () => {
-  beforeEach(async ({ task: { id } }) => {
-    vi.doUnmock("react-router-dom");
-    vi.doUnmock("@/features/auth");
-    vi.resetModules();
-
-    const taskId = Number(id.substring(id.length - 1));
-
-    if (taskId > 0) {
-      mockTestParams(responsesToMock[taskId - 1]);
-    }
-
+  it("should render error message when there is no search params", async () => {
     const { default: Component } = await import("./OidcAuthPage");
 
     renderWithProviders(<Component />);
-  });
 
-  it("should render error message when there is no search params", async () => {
     expect(
       screen.getByText(
         "Oops! Something went wrong. Please try again or contact our support team.",
@@ -85,32 +57,72 @@ describe("OidcAuthPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render error message when an error occurs", async () => {
-    expect(
-      screen.getByText(
-        "Oops! Something went wrong. Please try again or contact our support team.",
-      ),
-    ).toBeInTheDocument();
+  describe("with additional test params", () => {
+    const responsesToMock: (AuthStateResponse | Error)[] = [
+      new Error("Test error"),
+      {
+        ...authUser,
+        return_to: {
+          external: true,
+          url: "https://example.com",
+        },
+      },
+      {
+        ...authUser,
+        return_to: {
+          external: false,
+          url: "/dashboard",
+        },
+      },
+      {
+        ...authUser,
+        return_to: null,
+      },
+    ];
 
-    expect(
-      screen.getByRole("link", { name: "Back to login" }),
-    ).toBeInTheDocument();
-  });
+    beforeEach(async ({ task: { id } }) => {
+      vi.doUnmock("react-router-dom");
+      vi.doUnmock("@/features/auth");
+      vi.doUnmock("@/hooks/useAuth");
+      vi.resetModules();
 
-  it("should redirect to external URL when return_to is external", async () => {
-    expect(redirectToExternalUrl).toHaveBeenCalledWith("https://example.com", {
-      replace: true,
+      const taskId = Number(id.substring(id.length - 1));
+
+      mockTestParams(responsesToMock[taskId]);
+
+      const { default: Component } = await import("./OidcAuthPage");
+
+      renderWithProviders(<Component />);
     });
-  });
 
-  it("should redirect to internal URL when return_to is not external", async () => {
-    expect(navigate).toHaveBeenCalledWith("/dashboard", { replace: true });
-  });
+    it("should render error message when an error occurs", async () => {
+      expect(
+        screen.getByText(
+          "Oops! Something went wrong. Please try again or contact our support team.",
+        ),
+      ).toBeInTheDocument();
 
-  it("should redirect to internal URL when return_to is not provided", async () => {
-    expect(navigate).toHaveBeenCalledWith(
-      new URL(`${ROOT_PATH}overview`, location.origin).pathname,
-      { replace: true },
-    );
+      expect(
+        screen.getByRole("link", { name: "Back to login" }),
+      ).toBeInTheDocument();
+    });
+
+    it("should redirect to external URL when return_to is external", async () => {
+      expect(redirectToExternalUrl).toHaveBeenCalledWith(
+        "https://example.com",
+        { replace: true },
+      );
+    });
+
+    it("should redirect to internal URL when return_to is not external", async () => {
+      expect(navigate).toHaveBeenCalledWith("/dashboard", { replace: true });
+    });
+
+    it("should redirect to internal URL when return_to is not provided", async () => {
+      expect(navigate).toHaveBeenCalledWith(
+        new URL(`${ROOT_PATH}overview`, location.origin).pathname,
+        { replace: true },
+      );
+    });
   });
 });
