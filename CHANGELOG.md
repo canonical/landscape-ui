@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/canonical/landscape-dashboard/compare/v1.9.0...v1.9.1) (2024-12-02)
+
+
+### Bug Fixes
+
+* add component to render while redirecting ([89c8640](https://github.com/canonical/landscape-dashboard/commit/89c86409d42070dfdd61f44c519eee88e3d12f1a))
+
 # [1.9.0](https://github.com/canonical/landscape-dashboard/compare/v1.8.1...v1.9.0) (2024-11-25)
 
 
