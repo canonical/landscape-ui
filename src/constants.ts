@@ -10,3 +10,5 @@ export const DISPLAY_DATE_FORMAT = "MMM D, YYYY";
 export const DISPLAY_DATE_TIME_FORMAT = "MMM D, YYYY, HH:mm";
 export const NOT_AVAILABLE = "N/A";
 export const APP_VERSION = __APP_VERSION__;
+export const FEEDBACK_LINK =
+  "https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528";

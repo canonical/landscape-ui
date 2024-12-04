@@ -1,5 +1,4 @@
 @import "vanilla-framework/scss/settings_spacing";
-@import "vanilla-framework/scss/settings_colors";
 
 .container {
   display: flex;
@@ -16,12 +15,4 @@
 
 .footer {
   margin-top: auto;
-}
-
-.version {
-  color: $color-mid-x-light;
-  font-size: 0.8rem;
-  margin-bottom: $sph--x-small;
-  padding-left: $sph--small;
-  padding-right: $sph--small;
 }

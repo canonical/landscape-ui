@@ -1,0 +1,51 @@
+@import "vanilla-framework/scss/base_icon-definitions";
+@import "vanilla-framework/scss/base_placeholders";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  background-color: $colors--dark-theme--background-active;
+  margin-bottom: $spv--small;
+  padding-left: $sp-small;
+  padding-right: $sp-small;
+}
+
+.listItem {
+  padding-bottom: $spv--small !important;
+  padding-top: $spv--small !important;
+
+  button,
+  a,
+  a:visited {
+    color: $colors--dark-theme--focus;
+  }
+}
+
+.titleRow {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.title {
+  font-weight: 550;
+  margin-right: $spv--x-small;
+}
+
+.version {
+  color: $color-mid-x-light;
+}
+
+.feedbackLink {
+  &:visited {
+    color: $color-link-dark;
+  }
+
+  :global(.is-dark) & {
+    &[target="_blank"] {
+      &::after {
+        @include vf-icon-external-link($color-link-dark);
+      }
+    }
+  }
+}

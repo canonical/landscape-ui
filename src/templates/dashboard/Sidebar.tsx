@@ -6,7 +6,7 @@ import MobileHeader from "./MobileHeader";
 import classes from "./Sidebar.module.scss";
 import UserInfo from "./UserInfo";
 import OrganisationSwitch from "./OrganisationSwitch";
-import { APP_VERSION } from "@/constants";
+import LandscapeActions from "@/templates/dashboard/LandscapeActions";
 
 const Sidebar: FC = () => {
   const [menuClosed, setMenuClosed] = useState(true);
@@ -32,7 +32,7 @@ const Sidebar: FC = () => {
                 <Navigation />
               </div>
               <div className={classes.footer}>
-                <div className={classes.version}>v{APP_VERSION}</div>
+                <LandscapeActions />
                 <UserInfo />
               </div>
             </div>
