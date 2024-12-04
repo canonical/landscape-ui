@@ -279,7 +279,7 @@ const InstanceList: FC<InstanceListProps> = ({
           accessor: "os",
           Header: "OS",
           Cell: ({ row: { original } }: CellProps<Instance>) => (
-            <>{original.distribution_info.description ?? <NoData />}</>
+            <>{original.distribution_info?.description ?? <NoData />}</>
           ),
         },
         {
