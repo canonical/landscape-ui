@@ -21,11 +21,11 @@ interface ActivitiesHeaderProps {
 }
 
 const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
-  const { search, status, setPageParams } = usePageParams();
+  const { search, setPageParams } = usePageParams();
   const { instanceId } = useParams<UrlParams>();
   const { getActivityTypesQuery } = useActivities();
 
-  const [searchText, setSearchText] = useState(search);
+  const [searchText, setSearchText] = useState<string>("");
   const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const { data: activityTypesQueryData } = getActivityTypesQuery();
@@ -45,10 +45,14 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
   const IS_STICKY = !!instanceId;
 
   const handleSearch = () => {
+    if (!searchText) {
+      return;
+    }
+
     setPageParams({
-      search: searchText,
-      status: status,
+      search: search ? `${search},${searchText}` : `${searchText}`,
     });
+    setSearchText("");
     resetSelectedIds();
   };
 
@@ -80,13 +84,6 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
               onClear={handleClear}
             />
           </Form>
-          <SearchHelpPopup
-            open={showSearchHelp}
-            onClose={() => {
-              setShowSearchHelp(false);
-            }}
-            data={ACTIVITY_SEARCH_HELP_TERMS}
-          />
         </div>
         <div className={classes.filters}>
           <StatusFilter options={ACTIVITY_STATUS_OPTIONS} />
@@ -94,10 +91,16 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
           <ActivitiesDateFilter />
         </div>
       </div>
+      <SearchHelpPopup
+        open={showSearchHelp}
+        data={ACTIVITY_SEARCH_HELP_TERMS}
+        onClose={() => setShowSearchHelp(false)}
+      />
       <TableFilterChips
-        filtersToDisplay={["status", "type", "fromDate", "toDate"]}
+        filtersToDisplay={["search", "status", "type", "fromDate", "toDate"]}
         statusOptions={ACTIVITY_STATUS_OPTIONS}
         typeOptions={ACTIVITY_TYPE_OPTIONS}
+        useSearchAsQuery
       />
     </>
   );

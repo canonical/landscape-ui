@@ -16,6 +16,7 @@
   flex-shrink: 1;
   flex-wrap: wrap;
   gap: $sp-unit;
+  max-width: 100%;
 }
 
 .collapsed {

@@ -328,7 +328,7 @@ const InstanceList: FC<InstanceListProps> = ({
 
   return (
     <ModularTable
-      emptyMsg="No instances found"
+      emptyMsg="No instances found according to your search parameters."
       columns={columns}
       data={instancesData}
     />

@@ -1,1 +1,0 @@
-export { ExtendedSearchAndFilterChip } from "./ExtendedSearchAndFilterChip";

@@ -1,4 +1,5 @@
 import { usePageParams } from "@/hooks/usePageParams";
+import { SearchAndFilterChip } from "@canonical/react-components/dist/components/SearchAndFilter/types";
 
 export type FilterKey = keyof Omit<
   ReturnType<typeof usePageParams>,
@@ -10,3 +11,7 @@ export type FilterKey = keyof Omit<
   | "setPageParams"
   | "tab"
 >;
+
+export interface ExtendedSearchAndFilterChip extends SearchAndFilterChip {
+  title?: string;
+}
