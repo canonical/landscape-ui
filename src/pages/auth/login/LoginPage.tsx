@@ -15,14 +15,14 @@ const LoginPage: FC = () => {
 
   return (
     <AuthTemplate title="Sign in to Landscape">
-      {isLoading ?? <LoadingState />}
-      {!isLoading && isError && (
+      {isLoading ? (
+        <LoadingState />
+      ) : isError ? (
         <div>
           <h1>Error</h1>
           <pre>{JSON.stringify(error, null, 2)}</pre>
         </div>
-      )}
-      {!isLoading && !isError && (
+      ) : (
         <LoginMethodsLayout
           methods={getLoginMethodsQueryResult?.data ?? null}
         />
