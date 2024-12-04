@@ -84,4 +84,8 @@ export default [
   http.get(`${API_URL}me`, () => {
     return HttpResponse.json(authResponse);
   }),
+
+  http.get(`${API_URL}classic_dashboard_url`, () => {
+    return HttpResponse.json({ url: "https://old-dashboard-url" });
+  }),
 ];

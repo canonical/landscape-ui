@@ -7,6 +7,7 @@ import classes from "./DashboardTemplate.module.scss";
 import classNames from "classnames";
 import { useMediaQuery } from "usehooks-ts";
 import { ROOT_PATH } from "@/constants";
+import WelcomePopup from "@/features/welcome-banner";
 
 interface DashboardTemplateProps {
   children: ReactNode;
@@ -35,6 +36,7 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
           <div className={classes.pageContent}>{children}</div>
         </main>
       </SidePanelProvider>
+      <WelcomePopup />
     </div>
   );
 };

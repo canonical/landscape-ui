@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import { Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
@@ -14,23 +14,10 @@ const UserInfo: FC = () => {
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
-  const { getClassicDashboardUrlQuery, handleLogoutQuery } = useAuthHandle();
+  const { handleLogoutQuery } = useAuthHandle();
   const debug = useDebug();
 
   const [expandedAccountSettings, setExpandedAccountSettings] = useState(false);
-
-  const {
-    data: getClassicDashboardUrlQueryResult,
-    refetch: refetchClassicDashboardUrl,
-  } = getClassicDashboardUrlQuery({}, { enabled: false });
-
-  useEffect(() => {
-    if (!getClassicDashboardUrlQueryResult) {
-      return;
-    }
-
-    window.location.assign(getClassicDashboardUrlQueryResult.data.url);
-  }, [getClassicDashboardUrlQueryResult]);
 
   const { mutateAsync: deleteSessionCookies } = handleLogoutQuery;
 
@@ -163,30 +150,6 @@ const UserInfo: FC = () => {
               Alerts
             </span>
           </Link>
-        </li>
-        <li className="p-side-navigation__item">
-          <Button
-            type="button"
-            appearance="base"
-            className={classNames(
-              "u-no-margin--bottom",
-              classes.link,
-              classes.button,
-            )}
-            onClick={refetchClassicDashboardUrl}
-          >
-            <i
-              className={classNames(
-                `p-icon--desktop is-light p-side-navigation__icon`,
-                classes.icon,
-              )}
-            />
-            <span
-              className={classNames("p-side-navigation__label", classes.label)}
-            >
-              Old dashboard
-            </span>
-          </Button>
         </li>
         <li className="p-side-navigation__item">
           <Button
