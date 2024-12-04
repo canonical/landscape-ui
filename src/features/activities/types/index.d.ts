@@ -12,3 +12,11 @@ export {
   DelayWindow,
   SyncPocketRequest,
 } from "./Activity";
+
+export {
+  ApproveActivitiesParams,
+  CancelActivitiesParams,
+  GetActivitiesParams,
+  GetSingleActivityParams,
+  RedoUndoActivitiesParams,
+} from "./ActivityParams";

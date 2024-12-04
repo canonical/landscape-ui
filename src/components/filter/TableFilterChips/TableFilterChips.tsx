@@ -1,11 +1,12 @@
-import { FC, useEffect, useRef, useState } from "react";
 import { usePageParams } from "@/hooks/usePageParams";
-import { Button, Chip, Icon } from "@canonical/react-components";
-import classes from "./TableFilterChips.module.scss";
-import classNames from "classnames";
-import { FilterKey } from "./types";
-import { defaultFiltersToDisplay } from "./constants";
 import { SelectOption } from "@/types/SelectOption";
+import { Button, Chip, Icon } from "@canonical/react-components";
+import classNames from "classnames";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { defaultFiltersToDisplay } from "./constants";
+import { getChipLabel, parseSearchToChips } from "./helpers";
+import classes from "./TableFilterChips.module.scss";
+import { FilterKey } from "./types";
 
 interface TableFilterChipsProps {
   accessGroupOptions?: SelectOption[];
@@ -15,6 +16,7 @@ interface TableFilterChipsProps {
   statusOptions?: SelectOption[];
   tagOptions?: SelectOption[];
   typeOptions?: SelectOption[];
+  useSearchAsQuery?: boolean;
 }
 
 const TableFilterChips: FC<TableFilterChipsProps> = ({
@@ -25,6 +27,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   statusOptions,
   tagOptions,
   typeOptions,
+  useSearchAsQuery = false,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [hiddenChipCount, setHiddenChipCount] = useState(0);
@@ -43,6 +46,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     tags,
     toDate,
     type,
+    search,
   } = usePageParams();
 
   const handleClearAllFilters = () => {
@@ -55,6 +59,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       tags: [],
       toDate: "",
       type: "",
+      search: "",
     });
     setIsExpanded(false);
   };
@@ -106,7 +111,10 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     tags.length,
     toDate,
     type,
+    search,
   ]);
+
+  const searchChips = useMemo(() => parseSearchToChips(search), [search]);
 
   const showClearAllButton =
     [
@@ -124,6 +132,8 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       ...[fromDate].slice(filtersToMonitor.includes("fromDate") ? 0 : 1),
       ...[toDate].slice(filtersToMonitor.includes("toDate") ? 0 : 1),
       ...[type].slice(filtersToMonitor.includes("type") ? 0 : 1),
+      ...[search].slice(filtersToMonitor.includes("search") ? 0 : 1),
+      useSearchAsQuery && search.includes(",") ? 1 : 0,
     ].filter(Boolean).length > 1;
 
   return (
@@ -145,6 +155,30 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             <Icon name="close" className={classes.clearAllIcon} />
             <span>Clear all filters</span>
           </Button>
+        )}
+        {filtersToMonitor.includes("search") &&
+          useSearchAsQuery &&
+          searchChips.map((chip) => (
+            <Chip
+              key={chip.value}
+              value={getChipLabel(chip)}
+              onDismiss={() =>
+                setPageParams({
+                  search: search
+                    .split(",")
+                    .filter((searchParam) => searchParam !== chip.value)
+                    .join(","),
+                })
+              }
+              className="u-no-margin--bottom u-no-margin--right"
+            />
+          ))}
+        {filtersToMonitor.includes("search") && !useSearchAsQuery && search && (
+          <Chip
+            value={`Search: ${search}`}
+            onDismiss={() => setPageParams({ search: "" })}
+            className="u-no-margin--bottom u-no-margin--right"
+          />
         )}
         {filtersToMonitor.includes("status") && status && (
           <Chip

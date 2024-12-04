@@ -5,13 +5,12 @@ import { Form, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { useSavedSearches } from "@/hooks/useSavedSearches";
 import SavedSearchList from "../SavedSearchList";
-import SearchChips from "../SearchChips";
 import SearchInfoBox from "../SearchInfoBox";
 import SearchPrompt from "../SearchPrompt";
 import { SavedSearch } from "@/types/SavedSearch";
 import classes from "./SearchBoxWithSavedSearches.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
-import { parseSearchToChips } from "./helpers";
+import { parseSearchToChips } from "@/components/filter";
 
 interface SearchBoxWithSavedSearchesProps {
   onHelpButtonClick: () => void;
@@ -24,8 +23,6 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   const [inputText, setInputText] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const [overflowingChipsAmount, setOverflowingChipsAmount] = useState(0);
-
   const { getSavedSearchesQuery } = useSavedSearches();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,15 +33,6 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   };
 
   useOnClickOutside(containerRef, handleDropdownClose);
-
-  const handleChipDismiss = (chipValue: string) => {
-    setPageParams({
-      search: search
-        .split(",")
-        .filter((searchParam) => searchParam !== chipValue)
-        .join(","),
-    });
-  };
 
   const {
     data: getSavedSearchesQueryResult,
@@ -125,14 +113,6 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
         ref={chipsContainerRef}
         onClick={() => setShowDropdown(true)}
       >
-        <SearchChips
-          containerRef={chipsContainerRef}
-          onDismiss={handleChipDismiss}
-          onOverflowingItemsAmountChange={(amount) =>
-            setOverflowingChipsAmount(amount)
-          }
-          searchData={searchData}
-        />
         <Form
           onSubmit={(event) => {
             event.preventDefault();
@@ -155,11 +135,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
             />
           </div>
         </Form>
-        <SearchInfoBox
-          isExpanded={showDropdown}
-          onHelpButtonClick={onHelpButtonClick}
-          overflowingChipsAmount={overflowingChipsAmount}
-        />
+        <SearchInfoBox onHelpButtonClick={onHelpButtonClick} />
       </div>
       {showDropdown && getSavedSearchesQueryLoading && <LoadingState />}
       {showDropdown && !getSavedSearchesQueryLoading && (

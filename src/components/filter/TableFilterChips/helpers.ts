@@ -1,16 +1,16 @@
 import { SavedSearch } from "@/types/SavedSearch";
-import { ExtendedSearchAndFilterChip } from "../../types";
+import { ExtendedSearchAndFilterChip } from "./types";
 
 export const parseSearchToChips = (
   search: string,
-  savedSearches: SavedSearch[] | undefined,
+  savedSearches?: SavedSearch[],
 ): ExtendedSearchAndFilterChip[] => {
-  if (!search || !savedSearches) {
+  if (!search) {
     return [];
   }
 
   return search.split(",").map((searchParam): ExtendedSearchAndFilterChip => {
-    const savedSearch = savedSearches.find(({ name }) => name === searchParam);
+    const savedSearch = savedSearches?.find(({ name }) => name === searchParam);
     return savedSearch
       ? {
           lead: "search",
@@ -22,4 +22,16 @@ export const parseSearchToChips = (
           quoteValue: true,
         };
   });
+};
+
+export const getChipLabel = (chip: ExtendedSearchAndFilterChip) => {
+  if (chip.title) {
+    return chip.title;
+  }
+
+  if (chip.quoteValue) {
+    return `'${chip.value}'`;
+  }
+
+  return chip.value;
 };

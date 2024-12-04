@@ -88,12 +88,14 @@ const InstancesHeader: FC = () => {
           "availabilityZones",
           "status",
           "tags",
+          "search",
         ]}
         accessGroupOptions={accessGroupOptions}
         availabilityZonesOptions={availabilityZoneOptions}
         osOptions={osOptions}
         statusOptions={statusOptions}
         tagOptions={tagOptions}
+        useSearchAsQuery
       />
 
       <SearchHelpPopup

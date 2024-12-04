@@ -196,12 +196,12 @@ const Activities: FC<ActivitiesProps> = ({
     <>
       {!searchQuery &&
         currentPage === 1 &&
-        pageSize === 50 &&
+        pageSize === 20 &&
         getActivitiesQueryLoading && <LoadingState />}
 
       {!searchQuery &&
         currentPage === 1 &&
-        pageSize === 50 &&
+        pageSize === 20 &&
         !getActivitiesQueryLoading &&
         (!getActivitiesQueryResult || !getActivitiesQueryResult.data.count) && (
           <ActivitiesEmptyState />
@@ -215,15 +215,15 @@ const Activities: FC<ActivitiesProps> = ({
           getActivitiesQueryResult.data.count > 0)) && (
         <>
           <ActivitiesHeader resetSelectedIds={handleClearSelection} />
-          <ModularTable
-            emptyMsg={
-              getActivitiesQueryLoading
-                ? "Loading..."
-                : `No activities found with the search ${searchQuery}`
-            }
-            columns={columns}
-            data={activities}
-          />
+          {getActivitiesQueryLoading ? (
+            <LoadingState />
+          ) : (
+            <ModularTable
+              emptyMsg="No activities found according to your search parameters."
+              columns={columns}
+              data={activities}
+            />
+          )}
           <TablePagination
             totalItems={getActivitiesQueryResult?.data.count}
             currentItemCount={activities.length}

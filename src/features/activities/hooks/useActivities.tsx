@@ -5,7 +5,15 @@ import {
   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { Activity, ActivityCommon } from "../types";
+import {
+  Activity,
+  ActivityCommon,
+  ApproveActivitiesParams,
+  CancelActivitiesParams,
+  GetActivitiesParams,
+  GetSingleActivityParams,
+  RedoUndoActivitiesParams,
+} from "../types";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
 import { ApiError } from "@/types/ApiError";
@@ -16,28 +24,6 @@ import { lazy, Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 
 const ActivityDetails = lazy(() => import("../components/ActivityDetails"));
-
-interface GetActivitiesParams {
-  limit?: number;
-  offset?: number;
-  query?: string;
-}
-
-interface GetSingleActivityParams {
-  activityId: number;
-}
-
-interface CancelActivitiesParams {
-  query: string;
-}
-
-interface ApproveActivitiesParams {
-  query: string;
-}
-
-interface RedoUndoActivitiesParams {
-  activity_ids: number[];
-}
 
 export default function useActivities() {
   const authFetchOld = useFetchOld();
