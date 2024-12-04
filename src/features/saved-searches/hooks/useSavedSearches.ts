@@ -1,7 +1,7 @@
-import useFetchOld from "./useFetchOld";
+import useFetchOld from "@/hooks/useFetchOld";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QueryFnType } from "@/types/QueryFnType";
-import { SavedSearch } from "@/types/SavedSearch";
+import { SavedSearch } from "../types";
 import { AxiosError, AxiosResponse } from "axios";
 import { ApiError } from "@/types/ApiError";
 import { Activity } from "@/features/activities";

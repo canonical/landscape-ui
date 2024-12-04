@@ -2,9 +2,14 @@ import { usePageParams } from "@/hooks/usePageParams";
 import { SelectOption } from "@/types/SelectOption";
 import { Button, Chip, Icon } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { defaultFiltersToDisplay } from "./constants";
-import { getChipLabel, parseSearchToChips } from "./helpers";
+import {
+  checkRenderConditions,
+  filterSearch,
+  getChipLabel,
+  parseSearch,
+} from "./helpers";
 import classes from "./TableFilterChips.module.scss";
 import { FilterKey } from "./types";
 
@@ -114,37 +119,33 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     search,
   ]);
 
-  const searchChips = useMemo(() => parseSearchToChips(search), [search]);
+  const renderResults = checkRenderConditions({
+    accessGroups,
+    availabilityZones,
+    filtersToMonitor,
+    fromDate,
+    os,
+    search,
+    status,
+    tags,
+    toDate,
+    type,
+    useSearchAsQuery,
+  });
 
-  const showClearAllButton =
-    [
-      ...[status].slice(filtersToMonitor.includes("status") ? 0 : 1),
-      ...[os].slice(filtersToMonitor.includes("os") ? 0 : 1),
-      ...availabilityZones.slice(
-        filtersToMonitor.includes("availabilityZones")
-          ? 0
-          : availabilityZones.length,
-      ),
-      ...accessGroups.slice(
-        filtersToMonitor.includes("accessGroups") ? 0 : accessGroups.length,
-      ),
-      ...tags.slice(filtersToMonitor.includes("tags") ? 0 : tags.length),
-      ...[fromDate].slice(filtersToMonitor.includes("fromDate") ? 0 : 1),
-      ...[toDate].slice(filtersToMonitor.includes("toDate") ? 0 : 1),
-      ...[type].slice(filtersToMonitor.includes("type") ? 0 : 1),
-      ...[search].slice(filtersToMonitor.includes("search") ? 0 : 1),
-      useSearchAsQuery && search.includes(",") ? 1 : 0,
-    ].filter(Boolean).length > 1;
+  if (renderResults.totalChipsToRenderCount === 0) {
+    return null;
+  }
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} data-testId="table-filter-chips">
       <div
         ref={containerRef}
         className={classNames(classes.chipsContainer, {
           [classes.collapsed]: !isExpanded,
         })}
       >
-        {showClearAllButton && (
+        {renderResults.totalChipsToRenderCount > 1 && (
           <Button
             type="button"
             appearance="link"
@@ -156,49 +157,43 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             <span>Clear all filters</span>
           </Button>
         )}
-        {filtersToMonitor.includes("search") &&
-          useSearchAsQuery &&
-          searchChips.map((chip) => (
+        {renderResults.areSearchQueryChipsRender &&
+          parseSearch(search).map((value) => (
             <Chip
-              key={chip.value}
-              value={getChipLabel(chip)}
+              key={value}
+              value={`Search: ${value}`}
               onDismiss={() =>
-                setPageParams({
-                  search: search
-                    .split(",")
-                    .filter((searchParam) => searchParam !== chip.value)
-                    .join(","),
-                })
+                setPageParams({ search: filterSearch(search, value) })
               }
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
-        {filtersToMonitor.includes("search") && !useSearchAsQuery && search && (
+        {renderResults.isSearchChipRender && (
           <Chip
             value={`Search: ${search}`}
             onDismiss={() => setPageParams({ search: "" })}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
-        {filtersToMonitor.includes("status") && status && (
+        {renderResults.isStatusChipRender && (
           <Chip
-            value={`Status: ${statusOptions?.find(({ value }) => value === status)?.label ?? status}`}
+            value={`Status: ${getChipLabel(statusOptions, status)}`}
             onDismiss={() => setPageParams({ status: "" })}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
-        {filtersToMonitor.includes("os") && os && (
+        {renderResults.isOsChipRender && (
           <Chip
-            value={`OS: ${osOptions?.find(({ value }) => value === os)?.label ?? os}`}
+            value={`OS: ${getChipLabel(osOptions, os)}`}
             onDismiss={() => setPageParams({ os: "" })}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
-        {filtersToMonitor.includes("availabilityZones") &&
+        {renderResults.areAvailabilityZonesChipsRender &&
           availabilityZones.map((availabilityZone, _, array) => (
             <Chip
               key={availabilityZone}
-              value={`Availability z.: ${availabilityZonesOptions?.find(({ value }) => value === availabilityZone)?.label ?? availabilityZone}`}
+              value={`Availability z.: ${getChipLabel(availabilityZonesOptions, availabilityZone)}`}
               onDismiss={() =>
                 setPageParams({
                   availabilityZones: array.filter(
@@ -209,11 +204,11 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
-        {filtersToMonitor.includes("accessGroups") &&
+        {renderResults.areAccessGroupsChipsRender &&
           accessGroups.map((accessGroup, _, array) => (
             <Chip
               key={accessGroup}
-              value={`Access group: ${accessGroupOptions?.find(({ value }) => value === accessGroup)?.label ?? accessGroup}`}
+              value={`Access group: ${getChipLabel(accessGroupOptions, accessGroup)}`}
               onDismiss={() =>
                 setPageParams({
                   accessGroups: array.filter((item) => item !== accessGroup),
@@ -222,34 +217,34 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
-        {filtersToMonitor.includes("tags") &&
+        {renderResults.areTagsChipsRender &&
           tags.map((tag, _, array) => (
             <Chip
               key={tag}
-              value={`Tag: ${tagOptions?.find(({ value }) => value === tag)?.label ?? tag}`}
+              value={`Tag: ${getChipLabel(tagOptions, tag)}`}
               onDismiss={() =>
                 setPageParams({ tags: array.filter((item) => item !== tag) })
               }
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
-        {filtersToMonitor.includes("fromDate") && fromDate && (
+        {renderResults.isFromDateChipRender && (
           <Chip
             value={`From: ${fromDate}`}
             onDismiss={() => setPageParams({ fromDate: "" })}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
-        {filtersToMonitor.includes("toDate") && toDate && (
+        {renderResults.isToDateChipRender && (
           <Chip
             value={`To: ${toDate}`}
             onDismiss={() => setPageParams({ toDate: "" })}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
-        {filtersToMonitor.includes("type") && type && (
+        {renderResults.isTypeChipRender && (
           <Chip
-            value={`Type: ${typeOptions?.find(({ value }) => value === type)?.label ?? type}`}
+            value={`Type: ${getChipLabel(typeOptions, type)}`}
             onDismiss={() => setPageParams({ type: "" })}
             className="u-no-margin--bottom u-no-margin--right"
           />
