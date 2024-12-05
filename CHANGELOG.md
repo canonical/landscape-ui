@@ -1,3 +1,17 @@
+# [1.10.0](https://github.com/canonical/landscape-dashboard/compare/v1.9.1...v1.10.0) (2024-12-05)
+
+
+### Bug Fixes
+
+* add loading state during first render ([5928f61](https://github.com/canonical/landscape-dashboard/commit/5928f61bb7357617d28a1fee40e8861142464351))
+* instance distribution info can be null ([#142](https://github.com/canonical/landscape-dashboard/issues/142)) ([8536044](https://github.com/canonical/landscape-dashboard/commit/853604488bbce947b7ef80f25a56797066f19a9b))
+
+
+### Features
+
+* add search as a filter chip ([e6c118c](https://github.com/canonical/landscape-dashboard/commit/e6c118c501630f7149adadf27fcdd496e77d3f67))
+* add welcome popup and info badge into sidebar ([#144](https://github.com/canonical/landscape-dashboard/issues/144)) ([0115e73](https://github.com/canonical/landscape-dashboard/commit/0115e7377459d6d7a5549ce29645dcd9a4bd281c))
+
 ## [1.9.1](https://github.com/canonical/landscape-dashboard/compare/v1.9.0...v1.9.1) (2024-12-02)
 
 
