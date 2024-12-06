@@ -1,17 +1,23 @@
 import { AuthContextProps } from "@/context/auth";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import useAuth from "../../../hooks/useAuth";
+import { beforeEach } from "vitest";
+import useAuth from "@/hooks/useAuth";
 import OrganisationSwitch from "./OrganisationSwitch";
 import userEvent from "@testing-library/user-event";
 import { authUser } from "@/tests/mocks/auth";
 
 vi.mock("@/hooks/useAuth");
 
-const authProps: AuthContextProps = {
+const singleAccountValues: AuthContextProps = {
   account: {
-    switchable: false,
+    current: "account1",
+    options: [{ label: "Account 1", value: "account1" }],
+    switch: vi.fn().mockImplementation((_, account: string) => {
+      if (account === "error") {
+        throw new Error(errorMessage);
+      }
+    }),
   },
   logout: vi.fn(),
   authorized: true,
@@ -22,10 +28,12 @@ const authProps: AuthContextProps = {
   redirectToExternalUrl: vi.fn(),
 };
 
-const authWithMultipleAccounts: AuthContextProps = {
-  ...authProps,
+const errorMessage = "Error: switching account failed";
+
+const multipleAccountValues: AuthContextProps = {
+  ...singleAccountValues,
   account: {
-    current: "account1",
+    ...singleAccountValues.account,
     options: [
       {
         label: "Account 1",
@@ -35,65 +43,55 @@ const authWithMultipleAccounts: AuthContextProps = {
         label: "Account 2",
         value: "account2",
       },
-    ],
-    switch: vi.fn(),
-    switchable: true,
-  },
-  user: {
-    ...authUser,
-    accounts: [
       {
-        name: "account1",
-        title: "Account 1",
-        subdomain: null,
-        classic_dashboard_url: "",
-      },
-      {
-        name: "account2",
-        title: "Account 2",
-        subdomain: null,
-        classic_dashboard_url: "",
+        label: "Error option",
+        value: "error",
       },
     ],
   },
 };
 
 describe("OrganisationSwitch", () => {
-  it("renders the component when there are multiple organisations", () => {
-    vi.mocked(useAuth).mockReturnValue(authWithMultipleAccounts);
+  it("should render an info item with current organisation if there is no other", () => {
+    vi.mocked(useAuth, true).mockReturnValue(singleAccountValues);
 
     renderWithProviders(<OrganisationSwitch />);
 
-    expect(screen.getByText(/organisation/i)).toBeInTheDocument();
+    expect(screen.queryByText(/organisation/i)).toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
   });
 
-  it("does not render the component when there is only one organisation", () => {
-    vi.mocked(useAuth).mockReturnValue(authProps);
+  describe("with multiple organisations", () => {
+    beforeEach(() => {
+      vi.mocked(useAuth).mockReturnValue(multipleAccountValues);
 
-    renderWithProviders(<OrganisationSwitch />);
+      renderWithProviders(<OrganisationSwitch />);
+    });
 
-    expect(screen.queryByText(/organisation/i)).not.toBeInTheDocument();
-  });
+    it("should render a select if there are multiple organisations", () => {
+      expect(
+        screen.getByRole("combobox", { name: /organisation/i }),
+      ).toBeInTheDocument();
+    });
 
-  it("sets the initial account state correctly", () => {
-    vi.mocked(useAuth).mockReturnValue(authWithMultipleAccounts);
+    it("should set the initial organisation correctly", () => {
+      const select = screen.getByRole("combobox");
+      expect(select).toHaveValue("account1");
+    });
 
-    renderWithProviders(<OrganisationSwitch />);
+    it("should change the organisation", async () => {
+      await userEvent.selectOptions(screen.getByRole("combobox"), "account2");
 
-    const select = screen.getByRole("combobox");
-    expect(select).toHaveValue("account1");
-  });
+      expect(multipleAccountValues.account.switch).toHaveBeenCalledWith(
+        "account2-token",
+        "account2",
+      );
+    });
 
-  it("changes the organisation", async () => {
-    vi.mocked(useAuth).mockReturnValue(authWithMultipleAccounts);
+    it("should handle errors when changing the organisation", async () => {
+      await userEvent.selectOptions(screen.getByRole("combobox"), "error");
 
-    renderWithProviders(<OrganisationSwitch />);
-
-    await userEvent.selectOptions(screen.getByRole("combobox"), "account2");
-
-    expect(
-      authWithMultipleAccounts.account.switchable &&
-        authWithMultipleAccounts.account.switch,
-    ).toHaveBeenCalledWith("account2-token", "account2");
+      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    });
   });
 });

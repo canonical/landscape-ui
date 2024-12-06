@@ -5,14 +5,21 @@ import classes from "./OrganisationSwitch.module.scss";
 import { useAuthHandle } from "@/features/auth";
 import useDebug from "@/hooks/useDebug";
 import { ChangeEvent } from "react";
+import InfoItem from "@/components/layout/InfoItem";
 
 const OrganisationSwitch = () => {
   const { account } = useAuth();
   const debug = useDebug();
   const { switchAccountQuery } = useAuthHandle();
 
-  if (!account.switchable) {
-    return null;
+  if (account.options.length === 1) {
+    return (
+      <InfoItem
+        label="Organisation"
+        value={account.options[0].label}
+        className={classes.organisation}
+      />
+    );
   }
 
   const { mutateAsync: switchAccount } = switchAccountQuery;
@@ -36,8 +43,8 @@ const OrganisationSwitch = () => {
       <Select
         label="Organisation"
         labelClassName={classNames(
-          classes.selectLabel,
-          "p-text--small p-text--small-caps",
+          classes.organisation,
+          "p-text--small p-text--small-caps u-no-margin--bottom",
         )}
         options={account.options}
         value={account.current}

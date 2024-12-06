@@ -12,15 +12,10 @@ import { useUserGeneralSettings } from "../../hooks";
 import { UserDetails } from "../../types";
 import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
 import classes from "./EditUserForm.module.scss";
+import { getAccountOptions, getFieldError } from "./helpers";
+import { EditUserFormValues } from "./types";
 
 const ChangePasswordForm = lazy(() => import("../ChangePasswordForm"));
-
-interface FormProps {
-  name: string;
-  timezone: string;
-  email: string;
-  defaultOrganisation: string;
-}
 
 interface EditUserFormProps {
   user: UserDetails;
@@ -42,28 +37,21 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       value: email,
     })) ?? [];
 
-  const currentEmail = EMAIL_OPTIONS.find((e) => e.label === user.email);
-
-  const formik = useFormik<FormProps>({
+  const formik = useFormik<EditUserFormValues>({
     initialValues: {
       name: user.name,
       timezone: user.timezone,
-      email: currentEmail?.label ?? "Select",
-      defaultOrganisation: account.switchable ? account.current : "",
+      email: user.email,
+      preferred_account: user.preferred_account ?? "",
     },
     validationSchema: VALIDATION_SCHEMA,
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
         if (!authUser) {
           return;
         }
 
-        await editUserMutation({
-          name: values.name,
-          email: values.email,
-          timezone: values.timezone,
-          preferred_account: values.defaultOrganisation,
-        });
+        await editUserMutation(values);
 
         setUser({
           ...authUser,
@@ -75,14 +63,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           message: "User details updated successfully",
         });
 
-        formik.resetForm({
-          values: {
-            name: values.name,
-            timezone: values.timezone,
-            email: values.email,
-            defaultOrganisation: values.defaultOrganisation,
-          },
-        });
+        resetForm({ values });
       } catch (error) {
         debug(error);
       }
@@ -103,11 +84,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       <Input
         label="Name"
         type="text"
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFieldError(formik, "name")}
         help="Visible to others in the organisation"
         {...formik.getFieldProps("name")}
       />
@@ -136,11 +113,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             </>
           }
           {...formik.getFieldProps("email")}
-          error={
-            formik.touched.email && formik.errors.email
-              ? formik.errors.email
-              : undefined
-          }
+          error={getFieldError(formik, "email")}
         />
       ) : (
         <Input
@@ -168,11 +141,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             </>
           }
           {...formik.getFieldProps("email")}
-          error={
-            formik.touched.email && formik.errors.email
-              ? formik.errors.email
-              : undefined
-          }
+          error={getFieldError(formik, "email")}
         />
       )}
       <div className={classes.passwordField}>
@@ -208,22 +177,17 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         label="Timezone"
         options={TIMEZONE_OPTIONS}
         {...formik.getFieldProps("timezone")}
-        error={
-          formik.touched.timezone && formik.errors.timezone
-            ? formik.errors.timezone
-            : undefined
-        }
+        error={getFieldError(formik, "timezone")}
       />
-      {account.switchable && (
+      {account.options.length > 1 && (
         <Select
           label="Default organisation"
-          options={account.options}
-          {...formik.getFieldProps("defaultOrganisation")}
-          error={
-            formik.touched.timezone && formik.errors.timezone
-              ? formik.errors.timezone
-              : undefined
-          }
+          options={getAccountOptions(
+            account.options,
+            formik.values.preferred_account,
+          )}
+          {...formik.getFieldProps("preferred_account")}
+          error={getFieldError(formik, "preferred_account")}
         />
       )}
       <div className={buttonClasses.buttons}>
