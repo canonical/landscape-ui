@@ -1,20 +1,21 @@
-import { FC, useMemo } from "react";
+import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import { TablePagination } from "@/components/layout/TablePagination";
+import { AuthUser } from "@/features/auth";
 import {
   EventsLogHeader,
   EventsLogList,
   useEventsLog,
 } from "@/features/events-log";
-import { Button } from "@canonical/react-components";
-import { TablePagination } from "@/components/layout/TablePagination";
 import useAuth from "@/hooks/useAuth";
-import { AuthUser } from "@/features/auth";
-import moment from "moment";
-import { downloadCSV } from "./helpers";
-import LoadingState from "@/components/layout/LoadingState";
 import { usePageParams } from "@/hooks/usePageParams";
+import { Button } from "@canonical/react-components";
+import moment from "moment";
+import { FC, useMemo } from "react";
+import classes from "./EventsLogPage.module.scss";
+import { downloadCSV } from "./helpers";
 
 const EventsLogPage: FC = () => {
   const { days, search, currentPage, pageSize } = usePageParams();
@@ -31,7 +32,7 @@ const EventsLogPage: FC = () => {
   const eventsLog = useMemo(
     () =>
       eventsLogData?.data.results.filter((event) =>
-        event.message.includes(search),
+        event.message.toLowerCase().includes(search.toLowerCase()),
       ) ?? [],
     [eventsLogData, search],
   );
@@ -39,6 +40,7 @@ const EventsLogPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
+        className={classes.header}
         title="Events log"
         actions={[
           <Button
