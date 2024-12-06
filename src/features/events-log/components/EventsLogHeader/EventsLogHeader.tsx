@@ -1,39 +1,60 @@
-import { Select } from "@canonical/react-components";
-import { ChangeEvent, FC } from "react";
-import classes from "./EventsLogHeader.module.scss";
-import { FILTERS } from "./constants";
+import { TableFilterChips } from "@/components/filter";
 import { usePageParams } from "@/hooks/usePageParams";
-import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import { Form, SearchBox } from "@canonical/react-components";
+import { useFormik } from "formik";
+import { FC } from "react";
+import * as Yup from "yup";
+import DaysFilter from "../DaysFilter";
+import classes from "./EventsLogHeader.module.scss";
+
+interface FormProps {
+  searchText: string;
+}
 
 const EventsLogHeader: FC = () => {
-  const { days, setPageParams } = usePageParams();
+  const { search, setPageParams } = usePageParams();
 
-  const handleSearch = (searchText: string) => {
-    setPageParams({ search: searchText });
+  const handleSearch = () => {
+    setPageParams({ search: formik.values.searchText });
   };
 
-  const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setPageParams({
-      days: e.target.value,
-    });
+  const handleClear = () => {
+    setPageParams({ search: "" });
   };
+
+  const formik = useFormik<FormProps>({
+    initialValues: {
+      searchText: search,
+    },
+    enableReinitialize: true,
+    validationSchema: Yup.object().shape({
+      search: Yup.string(),
+    }),
+    onSubmit: handleSearch,
+  });
 
   return (
-    <HeaderWithSearch
-      onSearch={handleSearch}
-      actions={
-        FILTERS.days.type === "select" && (
-          <Select
-            wrapperClassName={classes.select}
-            label={FILTERS.days.label}
-            labelClassName="u-no-margin--bottom"
-            options={FILTERS.days.options}
-            value={days}
-            onChange={handleFilterChange}
-          />
-        )
-      }
-    />
+    <>
+      <div className={classes.container}>
+        <div className={classes.searchContainer}>
+          <Form onSubmit={formik.handleSubmit} noValidate>
+            <SearchBox
+              autocomplete="off"
+              externallyControlled
+              value={formik.values.searchText}
+              onChange={async (value) =>
+                await formik.setFieldValue("searchText", value)
+              }
+              placeholder="Search"
+              onSearch={handleSearch}
+              onClear={handleClear}
+            />
+          </Form>
+        </div>
+        <DaysFilter />
+      </div>
+      <TableFilterChips filtersToDisplay={["search"]} />
+    </>
   );
 };
 
