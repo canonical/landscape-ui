@@ -186,34 +186,22 @@ interface DistributionInfo {
 
 export interface InstanceWithoutRelation extends Record<string, unknown> {
   access_group: AccessGroup["name"];
-  clone_id: number | null;
   cloud_init: {
     availability_zone?: string | null;
   };
-  cloud_instance_metadata: CloudInstanceMetadata;
   comment: string;
-  container_info: string | null;
   distribution: string | null;
   distribution_info: DistributionInfo | null;
   hostname: string | null;
   id: number;
   is_default_child: boolean | null;
   is_wsl_instance: boolean;
-  last_exchange_time: string | null;
   last_ping_time: string | null;
-  reboot_required_flag: boolean;
-  secrets_name: string | null;
   tags: string[];
   title: string;
-  total_memory: number | null;
-  total_swap: number | null;
   ubuntu_pro_info: UbuntuProInfo | null;
-  update_manager_prompt: string;
-  vm_info: string | null;
   annotations?: Record<string, string>;
   grouped_hardware?: GroupedHardware;
-  hardware?: HardwareDescription[];
-  network_devices?: NetworkDevice[];
   alerts?: InstanceAlert[];
   upgrades?: InstanceUpgrades;
 }
