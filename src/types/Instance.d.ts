@@ -192,7 +192,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   comment: string;
   distribution: string | null;
   distribution_info: DistributionInfo | null;
-  hostname: string | null;
+  hostname: string;
   id: number;
   is_default_child: boolean | null;
   is_wsl_instance: boolean;
@@ -210,6 +210,17 @@ export interface Instance extends InstanceWithoutRelation {
   children: InstanceWithoutRelation[];
   parent: InstanceWithoutRelation | null;
 }
+
+export interface InstanceWithDistribution extends Instance {
+  distribution: string;
+  distribution_info: DistributionInfo;
+}
+
+// export interface UbuntuInstance extends InstanceWithDistribution {
+// }
+
+// export interface WindowsInstance extends InstanceWithDistribution {
+// }
 
 export interface PendingInstance extends Record<string, unknown> {
   access_group: string | null;
