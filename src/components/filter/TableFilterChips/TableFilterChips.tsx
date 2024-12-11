@@ -138,7 +138,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   }
 
   return (
-    <div className={classes.container} data-testId="table-filter-chips">
+    <div className={classes.container} data-testid="table-filter-chips">
       <div
         ref={containerRef}
         className={classNames(classes.chipsContainer, {
