@@ -30,6 +30,7 @@ import { useFormik } from "formik";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { ModalConfirmationFormProps } from "./types";
 import { useActivities } from "@/features/activities";
+import { canRunScripts } from "@/features/instances";
 
 const EditInstance = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
@@ -234,14 +235,16 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 <Icon name="edit" />
                 <span>Edit</span>
               </Button>
-              <Button
-                className="p-segmented-control__button u-no-margin--bottom"
-                type="button"
-                onClick={handleRunScript}
-              >
-                <Icon name="code" />
-                <span>Run script</span>
-              </Button>
+              {canRunScripts(instance) && (
+                <Button
+                  className="p-segmented-control__button u-no-margin--bottom"
+                  type="button"
+                  onClick={handleRunScript}
+                >
+                  <Icon name="code" />
+                  <span>Run script</span>
+                </Button>
+              )}
 
               <ConfirmationButton
                 className="p-segmented-control__button u-no-margin--bottom has-icon"
