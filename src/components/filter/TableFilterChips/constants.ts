@@ -4,7 +4,9 @@ export const defaultFiltersToDisplay: FilterKey[] = [
   "accessGroups",
   "availabilityZones",
   "os",
-  "search",
+  "fromDate",
   "status",
   "tags",
+  "toDate",
+  "type",
 ];

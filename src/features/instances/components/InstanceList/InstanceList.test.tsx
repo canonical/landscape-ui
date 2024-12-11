@@ -8,8 +8,8 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 const props = {
   instances,
   selectedInstances: [],
+  setColumnFilterOptions: vi.fn(),
   setSelectedInstances: vi.fn(),
-  groupBy: "",
 };
 
 describe("InstanceList", () => {

@@ -9,8 +9,8 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
-import { useSavedSearches } from "@/hooks/useSavedSearches";
-import { SavedSearch } from "@/types/SavedSearch";
+import { useSavedSearches } from "../../hooks";
+import { SavedSearch } from "../../types";
 import classes from "./SavedSearchList.module.scss";
 import useNotify from "@/hooks/useNotify";
 
