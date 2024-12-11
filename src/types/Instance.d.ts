@@ -211,16 +211,29 @@ export interface Instance extends InstanceWithoutRelation {
   parent: InstanceWithoutRelation | null;
 }
 
+export interface FreshInstance extends Instance {
+  distribution: null;
+  distribution_info: null;
+}
+
 export interface InstanceWithDistribution extends Instance {
   distribution: string;
   distribution_info: DistributionInfo;
 }
 
-// export interface UbuntuInstance extends InstanceWithDistribution {
-// }
+export interface WslInstance extends InstanceWithDistribution {
+  children: [];
+  is_default_child: boolean;
+  is_wsl_instance: true;
+  parent: Omit<WindowsInstance, "children">;
+}
 
-// export interface WindowsInstance extends InstanceWithDistribution {
-// }
+export interface WindowsInstance extends InstanceWithDistribution {
+  children: Omit<WslInstance, "parent">[];
+  is_default_child: null;
+  is_wsl_instance: false;
+  parent: null;
+}
 
 export interface PendingInstance extends Record<string, unknown> {
   access_group: string | null;
