@@ -13,6 +13,7 @@ import { Script } from "../../types";
 import DeliveryBlock from "../DeliveryBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { FormProps } from "./types";
+import { canRunScripts } from "@/features/instances";
 
 interface RunScriptFormProps {
   script: Script;
@@ -74,10 +75,14 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
   const { data: getInstancesQueryResult } = getInstancesQuery();
 
   const instanceOptions: MultiSelectItem[] =
-    getInstancesQueryResult?.data.results.map(({ title, id }) => ({
-      label: title,
-      value: id,
-    })) ?? [];
+    getInstancesQueryResult?.data.results
+      .filter((instance) => {
+        return canRunScripts(instance);
+      })
+      .map(({ title, id }) => ({
+        label: title,
+        value: id,
+      })) ?? [];
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
