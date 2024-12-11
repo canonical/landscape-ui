@@ -2,10 +2,10 @@ import moment from "moment/moment";
 import { InfoItemProps } from "@/components/layout/InfoItem";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { InstanceWithoutRelation } from "@/types/Instance";
+import { Instance } from "@/types/Instance";
 import { SelectOption } from "@/types/SelectOption";
 
-const getIpAddress = (instance: InstanceWithoutRelation) => {
+const getIpAddress = (instance: Instance) => {
   const network = instance.grouped_hardware?.network;
 
   if (!Array.isArray(network) || network.length === 0) {
@@ -21,7 +21,7 @@ const getIpAddress = (instance: InstanceWithoutRelation) => {
 };
 
 export const getInstanceInfoItems = (
-  instance: InstanceWithoutRelation,
+  instance: Instance,
   accessGroupOptions: SelectOption[],
 ): InfoItemProps[] => {
   return [

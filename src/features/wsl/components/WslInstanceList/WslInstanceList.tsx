@@ -6,19 +6,19 @@ import {
 } from "@canonical/react-components/node_modules/@types/react-table";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
-import { Instance, InstanceWithoutRelation } from "@/types/Instance";
+import { WindowsInstance, WslInstanceWithoutRelation } from "@/types/Instance";
 import WslInstanceListActions from "../WslInstanceListActions";
 import WslInstancesHeader from "../WslInstancesHeader";
 import classes from "./WslInstanceList.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
 
 interface WslInstanceListProps {
-  instance: Instance;
+  instance: WindowsInstance;
 }
 
 const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
   const [selectedInstances, setSelectedInstances] = useState<
-    InstanceWithoutRelation[]
+    WslInstanceWithoutRelation[]
   >([]);
   const { search } = usePageParams();
 
@@ -34,7 +34,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
     );
   }, [instance, search]);
 
-  const handleInstanceCheck = (instance: InstanceWithoutRelation) => {
+  const handleInstanceCheck = (instance: WslInstanceWithoutRelation) => {
     setSelectedInstances((prevState) =>
       prevState.some(({ id }) => id === instance.id)
         ? prevState.filter(({ id }) => id !== instance.id)
@@ -42,7 +42,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
     );
   };
 
-  const columns = useMemo<Column<InstanceWithoutRelation>[]>(
+  const columns = useMemo<Column<WslInstanceWithoutRelation>[]>(
     () => [
       {
         accessor: "title",
@@ -68,7 +68,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
             <span>Title</span>
           </>
         ),
-        Cell: ({ row }: CellProps<InstanceWithoutRelation>) => (
+        Cell: ({ row }: CellProps<WslInstanceWithoutRelation>) => (
           <div className={classes.title}>
             <CheckboxInput
               label={
@@ -91,7 +91,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
       {
         accessor: "distribution",
         Header: "OS",
-        Cell: ({ row: { original } }: CellProps<InstanceWithoutRelation>) =>
+        Cell: ({ row: { original } }: CellProps<WslInstanceWithoutRelation>) =>
           original.distribution
             ? `Ubuntu\xA0${original.distribution}`
             : "Unknown",
@@ -99,7 +99,9 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
       {
         accessor: "default",
         Header: "Default",
-        Cell: ({ row: { original } }: CellProps<InstanceWithoutRelation>) => (
+        Cell: ({
+          row: { original },
+        }: CellProps<WslInstanceWithoutRelation>) => (
           <>{original.is_default_child ? "Yes" : "No"}</>
         ),
       },
@@ -107,7 +109,9 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
         accessor: "actions",
         className: classes.actions,
         Header: "Actions",
-        Cell: ({ row: { original } }: CellProps<InstanceWithoutRelation>) => (
+        Cell: ({
+          row: { original },
+        }: CellProps<WslInstanceWithoutRelation>) => (
           <WslInstanceListActions instance={original} parentId={instance.id} />
         ),
       },

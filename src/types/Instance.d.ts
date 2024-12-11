@@ -184,8 +184,9 @@ interface DistributionInfo {
   release: string;
 }
 
-export interface InstanceWithoutRelation extends Record<string, unknown> {
+export interface Instance extends Record<string, unknown> {
   access_group: AccessGroup["name"];
+  children: Instance[];
   cloud_init: {
     availability_zone?: string | null;
   };
@@ -197,6 +198,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   is_default_child: boolean | null;
   is_wsl_instance: boolean;
   last_ping_time: string | null;
+  parent: Instance | null;
   tags: string[];
   title: string;
   ubuntu_pro_info: UbuntuProInfo | null;
@@ -204,11 +206,6 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   grouped_hardware?: GroupedHardware;
   alerts?: InstanceAlert[];
   upgrades?: InstanceUpgrades;
-}
-
-export interface Instance extends InstanceWithoutRelation {
-  children: InstanceWithoutRelation[];
-  parent: InstanceWithoutRelation | null;
 }
 
 export interface FreshInstance extends Instance {
@@ -221,18 +218,25 @@ export interface InstanceWithDistribution extends Instance {
   distribution_info: DistributionInfo;
 }
 
-export interface WslInstance extends InstanceWithDistribution {
+export interface WslInstanceWithoutRelation extends InstanceWithDistribution {
   children: [];
   is_default_child: boolean;
   is_wsl_instance: true;
-  parent: Omit<WindowsInstance, "children">;
 }
 
-export interface WindowsInstance extends InstanceWithDistribution {
-  children: Omit<WslInstance, "parent">[];
+export interface WslInstance extends WslInstanceWithoutRelation {
+  parent: WindowsInstanceWithoutRelation;
+}
+
+export interface WindowsInstanceWithoutRelation
+  extends InstanceWithDistribution {
   is_default_child: null;
   is_wsl_instance: false;
   parent: null;
+}
+
+export interface WindowsInstance extends WindowsInstanceWithoutRelation {
+  children: WslInstanceWithoutRelation[];
 }
 
 export interface PendingInstance extends Record<string, unknown> {

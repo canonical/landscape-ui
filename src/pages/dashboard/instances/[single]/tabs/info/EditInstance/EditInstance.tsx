@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { useFormik } from "formik";
 import { Form, Input, Select, Textarea } from "@canonical/react-components";
-import { InstanceWithoutRelation } from "@/types/Instance";
+import { Instance } from "@/types/Instance";
 import useSidePanel from "@/hooks/useSidePanel";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -12,7 +12,7 @@ import useRoles from "@/hooks/useRoles";
 import { SelectOption } from "@/types/SelectOption";
 
 interface EditInstanceProps {
-  instance: InstanceWithoutRelation;
+  instance: Instance;
 }
 
 const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
