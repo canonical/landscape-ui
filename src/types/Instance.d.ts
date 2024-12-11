@@ -184,9 +184,8 @@ interface DistributionInfo {
   release: string;
 }
 
-export interface Instance extends Record<string, unknown> {
+export interface InstanceWithoutRelation extends Record<string, unknown> {
   access_group: AccessGroup["name"];
-  children: Instance[];
   cloud_init: {
     availability_zone?: string | null;
   };
@@ -198,7 +197,6 @@ export interface Instance extends Record<string, unknown> {
   is_default_child: boolean | null;
   is_wsl_instance: boolean;
   last_ping_time: string | null;
-  parent: Instance | null;
   tags: string[];
   title: string;
   ubuntu_pro_info: UbuntuProInfo | null;
@@ -208,35 +206,49 @@ export interface Instance extends Record<string, unknown> {
   upgrades?: InstanceUpgrades;
 }
 
+interface WithRelation {
+  children: InstanceWithoutRelation[];
+  parent: InstanceWithoutRelation | null;
+}
+
+export interface Instance extends InstanceWithoutRelation, WithRelation {}
+
 export interface FreshInstance extends Instance {
   distribution: null;
   distribution_info: null;
 }
 
-export interface InstanceWithDistribution extends Instance {
+interface WithDistribution {
   distribution: string;
   distribution_info: DistributionInfo;
 }
 
-export interface WslInstanceWithoutRelation extends InstanceWithDistribution {
-  children: [];
+export interface UbuntuInstance extends Instance, WithDistribution {}
+
+export interface WslInstanceWithoutRelation
+  extends InstanceWithoutRelation,
+    WithDistribution {
   is_default_child: boolean;
   is_wsl_instance: true;
 }
 
-export interface WslInstance extends WslInstanceWithoutRelation {
+export interface WslInstance extends WslInstanceWithoutRelation, WithRelation {
+  children: [];
   parent: WindowsInstanceWithoutRelation;
 }
 
 export interface WindowsInstanceWithoutRelation
-  extends InstanceWithDistribution {
+  extends InstanceWithoutRelation,
+    WithDistribution {
   is_default_child: null;
   is_wsl_instance: false;
-  parent: null;
 }
 
-export interface WindowsInstance extends WindowsInstanceWithoutRelation {
+export interface WindowsInstance
+  extends WindowsInstanceWithoutRelation,
+    WithRelation {
   children: WslInstanceWithoutRelation[];
+  parent: null;
 }
 
 export interface PendingInstance extends Record<string, unknown> {
