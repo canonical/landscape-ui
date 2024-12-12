@@ -6,6 +6,7 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   email: Yup.string()
     .email("Please provide a valid email address")
     .required("This field is required"),
+  preferred_account: Yup.string(),
 });
 
 export const TIMEZONE_OPTIONS = [

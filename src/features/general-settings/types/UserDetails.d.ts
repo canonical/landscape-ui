@@ -7,7 +7,7 @@ export interface UserDetails {
   last_login_time: string;
   name: string;
   oidc_identities: OidcIdentity[];
-  preferred_account: string;
+  preferred_account: string | null;
   timezone: string;
 }
 
