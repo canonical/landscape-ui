@@ -13,7 +13,7 @@ import { Script } from "../../types";
 import DeliveryBlock from "../DeliveryBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { FormProps } from "./types";
-import { canRunScripts } from "@/features/instances";
+import { currentInstanceCan } from "@/features/instances";
 
 interface RunScriptFormProps {
   script: Script;
@@ -77,7 +77,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
   const instanceOptions: MultiSelectItem[] =
     getInstancesQueryResult?.data.results
       .filter((instance) => {
-        return canRunScripts(instance);
+        return currentInstanceCan("runScripts", instance);
       })
       .map(({ title, id }) => ({
         label: title,
