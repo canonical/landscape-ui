@@ -85,7 +85,7 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
         columns={columns}
         data={eventsLog}
         sortable={true}
-        emptyMsg="No events found"
+        emptyMsg="No events found according to your search parameters."
       />
     </div>
   );

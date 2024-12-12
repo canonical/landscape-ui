@@ -3,7 +3,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@/types/ApiError";
 import useFetchOld from "./useFetchOld";
-import { AccessGroup } from "@/types/AccessGroup";
+import { AccessGroup } from "@/features/access-groups";
 import { Role } from "@/types/Role";
 import { Permission } from "@/types/Permission";
 import { Activity } from "@/features/activities";

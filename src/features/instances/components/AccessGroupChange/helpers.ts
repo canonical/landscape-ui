@@ -1,4 +1,4 @@
-import { AccessGroup } from "@/types/AccessGroup";
+import { AccessGroup } from "@/features/access-groups";
 
 export const getAccessGroupOptions = (
   accessGroups: AccessGroup[] | undefined,

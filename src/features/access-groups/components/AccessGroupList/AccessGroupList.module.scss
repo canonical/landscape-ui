@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.actions {
+  width: 15%;
+}
+
+.link {
+  &:visited {
+    color: $color-link;
+  }
+}
+
+.instanceCount {
+  width: 10%;
+}

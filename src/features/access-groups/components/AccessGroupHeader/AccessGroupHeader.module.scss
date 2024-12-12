@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.container {
+  align-items: flex-start;
+  background-color: $color-x-light;
+  column-gap: $sph--x-large;
+  display: flex;
+  position: sticky;
+  top: 4.5rem;
+  z-index: 1;
+}
+
+.searchContainer {
+  flex-basis: 30rem;
+}
