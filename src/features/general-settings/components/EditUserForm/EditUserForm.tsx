@@ -12,8 +12,9 @@ import { useUserGeneralSettings } from "../../hooks";
 import { UserDetails } from "../../types";
 import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
 import classes from "./EditUserForm.module.scss";
-import { getAccountOptions, getFieldError } from "./helpers";
+import { getAccountOptions } from "./helpers";
 import { EditUserFormValues } from "./types";
+import { getFormikError } from "@/utils/formikErrors";
 
 const ChangePasswordForm = lazy(() => import("../ChangePasswordForm"));
 
@@ -84,7 +85,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       <Input
         label="Name"
         type="text"
-        error={getFieldError(formik, "name")}
+        error={getFormikError(formik, "name")}
         help="Visible to others in the organisation"
         {...formik.getFieldProps("name")}
       />
@@ -113,7 +114,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             </>
           }
           {...formik.getFieldProps("email")}
-          error={getFieldError(formik, "email")}
+          error={getFormikError(formik, "email")}
         />
       ) : (
         <Input
@@ -141,7 +142,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             </>
           }
           {...formik.getFieldProps("email")}
-          error={getFieldError(formik, "email")}
+          error={getFormikError(formik, "email")}
         />
       )}
       <div className={classes.passwordField}>
@@ -177,7 +178,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         label="Timezone"
         options={TIMEZONE_OPTIONS}
         {...formik.getFieldProps("timezone")}
-        error={getFieldError(formik, "timezone")}
+        error={getFormikError(formik, "timezone")}
       />
       {account.options.length > 1 && (
         <Select
@@ -187,7 +188,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             formik.values.preferred_account,
           )}
           {...formik.getFieldProps("preferred_account")}
-          error={getFieldError(formik, "preferred_account")}
+          error={getFormikError(formik, "preferred_account")}
         />
       )}
       <div className={buttonClasses.buttons}>
