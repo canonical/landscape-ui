@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_API_URL_OLD: string;
   readonly VITE_ROOT_PATH: string;
   readonly VITE_SELF_HOSTED_ENV: string;
+  readonly VITE_REPORT_VIEW_ENABLED: string;
 }
 
 interface ImportMeta {
