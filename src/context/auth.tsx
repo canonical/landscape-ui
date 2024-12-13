@@ -16,16 +16,11 @@ import { SelectOption } from "@/types/SelectOption";
 import Redirecting from "@/components/layout/Redirecting";
 
 export interface AuthContextProps {
-  account:
-    | {
-        switchable: false;
-      }
-    | {
-        current: string;
-        options: SelectOption[];
-        switch: (newToken: string, newAccount: string) => void;
-        switchable: true;
-      };
+  account: {
+    current: string;
+    options: SelectOption[];
+    switch: (newToken: string, newAccount: string) => void;
+  };
   authLoading: boolean;
   authorized: boolean;
   isOidcAvailable: boolean;
@@ -37,7 +32,9 @@ export interface AuthContextProps {
 
 const initialState: AuthContextProps = {
   account: {
-    switchable: false,
+    current: "",
+    options: [],
+    switch: () => undefined,
   },
   authLoading: false,
   authorized: false,
@@ -127,16 +124,8 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   };
 
   const account = useMemo<AuthContextProps["account"]>(() => {
-    if (
-      !user ||
-      user.accounts.some(
-        ({ subdomain }) =>
-          !!subdomain && location.hostname.startsWith(subdomain),
-      )
-    ) {
-      return {
-        switchable: false,
-      };
+    if (!user) {
+      return initialState.account;
     }
 
     const options: SelectOption[] = user.accounts
@@ -146,18 +135,13 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         value: name,
       }));
 
-    return options.length > 1
-      ? {
-          current: options.some(({ value }) => value === user.current_account)
-            ? user.current_account
-            : options[0].value,
-          options,
-          switch: handleSwitchAccount,
-          switchable: true,
-        }
-      : {
-          switchable: false,
-        };
+    return {
+      current: options.some(({ value }) => value === user.current_account)
+        ? user.current_account
+        : options[0].value,
+      options,
+      switch: handleSwitchAccount,
+    };
   }, [user]);
 
   const handleLogout = () => {

@@ -1,39 +1,36 @@
-import * as Yup from "yup";
 import useDebug from "@/hooks/useDebug";
 import { useFormik } from "formik";
 import { Form, Input, Select } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { FC } from "react";
+import { FormProps } from "./types";
+import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 
-interface FormProps {
-  title: string;
-  parent: string;
-}
-
-const NewAccessGroupForm = () => {
+const NewAccessGroupForm: FC = () => {
   const { createAccessGroupQuery, getAccessGroupQuery } = useRoles();
   const { mutateAsync } = createAccessGroupQuery;
   const { closeSidePanel } = useSidePanel();
   const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =
     getAccessGroupQuery();
 
-  const accessGroupsOptions = (accessGroupsResponse?.data ?? []).map(
+  const accessGroupsOptionsResults = (accessGroupsResponse?.data ?? []).map(
     (accessGroup) => ({
       label: accessGroup.title,
       value: accessGroup.name,
     }),
   );
 
+  const ACCESS_GROUP_OPTIONS = [
+    { label: "Select access group", value: "" },
+    ...accessGroupsOptionsResults,
+  ];
+
   const debug = useDebug();
   const formik = useFormik<FormProps>({
-    initialValues: {
-      title: "",
-      parent: "",
-    },
-    validationSchema: Yup.object().shape({
-      title: Yup.string().required("This field is required"),
-    }),
+    initialValues: INITIAL_VALUES,
+    validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
         await mutateAsync(values);
@@ -49,7 +46,6 @@ const NewAccessGroupForm = () => {
       <Input
         type="text"
         label="Title"
-        id="new-access-group-title"
         required
         error={
           formik.touched.title && formik.errors.title
@@ -60,10 +56,14 @@ const NewAccessGroupForm = () => {
       />
       <Select
         required
-        id="Parent"
         label="Parent"
         disabled={isGettingAccessGroups}
-        options={[...accessGroupsOptions]}
+        options={ACCESS_GROUP_OPTIONS}
+        error={
+          formik.touched.parent && formik.errors.parent
+            ? formik.errors.parent
+            : undefined
+        }
         {...formik.getFieldProps("parent")}
       />
       <SidePanelFormButtons

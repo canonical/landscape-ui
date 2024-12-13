@@ -3,7 +3,7 @@ import {
   AccessGroupOption,
   PermissionOption,
 } from "@/pages/dashboard/settings/roles/types";
-import { AccessGroup } from "@/types/AccessGroup";
+import { AccessGroup } from "@/features/access-groups";
 
 export const getPermissionOptions = (permissions: Permission[]) => {
   return permissions.reduce((acc, { global, name, title }) => {

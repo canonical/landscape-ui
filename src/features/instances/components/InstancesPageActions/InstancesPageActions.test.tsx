@@ -4,43 +4,82 @@ import { instances } from "@/tests/mocks/instance";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
+import * as Constants from "@/constants";
 
 const selected = instances.slice(0, 2);
 
+const BUTTON_LABELS = [
+  "Shutdown",
+  "Restart",
+  "View report",
+  "Run script",
+  "Upgrade",
+  "Assign access group",
+];
+
 describe("InstancesPageActions", () => {
-  test("should render correctly", () => {
+  beforeEach(() => {
+    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
+  });
+
+  it("should render correctly", () => {
     const { container } = renderWithProviders(
       <InstancesPageActions selected={selected} />,
     );
 
     const buttons = screen.getAllByRole("button");
 
-    expect(buttons).toHaveLength(6);
+    expect(buttons).toHaveLength(BUTTON_LABELS.length);
 
-    expect(container).toHaveTexts([
-      "Shutdown",
-      "Restart",
-      "View report",
-      "Run script",
-      "Upgrade",
-      "Assign access group",
-    ]);
+    expect(container).toHaveTexts(BUTTON_LABELS);
 
     for (const button of buttons) {
       expect(button).not.toHaveClass("is-disabled");
     }
   });
 
-  test("should disable buttons", () => {
+  it("should disable buttons", () => {
     renderWithProviders(<InstancesPageActions selected={[]} />);
 
     const buttons = screen.getAllByRole("button");
 
-    expect(buttons).toHaveLength(6);
+    expect(buttons).toHaveLength(BUTTON_LABELS.length);
 
     for (const button of buttons) {
       expect(button).toHaveClass("is-disabled");
     }
+  });
+
+  it("'View report' button should be visible when feature enabled", () => {
+    renderWithProviders(<InstancesPageActions selected={selected} />);
+
+    const button = screen.queryByRole("button", { name: /view report/i });
+    expect(button).toBeInTheDocument();
+  });
+
+  it("'View report' button should not be visible when feature disabled", () => {
+    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
+
+    renderWithProviders(<InstancesPageActions selected={selected} />);
+
+    const button = screen.queryByRole("button", { name: /view report/i });
+    expect(button).not.toBeInTheDocument();
+  });
+
+  test("'View report' button should be visible when feature enabled", async () => {
+    renderWithProviders(<InstancesPageActions selected={selected} />);
+
+    const button = screen.queryByRole("button", { name: /view report/i });
+    expect(button).toBeInTheDocument();
+  });
+
+  test("'View report' button should not be visible when feature disabled", async () => {
+    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
+
+    renderWithProviders(<InstancesPageActions selected={selected} />);
+
+    const button = screen.queryByRole("button", { name: /view report/i });
+    expect(button).not.toBeInTheDocument();
   });
 
   describe("should proper handle button clicks", () => {
@@ -48,7 +87,7 @@ describe("InstancesPageActions", () => {
       renderWithProviders(<InstancesPageActions selected={selected} />);
     });
 
-    test("'Shutdown' button", async () => {
+    it("'Shutdown' button", async () => {
       await userEvent.click(screen.getByRole("button", { name: /shutdown/i }));
 
       const dialog = screen.getByRole("dialog", {
@@ -64,7 +103,7 @@ describe("InstancesPageActions", () => {
       screen.getByText("Selected instances have been queued for shutdown.");
     });
 
-    test("'Restart' button", async () => {
+    it("'Restart' button", async () => {
       await userEvent.click(screen.getByRole("button", { name: /restart/i }));
 
       const dialog = screen.getByRole("dialog", {
@@ -80,7 +119,7 @@ describe("InstancesPageActions", () => {
       screen.getByText("Selected instances have been queued for reboot.");
     });
 
-    test("'Run script' button", async () => {
+    it("'Run script' button", async () => {
       await userEvent.click(
         screen.getByRole("button", { name: /run script/i }),
       );
@@ -90,7 +129,7 @@ describe("InstancesPageActions", () => {
       ).toBeInTheDocument();
     });
 
-    test("'View report' button", async () => {
+    it("'View report' button", async () => {
       await userEvent.click(
         screen.getByRole("button", { name: /view report/i }),
       );
@@ -102,7 +141,7 @@ describe("InstancesPageActions", () => {
       ).toBeInTheDocument();
     });
 
-    test("'Upgrade' button", async () => {
+    it("'Upgrade' button", async () => {
       await userEvent.click(screen.getByRole("button", { name: /upgrade/i }));
 
       expect(
@@ -110,7 +149,7 @@ describe("InstancesPageActions", () => {
       ).toBeInTheDocument();
     });
 
-    test("'Assign access group' button", async () => {
+    it("'Assign access group' button", async () => {
       await userEvent.click(
         screen.getByRole("button", { name: /Assign access group/i }),
       );

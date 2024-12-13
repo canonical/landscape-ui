@@ -67,20 +67,32 @@ const TableFilter: FC<TableFilterProps> = ({
       toggleLabel={
         <>
           <span>{label}</span>
-          {hasBadge && (
+          {hasBadge && otherProps.multiple && (
             <span
               className={classNames(classes.badgeContainer, {
-                [classes.multiple]: otherProps.multiple && options.length > 9,
+                [classes.multiple]: options.length > 9,
               })}
             >
-              {((otherProps.multiple && otherProps.selectedItems.length > 0) ||
-                (!otherProps.multiple && otherProps.selectedItem)) && (
+              {otherProps.selectedItems.length > 0 && (
                 <Badge
-                  value={
-                    otherProps.multiple ? otherProps.selectedItems.length : 1
-                  }
+                  value={otherProps.selectedItems.length}
                   className={classes.badge}
                 />
+              )}
+            </span>
+          )}
+          {hasBadge && !otherProps.multiple && (
+            <span className={classes.badgeContainer}>
+              {otherProps.selectedItem && (
+                <svg
+                  role="img"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="10" cy="13" r="6" fill="#666666" />
+                </svg>
               )}
             </span>
           )}
@@ -99,7 +111,7 @@ const TableFilter: FC<TableFilterProps> = ({
       <span
         className={classNames(classes.container, {
           [classes.multiple]: otherProps.multiple,
-          [classes.horizontalPadding]: otherProps.multiple || onSearch,
+          [classes.horizontalPadding]: Boolean(otherProps.multiple || onSearch),
         })}
       >
         {onSearch && <SearchBoxWithForm onSearch={onSearch} />}

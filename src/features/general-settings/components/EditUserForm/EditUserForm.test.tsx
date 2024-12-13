@@ -35,10 +35,9 @@ const authContextValues: AuthContextProps = {
   authLoading: false,
   setUser: vi.fn(),
   account: {
-    switchable: true,
-    current: "test-account",
+    current: authUser.current_account,
     options: [
-      { label: "Test Account", value: "test-account" },
+      { label: authUser.accounts[0].title, value: authUser.accounts[0].name },
       { label: "Another Account", value: "another-account" },
     ],
     switch: vi.fn(),
@@ -109,6 +108,18 @@ describe("EditUserForm", () => {
       await userEvent.click(saveButton);
 
       expect(saveButton).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("should show an empty option for default organisation select if user has not yet selected one", async () => {
+      renderWithProviders(
+        <EditUserForm user={{ ...props.user, preferred_account: null }} />,
+      );
+
+      const organisationSelect = screen.getByRole("combobox", {
+        name: /default organisation/i,
+      });
+
+      expect(organisationSelect).toHaveValue("");
     });
   });
 
