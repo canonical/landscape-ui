@@ -10,6 +10,7 @@ import { useActivities } from "@/features/activities";
 import { getNotificationArgs } from "./helpers";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { currentInstanceCan } from "../../helpers";
+import { Notification } from "@canonical/react-components";
 
 const RunInstanceScriptForm = lazy(() =>
   import("@/features/scripts").then((module) => ({
@@ -47,6 +48,13 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
+        {selected.some(
+          (instance) => !currentInstanceCan("runScripts", instance),
+        ) ? (
+          <Notification severity="caution" title="Warning">
+            The script will not run on Windows instances.
+          </Notification>
+        ) : null}
         <RunInstanceScriptForm
           query={selected.map(({ id }) => `id:${id}`).join(" OR ")}
         />
