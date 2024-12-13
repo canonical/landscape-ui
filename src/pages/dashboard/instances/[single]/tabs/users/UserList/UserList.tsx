@@ -156,7 +156,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
         ),
       },
     ],
-    [users],
+    [users, selected],
   );
 
   return (

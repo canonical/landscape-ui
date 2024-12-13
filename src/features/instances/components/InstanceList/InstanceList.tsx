@@ -37,7 +37,15 @@ const InstanceList: FC<InstanceListProps> = ({
   setColumnFilterOptions,
   setSelectedInstances,
 }) => {
-  const { disabledColumns, groupBy } = usePageParams();
+  const { disabledColumns, groupBy, ...filters } = usePageParams();
+
+  const isFilteringInstances = Object.values(filters).some((filter) => {
+    if (typeof filter === "string") {
+      return filter.length > 0;
+    } else if (Array.isArray(filter)) {
+      return filter.length > 0;
+    }
+  });
 
   const toggleAll = () => {
     setSelectedInstances(selectedInstances.length !== 0 ? [] : instances);
@@ -221,12 +229,16 @@ const InstanceList: FC<InstanceListProps> = ({
         ({ accessor }) =>
           typeof accessor === "string" && !disabledColumns.includes(accessor),
       ),
-    [disabledColumns.length],
+    [disabledColumns.length, columns],
   );
 
   return (
     <ModularTable
-      emptyMsg="No instances found"
+      emptyMsg={
+        isFilteringInstances
+          ? "No instances found according to your search parameters."
+          : "No instances found"
+      }
       columns={filteredColumns}
       data={instancesData}
       getHeaderProps={handleHeaderProps}

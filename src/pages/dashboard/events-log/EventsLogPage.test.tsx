@@ -11,7 +11,9 @@ describe("EventsLogPage", () => {
     setEndpointStatus("empty");
     renderWithProviders(<EventsLogPage />);
 
-    const emptyStateTitle = await screen.findByText("No events found");
+    const emptyStateTitle = await screen.findByText(
+      "No events found according to your search parameters.",
+    );
     expect(emptyStateTitle).toBeInTheDocument();
   });
 

@@ -21,10 +21,9 @@ const props = {
 };
 
 describe("UserList", () => {
-  beforeEach(() => {
-    renderWithProviders(<UserList {...props} />);
-  });
   it("renders a list of users", async () => {
+    renderWithProviders(<UserList {...props} />);
+
     for (const user of users) {
       const listUser = await screen.findByRole("button", {
         name: `Show details of user ${user.username}`,
@@ -36,6 +35,7 @@ describe("UserList", () => {
 
   describe("Table Interactions", () => {
     it("shows locked user icon in the user table", async () => {
+      renderWithProviders(<UserList {...props} />);
       expect(lockedUser).toBeDefined();
 
       const statuses = screen.getAllByRole("cell", {
@@ -58,15 +58,25 @@ describe("UserList", () => {
     });
 
     it("should select all users when clicking ToggleAll checkbox", async () => {
+      const { rerender } = renderWithProviders(<UserList {...props} />);
       const toggleAllCheckbox = await screen.findByRole("checkbox", {
         name: /toggle all/i,
       });
       await userEvent.click(toggleAllCheckbox);
 
       expect(props.setSelected).toHaveBeenCalledWith(userIds);
+
+      rerender(<UserList {...props} selected={userIds} />);
+      const checkedCheckboxes = screen.getAllByRole("checkbox", {
+        checked: true,
+      });
+
+      expect(checkedCheckboxes).toHaveLength(userIds.length + 1);
     });
 
     it("should select user when clicking on its row checkbox", async () => {
+      renderWithProviders(<UserList {...props} />);
+
       const selectedUser = users[0];
 
       const userCheckbox = await screen.findByRole("checkbox", {
@@ -80,6 +90,9 @@ describe("UserList", () => {
   });
 
   describe("User details sidepanel", () => {
+    beforeEach(() => {
+      renderWithProviders(<UserList {...props} />);
+    });
     it("should open side panel when user in table is clicked", async () => {
       const user = await screen.findByRole("button", {
         name: `Show details of user ${users[0].username}`,
