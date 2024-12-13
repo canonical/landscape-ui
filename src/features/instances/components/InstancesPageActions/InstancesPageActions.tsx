@@ -9,6 +9,7 @@ import useNotify from "@/hooks/useNotify";
 import { useActivities } from "@/features/activities";
 import { getNotificationArgs } from "./helpers";
 import { REPORT_VIEW_ENABLED } from "@/constants";
+import { currentInstanceCan } from "../../helpers";
 
 const RunInstanceScriptForm = lazy(() =>
   import("@/features/scripts").then((module) => ({
@@ -180,7 +181,9 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           className="p-segmented-control__button"
           type="button"
           onClick={handleRunScript}
-          disabled={0 === selected.length}
+          disabled={selected.every((instance) => {
+            return !currentInstanceCan("runScripts", instance);
+          })}
         >
           <Icon name="code" />
           <span>Run script</span>
