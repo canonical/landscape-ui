@@ -2,7 +2,6 @@ import * as Yup from "yup";
 import { EditFormProps } from "../../types";
 
 export const INITIAL_VALUES: EditFormProps = {
-  access_group: "",
   all_computers: false,
   description: "",
   tags: [],
@@ -10,9 +9,8 @@ export const INITIAL_VALUES: EditFormProps = {
 };
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
-  access_group: Yup.string(),
   all_computers: Yup.boolean(),
   description: Yup.string(),
   tags: Yup.array().of(Yup.string()),
-  title: Yup.string().required("Required"),
+  title: Yup.string().required("This field is required"),
 });
