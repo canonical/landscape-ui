@@ -52,7 +52,7 @@ const AlertNotificationsPage: FC = () => {
                 appearance="positive"
                 key="go-to-alerts-page"
                 onClick={() =>
-                  navigate(`${ROOT_PATH}settings/alerts`, { replace: true })
+                  navigate(`${ROOT_PATH}account/alerts`, { replace: true })
                 }
                 type="button"
                 aria-label="Go to alerts page"

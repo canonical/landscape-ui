@@ -1,12 +1,12 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import useInstances from "@/hooks/useInstances";
-import InstanceList from "@/pages/dashboard/instances/InstanceList";
 import { Instance } from "@/types/Instance";
 import { usePageParams } from "@/hooks/usePageParams";
 import { getQuery } from "./helpers";
-import { InstancesHeader } from "@/features/instances";
+import { InstanceList, InstancesHeader } from "@/features/instances";
+import { ColumnFilterOption } from "@/components/form/ColumnFilter";
 
 interface InstancesContainerProps {
   selectedInstances: Instance[];
@@ -17,6 +17,9 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
   selectedInstances,
   setSelectedInstances,
 }) => {
+  const [columnFilterOptions, setColumnFilterOptions] = useState<
+    ColumnFilterOption[]
+  >([]);
   const { currentPage, pageSize, groupBy, ...filters } = usePageParams();
   const { getInstancesQuery } = useInstances();
 
@@ -39,7 +42,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
 
   return (
     <>
-      <InstancesHeader />
+      <InstancesHeader columnFilterOptions={columnFilterOptions} />
 
       {getInstancesQueryLoading ? (
         <LoadingState />
@@ -47,8 +50,8 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
         <InstanceList
           instances={instances}
           selectedInstances={selectedInstances}
+          setColumnFilterOptions={(options) => setColumnFilterOptions(options)}
           setSelectedInstances={(instances) => setSelectedInstances(instances)}
-          groupBy={groupBy}
         />
       )}
       <TablePagination

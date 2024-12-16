@@ -15,20 +15,25 @@ const props = {
 };
 
 describe("ProcessesList", () => {
-  beforeEach(() => {
-    renderWithProviders(<ProcessesList {...props} />);
-  });
-
   it("should select all processes when clicking ToggleAll checkbox", async () => {
+    const { rerender } = renderWithProviders(<ProcessesList {...props} />);
     const toggleAllCheckbox = await screen.findByRole("checkbox", {
       name: /toggle all/i,
     });
     await userEvent.click(toggleAllCheckbox);
 
     expect(props.setSelectedPids).toHaveBeenCalledWith(processIds);
+
+    rerender(<ProcessesList {...props} selectedPids={processIds} />);
+
+    const checkedCheckboxes = screen.getAllByRole("checkbox", {
+      checked: true,
+    });
+    expect(checkedCheckboxes).toHaveLength(processes.length + 1);
   });
 
   it("should select process when clicking on its row checkbox", async () => {
+    renderWithProviders(<ProcessesList {...props} />);
     const chosenProcess = processes[0];
     const row = screen.getByRole("row", {
       name: `Select process ${chosenProcess.name} ${chosenProcess.name} ${chosenProcess.state} ${chosenProcess.vm_size} ${(100 * chosenProcess.cpu_utilisation).toFixed(1)}% ${chosenProcess.pid} ${chosenProcess.start_time} ${chosenProcess.gid}`,

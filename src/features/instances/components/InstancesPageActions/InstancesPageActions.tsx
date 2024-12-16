@@ -8,6 +8,7 @@ import { Instance } from "@/types/Instance";
 import useNotify from "@/hooks/useNotify";
 import { useActivities } from "@/features/activities";
 import { getNotificationArgs } from "./helpers";
+import { REPORT_VIEW_ENABLED } from "@/constants";
 
 const RunInstanceScriptForm = lazy(() =>
   import("@/features/scripts").then((module) => ({
@@ -164,15 +165,17 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           <Icon name="restart" />
           <span>Restart</span>
         </ConfirmationButton>
-        <Button
-          className="p-segmented-control__button"
-          type="button"
-          onClick={handleReportView}
-          disabled={0 === selected.length}
-        >
-          <Icon name="status" />
-          <span>View report</span>
-        </Button>
+        {REPORT_VIEW_ENABLED && (
+          <Button
+            className="p-segmented-control__button"
+            type="button"
+            onClick={handleReportView}
+            disabled={0 === selected.length}
+          >
+            <Icon name="status" />
+            <span>View report</span>
+          </Button>
+        )}
         <Button
           className="p-segmented-control__button"
           type="button"

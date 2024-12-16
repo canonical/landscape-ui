@@ -3,14 +3,14 @@ import { FC, KeyboardEvent, useMemo, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { Form, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import { useSavedSearches } from "@/hooks/useSavedSearches";
+import { useSavedSearches } from "../../hooks";
 import SavedSearchList from "../SavedSearchList";
 import SearchInfoBox from "../SearchInfoBox";
 import SearchPrompt from "../SearchPrompt";
-import { SavedSearch } from "@/types/SavedSearch";
+import { SavedSearch } from "../../types";
 import classes from "./SearchBoxWithSavedSearches.module.scss";
 import { usePageParams } from "@/hooks/usePageParams";
-import { parseSearchToChips } from "@/components/filter";
+import { getFilteredSavedSearches } from "./helpers";
 
 interface SearchBoxWithSavedSearchesProps {
   onHelpButtonClick: () => void;
@@ -39,38 +39,37 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
     isLoading: getSavedSearchesQueryLoading,
   } = getSavedSearchesQuery();
 
-  const searchData = useMemo(
-    () => parseSearchToChips(search, getSavedSearchesQueryResult?.data),
-    [search, getSavedSearchesQueryResult?.data],
+  const filteredSearches = useMemo(
+    () =>
+      getFilteredSavedSearches({
+        inputText,
+        savedSearches: getSavedSearchesQueryResult?.data,
+        search,
+      }),
+    [getSavedSearchesQueryResult, inputText, search],
   );
-
-  const filteredSearches = useMemo(() => {
-    if (!getSavedSearchesQueryResult) {
-      return [];
-    }
-
-    if (!inputText && !searchData.length) {
-      return getSavedSearchesQueryResult.data;
-    }
-
-    return getSavedSearchesQueryResult.data
-      .filter(({ name }) =>
-        searchData.every(({ value }) => value !== `search:${name}`),
-      )
-      .filter(
-        ({ title, search }) =>
-          title.toLowerCase().includes(inputText.trim().toLowerCase()) ||
-          search.toLowerCase().includes(inputText.trim().toLowerCase()),
-      );
-  }, [getSavedSearchesQueryResult, inputText, searchData]);
 
   const handleSearch = () => {
     if (!inputText) {
       return;
     }
 
+    const searches = getFilteredSavedSearches({
+      inputText: "",
+      savedSearches: getSavedSearchesQueryResult?.data,
+      search,
+    });
+
+    const prefix = searches.some(
+      ({ name }) => name.toLowerCase() === inputText.trim().toLowerCase(),
+    )
+      ? "search:"
+      : "";
+
     setPageParams({
-      search: search ? `${search},${inputText}` : inputText,
+      search: search
+        ? `${search},${prefix}${inputText}`
+        : `${prefix}${inputText}`,
     });
 
     setInputText("");

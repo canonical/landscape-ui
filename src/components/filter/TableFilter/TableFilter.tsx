@@ -44,17 +44,21 @@ const TableFilter: FC<TableFilterProps> = ({
   position = "left",
   ...otherProps
 }) => {
-  const handleToggle = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!otherProps.multiple) {
-      return;
-    }
-
-    otherProps.onItemsSelect(
-      otherProps.selectedItems.includes(event.target.value)
-        ? otherProps.selectedItems.filter((item) => item !== event.target.value)
-        : [...otherProps.selectedItems, event.target.value],
-    );
-  };
+  const handleToggle =
+    ({
+      onItemsSelect,
+      selectedItems,
+    }: {
+      onItemsSelect: (items: string[]) => void;
+      selectedItems: string[];
+    }) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      onItemsSelect(
+        selectedItems.includes(event.target.value)
+          ? selectedItems.filter((item) => item !== event.target.value)
+          : [...selectedItems, event.target.value],
+      );
+    };
 
   return (
     <ContextualMenu
@@ -63,20 +67,32 @@ const TableFilter: FC<TableFilterProps> = ({
       toggleLabel={
         <>
           <span>{label}</span>
-          {hasBadge && (
+          {hasBadge && otherProps.multiple && (
             <span
               className={classNames(classes.badgeContainer, {
-                [classes.multiple]: otherProps.multiple && options.length > 9,
+                [classes.multiple]: options.length > 9,
               })}
             >
-              {((otherProps.multiple && otherProps.selectedItems.length > 0) ||
-                (!otherProps.multiple && otherProps.selectedItem)) && (
+              {otherProps.selectedItems.length > 0 && (
                 <Badge
-                  value={
-                    otherProps.multiple ? otherProps.selectedItems.length : 1
-                  }
+                  value={otherProps.selectedItems.length}
                   className={classes.badge}
                 />
+              )}
+            </span>
+          )}
+          {hasBadge && !otherProps.multiple && (
+            <span className={classes.badgeContainer}>
+              {otherProps.selectedItem && (
+                <svg
+                  role="img"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="10" cy="13" r="6" fill="#666666" />
+                </svg>
               )}
             </span>
           )}
@@ -95,7 +111,7 @@ const TableFilter: FC<TableFilterProps> = ({
       <span
         className={classNames(classes.container, {
           [classes.multiple]: otherProps.multiple,
-          [classes.horizontalPadding]: otherProps.multiple || onSearch,
+          [classes.horizontalPadding]: Boolean(otherProps.multiple || onSearch),
         })}
       >
         {onSearch && <SearchBoxWithForm onSearch={onSearch} />}
@@ -117,7 +133,7 @@ const TableFilter: FC<TableFilterProps> = ({
                   label={label}
                   labelClassName="u-no-padding--top u-no-margin--bottom"
                   value={value}
-                  onChange={handleToggle}
+                  onChange={handleToggle(otherProps)}
                   checked={otherProps.selectedItems.includes(value)}
                   disabled={disabledOptions?.some(
                     (option) => option.value === value,
@@ -130,6 +146,9 @@ const TableFilter: FC<TableFilterProps> = ({
                   appearance="base"
                   className={classes.button}
                   onClick={() => otherProps.onItemSelect(value)}
+                  disabled={disabledOptions?.some(
+                    (option) => option.value === value,
+                  )}
                 >
                   {label}
                 </Button>

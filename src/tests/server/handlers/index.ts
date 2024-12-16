@@ -3,6 +3,7 @@ import activity from "./activity";
 import alerts from "./alerts";
 import aptSource from "./aptSource";
 import auth from "./auth";
+import availabilityZones from "@/tests/server/handlers/availabilityZones";
 import distributions from "./distributions";
 import eventsLog from "./eventsLog";
 import gpgKey from "./gpgKey";
@@ -20,15 +21,15 @@ import user from "./user";
 import userSettings from "./userSettings";
 import usn from "./usn";
 import wsl from "./wsl";
+import savedSearches from "@/tests/server/handlers/savedSearches";
 
 export default [
   ...accessGroup,
   ...activity,
   ...alerts,
-  ...organisationPreferences,
-  ...userSettings,
   ...aptSource,
   ...auth,
+  ...availabilityZones,
   ...distributions,
   ...eventsLog,
   ...gpgKey,
@@ -39,6 +40,7 @@ export default [
   ...pockets,
   ...process,
   ...repo,
+  ...savedSearches,
   ...snap,
   ...tag,
   ...upgradeProfile,

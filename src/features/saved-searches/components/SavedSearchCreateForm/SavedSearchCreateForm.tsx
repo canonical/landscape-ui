@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { Button, Form, Input } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { useSavedSearches } from "@/hooks/useSavedSearches";
+import { useSavedSearches } from "../../hooks";
 
 interface SavedSearchCreateFormProps {
   onClose: () => void;

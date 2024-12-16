@@ -1,0 +1,1 @@
+export { useSavedSearches } from "./useSavedSearches";

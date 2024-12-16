@@ -33,16 +33,16 @@ const UserPanel: FC = () => {
 
   const allUsers = userResponse?.data.results ?? [];
 
-  const filteredUsers: User[] = useMemo(
-    () => getFilteredUsers(search, allUsers),
-    [search, allUsers],
-  );
+  const filteredUsers: User[] = getFilteredUsers(search, allUsers);
 
   const getUsers = (limit: number, offset: number) => {
     return filteredUsers.slice(offset, offset + limit);
   };
 
-  const users = getUsers(pageSize, (currentPage - 1) * pageSize);
+  const users = useMemo(
+    () => getUsers(pageSize, (currentPage - 1) * pageSize),
+    [search, allUsers, currentPage, pageSize],
+  );
 
   const handleClearSelection = () => {
     setSelected([]);
@@ -73,7 +73,7 @@ const UserPanel: FC = () => {
             ]}
           />
         )}
-      {(search || (!isLoading && filteredUsers.length > 0)) && (
+      {(search || (!isLoading && users.length > 0)) && (
         <>
           <UserPanelHeader
             selected={selected}

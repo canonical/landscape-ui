@@ -4,20 +4,18 @@ import { screen, within } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import InstanceList from "./InstanceList";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
+import userEvent from "@testing-library/user-event";
 
 const props = {
   instances,
   selectedInstances: [],
+  setColumnFilterOptions: vi.fn(),
   setSelectedInstances: vi.fn(),
-  groupBy: "",
 };
 
 describe("InstanceList", () => {
-  beforeEach(() => {
-    renderWithProviders(<InstanceList {...props} />);
-  });
-
   it("should show correct distribution info for instances", async () => {
+    renderWithProviders(<InstanceList {...props} />);
     // There must be at least one fresh instance
     assert(
       instances.find((instance) => {
@@ -40,5 +38,22 @@ describe("InstanceList", () => {
         ),
       ).toBeInTheDocument();
     }
+  });
+
+  it("should select all instances when clicking ToggleAll checkbox", async () => {
+    const { rerender } = renderWithProviders(<InstanceList {...props} />);
+
+    const toggleAllCheckbox = await screen.findByRole("checkbox", {
+      name: /toggle all/i,
+    });
+    await userEvent.click(toggleAllCheckbox);
+
+    expect(props.setSelectedInstances).toHaveBeenCalledWith(instances);
+
+    rerender(<InstanceList {...props} selectedInstances={instances} />);
+    const checkedCheckboxes = screen.getAllByRole("checkbox", {
+      checked: true,
+    });
+    expect(checkedCheckboxes).toHaveLength(instances.length + 1);
   });
 });

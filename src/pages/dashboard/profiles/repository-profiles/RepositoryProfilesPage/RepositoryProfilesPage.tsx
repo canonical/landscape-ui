@@ -54,19 +54,16 @@ const RepositoryProfilesPage: FC = () => {
         {isLoading && <LoadingState />}
         {!isLoading && repositoryProfiles.length === 0 && (
           <EmptyState
-            title="No profiles found"
-            icon="copy"
+            title="No repository profiles found"
             body={
               <>
-                <p className="u-no-margin--bottom">
-                  You haven’t added any profiles yet.
-                </p>
+                <p>You haven’t added any repository profiles yet.</p>
                 <a
-                  href="https://ubuntu.com/landscape/docs/repositories"
+                  href="https://ubuntu.com/landscape/docs/manage-repositories-web-portal"
                   target="_blank"
                   rel="nofollow noopener noreferrer"
                 >
-                  How to manage profiles in Landscape
+                  How to manage repositories in Landscape
                 </a>
               </>
             }

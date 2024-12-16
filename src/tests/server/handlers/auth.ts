@@ -16,6 +16,7 @@ import {
 } from "@/tests/mocks/identityProviders";
 import { InvitationSummary } from "@/types/Invitation";
 import { allLoginMethods } from "@/tests/mocks/loginMethods";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 
 interface SwitchAccountParams {
   account_name: string;
@@ -34,6 +35,20 @@ export default [
   ),
 
   http.get(`${API_URL}login/methods`, () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (endpointStatus === "error") {
+      return HttpResponse.json(
+        {
+          error: "InternalServerError",
+          message: "Error response",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+
     return HttpResponse.json(allLoginMethods);
   }),
 
