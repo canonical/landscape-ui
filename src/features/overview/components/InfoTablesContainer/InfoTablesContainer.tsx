@@ -59,10 +59,15 @@ const InfoTablesContainer: FC = () => {
     data: inProgressActivitiesRes,
     refetch: refetchInProgressActivities,
     isLoading: isLoadingInProgressActivitiesData,
-  } = getActivitiesQuery({
-    query: "status:delivered",
-    limit: 10,
-  });
+  } = getActivitiesQuery(
+    {
+      query: "status:delivered",
+      limit: 10,
+    },
+    {
+      enabled: currentActivitiesTab === 1,
+    },
+  );
 
   const {
     data: instancesUpgradesRes,
@@ -86,7 +91,7 @@ const InfoTablesContainer: FC = () => {
       limit: 11,
     },
     {
-      enabled: instancesData.length > 0,
+      enabled: instancesData.length > 0 && currentUpgradesTab === 2,
     },
   );
   const {
@@ -100,7 +105,7 @@ const InfoTablesContainer: FC = () => {
       limit: 10,
     },
     {
-      enabled: instancesData.length > 0,
+      enabled: instancesData.length > 0 && currentUpgradesTab === 1,
     },
   );
 
@@ -326,10 +331,14 @@ const InfoTablesContainer: FC = () => {
         refetchInstanceUpgrades();
         break;
       case 1:
-        refetchPackages();
+        if (instancesData.length > 0) {
+          refetchPackages();
+        }
         break;
       case 2:
-        refetchUsns();
+        if (instancesData.length > 0) {
+          refetchUsns();
+        }
         break;
     }
   };
