@@ -1,7 +1,10 @@
-import { Instance } from "@/types/Instance";
+import { InstanceWithoutRelation } from "@/types/Instance";
 import { Action } from "./types";
 
-export const getModalBody = (instance: Instance, action: Action) => {
+export const getModalBody = (
+  instance: InstanceWithoutRelation,
+  action: Action,
+) => {
   if (action === "remove") {
     return {
       title: "Remove instance from Landscape",
