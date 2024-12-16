@@ -20,19 +20,16 @@ const WslProfilesEmptyState: FC = () => {
 
   return (
     <EmptyState
-      title="You don't have any WSL profiles yet"
+      title="No WSL profiles found"
       body={
         <>
-          <p>
-            WSL profiles allow you to create and apply configurations for
-            Windows Subsystem for Linux (WSL) instances, in bulk.
-          </p>
+          <p>You haven’t added any WSL profiles yet.</p>
           <a
             href="https://ubuntu.com/landscape/docs/manage-wsl-instances-in-landscape"
             target="_blank"
             rel="nofollow noopener noreferrer"
           >
-            Learn how to use WSL profiles
+            How to manage WSL profiles in Landscape
           </a>
         </>
       }

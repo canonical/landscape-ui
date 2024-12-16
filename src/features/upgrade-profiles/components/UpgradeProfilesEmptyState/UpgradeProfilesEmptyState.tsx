@@ -24,9 +24,7 @@ const UpgradeProfilesEmptyState: FC = () => {
     <EmptyState
       body={
         <>
-          <p className="u-no-margin--bottom">
-            You haven’t added any upgrade profiles yet.
-          </p>
+          <p>You haven’t added any upgrade profiles yet.</p>
           <a
             href="https://ubuntu.com/landscape/docs/managing-computers"
             target="_blank"
@@ -46,8 +44,7 @@ const UpgradeProfilesEmptyState: FC = () => {
           Add upgrade profile
         </Button>,
       ]}
-      icon="change-version"
-      title="Upgrade profiles not found"
+      title="No upgrade profiles found"
     />
   );
 };
