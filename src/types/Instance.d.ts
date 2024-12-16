@@ -206,47 +206,50 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   upgrades?: InstanceUpgrades;
 }
 
-interface WithRelation {
+interface WithRelation<Type extends InstanceWithoutRelation> extends Type {
   children: InstanceWithoutRelation[];
   parent: InstanceWithoutRelation | null;
 }
 
-export interface Instance extends InstanceWithoutRelation, WithRelation {}
+export type Instance = WithRelation<InstanceWithoutRelation>;
 
 export interface FreshInstance extends Instance {
   distribution: null;
   distribution_info: null;
 }
 
-interface WithDistribution {
+interface WithDistribution<Type extends InstanceWithoutRelation> extends Type {
   distribution: string;
   distribution_info: DistributionInfo;
 }
 
-export interface UbuntuInstance extends Instance, WithDistribution {}
+export type UbuntuInstanceWithoutRelation = WithDistribution<Instance>;
+
+export interface UbuntuInstance
+  extends WithRelation<UbuntuInstanceWithoutRelation> {
+  children: [];
+}
 
 export interface WslInstanceWithoutRelation
-  extends InstanceWithoutRelation,
-    WithDistribution {
+  extends UbuntuInstanceWithoutRelation {
   is_default_child: boolean;
   is_wsl_instance: true;
 }
 
-export interface WslInstance extends WslInstanceWithoutRelation, WithRelation {
-  children: [];
+export interface WslInstance
+  extends WithRelation<WslInstanceWithoutRelation>,
+    UbuntuInstance {
   parent: WindowsInstanceWithoutRelation;
 }
 
 export interface WindowsInstanceWithoutRelation
-  extends InstanceWithoutRelation,
-    WithDistribution {
+  extends WithDistribution<InstanceWithoutRelation> {
   is_default_child: null;
   is_wsl_instance: false;
 }
 
 export interface WindowsInstance
-  extends WindowsInstanceWithoutRelation,
-    WithRelation {
+  extends WithRelation<WindowsInstanceWithoutRelation> {
   children: WslInstanceWithoutRelation[];
   parent: null;
 }
