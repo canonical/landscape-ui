@@ -223,7 +223,8 @@ interface WithDistribution<Type extends InstanceWithoutRelation> extends Type {
   distribution_info: DistributionInfo;
 }
 
-export type UbuntuInstanceWithoutRelation = WithDistribution<Instance>;
+export type UbuntuInstanceWithoutRelation =
+  WithDistribution<InstanceWithoutRelation>;
 
 export interface UbuntuInstance
   extends WithRelation<UbuntuInstanceWithoutRelation> {
