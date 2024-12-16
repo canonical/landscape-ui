@@ -161,14 +161,17 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "computer_id",
           Header: "Instance",
-          Cell: ({ row }: CellProps<ActivityCommon>) => (
-            <Link
-              className={classes.link}
-              to={`${ROOT_PATH}instances/${row.original.computer_id}`}
-            >
-              ID: {row.original.computer_id}
-            </Link>
-          ),
+          Cell: ({ row }: CellProps<ActivityCommon>) =>
+            row.original.computer_id ? (
+              <Link
+                className={classes.link}
+                to={`${ROOT_PATH}instances/${row.original.computer_id}`}
+              >
+                ID: {row.original.computer_id}
+              </Link>
+            ) : (
+              <NoData />
+            ),
         },
         {
           accessor: "creation_time",

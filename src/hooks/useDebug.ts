@@ -1,18 +1,7 @@
-import { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { IS_DEV_ENV } from "@/constants";
 import { ApiError } from "@/types/ApiError";
 import useNotify from "./useNotify";
-
-const isApiError = (error: unknown): error is ApiError => {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "error" in error &&
-    typeof error.error === "string" &&
-    "message" in error &&
-    typeof error.message === "string"
-  );
-};
 
 export default function useDebug() {
   const { notify } = useNotify();
@@ -20,11 +9,7 @@ export default function useDebug() {
   return (error: unknown) => {
     let message: string;
 
-    if (
-      error instanceof AxiosError &&
-      error.response &&
-      isApiError(error.response.data)
-    ) {
+    if (isAxiosError<ApiError>(error) && error.response) {
       message = error.response.data.message;
 
       if (IS_DEV_ENV) {
@@ -38,7 +23,7 @@ export default function useDebug() {
 
     notify.error({ message, error });
 
-    if (IS_DEV_ENV) {
+    if (IS_DEV_ENV && !(error instanceof Error && error.cause === "test")) {
       console.error(message, error);
     }
   };

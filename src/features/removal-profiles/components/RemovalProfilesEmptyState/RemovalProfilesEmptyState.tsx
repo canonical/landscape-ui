@@ -24,9 +24,7 @@ const RemovalProfilesEmptyState: FC = () => {
     <EmptyState
       body={
         <>
-          <p className="u-no-margin--bottom">
-            You haven’t added any removal profiles yet.
-          </p>
+          <p>You haven’t added any removal profiles yet.</p>
           <a
             href="https://ubuntu.com/landscape/docs/managing-computers"
             target="_blank"
@@ -46,8 +44,7 @@ const RemovalProfilesEmptyState: FC = () => {
           Add removal profile
         </Button>,
       ]}
-      icon="delete"
-      title="Removal profiles not found"
+      title="No removal profiles found"
     />
   );
 };

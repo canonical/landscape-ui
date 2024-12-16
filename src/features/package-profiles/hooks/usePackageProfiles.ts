@@ -43,7 +43,6 @@ export interface CreatePackageProfileParams {
 
 export interface EditPackageProfileParams {
   name: string;
-  access_group?: string;
   all_computers?: boolean;
   constraints?: PackageProfileConstraint[];
   description?: string;
