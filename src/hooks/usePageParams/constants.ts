@@ -53,6 +53,12 @@ export const PARAMS = {
     getDefaultValue: getDefaultArray,
     validate: (value) => validateArrayParam("disabledColumns", value),
   },
+  EMPLOYEE_GROUPS: {
+    urlParam: "employeeGroups" as const,
+    shouldResetPage: true,
+    getDefaultValue: getDefaultArray,
+    validate: (value) => validateArrayParam("employeeGroups", value),
+  },
   FROM_DATE: {
     urlParam: "fromDate" as const,
     shouldResetPage: true,

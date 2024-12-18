@@ -17,6 +17,7 @@ import type { FilterKey } from "./types";
 interface TableFilterChipsProps {
   readonly accessGroupOptions?: SelectOption[];
   readonly availabilityZonesOptions?: SelectOption[];
+  readonly employeeGroupOptions?: SelectOption[];
   readonly filtersToDisplay?: FilterKey[];
   readonly osOptions?: SelectOption[];
   readonly statusOptions?: SelectOption[];
@@ -27,6 +28,7 @@ interface TableFilterChipsProps {
 const TableFilterChips: FC<TableFilterChipsProps> = ({
   accessGroupOptions,
   availabilityZonesOptions,
+  employeeGroupOptions,
   filtersToDisplay,
   osOptions,
   statusOptions,
@@ -44,6 +46,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     setPageParams,
     accessGroups,
     availabilityZones,
+    employeeGroups,
     fromDate,
     os,
     status,
@@ -123,6 +126,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   const renderResults = checkRenderConditions({
     accessGroups,
     availabilityZones,
+    employeeGroups,
     filtersToMonitor,
     fromDate,
     os,
@@ -213,6 +217,21 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               onDismiss={() =>
                 setPageParams({
                   accessGroups: array.filter((item) => item !== accessGroup),
+                })
+              }
+              className="u-no-margin--bottom u-no-margin--right"
+            />
+          ))}
+        {renderResults.areEmployeeGroupsChipsRender &&
+          employeeGroups.map((employeeGroup, _, array) => (
+            <Chip
+              key={employeeGroup}
+              value={`Employee group: ${getChipLabel(employeeGroupOptions, employeeGroup)}`}
+              onDismiss={() =>
+                setPageParams({
+                  employeeGroups: array.filter(
+                    (item) => item !== employeeGroup,
+                  ),
                 })
               }
               className="u-no-margin--bottom u-no-margin--right"

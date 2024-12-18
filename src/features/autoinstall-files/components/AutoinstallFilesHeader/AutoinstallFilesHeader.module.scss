@@ -1,0 +1,13 @@
+.header {
+  display: flex;
+  gap: 1rem;
+  justify-content: left;
+}
+
+.search {
+  width: 25rem;
+}
+
+.filters {
+  flex: 1;
+}
