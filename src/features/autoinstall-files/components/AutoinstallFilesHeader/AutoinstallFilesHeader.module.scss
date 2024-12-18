@@ -11,3 +11,19 @@
 .filters {
   flex: 1;
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 2rem;
+
+  label {
+    margin: 0;
+    padding-top: 0;
+  }
+}
