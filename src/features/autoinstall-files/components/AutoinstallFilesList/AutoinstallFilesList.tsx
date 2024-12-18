@@ -109,7 +109,12 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   );
 
   return (
-    <ModularTable columns={columns} data={files} getCellProps={getCellProps} />
+    <ModularTable
+      className={classes.table}
+      columns={columns}
+      data={files}
+      getCellProps={getCellProps}
+    />
   );
 };
 
