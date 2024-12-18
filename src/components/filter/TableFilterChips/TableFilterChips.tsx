@@ -23,6 +23,7 @@ interface TableFilterChipsProps {
   readonly statusOptions?: SelectOption[];
   readonly tagOptions?: SelectOption[];
   readonly typeOptions?: SelectOption[];
+  readonly employeeGroupOptions?: SelectOption[];
 }
 
 const TableFilterChips: FC<TableFilterChipsProps> = ({
