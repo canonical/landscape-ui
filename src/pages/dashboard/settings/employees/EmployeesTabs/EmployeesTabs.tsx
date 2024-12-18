@@ -3,7 +3,7 @@ import { Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./EmployeesTabs.module.scss";
 import EmployeesPanel from "../tabs/employees/EmployeesPanel";
-import AutoinstallFilesPanel from "../tabs/autoinstall-files/AutoinstallFilesPanel";
+import { AutoinstallFilesPanel } from "@/features/autoinstall-files";
 
 const tabLinks = [
   {
