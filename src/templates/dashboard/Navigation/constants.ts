@@ -89,6 +89,10 @@ export const MENU_ITEMS: MenuItem[] = [
         path: `${ROOT_PATH}settings/administrators`,
       },
       {
+        label: "Employees",
+        path: `${ROOT_PATH}settings/employees`,
+      },
+      {
         label: "Roles",
         path: `${ROOT_PATH}settings/roles`,
       },
