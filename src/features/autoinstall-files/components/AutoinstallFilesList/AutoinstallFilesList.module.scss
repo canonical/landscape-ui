@@ -1,0 +1,18 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.actions {
+  text-align: right;
+  width: 6rem;
+}
+
+.cell {
+  padding: 0.5rem;
+
+  > * {
+    justify-content: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 13rem;
+  }
+}

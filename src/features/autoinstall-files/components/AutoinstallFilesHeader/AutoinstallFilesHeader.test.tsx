@@ -10,4 +10,12 @@ describe("AutoinstallFilesHeader", () => {
     await userEvent.type(screen.getByRole("searchbox"), "test");
     await userEvent.click(screen.getByRole("button", { name: "Search" }));
   });
+
+  it("should filter by employee group", async () => {
+    renderWithProviders(<AutoinstallFilesHeader />);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Employee group" }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Test" }));
+  });
 });

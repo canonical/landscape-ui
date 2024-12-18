@@ -8,6 +8,8 @@ import { AutoinstallFile } from "../../types";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getCellProps } from "./helpers";
 import { usePageParams } from "@/hooks/usePageParams";
+import classes from "./AutoinstallFilesList.module.scss";
+import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 
 interface AutoinstallFilesListProps {
   autoinstallFiles: AutoinstallFile[];
@@ -37,6 +39,7 @@ const PackageProfileList: FC<AutoinstallFilesListProps> = ({
     () => [
       {
         accessor: "name",
+        className: classes.cell,
         Header: "Name",
         Cell: ({ row: { original } }: CellProps<AutoinstallFile>) => (
           <Button
@@ -49,12 +52,59 @@ const PackageProfileList: FC<AutoinstallFilesListProps> = ({
           </Button>
         ),
       },
+      {
+        accessor: "employeeGroupsAssociated",
+        className: classes.cell,
+        Header: "Employee Groups Associated",
+        Cell: ({
+          row: {
+            original: { employeeGroupsAssociated },
+          },
+        }: CellProps<AutoinstallFile>) => (
+          <div className={classes.truncated}>
+            {employeeGroupsAssociated.join(", ")}
+          </div>
+        ),
+      },
+      {
+        accessor: "lastModified",
+        className: classes.cell,
+        Header: "Last modified",
+        Cell: ({
+          row: {
+            original: { lastModified },
+          },
+        }: CellProps<AutoinstallFile>) => <div>{lastModified}</div>,
+      },
+      {
+        accessor: "dateCreated",
+        className: classes.cell,
+        Header: "Date created",
+        Cell: ({
+          row: {
+            original: { dateCreated },
+          },
+        }: CellProps<AutoinstallFile>) => <div>{dateCreated}</div>,
+      },
+      {
+        accessor: "actions",
+        className: classes.actions,
+        Header: "Actions",
+        Cell: ({ row: { original } }: CellProps<AutoinstallFile>) => (
+          <AutoinstallFilesListContextualMenu file={original} />
+        ),
+      },
     ],
     [files],
   );
 
   return (
-    <ModularTable columns={columns} data={files} getCellProps={getCellProps} />
+    <ModularTable
+      className={classes.table}
+      columns={columns}
+      data={files}
+      getCellProps={getCellProps}
+    />
   );
 };
 

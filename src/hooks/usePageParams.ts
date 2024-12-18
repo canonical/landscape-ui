@@ -10,6 +10,7 @@ export const PARAMS = {
   CURRENT_PAGE: "currentPage",
   DAYS: "days",
   DISABLED_COLUMNS: "disabledColumns",
+  EMPLOYEE_GROUPS: "employeeGroups",
   FROM_DATE: "fromDate",
   GROUP_BY: "groupBy",
   OS: "os",
@@ -42,6 +43,7 @@ export const usePageParams = () => {
     CURRENT_PAGE,
     DAYS,
     DISABLED_COLUMNS,
+    EMPLOYEE_GROUPS,
     FROM_DATE,
     GROUP_BY,
     OS,
@@ -73,6 +75,8 @@ export const usePageParams = () => {
     searchParams.get(AVAILABILITY_ZONES)?.split(",").filter(Boolean) ?? [];
   const accessGroups =
     searchParams.get(ACCESS_GROUPS)?.split(",").filter(Boolean) ?? [];
+  const employeeGroups =
+    searchParams.get(EMPLOYEE_GROUPS)?.split(",").filter(Boolean) ?? [];
   const disabledColumns =
     searchParams.get(DISABLED_COLUMNS)?.split(",").filter(Boolean) ?? [];
   const type = searchParams.get(TYPE) ?? "";
@@ -85,6 +89,7 @@ export const usePageParams = () => {
     currentPage?: number;
     days?: string;
     disabledColumns?: string[];
+    employeeGroups?: string[];
     fromDate?: string;
     groupBy?: string;
     os?: string;
@@ -120,6 +125,7 @@ export const usePageParams = () => {
           newParams.tags ||
           newParams.availabilityZones ||
           newParams.accessGroups ||
+          newParams.employeeGroups ||
           newParams.type ||
           newParams.fromDate ||
           newParams.toDate
@@ -146,6 +152,7 @@ export const usePageParams = () => {
     currentPage,
     days,
     disabledColumns,
+    employeeGroups,
     fromDate,
     groupBy,
     os,
