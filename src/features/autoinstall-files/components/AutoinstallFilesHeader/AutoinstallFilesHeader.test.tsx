@@ -3,6 +3,7 @@ import { describe } from "vitest";
 import AutoinstallFilesHeader from ".";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ADD_BUTTON_TEXT } from "./constants";
 
 describe("AutoinstallFilesHeader", () => {
   it("should have a search box", async () => {
@@ -17,5 +18,12 @@ describe("AutoinstallFilesHeader", () => {
       screen.getByRole("button", { name: "Employee group" }),
     );
     await userEvent.click(screen.getByRole("button", { name: "Test" }));
+  });
+
+  it("should show a side panel to add a file", async () => {
+    renderWithProviders(<AutoinstallFilesHeader />);
+    await userEvent.click(
+      screen.getByRole("button", { name: ADD_BUTTON_TEXT }),
+    );
   });
 });
