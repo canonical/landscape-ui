@@ -11,6 +11,7 @@ export const autoinstallFiles: AutoinstallFile[] = [
     ],
     lastModified: "Nov 29, 2024, 16:00",
     dateCreated: "Nov 23, 2024, 10:16",
+    version: 3,
   },
   {
     name: "medium.yaml",
@@ -22,6 +23,7 @@ export const autoinstallFiles: AutoinstallFile[] = [
     ],
     lastModified: "Nov 29, 2024, 16:00",
     dateCreated: "Nov 23, 2024, 10:16",
+    version: 3,
   },
   {
     name: "strict.yaml",
@@ -33,6 +35,7 @@ export const autoinstallFiles: AutoinstallFile[] = [
     ],
     lastModified: "Nov 29, 2024, 16:00",
     dateCreated: "Nov 23, 2024, 10:16",
+    version: 3,
   },
 ];
 

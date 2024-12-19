@@ -3,4 +3,5 @@ export interface AutoinstallFile extends Record<string, unknown> {
   employeeGroupsAssociated: string[];
   lastModified: string;
   dateCreated: string;
+  version: number;
 }

@@ -10,6 +10,7 @@ import { getCellProps } from "./helpers";
 import { usePageParams } from "@/hooks/usePageParams";
 import classes from "./AutoinstallFilesList.module.scss";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
+import ViewAutoinstallFileDetailsPanel from "../ViewAutoinstallFileDetailsPanel";
 
 interface AutoinstallFilesListProps {
   autoinstallFiles: AutoinstallFile[];
@@ -22,7 +23,11 @@ const PackageProfileList: FC<AutoinstallFilesListProps> = ({
   const { setSidePanelContent } = useSidePanel();
 
   const handleAutoinstallFileDetailsOpen = (profile: AutoinstallFile) => {
-    setSidePanelContent(profile.name, null, "medium");
+    setSidePanelContent(
+      profile.name,
+      <ViewAutoinstallFileDetailsPanel file={profile} />,
+      "medium",
+    );
   };
 
   const files = useMemo(() => {
