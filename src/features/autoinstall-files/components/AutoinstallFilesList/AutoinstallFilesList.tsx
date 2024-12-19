@@ -16,7 +16,7 @@ interface AutoinstallFilesListProps {
   autoinstallFiles: AutoinstallFile[];
 }
 
-const PackageProfileList: FC<AutoinstallFilesListProps> = ({
+const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   autoinstallFiles,
 }) => {
   const { search } = usePageParams();
@@ -26,7 +26,7 @@ const PackageProfileList: FC<AutoinstallFilesListProps> = ({
     setSidePanelContent(
       profile.name,
       <ViewAutoinstallFileDetailsPanel file={profile} />,
-      "medium",
+      "large",
     );
   };
 
@@ -104,13 +104,8 @@ const PackageProfileList: FC<AutoinstallFilesListProps> = ({
   );
 
   return (
-    <ModularTable
-      className={classes.table}
-      columns={columns}
-      data={files}
-      getCellProps={getCellProps}
-    />
+    <ModularTable columns={columns} data={files} getCellProps={getCellProps} />
   );
 };
 
-export default PackageProfileList;
+export default AutoinstallFilesList;
