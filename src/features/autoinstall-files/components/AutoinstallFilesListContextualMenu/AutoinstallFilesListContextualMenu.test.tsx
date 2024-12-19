@@ -3,7 +3,7 @@ import { describe } from "vitest";
 import AutoinstallFilesListContextualMenu from ".";
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 
-describe("AutoinstallFilesHeader", () => {
+describe("AutoinstallFilesListContextualMenu", () => {
   it("should render", async () => {
     renderWithProviders(
       <AutoinstallFilesListContextualMenu file={autoinstallFiles[0]} />,
