@@ -3,6 +3,7 @@ import { AutoinstallFile } from "../../types";
 import classes from "./ViewAutoinstallFileDetailsTabs.module.scss";
 import InfoItem from "@/components/layout/InfoItem";
 import { Tabs } from "@canonical/react-components";
+import ViewAutoinstallFileDetailsEventLog from "../ViewAutoinstallFileDetailsEventLog";
 
 type TabId = "info" | "event-log";
 
@@ -58,7 +59,9 @@ const ViewAutoinstallFileDetailsTabs: FC<{ file: AutoinstallFile }> = ({
         </div>
       )}
 
-      {tabId === "event-log" && null}
+      {tabId === "event-log" && (
+        <ViewAutoinstallFileDetailsEventLog events={file.events} />
+      )}
     </>
   );
 };
