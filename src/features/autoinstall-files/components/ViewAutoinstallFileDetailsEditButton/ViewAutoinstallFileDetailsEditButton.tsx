@@ -11,13 +11,19 @@ import {
   CONTINUE_BUTTON_TEXT,
   EDIT_BUTTON_TEXT,
   LOCAL_STORAGE_ITEM,
+  SUBMIT_BUTTON_TEXT,
 } from "./constants";
+import useSidePanel from "@/hooks/useSidePanel";
+import AutoinstallFileForm from "../AutoinstallFileForm";
 
-const ViewAutoinstallFileDetailsEditButton: FC = () => {
+const ViewAutoinstallFileDetailsEditButton: FC<{ fileName: string }> = ({
+  fileName,
+}) => {
   const [modalState, setModalState] = useState<
     "visible" | "invisible" | "ignored"
   >("invisible");
   const [isChecked, setIsChecked] = useState(false);
+  const { setSidePanelContent } = useSidePanel();
 
   useEffect(() => {
     if (localStorage.getItem(LOCAL_STORAGE_ITEM)) {
@@ -38,6 +44,28 @@ const ViewAutoinstallFileDetailsEditButton: FC = () => {
     } else {
       setModalState("invisible");
     }
+
+    showSidePanel();
+  };
+
+  const showSidePanel = () => {
+    setSidePanelContent(
+      `Edit ${fileName}`,
+      <AutoinstallFileForm
+        createNotificationMessage={(fileName) => {
+          return `${fileName} has been edited and all the changes made have been saved successfully.`;
+        }}
+        createNotificationTitle={(fileName) => {
+          return `You have successfully saved changes for ${fileName}`;
+        }}
+        fileName={fileName}
+        fileNameInputDisabled
+        submitButtonText={SUBMIT_BUTTON_TEXT}
+      >
+        The duplicated {fileName} will inherit the Employee group assignments of
+        the original file.
+      </AutoinstallFileForm>,
+    );
   };
 
   return (
@@ -45,7 +73,9 @@ const ViewAutoinstallFileDetailsEditButton: FC = () => {
       <Button
         className="p-segmented-control__button"
         onClick={() => {
-          if (modalState !== "ignored") {
+          if (modalState === "ignored") {
+            showSidePanel();
+          } else {
             setModalState("visible");
           }
         }}
@@ -57,7 +87,9 @@ const ViewAutoinstallFileDetailsEditButton: FC = () => {
       {modalState === "visible" && (
         <Modal
           close={closeModal}
-          title="Edit history limit reached"
+          title=<span className={classes.capitalize}>
+            Edit history limit reached
+          </span>
           buttonRow={
             <>
               <Button appearance="base" onClick={closeModal}>
@@ -69,7 +101,9 @@ const ViewAutoinstallFileDetailsEditButton: FC = () => {
                 className="u-no-margin--bottom"
                 onClick={continueEditing}
               >
-                {CONTINUE_BUTTON_TEXT}
+                <span className={classes.capitalize}>
+                  {CONTINUE_BUTTON_TEXT}
+                </span>
               </Button>
             </>
           }

@@ -7,9 +7,10 @@ import { Button, Icon } from "@canonical/react-components";
 import {
   ADD_BUTTON_TEXT,
   AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS,
+  SUBMIT_BUTTON_TEXT,
 } from "./constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import AddAutoinstallFileForm from "../AddAutoinstallFileForm";
+import AutoinstallFileForm from "../AutoinstallFileForm";
 
 const AutoinstallFilesHeader: FC = () => {
   const { setPageParams, status } = usePageParams();
@@ -41,7 +42,19 @@ const AutoinstallFilesHeader: FC = () => {
           onClick={() =>
             setSidePanelContent(
               "Add new autoinstall file",
-              <AddAutoinstallFileForm />,
+              <AutoinstallFileForm
+                createNotificationMessage={() => {
+                  return "Autoinstall file can now be assigned to Employee groups.";
+                }}
+                createNotificationTitle={(fileName) => {
+                  return `You have successfully added ${fileName}`;
+                }}
+                fileName="administrators.yaml"
+                submitButtonText={SUBMIT_BUTTON_TEXT}
+              >
+                Add autoinstall file. It can be applied during the initial setup
+                of associated instances.
+              </AutoinstallFileForm>,
             )
           }
         >

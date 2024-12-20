@@ -12,7 +12,7 @@ const ViewAutoinstallFileDetailsPanel: FC<{ file: AutoinstallFile }> = ({
     <>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
-          <ViewAutoinstallFileDetailsEditButton />
+          <ViewAutoinstallFileDetailsEditButton fileName={file.name} />
 
           <Button className="p-segmented-control__button" disabled>
             <Icon name="delete" />
