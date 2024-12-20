@@ -1,28 +1,39 @@
 import { useFormik } from "formik";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { CodeSnippet, Form, Input } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { autoinstallFileCode as code } from "@/tests/mocks/autoinstallFiles";
-import {
-  INITIAL_VALUES,
-  NOTIFICATION_MESSAGE,
-  SUBMIT_BUTTON_TEXT,
-  VALIDATION_SCHEMA,
-} from "./constants";
-import { createNotificationTitle } from "./helpers";
+import { VALIDATION_SCHEMA } from "./constants";
 import { FormProps } from "./types";
-import classes from "./AddAutoinstallFileForm.module.scss";
+import classes from "./AutoinstallFileForm.module.scss";
 
-const AddAutoinstallFileForm: FC = () => {
+const AutoinstallFileForm: FC<{
+  children?: ReactNode;
+  createNotificationTitle: (fileName: string) => string | undefined;
+  createNotificationMessage: (fileName: string) => string;
+  fileName: string;
+  fileNameInputDisabled?: boolean;
+  submitButtonText: string;
+}> = ({
+  children,
+  createNotificationMessage,
+  createNotificationTitle,
+  fileName,
+  fileNameInputDisabled,
+  submitButtonText,
+}) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
 
   const formik = useFormik<FormProps>({
-    initialValues: INITIAL_VALUES,
+    initialValues: {
+      addMethod: "fromFile",
+      fileName,
+    },
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async ({ fileName }) => {
       try {
@@ -30,7 +41,7 @@ const AddAutoinstallFileForm: FC = () => {
 
         notify.success({
           title: createNotificationTitle(fileName),
-          message: NOTIFICATION_MESSAGE,
+          message: createNotificationMessage(fileName),
         });
       } catch (error) {
         debug(error);
@@ -41,10 +52,7 @@ const AddAutoinstallFileForm: FC = () => {
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <div className={classes.container}>
-        <span>
-          Add autoinstall file. It can be applied during the initial setup of
-          associated instances.
-        </span>
+        <span>{children}</span>
 
         <div className={classes.inputs}>
           <div className={classes.radioGroup}>
@@ -74,6 +82,7 @@ const AddAutoinstallFileForm: FC = () => {
                 ? formik.errors.fileName
                 : undefined
             }
+            disabled={fileNameInputDisabled}
           />
 
           <CodeSnippet
@@ -91,10 +100,10 @@ const AddAutoinstallFileForm: FC = () => {
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText={SUBMIT_BUTTON_TEXT}
+        submitButtonText={submitButtonText}
       />
     </Form>
   );
 };
 
-export default AddAutoinstallFileForm;
+export default AutoinstallFileForm;

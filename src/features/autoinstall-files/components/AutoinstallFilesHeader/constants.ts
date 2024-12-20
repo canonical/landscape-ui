@@ -6,3 +6,4 @@ export const AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS: SelectOption[] = [
 ];
 
 export const ADD_BUTTON_TEXT = "Add new";
+export const SUBMIT_BUTTON_TEXT = "Add";
