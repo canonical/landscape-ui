@@ -19,43 +19,43 @@ import { getFormikError } from "@/utils/formikErrors";
 const ChangePasswordForm = lazy(() => import("../ChangePasswordForm"));
 
 interface EditUserFormProps {
-  user: UserDetails;
+  userDetails: UserDetails;
 }
 
-const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
+const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { isSaas, isSelfHosted } = useEnv();
   const { setSidePanelContent } = useSidePanel();
-  const { user: authUser, setUser, account } = useAuth();
+  const { user, setUser, account } = useAuth();
   const { editUserDetails } = useUserGeneralSettings();
 
   const { mutateAsync: editUserMutation } = editUserDetails;
 
   const EMAIL_OPTIONS =
-    user.allowable_emails?.map((email) => ({
+    userDetails.allowable_emails?.map((email) => ({
       label: email,
       value: email,
     })) ?? [];
 
   const formik = useFormik<EditUserFormValues>({
     initialValues: {
-      name: user.name,
-      timezone: user.timezone,
-      email: user.email,
-      preferred_account: user.preferred_account ?? "",
+      name: userDetails.name,
+      timezone: userDetails.timezone,
+      email: userDetails.email,
+      preferred_account: userDetails.preferred_account ?? "",
     },
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values, { resetForm }) => {
       try {
-        if (!authUser) {
+        if (!user) {
           return;
         }
 
         await editUserMutation(values);
 
         setUser({
-          ...authUser,
+          ...user,
           email: values.email,
           name: values.name,
         });

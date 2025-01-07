@@ -1,4 +1,5 @@
 import { User } from "@/types/User";
+import { UserDetails } from "@/features/general-settings";
 
 export const users: User[] = [
   {
@@ -86,3 +87,19 @@ export const users: User[] = [
     username: "user9",
   },
 ];
+
+const accountName = "test-account";
+const email = "example@mail.com";
+
+export const userDetails: UserDetails = {
+  email: email,
+  name: "Test User",
+  preferred_account: accountName,
+  accounts: [{ name: accountName, title: "Test Account", roles: ["Test"] }],
+  allowable_emails: [email],
+  oidc_identities: [],
+  timezone: "America/New_York",
+  identity: "test-user",
+  last_login_host: "test-host",
+  last_login_time: "2022-01-01T00:00:00Z",
+};
