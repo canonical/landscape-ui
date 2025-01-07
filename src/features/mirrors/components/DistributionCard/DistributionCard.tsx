@@ -144,6 +144,7 @@ const DistributionCard: FC<DistributionCardProps> = ({
           ) : (
             <ContextualMenu
               position="left"
+              hasToggleIcon
               toggleLabel="Actions"
               toggleProps={{
                 "aria-label": `${distribution.name} distribution actions`,

@@ -14,7 +14,7 @@ const BUTTON_LABELS = [
   "View report",
   "Run script",
   "Upgrade",
-  "Assign access group",
+  "Assign",
 ];
 
 describe("InstancesPageActions", () => {
@@ -149,13 +149,34 @@ describe("InstancesPageActions", () => {
       ).toBeInTheDocument();
     });
 
+    it("'Assign' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /assign/i }));
+
+      expect(
+        screen.getByRole("button", { name: /access group/i }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /tags/i })).toBeInTheDocument();
+    });
+
     it("'Assign access group' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /assign/i }));
+
       await userEvent.click(
-        screen.getByRole("button", { name: /Assign access group/i }),
+        screen.getByRole("button", { name: /access group/i }),
       );
 
       expect(
-        screen.getByRole("heading", { name: /Assign access group/i }),
+        screen.getByRole("heading", { name: /assign access group/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Assign tags' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /assign/i }));
+
+      await userEvent.click(screen.getByRole("button", { name: /tags/i }));
+
+      expect(
+        screen.getByRole("heading", { name: /assign tags/i }),
       ).toBeInTheDocument();
     });
   });
