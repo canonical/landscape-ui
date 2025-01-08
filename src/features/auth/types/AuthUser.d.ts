@@ -7,9 +7,10 @@ export interface Account {
 }
 
 export interface AuthUser {
-  email: string;
-  name: string;
-  token: string;
   accounts: Account[];
   current_account: string;
+  email: string;
+  has_password: boolean;
+  name: string;
+  token: string;
 }

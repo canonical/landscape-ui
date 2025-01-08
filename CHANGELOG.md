@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/canonical/landscape-dashboard/compare/v1.11.0...v1.11.1) (2025-01-07)
+
+
+### Bug Fixes
+
+* update react-components to 1.7.3 ([#153](https://github.com/canonical/landscape-dashboard/issues/153)) ([88b14fd](https://github.com/canonical/landscape-dashboard/commit/88b14fdf969651756c34c7fba6503a77a49afffd))
+
 # [1.11.0](https://github.com/canonical/landscape-dashboard/compare/v1.10.0...v1.11.0) (2024-12-16)
 
 
