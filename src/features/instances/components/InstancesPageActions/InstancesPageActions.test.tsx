@@ -159,4 +159,16 @@ describe("InstancesPageActions", () => {
       ).toBeInTheDocument();
     });
   });
+
+  describe("Run script form warning", () => {
+    it("should appear when some invalid instances are selected", async () => {
+      renderWithProviders(
+        <InstancesPageActions selected={instances.slice(9, 12)} />,
+      );
+
+      await userEvent.click(
+        screen.getByRole("button", { name: /Run script/i }),
+      );
+    });
+  });
 });
