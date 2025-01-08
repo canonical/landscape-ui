@@ -30,11 +30,9 @@ const props = {
 };
 
 describe("SnapsList", () => {
-  beforeEach(() => {
-    renderWithProviders(<SnapsList {...props} />);
-  });
-
   it("renders a list of installed snaps", async () => {
+    renderWithProviders(<SnapsList {...props} />);
+
     for (const installedSnap of installedSnaps) {
       const snap = await screen.findByRole("button", {
         name: `Show details of snap ${installedSnap.snap.name}`,
@@ -46,6 +44,7 @@ describe("SnapsList", () => {
 
   describe("Table Interactions", () => {
     it("shows held snap icon in the snaps table", async () => {
+      renderWithProviders(<SnapsList {...props} />);
       const heldSnap = installedSnaps.find((snap) => snap.held_until !== null);
       assert(heldSnap);
 
@@ -65,6 +64,7 @@ describe("SnapsList", () => {
     });
 
     it("shows version tooltip when hovering on held snap", async () => {
+      renderWithProviders(<SnapsList {...props} />);
       const heldSnap = installedSnaps.find((snap) => snap.held_until !== null);
       assert(heldSnap);
 
@@ -89,15 +89,25 @@ describe("SnapsList", () => {
     });
 
     it("should select all snaps when clicking ToggleAll checkbox", async () => {
+      const { rerender } = renderWithProviders(<SnapsList {...props} />);
+
       const toggleAllCheckbox = await screen.findByRole("checkbox", {
         name: /toggle all/i,
       });
       await userEvent.click(toggleAllCheckbox);
 
       expect(props.setSelectedSnapIds).toHaveBeenCalledWith(snapIds);
+      rerender(<SnapsList {...props} selectedSnapIds={snapIds} />);
+      const checkedCheckboxes = screen.getAllByRole("checkbox", {
+        checked: true,
+      });
+
+      expect(checkedCheckboxes).toHaveLength(snapIds.length + 1);
     });
 
     it("should select snap when clicking on its row checkbox", async () => {
+      renderWithProviders(<SnapsList {...props} />);
+
       const selectedSnap = installedSnaps[0];
       const snapCheckbox = await screen.findByRole("checkbox", {
         name: selectedSnap.snap.name,
@@ -114,6 +124,8 @@ describe("SnapsList", () => {
     const selectedSnap = installedSnaps[0];
 
     beforeEach(async () => {
+      renderWithProviders(<SnapsList {...props} />);
+
       await clickSnapOnTable(selectedSnap.snap.name);
     });
 

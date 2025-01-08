@@ -2,6 +2,7 @@ import { FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { LoginMethodsLayout, useUnsigned } from "@/features/auth";
 import AuthTemplate from "@/templates/auth";
+import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 
 const LoginPage: FC = () => {
   const { getLoginMethodsQuery } = useUnsigned();
@@ -10,7 +11,6 @@ const LoginPage: FC = () => {
     data: getLoginMethodsQueryResult,
     isLoading,
     isError,
-    error,
   } = getLoginMethodsQuery();
 
   return (
@@ -18,10 +18,7 @@ const LoginPage: FC = () => {
       {isLoading ? (
         <LoadingState />
       ) : isError ? (
-        <div>
-          <h1>Error</h1>
-          <pre>{JSON.stringify(error, null, 2)}</pre>
-        </div>
+        <p className="u-no-margin--bottom">{CONTACT_SUPPORT_TEAM_MESSAGE}</p>
       ) : (
         <LoginMethodsLayout
           methods={getLoginMethodsQueryResult?.data ?? null}

@@ -23,7 +23,7 @@ const PackageProfilesEmptyState: FC = () => {
     <EmptyState
       body={
         <>
-          <p>You haven’t added any package profile yet.</p>
+          <p>You haven’t added any package profiles yet.</p>
           <a
             href="https://ubuntu.com/landscape/docs/managing-packages"
             target="_blank"
@@ -43,7 +43,6 @@ const PackageProfilesEmptyState: FC = () => {
           Add package profile
         </Button>,
       ]}
-      icon="package-profiles"
       title="No package profiles found"
     />
   );

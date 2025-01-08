@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ROOT_PATH } from "@/constants";
+import { CONTACT_SUPPORT_TEAM_MESSAGE, ROOT_PATH } from "@/constants";
 import { useUnsigned } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import classes from "./OidcAuthPage.module.scss";
@@ -57,10 +57,7 @@ const OidcAuthPage: FC = () => {
         </div>
       ) : (
         <div>
-          <p>
-            Oops! Something went wrong. Please try again or contact our support
-            team.
-          </p>
+          <p>{CONTACT_SUPPORT_TEAM_MESSAGE}</p>
           <Link to={`${ROOT_PATH}login`} className="p-button">
             Back to login
           </Link>

@@ -1,3 +1,30 @@
+## [1.11.1](https://github.com/canonical/landscape-dashboard/compare/v1.11.0...v1.11.1) (2025-01-07)
+
+
+### Bug Fixes
+
+* update react-components to 1.7.3 ([#153](https://github.com/canonical/landscape-dashboard/issues/153)) ([88b14fd](https://github.com/canonical/landscape-dashboard/commit/88b14fdf969651756c34c7fba6503a77a49afffd))
+
+# [1.11.0](https://github.com/canonical/landscape-dashboard/compare/v1.10.0...v1.11.0) (2024-12-16)
+
+
+### Bug Fixes
+
+* add overview page lazy queries ([4375ebd](https://github.com/canonical/landscape-dashboard/commit/4375ebd33692ee736d5069ee76023c58c3a799ab))
+* broken link in alerts notification page ([2b9504f](https://github.com/canonical/landscape-dashboard/commit/2b9504f02ed4f4ab21ad038af087d0011be2e5ea))
+* change HTTP method to change organisation preferences ([868a812](https://github.com/canonical/landscape-dashboard/commit/868a812f9f35ceedfc7052b242cb5bd3dedd808f))
+* remove access group dropdown from edit package profile form ([#155](https://github.com/canonical/landscape-dashboard/issues/155)) ([053e5b4](https://github.com/canonical/landscape-dashboard/commit/053e5b444cca5e6fb583e35bdc1045656e832067))
+* show empty cell in activity table when activity has no related instance ([23ae288](https://github.com/canonical/landscape-dashboard/commit/23ae2888d8d17b3c3e6a174796fb4b3aaef5ecf6))
+* unify empty state in profiles empty state ([5845267](https://github.com/canonical/landscape-dashboard/commit/584526757f52a7051a4a398290127e2bcdcb8796))
+
+
+### Features
+
+* add instances column to access groups ([#137](https://github.com/canonical/landscape-dashboard/issues/137)) ([9632989](https://github.com/canonical/landscape-dashboard/commit/96329896fb79bda873e5773b94afa3c77b7e8021))
+* change event log page filter ([#139](https://github.com/canonical/landscape-dashboard/issues/139)) ([ace8ab6](https://github.com/canonical/landscape-dashboard/commit/ace8ab602c4cde7952a9f5108fedd11f75c2df37))
+* hide 'View report' button on instances page ([2d762ad](https://github.com/canonical/landscape-dashboard/commit/2d762adeca680e30cb8974db5700af70da83a690))
+* show organisation label instead of switch if user has only one ([#147](https://github.com/canonical/landscape-dashboard/issues/147)) ([0539efa](https://github.com/canonical/landscape-dashboard/commit/0539efac3190a831a2646d95211bbf7ff0d3f6cb))
+
 # [1.10.0](https://github.com/canonical/landscape-dashboard/compare/v1.9.1...v1.10.0) (2024-12-05)
 
 

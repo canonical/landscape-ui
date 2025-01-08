@@ -14,7 +14,7 @@ import useRoles from "@/hooks/useRoles";
 import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
-import GroupFilter from "../GroupFilter";
+import GroupFilter from "../../../../components/filter/GroupFilter";
 import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";

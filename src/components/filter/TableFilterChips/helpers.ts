@@ -51,7 +51,7 @@ export const checkRenderConditions: CheckRenderConditions = ({
     result.areSearchQueryChipsRender = useSearchAsQuery && Boolean(search);
     result.isSearchChipRender = !useSearchAsQuery && Boolean(search);
 
-    result.totalChipsToRenderCount += useSearchAsQuery
+    result.totalChipsToRenderCount += result.areSearchQueryChipsRender
       ? search.split(",").length
       : Number(result.isSearchChipRender);
   }

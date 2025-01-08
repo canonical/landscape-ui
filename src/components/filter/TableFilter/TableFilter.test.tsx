@@ -153,7 +153,7 @@ describe("TableFilter", () => {
           <TableFilter {...singleFilterProps} hasBadge selectedItem={value} />,
         );
 
-        expect(within(button).getByText("1")).toBeInTheDocument();
+        expect(within(button).getByRole("img")).toBeInTheDocument();
       }
 
       await userEvent.click(

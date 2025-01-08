@@ -1,18 +1,25 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import EditUserForm from "./EditUserForm";
 import useEnv from "@/hooks/useEnv";
 import useAuth from "@/hooks/useAuth";
 import { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
+import { useUserGeneralSettings } from "../../hooks";
+import { EditUserDetailsParams, UserDetails } from "../../types";
+import { UseMutationResult } from "@tanstack/react-query";
+import { AxiosError, AxiosResponse } from "axios";
+import { ApiError } from "@/types/ApiError";
+import { getTestErrorParams } from "@/tests/mocks/error";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
+vi.mock("../../hooks");
 
 const props = {
-  user: {
+  userDetails: {
     name: "Test User",
     email: "test@example.com",
     timezone: "UTC",
@@ -35,10 +42,9 @@ const authContextValues: AuthContextProps = {
   authLoading: false,
   setUser: vi.fn(),
   account: {
-    switchable: true,
-    current: "test-account",
+    current: authUser.current_account,
     options: [
-      { label: "Test Account", value: "test-account" },
+      { label: authUser.accounts[0].title, value: authUser.accounts[0].name },
       { label: "Another Account", value: "another-account" },
     ],
     switch: vi.fn(),
@@ -65,10 +71,26 @@ const mockSaas = {
 };
 
 describe("EditUserForm", () => {
+  const { testError, testErrorMessage } = getTestErrorParams();
+
+  const mockEditUserDetails = vi.fn(({ name }: { name: string }) => {
+    if (name === "error") {
+      throw testError;
+    }
+  });
+
   beforeEach(() => {
-    vi.resetAllMocks();
     vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
     vi.mocked(useAuth).mockReturnValue(authContextValues);
+    vi.mocked(useUserGeneralSettings, { partial: true }).mockReturnValue({
+      editUserDetails: {
+        mutateAsync: mockEditUserDetails,
+      } as UseMutationResult<
+        AxiosResponse<UserDetails>,
+        AxiosError<ApiError>,
+        EditUserDetailsParams
+      > & { mutateAsync: Mock },
+    });
   });
 
   describe("tests for saas and self-hosted", () => {
@@ -96,6 +118,37 @@ describe("EditUserForm", () => {
 
       const saveButton = screen.getByRole("button", { name: /save changes/i });
       expect(saveButton).toBeEnabled();
+
+      await userEvent.click(saveButton);
+
+      expect(mockEditUserDetails).toHaveBeenCalledWith({
+        name: `${props.userDetails.name} Updated`,
+        email: props.userDetails.email,
+        timezone: props.userDetails.timezone,
+        preferred_account: props.userDetails.preferred_account,
+      });
+    });
+
+    it("should show error notification if editUserDetails throws an error", async () => {
+      renderWithProviders(<EditUserForm {...props} />);
+
+      const nameInput = screen.getByRole("textbox");
+      await userEvent.clear(nameInput);
+      await userEvent.type(nameInput, "error");
+
+      const saveButton = screen.getByRole("button", { name: /save changes/i });
+      expect(saveButton).toBeEnabled();
+
+      await userEvent.click(saveButton);
+
+      expect(mockEditUserDetails).toHaveBeenCalledWith({
+        name: "error",
+        email: props.userDetails.email,
+        timezone: props.userDetails.timezone,
+        preferred_account: props.userDetails.preferred_account,
+      });
+
+      expect(screen.getByText(testErrorMessage)).toBeInTheDocument();
     });
 
     it("calls editUserDetails and setPreferredAccount when form is submitted", async () => {
@@ -109,6 +162,20 @@ describe("EditUserForm", () => {
       await userEvent.click(saveButton);
 
       expect(saveButton).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("should show an empty option for default organisation select if user has not yet selected one", async () => {
+      renderWithProviders(
+        <EditUserForm
+          userDetails={{ ...props.userDetails, preferred_account: null }}
+        />,
+      );
+
+      const organisationSelect = screen.getByRole("combobox", {
+        name: /default organisation/i,
+      });
+
+      expect(organisationSelect).toHaveValue("");
     });
   });
 
@@ -135,10 +202,10 @@ describe("EditUserForm", () => {
 
     it("renders disabled fields in SaaS environment", () => {
       const mockUser = {
-        ...props.user,
+        ...props.userDetails,
         allowable_emails: ["test@example.com"],
       };
-      renderWithProviders(<EditUserForm user={mockUser} />);
+      renderWithProviders(<EditUserForm userDetails={mockUser} />);
 
       const changePasswordButton = screen.queryByRole("button", {
         name: /change password/i,

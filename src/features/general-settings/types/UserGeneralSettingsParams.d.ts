@@ -2,7 +2,7 @@ export interface EditUserDetailsParams {
   email: string;
   name: string;
   timezone: string;
-  preferred_account: string;
+  preferred_account?: string;
 }
 
 export interface ChangePasswordParams {

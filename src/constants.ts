@@ -12,3 +12,7 @@ export const NOT_AVAILABLE = "N/A";
 export const APP_VERSION = __APP_VERSION__;
 export const FEEDBACK_LINK =
   "https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528";
+export const REPORT_VIEW_ENABLED =
+  import.meta.env.VITE_REPORT_VIEW_ENABLED === "true";
+export const CONTACT_SUPPORT_TEAM_MESSAGE =
+  "Oops! Something went wrong. Please try again or contact our support team.";

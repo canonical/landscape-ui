@@ -31,7 +31,7 @@ export default function useOrgSettings() {
     ChangeOrganisationPreferencesParams
   >({
     mutationKey: ["preferences", "change"],
-    mutationFn: (params) => authFetch.put("preferences", params),
+    mutationFn: (params) => authFetch.patch("preferences", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["preferences"] }),
   });
