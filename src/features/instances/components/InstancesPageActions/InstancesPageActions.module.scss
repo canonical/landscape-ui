@@ -1,0 +1,12 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.warning {
+  p {
+    margin-bottom: 0.5rem;
+    padding: 0;
+  }
+
+  ul {
+    margin-bottom: $spv--large;
+  }
+}

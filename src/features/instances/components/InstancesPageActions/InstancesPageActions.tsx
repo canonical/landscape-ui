@@ -10,7 +10,7 @@ import { useActivities } from "@/features/activities";
 import { getNotificationArgs } from "./helpers";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { currentInstanceCan } from "../../helpers";
-import { Notification } from "@canonical/react-components";
+import classes from "./InstancesPageActions.module.scss";
 
 const RunInstanceScriptForm = lazy(() =>
   import("@/features/scripts").then((module) => ({
@@ -44,6 +44,14 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
     isPending: shutdownInstancesLoading,
   } = shutdownInstancesQuery;
 
+  const createInstanceCountString = (instances: Instance[]) => {
+    return (
+      <>
+        <b>{instances.length}</b> instance{instances.length === 1 ? "" : "s"}
+      </>
+    );
+  };
+
   const handleRunScript = async () => {
     setSidePanelContent(
       "Run script",
@@ -51,9 +59,28 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
         {selected.some(
           (instance) => !currentInstanceCan("runScripts", instance),
         ) ? (
-          <Notification severity="caution" title="Warning">
-            The script will not run on Windows instances.
-          </Notification>
+          <div className={classes.warning}>
+            <p>You selected {selected.length} instances. This script will:</p>
+
+            <ul>
+              <li>
+                run on{" "}
+                {createInstanceCountString(
+                  selected.filter((instance) =>
+                    currentInstanceCan("runScripts", instance),
+                  ),
+                )}
+              </li>
+              <li>
+                not run on{" "}
+                {createInstanceCountString(
+                  selected.filter(
+                    (instance) => !currentInstanceCan("runScripts", instance),
+                  ),
+                )}
+              </li>
+            </ul>
+          </div>
         ) : null}
         <RunInstanceScriptForm
           query={selected.map(({ id }) => `id:${id}`).join(" OR ")}
