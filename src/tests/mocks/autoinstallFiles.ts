@@ -1,14 +1,9 @@
-import { AutoinstallFile } from "@/features/autoinstall-files";
+import type { AutoinstallFile } from "@/features/autoinstall-files";
 
 export const autoinstallFiles: AutoinstallFile[] = [
   {
     name: "default.yaml",
-    employeeGroupsAssociated: [
-      "Employee group 1",
-      "Employee group 2",
-      "Employee group 3",
-      "Employee group 4",
-    ],
+    employeeGroupsAssociated: ["employeeGroup1"],
     lastModified: "Nov 29, 2024, 16:00",
     dateCreated: "Nov 23, 2024, 10:16",
     version: 3,
@@ -74,10 +69,10 @@ export const autoinstallFiles: AutoinstallFile[] = [
   {
     name: "medium.yaml",
     employeeGroupsAssociated: [
-      "Employee group 1",
-      "Employee group 2",
-      "Employee group 3",
-      "Employee group 4",
+      "employeeGroup1",
+      "employeeGroup2",
+      "employeeGroup3",
+      "employeeGroup4",
     ],
     lastModified: "Nov 29, 2024, 16:00",
     dateCreated: "Nov 23, 2024, 10:16",
@@ -87,10 +82,10 @@ export const autoinstallFiles: AutoinstallFile[] = [
   {
     name: "strict.yaml",
     employeeGroupsAssociated: [
-      "Employee group 1",
-      "Employee group 2",
-      "Employee group 3",
-      "Employee group 4",
+      "employeeGroup1",
+      "employeeGroup2",
+      "employeeGroup3",
+      "employeeGroup4",
     ],
     lastModified: "Nov 29, 2024, 16:00",
     dateCreated: "Nov 23, 2024, 10:16",

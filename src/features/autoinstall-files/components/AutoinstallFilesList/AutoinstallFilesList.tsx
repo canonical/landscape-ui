@@ -1,22 +1,24 @@
-import { FC, useMemo } from "react";
+import type { FC } from "react";
+import { useMemo } from "react";
 import { Button, ModularTable } from "@canonical/react-components";
-import { AutoinstallFile } from "../../types";
+import type { AutoinstallFile } from "../../types";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getCellProps } from "./helpers";
 import usePageParams from "@/hooks/usePageParams";
 import classes from "./AutoinstallFilesList.module.scss";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 import ViewAutoinstallFileDetailsPanel from "../ViewAutoinstallFileDetailsPanel";
-import { CellProps, Column } from "react-table";
+import type { CellProps, Column } from "react-table";
+import { createEmployeeGroupString } from "../../helpers";
 
 interface AutoinstallFilesListProps {
-  autoinstallFiles: AutoinstallFile[];
+  readonly autoinstallFiles: AutoinstallFile[];
 }
 
 const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   autoinstallFiles,
 }) => {
-  const { search } = usePageParams();
+  const { employeeGroups, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const handleAutoinstallFileDetailsOpen = (profile: AutoinstallFile) => {
@@ -28,14 +30,15 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   };
 
   const files = useMemo(() => {
-    if (!search) {
-      return autoinstallFiles;
-    }
-
     return autoinstallFiles.filter((file) => {
-      return file.name.toLowerCase().includes(search.toLowerCase());
+      return (
+        file.name.toLowerCase().includes(search.toLowerCase()) &&
+        file.employeeGroupsAssociated.some((group) => {
+          return employeeGroups.length === 0 || employeeGroups.includes(group);
+        })
+      );
     });
-  }, [autoinstallFiles, search]);
+  }, [autoinstallFiles, employeeGroups, search]);
 
   const columns = useMemo<Column<AutoinstallFile>[]>(
     () => [
@@ -64,7 +67,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           },
         }: CellProps<AutoinstallFile>) => (
           <div className={classes.truncated}>
-            {employeeGroupsAssociated.join(", ")}
+            {createEmployeeGroupString(employeeGroupsAssociated)}
           </div>
         ),
       },
