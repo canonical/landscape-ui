@@ -13,7 +13,7 @@ interface GetScriptsParams {
   offset?: number;
 }
 
-interface GetScriptCodeParams {
+export interface GetScriptCodeParams {
   script_id: number;
 }
 
@@ -56,7 +56,7 @@ interface RemoveScriptAttachmentParams {
   script_id: number;
 }
 
-interface CreateScriptAttachmentParams {
+export interface CreateScriptAttachmentParams {
   // <filename>$$<base64 encoded file contents>
   file: string;
   script_id: number;
