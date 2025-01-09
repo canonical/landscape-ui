@@ -13,7 +13,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 
 const AutoinstallFilesHeader: FC = () => {
-  const { setPageParams, status } = usePageParams();
+  const { setPageParams, employeeGroups } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const handleSearch = (searchText: string) => {
@@ -27,13 +27,13 @@ const AutoinstallFilesHeader: FC = () => {
 
         <div className={classes.filters}>
           <TableFilter
-            multiple={false}
+            multiple
             label="Employee group"
             hasToggleIcon
             hasBadge
             options={AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS}
-            onItemSelect={(item) => setPageParams({ status: item })}
-            selectedItem={status}
+            onItemsSelect={(items) => setPageParams({ employeeGroups: items })}
+            selectedItems={employeeGroups}
           />
         </div>
 
@@ -64,7 +64,7 @@ const AutoinstallFilesHeader: FC = () => {
       </div>
 
       <TableFilterChips
-        filtersToDisplay={["search", "status", "type", "fromDate", "toDate"]}
+        filtersToDisplay={["search", "employeeGroups"]}
         employeeGroupOptions={AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS}
         useSearchAsQuery
       />

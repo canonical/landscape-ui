@@ -4,6 +4,7 @@ import classes from "./ViewAutoinstallFileDetailsTabs.module.scss";
 import InfoItem from "@/components/layout/InfoItem";
 import { Tabs } from "@canonical/react-components";
 import ViewAutoinstallFileDetailsEventLog from "../ViewAutoinstallFileDetailsEventLog";
+import { createEmployeeGroupString } from "../../helpers";
 
 type TabId = "info" | "event-log";
 
@@ -54,7 +55,7 @@ const ViewAutoinstallFileDetailsTabs: FC<{ file: AutoinstallFile }> = ({
 
           <InfoItem
             label="Employee groups associated"
-            value={file.employeeGroupsAssociated.join(", ")}
+            value={createEmployeeGroupString(file.employeeGroupsAssociated)}
           />
         </div>
       )}

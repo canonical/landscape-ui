@@ -61,6 +61,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     setPageParams({
       accessGroups: [],
       availabilityZones: [],
+      employeeGroups: [],
       fromDate: "",
       os: "",
       status: "",
@@ -112,6 +113,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   }, [
     accessGroups.length,
     availabilityZones.length,
+    employeeGroups.length,
     fromDate,
     hiddenChipCount,
     os,
