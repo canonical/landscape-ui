@@ -11,6 +11,7 @@ import { usePageParams } from "@/hooks/usePageParams";
 import classes from "./AutoinstallFilesList.module.scss";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 import ViewAutoinstallFileDetailsPanel from "../ViewAutoinstallFileDetailsPanel";
+import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 
 interface AutoinstallFilesListProps {
   autoinstallFiles: AutoinstallFile[];
@@ -66,9 +67,9 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             original: { employeeGroupsAssociated },
           },
         }: CellProps<AutoinstallFile>) => (
-          <div className={classes.truncated}>
-            {employeeGroupsAssociated.join(", ")}
-          </div>
+          <AutoinstallFileEmployeeGroupsList
+            groups={employeeGroupsAssociated}
+          />
         ),
       },
       {
