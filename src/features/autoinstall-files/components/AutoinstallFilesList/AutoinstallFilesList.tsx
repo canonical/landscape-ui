@@ -9,7 +9,7 @@ import classes from "./AutoinstallFilesList.module.scss";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 import ViewAutoinstallFileDetailsPanel from "../ViewAutoinstallFileDetailsPanel";
 import type { CellProps, Column } from "react-table";
-import { createEmployeeGroupString } from "../../helpers";
+import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 
 interface AutoinstallFilesListProps {
   readonly autoinstallFiles: AutoinstallFile[];
@@ -66,9 +66,9 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             original: { employeeGroupsAssociated },
           },
         }: CellProps<AutoinstallFile>) => (
-          <div className={classes.truncated}>
-            {createEmployeeGroupString(employeeGroupsAssociated)}
-          </div>
+          <AutoinstallFileEmployeeGroupsList
+            groups={employeeGroupsAssociated}
+          />
         ),
       },
       {
