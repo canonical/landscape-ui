@@ -1,23 +1,23 @@
 import { useFormik } from "formik";
-import { FC, ReactNode, useState } from "react";
-import { Form, Input } from "@canonical/react-components";
+import type { FC, ReactNode } from "react";
+import { useRef, useState } from "react";
+import { Button, Form, Icon, Input } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { autoinstallFileCode as defaultCode } from "@/tests/mocks/autoinstallFiles";
 import { VALIDATION_SCHEMA } from "./constants";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 import classes from "./AutoinstallFileForm.module.scss";
 import CodeEditor from "@/components/form/CodeEditor";
 
 const AutoinstallFileForm: FC<{
-  children?: ReactNode;
-  createNotificationTitle: (fileName: string) => string | undefined;
-  createNotificationMessage: (fileName: string) => string;
-  fileName: string;
-  fileNameInputDisabled?: boolean;
-  submitButtonText: string;
+  readonly children?: ReactNode;
+  readonly createNotificationTitle: (fileName: string) => string | undefined;
+  readonly createNotificationMessage: (fileName: string) => string;
+  readonly fileName: string;
+  readonly fileNameInputDisabled?: boolean;
+  readonly submitButtonText: string;
 }> = ({
   children,
   createNotificationMessage,
@@ -30,6 +30,7 @@ const AutoinstallFileForm: FC<{
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const [code, setCode] = useState<string | undefined>("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -57,24 +58,6 @@ const AutoinstallFileForm: FC<{
         <span>{children}</span>
 
         <div className={classes.inputs}>
-          <div className={classes.radioGroup}>
-            <Input
-              type="radio"
-              label="From a file"
-              {...formik.getFieldProps("addMethod")}
-              value="fromFile"
-              checked={formik.values.addMethod === "fromFile"}
-            />
-
-            <Input
-              type="radio"
-              label="Plain text"
-              {...formik.getFieldProps("addMethod")}
-              value="plainText"
-              checked={formik.values.addMethod === "plainText"}
-            />
-          </div>
-
           <Input
             type="text"
             label="File name"
@@ -88,13 +71,38 @@ const AutoinstallFileForm: FC<{
             required
           />
 
+          <input
+            ref={inputRef}
+            className={classes.hidden}
+            type="file"
+            accept=".yaml"
+            onChange={async ({ target: { files } }) => {
+              if (files) {
+                setCode(await files[0].text());
+              }
+            }}
+          />
+
           <CodeEditor
             label="Code"
             onChange={setCode}
             value={code}
             required
             language="yaml"
-            defaultValue={defaultCode}
+            headerContent={
+              <Button
+                className="u-no-margin--bottom"
+                appearance="base"
+                hasIcon
+                onClick={() => {
+                  inputRef.current?.click();
+                }}
+                type="button"
+              >
+                <Icon name="upload" />
+                <span>Populate from file</span>
+              </Button>
+            }
           />
         </div>
       </div>

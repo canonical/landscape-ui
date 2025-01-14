@@ -25,6 +25,7 @@ import {
   VALIDATION_SCHEMA,
 } from "./constants";
 import { getNotification, getScriptOptions } from "./helpers";
+import { DEFAULT_SCRIPT } from "../../constants";
 
 interface RunInstanceScriptFormProps {
   readonly query: string;
@@ -212,6 +213,7 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {
                 ? formik.errors.code
                 : undefined
             }
+            defaultValue={DEFAULT_SCRIPT}
           />
 
           <Select
