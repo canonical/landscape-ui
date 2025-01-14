@@ -17,3 +17,9 @@
     border-bottom-color: $colors--light-theme--border-high-contrast;
   }
 }
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

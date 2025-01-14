@@ -20,6 +20,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { SelectOption } from "@/types/SelectOption";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { CTA_LABELS } from "./constants";
+import { DEFAULT_SCRIPT } from "../../constants";
 
 interface FormProps extends CreateScriptParams {
   attachments: {
@@ -431,6 +432,7 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
                 ? formik.errors.code
                 : undefined
             }
+            defaultValue={DEFAULT_SCRIPT}
           />
 
           <Input

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import classNames from "classnames";
 import { Editor } from "@monaco-editor/react";
 import LoadingState from "../layout/LoadingState";
@@ -14,6 +14,7 @@ interface CodeEditorProps {
   required?: boolean;
   language?: string;
   defaultValue?: string;
+  headerContent?: ReactNode;
 }
 
 const CodeEditor: FC<CodeEditorProps> = ({
@@ -25,7 +26,8 @@ const CodeEditor: FC<CodeEditorProps> = ({
   labelClassName,
   required = false,
   language = "shell",
-  defaultValue = "#!/bin/bash",
+  defaultValue,
+  headerContent,
 }) => {
   return (
     <div
@@ -33,16 +35,21 @@ const CodeEditor: FC<CodeEditorProps> = ({
         "is-error": error,
       })}
     >
-      <label
-        className={classNames(
-          "p-form__label",
-          { "is-required": required },
-          labelClassName,
-        )}
-        htmlFor="code"
-      >
-        {label}
-      </label>
+      <div className={classes.header}>
+        <label
+          className={classNames(
+            "p-form__label",
+            { "is-required": required },
+            labelClassName,
+          )}
+          htmlFor="code"
+        >
+          {label}
+        </label>
+
+        {headerContent}
+      </div>
+
       <div className="p-form__control u-clearfix">
         <Editor
           language={language}
