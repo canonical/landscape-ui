@@ -4,6 +4,7 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import {
   EditUserForm,
+  UserInfo,
   useUserGeneralSettings,
 } from "@/features/general-settings";
 import useEnv from "@/hooks/useEnv";
@@ -12,21 +13,23 @@ import classNames from "classnames";
 import { FC } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classes from "./GeneralSettings.module.scss";
+import useAuth from "@/hooks/useAuth";
 
 const GeneralSettings: FC = () => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const { isSaas } = useEnv();
+  const { user } = useAuth();
   const { getUserDetails } = useUserGeneralSettings();
   const { data: userData, isLoading } = getUserDetails();
 
-  const user = userData?.data;
+  const userDetails = userData?.data;
 
   return (
     <PageMain>
       <PageHeader
         title="General"
         helperContent={
-          isSaas ? (
+          isSaas && (
             <span
               className={classNames("u-text--muted", classes.helperContent, {
                 "u-no-padding--bottom": isSmallerScreen,
@@ -42,12 +45,17 @@ const GeneralSettings: FC = () => {
                 Ubuntu One
               </Link>
             </span>
-          ) : null
+          )
         }
       />
       <PageContent container="medium">
         {isLoading && <LoadingState />}
-        {user && <EditUserForm user={user} />}
+        {user?.has_password && userDetails && (
+          <EditUserForm userDetails={userDetails} />
+        )}
+        {!user?.has_password && userDetails && (
+          <UserInfo userDetails={userDetails} />
+        )}
       </PageContent>
     </PageMain>
   );
