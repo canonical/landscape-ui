@@ -1,14 +1,15 @@
 import { useFormik } from "formik";
-import { FC, ReactNode } from "react";
-import { CodeSnippet, Form, Input } from "@canonical/react-components";
+import { FC, ReactNode, useState } from "react";
+import { Form, Input } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { autoinstallFileCode as code } from "@/tests/mocks/autoinstallFiles";
+import { autoinstallFileCode as defaultCode } from "@/tests/mocks/autoinstallFiles";
 import { VALIDATION_SCHEMA } from "./constants";
 import { FormProps } from "./types";
 import classes from "./AutoinstallFileForm.module.scss";
+import CodeEditor from "@/components/form/CodeEditor";
 
 const AutoinstallFileForm: FC<{
   children?: ReactNode;
@@ -28,6 +29,7 @@ const AutoinstallFileForm: FC<{
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
+  const [code, setCode] = useState<string | undefined>("");
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -83,17 +85,16 @@ const AutoinstallFileForm: FC<{
                 : undefined
             }
             disabled={fileNameInputDisabled}
+            required
           />
 
-          <CodeSnippet
-            className={classes.code}
-            blocks={[
-              {
-                title: "* Code",
-                code,
-                wrapLines: true,
-              },
-            ]}
+          <CodeEditor
+            label="Code"
+            onChange={setCode}
+            value={code}
+            required
+            language="yaml"
+            defaultValue={defaultCode}
           />
         </div>
       </div>
