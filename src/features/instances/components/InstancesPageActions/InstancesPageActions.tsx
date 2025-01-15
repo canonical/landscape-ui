@@ -1,5 +1,10 @@
 import { FC, lazy, Suspense } from "react";
-import { Button, ConfirmationButton, Icon } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationButton,
+  ContextualMenu,
+  Icon,
+} from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -22,6 +27,7 @@ const Upgrades = lazy(() =>
 );
 const ReportView = lazy(() => import("@/pages/dashboard/instances/ReportView"));
 const AccessGroupChange = lazy(() => import("../AccessGroupChange"));
+const TagsAddForm = lazy(() => import("../TagsAddForm"));
 
 interface InstancesPageActionsProps {
   selected: Instance[];
@@ -118,99 +124,124 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
     );
   };
 
+  const handleTagsAssign = () => {
+    setSidePanelContent(
+      "Assign tags",
+      <Suspense fallback={<LoadingState />}>
+        <TagsAddForm selected={selected} />
+      </Suspense>,
+    );
+  };
+
   return (
-    <div className="p-segmented-control">
-      <div className="p-segmented-control__list">
-        <ConfirmationButton
-          className="p-segmented-control__button has-icon"
-          type="button"
-          disabled={shutdownInstancesLoading || 0 === selected.length}
-          confirmationModalProps={{
-            title: "Shutting down selected instances",
-            children: (
-              <p>
-                Are you sure you want to shutdown {selected.length} instance
-                {selected.length === 1 ? "" : "s"}?
-              </p>
-            ),
-            confirmButtonLabel: "Shutdown",
-            confirmButtonAppearance: "negative",
-            confirmButtonLoading: shutdownInstancesLoading,
-            confirmButtonDisabled: shutdownInstancesLoading,
-            onConfirm: handleShutdownInstance,
-          }}
-        >
-          <Icon name="power-off" />
-          <span>Shutdown</span>
-        </ConfirmationButton>
-        <ConfirmationButton
-          className="p-segmented-control__button has-icon"
-          type="button"
-          disabled={rebootInstancesLoading || 0 === selected.length}
-          confirmationModalProps={{
-            title: "Restarting selected instances",
-            children: (
-              <p>
-                Are you sure you want to restart {selected.length} instance
-                {selected.length === 1 ? "" : "s"}?
-              </p>
-            ),
-            confirmButtonLabel: "Restart",
-            confirmButtonAppearance: "negative",
-            confirmButtonLoading: rebootInstancesLoading,
-            confirmButtonDisabled: rebootInstancesLoading,
-            onConfirm: handleRebootInstance,
-          }}
-        >
-          <Icon name="restart" />
-          <span>Restart</span>
-        </ConfirmationButton>
-        {REPORT_VIEW_ENABLED && (
+    <>
+      <div className="p-segmented-control">
+        <div className="p-segmented-control__list">
+          <ConfirmationButton
+            className="p-segmented-control__button has-icon"
+            type="button"
+            disabled={shutdownInstancesLoading || 0 === selected.length}
+            confirmationModalProps={{
+              title: "Shutting down selected instances",
+              children: (
+                <p>
+                  Are you sure you want to shutdown {selected.length} instance
+                  {selected.length === 1 ? "" : "s"}?
+                </p>
+              ),
+              confirmButtonLabel: "Shutdown",
+              confirmButtonAppearance: "negative",
+              confirmButtonLoading: shutdownInstancesLoading,
+              confirmButtonDisabled: shutdownInstancesLoading,
+              onConfirm: handleShutdownInstance,
+            }}
+          >
+            <Icon name="power-off" />
+            <span>Shutdown</span>
+          </ConfirmationButton>
+          <ConfirmationButton
+            className="p-segmented-control__button has-icon"
+            type="button"
+            disabled={rebootInstancesLoading || 0 === selected.length}
+            confirmationModalProps={{
+              title: "Restarting selected instances",
+              children: (
+                <p>
+                  Are you sure you want to restart {selected.length} instance
+                  {selected.length === 1 ? "" : "s"}?
+                </p>
+              ),
+              confirmButtonLabel: "Restart",
+              confirmButtonAppearance: "negative",
+              confirmButtonLoading: rebootInstancesLoading,
+              confirmButtonDisabled: rebootInstancesLoading,
+              onConfirm: handleRebootInstance,
+            }}
+          >
+            <Icon name="restart" />
+            <span>Restart</span>
+          </ConfirmationButton>
+          {REPORT_VIEW_ENABLED && (
+            <Button
+              className="p-segmented-control__button"
+              type="button"
+              onClick={handleReportView}
+              disabled={0 === selected.length}
+            >
+              <Icon name="status" />
+              <span>View report</span>
+            </Button>
+          )}
           <Button
             className="p-segmented-control__button"
             type="button"
-            onClick={handleReportView}
+            onClick={handleRunScript}
             disabled={0 === selected.length}
           >
-            <Icon name="status" />
-            <span>View report</span>
+            <Icon name="code" />
+            <span>Run script</span>
           </Button>
-        )}
-        <Button
-          className="p-segmented-control__button"
-          type="button"
-          onClick={handleRunScript}
-          disabled={0 === selected.length}
-        >
-          <Icon name="code" />
-          <span>Run script</span>
-        </Button>
-        <Button
-          className="p-segmented-control__button"
-          type="button"
-          onClick={handleUpgradesRequest}
-          disabled={
-            0 === selected.length ||
-            selected.every(
-              ({ upgrades }) =>
-                !upgrades || (!upgrades.regular && !upgrades.security),
-            )
-          }
-        >
-          <Icon name="change-version" />
-          <span>Upgrade</span>
-        </Button>
-        <Button
-          className="p-segmented-control__button"
-          type="button"
-          onClick={handleAccessGroupChange}
-          disabled={0 === selected.length}
-        >
-          <Icon name="settings" />
-          <span>Assign access group</span>
-        </Button>
+          <Button
+            className="p-segmented-control__button"
+            type="button"
+            onClick={handleUpgradesRequest}
+            disabled={
+              0 === selected.length ||
+              selected.every(
+                ({ upgrades }) =>
+                  !upgrades || (!upgrades.regular && !upgrades.security),
+              )
+            }
+          >
+            <Icon name="change-version" />
+            <span>Upgrade</span>
+          </Button>
+        </div>
       </div>
-    </div>
+
+      <ContextualMenu
+        hasToggleIcon
+        links={[
+          {
+            children: "Access group",
+            onClick: handleAccessGroupChange,
+          },
+          {
+            children: "Tags",
+            onClick: handleTagsAssign,
+          },
+        ]}
+        position="right"
+        toggleLabel={
+          <>
+            <Icon name="plus" />
+            <span>Assign</span>
+          </>
+        }
+        toggleDisabled={0 === selected.length}
+        dropdownProps={{ style: { zIndex: 10 } }}
+      />
+    </>
   );
 };
 

@@ -5,6 +5,7 @@ export const tags = [
   "dapper",
   "edgy",
   "empty",
+  "error",
   "feisty",
   "focal",
   "gutsy",

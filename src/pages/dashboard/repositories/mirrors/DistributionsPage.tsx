@@ -92,6 +92,7 @@ const DistributionsPage: FC = () => {
             : [
                 <ContextualMenu
                   key="menu"
+                  hasToggleIcon
                   toggleLabel="Actions"
                   toggleClassName="u-no-margin--bottom"
                   links={contextualMenuLinks}
