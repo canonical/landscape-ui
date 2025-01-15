@@ -1,4 +1,4 @@
 export interface FormProps {
-  addMethod: "fromFile" | "plainText";
   fileName: string;
+  code: string;
 }
