@@ -49,7 +49,6 @@ const AutoinstallFilesHeader: FC = () => {
                 createNotificationTitle={(fileName) => {
                   return `You have successfully added ${fileName}`;
                 }}
-                fileName="administrators.yaml"
                 submitButtonText={SUBMIT_BUTTON_TEXT}
               >
                 Add autoinstall file. It can be applied during the initial setup

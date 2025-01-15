@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import type { FC, ReactNode } from "react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Button, Form, Icon, Input } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
@@ -13,29 +13,30 @@ import CodeEditor from "@/components/form/CodeEditor";
 
 const AutoinstallFileForm: FC<{
   readonly children?: ReactNode;
+  readonly code?: string;
   readonly createNotificationTitle: (fileName: string) => string | undefined;
   readonly createNotificationMessage: (fileName: string) => string;
-  readonly fileName: string;
+  readonly fileName?: string;
   readonly fileNameInputDisabled?: boolean;
   readonly submitButtonText: string;
 }> = ({
   children,
+  code = "",
   createNotificationMessage,
   createNotificationTitle,
-  fileName,
+  fileName = "",
   fileNameInputDisabled,
   submitButtonText,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const [code, setCode] = useState<string | undefined>("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      addMethod: "fromFile",
       fileName,
+      code,
     },
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async ({ fileName }) => {
@@ -77,16 +78,24 @@ const AutoinstallFileForm: FC<{
             type="file"
             accept=".yaml"
             onChange={async ({ target: { files } }) => {
-              if (files) {
-                setCode(await files[0].text());
+              if (!files) {
+                return;
               }
+
+              formik.setFieldValue("code", await files[0].text());
+
+              if (formik.values.fileName) {
+                return;
+              }
+
+              formik.setFieldValue("fileName", files[0].name);
             }}
           />
 
           <CodeEditor
+            className={classes.editor}
             label="Code"
-            onChange={setCode}
-            value={code}
+            {...formik.getFieldProps("code")}
             required
             language="yaml"
             headerContent={

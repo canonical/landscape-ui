@@ -1,11 +1,19 @@
+form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .container {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 1.5rem;
 }
 
 .inputs {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 1rem;
 }
