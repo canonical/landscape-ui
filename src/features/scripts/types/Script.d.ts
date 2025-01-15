@@ -6,7 +6,7 @@ export interface Script extends Record<string, unknown> {
   attachments: string[];
   creator: Creator;
   id: number;
-  interpreter: string;
+  interpreter?: string;
   time_limit: number;
   title: string;
   username: string;

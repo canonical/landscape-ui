@@ -1,52 +1,24 @@
-import { Buffer } from "buffer";
 import { useFormik } from "formik";
 import { FC, useEffect, useMemo } from "react";
-import * as Yup from "yup";
-import {
-  Button,
-  Form,
-  Icon,
-  ICONS,
-  Input,
-  Select,
-  Tooltip,
-} from "@canonical/react-components";
+import { Form, Input, Select } from "@canonical/react-components";
 import CodeEditor from "@/components/form/CodeEditor";
-import { CreateScriptParams, useScripts } from "../../hooks";
-import { Script } from "../../types";
+import { useScripts } from "../../hooks";
+import { Script, ScriptFormValues } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { SelectOption } from "@/types/SelectOption";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { CTA_LABELS } from "./constants";
-
-interface FormProps extends CreateScriptParams {
-  attachments: {
-    first: File | null;
-    second: File | null;
-    third: File | null;
-    fourth: File | null;
-    fifth: File | null;
-  };
-  attachmentsToRemove: string[];
-}
-
-const INITIAL_VALUES: FormProps = {
-  title: "",
-  code: "",
-  access_group: "",
-  time_limit: 300,
-  username: "",
-  attachments: {
-    first: null,
-    second: null,
-    third: null,
-    fourth: null,
-    fifth: null,
-  },
-  attachmentsToRemove: [],
-};
+import { CTA_LABELS, SCRIPT_FORM_INITIAL_VALUES } from "./constants";
+import {
+  getCopyScriptParams,
+  getCreateAttachmentsPromises,
+  getCreateScriptParams,
+  getEditScriptParams,
+  getValidationSchema,
+} from "./helpers";
+import ScriptFormAttachments from "../ScriptFormAttachments";
+import { getFormikError } from "@/utils/formikErrors";
 
 type SingleScriptProps =
   | {
@@ -81,153 +53,68 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
   const { mutateAsync: createScriptAttachment } = createScriptAttachmentQuery;
   const { mutateAsync: removeScriptAttachment } = removeScriptAttachmentQuery;
 
-  const validationSchema = Yup.object().shape({
-    title: Yup.string().required("This field is required"),
-    time_limit: Yup.number().required("This field is required"),
-    code: Yup.string().test({
-      name: "required",
-      message: "This field is required",
-      test: (value) =>
-        "copy" === props.action || "edit" === props.action || !!value,
-    }),
-    username: Yup.string(),
-    access_group: Yup.string(),
-    attachments: Yup.object().shape({
-      first: Yup.mixed().nullable(),
-      second: Yup.mixed().nullable(),
-      third: Yup.mixed().nullable(),
-      fourth: Yup.mixed().nullable(),
-      fifth: Yup.mixed().nullable(),
-    }),
-    attachmentsToRemove: Yup.array().of(Yup.string()),
-  });
+  const handleSubmit = async (values: ScriptFormValues) => {
+    const newAttachments = Object.values(values.attachments).filter(
+      (attachment) => attachment !== null,
+    );
 
-  const createAttachments = async (
-    script_id: number,
-    attachments: (File | null)[],
-  ) => {
-    const promises: Promise<unknown>[] = [];
-
-    const bufferPromises: Promise<ArrayBuffer>[] = [];
-    const fileNames: string[] = [];
-
-    for (const attachment of attachments) {
-      if (!attachment) {
-        continue;
-      }
-
-      bufferPromises.push(attachment.arrayBuffer());
-      fileNames.push(attachment.name);
-    }
-
-    const buffers = await Promise.all(bufferPromises);
-
-    for (let i = 0; i < buffers.length; i++) {
-      promises.push(
-        createScriptAttachment({
-          script_id,
-          file: `${fileNames[i]}$$${Buffer.from(buffers[i]).toString(
-            "base64",
-          )}`,
-        }),
-      );
-    }
-
-    await Promise.all(promises);
-  };
-
-  const handleSubmit = async (values: FormProps) => {
     try {
       if ("add" === props.action) {
-        const newScript = await createScript({
-          title: values.title,
-          time_limit: values.time_limit,
-          code: Buffer.from(values.code).toString("base64"),
-          username: values.username,
-          access_group: values.access_group,
-        });
+        const newScript = await createScript(getCreateScriptParams(values));
 
-        await createAttachments(
-          newScript.data.id,
-          Object.values(values.attachments),
-        );
-      } else if ("edit" === props.action) {
-        const promises: Promise<unknown>[] = [];
-        const newAttachments = Object.values(values.attachments).filter(
-          (attachment) => attachment,
-        );
-
-        for (const attachmentToRemove of values.attachmentsToRemove) {
-          promises.push(
-            removeScriptAttachment({
-              script_id: props.script.id,
-              filename: attachmentToRemove,
+        if (newAttachments.length > 0) {
+          await Promise.all(
+            await getCreateAttachmentsPromises({
+              attachments: newAttachments,
+              createScriptAttachment,
+              script_id: newScript.data.id,
             }),
           );
         }
+      } else if ("edit" === props.action) {
+        const promises: Promise<unknown>[] = [
+          editScript(getEditScriptParams({ props, values })),
+        ];
 
-        if (promises.length) {
-          await Promise.all([
-            ...promises,
-            editScript({
-              script_id: props.script.id,
-              title: values.title,
-              time_limit: values.time_limit,
-              code: Buffer.from(values.code).toString("base64"),
-              username: values.username,
-            }),
-          ]);
-
-          if (newAttachments.length) {
-            await createAttachments(props.script.id, newAttachments);
+        if (values.attachmentsToRemove.length > 0) {
+          for (const attachmentToRemove of values.attachmentsToRemove) {
+            promises.push(
+              removeScriptAttachment({
+                script_id: props.script.id,
+                filename: attachmentToRemove,
+              }),
+            );
           }
-        } else if (newAttachments.length) {
-          await Promise.all([
-            editScript({
-              script_id: props.script.id,
-              title: values.title,
-              time_limit: values.time_limit,
-              code: Buffer.from(values.code).toString("base64"),
-              username: values.username,
-            }),
-            createAttachments(
-              props.script.id,
-              Object.values(values.attachments),
-            ),
-          ]);
-        } else {
-          await editScript({
-            script_id: props.script.id,
-            title: values.title,
-            time_limit: values.time_limit,
-            code: Buffer.from(values.code).toString("base64"),
-            username: values.username,
-          });
+
+          await Promise.all(promises.splice(0));
         }
+
+        if (newAttachments.length > 0) {
+          promises.push(
+            ...(await getCreateAttachmentsPromises({
+              attachments: newAttachments,
+              createScriptAttachment,
+              script_id: props.script.id,
+            })),
+          );
+        }
+
+        await Promise.all(promises);
       } else if ("copy" === props.action) {
-        await copyScript({
-          script_id: props.script.id,
-          destination_title: values.title,
-          access_group: values.access_group,
-        });
+        await copyScript(getCopyScriptParams({ props, values }));
       }
 
-      handleClose();
+      closeSidePanel();
     } catch (error) {
       debug(error);
     }
   };
 
   const formik = useFormik({
-    initialValues: INITIAL_VALUES,
-    validationSchema,
+    initialValues: SCRIPT_FORM_INITIAL_VALUES,
+    validationSchema: getValidationSchema(props.action),
     onSubmit: handleSubmit,
   });
-
-  const handleClose = () => {
-    formik.resetForm();
-    closeSidePanel();
-  };
 
   useEffect(() => {
     if ("add" === props.action) {
@@ -244,23 +131,18 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
     }
   }, [props.action]);
 
-  const { data: getScriptCodeResult, isFetching: getScriptCodeFetching } =
-    getScriptCodeQuery(
-      {
-        script_id: "edit" === props.action ? props.script.id : 0,
-      },
-      {
-        enabled: "edit" === props.action,
-      },
-    );
+  const { data: getScriptCodeResult } = getScriptCodeQuery(
+    { script_id: "edit" === props.action ? props.script.id : 0 },
+    { enabled: "edit" === props.action },
+  );
 
   useEffect(() => {
-    if (getScriptCodeFetching) {
+    if (!getScriptCodeResult) {
       return;
     }
 
-    formik.setFieldValue("code", getScriptCodeResult?.data ?? "");
-  }, [getScriptCodeFetching]);
+    formik.setFieldValue("code", getScriptCodeResult.data);
+  }, [getScriptCodeResult]);
 
   const { data: getAccessGroupResult } = getAccessGroupQuery();
 
@@ -272,124 +154,6 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
       })),
     [getAccessGroupResult],
   );
-
-  const FileInputs = [
-    <Input
-      key="first"
-      type="file"
-      label="First attachment"
-      labelClassName="u-off-screen"
-      onChange={(event) => {
-        formik.setFieldValue(
-          "attachments.first",
-          event.target.files?.[0] ?? null,
-        );
-      }}
-      error={
-        formik.touched.attachments?.first && formik.errors.attachments?.first
-      }
-    />,
-    <Input
-      key="second"
-      type="file"
-      label="Second attachment"
-      labelClassName="u-off-screen"
-      onChange={(event) => {
-        formik.setFieldValue(
-          "attachments.second",
-          event.target.files?.[0] ?? null,
-        );
-      }}
-      error={
-        formik.touched.attachments?.second && formik.errors.attachments?.second
-      }
-    />,
-    <Input
-      key="third"
-      type="file"
-      label="Third attachment"
-      labelClassName="u-off-screen"
-      onChange={(event) => {
-        formik.setFieldValue(
-          "attachments.third",
-          event.target.files?.[0] ?? null,
-        );
-      }}
-      error={
-        formik.touched.attachments?.third && formik.errors.attachments?.third
-      }
-    />,
-    <Input
-      key="fourth"
-      type="file"
-      label="Fourth attachment"
-      labelClassName="u-off-screen"
-      onChange={(event) => {
-        formik.setFieldValue(
-          "attachments.fourth",
-          event.target.files?.[0] ?? null,
-        );
-      }}
-      error={
-        formik.touched.attachments?.fourth && formik.errors.attachments?.fourth
-      }
-    />,
-    <Input
-      key="fifth"
-      type="file"
-      label="Fifth attachment"
-      labelClassName="u-off-screen"
-      onChange={(event) => {
-        formik.setFieldValue(
-          "attachments.fifth",
-          event.target.files?.[0] ?? null,
-        );
-      }}
-      error={
-        formik.touched.attachments?.fifth && formik.errors.attachments?.fifth
-      }
-    />,
-  ];
-
-  const getAttachmentInputs = () => {
-    const attachments = FileInputs;
-
-    if ("edit" === props.action) {
-      const scriptAttachments = props.script.attachments
-        .filter(
-          (attachment) =>
-            !formik.values.attachmentsToRemove.includes(attachment),
-        )
-        .reverse();
-
-      for (const scriptAttachment of scriptAttachments) {
-        attachments.unshift(
-          <div key={scriptAttachment}>
-            <span>{scriptAttachment}</span>
-            <Button
-              type="button"
-              hasIcon
-              appearance="base"
-              className="u-no-margin--bottom u-no-padding--left"
-              aria-label={`Remove ${scriptAttachment} attachment`}
-              onClick={() => {
-                formik.setFieldValue("attachmentsToRemove", [
-                  ...formik.values.attachmentsToRemove,
-                  scriptAttachment,
-                ]);
-              }}
-            >
-              <Tooltip message="Remove" position="top-center">
-                <Icon name={ICONS.delete} />
-              </Tooltip>
-            </Button>
-          </div>,
-        );
-      }
-    }
-
-    return attachments.slice(0, 5);
-  };
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -474,8 +238,31 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
         </>
       )}
 
-      {("add" === props.action || "edit" === props.action) &&
-        getAttachmentInputs()}
+      {("add" === props.action || "edit" === props.action) && (
+        <ScriptFormAttachments
+          attachments={formik.values.attachments}
+          attachmentsToRemove={formik.values.attachmentsToRemove}
+          getFileInputError={(key: keyof ScriptFormValues["attachments"]) =>
+            getFormikError(formik, ["attachments", key])
+          }
+          initialAttachments={
+            props.action === "edit" ? props.script.attachments : []
+          }
+          onFileInputChange={(key: keyof ScriptFormValues["attachments"]) =>
+            (event) => {
+              formik.setFieldValue(
+                `attachments.${key}`,
+                event.target.files?.[0] ?? null,
+              );
+            }}
+          onInitialAttachmentDelete={(attachment: string) => {
+            formik.setFieldValue("attachmentsToRemove", [
+              ...formik.values.attachmentsToRemove,
+              attachment,
+            ]);
+          }}
+        />
+      )}
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}

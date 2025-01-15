@@ -4,6 +4,7 @@ import {
   TableCellProps,
 } from "@canonical/react-components/node_modules/@types/react-table";
 import { Script } from "../../types";
+import classes from "./ScriptList.module.scss";
 
 export const getCellProps = ({ column, row: { original } }: Cell<Script>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
@@ -13,7 +14,7 @@ export const getCellProps = ({ column, row: { original } }: Cell<Script>) => {
     if (column.id === "title") {
       cellProps.colSpan = 4;
     } else {
-      cellProps.hidden = true;
+      cellProps.className = classes.hidden;
       cellProps["aria-hidden"] = true;
     }
   } else if (column.id === "title") {
