@@ -61,7 +61,7 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
       {
         accessor: "message",
         className: classes.message,
-        Header: "event log message",
+        Header: "message",
         Cell: ({ row: { original, index } }: CellProps<EventLog>) => (
           <TruncatedCell
             content={original.message}
@@ -84,7 +84,6 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
         getRowProps={handleRowProps(expandedRowIndex)}
         columns={columns}
         data={eventsLog}
-        sortable={true}
         emptyMsg="No events found according to your search parameters."
       />
     </div>
