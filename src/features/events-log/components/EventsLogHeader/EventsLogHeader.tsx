@@ -1,5 +1,5 @@
 import { TableFilterChips } from "@/components/filter";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { Form, SearchBox } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { FC } from "react";

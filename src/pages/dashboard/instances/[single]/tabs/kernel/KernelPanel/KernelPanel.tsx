@@ -8,7 +8,7 @@ import {
   KernelTableList,
   useKernel,
 } from "@/features/kernel";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { UrlParams } from "@/types/UrlParams";
 import moment from "moment";
 import { FC, useMemo } from "react";

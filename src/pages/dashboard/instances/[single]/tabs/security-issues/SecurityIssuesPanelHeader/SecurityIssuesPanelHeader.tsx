@@ -11,7 +11,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { useUsns } from "@/features/usns";
 import classes from "./SecurityIssuesPanelHeader.module.scss";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { UrlParams } from "@/types/UrlParams";
 
 interface SecurityIssuesPanelHeaderProps {

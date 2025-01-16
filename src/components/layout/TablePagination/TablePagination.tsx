@@ -2,7 +2,7 @@ import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Button, Icon, Select } from "@canonical/react-components";
 import classes from "./TablePagination.module.scss";
 import classNames from "classnames";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 
 interface TablePaginationProps {
   totalItems: number | undefined;

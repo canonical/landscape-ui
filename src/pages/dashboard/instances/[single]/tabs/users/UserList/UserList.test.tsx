@@ -34,27 +34,19 @@ describe("UserList", () => {
   });
 
   describe("Table Interactions", () => {
-    it("shows locked user icon in the user table", async () => {
+    it("shows locked and unlocked user icon in the user table", async () => {
       renderWithProviders(<UserList {...props} />);
       expect(lockedUser).toBeDefined();
 
-      const statuses = screen.getAllByRole("cell", {
-        name: /status/i,
-      });
+      const unlockedStatusesLength = screen.getAllByRole("gridcell", {
+        name: /unlocked/i,
+      }).length;
 
-      const lockedIconElement = statuses.find((status) => {
-        return status
-          .querySelector("i")
-          ?.classList.contains("p-icon--lock-locked-active");
-      });
-      expect(lockedIconElement).toBeInTheDocument();
-
-      const unlockedIconElement = statuses.find((status) => {
-        return status
-          .querySelector("i")
-          ?.classList.contains("p-icon--lock-unlock");
-      });
-      expect(unlockedIconElement).toBeInTheDocument();
+      const lockedStatusesLength = screen.getAllByRole("gridcell", {
+        name: /locked/i,
+      }).length;
+      expect(unlockedStatusesLength).toBeGreaterThanOrEqual(1);
+      expect(lockedStatusesLength).toBeGreaterThanOrEqual(1);
     });
 
     it("should select all users when clicking ToggleAll checkbox", async () => {

@@ -1,6 +1,6 @@
 import { GroupFilter, TableFilterChips } from "@/components/filter";
 import { FILTERS } from "@/features/instances";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { FC } from "react";
 import classes from "./AccessGroupHeader.module.scss";
 import { useFormik } from "formik";

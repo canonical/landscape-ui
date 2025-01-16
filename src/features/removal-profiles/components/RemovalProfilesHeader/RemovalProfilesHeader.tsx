@@ -1,6 +1,6 @@
 import { FC } from "react";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 
 const RemovalProfilesHeader: FC = () => {
   const { setPageParams } = usePageParams();

@@ -1,7 +1,7 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { useProcesses } from "../../hooks";
 import { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";

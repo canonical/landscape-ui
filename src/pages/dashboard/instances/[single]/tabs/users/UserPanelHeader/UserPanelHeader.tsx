@@ -3,7 +3,7 @@ import classes from "./UserPanelHeader.module.scss";
 import UserPanelActionButtons from "../UserPanelActionButtons";
 import { User } from "@/types/User";
 import { getSelectedUsers } from "./helpers";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 
 interface UserPanelHeaderProps {

@@ -7,7 +7,7 @@ import {
   SnapsList,
   useSnaps,
 } from "@/features/snaps";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";

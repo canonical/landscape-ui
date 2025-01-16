@@ -9,7 +9,7 @@ import SearchInfoBox from "../SearchInfoBox";
 import SearchPrompt from "../SearchPrompt";
 import { SavedSearch } from "../../types";
 import classes from "./SearchBoxWithSavedSearches.module.scss";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { getFilteredSavedSearches } from "./helpers";
 
 interface SearchBoxWithSavedSearchesProps {

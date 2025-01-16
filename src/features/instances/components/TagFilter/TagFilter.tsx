@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { TableFilter } from "@/components/filter";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { SelectOption } from "@/types/SelectOption";
 
 interface TagFilterProps {

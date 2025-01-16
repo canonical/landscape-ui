@@ -17,7 +17,7 @@ import { SelectOption } from "@/types/SelectOption";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import WslProfilesListContextualMenu from "../WslProfilesListContextualMenu";

@@ -8,7 +8,7 @@ import {
   PackagesPanelHeader,
   usePackages,
 } from "@/features/packages";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { getEmptyMessage } from "./helpers";
 import { UrlParams } from "@/types/UrlParams";
 

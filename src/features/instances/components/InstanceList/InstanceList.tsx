@@ -10,7 +10,7 @@ import {
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { Instance } from "@/types/Instance";
 import classes from "./InstanceList.module.scss";
 import { ColumnFilterOption } from "@/components/form/ColumnFilter";

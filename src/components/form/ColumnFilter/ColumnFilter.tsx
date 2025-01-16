@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Icon } from "@canonical/react-components";
 import { TableFilter } from "@/components/filter";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { ColumnFilterOption } from "./types";
 import classes from "./ColumnFilter.module.scss";
 

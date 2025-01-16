@@ -10,7 +10,7 @@ import { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import WslInstanceListActions from "../WslInstanceListActions";
 import WslInstancesHeader from "../WslInstancesHeader";
 import classes from "./WslInstanceList.module.scss";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 
 interface WslInstanceListProps {
   instance: Instance;

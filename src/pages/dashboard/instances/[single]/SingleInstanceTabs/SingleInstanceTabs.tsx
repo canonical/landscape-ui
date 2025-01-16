@@ -5,7 +5,7 @@ import { Instance } from "@/types/Instance";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getTabLinks } from "./helpers";
 import classes from "./SingleInstanceTabs.module.scss";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 
 const InfoPanel = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info"),
