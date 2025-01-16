@@ -10,7 +10,7 @@ describe("EventsLogHeader", () => {
 
   it("should render EventsLogHeader correctly", () => {
     expect(screen.getByRole("searchbox")).toBeInTheDocument();
-    expect(screen.getByText("Days")).toBeInTheDocument();
+    expect(screen.getByText(/days/i)).toBeInTheDocument();
   });
 
   it("should write in search", async () => {

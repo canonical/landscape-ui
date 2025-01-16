@@ -1,38 +1,15 @@
-import { ChangeEvent, FC, ReactNode } from "react";
+import SearchBoxWithForm from "@/components/form/SearchBoxWithForm";
 import {
   Badge,
   Button,
   ContextualMenu,
   Input,
-  Position,
 } from "@canonical/react-components";
-import { SelectOption } from "@/types/SelectOption";
-import classes from "./TableFilter.module.scss";
-import SearchBoxWithForm from "@/components/form/SearchBoxWithForm";
 import classNames from "classnames";
-import { GroupedOption } from "./types";
-
-type TableFilterProps = {
-  label: ReactNode;
-  options: GroupedOption[];
-  disabledOptions?: SelectOption[];
-  hasBadge?: boolean;
-  hasToggleIcon?: boolean;
-  onSearch?: (search: string) => void;
-  position?: Position;
-} & (
-  | {
-      multiple: false;
-      onItemSelect: (item: string) => void;
-      selectedItem: string;
-    }
-  | {
-      multiple: true;
-      onItemsSelect: (items: string[]) => void;
-      selectedItems: string[];
-      showSelectedItemCount?: boolean;
-    }
-);
+import { ChangeEvent, FC } from "react";
+import { getToggleLabel } from "./helpers";
+import classes from "./TableFilter.module.scss";
+import { TableFilterProps } from "./types";
 
 const TableFilter: FC<TableFilterProps> = ({
   disabledOptions,
@@ -66,7 +43,13 @@ const TableFilter: FC<TableFilterProps> = ({
       toggleAppearance="base"
       toggleLabel={
         <>
-          <span>{label}</span>
+          <span>
+            {getToggleLabel({
+              label,
+              options,
+              otherProps,
+            })}
+          </span>
           {hasBadge && otherProps.multiple && (
             <span
               className={classNames(classes.badgeContainer, {

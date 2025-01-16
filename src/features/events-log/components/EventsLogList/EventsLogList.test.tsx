@@ -20,7 +20,7 @@ describe("EventsList", () => {
       "username",
       "entity type",
       "entity name",
-      "event log message",
+      "message",
     ];
 
     expect(eventsLogTable).toHaveTexts(columns);

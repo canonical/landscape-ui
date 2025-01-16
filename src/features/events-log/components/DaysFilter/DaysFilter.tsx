@@ -10,6 +10,7 @@ const DaysFilter: FC = () => {
     <TableFilter
       multiple={false}
       label="Days"
+      showSelectionOnToggleLabel
       hasToggleIcon
       options={DAYS_FILTER_OPTIONS}
       onItemSelect={(item) => setPageParams({ days: item })}
