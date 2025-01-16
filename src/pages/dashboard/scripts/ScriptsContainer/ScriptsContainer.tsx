@@ -26,22 +26,22 @@ const ScriptsContainer: FC = () => {
           getScriptsQueryResult.data.results.length === 0) && (
           <ScriptsEmptyState />
         )}
-      {currentPage !== 1 ||
+      {(currentPage !== 1 ||
         pageSize !== 20 ||
         (!getScriptsQueryLoading &&
           getScriptsQueryResult &&
-          getScriptsQueryResult.data.results.length > 0 && (
-            <>
-              <ScriptList
-                isScriptsLoading={getScriptsQueryLoading}
-                scripts={getScriptsQueryResult?.data.results ?? []}
-              />
-              <TablePagination
-                totalItems={getScriptsQueryResult?.data.count}
-                currentItemCount={getScriptsQueryResult.data.results.length}
-              />
-            </>
-          ))}
+          getScriptsQueryResult.data.results.length > 0)) && (
+        <>
+          <ScriptList
+            isScriptsLoading={getScriptsQueryLoading}
+            scripts={getScriptsQueryResult?.data.results ?? []}
+          />
+          <TablePagination
+            totalItems={getScriptsQueryResult?.data.count}
+            currentItemCount={getScriptsQueryResult?.data.results.length}
+          />
+        </>
+      )}
     </>
   );
 };

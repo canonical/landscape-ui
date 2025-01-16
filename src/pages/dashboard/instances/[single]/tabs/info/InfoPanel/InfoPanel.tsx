@@ -1,16 +1,16 @@
 import classNames from "classnames";
-import { FC, lazy, Suspense, useState } from "react";
+import { FC, lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
   CheckboxInput,
   Col,
   ConfirmationButton,
+  Form,
   Icon,
   ICONS,
-  Row,
   Input,
-  Form,
+  Row,
 } from "@canonical/react-components";
 import TagMultiSelect from "@/components/form/TagMultiSelect";
 import InfoItem from "@/components/layout/InfoItem";
@@ -59,7 +59,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { deleteChildInstancesQuery } = useWsl();
   const { editInstanceQuery } = useInstances();
 
-  const { mutateAsync: editInstance } = editInstanceQuery;
+  useEffect(() => {
+    setInstanceTags(instance.tags);
+  }, [instance.tags]);
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -69,6 +71,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       value: name,
     })) ?? [];
 
+  const { mutateAsync: editInstance } = editInstanceQuery;
   const { mutateAsync: removeInstances, isPending: isRemoving } =
     removeInstancesQuery;
   const { mutateAsync: rebootInstances, isPending: isRebooting } =

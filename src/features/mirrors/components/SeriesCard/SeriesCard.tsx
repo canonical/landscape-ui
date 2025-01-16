@@ -192,6 +192,7 @@ const SeriesCard: FC<SeriesCardProps> = ({
           ) : (
             <ContextualMenu
               position="left"
+              hasToggleIcon
               toggleLabel="Actions"
               toggleClassName="u-no-margin--bottom"
               links={contextualMenuLinks}

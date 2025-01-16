@@ -22,6 +22,7 @@ import userSettings from "./userSettings";
 import usn from "./usn";
 import wsl from "./wsl";
 import savedSearches from "@/tests/server/handlers/savedSearches";
+import script from "@/tests/server/handlers/script";
 
 export default [
   ...accessGroup,
@@ -41,6 +42,7 @@ export default [
   ...process,
   ...repo,
   ...savedSearches,
+  ...script,
   ...snap,
   ...tag,
   ...upgradeProfile,
