@@ -1,20 +1,21 @@
 import { Button, Icon } from "@canonical/react-components";
-import { FC } from "react";
-import { AutoinstallFile } from "../../types";
+import type { FC } from "react";
+import type { AutoinstallFile } from "../../types";
 import classes from "./ViewAutoinstallFileDetailsPanel.module.scss";
 import ViewAutoinstallFileDetailsTabs from "../ViewAutoinstallFileDetailsTabs";
 import ViewAutoinstallFileDetailsEditButton from "../ViewAutoinstallFileDetailsEditButton";
 
-const ViewAutoinstallFileDetailsPanel: FC<{ file: AutoinstallFile }> = ({
-  file,
-}) => {
+const ViewAutoinstallFileDetailsPanel: FC<{
+  readonly file: AutoinstallFile;
+  readonly isDefault: boolean;
+}> = ({ file, isDefault }) => {
   return (
     <>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
           <ViewAutoinstallFileDetailsEditButton fileName={file.name} />
 
-          <Button className="p-segmented-control__button" disabled>
+          <Button className="p-segmented-control__button" disabled={isDefault}>
             <Icon name="delete" />
             <span>Remove</span>
           </Button>
