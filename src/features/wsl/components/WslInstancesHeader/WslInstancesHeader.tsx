@@ -4,7 +4,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useSidePanel from "@/hooks/useSidePanel";
-import { InstanceWithoutRelation } from "@/types/Instance";
+import { WslInstanceWithoutRelation } from "@/types/Instance";
 import { useWsl } from "../../hooks";
 import classes from "./WslInstancesHeader.module.scss";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
@@ -13,7 +13,7 @@ import { usePageParams } from "@/hooks/usePageParams";
 const WslInstanceInstallForm = lazy(() => import("../WslInstanceInstallForm"));
 
 interface WslInstancesHeaderProps {
-  selectedInstances: InstanceWithoutRelation[];
+  selectedInstances: WslInstanceWithoutRelation[];
 }
 
 const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({

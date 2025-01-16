@@ -186,41 +186,73 @@ interface DistributionInfo {
 
 export interface InstanceWithoutRelation extends Record<string, unknown> {
   access_group: AccessGroup["name"];
-  clone_id: number | null;
   cloud_init: {
     availability_zone?: string | null;
   };
-  cloud_instance_metadata: CloudInstanceMetadata;
   comment: string;
-  container_info: string | null;
   distribution: string | null;
   distribution_info: DistributionInfo | null;
-  hostname: string | null;
+  hostname: string;
   id: number;
   is_default_child: boolean | null;
   is_wsl_instance: boolean;
-  last_exchange_time: string | null;
   last_ping_time: string | null;
-  reboot_required_flag: boolean;
-  secrets_name: string | null;
   tags: string[];
   title: string;
-  total_memory: number | null;
-  total_swap: number | null;
   ubuntu_pro_info: UbuntuProInfo | null;
-  update_manager_prompt: string;
-  vm_info: string | null;
   annotations?: Record<string, string>;
   grouped_hardware?: GroupedHardware;
-  hardware?: HardwareDescription[];
-  network_devices?: NetworkDevice[];
   alerts?: InstanceAlert[];
   upgrades?: InstanceUpgrades;
 }
 
-export interface Instance extends InstanceWithoutRelation {
+interface WithRelation<Type extends InstanceWithoutRelation> extends Type {
   children: InstanceWithoutRelation[];
   parent: InstanceWithoutRelation | null;
+}
+
+export type Instance = WithRelation<InstanceWithoutRelation>;
+
+export interface FreshInstance extends Instance {
+  distribution: null;
+  distribution_info: null;
+}
+
+interface WithDistribution<Type extends InstanceWithoutRelation> extends Type {
+  distribution: string;
+  distribution_info: DistributionInfo;
+}
+
+export type UbuntuInstanceWithoutRelation =
+  WithDistribution<InstanceWithoutRelation>;
+
+export interface UbuntuInstance
+  extends WithRelation<UbuntuInstanceWithoutRelation> {
+  children: [];
+}
+
+export interface WslInstanceWithoutRelation
+  extends UbuntuInstanceWithoutRelation {
+  is_default_child: boolean;
+  is_wsl_instance: true;
+}
+
+export interface WslInstance
+  extends WithRelation<WslInstanceWithoutRelation>,
+    UbuntuInstance {
+  parent: WindowsInstanceWithoutRelation;
+}
+
+export interface WindowsInstanceWithoutRelation
+  extends WithDistribution<InstanceWithoutRelation> {
+  is_default_child: null;
+  is_wsl_instance: false;
+}
+
+export interface WindowsInstance
+  extends WithRelation<WindowsInstanceWithoutRelation> {
+  children: WslInstanceWithoutRelation[];
+  parent: null;
 }
 
 export interface PendingInstance extends Record<string, unknown> {

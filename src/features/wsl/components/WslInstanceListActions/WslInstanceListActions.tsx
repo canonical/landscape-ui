@@ -8,13 +8,13 @@ import {
 import { useWsl } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import { InstanceWithoutRelation } from "@/types/Instance";
+import { WslInstanceWithoutRelation } from "@/types/Instance";
 import classes from "./WslInstanceListActions.module.scss";
 import { getModalBody } from "./constants";
 import { Action } from "./types";
 
 interface WslInstanceListActionsProps {
-  instance: InstanceWithoutRelation;
+  instance: WslInstanceWithoutRelation;
   parentId: number;
 }
 

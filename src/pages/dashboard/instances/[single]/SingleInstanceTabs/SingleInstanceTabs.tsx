@@ -1,7 +1,7 @@
 import { FC, lazy, Suspense } from "react";
 import { Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import { Instance } from "@/types/Instance";
+import { Instance, WindowsInstance } from "@/types/Instance";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getTabLinks } from "./helpers";
 import classes from "./SingleInstanceTabs.module.scss";
@@ -94,7 +94,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
             <InfoPanel instance={instance} />
           )}
           {"tab-link-wsl" === currentTabLinkId && (
-            <WslPanel instance={instance} />
+            <WslPanel instance={instance as WindowsInstance} />
           )}
           {"tab-link-activities" === currentTabLinkId && (
             <ActivityPanel instanceId={instance.id} />
