@@ -2,7 +2,7 @@ import { AutoinstallFile } from "@/features/autoinstall-files";
 
 export const autoinstallFiles: AutoinstallFile[] = [
   {
-    name: "default.yaml",
+    name: "autoinstall.yaml",
     employeeGroupsAssociated: [
       "Employee group 1",
       "Employee group 2",
@@ -14,58 +14,58 @@ export const autoinstallFiles: AutoinstallFile[] = [
     version: 3,
     events: [
       {
-        description: "New version 10 of default.yaml created",
+        description: "New version 10 of autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
-        description: "New version 9 of default.yaml created",
+        description: "New version 9 of autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
-        description: "New version 8 of default.yaml created",
+        description: "New version 8 of autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
-        description: "New version 7 of default.yaml created",
+        description: "New version 7 of autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
-        description: "New version 6 of default.yaml created",
+        description: "New version 6 of autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
-        description: "New version 5 of default.yaml created",
+        description: "New version 5 of autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
-        description: "New version 4 of default.yaml created",
+        description: "New version 4 of autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
-        description: "New version 3 of default.yaml created",
+        description: "New version 3 of autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
-        description: "New version 2 of default.yaml created",
+        description: "New version 2 of autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
         description:
-          "Autoinstall file default.yaml associated with Asia-Pacific Team",
+          "Autoinstall file autoinstall.yaml associated with Asia-Pacific Team",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },
       {
-        description: "Autoinstall file default.yaml created",
+        description: "Autoinstall file autoinstall.yaml created",
         author: "Stephanie Domas",
         createdAt: "Nov 23, 2024, 10:16",
       },

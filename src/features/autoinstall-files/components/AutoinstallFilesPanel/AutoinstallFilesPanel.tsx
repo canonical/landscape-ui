@@ -7,7 +7,10 @@ const AutoinstallFilesPanel: FC = () => {
   return (
     <>
       <AutoinstallFilesHeader />
-      <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />
+      <AutoinstallFilesList
+        autoinstallFiles={autoinstallFiles}
+        defaultFile={autoinstallFiles[0]}
+      />
     </>
   );
 };

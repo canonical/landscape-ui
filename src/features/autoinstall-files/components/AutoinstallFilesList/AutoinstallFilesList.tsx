@@ -14,18 +14,22 @@ import ViewAutoinstallFileDetailsPanel from "../ViewAutoinstallFileDetailsPanel"
 
 interface AutoinstallFilesListProps {
   autoinstallFiles: AutoinstallFile[];
+  defaultFile: AutoinstallFile;
 }
 
 const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   autoinstallFiles,
+  defaultFile,
 }) => {
   const { search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
-  const handleAutoinstallFileDetailsOpen = (profile: AutoinstallFile) => {
+  const handleAutoinstallFileDetailsOpen = (file: AutoinstallFile) => {
+    const isDefault = file === defaultFile;
+
     setSidePanelContent(
-      profile.name,
-      <ViewAutoinstallFileDetailsPanel file={profile} />,
+      `${file.name}${isDefault ? " (default)" : ""}`,
+      <ViewAutoinstallFileDetailsPanel file={file} isDefault={isDefault} />,
       "large",
     );
   };
@@ -54,6 +58,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             onClick={() => handleAutoinstallFileDetailsOpen(original)}
           >
             {original.name}
+            {original === defaultFile && " (default)"}
           </Button>
         ),
       },

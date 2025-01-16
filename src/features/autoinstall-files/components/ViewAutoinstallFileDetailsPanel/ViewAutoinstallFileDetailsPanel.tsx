@@ -5,16 +5,17 @@ import classes from "./ViewAutoinstallFileDetailsPanel.module.scss";
 import ViewAutoinstallFileDetailsTabs from "../ViewAutoinstallFileDetailsTabs";
 import ViewAutoinstallFileDetailsEditButton from "../ViewAutoinstallFileDetailsEditButton";
 
-const ViewAutoinstallFileDetailsPanel: FC<{ file: AutoinstallFile }> = ({
-  file,
-}) => {
+const ViewAutoinstallFileDetailsPanel: FC<{
+  file: AutoinstallFile;
+  isDefault: boolean;
+}> = ({ file, isDefault }) => {
   return (
     <>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
           <ViewAutoinstallFileDetailsEditButton fileName={file.name} />
 
-          <Button className="p-segmented-control__button" disabled>
+          <Button className="p-segmented-control__button" disabled={isDefault}>
             <Icon name="delete" />
             <span>Remove</span>
           </Button>
