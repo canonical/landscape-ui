@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Select } from "@canonical/react-components";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { InstancePackage } from "../../types";
 import PackageActions from "../PackageActions";
 import { filterOptions } from "./constants";

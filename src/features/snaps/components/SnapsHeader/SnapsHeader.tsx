@@ -1,5 +1,5 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { FC } from "react";
 import { getSelectedSnaps } from "../../helpers";
 import { InstalledSnap } from "../../types";

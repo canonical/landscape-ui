@@ -1,6 +1,6 @@
 import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import {
   ConfirmationButton,

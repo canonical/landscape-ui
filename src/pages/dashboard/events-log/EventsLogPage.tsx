@@ -10,7 +10,7 @@ import {
   useEventsLog,
 } from "@/features/events-log";
 import useAuth from "@/hooks/useAuth";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
 import { FC, useMemo } from "react";

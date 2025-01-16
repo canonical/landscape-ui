@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { TableFilter } from "@/components/filter";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { DAYS_FILTER_OPTIONS } from "./constants";
 
 const DaysFilter: FC = () => {

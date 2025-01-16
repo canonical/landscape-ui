@@ -4,7 +4,7 @@ import { ConfirmationButton, Icon } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { useUsns } from "@/features/usns";
 import { UrlParams } from "@/types/UrlParams";
 

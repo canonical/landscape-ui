@@ -1,4 +1,4 @@
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { SearchAndFilterChip } from "@canonical/react-components/dist/components/SearchAndFilter/types";
 
 export type FilterType = Pick<

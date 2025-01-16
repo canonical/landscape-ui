@@ -1,6 +1,6 @@
 import { FC, SyntheticEvent, useState } from "react";
 import { Col, Form, Row, SearchBox } from "@canonical/react-components";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 
 const AdministratorsPanelHeader: FC = () => {
   const { search, setPageParams } = usePageParams();

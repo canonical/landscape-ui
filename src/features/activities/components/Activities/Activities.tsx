@@ -19,7 +19,7 @@ import { useActivities, useOpenActivityDetails } from "../../hooks";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ActivityCommon } from "../../types";
 import classes from "./Activities.module.scss";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import NoData from "@/components/layout/NoData";
 import { Link } from "react-router-dom";
 import { getDateQuery, getStatusQuery, getTypeQuery } from "./helpers";

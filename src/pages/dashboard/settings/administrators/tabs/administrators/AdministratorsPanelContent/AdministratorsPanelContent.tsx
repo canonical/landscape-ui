@@ -4,7 +4,7 @@ import useRoles from "@/hooks/useRoles";
 import { Administrator } from "@/types/Administrator";
 import AdministratorList from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorList";
 import AdministratorsPanelHeader from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelHeader";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 
 interface AdministratorsPanelContentProps {
   administrators: Administrator[];

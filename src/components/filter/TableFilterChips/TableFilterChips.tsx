@@ -1,4 +1,4 @@
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { SelectOption } from "@/types/SelectOption";
 import { Button, Chip, Icon } from "@canonical/react-components";
 import classNames from "classnames";

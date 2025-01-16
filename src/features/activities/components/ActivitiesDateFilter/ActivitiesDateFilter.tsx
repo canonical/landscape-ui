@@ -8,7 +8,7 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import classes from "./ActivitiesDateFilter.module.scss";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";

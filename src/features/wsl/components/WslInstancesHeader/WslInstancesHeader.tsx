@@ -8,7 +8,7 @@ import { WslInstanceWithoutRelation } from "@/types/Instance";
 import { useWsl } from "../../hooks";
 import classes from "./WslInstancesHeader.module.scss";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 
 const WslInstanceInstallForm = lazy(() => import("../WslInstanceInstallForm"));
 

@@ -6,7 +6,7 @@ import {
   ProcessesList,
   useProcesses,
 } from "@/features/processes";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { UrlParams } from "@/types/UrlParams";
 import { FC, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";

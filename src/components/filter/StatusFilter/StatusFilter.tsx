@@ -1,4 +1,4 @@
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { SelectOption } from "@/types/SelectOption";
 import { FC } from "react";
 import TableFilter from "../TableFilter";

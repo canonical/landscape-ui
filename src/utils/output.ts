@@ -9,3 +9,14 @@ export const getFormattedDateTime = (date: string) => {
     minute: "numeric",
   });
 };
+
+export const getTableSortOrder = (sort: string | null) => {
+  switch (sort) {
+    case "asc":
+      return "ascending";
+    case "desc":
+      return "descending";
+    default:
+      return "none";
+  }
+};

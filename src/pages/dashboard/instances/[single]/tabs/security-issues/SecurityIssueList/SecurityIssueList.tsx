@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { Usn } from "@/types/Usn";
 import SecurityIssuesPanelHeader from "@/pages/dashboard/instances/[single]/tabs/security-issues/SecurityIssuesPanelHeader";
 import { UsnList } from "@/features/usns";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import { Instance } from "@/types/Instance";
 
 interface SecurityIssueListProps {
