@@ -141,7 +141,7 @@ const alertTypes = [
 
 type FilterKey = "os" | "groupBy" | "status";
 
-export const FILTERS: { [key in FilterKey]: ListFilter } = {
+export const FILTERS: Record<FilterKey, ListFilter> = {
   os: {
     slug: "os",
     label: "OS",
