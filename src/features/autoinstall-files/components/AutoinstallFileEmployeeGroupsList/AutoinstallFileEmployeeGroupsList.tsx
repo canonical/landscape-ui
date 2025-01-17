@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
 import classes from "./AutoinstallFileEmployeeGroupsList.module.scss";
+import { AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS } from "../AutoinstallFilesHeader/constants";
 
 interface AutoinstallFileEmployeeGroupsListProps {
   readonly groups: string[];
@@ -34,7 +35,11 @@ const AutoinstallFileEmployeeGroupsList: FC<
         {groups.map((group, key) => {
           return (
             <span key={key}>
-              {group}
+              {
+                AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS.find(({ value }) => {
+                  return value === group;
+                })?.label
+              }
               {key < groups.length - 1 && ", "}
             </span>
           );
