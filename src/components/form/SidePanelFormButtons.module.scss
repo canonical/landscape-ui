@@ -4,10 +4,16 @@
   background-color: $color-x-light;
   border-top: 1px solid $colors--light-theme--border-default;
   bottom: 0;
+  display: flex;
   margin-bottom: -3 * $sp-unit;
   margin-top: $spv--x-large;
   padding-bottom: $spv--x-large;
   padding-top: $spv--x-large;
   position: sticky;
-  text-align: right;
+
+  .actionButtons {
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-end;
+  }
 }

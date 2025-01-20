@@ -1,0 +1,25 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.expandedCell {
+  overflow: visible;
+  padding: 0;
+}
+
+.expandedRow {
+  background-color: $color-x-light;
+  filter: drop-shadow(0 4px 8px $color-mid-light);
+}
+
+.truncatedItem {
+  &:not(:last-child)::after {
+    content: ", ";
+  }
+}
+
+.actions {
+  width: 4.5rem;
+}
+
+th.actions {
+  text-align: right;
+}

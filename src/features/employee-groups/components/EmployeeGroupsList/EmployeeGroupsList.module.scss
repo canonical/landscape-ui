@@ -1,0 +1,61 @@
+@import "vanilla-framework/scss/base_placeholders";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.expandColumn {
+  width: 4rem; // TODO change
+}
+
+.expanded {
+  @include vf-highlight-bar($colors--light-theme--text-default, bottom, false);
+}
+
+.expandButton {
+  background-color: $color-transparent;
+  z-index: 0 !important;
+
+  &[aria-expanded="true"] {
+    background-color: inherit;
+    font-weight: 550;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.innerTable {
+  background-color: $color-light;
+}
+
+.row,
+.expanded {
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.expandedRow {
+  background-color: $color-x-light;
+  filter: drop-shadow(0 4px 8px $color-mid-light);
+}
+
+.expandedCell {
+  overflow: visible;
+  padding: 0;
+}
+
+.badge {
+  background-color: $colors--light-theme--text-muted;
+}
+
+.employeeGroupName {
+  margin-right: $sph--x-small;
+}
+
+.actions {
+  width: 4.5rem;
+}
+
+th.actions {
+  text-align: right;
+}

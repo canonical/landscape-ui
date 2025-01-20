@@ -1,62 +1,65 @@
-import type { HTMLProps, MutableRefObject } from "react";
-import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
-import type { Usn } from "@/types/Usn";
-import { EMPTY_USN } from "./constants";
-import type { ExpandedCell } from "./types";
-import classes from "./UsnList.module.scss";
+import { HTMLProps, MutableRefObject } from "react";
+import {
+  Cell,
+  Row,
+  TableCellProps,
+  TableRowProps,
+} from "@canonical/react-components/node_modules/@types/react-table";
+import { ExpandedCell } from "./types";
+import classes from "./EmployeeGroupsList.module.scss";
+import { EmployeeGroup } from "../../types";
 
-export const getUsnsWithExpanded = ({
+const EMPTY_EMPLOYEE_GROUP: EmployeeGroup = {
+  id: 0,
+  name: "",
+  autoinstall_file: "",
+  employees: [],
+  priority: 0,
+};
+
+export const getEmployeeGroupsWithExpanded = ({
   expandedCell,
-  isUsnsLoading,
-  showSelectAllButton,
-  usns,
+  isEmployeeGroupsLoading,
+  employeeGroups,
 }: {
   expandedCell: ExpandedCell;
-  isUsnsLoading: boolean;
-  showSelectAllButton: boolean;
-  usns: Usn[];
+  isEmployeeGroupsLoading: boolean;
+  employeeGroups: EmployeeGroup[];
 }) => {
   const rowIndexToInsert =
-    expandedCell?.column === "computers_count" ||
-    expandedCell?.column === "release_packages"
-      ? expandedCell.row + 1
-      : 0;
+    expandedCell?.column === "id" ? expandedCell.row + 1 : 0;
 
   return [
-    ...[EMPTY_USN].slice(showSelectAllButton ? 0 : 1),
-    ...usns.slice(0, rowIndexToInsert || usns.length),
-    ...usns.slice(rowIndexToInsert ? rowIndexToInsert - 1 : usns.length),
-    ...[EMPTY_USN].slice(isUsnsLoading ? 0 : 1),
+    ...employeeGroups.slice(0, rowIndexToInsert || employeeGroups.length),
+    ...employeeGroups.slice(
+      rowIndexToInsert ? rowIndexToInsert - 1 : employeeGroups.length,
+    ),
+    ...[EMPTY_EMPLOYEE_GROUP].slice(isEmployeeGroupsLoading ? 0 : 1),
   ];
 };
 
 export const handleCellProps =
   ({
     expandedCell,
-    isUsnsLoading,
-    lastUsnIndex,
-    showSelectAllButton,
+    isEmployeeGroupsLoading,
+    lastEmployeeGroupIndex,
   }: {
     expandedCell: ExpandedCell;
-    isUsnsLoading: boolean;
-    lastUsnIndex?: number;
-    showSelectAllButton?: boolean;
+    isEmployeeGroupsLoading: boolean;
+    lastEmployeeGroupIndex?: number;
   }) =>
-  ({ column, row: { index } }: Cell<Usn>) => {
+  ({ column, row: { index } }: Cell<EmployeeGroup>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
-
     if (
-      (showSelectAllButton && index === 0) ||
-      (isUsnsLoading && index === lastUsnIndex) ||
-      (expandedCell?.row === index - 1 &&
-        ["computers_count", "release_packages"].includes(expandedCell.column))
+      (isEmployeeGroupsLoading && index === lastEmployeeGroupIndex) ||
+      (expandedCell?.row === index - 1 && ["id"].includes(expandedCell.column))
     ) {
-      if (column.id === "usn") {
-        cellProps.colSpan = 5;
+      if (column.id === "id") {
+        cellProps.colSpan = 6;
         if (
           expandedCell?.row === index - 1 &&
-          ["computers_count", "release_packages"].includes(expandedCell.column)
+          ["id"].includes(expandedCell.column)
         ) {
           cellProps.className = classes.innerTable;
         }
@@ -64,7 +67,7 @@ export const handleCellProps =
         cellProps.className = classes.hidden;
         cellProps["aria-hidden"] = true;
       }
-    } else if (column.id === "usn") {
+    } else if (column.id === "id") {
       cellProps.role = "rowheader";
     } else if (column.id === "cves") {
       cellProps["aria-label"] = "CVE(s)";
@@ -93,11 +96,11 @@ export const handleCellProps =
 
 export const handleRowProps =
   (expandedCell: ExpandedCell) =>
-  ({ index }: Row<Usn>) => {
+  ({ index }: Row<EmployeeGroup>) => {
     const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
       {};
 
-    if (expandedCell?.column === "cves" && expandedCell.row === index) {
+    if (expandedCell?.column === "name" && expandedCell.row === index) {
       rowProps.className = classes.expandedRow;
     }
 
@@ -110,6 +113,7 @@ export const getTableRows =
     if (!instance) {
       return;
     }
+
     ref.current = [
       ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
     ];

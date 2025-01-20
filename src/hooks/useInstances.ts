@@ -8,6 +8,7 @@ import type { Instance, PendingInstance } from "@/types/Instance";
 import type { QueryFnType } from "@/types/QueryFnType";
 import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
+import { instances } from "@/tests/mocks/instance";
 
 export interface GetInstancesParams {
   query?: string;
@@ -29,6 +30,11 @@ interface GetSingleInstanceParams {
   with_grouped_hardware?: boolean;
   with_hardware?: boolean;
   with_network?: boolean;
+}
+
+interface GetEmployeeInstancesParams {
+  employeeId: number;
+  with_provisioning_info: true;
 }
 
 interface EditInstanceParams {
@@ -128,6 +134,32 @@ export default function useInstances() {
       queryKey: ["instances", { instanceId, ...queryParams }],
       queryFn: () =>
         authFetch.get(`computers/${instanceId}`, { params: queryParams }),
+      ...config,
+    });
+
+  const getEmployeeInstancesQuery = (
+    { employeeId, ...queryParams }: GetEmployeeInstancesParams,
+    config: Omit<
+      UseQueryOptions<AxiosResponse<Instance[]>, AxiosError<ApiError>>,
+      "queryKey" | "queryFn"
+    > = {}, //TODO change the return type to the truncated version
+  ) =>
+    useQuery<AxiosResponse<Instance[]>, AxiosError<ApiError>>({
+      queryKey: ["instances", { employeeId, ...queryParams }],
+      // queryFn: () =>
+      //   authFetch.get(`computers/${employeeId}`, { params: queryParams }),
+      queryFn: () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              data: instances.slice(0, 5),
+              status: 200,
+              statusText: "OK",
+              headers: {},
+              config: {},
+            } as AxiosResponse<Instance[]>);
+          }, 200); // Simulate delay
+        }),
       ...config,
     });
 
@@ -310,6 +342,7 @@ export default function useInstances() {
   return {
     getInstancesQuery,
     getSingleInstanceQuery,
+    getEmployeeInstancesQuery,
     editInstanceQuery,
     addAnnotationToInstancesQuery,
     removeAnnotationFromInstancesQuery,
