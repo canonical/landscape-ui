@@ -9,8 +9,8 @@ const redirectToExternalUrl = vi.fn();
 const navigate = vi.fn();
 
 const mockTestParams = (response: AuthStateResponse | Error) => {
-  vi.doMock("react-router-dom", async () => ({
-    ...(await vi.importActual("react-router-dom")),
+  vi.doMock("react-router", async () => ({
+    ...(await vi.importActual("react-router")),
     useSearchParams: () => [new URLSearchParams({ enabled: "true" })],
     useNavigate: () => navigate,
   }));
@@ -81,7 +81,7 @@ describe("OidcAuthPage", () => {
     ];
 
     beforeEach(async ({ task: { id } }) => {
-      vi.doUnmock("react-router-dom");
+      vi.doUnmock("react-router");
       vi.doUnmock("@/features/auth");
       vi.doUnmock("@/hooks/useAuth");
       vi.resetModules();

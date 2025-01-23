@@ -20,7 +20,7 @@ import {
   renderModalBody,
 } from "./helpers";
 import LoadingState from "@/components/layout/LoadingState";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { UrlParams } from "@/types/UrlParams";
 
 const EditUserForm = lazy(

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Button, Icon } from "@canonical/react-components";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import Logo from "../../assets/images/logo-white-full.svg";
 import LogoIcon from "../../assets/images/logo-white-icon.svg";
 import { APP_TITLE, ROOT_PATH } from "../../constants";

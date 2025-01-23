@@ -4,7 +4,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { UrlParams } from "@/types/UrlParams";
 import { FC, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useSnaps } from "../../hooks";
 import { SelectedSnaps } from "../../types";
 import SnapDropdownSearch from "../SnapDropdownSearch";

@@ -12,7 +12,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";
 import { FC, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 const SnapsPanel: FC = () => {
   const [selectedSnapIds, setSelectedSnapIds] = useState<string[]>([]);

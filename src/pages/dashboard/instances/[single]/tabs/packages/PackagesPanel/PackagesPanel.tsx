@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import {

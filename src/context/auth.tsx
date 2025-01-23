@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { ROOT_PATH } from "@/constants";
 import useNotify from "@/hooks/useNotify";

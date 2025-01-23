@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 import Sidebar from "./Sidebar";
 import SidePanelProvider from "../../context/sidePanel";
-import { matchPath, useLocation } from "react-router-dom";
+import { matchPath, useLocation } from "react-router";
 import SecondaryNavigation from "./SecondaryNavigation";
 import classes from "./DashboardTemplate.module.scss";
 import classNames from "classnames";

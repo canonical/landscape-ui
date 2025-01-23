@@ -17,7 +17,7 @@ import {
 import { useFormik } from "formik";
 import moment from "moment";
 import { FC } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useKernel } from "../../hooks";
 import { Kernel } from "../../types";
 import {

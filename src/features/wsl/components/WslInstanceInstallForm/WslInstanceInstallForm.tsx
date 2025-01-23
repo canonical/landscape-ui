@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import { FC } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import * as Yup from "yup";
 import { Form, Input, Select } from "@canonical/react-components";
 import FileInput from "@/components/form/FileInput";

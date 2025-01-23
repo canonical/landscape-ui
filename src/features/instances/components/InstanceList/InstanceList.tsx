@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import moment from "moment";
 import { FC, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import {
   CellProps,
   Column,

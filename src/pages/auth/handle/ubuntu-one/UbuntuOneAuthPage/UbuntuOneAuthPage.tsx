@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { CONTACT_SUPPORT_TEAM_MESSAGE, ROOT_PATH } from "@/constants";
 import { useUnsigned } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
