@@ -143,6 +143,8 @@ const SidePanelTablePagination: FC<SidePanelTablePaginationProps> = ({
                     required
                     type="number"
                     value={pageNumber}
+                    min={1}
+                    max={totalPages}
                   />
                   {error && (
                     <p

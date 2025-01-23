@@ -160,6 +160,8 @@ const TablePagination: FC<TablePaginationProps> = ({
                     required
                     type="number"
                     value={pageNumber}
+                    min={1}
+                    max={totalPages}
                   />
                   {error && (
                     <p
