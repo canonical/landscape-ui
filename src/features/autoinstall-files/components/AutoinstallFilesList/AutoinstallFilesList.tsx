@@ -1,16 +1,13 @@
 import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
 import { Button, ModularTable } from "@canonical/react-components";
 import { AutoinstallFile } from "../../types";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getCellProps } from "./helpers";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import classes from "./AutoinstallFilesList.module.scss";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 import ViewAutoinstallFileDetailsPanel from "../ViewAutoinstallFileDetailsPanel";
+import { CellProps, Column } from "react-table";
 
 interface AutoinstallFilesListProps {
   autoinstallFiles: AutoinstallFile[];

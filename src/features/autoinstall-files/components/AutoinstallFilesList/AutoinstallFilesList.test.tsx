@@ -4,7 +4,7 @@ import AutoinstallFilesList from ".";
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { usePageParams } from "@/hooks/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 
 vi.mock("@/hooks/usePageParams");
 
