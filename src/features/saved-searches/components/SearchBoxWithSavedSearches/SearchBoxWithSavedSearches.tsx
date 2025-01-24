@@ -28,7 +28,11 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const chipsContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleDropdownClose = () => {
+  const handleDropdownClose = (event: MouseEvent | TouchEvent | FocusEvent) => {
+    const portalElement = document.querySelector(".p-modal");
+    if (portalElement && portalElement.contains(event.target as Node)) {
+      return;
+    }
     setShowDropdown(false);
   };
 
