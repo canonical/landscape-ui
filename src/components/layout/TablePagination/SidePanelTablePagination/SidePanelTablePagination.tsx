@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from "react";
-import { Select } from "@canonical/react-components";
+import { Button, Icon, Select } from "@canonical/react-components";
 import classes from "../TablePagination.module.scss";
 import classNames from "classnames";
-import PageNumberControls from "../PageNumberControls";
+import PageNumberInputWithError from "../PageNumberInputWithError";
 
 interface SidePanelTablePaginationProps {
   currentPage: number;
@@ -65,8 +65,8 @@ const SidePanelTablePagination: FC<SidePanelTablePaginationProps> = ({
             ]}
             value={pageSize}
             onChange={(event) => {
-              setPageSize(parseInt(event.target.value));
               paginate(1);
+              setPageSize(parseInt(event.target.value));
             }}
           />
 
@@ -77,11 +77,40 @@ const SidePanelTablePagination: FC<SidePanelTablePaginationProps> = ({
                 classes.paginationWrapper,
               )}
             >
-              <PageNumberControls
+              <Button
+                aria-label="Previous page"
+                appearance="link"
+                className="p-pagination__link--previous u-no-margin--right u-no-margin--bottom u-no-padding--top"
+                disabled={currentPage <= 1}
+                onClick={() => paginate(currentPage - 1)}
+                type="button"
+              >
+                <Icon name="chevron-down" className={classes.icon} />
+              </Button>
+
+              <strong>Page </strong>
+
+              <PageNumberInputWithError
                 currentPage={currentPage}
                 max={totalPages}
+                min={1}
                 setCurrentPage={paginate}
               />
+
+              <strong className={classes.noWrap}>
+                of {Math.max(totalPages, 1)}
+              </strong>
+
+              <Button
+                aria-label="Next page"
+                appearance="link"
+                className="p-pagination__link--next u-no-margin--bottom u-no-padding--top"
+                disabled={currentPage >= totalPages}
+                onClick={() => paginate(currentPage + 1)}
+                type="button"
+              >
+                <Icon name="chevron-down" className={classes.icon} />
+              </Button>
             </span>
           </nav>
         </div>
