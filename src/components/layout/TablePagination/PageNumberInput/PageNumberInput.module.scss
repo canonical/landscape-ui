@@ -1,0 +1,21 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.input {
+  min-width: initial !important;
+}
+
+.smallInput {
+  width: $sp-xxx-large !important;
+}
+
+.mediumInput {
+  width: 7 * $sp-unit !important;
+}
+
+.largeInput {
+  width: $sp-xxxx-large !important;
+}
+
+.xLargeInput {
+  width: 9 * $sp-unit !important;
+}
