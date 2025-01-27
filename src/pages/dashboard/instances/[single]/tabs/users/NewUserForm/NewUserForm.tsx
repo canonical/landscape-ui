@@ -6,7 +6,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { UrlParams } from "@/types/UrlParams";
 
 interface FormProps {

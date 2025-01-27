@@ -1,5 +1,5 @@
 import { FC, lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import {
   CellProps,
   Column,

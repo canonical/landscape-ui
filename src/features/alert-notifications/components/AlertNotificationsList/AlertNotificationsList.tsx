@@ -6,7 +6,7 @@ import { PendingInstance } from "@/types/Instance";
 import { Button, Icon, List } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC, lazy, Suspense } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { AlertSummary } from "../../types";
 import classes from "./AlertNotificationsList.module.scss";
 

@@ -12,7 +12,7 @@ import { StatusFilter, TableFilterChips } from "@/components/filter";
 import ActivityTypeFilter from "../ActivityTypeFilter";
 import { useActivities } from "../../hooks";
 import ActivitiesDateFilter from "../ActivitiesDateFilter";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { UrlParams } from "@/types/UrlParams";
 import classNames from "classnames";
 

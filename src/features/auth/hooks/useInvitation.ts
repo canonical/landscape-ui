@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { useUnsigned } from "@/features/auth";
 
 export default function useInvitation() {

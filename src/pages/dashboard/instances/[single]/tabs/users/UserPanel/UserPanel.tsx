@@ -10,7 +10,7 @@ import { UrlParams } from "@/types/UrlParams";
 import { User } from "@/types/User";
 import { Button, Notification } from "@canonical/react-components";
 import { FC, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import { SORT_FUNCTIONS } from "../constants";
 import NewUserForm from "../NewUserForm";
 import UserList from "../UserList";

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import { ConfirmationButton, Icon } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
 import useDebug from "@/hooks/useDebug";

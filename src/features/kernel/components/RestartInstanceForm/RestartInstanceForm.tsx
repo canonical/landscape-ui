@@ -14,7 +14,7 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
 import { FC } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import {
   INITIAL_VALUES,
   NOTIFICATION_MESSAGE,

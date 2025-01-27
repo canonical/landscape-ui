@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { ROOT_PATH } from "@/constants";
 import useNotificationHelper from "@/hooks/useNotificationHelper";
 import { NotificationHelper } from "@/types/Notification";

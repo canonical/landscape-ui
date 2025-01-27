@@ -1,6 +1,6 @@
 import { render, RenderOptions } from "@testing-library/react";
 import { FC, ReactNode } from "react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router";
 import NotifyProvider, { NotifyContext } from "@/context/notify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AuthProvider from "@/context/auth";

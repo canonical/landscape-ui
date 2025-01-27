@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 import classes from "./PageHeader.module.scss";
 import classNames from "classnames";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Breadcrumb } from "../../../types/Breadcrumb";
 import { useMediaQuery } from "usehooks-ts";
 

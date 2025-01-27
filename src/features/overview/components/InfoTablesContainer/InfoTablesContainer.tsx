@@ -15,7 +15,7 @@ import {
 import classNames from "classnames";
 import moment from "moment";
 import { FC, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import {
   CellProps,
   Column,

@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import Downshift from "downshift";
 import React, { FC, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useDebounceCallback } from "usehooks-ts";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";

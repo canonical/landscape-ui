@@ -1,11 +1,5 @@
 import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
-import {
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import AppNotification from "@/components/layout/AppNotification";
 import LoadingState from "@/components/layout/LoadingState";

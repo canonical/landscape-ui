@@ -1,6 +1,6 @@
 import { ROOT_PATH } from "@/constants";
 import { FC, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const AccountPage: FC = () => {
   const navigate = useNavigate();
