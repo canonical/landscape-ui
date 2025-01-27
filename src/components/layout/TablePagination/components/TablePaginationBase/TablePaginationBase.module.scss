@@ -17,10 +17,6 @@
   z-index: 10;
 }
 
-.description {
-  margin-right: auto;
-}
-
 .paginationContainer {
   column-gap: $sph--x-large;
   display: flex;
@@ -31,4 +27,8 @@
 .paginationWrapper {
   align-items: baseline;
   column-gap: $sph--large;
+}
+
+.description {
+  margin-right: auto;
 }

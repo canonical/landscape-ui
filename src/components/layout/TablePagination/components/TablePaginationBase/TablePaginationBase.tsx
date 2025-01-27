@@ -1,45 +1,42 @@
-import { FC, useEffect, useState } from "react";
 import { Button, Icon, Select } from "@canonical/react-components";
-import classes from "../TablePagination.module.scss";
 import classNames from "classnames";
-import PageNumberInputWithError from "../PageNumberInputWithError";
+import { FC } from "react";
+import { useTotalPages } from "../../hooks";
+import PageNumberInputWithError from "../PageNumberInput";
+import classes from "./TablePaginationBase.module.scss";
+import { PAGE_SIZE_OPTIONS } from "./constants";
 
-interface SidePanelTablePaginationProps {
+interface TablePaginationBaseProps {
+  className: string;
+  currentItemCount: number;
   currentPage: number;
   pageSize: number;
   paginate: (page: number) => void;
   setPageSize: (itemsNumber: number) => void;
   totalItems: number | undefined;
-  className?: string;
-  currentItemCount?: number;
 }
 
-const SidePanelTablePagination: FC<SidePanelTablePaginationProps> = ({
-  currentPage,
+const TablePaginationBase: FC<TablePaginationBaseProps> = ({
+  className,
+  currentItemCount,
+  totalItems,
   pageSize,
   paginate,
   setPageSize,
-  totalItems,
-  className = "",
-  currentItemCount = 0,
+  currentPage,
 }) => {
-  const [totalPages, setTotalPages] = useState(1);
+  const totalPages = useTotalPages(totalItems, pageSize);
 
-  useEffect(() => {
-    if (totalItems === undefined) {
-      return;
-    }
+  const hasItems = !!currentItemCount && !!totalItems;
+  const hasControls = totalPages > 1;
 
-    setTotalPages(Math.ceil(totalItems / pageSize));
-  }, [totalItems, pageSize]);
-
-  if (totalPages <= 1 && (!currentItemCount || !totalItems)) {
+  if (!hasControls && !hasItems) {
     return null;
   }
 
   return (
     <div className={classNames(classes.wrapper, className)}>
-      {!!currentItemCount && !!totalItems && (
+      {hasItems && (
         <p
           className={classNames(
             "p-heading--5 u-no-margin--bottom u-no-padding--top",
@@ -52,17 +49,13 @@ const SidePanelTablePagination: FC<SidePanelTablePaginationProps> = ({
         </p>
       )}
 
-      {totalPages > 1 && (
+      {hasControls && (
         <div className={classes.paginationContainer}>
           <Select
             label="Instances per page"
             labelClassName="u-off-screen"
             className="u-no-margin--bottom"
-            options={[
-              { label: "20 / page", value: 20 },
-              { label: "50 / page", value: 50 },
-              { label: "100 / page", value: 100 },
-            ]}
+            options={PAGE_SIZE_OPTIONS}
             value={pageSize}
             onChange={(event) => {
               paginate(1);
@@ -119,4 +112,4 @@ const SidePanelTablePagination: FC<SidePanelTablePaginationProps> = ({
   );
 };
 
-export default SidePanelTablePagination;
+export default TablePaginationBase;

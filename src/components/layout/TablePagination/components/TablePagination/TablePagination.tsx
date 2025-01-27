@@ -1,6 +1,6 @@
-import { FC } from "react";
 import usePageParams from "@/hooks/usePageParams";
-import SidePanelTablePagination from "./SidePanelTablePagination";
+import { FC } from "react";
+import TablePaginationBase from "../TablePaginationBase";
 
 interface TablePaginationProps {
   totalItems: number | undefined;
@@ -18,24 +18,24 @@ const TablePagination: FC<TablePaginationProps> = ({
   const { currentPage, pageSize, setPageParams } = usePageParams();
 
   return (
-    <SidePanelTablePagination
+    <TablePaginationBase
       className={className}
       currentItemCount={currentItemCount}
-      currentPage={currentPage}
+      totalItems={totalItems}
       pageSize={pageSize}
-      paginate={(page) => {
+      paginate={(page: number) => {
         setPageParams({
           currentPage: page,
         });
 
-        handleClearSelection?.();
+        if (handleClearSelection) {
+          handleClearSelection();
+        }
       }}
-      setPageSize={(pageSize) => {
-        setPageParams({
-          pageSize,
-        });
+      setPageSize={(pageSize: number) => {
+        setPageParams({ pageSize });
       }}
-      totalItems={totalItems}
+      currentPage={currentPage}
     />
   );
 };

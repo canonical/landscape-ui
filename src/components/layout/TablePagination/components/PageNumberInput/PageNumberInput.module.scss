@@ -1,5 +1,20 @@
 @import "vanilla-framework/scss/settings_spacing";
 
+.inputWrapper {
+  position: relative;
+}
+
+.withError {
+  padding-bottom: $spv--x-large;
+}
+
+.error {
+  bottom: 0;
+  position: absolute;
+  right: -8 * $sp-unit;
+  white-space: nowrap;
+}
+
 .input {
   min-width: initial !important;
 }
