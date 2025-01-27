@@ -14,7 +14,7 @@ const PageNumberInput = ({
   setCurrentPage: (page: number) => void;
 }) => {
   const [error, setError] = useState("");
-  const [page, setPage] = useState<number>(currentPage);
+  const [page, setPage] = useState<number | "">(currentPage);
 
   useEffect(() => {
     setPage(currentPage);
@@ -61,12 +61,13 @@ const PageNumberInput = ({
             }
           }}
           onChange={(event) => {
-            setPage(event.target.valueAsNumber);
-
             if (!event.target.value) {
               setError("Enter a page number.");
+              setPage("");
               return;
             }
+
+            setPage(event.target.valueAsNumber);
 
             if (
               event.target.valueAsNumber > max ||
@@ -86,14 +87,16 @@ const PageNumberInput = ({
           max={max}
         />
 
-        <p
-          className={classNames(
-            "p-form-validation__message u-no-margin--bottom",
-            classes.error,
-          )}
-        >
-          {error}
-        </p>
+        {!!error && (
+          <p
+            className={classNames(
+              "p-form-validation__message u-no-margin--bottom",
+              classes.error,
+            )}
+          >
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );

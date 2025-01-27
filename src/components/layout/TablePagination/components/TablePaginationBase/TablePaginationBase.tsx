@@ -2,18 +2,18 @@ import { Button, Icon, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC } from "react";
 import { useTotalPages } from "../../hooks";
-import PageNumberInputWithError from "../PageNumberInput";
+import PageNumberInput from "../PageNumberInput";
 import classes from "./TablePaginationBase.module.scss";
 import { PAGE_SIZE_OPTIONS } from "./constants";
 
 interface TablePaginationBaseProps {
-  className: string;
-  currentItemCount: number;
+  className?: string;
+  currentItemCount?: number;
   currentPage: number;
   pageSize: number;
   paginate: (page: number) => void;
   setPageSize: (itemsNumber: number) => void;
-  totalItems: number | undefined;
+  totalItems?: number | undefined;
 }
 
 const TablePaginationBase: FC<TablePaginationBaseProps> = ({
@@ -75,7 +75,9 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
                 appearance="link"
                 className="p-pagination__link--previous u-no-margin--right u-no-margin--bottom u-no-padding--top"
                 disabled={currentPage <= 1}
-                onClick={() => paginate(currentPage - 1)}
+                onClick={() => {
+                  paginate(currentPage - 1);
+                }}
                 type="button"
               >
                 <Icon name="chevron-down" className={classes.icon} />
@@ -83,7 +85,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
 
               <strong>Page </strong>
 
-              <PageNumberInputWithError
+              <PageNumberInput
                 currentPage={currentPage}
                 max={totalPages}
                 min={1}
@@ -99,7 +101,9 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
                 appearance="link"
                 className="p-pagination__link--next u-no-margin--bottom u-no-padding--top"
                 disabled={currentPage >= totalPages}
-                onClick={() => paginate(currentPage + 1)}
+                onClick={() => {
+                  paginate(currentPage + 1);
+                }}
                 type="button"
               >
                 <Icon name="chevron-down" className={classes.icon} />
