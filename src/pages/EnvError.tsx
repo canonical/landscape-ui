@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import EmptyState from "@/components/layout/EmptyState";
 import { ROOT_PATH } from "@/constants";
 import useEnv from "@/hooks/useEnv";

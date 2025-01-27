@@ -1,6 +1,6 @@
 import { FC } from "react";
 import AuthTemplate from "../templates/auth";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ROOT_PATH } from "../constants";
 
 const PageNotFound: FC = () => {

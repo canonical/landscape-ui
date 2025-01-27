@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { FC, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import useEnv from "@/hooks/useEnv";
 import { getFilteredByEnvMenuItems, getPathToExpand } from "./helpers";
 import classes from "./Navigation.module.scss";

@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import { useUsns } from "@/features/usns";
 import { Instance } from "@/types/Instance";

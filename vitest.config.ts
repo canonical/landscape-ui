@@ -23,7 +23,7 @@ export default defineConfig({
         },
       },
     },
-    pool: "vmThreads",
+    pool: "vmForks",
     testTimeout: 30000,
     coverage: {
       provider: "v8",

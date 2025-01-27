@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import classNames from "classnames";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import AppNotification from "@/components/layout/AppNotification";
 import useNotify from "@/hooks/useNotify";
 import classes from "./SidePanelProvider.module.scss";

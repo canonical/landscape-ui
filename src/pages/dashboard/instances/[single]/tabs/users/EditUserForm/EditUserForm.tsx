@@ -9,7 +9,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
 import { User } from "@/types/User";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { UrlParams } from "@/types/UrlParams";
 
 interface FormProps {

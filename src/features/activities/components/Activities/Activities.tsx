@@ -21,7 +21,7 @@ import { ActivityCommon } from "../../types";
 import classes from "./Activities.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 import NoData from "@/components/layout/NoData";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { getDateQuery, getStatusQuery, getTypeQuery } from "./helpers";
 
 const ActivityDetails = lazy(

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { Button, Icon } from "@canonical/react-components";
 import { IdentityProvider } from "../../types";
 import {

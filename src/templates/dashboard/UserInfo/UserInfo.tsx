@@ -3,7 +3,7 @@ import useAuth from "../../../hooks/useAuth";
 import { Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 import { ROOT_PATH } from "@/constants";
 import { useMediaQuery } from "usehooks-ts";
 import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";

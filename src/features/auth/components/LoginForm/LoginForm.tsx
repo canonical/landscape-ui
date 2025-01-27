@@ -10,7 +10,7 @@ import {
 } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import classes from "./LoginForm.module.scss";
 import { useUnsigned } from "../../hooks";
 

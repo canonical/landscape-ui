@@ -11,7 +11,7 @@ import {
 import useInstances from "@/hooks/useInstances";
 import { Button } from "@canonical/react-components";
 import { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const AlertNotificationsPage: FC = () => {
   const navigate = useNavigate();

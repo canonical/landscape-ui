@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
 import { FC } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { Col, Form, Input, Row, Select } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";

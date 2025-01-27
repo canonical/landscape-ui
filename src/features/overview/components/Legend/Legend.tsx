@@ -1,7 +1,7 @@
 import { Chart, ChartData, LegendItem } from "chart.js";
 import classNames from "classnames";
 import { FC } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./Legend.module.scss";
 import { STATUSES } from "@/features/instances";

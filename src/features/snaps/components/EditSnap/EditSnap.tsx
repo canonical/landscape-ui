@@ -8,7 +8,7 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
 import { ChangeEvent, FC, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import * as Yup from "yup";
 import { EditSnapType } from "../../helpers";
 import { useSnaps } from "../../hooks";

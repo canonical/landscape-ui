@@ -9,7 +9,7 @@ import {
 import usePageParams from "@/hooks/usePageParams";
 import { UrlParams } from "@/types/UrlParams";
 import { FC, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 const ProcessesPanel: FC = () => {
   const [selectedPids, setSelectedPids] = useState<number[]>([]);

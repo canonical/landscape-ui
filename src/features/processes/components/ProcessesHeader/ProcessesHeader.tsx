@@ -7,7 +7,7 @@ import { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";
 import classNames from "classnames";
 import { FC } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import classes from "./ProcessesHeader.module.scss";
 
 interface ProcessesHeaderProps {

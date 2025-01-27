@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { Link, matchPath, useLocation } from "react-router-dom";
+import { Link, matchPath, useLocation } from "react-router";
 import classes from "./SecondaryNavigation.module.scss";
 import { ACCOUNT_SETTINGS } from "./constants";
 

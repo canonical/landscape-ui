@@ -5,7 +5,7 @@ import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import { useDebounceCallback } from "usehooks-ts";
 import { useSnaps } from "../../hooks";
 import { AvailableSnap, SelectedSnaps } from "../../types";

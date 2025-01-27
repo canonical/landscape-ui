@@ -19,8 +19,8 @@ const signInWithEmailAndPassword = vi
   .mockRejectedValueOnce(new Error("Invalid credentials"));
 
 const mockTestParams = (searchParams?: Record<string, string>) => {
-  vi.doMock("react-router-dom", async () => ({
-    ...(await vi.importActual("react-router-dom")),
+  vi.doMock("react-router", async () => ({
+    ...(await vi.importActual("react-router")),
     useSearchParams: () => [new URLSearchParams(searchParams)],
     useNavigate: () => navigate,
   }));
@@ -41,7 +41,7 @@ const mockTestParams = (searchParams?: Record<string, string>) => {
 describe("LoginForm", () => {
   describe("without additional test params", () => {
     beforeEach(async ({ task: { id } }) => {
-      vi.doUnmock("react-router-dom");
+      vi.doUnmock("react-router");
       vi.doUnmock("@/hooks/useAuth");
       vi.resetModules();
 
@@ -96,7 +96,7 @@ describe("LoginForm", () => {
     ];
 
     beforeEach(async ({ task: { id } }) => {
-      vi.doUnmock("react-router-dom");
+      vi.doUnmock("react-router");
       vi.doUnmock("@/hooks/useAuth");
       vi.resetModules();
 

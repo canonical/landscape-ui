@@ -2,7 +2,7 @@ import { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import { Button } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 interface SingleInstanceEmptyStateProps {
   childInstanceId: string | undefined;

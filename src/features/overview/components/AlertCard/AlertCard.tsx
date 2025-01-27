@@ -2,7 +2,7 @@ import { FC, lazy, Suspense } from "react";
 import classes from "./AlertCard.module.scss";
 import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ROOT_PATH } from "@/constants";
 import { Status } from "@/features/instances";
 import LoadingState from "@/components/layout/LoadingState";

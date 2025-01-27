@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
