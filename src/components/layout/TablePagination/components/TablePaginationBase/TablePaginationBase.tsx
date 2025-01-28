@@ -34,6 +34,21 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
     return null;
   }
 
+  const handleChangePageSize: React.ChangeEventHandler<HTMLSelectElement> = (
+    event,
+  ) => {
+    paginate(1);
+    setPageSize(parseInt(event.target.value));
+  };
+
+  const paginatePrevious = () => {
+    paginate(currentPage - 1);
+  };
+
+  const paginateNext = () => {
+    paginate(currentPage + 1);
+  };
+
   return (
     <div className={classNames(classes.wrapper, className)}>
       {hasItems && (
@@ -57,10 +72,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
             className="u-no-margin--bottom"
             options={PAGE_SIZE_OPTIONS}
             value={pageSize}
-            onChange={(event) => {
-              paginate(1);
-              setPageSize(parseInt(event.target.value));
-            }}
+            onChange={handleChangePageSize}
           />
 
           <nav aria-label="Table pagination" className="p-pagination">
@@ -75,9 +87,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
                 appearance="link"
                 className="p-pagination__link--previous u-no-margin--right u-no-margin--bottom u-no-padding--top"
                 disabled={currentPage <= 1}
-                onClick={() => {
-                  paginate(currentPage - 1);
-                }}
+                onClick={paginatePrevious}
                 type="button"
               >
                 <Icon name="chevron-down" className={classes.icon} />
@@ -101,9 +111,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
                 appearance="link"
                 className="p-pagination__link--next u-no-margin--bottom u-no-padding--top"
                 disabled={currentPage >= totalPages}
-                onClick={() => {
-                  paginate(currentPage + 1);
-                }}
+                onClick={paginateNext}
                 type="button"
               >
                 <Icon name="chevron-down" className={classes.icon} />

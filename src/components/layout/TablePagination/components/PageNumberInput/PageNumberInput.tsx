@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { useEffect, useState } from "react";
 import classes from "./PageNumberInput.module.scss";
+import { Input } from "@canonical/react-components";
 
 const PageNumberInput = ({
   currentPage,
@@ -24,6 +25,43 @@ const PageNumberInput = ({
     setError("");
   };
 
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (
+    event,
+  ) => {
+    if (event.key === "Enter" && !error) {
+      setCurrentPage(event.currentTarget.valueAsNumber);
+    }
+  };
+
+  const handleBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
+    if (!error) {
+      setCurrentPage(event.target.valueAsNumber);
+    } else {
+      setPage(currentPage);
+      clearError();
+    }
+  };
+
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    if (!event.target.value) {
+      setError("Enter a page number.");
+      setPage("");
+      return;
+    }
+
+    setPage(event.target.valueAsNumber);
+
+    if (
+      event.target.valueAsNumber > max ||
+      event.target.valueAsNumber < min ||
+      !Number.isInteger(event.target.valueAsNumber)
+    ) {
+      setError(`"${event.target.valueAsNumber}" is not a valid page number.`);
+    } else {
+      clearError();
+    }
+  };
+
   return (
     <div
       className={classNames("p-form__group p-form-validation", {
@@ -35,7 +73,7 @@ const PageNumberInput = ({
           [classes.withError]: error,
         })}
       >
-        <input
+        <Input
           aria-label="page number"
           className={classNames(
             "p-form-validation__input p-pagination__input u-no-margin--bottom",
@@ -47,44 +85,15 @@ const PageNumberInput = ({
               [classes.xLargeInput]: currentPage && currentPage > 999,
             },
           )}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !error) {
-              setCurrentPage(event.currentTarget.valueAsNumber);
-            }
-          }}
-          onBlur={(event) => {
-            if (!error) {
-              setCurrentPage(event.target.valueAsNumber);
-            } else {
-              setPage(currentPage);
-              clearError();
-            }
-          }}
-          onChange={(event) => {
-            if (!event.target.value) {
-              setError("Enter a page number.");
-              setPage("");
-              return;
-            }
-
-            setPage(event.target.valueAsNumber);
-
-            if (
-              event.target.valueAsNumber > max ||
-              event.target.valueAsNumber < min
-            ) {
-              setError(
-                `"${event.target.valueAsNumber}" is not a valid page number.`,
-              );
-            } else {
-              clearError();
-            }
-          }}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
+          onChange={handleChange}
           required
           type="number"
           value={page}
           min={min}
           max={max}
+          step={1}
         />
 
         {!!error && (

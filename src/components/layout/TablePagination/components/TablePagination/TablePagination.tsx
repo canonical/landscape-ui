@@ -17,25 +17,29 @@ const TablePagination: FC<TablePaginationProps> = ({
 }) => {
   const { currentPage, pageSize, setPageParams } = usePageParams();
 
+  const paginate = (page: number) => {
+    setPageParams({
+      currentPage: page,
+    });
+
+    if (handleClearSelection) {
+      handleClearSelection();
+    }
+  };
+
+  const setPageSize = (pageSize: number) => {
+    setPageParams({ pageSize });
+  };
+
   return (
     <TablePaginationBase
       className={className}
       currentItemCount={currentItemCount}
-      totalItems={totalItems}
-      pageSize={pageSize}
-      paginate={(page: number) => {
-        setPageParams({
-          currentPage: page,
-        });
-
-        if (handleClearSelection) {
-          handleClearSelection();
-        }
-      }}
-      setPageSize={(pageSize: number) => {
-        setPageParams({ pageSize });
-      }}
       currentPage={currentPage}
+      pageSize={pageSize}
+      paginate={paginate}
+      setPageSize={setPageSize}
+      totalItems={totalItems}
     />
   );
 };
