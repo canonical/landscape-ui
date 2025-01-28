@@ -43,22 +43,20 @@ const PageNumberInput = ({
   };
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    if (!event.target.value) {
-      setError("Enter a page number.");
+    const pageNumber = event.target.valueAsNumber;
+
+    if (isNaN(pageNumber)) {
       setPage("");
+      setError("Enter a page number.");
       return;
     }
 
-    setPage(event.target.valueAsNumber);
+    setPage(pageNumber);
 
-    if (
-      event.target.valueAsNumber > max ||
-      event.target.valueAsNumber < min ||
-      !Number.isInteger(event.target.valueAsNumber)
-    ) {
-      setError(`"${event.target.valueAsNumber}" is not a valid page number.`);
-    } else {
+    if (event.target.validity.valid) {
       clearError();
+    } else {
+      setError(`"${event.target.value}" is not a valid page number.`);
     }
   };
 
