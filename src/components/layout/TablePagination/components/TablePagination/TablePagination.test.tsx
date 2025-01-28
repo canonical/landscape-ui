@@ -3,6 +3,13 @@ import TablePagination from "./TablePagination";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
+import { ComponentProps } from "react";
+import { PAGE_SIZE_OPTIONS } from "../TablePaginationBase/constants";
+
+const props: ComponentProps<typeof TablePagination> = {
+  currentItemCount: 1,
+  totalItems: 21,
+};
 
 describe("TablePagination", () => {
   describe("currentPage", () => {
@@ -10,13 +17,7 @@ describe("TablePagination", () => {
       const clearSelection = vi.fn();
 
       renderWithProviders(
-        <TablePagination
-          currentItemCount={1}
-          handleClearSelection={clearSelection}
-          totalItems={21}
-        />,
-        undefined,
-        "?currentPage=1",
+        <TablePagination {...props} handleClearSelection={clearSelection} />,
       );
 
       await userEvent.click(screen.getByRole("button", { name: "Next page" }));
@@ -27,14 +28,8 @@ describe("TablePagination", () => {
     });
 
     it("should use searchParams", async () => {
-      const clearSelection = vi.fn();
-
       renderWithProviders(
-        <TablePagination
-          currentItemCount={1}
-          handleClearSelection={clearSelection}
-          totalItems={21}
-        />,
+        <TablePagination {...props} />,
         undefined,
         "?currentPage=2",
       );
@@ -45,13 +40,11 @@ describe("TablePagination", () => {
 
   describe("pageSize", () => {
     it("should change the page size", async () => {
-      renderWithProviders(
-        <TablePagination currentItemCount={1} totalItems={21} />,
-      );
+      renderWithProviders(<TablePagination {...props} />);
 
       await userEvent.selectOptions(
         screen.getByRole("combobox", { name: "Instances per page" }),
-        "50 / page",
+        PAGE_SIZE_OPTIONS[1].label,
       );
 
       expect(
@@ -60,14 +53,8 @@ describe("TablePagination", () => {
     });
 
     it("should use searchParams", async () => {
-      const clearSelection = vi.fn();
-
       renderWithProviders(
-        <TablePagination
-          currentItemCount={1}
-          handleClearSelection={clearSelection}
-          totalItems={21}
-        />,
+        <TablePagination {...props} />,
         undefined,
         "?pageSize=50",
       );

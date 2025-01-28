@@ -2,7 +2,7 @@ import { describe } from "vitest";
 import SidePanelTablePagination from "./SidePanelTablePagination";
 import { render } from "@testing-library/react";
 
-describe("TablePaginationBase", () => {
+describe("SidePanelTablePagination", () => {
   it("should render", () => {
     render(
       <SidePanelTablePagination
