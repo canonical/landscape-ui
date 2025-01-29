@@ -63,8 +63,11 @@ export default tseslint.config(
           patterns: ["@/features/*/*"],
         },
       ],
-      "react/prefer-read-only-props": "warn", // it will be an error in the future
-      complexity: ["warn", 10], // it will be an error in the future
+
+      /* These rules are set to warning to meet TICS rules. They will be changed to errors in the future. */
+      "react/prefer-read-only-props": "warn",
+      complexity: ["warn", 10],
+      "@typescript-eslint/consistent-type-imports": "warn",
     },
   },
 );
