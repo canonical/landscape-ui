@@ -63,6 +63,8 @@ export default tseslint.config(
           patterns: ["@/features/*/*"],
         },
       ],
+      "react/prefer-read-only-props": "warn", // it will be an error in the future
+      complexity: ["warn", 10], // it will be an error in the future
     },
   },
 );
