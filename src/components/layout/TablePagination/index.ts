@@ -1,2 +1,2 @@
-export { default as SidePanelTablePagination } from "./SidePanelTablePagination";
-export { default as TablePagination } from "./TablePagination";
+export { default as SidePanelTablePagination } from "./components/SidePanelTablePagination";
+export { default as TablePagination } from "./components/TablePagination/TablePagination";

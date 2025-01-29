@@ -17,10 +17,6 @@
   z-index: 10;
 }
 
-.description {
-  margin-right: auto;
-}
-
 .paginationContainer {
   column-gap: $sph--x-large;
   display: flex;
@@ -33,46 +29,6 @@
   column-gap: $sph--large;
 }
 
-.inputWrapper {
-  position: relative;
-}
-
-.withError {
-  padding-bottom: $spv--x-large;
-}
-
-.input {
-  min-width: initial !important;
-}
-
-.smallInput {
-  width: $sp-xxx-large !important;
-}
-
-.mediumInput {
-  width: 7 * $sp-unit !important;
-}
-
-.largeInput {
-  width: $sp-xxxx-large !important;
-}
-
-.xLargeInput {
-  width: 9 * $sp-unit !important;
-}
-
-.error {
-  bottom: 0;
-  position: absolute;
-  right: -8 * $sp-unit;
-  white-space: nowrap;
-}
-
-.noWrap {
-  white-space: nowrap;
-}
-
-.icon {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+.description {
+  margin-right: auto;
 }
