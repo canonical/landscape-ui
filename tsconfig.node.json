@@ -6,5 +6,5 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
-  "include": ["vite.config.ts", "tests/**/*"]
+  "include": ["vite.config.ts", "e2e/**/*"]
 }
