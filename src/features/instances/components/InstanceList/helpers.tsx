@@ -1,12 +1,12 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
-import type { InstanceColumn } from "./types";
-import type { Instance } from "@/types/Instance";
-import type { HTMLProps, ReactNode } from "react";
-import { STATUSES } from "@/features/instances";
-import classes from "./InstanceList.module.scss";
-import { Icon, Tooltip } from "@canonical/react-components";
-import type { HeaderGroup, TableHeaderProps } from "react-table";
 import NoData from "@/components/layout/NoData";
+import { STATUSES } from "@/features/instances";
+import type { Instance } from "@/types/Instance";
+import { Icon, Tooltip } from "@canonical/react-components";
+import type { HTMLProps, ReactNode } from "react";
+import type { HeaderGroup, TableHeaderProps } from "react-table";
+import classes from "./InstanceList.module.scss";
+import type { InstanceColumn } from "./types";
 
 export const getColumnFilterOptions = (
   columns: InstanceColumn[],
@@ -21,7 +21,7 @@ export const getColumnFilterOptions = (
 interface FigureCheckboxStateParams {
   groupBy: string;
   instance: Instance;
-  selectedInstances: Instance[];
+  selectedInstances: readonly Instance[];
 }
 
 export const getCheckboxState = ({
@@ -53,7 +53,7 @@ export const getCheckboxState = ({
 interface HandleCheckboxChangeParams {
   groupBy: string;
   instance: Instance;
-  selectedInstances: Instance[];
+  selectedInstances: readonly Instance[];
   setSelectedInstances: (instances: Instance[]) => void;
 }
 
@@ -94,7 +94,7 @@ export const handleCheckboxChange = ({
 export const getStatusCellIconAndLabel = (
   instance: Instance,
 ): { label: ReactNode; icon?: string } => {
-  const filteredAlerts = (instance?.alerts ?? []).filter(
+  const filteredAlerts = (instance.alerts ?? []).filter(
     ({ type }) =>
       !["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(type),
   );
@@ -121,7 +121,7 @@ export const getStatusCellIconAndLabel = (
             <Tooltip message={summary}>
               <Icon
                 className="u-no-margin--left"
-                name={`${STATUSES[type]?.icon.color ?? STATUSES.Unknown.icon.color}`}
+                name={`${STATUSES[type].icon.color ?? STATUSES.Unknown.icon.color}`}
               />
             </Tooltip>
           </span>

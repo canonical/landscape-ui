@@ -4,7 +4,7 @@ import type { PageParams } from "./types";
 export const modifyUrlParameters = (
   params: URLSearchParams,
   key: string,
-  value: string | string[] | number | number[] | null,
+  value: string | readonly string[] | number | number[] | null,
 ) => {
   if (
     value === "" ||

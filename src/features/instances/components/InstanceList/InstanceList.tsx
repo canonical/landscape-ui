@@ -22,10 +22,12 @@ import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
 
 interface InstanceListProps {
-  readonly instances: Instance[];
-  readonly selectedInstances: Instance[];
-  readonly setColumnFilterOptions: (options: ColumnFilterOption[]) => void;
-  readonly setSelectedInstances: (instances: Instance[]) => void;
+  readonly instances: readonly Instance[];
+  readonly selectedInstances: readonly Instance[];
+  readonly setColumnFilterOptions: (
+    options: readonly ColumnFilterOption[],
+  ) => void;
+  readonly setSelectedInstances: (instances: readonly Instance[]) => void;
 }
 
 const InstanceList: FC<InstanceListProps> = ({
@@ -241,7 +243,7 @@ const InstanceList: FC<InstanceListProps> = ({
           : "No instances found"
       }
       columns={filteredColumns}
-      data={instancesData}
+      data={instancesData as Instance[]}
       getHeaderProps={handleHeaderProps}
     />
   );

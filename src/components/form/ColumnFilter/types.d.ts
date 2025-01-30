@@ -1,5 +1,5 @@
 import type { SelectOption } from "@/types/SelectOption";
 
 export interface ColumnFilterOption extends SelectOption {
-  canBeHidden: boolean;
+  readonly canBeHidden: boolean;
 }

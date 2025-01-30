@@ -9,7 +9,7 @@ type ArrayParams = Record<
   | typeof PARAMS.AVAILABILITY_ZONES
   | typeof PARAMS.DISABLED_COLUMNS
   | typeof PARAMS.TAGS,
-  string[]
+  readonly string[]
 >;
 
 type NumberParams = Record<

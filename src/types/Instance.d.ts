@@ -17,113 +17,113 @@ interface NetworkDevice {
 }
 
 export interface GroupedHardware {
-  cpu: Cpu[];
-  display: Display;
-  memory: Memory;
-  multimedia: Multimedia;
-  network: GroupedHardwareNetwork[] | string;
-  pci: Pci[];
-  scsi: Scsi[];
-  storage: Storage[] | string;
-  system: System;
-  usb: Usb[];
+  readonly cpu: readonly Cpu[];
+  readonly display: Display;
+  readonly memory: Memory;
+  readonly multimedia: Multimedia;
+  readonly network: readonly GroupedHardwareNetwork[] | string;
+  readonly pci: readonly Pci[];
+  readonly scsi: readonly Scsi[];
+  readonly storage: readonly Storage[] | string;
+  readonly system: System;
+  readonly usb: readonly Usb[];
 }
 
 interface Storage {
-  description: string;
-  partitions: Partition[];
-  product: string;
-  size: string;
-  vendor: string;
+  readonly description: string;
+  readonly partitions: readonly Partition[];
+  readonly product: string;
+  readonly size: string;
+  readonly vendor: string;
 }
 
 interface Partition {
-  description: string;
-  filesystem: string;
-  size: string;
+  readonly description: string;
+  readonly filesystem: string;
+  readonly size: string;
 }
 
 interface GroupedHardwareNetwork {
-  description: string;
-  ip: string;
-  mac: string;
-  product: string;
-  vendor: string;
+  readonly description: string;
+  readonly ip: string;
+  readonly mac: string;
+  readonly product: string;
+  readonly vendor: string;
 }
 interface Cpu {
-  architecture: string;
-  cache: Cache;
-  clock_speed: string;
-  flags: Flag[];
-  model: string;
-  vendor: string;
+  readonly architecture: string;
+  readonly cache: Cache;
+  readonly clock_speed: string;
+  readonly flags: readonly Flag[];
+  readonly model: string;
+  readonly vendor: string;
 }
 
 interface Cache {
-  "L1 cache"?: string;
-  "L2 cache"?: string;
-  "L3 cache"?: string;
-  "L4 cache"?: string;
+  readonly "L1 cache"?: string;
+  readonly "L2 cache"?: string;
+  readonly "L3 cache"?: string;
+  readonly "L4 cache"?: string;
 }
 
 interface Flag {
-  code: string;
-  title: string;
+  readonly code: string;
+  readonly title: string;
 }
 
 interface Display {
-  model: string;
-  vendor: string;
+  readonly model: string;
+  readonly vendor: string;
 }
 
 interface Memory {
-  size: string;
+  readonly size: string;
 }
 
 interface Multimedia {
-  model: string;
-  vendor: string;
+  readonly model: string;
+  readonly vendor: string;
 }
 
 interface Pci {
-  attached_devices: AttachedDevice[];
-  description: string;
-  model: string;
-  vendor: string;
+  readonly attached_devices: readonly AttachedDevice[];
+  readonly description: string;
+  readonly model: string;
+  readonly vendor: string;
 }
 
 interface AttachedDevice {
-  description: string;
-  model: string;
-  vendor: string;
+  readonly description: string;
+  readonly model: string;
+  readonly vendor: string;
 }
 
 interface Scsi {
-  description: string;
-  model: string;
-  vendor: string;
+  readonly description: string;
+  readonly model: string;
+  readonly vendor: string;
 }
 
 interface System {
-  bios_capabilities: BiosCapability[];
-  bios_date: string;
-  bios_vendor: string;
-  bios_version: string;
-  chassis: string;
-  model: string;
-  serial: string;
-  vendor: string;
+  readonly bios_capabilities: readonly BiosCapability[];
+  readonly bios_date: string;
+  readonly bios_vendor: string;
+  readonly bios_version: string;
+  readonly chassis: string;
+  readonly model: string;
+  readonly serial: string;
+  readonly vendor: string;
 }
 
 interface BiosCapability {
-  code: string;
-  title: string;
+  readonly code: string;
+  readonly title: string;
 }
 
 interface Usb {
-  description: string;
-  model: string;
-  vendor: string;
+  readonly description: string;
+  readonly model: string;
+  readonly vendor: string;
 }
 
 type HardwareDescription = [
@@ -133,82 +133,86 @@ type HardwareDescription = [
 ];
 
 interface InstanceAlert {
-  type: string;
-  summary: string;
-  severity: "warning" | "danger" | "info";
+  readonly type: string;
+  readonly summary: string;
+  readonly severity: "warning" | "danger" | "info";
 }
 
 interface InstanceUpgrades {
-  regular: number;
-  security: number;
+  readonly regular: number;
+  readonly security: number;
 }
 
 interface UbuntuProAccount {
-  created_at: string;
-  external_account_ids: { IDs: string[]; origin: string }[];
-  id: string;
-  name: string;
+  readonly created_at: string;
+  readonly external_account_ids: readonly {
+    readonly IDs: readonly string[];
+    readonly origin: string;
+  }[];
+  readonly id: string;
+  readonly name: string;
 }
 
 interface UbuntuProContract {
-  created_at: string;
-  id: string;
-  name: string;
-  products: string[];
-  tech_support_level: string;
+  readonly created_at: string;
+  readonly id: string;
+  readonly name: string;
+  readonly products: readonly string[];
+  readonly tech_support_level: string;
 }
 
-export interface UbuntuProService extends Record<string, unknown> {
-  name: string;
-  available: string;
-  description: string;
-  entitled?: string;
-  status?: string;
-  status_details?: string;
+export interface UbuntuProService extends Readonly<Record<string, unknown>> {
+  readonly name: string;
+  readonly available: string;
+  readonly description: string;
+  readonly entitled?: string;
+  readonly status?: string;
+  readonly status_details?: string;
 }
 
 interface UbuntuProInfo {
-  attached: boolean;
-  expires: string | null;
-  services: UbuntuProService[];
-  techSupportLevel?: string;
-  effective?: string;
-  contract?: UbuntuProContract;
-  account?: UbuntuProAccount;
+  readonly attached: boolean;
+  readonly expires: string | null;
+  readonly services: readonly UbuntuProService[];
+  readonly techSupportLevel?: string;
+  readonly effective?: string;
+  readonly contract?: UbuntuProContract;
+  readonly account?: UbuntuProAccount;
 }
 
 interface DistributionInfo {
-  code_name: string;
-  description: string;
-  distributor: string;
-  release: string;
+  readonly code_name: string;
+  readonly description: string;
+  readonly distributor: string;
+  readonly release: string;
 }
 
-export interface InstanceWithoutRelation extends Record<string, unknown> {
-  access_group: AccessGroup["name"];
-  cloud_init: {
-    availability_zone?: string | null;
+export interface InstanceWithoutRelation
+  extends Readonly<Record<string, unknown>> {
+  readonly access_group: AccessGroup["name"];
+  readonly cloud_init: {
+    readonly availability_zone?: string | null;
   };
-  comment: string;
-  distribution: string | null;
-  distribution_info: DistributionInfo | null;
-  hostname: string;
-  id: number;
-  is_default_child: boolean | null;
-  is_wsl_instance: boolean;
-  last_ping_time: string | null;
-  tags: string[];
-  title: string;
-  ubuntu_pro_info: UbuntuProInfo | null;
-  annotations?: Record<string, string>;
-  grouped_hardware?: GroupedHardware;
-  alerts?: InstanceAlert[];
-  upgrades?: InstanceUpgrades;
+  readonly comment: string;
+  readonly distribution: string | null;
+  readonly distribution_info: DistributionInfo | null;
+  readonly hostname: string;
+  readonly id: number;
+  readonly is_default_child: boolean | null;
+  readonly is_wsl_instance: boolean;
+  readonly last_ping_time: string | null;
+  readonly tags: readonly string[];
+  readonly title: string;
+  readonly ubuntu_pro_info: UbuntuProInfo | null;
+  readonly annotations?: Readonly<Record<string, string>>;
+  readonly grouped_hardware?: GroupedHardware;
+  readonly alerts?: readonly InstanceAlert[];
+  readonly upgrades?: InstanceUpgrades;
 }
 
 interface WithRelation<Type extends InstanceWithoutRelation> extends Type {
-  children: InstanceWithoutRelation[];
-  parent: InstanceWithoutRelation | null;
+  readonly children: readonly InstanceWithoutRelation[];
+  readonly parent: InstanceWithoutRelation | null;
 }
 
 export type Instance = WithRelation<InstanceWithoutRelation>;
