@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 import { useFormik } from "formik";
-import { ChangeEvent, FC, useMemo } from "react";
+import type { ChangeEvent, FC } from "react";
+import { useMemo } from "react";
 import {
   CheckboxInput,
   Form,
@@ -14,8 +15,8 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
-import { RunInstanceScriptFormValues } from "../../types";
+import type { SelectOption } from "@/types/SelectOption";
+import type { RunInstanceScriptFormValues } from "../../types";
 import AttachmentBlock from "../AttachmentBlock";
 import DeliveryBlock from "../DeliveryBlock";
 import {
@@ -26,7 +27,7 @@ import {
 import { getNotification, getScriptOptions } from "./helpers";
 
 interface RunInstanceScriptFormProps {
-  query: string;
+  readonly query: string;
 }
 
 const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {

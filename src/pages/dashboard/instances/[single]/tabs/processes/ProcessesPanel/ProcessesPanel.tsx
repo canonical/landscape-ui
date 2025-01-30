@@ -7,8 +7,9 @@ import {
   useProcesses,
 } from "@/features/processes";
 import usePageParams from "@/hooks/usePageParams";
-import { UrlParams } from "@/types/UrlParams";
-import { FC, useMemo, useState } from "react";
+import type { UrlParams } from "@/types/UrlParams";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "react-router";
 
 const ProcessesPanel: FC = () => {

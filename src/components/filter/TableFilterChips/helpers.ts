@@ -1,10 +1,10 @@
-import {
+import type {
   CheckRenderConditions,
   CheckRenderConditionsReturn,
   PluralChipsKey,
   SingularChipKey,
 } from "./types";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 
 export const parseSearch = (search: string) => {
   if (!search) {

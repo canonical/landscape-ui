@@ -1,8 +1,9 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import { Form, SearchBox } from "@canonical/react-components";
 
 interface SearchBoxWithFormProps {
-  onSearch: (search: string) => void;
+  readonly onSearch: (search: string) => void;
 }
 
 const SearchBoxWithForm: FC<SearchBoxWithFormProps> = ({ onSearch }) => {

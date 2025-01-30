@@ -1,18 +1,18 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
-type FluidContainer = {
+interface FluidContainer {
   container?: "fluid";
   align?: never;
-};
+}
 
-type MediumContainer = {
+interface MediumContainer {
   container: "medium";
   align?: "center" | "left";
-};
+}
 
-type BasePageContentProps = {
+interface BasePageContentProps {
   children: ReactNode;
-};
+}
 
 export type PageContentProps = BasePageContentProps &
   (FluidContainer | MediumContainer);

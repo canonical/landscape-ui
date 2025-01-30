@@ -1,13 +1,13 @@
 import { distributionCardClasses, seriesCardClasses } from "@/features/mirrors";
 import useAuth from "@/hooks/useAuth";
-import { MultiSelectItem } from "@canonical/react-components";
-import { FC } from "react";
-import { Alert } from "../../types";
+import type { MultiSelectItem } from "@canonical/react-components";
+import type { FC } from "react";
+import type { Alert } from "../../types";
 import AlertsTable from "../AlertsTable";
 
 interface AlertsListProps {
-  alerts: Alert[];
-  availableTagOptions: MultiSelectItem[];
+  readonly alerts: Alert[];
+  readonly availableTagOptions: MultiSelectItem[];
 }
 
 const AlertsList: FC<AlertsListProps> = ({ alerts, availableTagOptions }) => {

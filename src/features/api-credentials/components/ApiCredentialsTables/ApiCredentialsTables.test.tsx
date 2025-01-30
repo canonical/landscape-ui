@@ -1,10 +1,10 @@
-import { UserDetails } from "@/features/general-settings";
+import type { UserDetails } from "@/features/general-settings";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { Credential } from "../../types";
+import type { Credential } from "../../types";
 import ApiCredentialsTables from "./ApiCredentialsTables";
 
 const mockUser: UserDetails = {

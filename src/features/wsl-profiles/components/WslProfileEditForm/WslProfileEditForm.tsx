@@ -6,9 +6,9 @@ import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import { useWslProfiles } from "../../hooks";
-import { WslProfile } from "../../types";
+import type { WslProfile } from "../../types";
 import { getValidationSchema } from "./helpers";
 import classes from "./WslProfileEditForm.module.scss";
 import { useWsl } from "@/features/wsl";
@@ -26,7 +26,7 @@ interface FormProps {
 }
 
 interface WslProfileEditFormProps {
-  profile: WslProfile;
+  readonly profile: WslProfile;
 }
 
 const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {

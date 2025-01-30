@@ -1,4 +1,4 @@
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
 import WslProfileList from "./WslProfilesList";

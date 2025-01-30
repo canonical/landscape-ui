@@ -1,7 +1,7 @@
 import { pockets } from "@/tests/mocks/pockets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import EditPocketForm from "./EditPocketForm";
 import { DEFAULT_SNAPSHOT_URI } from "../../constants";
 

@@ -1,9 +1,9 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { WslInstanceList, WslInstancesEmptyState } from "@/features/wsl";
-import { WindowsInstance } from "@/types/Instance";
+import type { WindowsInstance } from "@/types/Instance";
 
 interface WslPanelProps {
-  instance: WindowsInstance;
+  readonly instance: WindowsInstance;
 }
 
 const WslPanel: FC<WslPanelProps> = ({ instance }) => {

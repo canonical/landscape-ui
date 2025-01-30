@@ -1,5 +1,5 @@
-import { SelectOption } from "@/types/SelectOption";
-import { PackageProfileConstraintType } from "../../types";
+import type { SelectOption } from "@/types/SelectOption";
+import type { PackageProfileConstraintType } from "../../types";
 
 export const CONSTRAINT_TYPE_OPTIONS: (SelectOption & {
   value: PackageProfileConstraintType | "";

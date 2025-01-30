@@ -1,13 +1,13 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { TablePagination } from "@/components/layout/TablePagination";
 import useRoles from "@/hooks/useRoles";
-import { Administrator } from "@/types/Administrator";
+import type { Administrator } from "@/types/Administrator";
 import AdministratorList from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorList";
 import AdministratorsPanelHeader from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelHeader";
 import usePageParams from "@/hooks/usePageParams";
 
 interface AdministratorsPanelContentProps {
-  administrators: Administrator[];
+  readonly administrators: Administrator[];
 }
 
 const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({

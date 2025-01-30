@@ -1,5 +1,6 @@
-import { FC, lazy, Suspense, useState } from "react";
-import { WslProfile } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import type { WslProfile } from "../../types";
 import {
   Button,
   Col,
@@ -16,15 +17,15 @@ import useDebug from "@/hooks/useDebug";
 import classes from "./WslProfileDetails.module.scss";
 import useNotify from "@/hooks/useNotify";
 import NoData from "@/components/layout/NoData";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { useWslProfiles } from "../../hooks";
 
 const WslProfileEditForm = lazy(() => import("../WslProfileEditForm"));
 const WslProfileInstallForm = lazy(() => import("../WslProfileInstallForm"));
 
 interface WslProfileDetailsProps {
-  profile: WslProfile;
-  accessGroupOptions: SelectOption[];
+  readonly profile: WslProfile;
+  readonly accessGroupOptions: SelectOption[];
 }
 
 const WslProfileDetails: FC<WslProfileDetailsProps> = ({

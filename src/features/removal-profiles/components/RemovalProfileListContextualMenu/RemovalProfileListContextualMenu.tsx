@@ -1,16 +1,17 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
   ICONS,
   Input,
-  MenuLink,
 } from "@canonical/react-components";
-import { FC, lazy, Suspense, useState } from "react";
-import { RemovalProfile } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import type { RemovalProfile } from "../../types";
 import classes from "./RemovalProfileListContextualMenu.module.scss";
 import LoadingState from "@/components/layout/LoadingState";
 import { useRemovalProfiles } from "../../hooks";
@@ -20,7 +21,7 @@ const SingleRemovalProfileForm = lazy(
 );
 
 interface RemovalProfileListContextualMenuProps {
-  profile: RemovalProfile;
+  readonly profile: RemovalProfile;
 }
 
 const RemovalProfileListContextualMenu: FC<

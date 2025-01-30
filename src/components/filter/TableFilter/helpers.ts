@@ -1,5 +1,9 @@
-import { ReactNode } from "react";
-import { GroupedOption, MultipleSelectProps, SingleSelectProps } from "./types";
+import type { ReactNode } from "react";
+import type {
+  GroupedOption,
+  MultipleSelectProps,
+  SingleSelectProps,
+} from "./types";
 
 export const getToggleLabel = ({
   label,

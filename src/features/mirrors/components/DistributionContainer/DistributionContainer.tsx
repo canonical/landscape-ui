@@ -1,12 +1,13 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { FC, useEffect, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useState } from "react";
 import { useDistributions } from "../../hooks";
-import { SyncPocketRef } from "../../types";
+import type { SyncPocketRef } from "../../types";
 import DistributionCard from "../DistributionCard";
 import DistributionsEmptyState from "../DistributionsEmptyState";
 
 interface DistributionContainerProps {
-  onDistributionsLengthChange: (length: number) => void;
+  readonly onDistributionsLengthChange: (length: number) => void;
 }
 
 const DistributionContainer: FC<DistributionContainerProps> = ({

@@ -2,9 +2,9 @@ import { DISPLAY_DATE_FORMAT } from "@/constants";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import moment from "moment";
 import * as Yup from "yup";
-import { Distribution } from "../../types";
+import type { Distribution } from "../../types";
 import { INITIAL_VALUES, SNAPSHOT_START_DATE } from "./constants";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 export const getStrippedUrl = (url: string) => url.replace(/\/[^\\/@]*@/, "/");
 

@@ -1,7 +1,7 @@
 import "@/tests/matcher";
 import { users } from "@/tests/mocks/user";
 import { renderWithProviders } from "@/tests/render";
-import { User } from "@/types/User";
+import type { User } from "@/types/User";
 import { describe } from "vitest";
 import UserDetails from "./UserDetails";
 import { userGroups } from "@/tests/mocks/userGroup";

@@ -1,19 +1,19 @@
-import { FC } from "react";
+import type { FC } from "react";
 import classNames from "classnames";
 import { Editor } from "@monaco-editor/react";
 import LoadingState from "../layout/LoadingState";
 import classes from "./CodeEditor.module.scss";
 
 interface CodeEditorProps {
-  label: string;
-  onChange: (value: string | undefined) => void;
-  value: string | undefined;
-  className?: string;
-  error?: string | false;
-  labelClassName?: string;
-  required?: boolean;
-  language?: string;
-  defaultValue?: string;
+  readonly label: string;
+  readonly onChange: (value: string | undefined) => void;
+  readonly value: string | undefined;
+  readonly className?: string;
+  readonly error?: string | false;
+  readonly labelClassName?: string;
+  readonly required?: boolean;
+  readonly language?: string;
+  readonly defaultValue?: string;
 }
 
 const CodeEditor: FC<CodeEditorProps> = ({

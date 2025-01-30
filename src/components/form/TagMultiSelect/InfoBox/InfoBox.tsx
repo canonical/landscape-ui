@@ -1,10 +1,10 @@
 import classNames from "classnames";
-import { FC } from "react";
+import type { FC } from "react";
 import classes from "./InfoBox.module.scss";
 
 interface InfoBoxProps {
-  isExpanded: boolean;
-  overflowingChipsAmount: number;
+  readonly isExpanded: boolean;
+  readonly overflowingChipsAmount: number;
 }
 
 const InfoBox: FC<InfoBoxProps> = ({ isExpanded, overflowingChipsAmount }) => {

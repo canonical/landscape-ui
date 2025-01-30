@@ -1,4 +1,4 @@
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { describe, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import { expectLoadingState } from "@/tests/helpers";

@@ -1,9 +1,9 @@
 import { API_URL } from "@/constants";
-import { GetProcessesParams, Process } from "@/features/processes";
+import type { GetProcessesParams, Process } from "@/features/processes";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { processes } from "@/tests/mocks/process";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 
 export default [

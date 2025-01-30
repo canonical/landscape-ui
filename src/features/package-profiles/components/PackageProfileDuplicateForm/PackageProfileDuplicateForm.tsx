@@ -1,19 +1,21 @@
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { CopyPackageProfileParams, usePackageProfiles } from "../../hooks";
-import { DuplicateFormProps, PackageProfile } from "../../types";
+import type { CopyPackageProfileParams } from "../../hooks";
+import { usePackageProfiles } from "../../hooks";
+import type { DuplicateFormProps, PackageProfile } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileDuplicateFormProps {
-  profile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({

@@ -1,15 +1,15 @@
-import { FC } from "react";
+import type { FC } from "react";
 import InfoItem from "@/components/layout/InfoItem";
-import { User } from "@/types/User";
+import type { User } from "@/types/User";
 import UserPanelActionButtons from "../UserPanelActionButtons";
 import useUsers from "@/hooks/useUsers";
 import { NOT_AVAILABLE } from "@/constants";
 import { useParams } from "react-router";
 import NoData from "@/components/layout/NoData";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface UserDetailsProps {
-  user: User;
+  readonly user: User;
 }
 
 const UserDetails: FC<UserDetailsProps> = ({ user }) => {

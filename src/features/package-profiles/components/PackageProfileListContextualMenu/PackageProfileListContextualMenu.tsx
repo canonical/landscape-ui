@@ -1,15 +1,16 @@
-import { FC, lazy, Suspense, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
   ICONS,
   Input,
-  MenuLink,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { usePackageProfiles } from "../../hooks";
-import { PackageProfile } from "../../types";
+import type { PackageProfile } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -24,7 +25,7 @@ const PackageProfileDuplicateForm = lazy(
 const PackageProfileEditForm = lazy(() => import("../PackageProfileEditForm"));
 
 interface PackageProfileListContextualMenuProps {
-  profile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileListContextualMenu: FC<

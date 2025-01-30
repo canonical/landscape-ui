@@ -1,10 +1,10 @@
-import { FC } from "react";
+import type { FC } from "react";
 import classNames from "classnames";
 
 interface PackagesUpgradeInfoProps {
-  packageCount: number;
-  securityUpgradePackageCount: number;
-  totalUpgradePackageCount: number;
+  readonly packageCount: number;
+  readonly securityUpgradePackageCount: number;
+  readonly totalUpgradePackageCount: number;
 }
 
 const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({

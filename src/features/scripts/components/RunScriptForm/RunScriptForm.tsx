@@ -1,22 +1,24 @@
 import { useFormik } from "formik";
 import moment from "moment/moment";
-import { FC } from "react";
-import { Form, Input, MultiSelectItem } from "@canonical/react-components";
+import type { FC } from "react";
+import type { MultiSelectItem } from "@canonical/react-components";
+import { Form, Input } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { ExecuteScriptParams, useScripts } from "../../hooks";
-import { Script } from "../../types";
+import type { ExecuteScriptParams } from "../../hooks";
+import { useScripts } from "../../hooks";
+import type { Script } from "../../types";
 import DeliveryBlock from "../DeliveryBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 import { currentInstanceCan } from "@/features/instances";
 
 interface RunScriptFormProps {
-  script: Script;
+  readonly script: Script;
 }
 
 const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {

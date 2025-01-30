@@ -1,15 +1,16 @@
 import classNames from "classnames";
-import { FormikContextType } from "formik";
-import { FC, useState } from "react";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
+import { useState } from "react";
 import { CheckboxInput, Col, Row } from "@canonical/react-components";
 import RepositoryProfileFormSearch from "../RepositoryProfileFormSearch";
-import { RepositoryProfileFormValues } from "../../types";
-import { APTSource } from "@/features/apt-sources";
+import type { RepositoryProfileFormValues } from "../../types";
+import type { APTSource } from "@/features/apt-sources";
 import { getFilteredAptSources } from "./helpers";
 
 interface RepositoryProfileFormAptSourcesPanelProps {
-  aptSources: APTSource[];
-  formik: FormikContextType<RepositoryProfileFormValues>;
+  readonly aptSources: APTSource[];
+  readonly formik: FormikContextType<RepositoryProfileFormValues>;
 }
 
 const RepositoryProfileFormAptSourcesPanel: FC<

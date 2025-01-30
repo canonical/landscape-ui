@@ -1,11 +1,11 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Button, Notification } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface UbuntuProNotificationProps {
-  onDismiss: () => void;
+  readonly onDismiss: () => void;
 }
 
 const UbuntuProNotification: FC<UbuntuProNotificationProps> = ({

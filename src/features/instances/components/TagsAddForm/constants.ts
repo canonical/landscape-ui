@@ -1,4 +1,4 @@
-import { TagsAddFormValues } from "./types";
+import type { TagsAddFormValues } from "./types";
 import * as Yup from "yup";
 
 export const INITIAL_TAGS_ADD_FORM_VALUES: TagsAddFormValues = {

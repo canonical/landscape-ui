@@ -1,5 +1,5 @@
-import { Creator } from "./Creator";
-import { AccessGroup } from "./accessGroup";
+import type { Creator } from "./Creator";
+import type { AccessGroup } from "./accessGroup";
 
 export interface Script extends Record<string, unknown> {
   access_group: AccessGroup["name"];

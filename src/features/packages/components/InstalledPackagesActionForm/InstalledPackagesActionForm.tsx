@@ -1,19 +1,20 @@
-import { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { FC } from "react";
+import type { FC } from "react";
 import { useParams } from "react-router";
 import { Col, Form, Input, Row, Select } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
-import { Activity, useActivities } from "@/features/activities";
+import type { Activity } from "@/features/activities";
+import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import { usePackages } from "../../hooks";
-import { InstalledPackageAction, InstancePackage } from "../../types";
+import type { InstalledPackageAction, InstancePackage } from "../../types";
 import PackagesUpgradeInfo from "../PackagesUpgradeInfo";
 import { INITIAL_VALUES } from "./constants";
 import {
@@ -21,13 +22,13 @@ import {
   getActionSuccessNotificationProps,
   getValidationSchema,
 } from "./helpers";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 import classes from "./InstalledPackagesActionForm.module.scss";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface InstalledPackagesActionFormProps {
-  action: InstalledPackageAction;
-  packages: InstancePackage[];
+  readonly action: InstalledPackageAction;
+  readonly packages: InstancePackage[];
 }
 
 const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({

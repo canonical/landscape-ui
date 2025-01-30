@@ -1,5 +1,6 @@
-import { FormikContextType } from "formik";
-import { FC, lazy, Suspense } from "react";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import {
   Button,
   ConfirmationButton,
@@ -9,7 +10,7 @@ import {
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { usePackageProfiles } from "../../hooks";
-import {
+import type {
   Constraint,
   PackageProfile,
   PackageProfileConstraintType,
@@ -25,12 +26,12 @@ const PackageProfileConstraintsAddForm = lazy(
 );
 
 interface PackageProfileConstraintsEditFormActionsProps {
-  filter: PackageProfileConstraintType | "";
-  formik: FormikContextType<Constraint>;
-  onFilterChange: (value: PackageProfileConstraintType | "") => void;
-  profile: PackageProfile;
-  selectedIds: number[];
-  setSelectedIds: (value: number[]) => void;
+  readonly filter: PackageProfileConstraintType | "";
+  readonly formik: FormikContextType<Constraint>;
+  readonly onFilterChange: (value: PackageProfileConstraintType | "") => void;
+  readonly profile: PackageProfile;
+  readonly selectedIds: number[];
+  readonly setSelectedIds: (value: number[]) => void;
 }
 
 const PackageProfileConstraintsEditFormActions: FC<

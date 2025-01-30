@@ -1,10 +1,5 @@
-import React, {
-  createContext,
-  FC,
-  ReactNode,
-  useEffect,
-  useState,
-} from "react";
+import type { FC, ReactNode } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import classNames from "classnames";
 import { useLocation } from "react-router";
 import AppNotification from "@/components/layout/AppNotification";
@@ -35,7 +30,7 @@ export const SidePanelContext =
   createContext<SidePanelContextProps>(initialState);
 
 interface SidePanelProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {

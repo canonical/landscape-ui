@@ -1,14 +1,14 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Button, Icon } from "@canonical/react-components";
 
 interface SelectAllButtonProps {
-  count: number;
-  itemName: {
+  readonly count: number;
+  readonly itemName: {
     plural: string;
     singular: string;
   };
-  onClick: () => void;
-  totalCount: number;
+  readonly onClick: () => void;
+  readonly totalCount: number;
 }
 
 const SelectAllButton: FC<SelectAllButtonProps> = ({

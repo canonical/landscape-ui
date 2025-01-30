@@ -1,5 +1,5 @@
-import { ReactElement } from "react";
-import { SelectOption } from "@/types/SelectOption";
+import type { ReactElement } from "react";
+import type { SelectOption } from "@/types/SelectOption";
 import { ACTIVITY_STATUSES } from "../../constants";
 
 export const ACTIVITY_SEARCH_HELP_TERMS: {

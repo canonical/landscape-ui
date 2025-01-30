@@ -2,7 +2,7 @@ import { expectLoadingState } from "@/tests/helpers";
 import { listPockets, pockets } from "@/tests/mocks/pockets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { describe, expect } from "vitest";
 import PackageList from "./PackageList";
 

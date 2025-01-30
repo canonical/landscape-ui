@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import { Form, Input } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
@@ -8,7 +8,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { getValidationSchema } from "./helpers";
 
 interface FormProps {

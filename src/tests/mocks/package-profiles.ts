@@ -1,4 +1,4 @@
-import { PackageProfile } from "@/features/package-profiles";
+import type { PackageProfile } from "@/features/package-profiles";
 
 export const packageProfiles: PackageProfile[] = [
   {

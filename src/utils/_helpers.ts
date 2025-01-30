@@ -1,4 +1,4 @@
-import { InternalAxiosRequestConfig } from "axios";
+import type { InternalAxiosRequestConfig } from "axios";
 import { API_VERSION } from "@/constants";
 
 const figureRequestParams = (config: InternalAxiosRequestConfig) =>

@@ -1,3 +1,3 @@
-import { EditUserDetailsParams } from "../../types";
+import type { EditUserDetailsParams } from "../../types";
 
 export type EditUserFormValues = Required<EditUserDetailsParams>;

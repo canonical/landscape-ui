@@ -1,13 +1,13 @@
-import { FormikContextType } from "formik";
+import type { FormikContextType } from "formik";
 import { CheckboxInput, Chip } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import useInstances from "@/hooks/useInstances";
-import { AssociationBlockFormProps } from "./types";
+import type { AssociationBlockFormProps } from "./types";
 import classes from "./AssociationBlock.module.scss";
 
 interface AssociationBlockProps<T extends AssociationBlockFormProps> {
-  formik: FormikContextType<T>;
+  readonly formik: FormikContextType<T>;
 }
 
 const AssociationBlock = <T extends AssociationBlockFormProps>({

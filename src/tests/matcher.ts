@@ -1,5 +1,5 @@
 import { render, within } from "@testing-library/react";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { expect } from "vitest";
 
 expect.extend({

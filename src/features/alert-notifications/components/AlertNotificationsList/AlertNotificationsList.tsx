@@ -2,12 +2,13 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ROOT_PATH } from "@/constants";
 import { STATUSES } from "@/features/instances";
 import useSidePanel from "@/hooks/useSidePanel";
-import { PendingInstance } from "@/types/Instance";
+import type { PendingInstance } from "@/types/Instance";
 import { Button, Icon, List } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import { Link } from "react-router";
-import { AlertSummary } from "../../types";
+import type { AlertSummary } from "../../types";
 import classes from "./AlertNotificationsList.module.scss";
 
 const PendingInstancesForm = lazy(
@@ -15,8 +16,8 @@ const PendingInstancesForm = lazy(
 );
 
 interface AlertNotificationsListProps {
-  alerts: AlertSummary[];
-  pendingInstances: PendingInstance[];
+  readonly alerts: AlertSummary[];
+  readonly pendingInstances: PendingInstance[];
 }
 
 const AlertNotificationsList: FC<AlertNotificationsListProps> = ({

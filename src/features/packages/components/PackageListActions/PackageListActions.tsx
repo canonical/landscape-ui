@@ -1,7 +1,9 @@
-import { FC, lazy, Suspense } from "react";
-import { ContextualMenu, Icon, MenuLink } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import type { MenuLink } from "@canonical/react-components";
+import { ContextualMenu, Icon } from "@canonical/react-components";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
-import { InstalledPackageAction, InstancePackage } from "../../types";
+import type { InstalledPackageAction, InstancePackage } from "../../types";
 import classes from "./PackageListActions.module.scss";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -11,7 +13,7 @@ const InstalledPackagesActionForm = lazy(
 );
 
 interface PackageListActionsProps {
-  pkg: InstancePackage;
+  readonly pkg: InstancePackage;
 }
 
 const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {

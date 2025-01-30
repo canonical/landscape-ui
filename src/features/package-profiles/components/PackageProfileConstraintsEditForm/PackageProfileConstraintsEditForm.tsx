@@ -1,11 +1,13 @@
-import { FormikHelpers, useFormik } from "formik";
-import { FC, useState } from "react";
+import type { FormikHelpers } from "formik";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useState } from "react";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import PackageProfileConstraintsEditFormActions from "../PackageProfileConstraintsEditFormActions";
 import PackageProfileConstraintsEditFormTable from "../PackageProfileConstraintsEditFormTable";
 import { usePackageProfiles } from "../../hooks";
-import {
+import type {
   Constraint,
   PackageProfile,
   PackageProfileConstraintType,
@@ -17,7 +19,7 @@ import classes from "./PackageProfileConstraintsEditForm.module.scss";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 
 interface PackageProfileConstraintsEditFormProps {
-  profile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileConstraintsEditForm: FC<

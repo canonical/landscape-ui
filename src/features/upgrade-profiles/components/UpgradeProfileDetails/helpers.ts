@@ -1,5 +1,5 @@
 import moment from "moment";
-import { UpgradeProfile, UpgradeProfileDay } from "../../types";
+import type { UpgradeProfile, UpgradeProfileDay } from "../../types";
 import { DAY_OPTIONS } from "../../constants";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 

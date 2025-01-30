@@ -1,10 +1,5 @@
-import {
-  ComponentProps,
-  FC,
-  lazy,
-  MouseEvent as ReactMouseEvent,
-  Suspense,
-} from "react";
+import type { ComponentProps, FC, MouseEvent as ReactMouseEvent } from "react";
+import { lazy, Suspense } from "react";
 import {
   Button,
   ConfirmationButton,
@@ -17,13 +12,13 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { useScripts } from "../../hooks";
-import { Script } from "../../types";
+import type { Script } from "../../types";
 
 const SingleScript = lazy(() => import("../SingleScript"));
 const RunScriptForm = lazy(() => import("../RunScriptForm"));
 
 interface ScriptListActionsProps {
-  script: Script;
+  readonly script: Script;
 }
 
 const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {

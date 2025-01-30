@@ -1,10 +1,14 @@
-import { FC, useState } from "react";
-import { Input, InputProps } from "@canonical/react-components";
-import { FormikErrors } from "formik";
+import type { FC } from "react";
+import { useState } from "react";
+import type { InputProps } from "@canonical/react-components";
+import { Input } from "@canonical/react-components";
+import type { FormikErrors } from "formik";
 
 interface CellInputProps extends Omit<InputProps, "onBlur" | "onChange"> {
-  value: string;
-  onChange: (value: string) => Promise<void> | Promise<FormikErrors<unknown>>;
+  readonly value: string;
+  readonly onChange: (
+    value: string,
+  ) => Promise<void> | Promise<FormikErrors<unknown>>;
 }
 
 const CellInput: FC<CellInputProps> = ({

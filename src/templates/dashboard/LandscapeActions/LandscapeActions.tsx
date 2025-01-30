@@ -1,4 +1,5 @@
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
 import classes from "./LandscapeActions.module.scss";
 import { redirectToExternalUrl, useAuthHandle } from "@/features/auth";

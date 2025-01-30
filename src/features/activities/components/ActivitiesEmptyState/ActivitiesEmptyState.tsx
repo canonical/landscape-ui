@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 
 const ActivitiesEmptyState: FC = () => {

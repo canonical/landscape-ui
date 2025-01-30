@@ -1,5 +1,5 @@
-import { ChartData } from "chart.js";
-import { Colors } from "../../helpers";
+import type { ChartData } from "chart.js";
+import type { Colors } from "../../helpers";
 
 export const getChartData = ({
   chartData,

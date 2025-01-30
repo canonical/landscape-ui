@@ -2,16 +2,16 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import * as Yup from "yup";
 import { string } from "yup";
 import { useDistributions } from "../../hooks";
 import { INITIAL_VALUES } from "./constants";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 const NewDistributionForm: FC = () => {
   const debug = useDebug();

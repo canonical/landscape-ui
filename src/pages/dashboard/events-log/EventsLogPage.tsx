@@ -3,7 +3,7 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { AuthUser } from "@/features/auth";
+import type { AuthUser } from "@/features/auth";
 import {
   EventsLogHeader,
   EventsLogList,
@@ -13,7 +13,8 @@ import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
-import { FC, useMemo } from "react";
+import type { FC } from "react";
+import { useMemo } from "react";
 import classes from "./EventsLogPage.module.scss";
 import { downloadCSV } from "./helpers";
 

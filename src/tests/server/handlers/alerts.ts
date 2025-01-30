@@ -1,6 +1,6 @@
 import { API_URL, API_URL_OLD } from "@/constants";
-import { AlertSummaryResponse } from "@/features/alert-notifications";
-import { Alert, SubscriptionParams } from "@/features/alerts";
+import type { AlertSummaryResponse } from "@/features/alert-notifications";
+import type { Alert, SubscriptionParams } from "@/features/alerts";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { alerts, alertsSummary } from "@/tests/mocks/alerts";
 import { isAction } from "@/tests/server/handlers/_helpers";

@@ -1,17 +1,18 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import { useParams } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import { useUsns } from "@/features/usns";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import UsnInstanceList from "../UsnInstanceList";
 import UsnPackageList from "../UsnPackageList";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface UsnPackagesContainerProps {
-  instances: Instance[];
-  isRemovable: boolean;
-  listType: "packages" | "instances";
-  usn: string;
+  readonly instances: Instance[];
+  readonly isRemovable: boolean;
+  readonly listType: "packages" | "instances";
+  readonly usn: string;
 }
 
 const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({

@@ -1,12 +1,13 @@
 import { useFormik } from "formik";
-import { FC, Suspense } from "react";
+import type { FC } from "react";
+import { Suspense } from "react";
 import { Form } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
 import PackageProfileConstraintsEditForm from "../PackageProfileConstraintsEditForm";
 import { EMPTY_CONSTRAINT } from "../../constants";
 import { usePackageProfiles } from "../../hooks";
-import { ConstraintsFormProps, PackageProfile } from "../../types";
+import type { ConstraintsFormProps, PackageProfile } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -14,7 +15,7 @@ import { VALIDATION_SCHEMA } from "./constants";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 
 interface PackageProfileConstraintsAddFormProps {
-  profile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileConstraintsAddForm: FC<

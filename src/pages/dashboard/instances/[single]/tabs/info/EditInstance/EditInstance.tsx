@@ -1,18 +1,18 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { useFormik } from "formik";
 import { Form, Input, Select, Textarea } from "@canonical/react-components";
-import { InstanceWithoutRelation } from "@/types/Instance";
+import type { InstanceWithoutRelation } from "@/types/Instance";
 import useSidePanel from "@/hooks/useSidePanel";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import { VALIDATION_SCHEMA } from "./constants";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useRoles from "@/hooks/useRoles";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 
 interface EditInstanceProps {
-  instance: InstanceWithoutRelation;
+  readonly instance: InstanceWithoutRelation;
 }
 
 const EditInstance: FC<EditInstanceProps> = ({ instance }) => {

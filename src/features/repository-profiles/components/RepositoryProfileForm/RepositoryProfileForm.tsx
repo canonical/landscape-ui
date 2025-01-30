@@ -1,16 +1,18 @@
 import { useFormik } from "formik";
-import { FC, useEffect, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import RepositoryProfileFormAptSourcesPanel from "../RepositoryProfileFormAptSourcesPanel";
 import RepositoryProfileFormDetailsPanel from "../RepositoryProfileFormDetailsPanel";
 import RepositoryProfileFormPocketsPanel from "../RepositoryProfileFormPocketsPanel";
 import RepositoryProfileFormTabs from "../RepositoryProfileFormTabs";
-import {
-  CreateRepositoryProfileParams,
-  useRepositoryProfiles,
-} from "../../hooks";
-import { RepositoryProfile, RepositoryProfileFormValues } from "../../types";
+import type { CreateRepositoryProfileParams } from "../../hooks";
+import { useRepositoryProfiles } from "../../hooks";
+import type {
+  RepositoryProfile,
+  RepositoryProfileFormValues,
+} from "../../types";
 import { useAPTSources } from "@/features/apt-sources";
 import useDebug from "@/hooks/useDebug";
 import { useDistributions } from "@/features/mirrors";

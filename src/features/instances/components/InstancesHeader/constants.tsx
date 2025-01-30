@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import type { ReactElement } from "react";
 
 export const INSTANCE_SEARCH_HELP_TERMS: {
   term: string;

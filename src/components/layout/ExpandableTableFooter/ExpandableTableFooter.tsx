@@ -1,20 +1,20 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import { Button } from "@canonical/react-components";
 import classes from "./ExpandableTableFooter.module.scss";
 import classNames from "classnames";
 
 interface ExpandableTableFooterProps {
-  itemCount: number;
-  itemNames: {
+  readonly itemCount: number;
+  readonly itemNames: {
     plural: string;
     singular: string;
   };
-  onLimitChange: () => void;
-  totalCount: number;
-  additionalCta?: ReactNode;
-  className?: string;
-  hasNoMoreItems?: boolean;
-  viewAll?: boolean;
+  readonly onLimitChange: () => void;
+  readonly totalCount: number;
+  readonly additionalCta?: ReactNode;
+  readonly className?: string;
+  readonly hasNoMoreItems?: boolean;
+  readonly viewAll?: boolean;
 }
 
 const ExpandableTableFooter: FC<ExpandableTableFooterProps> = ({

@@ -1,4 +1,5 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import { useParams } from "react-router";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useActivities } from "@/features/activities";
@@ -6,9 +7,9 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { usePackages } from "../../hooks";
-import { InstancePackage } from "../../types";
+import type { InstancePackage } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 const PackagesInstallForm: FC = () => {
   const [selected, setSelected] = useState<InstancePackage[]>([]);

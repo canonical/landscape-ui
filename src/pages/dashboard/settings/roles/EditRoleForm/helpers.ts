@@ -1,11 +1,11 @@
-import { AxiosResponse } from "axios";
-import { Role } from "@/types/Role";
-import {
+import type { AxiosResponse } from "axios";
+import type { Role } from "@/types/Role";
+import type {
   AccessGroupOption,
   PermissionOption,
 } from "@/pages/dashboard/settings/roles/types";
 import { getAccessGroupsToSubmit } from "@/pages/dashboard/settings/roles/helpers";
-import { FormProps, GetPromisesToEditRoleFn } from "./types";
+import type { FormProps, GetPromisesToEditRoleFn } from "./types";
 
 export const getValuesToEditRole = (
   values: FormProps,

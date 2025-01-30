@@ -2,7 +2,7 @@ import { describe } from "vitest";
 import TablePaginationBase from "./TablePaginationBase";
 import userEvent from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { PAGE_SIZE_OPTIONS } from "./constants";
 
 describe("TablePaginationBase", () => {

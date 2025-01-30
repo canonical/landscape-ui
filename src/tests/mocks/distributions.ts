@@ -1,4 +1,4 @@
-import { Distribution } from "@/features/mirrors";
+import type { Distribution } from "@/features/mirrors";
 import { pockets, pocketsWithoutSnapshot } from "./pockets";
 
 export const distributions: Distribution[] = [

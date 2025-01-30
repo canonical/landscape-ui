@@ -3,16 +3,16 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { useProcesses } from "../../hooks";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC } from "react";
+import type { FC } from "react";
 import { useParams } from "react-router";
 import classes from "./ProcessesHeader.module.scss";
 
 interface ProcessesHeaderProps {
-  handleClearSelection: () => void;
-  selectedPids: number[];
+  readonly handleClearSelection: () => void;
+  readonly selectedPids: number[];
 }
 
 const ProcessesHeader: FC<ProcessesHeaderProps> = ({

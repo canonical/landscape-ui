@@ -1,14 +1,6 @@
 import classNames from "classnames";
-import {
-  ChangeEvent,
-  CSSProperties,
-  FC,
-  KeyboardEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import type { ChangeEvent, CSSProperties, FC, KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useOnClickOutside, useWindowSize } from "usehooks-ts";
 import { Input } from "@canonical/react-components";
 import InfoBox from "@/components/form/TagMultiSelect/InfoBox";
@@ -21,11 +13,11 @@ import { validationSchema } from "./constants";
 import classes from "./TagMultiSelect.module.scss";
 
 interface TagMultiSelectProps {
-  onTagsChange: (value: string[]) => void;
-  tags: string[];
-  label?: string;
-  labelClassName?: string;
-  required?: boolean;
+  readonly onTagsChange: (value: string[]) => void;
+  readonly tags: string[];
+  readonly label?: string;
+  readonly labelClassName?: string;
+  readonly required?: boolean;
 }
 
 const TagMultiSelect: FC<TagMultiSelectProps> = ({

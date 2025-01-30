@@ -1,4 +1,4 @@
-import { Usn, UsnPackage } from "@/types/Usn";
+import type { Usn, UsnPackage } from "@/types/Usn";
 
 export const usns: Usn[] = [
   {

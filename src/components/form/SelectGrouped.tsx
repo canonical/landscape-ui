@@ -1,6 +1,6 @@
-import { FC, FocusEventHandler, ReactNode } from "react";
+import type { FC, FocusEventHandler, ReactNode } from "react";
 import classNames from "classnames";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 
 interface EmptyOption {
   enabled: boolean;
@@ -13,22 +13,22 @@ export interface groupedOption {
 }
 
 interface SelectGroupedProps {
-  groupedOptions: groupedOption[];
-  name: string;
-  group: string;
-  option: string;
-  onChange: (newOption: string, newGroup: string) => void;
-  id?: string;
-  label?: string;
-  error?: ReactNode;
-  emptyOption?: EmptyOption;
-  onBlur?: FocusEventHandler<HTMLSelectElement>;
-  className?: string;
-  labelClassName?: string;
-  wrapperClassName?: string;
-  disabled?: boolean;
-  hidden?: boolean;
-  required?: boolean;
+  readonly groupedOptions: groupedOption[];
+  readonly name: string;
+  readonly group: string;
+  readonly option: string;
+  readonly onChange: (newOption: string, newGroup: string) => void;
+  readonly id?: string;
+  readonly label?: string;
+  readonly error?: ReactNode;
+  readonly emptyOption?: EmptyOption;
+  readonly onBlur?: FocusEventHandler<HTMLSelectElement>;
+  readonly className?: string;
+  readonly labelClassName?: string;
+  readonly wrapperClassName?: string;
+  readonly disabled?: boolean;
+  readonly hidden?: boolean;
+  readonly required?: boolean;
 }
 
 const SelectGrouped: FC<SelectGroupedProps> = ({

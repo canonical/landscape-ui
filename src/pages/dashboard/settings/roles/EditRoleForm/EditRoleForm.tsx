@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import * as Yup from "yup";
 import { Form } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
@@ -13,10 +14,10 @@ import {
 } from "@/pages/dashboard/settings/roles/helpers";
 import PermissionBlock from "@/pages/dashboard/settings/roles/PermissionBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { Role } from "@/types/Role";
+import type { Role } from "@/types/Role";
 import AccessGroupBlock from "@/pages/dashboard/settings/roles/AccessGroupBlock";
 import { getPromisesToEditRole, getRoleFormProps } from "./helpers";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 const INITIAL_VALUES: FormProps = {
   accessGroups: [],
@@ -29,7 +30,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
 });
 
 interface EditRoleFormProps {
-  role: Role;
+  readonly role: Role;
 }
 
 const EditRoleForm: FC<EditRoleFormProps> = ({ role }) => {

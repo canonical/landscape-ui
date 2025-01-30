@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import { useParams } from "react-router";
 import * as Yup from "yup";
 import { Form, Input, Select } from "@canonical/react-components";
@@ -12,7 +12,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { useWsl } from "../../hooks";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
 import { fileToBase64 } from "./helpers";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface FormProps {
   instanceType: string;

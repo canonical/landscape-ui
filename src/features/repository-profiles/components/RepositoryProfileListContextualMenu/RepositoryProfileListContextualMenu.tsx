@@ -1,12 +1,13 @@
-import { FC, lazy, Suspense, useState } from "react";
-import { RepositoryProfile } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import type { RepositoryProfile } from "../../types";
+import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
   ICONS,
   Input,
-  MenuLink,
 } from "@canonical/react-components";
 import classes from "./RepositoryProfileContextualMenu.module.scss";
 import LoadingState from "@/components/layout/LoadingState";
@@ -17,7 +18,7 @@ import useDebug from "@/hooks/useDebug";
 const RepositoryProfileForm = lazy(() => import("../RepositoryProfileForm"));
 
 interface RepositoryProfileListContextualMenuProps {
-  profile: RepositoryProfile;
+  readonly profile: RepositoryProfile;
 }
 
 const RepositoryProfileListContextualMenu: FC<

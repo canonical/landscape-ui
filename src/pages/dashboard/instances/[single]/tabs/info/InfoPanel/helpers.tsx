@@ -1,9 +1,9 @@
 import moment from "moment/moment";
-import { InfoItemProps } from "@/components/layout/InfoItem";
+import type { InfoItemProps } from "@/components/layout/InfoItem";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { InstanceWithoutRelation } from "@/types/Instance";
-import { SelectOption } from "@/types/SelectOption";
+import type { InstanceWithoutRelation } from "@/types/Instance";
+import type { SelectOption } from "@/types/SelectOption";
 
 const getIpAddress = (instance: InstanceWithoutRelation) => {
   const network = instance.grouped_hardware?.network;

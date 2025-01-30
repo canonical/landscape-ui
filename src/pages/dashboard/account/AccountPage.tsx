@@ -1,5 +1,6 @@
 import { ROOT_PATH } from "@/constants";
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 const AccountPage: FC = () => {

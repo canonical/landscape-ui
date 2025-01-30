@@ -1,15 +1,15 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Select } from "@canonical/react-components";
 import usePageParams from "@/hooks/usePageParams";
-import { InstancePackage } from "../../types";
+import type { InstancePackage } from "../../types";
 import PackageActions from "../PackageActions";
 import { filterOptions } from "./constants";
 import classes from "./PackagesPanelHeader.module.scss";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 
 interface PackagesPanelHeaderProps {
-  handleClearSelection: () => void;
-  selectedPackages: InstancePackage[];
+  readonly handleClearSelection: () => void;
+  readonly selectedPackages: InstancePackage[];
 }
 
 const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({

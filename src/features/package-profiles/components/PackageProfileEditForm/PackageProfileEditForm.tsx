@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { EditFormProps, PackageProfile } from "../../types";
+import type { FC } from "react";
+import type { EditFormProps, PackageProfile } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { usePackageProfiles } from "../../hooks";
@@ -11,7 +11,7 @@ import AssociationBlock from "@/components/form/AssociationBlock";
 import useNotify from "@/hooks/useNotify";
 
 interface PackageProfileEditFormProps {
-  profile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({

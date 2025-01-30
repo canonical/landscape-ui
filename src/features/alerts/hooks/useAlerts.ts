@@ -1,10 +1,10 @@
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
-import { ApiError } from "@/types/ApiError";
-import { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/ApiError";
+import type { QueryFnType } from "@/types/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import {
+import type { AxiosError, AxiosResponse } from "axios";
+import type {
   Alert,
   AssociateAlertParams,
   DisassociateAlertParams,

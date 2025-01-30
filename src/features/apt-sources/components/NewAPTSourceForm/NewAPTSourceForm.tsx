@@ -3,7 +3,7 @@ import { useGPGKeys } from "@/features/gpg-keys";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import {
   Form,
@@ -13,12 +13,12 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import * as Yup from "yup";
 import { useAPTSources } from "../../hooks";
 import { INITIAL_VALUES, APT_LINE_TOOLTIP } from "./constants";
 import classes from "./NewAPTSourceForm.module.scss";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 const NewAPTSourceForm: FC = () => {
   const { closeSidePanel } = useSidePanel();

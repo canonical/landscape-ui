@@ -1,15 +1,16 @@
-import { FC, useState } from "react";
-import { Usn } from "@/types/Usn";
+import type { FC } from "react";
+import { useState } from "react";
+import type { Usn } from "@/types/Usn";
 import SecurityIssuesPanelHeader from "@/pages/dashboard/instances/[single]/tabs/security-issues/SecurityIssuesPanelHeader";
 import { UsnList } from "@/features/usns";
 import usePageParams from "@/hooks/usePageParams";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 
 interface SecurityIssueListProps {
-  instance: Instance;
-  isUsnsLoading: boolean;
-  totalUsnCount: number;
-  usns: Usn[];
+  readonly instance: Instance;
+  readonly isUsnsLoading: boolean;
+  readonly totalUsnCount: number;
+  readonly usns: Usn[];
 }
 
 const SecurityIssueList: FC<SecurityIssueListProps> = ({

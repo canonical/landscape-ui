@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import AuthTemplate from "../templates/auth";
 import { Link } from "react-router";
 import { ROOT_PATH } from "../constants";

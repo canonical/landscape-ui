@@ -1,10 +1,10 @@
-import { FormikContextType } from "formik";
+import type { FormikContextType } from "formik";
 import { CheckboxInput, Icon, Tooltip } from "@canonical/react-components";
 import { UDEB_TOOLTIP } from "./constants";
 import classes from "./UdebCheckboxInput.module.scss";
 
 interface UdebCheckboxInputProps<T extends { include_udeb: boolean }> {
-  formik: FormikContextType<T>;
+  readonly formik: FormikContextType<T>;
 }
 
 const UdebCheckboxInput = <T extends { include_udeb: boolean }>({

@@ -1,4 +1,4 @@
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { describe, expect, vi } from "vitest";
 import UsnPackageList from "./UsnPackageList";
 import { renderWithProviders } from "@/tests/render";

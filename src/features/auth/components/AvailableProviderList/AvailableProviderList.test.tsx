@@ -1,7 +1,7 @@
 import { beforeEach, describe } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import AvailableProviderList from "./AvailableProviderList";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { screen } from "@testing-library/react";
 import {
   identityProviders,

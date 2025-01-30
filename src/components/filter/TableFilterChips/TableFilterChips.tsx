@@ -1,8 +1,9 @@
 import usePageParams from "@/hooks/usePageParams";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { Button, Chip, Icon } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC, useEffect, useRef, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useRef, useState } from "react";
 import { defaultFiltersToDisplay } from "./constants";
 import {
   checkRenderConditions,
@@ -11,17 +12,17 @@ import {
   parseSearch,
 } from "./helpers";
 import classes from "./TableFilterChips.module.scss";
-import { FilterKey } from "./types";
+import type { FilterKey } from "./types";
 
 interface TableFilterChipsProps {
-  accessGroupOptions?: SelectOption[];
-  availabilityZonesOptions?: SelectOption[];
-  filtersToDisplay?: FilterKey[];
-  osOptions?: SelectOption[];
-  statusOptions?: SelectOption[];
-  tagOptions?: SelectOption[];
-  typeOptions?: SelectOption[];
-  useSearchAsQuery?: boolean;
+  readonly accessGroupOptions?: SelectOption[];
+  readonly availabilityZonesOptions?: SelectOption[];
+  readonly filtersToDisplay?: FilterKey[];
+  readonly osOptions?: SelectOption[];
+  readonly statusOptions?: SelectOption[];
+  readonly tagOptions?: SelectOption[];
+  readonly typeOptions?: SelectOption[];
+  readonly useSearchAsQuery?: boolean;
 }
 
 const TableFilterChips: FC<TableFilterChipsProps> = ({

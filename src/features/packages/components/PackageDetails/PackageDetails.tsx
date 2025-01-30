@@ -1,10 +1,11 @@
-import { FC, Fragment, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { Fragment, lazy, Suspense } from "react";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
-import { InstalledPackageAction, InstancePackage } from "../../types";
+import type { InstalledPackageAction, InstancePackage } from "../../types";
 import { highlightVersionsDifference } from "./helpers";
 
 const InstalledPackagesActionForm = lazy(
@@ -12,7 +13,7 @@ const InstalledPackagesActionForm = lazy(
 );
 
 interface PackageDetailsProps {
-  singlePackage: InstancePackage;
+  readonly singlePackage: InstancePackage;
 }
 
 const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {

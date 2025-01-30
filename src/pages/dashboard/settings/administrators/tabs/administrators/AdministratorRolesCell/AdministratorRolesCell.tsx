@@ -1,18 +1,19 @@
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import { Button, Form } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { Administrator } from "@/types/Administrator";
-import { SelectOption } from "@/types/SelectOption";
+import type { Administrator } from "@/types/Administrator";
+import type { SelectOption } from "@/types/SelectOption";
 import classes from "./AdministratorRolesCell.module.scss";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
 interface AdministratorRolesCellProps {
-  administrator: Administrator;
-  roleOptions: SelectOption[];
+  readonly administrator: Administrator;
+  readonly roleOptions: SelectOption[];
 }
 
 const AdministratorRolesCell: FC<AdministratorRolesCellProps> = ({

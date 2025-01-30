@@ -1,5 +1,5 @@
-import { Pocket } from "@/features/mirrors";
-import { PackageDiff, PackageObject } from "@/features/packages";
+import type { Pocket } from "@/features/mirrors";
+import type { PackageDiff, PackageObject } from "@/features/packages";
 
 export const listPockets: PackageObject[] = [
   {

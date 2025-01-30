@@ -1,10 +1,10 @@
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import {
   DEFAULT_MIRROR_URI,
   PRE_SELECTED_ARCHITECTURES,
   PRE_SELECTED_COMPONENTS,
 } from "../../constants";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 export const PRE_DEFINED_POCKET_MODE_OPTIONS: SelectOption[] = [
   {

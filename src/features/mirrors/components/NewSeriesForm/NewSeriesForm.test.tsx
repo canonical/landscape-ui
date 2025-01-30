@@ -2,7 +2,7 @@ import { distributions } from "@/tests/mocks/distributions";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { describe, it } from "vitest";
 import {
   ARCHITECTURE_OPTIONS,

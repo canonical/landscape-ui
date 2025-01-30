@@ -4,10 +4,10 @@ import { pockets } from "@/tests/mocks/pockets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import moment from "moment";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { describe, expect, vi } from "vitest";
 import PocketSyncActivity from "./PocketSyncActivity";
-import { MirrorPocket, PullPocket } from "../../types/Pocket";
+import type { MirrorPocket, PullPocket } from "../../types/Pocket";
 import { ACTIVITY_STATUSES } from "@/features/activities";
 
 const commonProps = {

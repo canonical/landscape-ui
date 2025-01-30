@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import { Form, Input } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -15,7 +15,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import AccessGroupBlock from "@/pages/dashboard/settings/roles/AccessGroupBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getPromisesToAddRole } from "./helpers";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 const AddRoleForm: FC = () => {
   const debug = useDebug();

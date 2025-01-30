@@ -1,4 +1,4 @@
-import { Fix } from "@/features/kernel";
+import type { Fix } from "@/features/kernel";
 
 export const patches: Fix[] = [
   {

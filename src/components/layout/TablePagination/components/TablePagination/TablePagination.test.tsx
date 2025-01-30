@@ -3,7 +3,7 @@ import TablePagination from "./TablePagination";
 import userEvent from "@testing-library/user-event";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { PAGE_SIZE_OPTIONS } from "../TablePaginationBase/constants";
 
 const props: ComponentProps<typeof TablePagination> = {

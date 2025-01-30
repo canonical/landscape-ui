@@ -1,7 +1,7 @@
 import { distributions } from "@/tests/mocks/distributions";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { vi } from "vitest";
 import SeriesPocketList from "./SeriesPocketList";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";

@@ -1,5 +1,5 @@
 import { FILTERS } from "@/features/instances";
-import { ListFilter } from "@/types/Filters";
+import type { ListFilter } from "@/types/Filters";
 
 export const getOptionQuery = (filter: ListFilter, optionValue: string) => {
   return filter.type === "select"

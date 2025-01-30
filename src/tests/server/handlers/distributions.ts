@@ -1,5 +1,5 @@
 import { API_URL_OLD } from "@/constants";
-import { Distribution, GetDistributionsParams } from "@/features/mirrors";
+import type { Distribution, GetDistributionsParams } from "@/features/mirrors";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { distributions } from "@/tests/mocks/distributions";
 import { http, HttpResponse } from "msw";

@@ -3,7 +3,7 @@ import InfoPanel from "./InfoPanel";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
 import { instances } from "@/tests/mocks/instance";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import userEvent from "@testing-library/user-event";
 
 const PROPS_TO_CHECK: (keyof Instance)[] = [

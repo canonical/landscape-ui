@@ -1,5 +1,5 @@
 import { ALLOWED_DAY_OPTIONS, ALLOWED_PAGE_SIZES, PARAMS } from "./constants";
-import { PageParams } from "./types";
+import type { PageParams } from "./types";
 
 export const modifyUrlParameters = (
   params: URLSearchParams,

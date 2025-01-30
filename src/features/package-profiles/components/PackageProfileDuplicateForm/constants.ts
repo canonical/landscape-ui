@@ -1,4 +1,4 @@
-import { DuplicateFormProps } from "../../types";
+import type { DuplicateFormProps } from "../../types";
 import * as Yup from "yup";
 
 export const INITIAL_VALUES: DuplicateFormProps = {

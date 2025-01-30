@@ -1,10 +1,11 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import PageMain from "@/components/layout/PageMain";
 import PageHeader from "@/components/layout/PageHeader";
 import PageContent from "@/components/layout/PageContent";
 import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer/InstancesContainer";
 import classes from "./InstancesPage.module.scss";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import { InstancesPageActions } from "@/features/instances";
 
 const InstancesPage: FC = () => {

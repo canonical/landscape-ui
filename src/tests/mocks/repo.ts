@@ -1,4 +1,4 @@
-import { RepoInfo } from "@/features/mirrors";
+import type { RepoInfo } from "@/features/mirrors";
 
 export const repoInfo: RepoInfo = {
   flat: false,

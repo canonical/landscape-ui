@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Chart, ChartData } from "chart.js";
+import type { Chart, ChartData } from "chart.js";
 import { vi } from "vitest";
 import Legend from "./Legend";
 

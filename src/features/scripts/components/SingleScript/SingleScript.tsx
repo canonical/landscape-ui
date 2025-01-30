@@ -1,13 +1,14 @@
 import { useFormik } from "formik";
-import { FC, useEffect, useMemo } from "react";
+import type { FC } from "react";
+import { useEffect, useMemo } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import CodeEditor from "@/components/form/CodeEditor";
 import { useScripts } from "../../hooks";
-import { Script, ScriptFormValues } from "../../types";
+import type { Script, ScriptFormValues } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { CTA_LABELS, SCRIPT_FORM_INITIAL_VALUES } from "./constants";
 import {

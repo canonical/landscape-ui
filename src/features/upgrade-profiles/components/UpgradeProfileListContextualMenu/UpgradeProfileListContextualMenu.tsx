@@ -1,12 +1,13 @@
-import { FC, lazy, Suspense, useState } from "react";
-import { UpgradeProfile } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import type { UpgradeProfile } from "../../types";
+import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
   ICONS,
   Input,
-  MenuLink,
 } from "@canonical/react-components";
 import classes from "./UpgradeProfileListContextualMenu.module.scss";
 import useDebug from "@/hooks/useDebug";
@@ -20,7 +21,7 @@ const SingleUpgradeProfileForm = lazy(
 );
 
 interface UpgradeProfileListContextualMenuProps {
-  profile: UpgradeProfile;
+  readonly profile: UpgradeProfile;
 }
 
 const UpgradeProfileListContextualMenu: FC<

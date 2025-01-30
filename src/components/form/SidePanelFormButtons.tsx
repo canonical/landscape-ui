@@ -1,17 +1,19 @@
 import { Button } from "@canonical/react-components";
-import { FC, ReactElement, ReactNode, SyntheticEvent } from "react";
+import type { FC, ReactElement, ReactNode, SyntheticEvent } from "react";
 import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./SidePanelFormButtons.module.scss";
 
 interface SidePanelFormButtonsProps {
-  submitButtonDisabled: boolean;
-  submitButtonText: string;
-  submitButtonAppearance?: "positive" | "negative";
-  submitButtonAriaLabel?: string;
-  secondaryActionButtonTitle?: ReactNode;
-  secondaryActionButtonSubmit?: (event: SyntheticEvent) => Promise<void> | void;
-  cancelButtonDisabled?: boolean;
-  onSubmit?: (event: SyntheticEvent) => Promise<void> | void;
+  readonly submitButtonDisabled: boolean;
+  readonly submitButtonText: string;
+  readonly submitButtonAppearance?: "positive" | "negative";
+  readonly submitButtonAriaLabel?: string;
+  readonly secondaryActionButtonTitle?: ReactNode;
+  readonly secondaryActionButtonSubmit?: (
+    event: SyntheticEvent,
+  ) => Promise<void> | void;
+  readonly cancelButtonDisabled?: boolean;
+  readonly onSubmit?: (event: SyntheticEvent) => Promise<void> | void;
 }
 
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({

@@ -1,5 +1,5 @@
 import { alerts } from "@/tests/mocks/alerts";
-import { MultiSelectItem } from "@canonical/react-components";
+import type { MultiSelectItem } from "@canonical/react-components";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";

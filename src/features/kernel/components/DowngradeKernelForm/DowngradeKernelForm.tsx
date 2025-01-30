@@ -3,7 +3,7 @@ import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import {
   Button,
   Col,
@@ -16,24 +16,24 @@ import {
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
-import { FC } from "react";
+import type { FC } from "react";
 import { useParams } from "react-router";
 import { useKernel } from "../../hooks";
-import { Kernel } from "../../types";
+import type { Kernel } from "../../types";
 import {
   DOWNGRADE_MESSAGE_WITH_REBOOT,
   DOWNGRADE_MESSAGE_WITHOUT_REBOOT,
   SECURITY_WARNING,
 } from "./constants";
 import classes from "./DowngradeKernelForm.module.scss";
-import { FormProps } from "./types";
-import { UrlParams } from "@/types/UrlParams";
+import type { FormProps } from "./types";
+import type { UrlParams } from "@/types/UrlParams";
 import { KERNEL_ACTIONS_VALIDATION_SCHEMA } from "../../constants";
 
 interface DowngradeKernelFormProps {
-  currentKernelVersion: string;
-  downgradeKernelVersions: Kernel[];
-  instanceName: string;
+  readonly currentKernelVersion: string;
+  readonly downgradeKernelVersions: Kernel[];
+  readonly instanceName: string;
 }
 
 const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({

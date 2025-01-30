@@ -1,4 +1,5 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import {
   Button,
@@ -13,12 +14,12 @@ import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import PendingInstanceList from "@/pages/dashboard/instances/PendingInstanceList";
-import { PendingInstance } from "@/types/Instance";
-import { SelectOption } from "@/types/SelectOption";
+import type { PendingInstance } from "@/types/Instance";
+import type { SelectOption } from "@/types/SelectOption";
 import classes from "./PendingInstancesForm.module.scss";
 
 interface PendingInstanceListProps {
-  instances: PendingInstance[];
+  readonly instances: PendingInstance[];
 }
 
 const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {

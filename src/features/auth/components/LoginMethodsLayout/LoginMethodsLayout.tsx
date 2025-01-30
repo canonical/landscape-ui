@@ -1,12 +1,9 @@
-import { FC } from "react";
-import {
-  AvailableProviderList,
-  LoginForm,
-  LoginMethods,
-} from "@/features/auth";
+import type { FC } from "react";
+import type { LoginMethods } from "@/features/auth";
+import { AvailableProviderList, LoginForm } from "@/features/auth";
 
 interface LoginMethodsProps {
-  methods: LoginMethods | null;
+  readonly methods: LoginMethods | null;
 }
 
 const LoginMethodsLayout: FC<LoginMethodsProps> = ({ methods }) => {

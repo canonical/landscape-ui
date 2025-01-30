@@ -1,16 +1,17 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { Button, Form, Icon, ICONS, Select } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC, useEffect, useMemo, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSnaps } from "../../hooks";
-import { SelectedSnaps } from "../../types";
+import type { SelectedSnaps } from "../../types";
 import classes from "./AvailableSnapDetails.module.scss";
 
 interface AvailableSnapDetailsProps {
-  name: string;
-  handleDeleteToBeConfirmedItem: () => void;
-  handleAddToSelectedItems: (item: SelectedSnaps) => void;
-  instanceId: number;
+  readonly name: string;
+  readonly handleDeleteToBeConfirmedItem: () => void;
+  readonly handleAddToSelectedItems: (item: SelectedSnaps) => void;
+  readonly instanceId: number;
 }
 
 const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({

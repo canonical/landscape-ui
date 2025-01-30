@@ -9,18 +9,19 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC, lazy, MouseEvent as ReactMouseEvent, Suspense } from "react";
+import type { FC, MouseEvent as ReactMouseEvent } from "react";
+import { lazy, Suspense } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { usePockets } from "../../hooks";
-import { Pocket, SyncPocketRef } from "../../types";
+import type { Pocket, SyncPocketRef } from "../../types";
 
 const EditPocketForm = lazy(() => import("../EditPocketForm"));
 
 interface SeriesPocketListActionsProps {
-  distributionName: string;
-  pocket: Pocket;
-  seriesName: string;
-  syncPocketRefs: SyncPocketRef[];
+  readonly distributionName: string;
+  readonly pocket: Pocket;
+  readonly seriesName: string;
+  readonly syncPocketRefs: SyncPocketRef[];
 }
 
 const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({

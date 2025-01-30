@@ -5,7 +5,8 @@ import PageMain from "@/components/layout/PageMain";
 import { AccessGroupContainer } from "@/features/access-groups";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import classes from "./AccessGroupsPage.module.scss";
 
 const NewAccessGroupForm = lazy(() =>

@@ -1,12 +1,14 @@
-import { ChangeEvent, FC, FocusEvent, useState } from "react";
+import type { ChangeEvent, FC, FocusEvent } from "react";
+import { useState } from "react";
 import classNames from "classnames";
-import { Button, Icon, Input, InputProps } from "@canonical/react-components";
+import type { InputProps } from "@canonical/react-components";
+import { Button, Icon, Input } from "@canonical/react-components";
 
 interface FileInputProps
   extends Omit<InputProps, "multiple" | "onChange" | "type" | "value"> {
-  onFileRemove: () => Promise<void>;
-  onFileUpload: (files: File[]) => Promise<void>;
-  value: File | null;
+  readonly onFileRemove: () => Promise<void>;
+  readonly onFileUpload: (files: File[]) => Promise<void>;
+  readonly value: File | null;
 }
 
 const FileInput: FC<FileInputProps> = ({

@@ -5,7 +5,7 @@ import useAuth from "@/hooks/useAuth";
 import OrganisationSwitch from "./OrganisationSwitch";
 import userEvent from "@testing-library/user-event";
 import useSidePanel from "@/hooks/useSidePanel";
-import { AuthContextProps } from "@/context/auth";
+import type { AuthContextProps } from "@/context/auth";
 
 vi.mock("@/hooks/useAuth");
 vi.mock("@/hooks/useSidePanel");

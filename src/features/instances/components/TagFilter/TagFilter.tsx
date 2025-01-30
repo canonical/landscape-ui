@@ -1,10 +1,11 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 
 interface TagFilterProps {
-  options: SelectOption[];
+  readonly options: SelectOption[];
 }
 
 const TagFilter: FC<TagFilterProps> = ({ options }) => {

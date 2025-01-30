@@ -1,8 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import TableFilter from "./TableFilter";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import userEvent from "@testing-library/user-event";
-import { GroupedOption } from "@/components/filter";
+import type { GroupedOption } from "@/components/filter";
 import { describe } from "vitest";
 import classes from "./TableFilter.module.scss";
 

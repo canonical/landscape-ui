@@ -1,19 +1,21 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { Button, Form, MultiSelectItem } from "@canonical/react-components";
-import { AxiosResponse } from "axios";
+import type { MultiSelectItem } from "@canonical/react-components";
+import { Button, Form } from "@canonical/react-components";
+import type { AxiosResponse } from "axios";
 import { useFormik } from "formik";
-import { FC, useEffect, useRef } from "react";
+import type { FC } from "react";
+import { useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { useAlerts } from "../../hooks";
-import { Alert } from "../../types";
+import type { Alert } from "../../types";
 import classes from "./AlertTagsCell.module.scss";
 import { findExclusiveTags } from "./helpers";
 
 interface AlertTagsCellProps {
-  alert: Alert;
-  availableTagOptions: MultiSelectItem[];
+  readonly alert: Alert;
+  readonly availableTagOptions: MultiSelectItem[];
 }
 
 const AlertTagsCell: FC<AlertTagsCellProps> = ({

@@ -1,6 +1,6 @@
 import * as Yup from "yup";
-import { FormProps } from "./types";
-import {
+import type { FormProps } from "./types";
+import type {
   Pocket,
   EditMirrorPocketParams,
   EditPullPocketParams,

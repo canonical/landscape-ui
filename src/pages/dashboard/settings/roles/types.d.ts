@@ -1,5 +1,5 @@
-import { SelectOption } from "@/types/SelectOption";
-import {
+import type { SelectOption } from "@/types/SelectOption";
+import type {
   ChangeRoleAccessGroupsParams,
   ChangeRolePermissionsParams,
 } from "@/hooks/useRoles";

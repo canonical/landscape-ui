@@ -1,13 +1,13 @@
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import * as Yup from "yup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
 import { useParams } from "react-router";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface FormProps {
   name: string;

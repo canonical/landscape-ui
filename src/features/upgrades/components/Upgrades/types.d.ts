@@ -1,4 +1,4 @@
-import { InstancePackagesToExclude } from "@/features/packages";
+import type { InstancePackagesToExclude } from "@/features/packages";
 
 export interface UpgradesFormProps {
   excludedPackages: InstancePackagesToExclude[];

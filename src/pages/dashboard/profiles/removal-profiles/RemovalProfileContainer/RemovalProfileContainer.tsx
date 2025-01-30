@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import {
   RemovalProfileList,

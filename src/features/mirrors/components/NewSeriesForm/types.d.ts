@@ -1,4 +1,4 @@
-import { CreateSeriesParams } from "../../types";
+import type { CreateSeriesParams } from "../../types";
 
 interface FormProps extends CreateSeriesParams {
   type: "ubuntu" | "ubuntu-snapshot" | "third-party";

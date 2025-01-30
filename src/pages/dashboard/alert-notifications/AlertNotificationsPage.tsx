@@ -10,7 +10,7 @@ import {
 } from "@/features/alert-notifications";
 import useInstances from "@/hooks/useInstances";
 import { Button } from "@canonical/react-components";
-import { FC } from "react";
+import type { FC } from "react";
 import { useNavigate } from "react-router";
 
 const AlertNotificationsPage: FC = () => {

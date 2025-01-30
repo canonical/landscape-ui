@@ -1,4 +1,4 @@
-import { Pocket } from "./Pocket";
+import type { Pocket } from "./Pocket";
 
 export interface Series {
   creation_time: string;

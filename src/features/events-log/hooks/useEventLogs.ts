@@ -1,10 +1,10 @@
 import useFetch from "@/hooks/useFetch";
-import { ApiError } from "@/types/ApiError";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/ApiError";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { QueryFnType } from "@/types/QueryFnType";
 import { useQuery } from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import { EventLog, GetEventsLogParams } from "../types";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { EventLog, GetEventsLogParams } from "../types";
 
 export default function useEventsLog() {
   const authFetch = useFetch();

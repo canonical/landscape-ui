@@ -1,10 +1,10 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Button } from "@canonical/react-components";
 import classes from "./TagPrompt.module.scss";
 
 interface TagPromptProps {
-  onTagAdd: () => void;
-  search: string;
+  readonly onTagAdd: () => void;
+  readonly search: string;
 }
 
 const TagPrompt: FC<TagPromptProps> = ({ onTagAdd, search }) => {

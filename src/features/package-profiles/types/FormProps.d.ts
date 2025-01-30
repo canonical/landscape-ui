@@ -1,10 +1,10 @@
-import {
+import type {
   CopyPackageProfileParams,
   CreatePackageProfileParams,
   EditPackageProfileParams,
 } from "../hooks/usePackageProfiles";
 
-import {
+import type {
   PackageProfileConstraint,
   PackageProfileConstraintType,
 } from "./PackageProfile";

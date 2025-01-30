@@ -1,4 +1,4 @@
-import { FormikErrors, FormikTouched } from "formik";
+import type { FormikErrors, FormikTouched } from "formik";
 
 type NestedIndexType<T> =
   | []

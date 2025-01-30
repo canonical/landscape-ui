@@ -1,5 +1,5 @@
 import useInstances from "@/hooks/useInstances";
-import { FC } from "react";
+import type { FC } from "react";
 import { Colors } from "../../helpers";
 import { getChartData } from "./helpers";
 import PieChart from "../PieChart";

@@ -1,9 +1,11 @@
-import { FC, useState } from "react";
-import { GroupedOption, TableFilter } from "@/components/filter";
+import type { FC } from "react";
+import { useState } from "react";
+import type { GroupedOption } from "@/components/filter";
+import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
 
 interface AvailabilityZoneFilterProps {
-  options: GroupedOption[];
+  readonly options: GroupedOption[];
 }
 
 const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({

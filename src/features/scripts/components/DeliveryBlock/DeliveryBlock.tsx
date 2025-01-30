@@ -1,8 +1,8 @@
-import { FormikContextType } from "formik";
+import type { FormikContextType } from "formik";
 import moment from "moment";
-import { ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 import { Input } from "@canonical/react-components";
-import { RunInstanceScriptFormValues } from "../../types";
+import type { RunInstanceScriptFormValues } from "../../types";
 import classes from "./DeliveryBlock.module.scss";
 
 type DeliveryProps = Pick<
@@ -11,7 +11,7 @@ type DeliveryProps = Pick<
 >;
 
 interface DeliveryBlockProps<T extends DeliveryProps> {
-  formik: FormikContextType<T>;
+  readonly formik: FormikContextType<T>;
 }
 
 const DeliveryBlock = <T extends DeliveryProps>({

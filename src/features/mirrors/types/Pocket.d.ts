@@ -1,4 +1,4 @@
-import { GPGKey, UploadedGPGKey } from "@/features/gpg-keys";
+import type { GPGKey, UploadedGPGKey } from "@/features/gpg-keys";
 
 export interface PocketCommonProps {
   apt_source_line: string;

@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { Invitation } from "@/types/Invitation";
+import type { Invitation } from "@/types/Invitation";
 
 export const getValidationSchema = (invitations: Invitation[]) => {
   return Yup.object().shape({

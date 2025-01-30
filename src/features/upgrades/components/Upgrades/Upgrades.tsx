@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
-import { FC, Suspense, useState } from "react";
+import type { FC } from "react";
+import { Suspense, useState } from "react";
 import { Form, Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
@@ -8,14 +9,14 @@ import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import UpgradeInfo from "../UpgradeInfo";
 import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
 import { getInitialValues, getTabLinks } from "./helpers";
-import { UpgradesFormProps } from "./types";
+import type { UpgradesFormProps } from "./types";
 
 interface UpgradesProps {
-  selectedInstances: Instance[];
+  readonly selectedInstances: Instance[];
 }
 
 const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {

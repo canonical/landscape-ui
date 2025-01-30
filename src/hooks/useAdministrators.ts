@@ -1,13 +1,13 @@
-import { QueryFnType } from "@/types/QueryFnType";
-import { AxiosError, AxiosResponse } from "axios";
+import type { QueryFnType } from "@/types/QueryFnType";
+import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/ApiError";
 import useFetchOld from "./useFetchOld";
-import { Administrator } from "@/types/Administrator";
-import { Activity } from "@/features/activities";
+import type { Administrator } from "@/types/Administrator";
+import type { Activity } from "@/features/activities";
 import useFetch from "./useFetch";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { Invitation } from "@/types/Invitation";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { Invitation } from "@/types/Invitation";
 
 interface InviteAdministratorParams {
   email: string;

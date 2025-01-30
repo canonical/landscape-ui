@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Form, Input, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import useDebug from "@/hooks/useDebug";
@@ -7,7 +7,7 @@ import * as Yup from "yup";
 import { useGPGKeys } from "../../hooks";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 import { INITIAL_VALUES } from "./constants";
 
 const NewGPGKeyForm: FC = () => {

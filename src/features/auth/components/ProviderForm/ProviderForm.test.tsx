@@ -1,7 +1,7 @@
 import { describe } from "vitest";
 import ProviderForm from "./ProviderForm";
 import { renderWithProviders } from "@/tests/render";
-import { IdentityProvider } from "../../types";
+import type { IdentityProvider } from "../../types";
 import { screen, waitFor } from "@testing-library/react";
 import {
   identityProviders,

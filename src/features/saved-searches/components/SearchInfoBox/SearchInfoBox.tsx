@@ -1,9 +1,9 @@
 import { Button, Icon, ICONS } from "@canonical/react-components";
-import { FC } from "react";
+import type { FC } from "react";
 import classes from "./SearchInfoBox.module.scss";
 
 interface SearchInfoBoxProps {
-  onHelpButtonClick: () => void;
+  readonly onHelpButtonClick: () => void;
 }
 
 const SearchInfoBox: FC<SearchInfoBoxProps> = ({ onHelpButtonClick }) => {

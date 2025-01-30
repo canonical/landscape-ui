@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import useReports from "@/hooks/useReports";
 import ReportWidget from "@/pages/dashboard/instances/ReportWidget";
 import { Col, Row } from "@canonical/react-components";
@@ -9,7 +9,7 @@ import ReportForm from "@/pages/dashboard/instances/ReportForm";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 
 interface ReportViewProps {
-  instanceIds: number[];
+  readonly instanceIds: number[];
 }
 
 const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {

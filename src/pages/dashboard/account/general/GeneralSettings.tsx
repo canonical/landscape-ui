@@ -10,7 +10,7 @@ import {
 import useEnv from "@/hooks/useEnv";
 import { Link } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC } from "react";
+import type { FC } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classes from "./GeneralSettings.module.scss";
 import useAuth from "@/hooks/useAuth";

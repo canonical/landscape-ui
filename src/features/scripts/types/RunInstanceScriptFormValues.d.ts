@@ -1,4 +1,4 @@
-import { CreateScriptParams, ExecuteScriptParams } from "../hooks";
+import type { CreateScriptParams, ExecuteScriptParams } from "../hooks";
 
 export interface RunInstanceScriptFormValues
   extends CreateScriptParams,

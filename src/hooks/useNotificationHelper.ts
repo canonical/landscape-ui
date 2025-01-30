@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Notification, NotificationHelper } from "@/types/Notification";
+import type { Notification, NotificationHelper } from "@/types/Notification";
 
 const useNotificationHelper = (): NotificationHelper => {
   const [notification, setNotification] = useState<Notification | null>(null);

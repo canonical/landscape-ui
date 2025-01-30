@@ -1,13 +1,14 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { useUsns, UsnList } from "@/features/usns";
-import { Instance } from "@/types/Instance";
-import { Usn } from "@/types/Usn";
+import type { Instance } from "@/types/Instance";
+import type { Usn } from "@/types/Usn";
 
 interface UsnsPanelProps {
-  excludedUsns: string[];
-  instances: Instance[];
-  onExcludedUsnsChange: (usns: string[]) => void;
+  readonly excludedUsns: string[];
+  readonly instances: Instance[];
+  readonly onExcludedUsnsChange: (usns: string[]) => void;
 }
 
 const UsnsPanel: FC<UsnsPanelProps> = ({

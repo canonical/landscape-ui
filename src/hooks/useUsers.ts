@@ -1,11 +1,11 @@
-import { QueryFnType } from "@/types/QueryFnType";
-import { AxiosError, AxiosResponse } from "axios";
+import type { QueryFnType } from "@/types/QueryFnType";
+import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/ApiError";
 import useFetch from "./useFetch";
-import { GroupsResponse, User } from "@/types/User";
-import { Activity } from "@/features/activities";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { GroupsResponse, User } from "@/types/User";
+import type { Activity } from "@/features/activities";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 
 interface GetUsersParams {
   computer_id: number;

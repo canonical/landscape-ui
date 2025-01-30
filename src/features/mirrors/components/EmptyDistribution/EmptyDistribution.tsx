@@ -1,14 +1,15 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-import { FC, lazy, Suspense } from "react";
-import { Distribution } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import type { Distribution } from "../../types";
 import classes from "./EmptyDistribution.module.scss";
 
 const NewSeriesForm = lazy(() => import("../NewSeriesForm"));
 
 interface EmptyDistributionProps {
-  distribution: Distribution;
+  readonly distribution: Distribution;
 }
 
 const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {

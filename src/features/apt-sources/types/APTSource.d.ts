@@ -1,5 +1,5 @@
-import { AccessGroup } from "@/features/access-groups";
-import { GPGKey } from "@/features/gpg-keys";
+import type { AccessGroup } from "@/features/access-groups";
+import type { GPGKey } from "@/features/gpg-keys";
 
 export interface APTSource extends Record<string, unknown> {
   access_group: AccessGroup["name"];

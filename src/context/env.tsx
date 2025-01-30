@@ -1,5 +1,6 @@
 import axios from "axios";
-import { createContext, FC, ReactNode, useEffect, useState } from "react";
+import type { FC, ReactNode } from "react";
+import { createContext, useEffect, useState } from "react";
 import { API_URL, IS_SELF_HOSTED_ENV } from "@/constants";
 
 interface AboutResponse {
@@ -19,7 +20,7 @@ const initialState = {
 export const EnvContext = createContext(initialState);
 
 interface EnvProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const EnvProvider: FC<EnvProviderProps> = ({ children }) => {

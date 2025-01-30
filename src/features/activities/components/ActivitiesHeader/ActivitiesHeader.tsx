@@ -2,7 +2,8 @@ import SearchBoxWithDescriptionButton from "@/components/form/SearchBoxWithDescr
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import usePageParams from "@/hooks/usePageParams";
 import { Form } from "@canonical/react-components";
-import { FC, SyntheticEvent, useState } from "react";
+import type { FC, SyntheticEvent } from "react";
+import { useState } from "react";
 import classes from "./ActivitiesHeader.module.scss";
 import {
   ACTIVITY_SEARCH_HELP_TERMS,
@@ -13,11 +14,11 @@ import ActivityTypeFilter from "../ActivityTypeFilter";
 import { useActivities } from "../../hooks";
 import ActivitiesDateFilter from "../ActivitiesDateFilter";
 import { useParams } from "react-router";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 import classNames from "classnames";
 
 interface ActivitiesHeaderProps {
-  resetSelectedIds: () => void;
+  readonly resetSelectedIds: () => void;
 }
 
 const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {

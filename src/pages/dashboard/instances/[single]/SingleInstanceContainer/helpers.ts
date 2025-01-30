@@ -1,7 +1,7 @@
 import { ROOT_PATH } from "@/constants";
-import { KernelStatus } from "@/features/kernel";
-import { Breadcrumb } from "@/types/Breadcrumb";
-import { Instance } from "@/types/Instance";
+import type { KernelStatus } from "@/features/kernel";
+import type { Breadcrumb } from "@/types/Breadcrumb";
+import type { Instance } from "@/types/Instance";
 
 export const getBreadcrumbs = (
   instance: Instance | null,

@@ -1,5 +1,5 @@
-import { User } from "@/types/User";
-import { ReactNode } from "react";
+import type { User } from "@/types/User";
+import type { ReactNode } from "react";
 
 export enum UserAction {
   Lock = "lock",

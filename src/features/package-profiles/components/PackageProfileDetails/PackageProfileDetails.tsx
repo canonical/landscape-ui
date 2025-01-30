@@ -1,5 +1,6 @@
-import { FC, lazy, Suspense } from "react";
-import { PackageProfile } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import type { PackageProfile } from "../../types";
 import {
   Button,
   Col,
@@ -22,7 +23,7 @@ const PackageProfileDuplicateForm = lazy(
 const PackageProfileEditForm = lazy(() => import("../PackageProfileEditForm"));
 
 interface PackageProfileDetailsProps {
-  profile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {

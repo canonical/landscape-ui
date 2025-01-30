@@ -1,5 +1,5 @@
 import { distributions } from "@/tests/mocks/distributions";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import DistributionCard from "./DistributionCard";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";

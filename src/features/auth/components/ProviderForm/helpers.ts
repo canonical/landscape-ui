@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { IdentityProvider } from "../../types";
+import type { IdentityProvider } from "../../types";
 
 export const getValidationSchema = (provider: IdentityProvider | null) => {
   return Yup.object().shape({

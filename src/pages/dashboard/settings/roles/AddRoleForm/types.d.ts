@@ -1,6 +1,6 @@
-import { AxiosResponse } from "axios";
-import { Role } from "@/types/Role";
-import {
+import type { AxiosResponse } from "axios";
+import type { Role } from "@/types/Role";
+import type {
   AccessGroupOption,
   RoleHandlers,
 } from "@/pages/dashboard/settings/roles/types";

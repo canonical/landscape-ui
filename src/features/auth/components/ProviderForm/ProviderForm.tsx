@@ -1,14 +1,16 @@
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import { Form, Icon, Input, Tooltip } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import { AddProviderParams, useAuthHandle } from "../../hooks";
-import { IdentityProvider, SupportedIdentityProvider } from "../../types";
+import type { AddProviderParams } from "../../hooks";
+import { useAuthHandle } from "../../hooks";
+import type { IdentityProvider, SupportedIdentityProvider } from "../../types";
 import ProviderFormCta from "../ProviderFormCta";
 import { INITIAL_VALUES } from "./constants";
 import { getValidationSchema } from "./helpers";
-import { ProviderFormValues } from "./types";
+import type { ProviderFormValues } from "./types";
 import classes from "./ProviderForm.module.scss";
 
 type ProvideFormProps =

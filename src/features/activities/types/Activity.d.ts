@@ -1,4 +1,4 @@
-import { Creator } from "./Creator";
+import type { Creator } from "./Creator";
 
 export type ActivityStatus =
   | "succeeded"

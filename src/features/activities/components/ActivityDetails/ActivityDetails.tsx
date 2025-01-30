@@ -1,5 +1,5 @@
 import moment from "moment";
-import { FC } from "react";
+import type { FC } from "react";
 import {
   Col,
   ConfirmationButton,
@@ -11,13 +11,13 @@ import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities } from "../../hooks";
-import { Activity } from "../../types";
+import type { Activity } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import classes from "./ActivityDetails.module.scss";
 
 interface ActivityDetailsProps {
-  activityId: number;
+  readonly activityId: number;
 }
 
 const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {

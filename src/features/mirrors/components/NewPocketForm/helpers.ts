@@ -1,14 +1,14 @@
 import { assertNever } from "@/utils/debug";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import * as Yup from "yup";
-import {
+import type {
   CreateMirrorPocketParams,
   CreatePullPocketParams,
   CreateUploadPocketParams,
   Series,
 } from "../../types";
 import { INITIAL_VALUES } from "./constants";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 export const getCreatePocketParams = (
   values: FormProps,

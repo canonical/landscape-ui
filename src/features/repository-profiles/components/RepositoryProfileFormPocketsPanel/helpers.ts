@@ -1,4 +1,4 @@
-import { Distribution } from "@/features/mirrors";
+import type { Distribution } from "@/features/mirrors";
 
 const getDistributionPocketOptions = (distributions: Distribution[]) => {
   return distributions

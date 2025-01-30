@@ -1,7 +1,7 @@
 import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
-import { User } from "@/types/User";
+import type { User } from "@/types/User";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";

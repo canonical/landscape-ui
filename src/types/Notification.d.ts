@@ -1,10 +1,10 @@
-import { ValueOf } from "@canonical/react-components/dist/types";
-import { NotificationSeverity } from "@canonical/react-components/dist/components/Notification/Notification";
+import type { ValueOf } from "@canonical/react-components/dist/types";
+import type { NotificationSeverity } from "@canonical/react-components/dist/components/Notification/Notification";
 
-declare type NotificationAction = {
+declare interface NotificationAction {
   label: string;
   onClick: () => void;
-};
+}
 
 export interface Notification {
   message: string;

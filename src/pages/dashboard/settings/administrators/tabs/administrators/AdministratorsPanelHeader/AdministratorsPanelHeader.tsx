@@ -1,4 +1,5 @@
-import { FC, SyntheticEvent, useState } from "react";
+import type { FC, SyntheticEvent } from "react";
+import { useState } from "react";
 import { Col, Form, Row, SearchBox } from "@canonical/react-components";
 import usePageParams from "@/hooks/usePageParams";
 

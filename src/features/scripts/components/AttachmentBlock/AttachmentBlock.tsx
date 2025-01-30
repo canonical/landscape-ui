@@ -1,10 +1,10 @@
-import { FormikContextType } from "formik";
-import { FC } from "react";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
 import { Input } from "@canonical/react-components";
-import { RunInstanceScriptFormValues } from "../../types";
+import type { RunInstanceScriptFormValues } from "../../types";
 
 interface AttachmentBlockProps {
-  formik: FormikContextType<RunInstanceScriptFormValues>;
+  readonly formik: FormikContextType<RunInstanceScriptFormValues>;
 }
 
 const AttachmentBlock: FC<AttachmentBlockProps> = ({ formik }) => {

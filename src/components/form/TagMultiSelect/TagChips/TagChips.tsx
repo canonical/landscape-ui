@@ -1,4 +1,5 @@
-import { FC, RefObject, useEffect } from "react";
+import type { FC, RefObject } from "react";
+import { useEffect } from "react";
 import { useEventListener } from "usehooks-ts";
 import { Chip } from "@canonical/react-components";
 

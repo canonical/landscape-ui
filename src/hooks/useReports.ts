@@ -1,8 +1,9 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import useFetchOld from "@/hooks/useFetchOld";
-import { QueryFnType } from "@/types/QueryFnType";
-import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "@/types/ApiError";
+import type { QueryFnType } from "@/types/QueryFnType";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { ApiError } from "@/types/ApiError";
 
 interface CommonGetParams {
   query?: string;

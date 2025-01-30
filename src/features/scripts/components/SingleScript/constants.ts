@@ -1,4 +1,4 @@
-import { ScriptFormValues } from "../../types";
+import type { ScriptFormValues } from "../../types";
 
 export const CTA_LABELS = {
   add: "Add script",

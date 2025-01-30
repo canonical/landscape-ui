@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import DeriveSeriesForm from "./DeriveSeriesForm";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { distributions } from "@/tests/mocks/distributions";
 
 const props: ComponentProps<typeof DeriveSeriesForm> = {

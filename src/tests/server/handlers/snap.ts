@@ -1,5 +1,5 @@
 import { API_URL } from "@/constants";
-import { GetSnapsParams, InstalledSnap } from "@/features/snaps";
+import type { GetSnapsParams, InstalledSnap } from "@/features/snaps";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   availableSnapInfo,
@@ -7,7 +7,7 @@ import {
   installedSnaps,
   successfulSnapInstallResponse,
 } from "@/tests/mocks/snap";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import {
   generateFilteredResponse,

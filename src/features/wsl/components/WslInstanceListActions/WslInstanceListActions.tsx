@@ -1,21 +1,22 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
+import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
-  MenuLink,
 } from "@canonical/react-components";
 import { useWsl } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import { WslInstanceWithoutRelation } from "@/types/Instance";
+import type { WslInstanceWithoutRelation } from "@/types/Instance";
 import classes from "./WslInstanceListActions.module.scss";
 import { getModalBody } from "./constants";
-import { Action } from "./types";
+import type { Action } from "./types";
 
 interface WslInstanceListActionsProps {
-  instance: WslInstanceWithoutRelation;
-  parentId: number;
+  readonly instance: WslInstanceWithoutRelation;
+  readonly parentId: number;
 }
 
 const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({

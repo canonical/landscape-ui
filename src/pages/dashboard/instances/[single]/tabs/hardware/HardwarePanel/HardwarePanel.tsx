@@ -1,10 +1,10 @@
-import { FC } from "react";
+import type { FC } from "react";
 import HardwareInfoRow from "@/pages/dashboard/instances/[single]/tabs/hardware/HardwareInfoRow";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import { getHardwareInfo } from "./helpers";
 
 interface HardwarePanelProps {
-  instance: Instance;
+  readonly instance: Instance;
 }
 
 const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {

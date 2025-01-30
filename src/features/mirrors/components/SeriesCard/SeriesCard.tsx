@@ -2,20 +2,21 @@ import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { MenuLink } from "@canonical/react-components";
 import {
   Button,
   ConfirmationButton,
   ConfirmationModal,
   ContextualMenu,
-  MenuLink,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
-import { FC, lazy, Suspense, useEffect, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { DEFAULT_SNAPSHOT_URI } from "../../constants";
 import { useSeries } from "../../hooks";
-import { Distribution, Series, SyncPocketRef } from "../../types";
+import type { Distribution, Series, SyncPocketRef } from "../../types";
 import SeriesPocketList from "../SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
 
@@ -24,10 +25,10 @@ const NewPocketForm = lazy(() => import("../NewPocketForm"));
 const DeriveSeriesForm = lazy(() => import("../DeriveSeriesForm"));
 
 interface SeriesCardProps {
-  distribution: Distribution;
-  series: Series;
-  syncPocketRefAdd: (ref: SyncPocketRef) => void;
-  syncPocketRefs: SyncPocketRef[];
+  readonly distribution: Distribution;
+  readonly series: Series;
+  readonly syncPocketRefAdd: (ref: SyncPocketRef) => void;
+  readonly syncPocketRefs: SyncPocketRef[];
 }
 
 const SeriesCard: FC<SeriesCardProps> = ({

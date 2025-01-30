@@ -13,27 +13,27 @@ import {
   Select,
   Textarea,
 } from "@canonical/react-components";
-import { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import {
   ARCHITECTURE_OPTIONS,
   COMPONENT_OPTIONS,
   DEFAULT_SNAPSHOT_URI,
 } from "../../constants";
 import { usePockets } from "../../hooks";
-import { Distribution, Pocket, Series } from "../../types";
+import type { Distribution, Pocket, Series } from "../../types";
 import {
   getEditPocketParams,
   getInitialValues,
   getValidationSchema,
 } from "./helpers";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 interface EditPocketFormProps {
-  pocket: Pocket;
-  distributionName: Distribution["name"];
-  seriesName: Series["name"];
+  readonly pocket: Pocket;
+  readonly distributionName: Distribution["name"];
+  readonly seriesName: Series["name"];
 }
 
 const EditPocketForm: FC<EditPocketFormProps> = ({

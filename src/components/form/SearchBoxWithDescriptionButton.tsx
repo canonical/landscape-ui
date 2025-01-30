@@ -1,14 +1,14 @@
-import { FC } from "react";
+import type { FC } from "react";
 import classNames from "classnames";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classes from "./SearchBoxWithDescriptionButton.module.scss";
 
 interface SearchBoxWithDescriptionButtonProps {
-  inputValue: string;
-  onInputChange: (inputValue: string) => void;
-  onSearchClick: () => void;
-  onDescriptionClick: () => void;
-  onClear?: () => void;
+  readonly inputValue: string;
+  readonly onInputChange: (inputValue: string) => void;
+  readonly onSearchClick: () => void;
+  readonly onDescriptionClick: () => void;
+  readonly onClear?: () => void;
 }
 
 const SearchBoxWithDescriptionButton: FC<

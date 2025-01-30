@@ -1,9 +1,9 @@
 import { API_URL } from "@/constants";
-import { EventLog, GetEventsLogParams } from "@/features/events-log";
+import type { EventLog, GetEventsLogParams } from "@/features/events-log";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { eventsLog } from "@/tests/mocks/eventsLog";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 
 export default [

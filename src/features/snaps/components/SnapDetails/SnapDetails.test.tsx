@@ -5,7 +5,7 @@ import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import moment from "moment";
 import { describe } from "vitest";
-import { InstalledSnap } from "../../types";
+import type { InstalledSnap } from "../../types";
 import SnapDetails from "./SnapDetails";
 
 const heldSnap =

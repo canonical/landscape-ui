@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { FC } from "react";
+import type { FC } from "react";
 import {
   Button,
   Col,
@@ -10,14 +10,14 @@ import {
 } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import { useSavedSearches } from "../../hooks";
-import { SavedSearch } from "../../types";
+import type { SavedSearch } from "../../types";
 import classes from "./SavedSearchList.module.scss";
 import useNotify from "@/hooks/useNotify";
 
 interface SavedSearchListProps {
-  onSavedSearchClick: (search: SavedSearch) => void;
-  onSavedSearchRemove: () => void;
-  savedSearches: SavedSearch[];
+  readonly onSavedSearchClick: (search: SavedSearch) => void;
+  readonly onSavedSearchRemove: () => void;
+  readonly savedSearches: SavedSearch[];
 }
 
 const SavedSearchList: FC<SavedSearchListProps> = ({

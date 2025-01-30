@@ -1,5 +1,5 @@
 import { DEFAULT_MIRROR_URI } from "../../constants";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 export const INITIAL_VALUES: FormProps = {
   series: "",

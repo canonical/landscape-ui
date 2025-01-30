@@ -1,9 +1,9 @@
 import useFetch from "@/hooks/useFetch";
-import { ApiError } from "@/types/ApiError";
-import { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/ApiError";
+import type { QueryFnType } from "@/types/QueryFnType";
 import { useQuery } from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import { AlertSummaryResponse } from "../types";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { AlertSummaryResponse } from "../types";
 
 export default function useAlertsSummary() {
   const authFetch = useFetch();

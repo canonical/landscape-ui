@@ -1,6 +1,6 @@
-import { Chart, ChartData, LegendItem } from "chart.js";
+import type { Chart, ChartData, LegendItem } from "chart.js";
 import classNames from "classnames";
-import { FC } from "react";
+import type { FC } from "react";
 import { Link } from "react-router";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./Legend.module.scss";
@@ -8,10 +8,10 @@ import { STATUSES } from "@/features/instances";
 import { ROOT_PATH } from "@/constants";
 
 interface LegendProps {
-  data: ChartData<"pie">;
-  chartInstance: Chart | null;
-  selectedArc: number | null;
-  setSelectedArc: (index: number | null) => void;
+  readonly data: ChartData<"pie">;
+  readonly chartInstance: Chart | null;
+  readonly selectedArc: number | null;
+  readonly setSelectedArc: (index: number | null) => void;
 }
 
 const Legend: FC<LegendProps> = ({

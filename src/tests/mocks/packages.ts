@@ -1,4 +1,4 @@
-import { InstancePackage, Package } from "@/features/packages";
+import type { InstancePackage, Package } from "@/features/packages";
 
 export const packages: Package[] = [
   {

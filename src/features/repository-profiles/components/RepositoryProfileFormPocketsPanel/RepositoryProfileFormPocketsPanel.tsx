@@ -1,16 +1,17 @@
 import classNames from "classnames";
-import { FormikContextType } from "formik";
-import { FC, useState } from "react";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
+import { useState } from "react";
 import { CheckboxInput, Col, Row } from "@canonical/react-components";
-import { RepositoryProfileFormValues } from "../../types";
+import type { RepositoryProfileFormValues } from "../../types";
 import RepositoryProfileFormSearch from "../RepositoryProfileFormSearch";
-import { Distribution } from "@/features/mirrors";
+import type { Distribution } from "@/features/mirrors";
 import { getFilteredDistributionPocketOptions } from "./helpers";
 import classes from "./RepositoryProfileFormPocketsPanel.module.scss";
 
 interface RepositoryProfileFormPocketsPanelProps {
-  distributions: Distribution[];
-  formik: FormikContextType<RepositoryProfileFormValues>;
+  readonly distributions: Distribution[];
+  readonly formik: FormikContextType<RepositoryProfileFormValues>;
 }
 
 const RepositoryProfileFormPocketsPanel: FC<

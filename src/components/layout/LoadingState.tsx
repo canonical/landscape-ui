@@ -1,5 +1,5 @@
 import { Icon, ICONS } from "@canonical/react-components";
-import { FC } from "react";
+import type { FC } from "react";
 
 const LoadingState: FC = () => {
   return (

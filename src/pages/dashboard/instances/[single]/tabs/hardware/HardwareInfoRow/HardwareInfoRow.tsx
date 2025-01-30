@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { FC } from "react";
+import type { FC } from "react";
 import { Col, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import classes from "./HardwareInfoRow.module.scss";
@@ -10,8 +10,8 @@ interface InfoBlock {
 }
 
 interface HardwareInfoRowProps {
-  infoRowLabel: string;
-  infoBlocksArray: InfoBlock[][];
+  readonly infoRowLabel: string;
+  readonly infoBlocksArray: InfoBlock[][];
 }
 
 const HardwareInfoRow: FC<HardwareInfoRowProps> = ({

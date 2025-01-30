@@ -1,6 +1,8 @@
-import { FC, lazy, Suspense, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import { Button, ContextualMenu, MenuLink } from "@canonical/react-components";
+import type { MenuLink } from "@canonical/react-components";
+import { Button, ContextualMenu } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";

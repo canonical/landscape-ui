@@ -1,7 +1,7 @@
 import * as Yup from "yup";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "../constants";
-import { ComponentProps } from "react";
-import WslProfileInstallForm from "./WslProfileInstallForm";
+import type { ComponentProps } from "react";
+import type WslProfileInstallForm from "./WslProfileInstallForm";
 
 export const getValidationSchema = () => {
   return Yup.object().shape({

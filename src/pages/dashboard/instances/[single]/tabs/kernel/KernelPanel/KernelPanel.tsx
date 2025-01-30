@@ -1,21 +1,22 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
+import type { KernelOverviewInfo } from "@/features/kernel";
 import {
   KernelOverview,
-  KernelOverviewInfo,
   KernelHeader,
   KernelTableList,
   useKernel,
 } from "@/features/kernel";
 import usePageParams from "@/hooks/usePageParams";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 import moment from "moment";
-import { FC, useMemo } from "react";
+import type { FC } from "react";
+import { useMemo } from "react";
 import { useParams } from "react-router";
 
 interface KernelPanelProps {
-  instanceTitle: string;
+  readonly instanceTitle: string;
 }
 
 const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {

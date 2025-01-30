@@ -1,4 +1,4 @@
-import { ModalConfirmationFormProps } from "./types";
+import type { ModalConfirmationFormProps } from "./types";
 import * as Yup from "yup";
 import moment from "moment";
 

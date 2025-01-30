@@ -2,7 +2,7 @@ import { ROOT_PATH } from "@/constants";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { describe, expect } from "vitest";
 import AccessGroupInstanceCountCell from "./AccessGroupInstanceCountCell";
 

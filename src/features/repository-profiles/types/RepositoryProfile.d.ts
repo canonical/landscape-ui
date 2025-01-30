@@ -1,4 +1,4 @@
-import { Distribution, Pocket, Series } from "@/features/mirrors";
+import type { Distribution, Pocket, Series } from "@/features/mirrors";
 
 type RepositoryProfilePocket = Pocket & {
   distribution: Pick<Distribution, "access_group" | "creation_time" | "name">;

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { API_URL_OLD } from "@/constants";
-import { GetRepoInfoParams, RepoInfo } from "@/features/mirrors";
+import type { GetRepoInfoParams, RepoInfo } from "@/features/mirrors";
 import { repoInfo } from "@/tests/mocks/repo";
 import { isAction } from "@/tests/server/handlers/_helpers";
 

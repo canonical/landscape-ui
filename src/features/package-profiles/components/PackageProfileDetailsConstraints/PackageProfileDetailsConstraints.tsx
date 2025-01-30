@@ -1,11 +1,12 @@
 import classNames from "classnames";
-import { FC, lazy, Suspense, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Button, Col, Row } from "@canonical/react-components";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import PackageProfileDetailsConstraintsInfo from "../PackageProfileDetailsConstraintsInfo";
 import { usePackageProfiles } from "../../hooks";
-import { PackageProfile } from "../../types";
+import type { PackageProfile } from "../../types";
 import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./PackageProfileDetailsConstraints.module.scss";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
@@ -15,7 +16,7 @@ const PackageProfileConstraintsEditForm = lazy(
 );
 
 interface PackageProfileDetailsConstraintsProps {
-  profile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileDetailsConstraints: FC<

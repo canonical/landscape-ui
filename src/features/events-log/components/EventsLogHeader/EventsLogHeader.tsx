@@ -2,7 +2,7 @@ import { TableFilterChips } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
 import { Form, SearchBox } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import * as Yup from "yup";
 import DaysFilter from "../DaysFilter";
 import classes from "./EventsLogHeader.module.scss";

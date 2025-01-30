@@ -1,7 +1,7 @@
-import { TabLink } from "@canonical/react-components/dist/components/Tabs/Tabs";
-import { Instance } from "@/types/Instance";
+import type { TabLink } from "@canonical/react-components/dist/components/Tabs/Tabs";
+import type { Instance } from "@/types/Instance";
 import { TAB_LINKS } from "./constants";
-import { UpgradesFormProps } from "./types";
+import type { UpgradesFormProps } from "./types";
 
 export const getTabLinks = ({
   activeTabLinkId,

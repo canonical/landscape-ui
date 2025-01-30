@@ -1,5 +1,5 @@
 import { ROOT_PATH } from "@/constants";
-import { MenuItem } from "../Navigation/types";
+import type { MenuItem } from "../Navigation/types";
 
 export const ACCOUNT_SETTINGS: MenuItem = {
   label: "Account settings",

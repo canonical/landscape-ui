@@ -1,11 +1,11 @@
 import classNames from "classnames";
-import { FC } from "react";
+import type { FC } from "react";
 import { Button } from "@canonical/react-components";
 import classes from "./TagList.module.scss";
 
 interface TagListProps {
-  onTagClick: (tag: string) => void;
-  tags: string[];
+  readonly onTagClick: (tag: string) => void;
+  readonly tags: string[];
 }
 
 const TagList: FC<TagListProps> = ({ onTagClick, tags }) => {

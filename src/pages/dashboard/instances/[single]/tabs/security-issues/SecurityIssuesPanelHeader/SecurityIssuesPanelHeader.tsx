@@ -1,4 +1,5 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
   ConfirmationButton,
@@ -12,11 +13,11 @@ import useNotify from "@/hooks/useNotify";
 import { useUsns } from "@/features/usns";
 import classes from "./SecurityIssuesPanelHeader.module.scss";
 import usePageParams from "@/hooks/usePageParams";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface SecurityIssuesPanelHeaderProps {
-  onSearch: (searchText: string) => void;
-  usns: string[];
+  readonly onSearch: (searchText: string) => void;
+  readonly usns: string[];
 }
 
 const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({

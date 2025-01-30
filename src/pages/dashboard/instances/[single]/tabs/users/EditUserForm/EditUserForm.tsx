@@ -1,6 +1,6 @@
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import * as Yup from "yup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import MultiSelectField from "@/components/form/MultiSelectField";
@@ -8,9 +8,9 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
-import { User } from "@/types/User";
+import type { User } from "@/types/User";
 import { useParams } from "react-router";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface FormProps {
   name: string;
@@ -25,7 +25,7 @@ interface FormProps {
 }
 
 interface EditUserFormProps {
-  user: User;
+  readonly user: User;
 }
 
 const EditUserForm: FC<EditUserFormProps> = ({ user }) => {

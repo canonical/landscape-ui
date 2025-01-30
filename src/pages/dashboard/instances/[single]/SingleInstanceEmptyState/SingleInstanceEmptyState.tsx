@@ -1,12 +1,12 @@
-import { FC } from "react";
+import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import { Button } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
 import { useNavigate } from "react-router";
 
 interface SingleInstanceEmptyStateProps {
-  childInstanceId: string | undefined;
-  instanceId: string | undefined;
+  readonly childInstanceId: string | undefined;
+  readonly instanceId: string | undefined;
 }
 
 const SingleInstanceEmptyState: FC<SingleInstanceEmptyStateProps> = ({

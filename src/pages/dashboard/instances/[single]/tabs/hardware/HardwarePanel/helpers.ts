@@ -1,4 +1,4 @@
-import { GroupedHardware } from "@/types/Instance";
+import type { GroupedHardware } from "@/types/Instance";
 
 const getSystemInfo = (groupedHardware: GroupedHardware) => {
   return [

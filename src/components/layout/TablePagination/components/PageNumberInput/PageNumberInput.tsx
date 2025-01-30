@@ -9,10 +9,10 @@ const PageNumberInput = ({
   min,
   setCurrentPage,
 }: {
-  currentPage: number;
-  max: number;
-  min: number;
-  setCurrentPage: (page: number) => void;
+  readonly currentPage: number;
+  readonly max: number;
+  readonly min: number;
+  readonly setCurrentPage: (page: number) => void;
 }) => {
   const [error, setError] = useState("");
   const [page, setPage] = useState<number | "">(currentPage);

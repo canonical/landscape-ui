@@ -1,4 +1,4 @@
-import { LoginMethods } from "@/features/auth";
+import type { LoginMethods } from "@/features/auth";
 import { identityProviders } from "@/tests/mocks/identityProviders";
 
 export const allLoginMethods: LoginMethods = {

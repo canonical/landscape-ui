@@ -6,11 +6,12 @@ import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT } from "@/constants";
 import { useGPGKeys } from "@/features/gpg-keys";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { Col, Form, Input, Row, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import type { ChangeEvent, FC } from "react";
+import { useEffect, useState } from "react";
 import {
   ARCHITECTURE_OPTIONS,
   COMPONENT_OPTIONS,
@@ -21,7 +22,7 @@ import {
   PRE_SELECTED_POCKETS,
 } from "../../constants";
 import { useDistributions, useSeries } from "../../hooks";
-import { Distribution } from "../../types";
+import type { Distribution } from "../../types";
 import {
   POCKET_OPTIONS,
   SNAPSHOT_START_DATE,
@@ -32,11 +33,11 @@ import {
   getStrippedUrl,
   getValidationSchema,
 } from "./helpers";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 interface NewSeriesFormProps {
-  distribution?: Distribution;
-  ctaText?: string;
+  readonly distribution?: Distribution;
+  readonly ctaText?: string;
 }
 
 const NewSeriesForm: FC<NewSeriesFormProps> = ({

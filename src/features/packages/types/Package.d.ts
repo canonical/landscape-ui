@@ -4,17 +4,16 @@ type PocketPackageVersion = string;
 
 export type PocketPackage = [PocketPackageName, PocketPackageVersion];
 
-export interface PackageDiff {
-  [componentArchitecturePair: string]: {
+export type PackageDiff = Record<
+  string,
+  {
     add?: PocketPackage[];
     delete?: PocketPackage[];
     update?: [PocketPackageName, PocketPackageVersion, PocketPackageVersion][];
-  };
-}
+  }
+>;
 
-export interface PocketPackagesList {
-  [componentArchitecturePair: string]: PocketPackage[];
-}
+export type PocketPackagesList = Record<string, PocketPackage[]>;
 
 interface CommonPackageInfo extends Record<string, unknown> {
   id: number;

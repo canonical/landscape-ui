@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
-import { FC, useEffect, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import {
   Col,
@@ -17,11 +18,11 @@ import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
-import { Administrator } from "@/types/Administrator";
-import { SelectOption } from "@/types/SelectOption";
+import type { Administrator } from "@/types/Administrator";
+import type { SelectOption } from "@/types/SelectOption";
 
 interface EditAdministratorFormProps {
-  administrator: Administrator;
+  readonly administrator: Administrator;
 }
 
 const EditAdministratorForm: FC<EditAdministratorFormProps> = ({

@@ -1,4 +1,5 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import {
   Button,
   Col,
@@ -13,9 +14,9 @@ import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { useRemovalProfiles } from "../../hooks";
-import { RemovalProfile } from "../../types";
+import type { RemovalProfile } from "../../types";
 import classes from "./RemovalProfileDetails.module.scss";
 
 const SingleRemovalProfileForm = lazy(
@@ -23,8 +24,8 @@ const SingleRemovalProfileForm = lazy(
 );
 
 interface RemovalProfileDetailsProps {
-  accessGroupOptions: SelectOption[];
-  profile: RemovalProfile;
+  readonly accessGroupOptions: SelectOption[];
+  readonly profile: RemovalProfile;
 }
 
 const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({

@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import classes from "./FieldDescription.module.scss";
 import { Icon, ICONS, Tooltip } from "@canonical/react-components";
 
@@ -6,9 +6,9 @@ type TooltipProps = React.ComponentProps<typeof Tooltip>;
 type TooltipPosition = TooltipProps["position"];
 
 interface FieldDescriptionProps {
-  description: ReactNode;
-  label: string;
-  tooltipPosition?: TooltipPosition;
+  readonly description: ReactNode;
+  readonly label: string;
+  readonly tooltipPosition?: TooltipPosition;
 }
 
 const FieldDescription: FC<FieldDescriptionProps> = ({

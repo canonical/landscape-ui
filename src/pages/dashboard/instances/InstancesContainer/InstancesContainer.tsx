@@ -1,16 +1,17 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import useInstances from "@/hooks/useInstances";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import usePageParams from "@/hooks/usePageParams";
 import { getQuery } from "./helpers";
 import { InstanceList, InstancesHeader } from "@/features/instances";
-import { ColumnFilterOption } from "@/components/form/ColumnFilter";
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 
 interface InstancesContainerProps {
-  selectedInstances: Instance[];
-  setSelectedInstances: (instances: Instance[]) => void;
+  readonly selectedInstances: Instance[];
+  readonly setSelectedInstances: (instances: Instance[]) => void;
 }
 
 const InstancesContainer: FC<InstancesContainerProps> = ({

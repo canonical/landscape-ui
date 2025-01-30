@@ -1,18 +1,19 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { MenuLink } from "@canonical/react-components";
 import {
   Button,
   ConfirmationButton,
   ConfirmationModal,
   ContextualMenu,
-  MenuLink,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC, lazy, Suspense, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { useDistributions } from "../../hooks";
-import { Distribution, SyncPocketRef } from "../../types";
+import type { Distribution, SyncPocketRef } from "../../types";
 import EmptyDistribution from "../EmptyDistribution/EmptyDistribution";
 import SeriesCard from "../SeriesCard";
 import classes from "./DistributionCard.module.scss";
@@ -20,9 +21,9 @@ import classes from "./DistributionCard.module.scss";
 const NewSeriesForm = lazy(() => import("../NewSeriesForm"));
 
 interface DistributionCardProps {
-  distribution: Distribution;
-  syncPocketRefAdd: (ref: SyncPocketRef) => void;
-  syncPocketRefs: SyncPocketRef[];
+  readonly distribution: Distribution;
+  readonly syncPocketRefAdd: (ref: SyncPocketRef) => void;
+  readonly syncPocketRefs: SyncPocketRef[];
 }
 
 const DistributionCard: FC<DistributionCardProps> = ({

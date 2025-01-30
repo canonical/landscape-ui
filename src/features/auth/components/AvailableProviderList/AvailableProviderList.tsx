@@ -1,20 +1,17 @@
-import { FC, useEffect, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { Button, Icon } from "@canonical/react-components";
-import { IdentityProvider } from "../../types";
-import {
-  GetOidcUrlParams,
-  GetUbuntuOneUrlParams,
-  useInvitation,
-  useUnsigned,
-} from "../../hooks";
+import type { IdentityProvider } from "../../types";
+import type { GetOidcUrlParams, GetUbuntuOneUrlParams } from "../../hooks";
+import { useInvitation, useUnsigned } from "../../hooks";
 import { getProviderIcon, redirectToExternalUrl } from "../../helpers";
 import classes from "./AvailableProviderList.module.scss";
 
 interface AvailableProviderListProps {
-  isStandaloneOidcEnabled: boolean;
-  isUbuntuOneEnabled: boolean;
-  oidcProviders: IdentityProvider[];
+  readonly isStandaloneOidcEnabled: boolean;
+  readonly isUbuntuOneEnabled: boolean;
+  readonly oidcProviders: IdentityProvider[];
 }
 
 const AvailableProviderList: FC<AvailableProviderListProps> = ({

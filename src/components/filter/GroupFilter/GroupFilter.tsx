@@ -1,10 +1,10 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 
 interface GroupFilterProps {
-  options: SelectOption[];
+  readonly options: SelectOption[];
 }
 
 const GroupFilter: FC<GroupFilterProps> = ({ options }) => {

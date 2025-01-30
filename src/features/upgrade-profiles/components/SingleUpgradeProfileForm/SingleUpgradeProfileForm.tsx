@@ -1,10 +1,12 @@
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { CreateUpgradeProfileParams, useUpgradeProfiles } from "../../hooks";
-import { FormProps, UpgradeProfile } from "../../types";
+import type { CreateUpgradeProfileParams } from "../../hooks";
+import { useUpgradeProfiles } from "../../hooks";
+import type { FormProps, UpgradeProfile } from "../../types";
 import UpgradeProfileScheduleBlock from "../UpgradeProfileScheduleBlock";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";

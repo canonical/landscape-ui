@@ -1,4 +1,4 @@
-import { Preferences } from "@/types/Preferences";
+import type { Preferences } from "@/types/Preferences";
 
 export const preferences: Preferences = {
   title: "Onward, Inc",

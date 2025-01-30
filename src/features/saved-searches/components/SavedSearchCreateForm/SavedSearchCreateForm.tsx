@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import * as Yup from "yup";
 import { Button, Form, Input } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
@@ -7,9 +7,9 @@ import useNotify from "@/hooks/useNotify";
 import { useSavedSearches } from "../../hooks";
 
 interface SavedSearchCreateFormProps {
-  onClose: () => void;
-  onSearchSave: () => void;
-  search: string;
+  readonly onClose: () => void;
+  readonly onSearchSave: () => void;
+  readonly search: string;
 }
 
 const SavedSearchCreateForm: FC<SavedSearchCreateFormProps> = ({

@@ -6,7 +6,8 @@ import PageMain from "@/components/layout/PageMain";
 import { APTSourcesList, useAPTSources } from "@/features/apt-sources";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 
 const NewAPTSourceForm = lazy(() =>
   import("@/features/apt-sources").then((module) => ({

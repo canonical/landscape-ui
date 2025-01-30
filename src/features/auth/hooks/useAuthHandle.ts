@@ -1,10 +1,13 @@
-import { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Activity } from "@/features/activities";
+import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
-import { ApiError } from "@/types/ApiError";
-import { QueryFnType, QueryFnTypeWithRequiredParam } from "@/types/QueryFnType";
-import {
+import type { ApiError } from "@/types/ApiError";
+import type {
+  QueryFnType,
+  QueryFnTypeWithRequiredParam,
+} from "@/types/QueryFnType";
+import type {
   IdentityProvider,
   SingleIdentityProvider,
   SupportedIdentityProvider,

@@ -1,4 +1,4 @@
-import { Instance, PendingInstance } from "@/types/Instance";
+import type { Instance, PendingInstance } from "@/types/Instance";
 
 export const instances: Instance[] = [
   {

@@ -1,4 +1,4 @@
-import { IdentityProvider } from "../../types";
+import type { IdentityProvider } from "../../types";
 
 export const UBUNTU_ONE_PROVIDER: IdentityProvider = {
   enabled: true,

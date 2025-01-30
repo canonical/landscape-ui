@@ -1,21 +1,17 @@
-import { QueryFnType } from "@/types/QueryFnType";
-import {
+import type { QueryFnType } from "@/types/QueryFnType";
+import type {
   PackageProfile,
   PackageProfileConstraint,
   PackageProfileConstraintType,
 } from "../types";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "@/types/ApiError";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { ApiError } from "@/types/ApiError";
 import useFetchOld from "@/hooks/useFetchOld";
-import { Activity } from "@/features/activities";
+import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 
 interface GetPackageProfilesParams {
   names?: string[];

@@ -1,4 +1,5 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import {
   Button,
   Col,
@@ -13,9 +14,9 @@ import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { useUpgradeProfiles } from "../../hooks";
-import { UpgradeProfile } from "../../types";
+import type { UpgradeProfile } from "../../types";
 import { getScheduleInfo } from "./helpers";
 import classes from "./UpgradeProfileDetails.module.scss";
 
@@ -24,8 +25,8 @@ const SingleUpgradeProfileForm = lazy(
 );
 
 interface UpgradeProfileDetailsProps {
-  accessGroupOptions: SelectOption[];
-  profile: UpgradeProfile;
+  readonly accessGroupOptions: SelectOption[];
+  readonly profile: UpgradeProfile;
 }
 
 const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({

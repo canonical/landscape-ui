@@ -1,12 +1,12 @@
-import { FC } from "react";
+import type { FC } from "react";
 import classes from "./ReportWidget.module.scss";
 
 interface ReportWidgetProps {
-  currentCount: number;
-  negativeDescription: string;
-  positiveDescription: string;
-  title: string;
-  totalCount: number;
+  readonly currentCount: number;
+  readonly negativeDescription: string;
+  readonly positiveDescription: string;
+  readonly title: string;
+  readonly totalCount: number;
 }
 
 const ReportWidget: FC<ReportWidgetProps> = ({

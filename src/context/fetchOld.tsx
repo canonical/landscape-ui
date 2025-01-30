@@ -1,5 +1,7 @@
-import React, { FC, ReactNode } from "react";
-import axios, { AxiosError, AxiosInstance } from "axios";
+import type { FC, ReactNode } from "react";
+import React from "react";
+import type { AxiosError, AxiosInstance } from "axios";
+import axios from "axios";
 
 import { API_URL_OLD } from "@/constants";
 import { generateRequestParams } from "@/utils/api";
@@ -8,7 +10,7 @@ import useAuth from "../hooks/useAuth";
 export const FetchContext = React.createContext<AxiosInstance | null>(null);
 
 interface FetchProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const FetchOldProvider: FC<FetchProviderProps> = ({ children }) => {

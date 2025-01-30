@@ -1,9 +1,9 @@
 import * as Yup from "yup";
-import { ComponentProps } from "react";
-import SingleScript from "./SingleScript";
-import { Script, ScriptFormValues } from "../../types";
+import type { ComponentProps } from "react";
+import type SingleScript from "./SingleScript";
+import type { Script, ScriptFormValues } from "../../types";
 import { Buffer } from "buffer";
-import { CreateScriptAttachmentParams } from "../../hooks/useScripts";
+import type { CreateScriptAttachmentParams } from "../../hooks/useScripts";
 
 export const getValidationSchema = (
   action: ComponentProps<typeof SingleScript>["action"],

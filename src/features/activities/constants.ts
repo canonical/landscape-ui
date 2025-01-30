@@ -1,4 +1,4 @@
-import { ActivityStatus } from "./types";
+import type { ActivityStatus } from "./types";
 import classes from "./activities.module.scss";
 
 export const ACTIVITY_STATUSES: Record<

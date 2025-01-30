@@ -1,16 +1,16 @@
-import { FormikContextType } from "formik";
-import { FC } from "react";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
 import { Select } from "@canonical/react-components";
 import FileInput from "@/components/form/FileInput";
 import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
-import { AddFormProps } from "../../types";
+import type { AddFormProps } from "../../types";
 import useInstances from "@/hooks/useInstances";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { CONSTRAINTS_TYPE_OPTIONS } from "./constants";
 import classes from "./PackageProfileConstraintsTypeBlock.module.scss";
 
 interface PackageProfileConstraintsTypeBlockProps {
-  formik: FormikContextType<AddFormProps>;
+  readonly formik: FormikContextType<AddFormProps>;
 }
 
 const PackageProfileConstraintsTypeBlock: FC<

@@ -1,19 +1,19 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import classes from "./PageHeader.module.scss";
 import classNames from "classnames";
 import { Link } from "react-router";
-import { Breadcrumb } from "../../../types/Breadcrumb";
+import type { Breadcrumb } from "../../../types/Breadcrumb";
 import { useMediaQuery } from "usehooks-ts";
 
 interface PageHeaderProps {
-  title: string;
-  hideTitle?: boolean;
-  breadcrumbs?: Breadcrumb[];
-  actions?: ReactNode[];
-  className?: string;
-  visualTitle?: string;
-  sticky?: boolean;
-  helperContent?: ReactNode;
+  readonly title: string;
+  readonly hideTitle?: boolean;
+  readonly breadcrumbs?: Breadcrumb[];
+  readonly actions?: ReactNode[];
+  readonly className?: string;
+  readonly visualTitle?: string;
+  readonly sticky?: boolean;
+  readonly helperContent?: ReactNode;
 }
 
 const PageHeader: FC<PageHeaderProps> = ({

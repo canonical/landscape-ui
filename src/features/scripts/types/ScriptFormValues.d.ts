@@ -1,4 +1,4 @@
-import { CreateScriptParams } from "../hooks";
+import type { CreateScriptParams } from "../hooks";
 
 export interface ScriptFormValues extends CreateScriptParams {
   attachments: {

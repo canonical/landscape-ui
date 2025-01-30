@@ -2,11 +2,12 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { UrlParams } from "@/types/UrlParams";
-import { FC, useState } from "react";
+import type { UrlParams } from "@/types/UrlParams";
+import type { FC } from "react";
+import { useState } from "react";
 import { useParams } from "react-router";
 import { useSnaps } from "../../hooks";
-import { SelectedSnaps } from "../../types";
+import type { SelectedSnaps } from "../../types";
 import SnapDropdownSearch from "../SnapDropdownSearch";
 
 const InstallSnaps: FC = () => {

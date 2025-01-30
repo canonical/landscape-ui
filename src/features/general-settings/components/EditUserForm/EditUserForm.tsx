@@ -7,19 +7,20 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Form, Input, Link, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import { useUserGeneralSettings } from "../../hooks";
-import { UserDetails } from "../../types";
+import type { UserDetails } from "../../types";
 import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
 import classes from "./EditUserForm.module.scss";
 import { getAccountOptions } from "./helpers";
-import { EditUserFormValues } from "./types";
+import type { EditUserFormValues } from "./types";
 import { getFormikError } from "@/utils/formikErrors";
 
 const ChangePasswordForm = lazy(() => import("../ChangePasswordForm"));
 
 interface EditUserFormProps {
-  userDetails: UserDetails;
+  readonly userDetails: UserDetails;
 }
 
 const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {

@@ -6,12 +6,13 @@ import {
   Input,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC, Suspense, lazy, useState } from "react";
+import type { FC } from "react";
+import { Suspense, lazy, useState } from "react";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
-import { User } from "@/types/User";
+import type { User } from "@/types/User";
 import NewUserForm from "../NewUserForm";
 import {
   UserAction,
@@ -21,16 +22,16 @@ import {
 } from "./helpers";
 import LoadingState from "@/components/layout/LoadingState";
 import { useParams } from "react-router";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 const EditUserForm = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
 );
 
 interface UserPanelActionButtonsProps {
-  selectedUsers: User[];
-  handleClearSelection?: () => void;
-  sidePanel?: boolean;
+  readonly selectedUsers: User[];
+  readonly handleClearSelection?: () => void;
+  readonly sidePanel?: boolean;
 }
 
 const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({

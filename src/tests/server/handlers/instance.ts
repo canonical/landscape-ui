@@ -1,11 +1,11 @@
 import { http, HttpResponse } from "msw";
 import { API_URL, API_URL_OLD } from "@/constants";
 import { userGroups } from "@/tests/mocks/userGroup";
-import { GroupsResponse } from "@/types/User";
-import { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
-import { GetInstancesParams } from "@/hooks/useInstances";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { Instance, PendingInstance } from "@/types/Instance";
+import type { GroupsResponse } from "@/types/User";
+import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
+import type { GetInstancesParams } from "@/hooks/useInstances";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { Instance, PendingInstance } from "@/types/Instance";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 import { instances, pendingInstances } from "@/tests/mocks/instance";
 import { getEndpointStatus } from "@/tests/controllers/controller";

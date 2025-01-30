@@ -1,15 +1,15 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import usePageParams from "@/hooks/usePageParams";
-import { FC } from "react";
+import type { FC } from "react";
 import { getSelectedSnaps } from "../../helpers";
-import { InstalledSnap } from "../../types";
+import type { InstalledSnap } from "../../types";
 import SnapsActions from "../SnapsActions";
 import classes from "./SnapsHeader.module.scss";
 
 interface SnapsHeaderProps {
-  handleClearSelection: () => void;
-  selectedSnapIds: string[];
-  installedSnaps: InstalledSnap[];
+  readonly handleClearSelection: () => void;
+  readonly selectedSnapIds: string[];
+  readonly installedSnaps: InstalledSnap[];
 }
 
 const SnapsHeader: FC<SnapsHeaderProps> = ({

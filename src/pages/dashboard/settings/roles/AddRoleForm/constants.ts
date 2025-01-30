@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 export const INITIAL_VALUES: FormProps = {
   access_groups: [],

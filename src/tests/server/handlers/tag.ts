@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { tags } from "@/tests/mocks/tag";
 

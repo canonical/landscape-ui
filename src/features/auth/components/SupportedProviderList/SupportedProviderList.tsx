@@ -1,9 +1,10 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import { Button, Icon } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { useAuthHandle } from "../../hooks";
-import { SupportedIdentityProvider } from "../../types";
+import type { SupportedIdentityProvider } from "../../types";
 import classes from "./SupportedProviderList.module.scss";
 import { getProviderIcon } from "../../helpers";
 

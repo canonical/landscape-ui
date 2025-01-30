@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { Instance } from "@/types/Instance";
+import type { FC } from "react";
+import type { Instance } from "@/types/Instance";
 import { Form } from "@canonical/react-components";
 import { useFormik } from "formik";
 import MultiSelectField from "@/components/form/MultiSelectField";
@@ -7,7 +7,7 @@ import {
   INITIAL_TAGS_ADD_FORM_VALUES,
   TAGS_ADD_FORM_VALIDATION_SCHEMA,
 } from "./constants";
-import { TagsAddFormValues } from "./types";
+import type { TagsAddFormValues } from "./types";
 import useInstances from "@/hooks/useInstances";
 import useDebug from "@/hooks/useDebug";
 import { getFormikError } from "@/utils/formikErrors";
@@ -16,7 +16,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 
 interface TagsAddFormProps {
-  selected: Instance[];
+  readonly selected: Instance[];
 }
 
 const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import ScriptFormAttachments from "./ScriptFormAttachments";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import userEvent from "@testing-library/user-event";
 
 describe("ScriptFormAttachments", () => {

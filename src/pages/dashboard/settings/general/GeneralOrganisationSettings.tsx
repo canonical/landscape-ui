@@ -8,7 +8,7 @@ import {
   useOrgSettings,
 } from "@/features/organisation-settings";
 import { Button } from "@canonical/react-components";
-import { FC } from "react";
+import type { FC } from "react";
 
 const GeneralOrganisationSettings: FC = () => {
   const { getOrganisationPreferences } = useOrgSettings();

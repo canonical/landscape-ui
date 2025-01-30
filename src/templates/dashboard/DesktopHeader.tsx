@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Button, Icon } from "@canonical/react-components";
 import { Link } from "react-router";
 import Logo from "../../assets/images/logo-white-full.svg";
@@ -8,7 +8,7 @@ import classes from "./DesktopHeader.module.scss";
 import classNames from "classnames";
 
 interface DesktopHeaderProps {
-  closeMenu: () => void;
+  readonly closeMenu: () => void;
 }
 
 const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {

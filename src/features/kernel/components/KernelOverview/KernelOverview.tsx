@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { KernelOverviewInfo } from "../../types";
+import type { FC } from "react";
+import type { KernelOverviewInfo } from "../../types";
 import { Col, Icon, Row, Tooltip } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import {
@@ -13,7 +13,7 @@ import classNames from "classnames";
 import NoData from "@/components/layout/NoData";
 
 interface KernelHeaderProps {
-  kernelOverview: KernelOverviewInfo;
+  readonly kernelOverview: KernelOverviewInfo;
 }
 
 const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {

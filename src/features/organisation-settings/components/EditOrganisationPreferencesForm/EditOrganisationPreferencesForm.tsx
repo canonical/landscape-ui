@@ -1,10 +1,10 @@
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { Preferences } from "@/types/Preferences";
+import type { Preferences } from "@/types/Preferences";
 import { Button, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { ChangeEvent, FC } from "react";
+import type { ChangeEvent, FC } from "react";
 import classes from "./EditOrganisationPreferencesForm.module.scss";
 import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 import { useOrgSettings } from "../../hooks";
@@ -18,7 +18,7 @@ interface FormProps {
 }
 
 interface EditOrganisationPreferencesFormProps {
-  organisationPreferences: Preferences;
+  readonly organisationPreferences: Preferences;
 }
 
 const EditOrganisationPreferencesForm: FC<

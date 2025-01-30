@@ -1,8 +1,9 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
-import { FC, lazy, Suspense } from "react";
-import { KernelManagementInfo } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import type { KernelManagementInfo } from "../../types";
 import classes from "./KernelHeader.module.scss";
 
 const DowngradeKernelForm = lazy(() => import("../DowngradeKernelForm"));
@@ -10,9 +11,9 @@ const UpgradeKernelForm = lazy(() => import("../UpgradeKernelForm"));
 const RestartInstanceForm = lazy(() => import("../RestartInstanceForm"));
 
 interface KernelHeaderProps {
-  instanceName: string;
-  hasTableData: boolean;
-  kernelStatuses: KernelManagementInfo;
+  readonly instanceName: string;
+  readonly hasTableData: boolean;
+  readonly kernelStatuses: KernelManagementInfo;
 }
 
 const KernelHeader: FC<KernelHeaderProps> = ({

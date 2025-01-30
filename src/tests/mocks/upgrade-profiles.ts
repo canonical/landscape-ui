@@ -1,4 +1,4 @@
-import { UpgradeProfile } from "@/features/upgrade-profiles";
+import type { UpgradeProfile } from "@/features/upgrade-profiles";
 
 export const upgradeProfiles: UpgradeProfile[] = [
   {

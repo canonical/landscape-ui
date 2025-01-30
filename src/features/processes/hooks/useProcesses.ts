@@ -1,11 +1,15 @@
 import useFetch from "@/hooks/useFetch";
-import { QueryFnType } from "@/types/QueryFnType";
-import { AxiosError, AxiosResponse } from "axios";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { QueryFnType } from "@/types/QueryFnType";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiError } from "@/types/ApiError";
-import { Activity } from "@/features/activities";
-import { GetProcessesParams, Process, ProcessesSignalParams } from "../types";
+import type { ApiError } from "@/types/ApiError";
+import type { Activity } from "@/features/activities";
+import type {
+  GetProcessesParams,
+  Process,
+  ProcessesSignalParams,
+} from "../types";
 
 export default function useProcesses() {
   const authFetch = useFetch();

@@ -1,7 +1,7 @@
 import { describe } from "vitest";
 import { screen } from "@testing-library/react";
 import ProviderList from "./ProviderList";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { identityProviders } from "@/tests/mocks/identityProviders";
 import { renderWithProviders } from "@/tests/render";
 import userEvent from "@testing-library/user-event";

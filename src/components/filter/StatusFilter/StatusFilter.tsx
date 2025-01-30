@@ -1,10 +1,10 @@
 import usePageParams from "@/hooks/usePageParams";
-import { SelectOption } from "@/types/SelectOption";
-import { FC } from "react";
+import type { SelectOption } from "@/types/SelectOption";
+import type { FC } from "react";
 import TableFilter from "../TableFilter";
 
 interface StatusFilterProps {
-  options: SelectOption[];
+  readonly options: SelectOption[];
 }
 
 const StatusFilter: FC<StatusFilterProps> = ({ options }) => {

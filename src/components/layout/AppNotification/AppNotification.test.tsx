@@ -2,7 +2,7 @@ import AppNotification from "./AppNotification";
 import { describe, it } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
-import { NotificationHelper } from "@/types/Notification";
+import type { NotificationHelper } from "@/types/Notification";
 
 describe("AppNotification", () => {
   it("renders notification", () => {

@@ -1,5 +1,5 @@
-import { SelectOption } from "@/types/SelectOption";
-import { Position } from "@canonical/react-components";
+import type { SelectOption } from "@/types/SelectOption";
+import type { Position } from "@canonical/react-components";
 
 export interface GroupedOption extends SelectOption {
   group?: string;

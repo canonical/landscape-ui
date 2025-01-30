@@ -1,16 +1,17 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import { useLocation, useParams } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
+import type { InstancePackage } from "@/features/packages";
 import {
-  InstancePackage,
   PackageList,
   PackagesPanelHeader,
   usePackages,
 } from "@/features/packages";
 import usePageParams from "@/hooks/usePageParams";
 import { getEmptyMessage } from "./helpers";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 const PackagesPanel: FC = () => {
   const [selected, setSelected] = useState<InstancePackage[]>([]);

@@ -1,9 +1,10 @@
-import { FC, useEffect, useRef, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Icon, ICONS, Input } from "@canonical/react-components";
 
 interface RepositoryProfileFormSearchProps {
-  label: string;
-  onSearchChange: (searchText: string) => void;
+  readonly label: string;
+  readonly onSearchChange: (searchText: string) => void;
 }
 
 const RepositoryProfileFormSearch: FC<RepositoryProfileFormSearchProps> = ({

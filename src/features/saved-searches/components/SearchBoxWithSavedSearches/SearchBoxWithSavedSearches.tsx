@@ -1,5 +1,6 @@
 import classNames from "classnames";
-import { FC, KeyboardEvent, useMemo, useRef, useState } from "react";
+import type { FC, KeyboardEvent } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { Form, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
@@ -7,13 +8,13 @@ import { useSavedSearches } from "../../hooks";
 import SavedSearchList from "../SavedSearchList";
 import SearchInfoBox from "../SearchInfoBox";
 import SearchPrompt from "../SearchPrompt";
-import { SavedSearch } from "../../types";
+import type { SavedSearch } from "../../types";
 import classes from "./SearchBoxWithSavedSearches.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 import { getFilteredSavedSearches } from "./helpers";
 
 interface SearchBoxWithSavedSearchesProps {
-  onHelpButtonClick: () => void;
+  readonly onHelpButtonClick: () => void;
 }
 
 const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({

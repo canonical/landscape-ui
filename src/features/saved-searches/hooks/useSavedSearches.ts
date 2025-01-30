@@ -1,10 +1,10 @@
 import useFetchOld from "@/hooks/useFetchOld";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { QueryFnType } from "@/types/QueryFnType";
-import { SavedSearch } from "../types";
-import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "@/types/ApiError";
-import { Activity } from "@/features/activities";
+import type { QueryFnType } from "@/types/QueryFnType";
+import type { SavedSearch } from "../types";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { ApiError } from "@/types/ApiError";
+import type { Activity } from "@/features/activities";
 
 interface GetSavedSearchesParams {
   limit?: number;

@@ -1,9 +1,9 @@
-import { FC } from "react";
-import { Instance } from "@/types/Instance";
+import type { FC } from "react";
+import type { Instance } from "@/types/Instance";
 import classNames from "classnames";
 
 interface UpgradeInfoProps {
-  instances: Instance[];
+  readonly instances: Instance[];
 }
 
 const UpgradeInfo: FC<UpgradeInfoProps> = ({ instances }) => {

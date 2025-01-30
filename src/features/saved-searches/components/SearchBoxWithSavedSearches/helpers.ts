@@ -1,4 +1,4 @@
-import { SavedSearch } from "../../types";
+import type { SavedSearch } from "../../types";
 
 interface GetFilteredSavedSearchesParams {
   inputText: string;

@@ -1,12 +1,12 @@
-import { FC } from "react";
+import type { FC } from "react";
+import type { PackageProfile } from "@/features/package-profiles";
 import {
-  PackageProfile,
   PackageProfileHeader,
   PackageProfileList,
 } from "@/features/package-profiles";
 
 interface PackageProfilesContentProps {
-  packageProfiles: PackageProfile[] | undefined;
+  readonly packageProfiles: PackageProfile[] | undefined;
 }
 
 const PackageProfilesContent: FC<PackageProfilesContentProps> = ({

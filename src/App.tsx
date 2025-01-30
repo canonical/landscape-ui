@@ -1,4 +1,5 @@
-import { FC, lazy, ReactNode, Suspense, useEffect } from "react";
+import type { FC, ReactNode } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import AppNotification from "@/components/layout/AppNotification";
@@ -78,7 +79,7 @@ const IdentityProvidersPage = lazy(
 );
 
 interface AuthRouteProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const AuthRoute: FC<AuthRouteProps> = ({ children }) => {

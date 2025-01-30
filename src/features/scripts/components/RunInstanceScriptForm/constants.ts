@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { RunInstanceScriptFormValues } from "../../types";
+import type { RunInstanceScriptFormValues } from "../../types";
 
 export const INITIAL_VALUES: RunInstanceScriptFormValues = {
   access_group: "",

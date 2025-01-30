@@ -4,8 +4,9 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { AlertsList, useAlerts } from "@/features/alerts";
 import useInstances from "@/hooks/useInstances";
-import { MultiSelectItem } from "@canonical/react-components";
-import { FC, useMemo } from "react";
+import type { MultiSelectItem } from "@canonical/react-components";
+import type { FC } from "react";
+import { useMemo } from "react";
 
 const AlertsPage: FC = () => {
   const { getAlertsQuery } = useAlerts();

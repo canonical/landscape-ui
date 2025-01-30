@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
 import { authResponse } from "@/tests/mocks/auth";
-import {
+import type {
   AuthStateResponse,
   LoginRequestParams,
   SingleIdentityProvider,
@@ -14,7 +14,7 @@ import {
   singleIdentityProviders,
   supportedProviders,
 } from "@/tests/mocks/identityProviders";
-import { InvitationSummary } from "@/types/Invitation";
+import type { InvitationSummary } from "@/types/Invitation";
 import { allLoginMethods } from "@/tests/mocks/loginMethods";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 

@@ -1,17 +1,19 @@
 import { useFormik } from "formik";
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { CreateRemovalProfileParams, useRemovalProfiles } from "../../hooks";
-import { RemovalProfile } from "../../types";
+import type { CreateRemovalProfileParams } from "../../hooks";
+import { useRemovalProfiles } from "../../hooks";
+import type { RemovalProfile } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { CTA_LABELS, INITIAL_VALUES, NOTIFICATION_ACTIONS } from "./constants";
 import { getValidationSchema } from "./helpers";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 import classes from "./SingleRemovalProfileForm.module.scss";
 
 type SingleRemovalProfileFormProps =

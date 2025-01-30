@@ -1,7 +1,7 @@
 import { INPUT_DATE_FORMAT } from "@/constants";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import moment from "moment";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 export const SNAPSHOT_START_DATE = "2023-02-28";
 export const SNAPSHOT_TIMESTAMP_FORMAT = "YYYYMMDD[T]HHmmss[Z]";

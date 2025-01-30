@@ -1,7 +1,8 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import useRoles from "@/hooks/useRoles";
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import AccessGroupHeader from "../AccessGroupHeader";
 import AccessGroupList from "../AccessGroupList";
 import { Button } from "@canonical/react-components";

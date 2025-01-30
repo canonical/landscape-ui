@@ -1,4 +1,4 @@
-import {
+import type {
   InstalledPackageAction,
   InstalledPackageActionAppearance,
 } from "./types";

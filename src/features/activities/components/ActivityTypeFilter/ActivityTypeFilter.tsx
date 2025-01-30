@@ -1,10 +1,11 @@
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
-import { SelectOption } from "@/types/SelectOption";
-import { FC, useState } from "react";
+import type { SelectOption } from "@/types/SelectOption";
+import type { FC } from "react";
+import { useState } from "react";
 
 interface ActivityTypeFilterProps {
-  options: SelectOption[];
+  readonly options: SelectOption[];
 }
 
 const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({ options }) => {

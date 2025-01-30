@@ -1,9 +1,9 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import classNames from "classnames";
 import classes from "./PageMain.module.scss";
 
 interface PageMainProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const PageMain: FC<PageMainProps> = ({ children }) => {

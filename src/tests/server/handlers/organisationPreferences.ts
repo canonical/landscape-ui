@@ -1,7 +1,7 @@
 import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { preferences } from "@/tests/mocks/organisationPreferences";
-import { Preferences } from "@/types/Preferences";
+import type { Preferences } from "@/types/Preferences";
 import { http, HttpResponse } from "msw";
 
 export default [

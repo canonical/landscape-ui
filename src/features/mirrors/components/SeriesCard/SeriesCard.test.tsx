@@ -1,15 +1,15 @@
 import { distributions } from "@/tests/mocks/distributions";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_SNAPSHOT_URI } from "../../constants";
 import SeriesCard from "./SeriesCard";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
-import { MirrorPocket } from "../../types/Pocket";
+import type { MirrorPocket } from "../../types/Pocket";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
-import { Distribution } from "../../types";
+import type { Distribution } from "../../types";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 const checkModalActions = async ({

@@ -4,7 +4,8 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import AlertCard from "./AlertCard";
-import { Status, STATUSES } from "@/features/instances";
+import type { Status } from "@/features/instances";
+import { STATUSES } from "@/features/instances";
 
 const alert =
   Object.values(STATUSES).find((status) => status.alternateLabel) ??

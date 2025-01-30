@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import useReports from "@/hooks/useReports";
 import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -29,7 +29,7 @@ const downloadCSV = (csvString: string, filename: string) => {
 };
 
 interface ReportFormProps {
-  instanceIds: number[];
+  readonly instanceIds: number[];
 }
 
 const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {

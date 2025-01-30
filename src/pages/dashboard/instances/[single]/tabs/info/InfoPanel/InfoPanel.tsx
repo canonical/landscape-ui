@@ -1,5 +1,6 @@
 import classNames from "classnames";
-import { FC, lazy, Suspense, useEffect, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import {
   Button,
@@ -22,13 +23,13 @@ import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Instance } from "@/types/Instance";
-import { SelectOption } from "@/types/SelectOption";
+import type { Instance } from "@/types/Instance";
+import type { SelectOption } from "@/types/SelectOption";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
 import { useFormik } from "formik";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import { ModalConfirmationFormProps } from "./types";
+import type { ModalConfirmationFormProps } from "./types";
 import { useActivities } from "@/features/activities";
 import { currentInstanceCan } from "@/features/instances";
 
@@ -42,7 +43,7 @@ const RunInstanceScriptForm = lazy(() =>
 );
 
 interface InfoPanelProps {
-  instance: Instance;
+  readonly instance: Instance;
 }
 
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {

@@ -4,16 +4,16 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import * as Yup from "yup";
 import { useSeries } from "../../hooks";
-import { Distribution, Series } from "../../types";
+import type { Distribution, Series } from "../../types";
 import { INITIAL_VALUES } from "./constants";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 interface DeriveSeriesProps {
-  distribution: Distribution;
-  origin: Series["name"];
+  readonly distribution: Distribution;
+  readonly origin: Series["name"];
 }
 
 const DeriveSeriesForm: FC<DeriveSeriesProps> = ({ distribution, origin }) => {

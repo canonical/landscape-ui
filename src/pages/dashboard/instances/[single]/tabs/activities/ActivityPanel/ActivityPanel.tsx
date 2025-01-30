@@ -1,8 +1,9 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import { Activities } from "@/features/activities";
 
 interface ActivityPanelProps {
-  instanceId?: number;
+  readonly instanceId?: number;
 }
 
 const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {

@@ -1,10 +1,10 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 
 interface OsFilterProps {
-  options: SelectOption[];
+  readonly options: SelectOption[];
 }
 
 const OsFilter: FC<OsFilterProps> = ({ options }) => {

@@ -1,4 +1,5 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
 import useSidePanel from "@/hooks/useSidePanel";

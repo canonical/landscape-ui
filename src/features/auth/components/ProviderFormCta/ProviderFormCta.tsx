@@ -1,4 +1,5 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import { Button, Icon } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -7,7 +8,7 @@ import classes from "./ProviderFormCta.module.scss";
 const SupportedProviderList = lazy(() => import("../SupportedProviderList"));
 
 interface ProviderFormCtaProps {
-  action: "add" | "edit";
+  readonly action: "add" | "edit";
 }
 
 const ProviderFormCta: FC<ProviderFormCtaProps> = ({ action }) => {

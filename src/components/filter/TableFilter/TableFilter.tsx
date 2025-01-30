@@ -6,10 +6,10 @@ import {
   Input,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import { ChangeEvent, FC } from "react";
+import type { ChangeEvent, FC } from "react";
 import { getToggleLabel } from "./helpers";
 import classes from "./TableFilter.module.scss";
-import { TableFilterProps } from "./types";
+import type { TableFilterProps } from "./types";
 
 const TableFilter: FC<TableFilterProps> = ({
   disabledOptions,

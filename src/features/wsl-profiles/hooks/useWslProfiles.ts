@@ -1,11 +1,11 @@
-import { QueryFnType } from "@/types/QueryFnType";
-import { WslProfile } from "../types";
+import type { QueryFnType } from "@/types/QueryFnType";
+import type { WslProfile } from "../types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "@/types/ApiError";
-import { Activity } from "@/features/activities";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { ApiError } from "@/types/ApiError";
+import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 
 export interface CreateWslProfileParams {
   description: string;

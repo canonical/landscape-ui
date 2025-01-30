@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { NO_DATA_TEXT } from "./constants";
 
 const NoData: FC = () => {

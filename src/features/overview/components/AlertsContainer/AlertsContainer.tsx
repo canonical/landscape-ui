@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import AlertCard from "../AlertCard";
 import classes from "./AlertsContainer.module.scss";
 import { widgetAlerts } from "./constants";

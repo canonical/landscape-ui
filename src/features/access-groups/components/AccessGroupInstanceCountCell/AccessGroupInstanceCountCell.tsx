@@ -1,13 +1,13 @@
 import { ROOT_PATH } from "@/constants";
 import useInstances from "@/hooks/useInstances";
 import { Spinner } from "@canonical/react-components";
-import { FC } from "react";
+import type { FC } from "react";
 import { Link } from "react-router";
-import { AccessGroupWithInstancesCount } from "../../types/AccessGroup";
+import type { AccessGroupWithInstancesCount } from "../../types/AccessGroup";
 import classes from "./AccessGroupInstanceCountCell.module.scss";
 
 interface AccessGroupInstanceCountCellProps {
-  accessGroup: AccessGroupWithInstancesCount;
+  readonly accessGroup: AccessGroupWithInstancesCount;
 }
 
 const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({

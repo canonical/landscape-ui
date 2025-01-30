@@ -1,7 +1,8 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import { Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import { Instance, WindowsInstance } from "@/types/Instance";
+import type { Instance, WindowsInstance } from "@/types/Instance";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getTabLinks } from "./helpers";
 import classes from "./SingleInstanceTabs.module.scss";
@@ -42,13 +43,13 @@ const SnapsPanel = lazy(
 );
 
 interface SingleInstanceTabsProps {
-  instance: Instance;
-  packageCount: number | undefined;
-  packagesLoading: boolean;
-  usnCount: number | undefined;
-  usnLoading: boolean;
-  kernelCount: number | undefined;
-  kernelLoading: boolean;
+  readonly instance: Instance;
+  readonly packageCount: number | undefined;
+  readonly packagesLoading: boolean;
+  readonly usnCount: number | undefined;
+  readonly usnLoading: boolean;
+  readonly kernelCount: number | undefined;
+  readonly kernelLoading: boolean;
 }
 
 const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({

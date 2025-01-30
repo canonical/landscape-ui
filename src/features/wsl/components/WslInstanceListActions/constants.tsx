@@ -1,5 +1,5 @@
-import { InstanceWithoutRelation } from "@/types/Instance";
-import { Action } from "./types";
+import type { InstanceWithoutRelation } from "@/types/Instance";
+import type { Action } from "./types";
 
 export const getModalBody = (
   instance: InstanceWithoutRelation,

@@ -5,7 +5,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Form, Icon, Input, PasswordToggle } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import { useUserGeneralSettings } from "../../hooks";
 import classes from "./ChangePasswordForm.module.scss";
 import { VALIDATION_SCHEMA } from "./constants";

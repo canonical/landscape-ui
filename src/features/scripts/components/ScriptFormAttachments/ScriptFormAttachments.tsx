@@ -1,5 +1,5 @@
-import { ChangeEventHandler, FC } from "react";
-import { ScriptFormValues } from "../../types";
+import type { ChangeEventHandler, FC } from "react";
+import type { ScriptFormValues } from "../../types";
 import {
   Button,
   Icon,
@@ -9,16 +9,16 @@ import {
 } from "@canonical/react-components";
 
 interface ScriptFormAttachmentsProps {
-  attachments: ScriptFormValues["attachments"];
-  attachmentsToRemove: string[];
-  getFileInputError: (
+  readonly attachments: ScriptFormValues["attachments"];
+  readonly attachmentsToRemove: string[];
+  readonly getFileInputError: (
     key: keyof ScriptFormValues["attachments"],
   ) => string | undefined;
-  initialAttachments: string[];
-  onFileInputChange: (
+  readonly initialAttachments: string[];
+  readonly onFileInputChange: (
     key: keyof ScriptFormValues["attachments"],
   ) => ChangeEventHandler<HTMLInputElement>;
-  onInitialAttachmentDelete: (attachment: string) => void;
+  readonly onInitialAttachmentDelete: (attachment: string) => void;
 }
 
 const ScriptFormAttachments: FC<ScriptFormAttachmentsProps> = ({

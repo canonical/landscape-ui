@@ -1,4 +1,4 @@
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 
 interface GeneratePaginatedResponseProps<D> {
   data: D[];

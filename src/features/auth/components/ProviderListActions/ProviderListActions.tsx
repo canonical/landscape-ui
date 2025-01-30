@@ -1,14 +1,15 @@
-import { FC, lazy, Suspense, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
   ICONS,
-  MenuLink,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { IdentityProvider } from "../../types";
+import type { IdentityProvider } from "../../types";
 import classes from "./ProviderListActions.module.scss";
 import { useAuthHandle } from "../../hooks";
 import useDebug from "@/hooks/useDebug";
@@ -16,8 +17,8 @@ import useDebug from "@/hooks/useDebug";
 const ProviderForm = lazy(() => import("../ProviderForm"));
 
 interface ProviderListActionsProps {
-  canBeDisabled: boolean;
-  provider: IdentityProvider;
+  readonly canBeDisabled: boolean;
+  readonly provider: IdentityProvider;
 }
 
 const ProviderListActions: FC<ProviderListActionsProps> = ({

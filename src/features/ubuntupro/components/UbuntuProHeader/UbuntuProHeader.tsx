@@ -1,14 +1,14 @@
-import { FC } from "react";
+import type { FC } from "react";
 import classes from "./UbuntuProHeader.module.scss";
 import { Col, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
-import { UbuntuProInfo } from "@/types/Instance";
+import type { UbuntuProInfo } from "@/types/Instance";
 import NoData from "@/components/layout/NoData";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 interface UbuntuProHeaderProps {
-  ubuntuProData: UbuntuProInfo;
+  readonly ubuntuProData: UbuntuProInfo;
 }
 
 const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => {

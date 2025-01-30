@@ -1,6 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import KernelOverview from "./KernelOverview";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import NoData from "@/components/layout/NoData";
 import {
   getLivepatchCoverageDisplayValue,

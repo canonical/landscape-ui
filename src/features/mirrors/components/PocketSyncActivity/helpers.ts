@@ -1,5 +1,5 @@
 import { ACTIVITY_STATUSES } from "@/features/activities";
-import { PocketLastSyncProps } from "../../types";
+import type { PocketLastSyncProps } from "../../types";
 
 export const getLastSyncStatusIcon = (
   status: PocketLastSyncProps["last_sync_status"],

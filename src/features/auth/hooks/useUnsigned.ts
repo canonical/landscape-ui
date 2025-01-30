@@ -1,10 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { QueryFnType, QueryFnTypeWithRequiredParam } from "@/types/QueryFnType";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import type {
+  QueryFnType,
+  QueryFnTypeWithRequiredParam,
+} from "@/types/QueryFnType";
+import type { AxiosError, AxiosResponse } from "axios";
+import axios from "axios";
 import { API_URL } from "@/constants";
-import { AuthUser, IdentityProvider } from "../types";
-import { ApiError } from "@/types/ApiError";
-import { InvitationSummary } from "@/types/Invitation";
+import type { AuthUser, IdentityProvider } from "../types";
+import type { ApiError } from "@/types/ApiError";
+import type { InvitationSummary } from "@/types/Invitation";
 import { useState } from "react";
 
 export interface LoginMethods {

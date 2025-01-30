@@ -1,16 +1,17 @@
-import { ActiveElement, Chart, ChartData, registerables } from "chart.js";
+import type { ActiveElement, ChartData } from "chart.js";
+import { Chart, registerables } from "chart.js";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import Legend from "../Legend";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./PieChart.module.scss";
-import { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
+import type { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
 
 Chart.register(...registerables);
 
 interface PieChartProps {
-  data: ChartData<"pie">;
+  readonly data: ChartData<"pie">;
 }
 
 const PieChart: React.FC<PieChartProps> = ({ data }) => {

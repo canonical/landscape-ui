@@ -1,4 +1,5 @@
-import { FC, Fragment, ReactNode, useState } from "react";
+import type { FC, ReactNode } from "react";
+import { Fragment, useState } from "react";
 import classes from "./InfoItem.module.scss";
 import classNames from "classnames";
 import { Button } from "@canonical/react-components";
@@ -59,8 +60,8 @@ const shouldDisplayTruncation = (props: InfoItemMode): boolean => {
 };
 
 interface InfoItemBaseProps {
-  label: string;
-  className?: string;
+  readonly label: string;
+  readonly className?: string;
 }
 
 interface TruncatedInfoItemProps {

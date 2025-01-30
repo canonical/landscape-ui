@@ -1,4 +1,5 @@
-import { ComponentProps, FC, lazy, Suspense } from "react";
+import type { ComponentProps, FC } from "react";
+import { lazy, Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 
 const ActivityDetailsComponent = lazy(

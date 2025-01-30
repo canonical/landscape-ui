@@ -1,4 +1,5 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import { Button } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";

@@ -1,9 +1,9 @@
-import { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { RemovalProfile } from "../types";
+import type { RemovalProfile } from "../types";
 import useFetchOld from "@/hooks/useFetchOld";
-import { ApiError } from "@/types/ApiError";
-import { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/ApiError";
+import type { QueryFnType } from "@/types/QueryFnType";
 
 export interface CreateRemovalProfileParams {
   all_computers: boolean;

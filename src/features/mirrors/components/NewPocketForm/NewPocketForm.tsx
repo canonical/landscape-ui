@@ -1,7 +1,8 @@
 import CheckboxGroup from "@/components/form/CheckboxGroup";
 import FieldDescription from "@/components/form/FieldDescription";
 import MultiSelectField from "@/components/form/MultiSelectField";
-import SelectGrouped, { groupedOption } from "@/components/form/SelectGrouped";
+import type { groupedOption } from "@/components/form/SelectGrouped";
+import SelectGrouped from "@/components/form/SelectGrouped";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
 import { useGPGKeys } from "@/features/gpg-keys";
@@ -16,7 +17,7 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import {
   ARCHITECTURE_OPTIONS,
   COMPONENT_OPTIONS,
@@ -25,7 +26,7 @@ import {
   PRE_SELECTED_COMPONENTS,
 } from "../../constants";
 import { usePockets } from "../../hooks";
-import { Distribution, Series } from "../../types";
+import type { Distribution, Series } from "../../types";
 import {
   filterTypeOptions,
   PRE_DEFINED_POCKET_MODE_OPTIONS,
@@ -35,11 +36,11 @@ import {
   getInitialValues,
   getValidationSchema,
 } from "./helpers";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 interface NewPocketFormProps {
-  distribution: Distribution;
-  series: Series;
+  readonly distribution: Distribution;
+  readonly series: Series;
 }
 
 const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {

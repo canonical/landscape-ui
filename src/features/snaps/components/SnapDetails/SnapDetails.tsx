@@ -3,12 +3,12 @@ import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { Col, Row } from "@canonical/react-components";
 import moment from "moment";
-import { FC } from "react";
-import { InstalledSnap } from "../../types";
+import type { FC } from "react";
+import type { InstalledSnap } from "../../types";
 import SnapsActions from "../SnapsActions";
 
 interface SnapDetailsProps {
-  installedSnap: InstalledSnap;
+  readonly installedSnap: InstalledSnap;
 }
 
 const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {

@@ -1,22 +1,23 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
-import React, { FC, useEffect, useRef, useState } from "react";
+import type { FC } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { useDebounceCallback } from "usehooks-ts";
 import { useSnaps } from "../../hooks";
-import { AvailableSnap, SelectedSnaps } from "../../types";
+import type { AvailableSnap, SelectedSnaps } from "../../types";
 import AvailableSnapDetails from "../AvailableSnapDetails";
 import classes from "./SnapDropdownSearch.module.scss";
 import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
 
 interface SnapDropdownSearchProps {
-  selectedItems: SelectedSnaps[];
-  setSelectedItems: (items: SelectedSnaps[]) => void;
-  setConfirming: (confirming: boolean) => void;
+  readonly selectedItems: SelectedSnaps[];
+  readonly setSelectedItems: (items: SelectedSnaps[]) => void;
+  readonly setConfirming: (confirming: boolean) => void;
 }
 
 const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({

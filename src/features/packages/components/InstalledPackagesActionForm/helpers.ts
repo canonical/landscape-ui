@@ -1,6 +1,6 @@
 import moment from "moment/moment";
 import * as Yup from "yup";
-import { InstalledPackageAction, InstancePackage } from "../../types";
+import type { InstalledPackageAction, InstancePackage } from "../../types";
 
 export const getValidationSchema = (action: InstalledPackageAction) =>
   Yup.object({

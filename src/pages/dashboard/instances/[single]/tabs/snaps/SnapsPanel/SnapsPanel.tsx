@@ -9,9 +9,10 @@ import {
 } from "@/features/snaps";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";
-import { FC, useMemo, useState } from "react";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "react-router";
 
 const SnapsPanel: FC = () => {

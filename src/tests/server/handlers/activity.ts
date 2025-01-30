@@ -1,9 +1,9 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
-import { Activity, GetActivitiesParams } from "@/features/activities";
+import type { Activity, GetActivitiesParams } from "@/features/activities";
 import { activities, activityTypes } from "@/tests/mocks/activity";
 
 export default [

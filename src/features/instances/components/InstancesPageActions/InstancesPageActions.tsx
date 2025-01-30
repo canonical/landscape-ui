@@ -1,4 +1,5 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import {
   Button,
   ConfirmationButton,
@@ -9,7 +10,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useInstances from "@/hooks/useInstances";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import useNotify from "@/hooks/useNotify";
 import { useActivities } from "@/features/activities";
 import { getNotificationArgs } from "./helpers";
@@ -32,7 +33,7 @@ const AccessGroupChange = lazy(() => import("../AccessGroupChange"));
 const TagsAddForm = lazy(() => import("../TagsAddForm"));
 
 interface InstancesPageActionsProps {
-  selected: Instance[];
+  readonly selected: Instance[];
 }
 
 const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {

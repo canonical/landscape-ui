@@ -4,7 +4,7 @@ import classNames from "classnames";
 import classes from "./OrganisationSwitch.module.scss";
 import { useAuthHandle } from "@/features/auth";
 import useDebug from "@/hooks/useDebug";
-import { ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 import InfoItem from "@/components/layout/InfoItem";
 import useSidePanel from "@/hooks/useSidePanel";
 

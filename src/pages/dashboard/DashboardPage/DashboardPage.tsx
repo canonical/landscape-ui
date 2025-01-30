@@ -1,4 +1,5 @@
-import { FC, Suspense, useEffect } from "react";
+import type { FC } from "react";
+import { Suspense, useEffect } from "react";
 import DashboardTemplate from "@/templates/dashboard";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";

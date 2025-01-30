@@ -1,8 +1,8 @@
-import { FormProps, GetPromisesToAddRoleFn } from "./types";
-import { AxiosResponse } from "axios";
-import { Role } from "@/types/Role";
+import type { FormProps, GetPromisesToAddRoleFn } from "./types";
+import type { AxiosResponse } from "axios";
+import type { Role } from "@/types/Role";
 import { getAccessGroupsToSubmit } from "@/pages/dashboard/settings/roles/helpers";
-import { AccessGroupOption } from "@/pages/dashboard/settings/roles/types";
+import type { AccessGroupOption } from "@/pages/dashboard/settings/roles/types";
 
 export const getValuesToAddRole = (
   values: FormProps,

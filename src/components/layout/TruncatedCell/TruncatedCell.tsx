@@ -1,12 +1,15 @@
 import classNames from "classnames";
-import { FC, MouseEvent as ReactMouseEvent, ReactNode, useState } from "react";
+import type { FC, MouseEvent as ReactMouseEvent, ReactNode } from "react";
+import { useState } from "react";
 import { Button } from "@canonical/react-components";
 import classes from "./TruncatedCell.module.scss";
 
 interface TruncatedCellProps {
-  content: ReactNode;
-  isExpanded: boolean;
-  onExpand: (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  readonly content: ReactNode;
+  readonly isExpanded: boolean;
+  readonly onExpand: (
+    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => void;
 }
 
 const TruncatedCell: FC<TruncatedCellProps> = ({

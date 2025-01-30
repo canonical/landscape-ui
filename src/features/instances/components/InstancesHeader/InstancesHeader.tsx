@@ -1,12 +1,9 @@
-import { FC, useState } from "react";
-import ColumnFilter, {
-  ColumnFilterOption,
-} from "@/components/form/ColumnFilter";
-import {
-  GroupedOption,
-  StatusFilter,
-  TableFilterChips,
-} from "@/components/filter";
+import type { FC } from "react";
+import { useState } from "react";
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
+import ColumnFilter from "@/components/form/ColumnFilter";
+import type { GroupedOption } from "@/components/filter";
+import { StatusFilter, TableFilterChips } from "@/components/filter";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import { SearchBoxWithSavedSearches } from "@/features/saved-searches";
 import useInstances from "@/hooks/useInstances";
@@ -22,7 +19,7 @@ import { INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesHeader.module.scss";
 
 interface InstancesHeaderProps {
-  columnFilterOptions: ColumnFilterOption[];
+  readonly columnFilterOptions: ColumnFilterOption[];
 }
 
 const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {

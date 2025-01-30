@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import KernelHeader from "./KernelHeader";
 
 const props: ComponentProps<typeof KernelHeader> = {

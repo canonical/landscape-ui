@@ -1,4 +1,4 @@
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 
 export const CONSTRAINTS_TYPE_OPTIONS: SelectOption[] = [
   { label: "Select constraints type", value: "" },

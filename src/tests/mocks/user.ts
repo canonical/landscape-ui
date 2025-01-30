@@ -1,5 +1,5 @@
-import { User } from "@/types/User";
-import { UserDetails } from "@/features/general-settings";
+import type { User } from "@/types/User";
+import type { UserDetails } from "@/features/general-settings";
 
 export const users: User[] = [
   {

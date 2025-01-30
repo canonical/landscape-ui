@@ -1,20 +1,21 @@
 import classNames from "classnames";
 import Downshift from "downshift";
-import React, { FC, useState } from "react";
+import type { FC } from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router";
 import { useDebounceCallback } from "usehooks-ts";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import { usePackages } from "../../hooks";
-import { InstancePackage } from "../../types";
+import type { InstancePackage } from "../../types";
 import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
 import classes from "./PackageDropdownSearch.module.scss";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface PackageDropdownSearchProps {
-  selectedItems: InstancePackage[];
-  setSelectedItems: (items: InstancePackage[]) => void;
+  readonly selectedItems: InstancePackage[];
+  readonly setSelectedItems: (items: InstancePackage[]) => void;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({

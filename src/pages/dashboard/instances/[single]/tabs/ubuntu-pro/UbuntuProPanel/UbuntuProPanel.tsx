@@ -1,12 +1,12 @@
-import { FC } from "react";
-import { Instance } from "@/types/Instance";
+import type { FC } from "react";
+import type { Instance } from "@/types/Instance";
 import { UbuntuProHeader, UbuntuProList } from "@/features/ubuntupro";
 import EmptyState from "@/components/layout/EmptyState";
 import { Button } from "@canonical/react-components";
 import classes from "./UbuntuProPanel.module.scss";
 
 interface UbuntuProPanelProps {
-  instance: Instance;
+  readonly instance: Instance;
 }
 
 const UbuntuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {

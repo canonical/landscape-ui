@@ -1,15 +1,11 @@
 import useFetch from "@/hooks/useFetch";
-import { ApiError } from "@/types/ApiError";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import { KernelManagementInfo } from "../types/Kernel";
-import { Activity } from "@/features/activities";
-import { LivepatchInformation } from "../types";
+import type { ApiError } from "@/types/ApiError";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { KernelManagementInfo } from "../types/Kernel";
+import type { Activity } from "@/features/activities";
+import type { LivepatchInformation } from "../types";
 
 export interface GetKernelInformationParams {
   id: number;

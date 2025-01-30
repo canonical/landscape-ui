@@ -1,7 +1,7 @@
-import { FC } from "react";
+import type { FC } from "react";
 import classNames from "classnames";
 import classes from "./PageContent.module.scss";
-import { PageContentProps } from "./types";
+import type { PageContentProps } from "./types";
 
 const PageContent: FC<PageContentProps> = ({
   children,

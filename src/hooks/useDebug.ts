@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 import { IS_DEV_ENV } from "@/constants";
-import { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/ApiError";
 import useNotify from "./useNotify";
 
 export default function useDebug() {

@@ -1,6 +1,6 @@
 import moment from "moment";
 import * as Yup from "yup";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
   deliver_immediately: Yup.boolean(),

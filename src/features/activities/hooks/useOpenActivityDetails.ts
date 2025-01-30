@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Activity, ActivityCommon } from "../types";
+import type { Activity, ActivityCommon } from "../types";
 import { useLocation } from "react-router";
 
 export default function useOpenActivityDetails(

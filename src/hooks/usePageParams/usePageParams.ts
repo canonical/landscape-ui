@@ -5,7 +5,7 @@ import {
   modifyUrlParameters,
   shouldResetPage,
 } from "./helpers";
-import { PageParams } from "./types";
+import type { PageParams } from "./types";
 
 const usePageParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();

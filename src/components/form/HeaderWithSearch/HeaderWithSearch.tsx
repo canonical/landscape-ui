@@ -1,5 +1,7 @@
-import { FC, isValidElement, ReactNode, useState } from "react";
-import { Form, SearchBox, SearchBoxProps } from "@canonical/react-components";
+import type { FC, ReactNode } from "react";
+import { isValidElement, useState } from "react";
+import type { SearchBoxProps } from "@canonical/react-components";
+import { Form, SearchBox } from "@canonical/react-components";
 import classes from "./HeaderWithSearch.module.scss";
 
 interface HeaderWithSearchProps
@@ -13,8 +15,8 @@ interface HeaderWithSearchProps
     | "onChange"
     | "ref"
   > {
-  onSearch: (searchText: string) => void;
-  actions?: ReactNode;
+  readonly onSearch: (searchText: string) => void;
+  readonly actions?: ReactNode;
 }
 
 const HeaderWithSearch: FC<HeaderWithSearchProps> = ({

@@ -1,7 +1,7 @@
 import { aptSources } from "@/tests/mocks/apt-sources";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { describe, expect } from "vitest";
 import APTSourcesList from "./APTSourcesList";
 

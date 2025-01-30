@@ -1,10 +1,10 @@
-import { FC } from "react";
-import { Instance } from "@/types/Instance";
+import type { FC } from "react";
+import type { Instance } from "@/types/Instance";
 import useRoles from "@/hooks/useRoles";
 import { useFormik } from "formik";
 import { Form, Select } from "@canonical/react-components";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import { AccessGroupChangeFormValues } from "./types";
+import type { AccessGroupChangeFormValues } from "./types";
 import useDebug from "@/hooks/useDebug";
 import { getAccessGroupOptions } from "./helpers";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
@@ -12,7 +12,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 
 interface AccessGroupChangeProps {
-  selected: Instance[];
+  readonly selected: Instance[];
 }
 
 const AccessGroupChange: FC<AccessGroupChangeProps> = ({ selected }) => {

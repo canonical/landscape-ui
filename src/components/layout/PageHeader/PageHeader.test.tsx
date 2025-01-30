@@ -1,7 +1,7 @@
 import PageHeader from "./PageHeader";
 import { describe, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { Breadcrumb } from "@/types/Breadcrumb";
+import type { Breadcrumb } from "@/types/Breadcrumb";
 import { renderWithProviders } from "@/tests/render";
 
 describe("PageHeader", () => {

@@ -1,4 +1,5 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import {
   Button,
   ConfirmationButton,
@@ -10,7 +11,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Role } from "@/types/Role";
+import type { Role } from "@/types/Role";
 import classes from "./RoleListActions.module.scss";
 
 const EditRoleForm = lazy(
@@ -18,7 +19,7 @@ const EditRoleForm = lazy(
 );
 
 interface RoleListActionsProps {
-  role: Role;
+  readonly role: Role;
 }
 
 const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {

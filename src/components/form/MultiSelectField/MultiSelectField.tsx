@@ -1,22 +1,16 @@
-import {
-  FC,
-  MutableRefObject,
-  ReactNode,
-  Ref,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { MultiSelect, MultiSelectProps } from "@canonical/react-components";
+import type { FC, MutableRefObject, ReactNode, Ref } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { MultiSelectProps } from "@canonical/react-components";
+import { MultiSelect } from "@canonical/react-components";
 import classNames from "classnames";
 import classes from "./MultiSelectField.module.scss";
 
 interface MultiSelectFieldProps extends Omit<MultiSelectProps, "help"> {
-  className?: string;
-  help?: ReactNode;
-  innerRef?: Ref<HTMLDivElement>;
-  label?: string;
-  labelClassName?: string;
+  readonly className?: string;
+  readonly help?: ReactNode;
+  readonly innerRef?: Ref<HTMLDivElement>;
+  readonly label?: string;
+  readonly labelClassName?: string;
 }
 
 const MultiSelectField: FC<MultiSelectFieldProps> = ({

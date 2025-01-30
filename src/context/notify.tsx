@@ -1,14 +1,9 @@
-import React, {
-  createContext,
-  FC,
-  ReactNode,
-  useEffect,
-  useState,
-} from "react";
+import type { FC, ReactNode } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import { ROOT_PATH } from "@/constants";
 import useNotificationHelper from "@/hooks/useNotificationHelper";
-import { NotificationHelper } from "@/types/Notification";
+import type { NotificationHelper } from "@/types/Notification";
 
 interface NotifyContextProps {
   notify: NotificationHelper;
@@ -35,7 +30,7 @@ const initialState: NotifyContextProps = {
 export const NotifyContext = createContext<NotifyContextProps>(initialState);
 
 interface NotifyProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const NotifyProvider: FC<NotifyProviderProps> = ({ children }) => {

@@ -1,12 +1,12 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import classNames from "classnames";
 import classes from "./EmptyState.module.scss";
 
 interface EmptyStateProps {
-  title?: string;
-  body?: ReactNode;
-  icon?: string;
-  cta?: ReactNode[];
+  readonly title?: string;
+  readonly body?: ReactNode;
+  readonly icon?: string;
+  readonly cta?: ReactNode[];
 }
 
 const EmptyState: FC<EmptyStateProps> = ({

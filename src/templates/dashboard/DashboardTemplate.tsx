@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import Sidebar from "./Sidebar";
 import SidePanelProvider from "../../context/sidePanel";
 import { matchPath, useLocation } from "react-router";
@@ -10,7 +10,7 @@ import { ROOT_PATH } from "@/constants";
 import WelcomePopup from "@/features/welcome-banner";
 
 interface DashboardTemplateProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {

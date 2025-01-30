@@ -1,12 +1,12 @@
-import { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Activity } from "@/features/activities";
+import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
-import { ApiError } from "@/types/ApiError";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { Instance } from "@/types/Instance";
-import { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/ApiError";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { Instance } from "@/types/Instance";
+import type { QueryFnType } from "@/types/QueryFnType";
 
 interface GetWslParams {
   limit?: number;

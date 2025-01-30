@@ -1,15 +1,15 @@
 import classNames from "classnames";
-import { FormikContextType } from "formik";
-import { FC } from "react";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
 import { Icon, Input, RadioInput, Tooltip } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import { DAY_OPTIONS } from "../../constants";
-import { FormProps } from "../../types";
+import type { FormProps } from "../../types";
 import { EXPIRATION_TOOLTIP_MESSAGE } from "./constants";
 import classes from "./UpgradeProfileScheduleBlock.module.scss";
 
 interface UpgradeProfileScheduleBlockProps {
-  formik: FormikContextType<FormProps>;
+  readonly formik: FormikContextType<FormProps>;
 }
 
 const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({

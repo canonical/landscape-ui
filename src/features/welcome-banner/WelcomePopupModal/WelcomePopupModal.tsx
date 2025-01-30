@@ -1,9 +1,9 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Button, Modal } from "@canonical/react-components";
 import { FEEDBACK_LINK } from "@/constants";
 
 interface WelcomeBannerProps {
-  hideBanner: () => void;
+  readonly hideBanner: () => void;
 }
 
 const WelcomePopupModal: FC<WelcomeBannerProps> = ({ hideBanner }) => {

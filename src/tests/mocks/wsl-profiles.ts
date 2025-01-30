@@ -1,4 +1,4 @@
-import { WslProfile } from "@/features/wsl-profiles";
+import type { WslProfile } from "@/features/wsl-profiles";
 
 export const wslProfiles: WslProfile[] = [
   {

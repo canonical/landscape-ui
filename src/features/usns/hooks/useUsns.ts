@@ -1,15 +1,11 @@
-import { AxiosError, AxiosResponse } from "axios";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  UseQueryOptions,
-} from "@tanstack/react-query";
-import { Activity } from "@/features/activities";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
-import { ApiError } from "@/types/ApiError";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { Usn, UsnPackage } from "@/types/Usn";
+import type { ApiError } from "@/types/ApiError";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { Usn, UsnPackage } from "@/types/Usn";
 
 export interface GetUsnsParams {
   computer_ids: number[];

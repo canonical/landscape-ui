@@ -1,4 +1,5 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import { Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";

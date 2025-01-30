@@ -1,4 +1,4 @@
-import { RunInstanceScriptFormValues, Script } from "../../types";
+import type { RunInstanceScriptFormValues, Script } from "../../types";
 
 export const getNotification = (
   values: RunInstanceScriptFormValues,

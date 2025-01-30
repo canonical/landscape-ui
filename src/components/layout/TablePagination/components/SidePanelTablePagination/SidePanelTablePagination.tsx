@@ -1,14 +1,14 @@
-import { FC } from "react";
+import type { FC } from "react";
 import TablePaginationBase from "../TablePaginationBase";
 
 interface SidePanelTablePaginationProps {
-  currentPage: number;
-  pageSize: number;
-  paginate: (page: number) => void;
-  setPageSize: (itemsNumber: number) => void;
-  totalItems: number | undefined;
-  className?: string;
-  currentItemCount?: number;
+  readonly currentPage: number;
+  readonly pageSize: number;
+  readonly paginate: (page: number) => void;
+  readonly setPageSize: (itemsNumber: number) => void;
+  readonly totalItems: number | undefined;
+  readonly className?: string;
+  readonly currentItemCount?: number;
 }
 
 const SidePanelTablePagination: FC<SidePanelTablePaginationProps> = ({

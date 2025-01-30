@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import {
+import type {
   UpgradeProfileDay,
   UpgradeProfileFrequency,
   UpgradeProfileType,

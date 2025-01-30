@@ -1,9 +1,9 @@
-import {
+import type {
   IdentityProvider,
   SingleIdentityProvider,
   SupportedIdentityProvider,
 } from "@/features/auth";
-import { InvitationSummary } from "@/types/Invitation";
+import type { InvitationSummary } from "@/types/Invitation";
 
 export const identityProviders: IdentityProvider[] = [
   {

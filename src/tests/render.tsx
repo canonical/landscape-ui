@@ -1,5 +1,6 @@
-import { render, RenderOptions } from "@testing-library/react";
-import { FC, ReactNode } from "react";
+import type { RenderOptions } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import type { FC, ReactNode } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import NotifyProvider, { NotifyContext } from "@/context/notify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -10,7 +11,7 @@ import SidePanelProvider from "@/context/sidePanel";
 import AppNotification from "@/components/layout/AppNotification";
 
 interface WrapperProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 export const renderWithProviders = (

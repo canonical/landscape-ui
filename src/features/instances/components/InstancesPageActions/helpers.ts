@@ -1,5 +1,5 @@
-import { NotificationMethodArgs } from "@/types/Notification";
-import { Instance } from "@/types/Instance";
+import type { NotificationMethodArgs } from "@/types/Notification";
+import type { Instance } from "@/types/Instance";
 
 type GetNotificationArgsFn = (params: {
   action: "reboot" | "shutdown";

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { API_URL_OLD } from "@/constants";
-import { APTSource, GetAPTSourcesParams } from "@/features/apt-sources";
+import type { APTSource, GetAPTSourcesParams } from "@/features/apt-sources";
 import { aptSources } from "@/tests/mocks/apt-sources";
 import { isAction } from "@/tests/server/handlers/_helpers";
 

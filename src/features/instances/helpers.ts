@@ -1,5 +1,5 @@
 import { IS_DEV_ENV } from "@/constants";
-import { InstanceWithoutRelation } from "@/types/Instance";
+import type { InstanceWithoutRelation } from "@/types/Instance";
 
 export function currentInstanceCan(
   capability: "runScripts",

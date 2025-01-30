@@ -1,4 +1,4 @@
-import { FilterKey } from "./types";
+import type { FilterKey } from "./types";
 
 export const defaultFiltersToDisplay: FilterKey[] = [
   "accessGroups",

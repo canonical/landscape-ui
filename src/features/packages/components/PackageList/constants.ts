@@ -1,4 +1,4 @@
-import { InstancePackage } from "../../types";
+import type { InstancePackage } from "../../types";
 
 export const LOADING_PACKAGE: InstancePackage = {
   available_version: null,

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import usePageParams from "@/hooks/usePageParams";
 

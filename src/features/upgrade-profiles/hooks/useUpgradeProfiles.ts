@@ -1,4 +1,4 @@
-import { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   UpgradeProfile,
@@ -7,9 +7,9 @@ import type {
   UpgradeProfileType,
 } from "../types";
 import useFetchOld from "@/hooks/useFetchOld";
-import { Activity } from "@/features/activities";
-import { ApiError } from "@/types/ApiError";
-import { QueryFnType } from "@/types/QueryFnType";
+import type { Activity } from "@/features/activities";
+import type { ApiError } from "@/types/ApiError";
+import type { QueryFnType } from "@/types/QueryFnType";
 
 export interface CreateUpgradeProfileParams {
   every: UpgradeProfileFrequency;

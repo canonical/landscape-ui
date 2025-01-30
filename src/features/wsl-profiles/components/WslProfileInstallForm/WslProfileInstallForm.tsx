@@ -3,7 +3,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useRoles from "@/hooks/useRoles";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import {
   getCloudInitFile,
   getInitialValues,
@@ -16,7 +16,7 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import useNotify from "@/hooks/useNotify";
 import classes from "./WslProfileInstallForm.module.scss";
-import { WslProfile } from "../../types";
+import type { WslProfile } from "../../types";
 import { CLOUD_INIT_OPTIONS, FILE_INPUT_HELPER_TEXT } from "../constants";
 import CodeEditor from "@/components/form/CodeEditor";
 import { CTA_INFO } from "./constants";

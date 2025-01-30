@@ -1,10 +1,11 @@
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import { Button, ConfirmationButton } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useSidePanel from "@/hooks/useSidePanel";
-import { WslInstanceWithoutRelation } from "@/types/Instance";
+import type { WslInstanceWithoutRelation } from "@/types/Instance";
 import { useWsl } from "../../hooks";
 import classes from "./WslInstancesHeader.module.scss";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
@@ -13,7 +14,7 @@ import usePageParams from "@/hooks/usePageParams";
 const WslInstanceInstallForm = lazy(() => import("../WslInstanceInstallForm"));
 
 interface WslInstancesHeaderProps {
-  selectedInstances: WslInstanceWithoutRelation[];
+  readonly selectedInstances: WslInstanceWithoutRelation[];
 }
 
 const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({

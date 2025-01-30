@@ -5,16 +5,17 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import { Pocket, SyncPocketRef } from "../../types";
+import type { Pocket, SyncPocketRef } from "../../types";
 import { getLastSyncStatusIcon } from "./helpers";
 import classes from "./PocketSyncActivity.module.scss";
 
 interface PocketSyncActivityProps {
-  pocket: Pocket;
-  syncPocketRefAdd: (ref: SyncPocketRef) => void;
-  syncPocketRefs: SyncPocketRef[];
+  readonly pocket: Pocket;
+  readonly syncPocketRefAdd: (ref: SyncPocketRef) => void;
+  readonly syncPocketRefs: SyncPocketRef[];
 }
 
 const PocketSyncActivity: FC<PocketSyncActivityProps> = ({

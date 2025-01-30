@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
-import { User } from "@/types/User";
+import type { User } from "@/types/User";
 import { getTableSortOrder } from "@/utils/output";
 import {
   Button,
@@ -11,7 +11,8 @@ import {
   MainTable,
   Tooltip,
 } from "@canonical/react-components";
-import { FC, lazy, Suspense, useMemo } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { SORT_KEYS } from "../constants";
 import classes from "./UserList.module.scss";
 
@@ -23,9 +24,9 @@ const UserDetails = lazy(
 );
 
 interface UserListProps {
-  users: User[];
-  selected: number[];
-  setSelected: (userIds: number[]) => void;
+  readonly users: User[];
+  readonly selected: number[];
+  readonly setSelected: (userIds: number[]) => void;
 }
 
 const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {

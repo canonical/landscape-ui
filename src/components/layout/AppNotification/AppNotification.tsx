@@ -1,12 +1,12 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
-import { NotificationHelper } from "@/types/Notification";
+import type { NotificationHelper } from "@/types/Notification";
 import classes from "./AppNotification.module.scss";
 import classNames from "classnames";
 
 interface AppNotificationProps {
-  notify: NotificationHelper;
-  isSidePanelOpen?: boolean;
+  readonly notify: NotificationHelper;
+  readonly isSidePanelOpen?: boolean;
 }
 
 const AppNotification: FC<AppNotificationProps> = ({

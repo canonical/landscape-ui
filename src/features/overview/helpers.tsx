@@ -1,4 +1,4 @@
-import { ActiveElement, Chart } from "chart.js";
+import type { ActiveElement, Chart } from "chart.js";
 
 export interface IColors {
   security: {

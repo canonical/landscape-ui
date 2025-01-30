@@ -1,13 +1,14 @@
-import { FC, ReactNode, useState } from "react";
+import type { FC, ReactNode } from "react";
+import { useState } from "react";
+import type { QueryClientConfig } from "@tanstack/react-query";
 import {
   QueryCache,
   QueryClient,
-  QueryClientConfig,
   QueryClientProvider,
 } from "@tanstack/react-query";
 import useDebug from "@/hooks/useDebug";
-import { AxiosError } from "axios";
-import { ApiError } from "@/types/ApiError";
+import type { AxiosError } from "axios";
+import type { ApiError } from "@/types/ApiError";
 
 declare module "@tanstack/react-query" {
   interface Register {
@@ -16,7 +17,7 @@ declare module "@tanstack/react-query" {
 }
 
 interface ReactQueryProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const ReactQueryProvider: FC<ReactQueryProviderProps> = ({ children }) => {

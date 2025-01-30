@@ -13,7 +13,7 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { FC } from "react";
+import type { FC } from "react";
 import { useParams } from "react-router";
 import {
   INITIAL_VALUES,
@@ -21,15 +21,15 @@ import {
   VALIDATION_SCHEMA,
 } from "./constants";
 import classes from "./RestartInstanceForm.module.scss";
-import { FormProps } from "./types";
+import type { FormProps } from "./types";
 import { useKernel } from "../../hooks";
 import { UPGRADE_MESSAGE_WITH_REBOOT } from "../UpgradeKernelForm/constants";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 interface RestartInstanceFormProps {
-  showNotification: boolean;
-  instanceName: string;
-  newKernelVersionId?: number;
+  readonly showNotification: boolean;
+  readonly instanceName: string;
+  readonly newKernelVersionId?: number;
 }
 
 const RestartInstanceForm: FC<RestartInstanceFormProps> = ({

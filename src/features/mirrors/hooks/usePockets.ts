@@ -1,12 +1,12 @@
-import { Activity } from "@/features/activities";
-import { PackageDiff, PackageObject } from "@/features/packages";
+import type { Activity } from "@/features/activities";
+import type { PackageDiff, PackageObject } from "@/features/packages";
 import useFetchOld from "@/hooks/useFetchOld";
-import { ApiError } from "@/types/ApiError";
-import { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/ApiError";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { QueryFnType } from "@/types/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import {
+import type { AxiosError, AxiosResponse } from "axios";
+import type {
   AddPackageFiltersToPocketParams,
   AddUploaderGPGKeysToPocketParams,
   CreateMirrorPocketParams,

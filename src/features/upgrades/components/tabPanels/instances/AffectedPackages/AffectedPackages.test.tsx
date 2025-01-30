@@ -1,8 +1,8 @@
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { describe, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { InstancePackagesToExclude } from "@/features/packages";
+import type { InstancePackagesToExclude } from "@/features/packages";
 import { instances } from "@/tests/mocks/instance";
 import { getInstancePackages } from "@/tests/mocks/packages";
 import AffectedPackages from "./AffectedPackages";

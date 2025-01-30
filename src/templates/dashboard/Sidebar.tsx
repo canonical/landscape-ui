@@ -1,4 +1,5 @@
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import classNames from "classnames";
 import Navigation from "./Navigation";
 import DesktopHeader from "./DesktopHeader";

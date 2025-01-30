@@ -1,14 +1,14 @@
 import useFetchOld from "@/hooks/useFetchOld";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
+import type {
   GetGPGKeysParams,
   GPGKey,
   ImportGPGKeyParams,
   RemoveGPGKeyParams,
 } from "../types";
-import { AxiosError, AxiosResponse } from "axios";
-import { QueryFnType } from "@/types/QueryFnType";
-import { ApiError } from "@/types/ApiError";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/ApiError";
 
 export default function useGPGKeys() {
   const queryClient = useQueryClient();

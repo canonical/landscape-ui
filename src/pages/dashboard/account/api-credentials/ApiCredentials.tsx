@@ -7,7 +7,7 @@ import {
   useApiCredentials,
 } from "@/features/api-credentials";
 import { useUserGeneralSettings } from "@/features/general-settings";
-import { FC } from "react";
+import type { FC } from "react";
 
 const ApiCredentials: FC = () => {
   const { getUserDetails } = useUserGeneralSettings();

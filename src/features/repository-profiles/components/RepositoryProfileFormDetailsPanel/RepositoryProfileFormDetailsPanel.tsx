@@ -1,14 +1,14 @@
-import { FormikContextType } from "formik";
-import { FC } from "react";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
 import { Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
-import { RepositoryProfileFormValues } from "../../types";
-import { AccessGroup } from "@/features/access-groups";
+import type { RepositoryProfileFormValues } from "../../types";
+import type { AccessGroup } from "@/features/access-groups";
 
 interface RepositoryProfileFormDetailsPanelProps {
-  accessGroups: AccessGroup[];
-  formik: FormikContextType<RepositoryProfileFormValues>;
-  isTitleRequired?: boolean;
+  readonly accessGroups: AccessGroup[];
+  readonly formik: FormikContextType<RepositoryProfileFormValues>;
+  readonly isTitleRequired?: boolean;
 }
 
 const RepositoryProfileFormDetailsPanel: FC<

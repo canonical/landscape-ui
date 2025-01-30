@@ -1,10 +1,10 @@
-import { FC } from "react";
-import { UserDetails } from "../../types";
+import type { FC } from "react";
+import type { UserDetails } from "../../types";
 import InfoItem from "@/components/layout/InfoItem";
 import { Col, Row } from "@canonical/react-components";
 
 interface UserInfoProps {
-  userDetails: UserDetails;
+  readonly userDetails: UserDetails;
 }
 
 const UserInfo: FC<UserInfoProps> = ({ userDetails }) => {

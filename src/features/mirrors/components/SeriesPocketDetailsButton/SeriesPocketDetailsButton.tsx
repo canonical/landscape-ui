@@ -1,15 +1,16 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-import { FC, lazy, Suspense } from "react";
-import { Distribution, Pocket, Series } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import type { Distribution, Pocket, Series } from "../../types";
 
 const PackageList = lazy(() => import("../PackageList"));
 
 interface SeriesPocketDetailsButtonProps {
-  distributionName: Distribution["name"];
-  pocket: Pocket;
-  seriesName: Series["name"];
+  readonly distributionName: Distribution["name"];
+  readonly pocket: Pocket;
+  readonly seriesName: Series["name"];
 }
 
 const SeriesPocketDetailsButton: FC<SeriesPocketDetailsButtonProps> = ({

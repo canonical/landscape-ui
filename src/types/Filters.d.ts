@@ -1,4 +1,4 @@
-import { SelectOption } from "./SelectOption";
+import type { SelectOption } from "./SelectOption";
 
 interface ListFilterBase {
   label: string;

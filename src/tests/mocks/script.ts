@@ -1,4 +1,4 @@
-import { Script } from "../../features/scripts/types";
+import type { Script } from "../../features/scripts/types";
 
 export const scripts: Script[] = [
   {

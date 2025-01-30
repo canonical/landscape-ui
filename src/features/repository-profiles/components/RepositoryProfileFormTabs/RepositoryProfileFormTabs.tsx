@@ -1,9 +1,9 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Tabs } from "@canonical/react-components";
 
 interface RepositoryProfileFormTabsProps {
-  currentTab: number;
-  onCurrentTabChange: (tab: number) => void;
+  readonly currentTab: number;
+  readonly onCurrentTabChange: (tab: number) => void;
 }
 
 const RepositoryProfileFormTabs: FC<RepositoryProfileFormTabsProps> = ({

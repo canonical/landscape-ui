@@ -1,4 +1,4 @@
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { render, screen } from "@testing-library/react";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import PackageProfileDetailsConstraintsInfo from "./PackageProfileDetailsConstraintsInfo";

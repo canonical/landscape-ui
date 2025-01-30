@@ -1,11 +1,11 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Link } from "react-router";
 import { Button } from "@canonical/react-components";
 import Logo from "../../assets/images/logo-white-full.svg";
 import { APP_TITLE, ROOT_PATH } from "../../constants";
 
 interface MobileHeaderProps {
-  toggleMenu: () => void;
+  readonly toggleMenu: () => void;
 }
 
 const MobileHeader: FC<MobileHeaderProps> = ({ toggleMenu }) => {

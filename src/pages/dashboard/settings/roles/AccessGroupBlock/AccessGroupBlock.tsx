@@ -1,12 +1,12 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { CheckboxInput } from "@canonical/react-components";
-import { AccessGroupOption } from "@/pages/dashboard/settings/roles/types";
+import type { AccessGroupOption } from "@/pages/dashboard/settings/roles/types";
 import classes from "./AccessGroupBlock.module.scss";
 
 interface AccessGroupBlockProps {
-  accessGroupOptions: AccessGroupOption[];
-  accessGroups: string[];
-  onAccessGroupChange: (newAccessGroups: string[]) => void;
+  readonly accessGroupOptions: AccessGroupOption[];
+  readonly accessGroups: string[];
+  readonly onAccessGroupChange: (newAccessGroups: string[]) => void;
 }
 
 const AccessGroupBlock: FC<AccessGroupBlockProps> = ({

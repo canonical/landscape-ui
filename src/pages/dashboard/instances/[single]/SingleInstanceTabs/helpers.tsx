@@ -1,5 +1,5 @@
 import { Badge, Spinner } from "@canonical/react-components";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import { TAB_LINKS } from "./constants";
 
 interface GetTabLabelProps {

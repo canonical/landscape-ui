@@ -1,12 +1,13 @@
-import { FC, lazy, Suspense, useState } from "react";
-import { WslProfile } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import type { WslProfile } from "../../types";
+import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
   ICONS,
   Input,
-  MenuLink,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -19,7 +20,7 @@ const WslProfileEditForm = lazy(() => import("../WslProfileEditForm"));
 const WslProfileInstallForm = lazy(() => import("../WslProfileInstallForm"));
 
 interface WslProfilesListContextualMenuProps {
-  profile: WslProfile;
+  readonly profile: WslProfile;
 }
 
 const WslProfilesListContextualMenu: FC<WslProfilesListContextualMenuProps> = ({

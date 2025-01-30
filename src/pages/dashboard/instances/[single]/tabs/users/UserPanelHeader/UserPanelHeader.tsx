@@ -1,15 +1,15 @@
-import { FC } from "react";
+import type { FC } from "react";
 import classes from "./UserPanelHeader.module.scss";
 import UserPanelActionButtons from "../UserPanelActionButtons";
-import { User } from "@/types/User";
+import type { User } from "@/types/User";
 import { getSelectedUsers } from "./helpers";
 import usePageParams from "@/hooks/usePageParams";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 
 interface UserPanelHeaderProps {
-  selected: number[];
-  handleClearSelection: () => void;
-  users: User[];
+  readonly selected: number[];
+  readonly handleClearSelection: () => void;
+  readonly users: User[];
 }
 
 const UserPanelHeader: FC<UserPanelHeaderProps> = ({

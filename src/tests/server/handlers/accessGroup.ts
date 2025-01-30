@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { API_URL_OLD } from "@/constants";
 import { accessGroups } from "@/tests/mocks/accessGroup";
-import { AccessGroup } from "@/features/access-groups";
+import type { AccessGroup } from "@/features/access-groups";
 import { isAction } from "@/tests/server/handlers/_helpers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 

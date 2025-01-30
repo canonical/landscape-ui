@@ -1,4 +1,4 @@
-import { AuthStateResponse, AuthUser } from "@/features/auth";
+import type { AuthStateResponse, AuthUser } from "@/features/auth";
 
 const testAccount = "test-account";
 

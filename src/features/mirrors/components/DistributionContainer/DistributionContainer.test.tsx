@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { vi } from "vitest";
 import DistributionContainer from "./DistributionContainer";
 import { setEndpointStatus } from "@/tests/controllers/controller";

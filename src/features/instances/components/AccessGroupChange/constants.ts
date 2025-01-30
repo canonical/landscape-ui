@@ -1,4 +1,4 @@
-import { AccessGroupChangeFormValues } from "./types";
+import type { AccessGroupChangeFormValues } from "./types";
 import * as Yup from "yup";
 
 export const INITIAL_VALUES: AccessGroupChangeFormValues = {

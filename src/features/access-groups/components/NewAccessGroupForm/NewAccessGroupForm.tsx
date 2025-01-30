@@ -4,8 +4,8 @@ import { Form, Input, Select } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { FC } from "react";
-import { FormProps } from "./types";
+import type { FC } from "react";
+import type { FormProps } from "./types";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 
 const NewAccessGroupForm: FC = () => {

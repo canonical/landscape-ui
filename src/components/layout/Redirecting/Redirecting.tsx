@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import classes from "./Redirecting.module.scss";
 
 const Redirecting: FC = () => {

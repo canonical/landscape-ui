@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { API_URL_OLD } from "@/constants";
-import { GetGPGKeysParams, GPGKey } from "@/features/gpg-keys";
+import type { GetGPGKeysParams, GPGKey } from "@/features/gpg-keys";
 import { gpgKeys } from "@/tests/mocks/gpgKey";
 import { isAction } from "@/tests/server/handlers/_helpers";
 

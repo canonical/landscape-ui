@@ -2,8 +2,8 @@ import { formatCountableNoun } from "@/pages/dashboard/instances/[single]/tabs/u
 import moment from "moment";
 import * as Yup from "yup";
 import { EditSnapType, getSnapUpgradeCounts } from "../../helpers";
-import { InstalledSnap } from "../../types";
-import { FormValidationSchemaShape } from "./types";
+import type { InstalledSnap } from "../../types";
+import type { FormValidationSchemaShape } from "./types";
 
 const commonValidationSchema = {
   deliver_immediately: Yup.string(),

@@ -1,19 +1,19 @@
 import { Button, Icon, Select } from "@canonical/react-components";
 import classNames from "classnames";
-import { FC } from "react";
+import type { FC } from "react";
 import { useTotalPages } from "../../hooks";
 import PageNumberInput from "../PageNumberInput";
 import classes from "./TablePaginationBase.module.scss";
 import { PAGE_SIZE_OPTIONS } from "./constants";
 
 interface TablePaginationBaseProps {
-  className?: string;
-  currentItemCount?: number;
-  currentPage: number;
-  pageSize: number;
-  paginate: (page: number) => void;
-  setPageSize: (itemsNumber: number) => void;
-  totalItems?: number | undefined;
+  readonly className?: string;
+  readonly currentItemCount?: number;
+  readonly currentPage: number;
+  readonly pageSize: number;
+  readonly paginate: (page: number) => void;
+  readonly setPageSize: (itemsNumber: number) => void;
+  readonly totalItems?: number | undefined;
 }
 
 const TablePaginationBase: FC<TablePaginationBaseProps> = ({

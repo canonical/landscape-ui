@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import SeriesPocketDetailsButton from "./SeriesPocketDetailsButton";
-import { ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { pockets } from "@/tests/mocks/pockets";
 
 const propsWithMirrorPocket: ComponentProps<typeof SeriesPocketDetailsButton> =

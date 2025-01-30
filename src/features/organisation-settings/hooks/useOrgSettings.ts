@@ -1,8 +1,8 @@
-import { ApiError } from "@/types/ApiError";
-import { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/ApiError";
+import type { QueryFnType } from "@/types/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import { Preferences } from "@/types/Preferences";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { Preferences } from "@/types/Preferences";
 import useFetch from "@/hooks/useFetch";
 
 export interface ChangeOrganisationPreferencesParams {

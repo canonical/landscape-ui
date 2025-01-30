@@ -1,17 +1,15 @@
-import { FC, useEffect, useRef, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import {
-  InstancePackagesToExclude,
-  Package,
-  usePackages,
-} from "@/features/packages";
-import { Instance } from "@/types/Instance";
+import type { InstancePackagesToExclude, Package } from "@/features/packages";
+import { usePackages } from "@/features/packages";
+import type { Instance } from "@/types/Instance";
 import AffectedPackages from "../AffectedPackages";
 
 interface PackagesPanelProps {
-  excludedPackages: InstancePackagesToExclude[];
-  instances: Instance[];
-  onExcludedPackagesChange: (
+  readonly excludedPackages: InstancePackagesToExclude[];
+  readonly instances: Instance[];
+  readonly onExcludedPackagesChange: (
     newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
 }

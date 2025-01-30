@@ -1,4 +1,4 @@
-import { Series } from "./Series";
+import type { Series } from "./Series";
 
 export interface Distribution {
   access_group: string;

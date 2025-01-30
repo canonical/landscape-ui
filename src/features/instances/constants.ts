@@ -1,5 +1,5 @@
-import { ListFilter } from "@/types/Filters";
-import { Status } from "./types/Status";
+import type { ListFilter } from "@/types/Filters";
+import type { Status } from "./types/Status";
 
 export const STATUSES: Record<string, Status> = {
   Online: {
