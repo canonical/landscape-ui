@@ -30,14 +30,12 @@ interface InstanceListProps {
   readonly setSelectedInstances: (instances: readonly Instance[]) => void;
 }
 
-const InstanceList: FC<InstanceListProps> = (props) => {
-  const {
-    instances,
-    selectedInstances,
-    setColumnFilterOptions,
-    setSelectedInstances,
-  } = props;
-
+const InstanceList: FC<InstanceListProps> = ({
+  instances,
+  selectedInstances,
+  setColumnFilterOptions,
+  setSelectedInstances,
+}: InstanceListProps): ReactNode => {
   const { disabledColumns, groupBy, ...filters } = usePageParams();
 
   const isFilteringInstances = Object.values(filters).some((filter) => {
