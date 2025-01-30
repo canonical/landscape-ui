@@ -1,7 +1,7 @@
 import { isAxiosError } from "axios";
-import React, {
-  FC,
-  ReactNode,
+import type { FC, ReactNode } from "react";
+import {
+  createContext,
   useCallback,
   useEffect,
   useMemo,
@@ -11,8 +11,9 @@ import { useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { ROOT_PATH } from "@/constants";
 import useNotify from "@/hooks/useNotify";
-import { AuthUser, redirectToExternalUrl, useUnsigned } from "@/features/auth";
-import { SelectOption } from "@/types/SelectOption";
+import type { AuthUser } from "@/features/auth";
+import { redirectToExternalUrl, useUnsigned } from "@/features/auth";
+import type { SelectOption } from "@/types/SelectOption";
 import Redirecting from "@/components/layout/Redirecting";
 
 export interface AuthContextProps {
@@ -26,6 +27,7 @@ export interface AuthContextProps {
   isOidcAvailable: boolean;
   logout: () => void;
   redirectToExternalUrl: (url: string, options?: { replace: boolean }) => void;
+  setAuthLoading: (loading: boolean) => void;
   setUser: (user: AuthUser) => void;
   user: AuthUser | null;
 }
@@ -41,14 +43,15 @@ const initialState: AuthContextProps = {
   isOidcAvailable: false,
   logout: () => undefined,
   redirectToExternalUrl: () => undefined,
+  setAuthLoading: () => undefined,
   setUser: () => undefined,
   user: null,
 };
 
-export const AuthContext = React.createContext<AuthContextProps>(initialState);
+export const AuthContext = createContext<AuthContextProps>(initialState);
 
 interface AuthProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
@@ -72,6 +75,14 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
     setLoading(false);
   }, [isGetAuthStateQueryEnabled]);
+
+  useEffect(() => {
+    if (!loading) {
+      return;
+    }
+
+    setLoading(false);
+  }, [pathname]);
 
   const { data: getAuthStateQueryResult } = getAuthStateQuery(
     {},
@@ -160,6 +171,10 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     [],
   );
 
+  const handleAuthLoading = useCallback((loading: boolean) => {
+    setLoading(loading);
+  }, []);
+
   if (isRedirecting) {
     return <Redirecting />;
   }
@@ -173,6 +188,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         isOidcAvailable: !!getLoginMethodsQueryResult?.data.oidc.available,
         logout: handleLogout,
         redirectToExternalUrl: handleExternalRedirect,
+        setAuthLoading: handleAuthLoading,
         setUser: handleSetUser,
         user,
       }}

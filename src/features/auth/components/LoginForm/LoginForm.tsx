@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import useDebug from "@/hooks/useDebug";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -20,7 +20,7 @@ interface FormProps {
 }
 
 interface LoginFormProps {
-  isIdentityAvailable: boolean;
+  readonly isIdentityAvailable: boolean;
 }
 
 const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
@@ -28,7 +28,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
   const debug = useDebug();
   const { signInWithEmailAndPasswordQuery } = useUnsigned();
-  const { setUser, redirectToExternalUrl } = useAuth();
+  const { redirectToExternalUrl, setAuthLoading, setUser } = useAuth();
   const navigate = useNavigate();
 
   const redirectTo = searchParams.get("redirect-to");
@@ -61,6 +61,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
           redirectToExternalUrl(redirectTo, { replace: true });
         } else {
           if ("current_account" in data) {
+            setAuthLoading(true);
             setUser(data);
           }
 

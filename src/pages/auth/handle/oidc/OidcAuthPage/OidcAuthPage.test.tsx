@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { AuthStateResponse } from "@/features/auth";
+import type { AuthStateResponse } from "@/features/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { ROOT_PATH } from "@/constants";
 
@@ -34,6 +34,7 @@ const mockTestParams = (response: AuthStateResponse | Error) => {
 
   vi.doMock("@/hooks/useAuth", async () => ({
     default: () => ({
+      setAuthLoading: vi.fn(),
       setUser: vi.fn(),
       redirectToExternalUrl,
     }),
@@ -47,7 +48,11 @@ describe("OidcAuthPage", () => {
     renderWithProviders(<Component />);
 
     expect(
-      screen.getByText(
+      screen.getByText("Please wait while your request is being processed..."),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(
         "Oops! Something went wrong. Please try again or contact our support team.",
       ),
     ).toBeInTheDocument();

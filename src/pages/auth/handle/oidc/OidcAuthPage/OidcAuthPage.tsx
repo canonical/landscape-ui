@@ -1,4 +1,5 @@
-import { FC, useEffect } from "react";
+import type { FC } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { CONTACT_SUPPORT_TEAM_MESSAGE, ROOT_PATH } from "@/constants";
 import { useUnsigned } from "@/features/auth";
@@ -8,7 +9,7 @@ import classes from "./OidcAuthPage.module.scss";
 const OidcAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
 
-  const { setUser, redirectToExternalUrl } = useAuth();
+  const { redirectToExternalUrl, setAuthLoading, setUser } = useAuth();
   const { getAuthStateWithOidcQuery } = useUnsigned();
   const navigate = useNavigate();
 
@@ -34,6 +35,7 @@ const OidcAuthPage: FC = () => {
         replace: true,
       });
     } else {
+      setAuthLoading(true);
       setUser(getAuthStateQueryResult.data);
 
       const url = new URL(

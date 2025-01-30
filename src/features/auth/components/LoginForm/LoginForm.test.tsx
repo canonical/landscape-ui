@@ -12,6 +12,7 @@ const user = {
 
 const navigate = vi.fn();
 const redirectToExternalUrl = vi.fn();
+const setAuthLoading = vi.fn();
 const setUser = vi.fn();
 const signInWithEmailAndPassword = vi
   .fn()
@@ -26,7 +27,11 @@ const mockTestParams = (searchParams?: Record<string, string>) => {
   }));
 
   vi.doMock("@/hooks/useAuth", () => ({
-    default: () => ({ setUser, redirectToExternalUrl }),
+    default: () => ({
+      redirectToExternalUrl,
+      setAuthLoading,
+      setUser,
+    }),
   }));
 
   vi.doMock("../../hooks", () => ({
@@ -80,7 +85,7 @@ describe("LoginForm", () => {
       );
 
       expect(signInWithEmailAndPassword).toHaveBeenCalledWith(user);
-
+      expect(setAuthLoading).toHaveBeenCalledWith(true);
       expect(setUser).toHaveBeenCalledWith(authUser);
     });
   });
@@ -118,7 +123,7 @@ describe("LoginForm", () => {
       await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
 
       expect(signInWithEmailAndPassword).toHaveBeenCalledWith(user);
-
+      expect(setAuthLoading).toHaveBeenCalledWith(true);
       expect(setUser).toHaveBeenCalledWith(authUser);
     });
 
