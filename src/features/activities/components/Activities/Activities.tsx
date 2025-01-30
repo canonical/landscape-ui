@@ -9,7 +9,7 @@ import {
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import ActivitiesEmptyState from "../ActivitiesEmptyState";
 import ActivitiesHeader from "../ActivitiesHeader";
 import { ACTIVITY_STATUSES } from "../../constants";
@@ -163,7 +163,7 @@ const Activities: FC<ActivitiesProps> = ({
             row.original.computer_id ? (
               <Link
                 className={classes.link}
-                to={`${ROOT_PATH}instances/${row.original.computer_id}`}
+                to={`/instances/${row.original.computer_id}`}
               >
                 ID: {row.original.computer_id}
               </Link>

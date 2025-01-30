@@ -3,7 +3,6 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { ROOT_PATH } from "@/constants";
 import {
   AlertNotificationsList,
   useAlertsSummary,
@@ -51,9 +50,7 @@ const AlertNotificationsPage: FC = () => {
               <Button
                 appearance="positive"
                 key="go-to-alerts-page"
-                onClick={() =>
-                  navigate(`${ROOT_PATH}account/alerts`, { replace: true })
-                }
+                onClick={() => navigate("/account/alerts", { replace: true })}
                 type="button"
                 aria-label="Go to alerts page"
               >

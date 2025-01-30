@@ -1,6 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import ExpandableTableFooter from "@/components/layout/ExpandableTableFooter";
-import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
@@ -191,7 +191,7 @@ const InfoTablesContainer: FC = () => {
             accessor: "instanceName",
             Cell: ({ row }: CellProps<Instance>) => (
               <Link
-                to={`${ROOT_PATH}instances/${row.original.id}`}
+                to={`/instances/${row.original.id}`}
                 className={classNames("u-no-margin--bottom", classes.link)}
               >
                 {row.original.title}
@@ -221,7 +221,7 @@ const InfoTablesContainer: FC = () => {
             accessor: "computers",
             Cell: ({ row }: CellProps<Package>) => (
               <Link
-                to={`${ROOT_PATH}instances`}
+                to="/instances"
                 className={classNames("u-no-margin--bottom", classes.link)}
               >
                 {row.original.computers.length}
@@ -241,7 +241,7 @@ const InfoTablesContainer: FC = () => {
             accessor: "computers_count",
             Cell: ({ row }: CellProps<Usn>) => (
               <Link
-                to={`${ROOT_PATH}instances`}
+                to="/instances"
                 className={classNames("u-no-margin--bottom", classes.link)}
               >
                 {row.original.computers_count}
@@ -290,7 +290,7 @@ const InfoTablesContainer: FC = () => {
         className: classes.description,
         Cell: ({ row }: CellProps<ActivityCommon>) => (
           <Link
-            to={`${ROOT_PATH}activities`}
+            to="/activities"
             state={{ activity: row.original as Activity }}
             className={classNames("u-no-margin--bottom", classes.link)}
           >
@@ -469,7 +469,7 @@ const InfoTablesContainer: FC = () => {
                   plural: `${getUpgradesTableFooterName()}s`,
                 }}
                 itemCount={10}
-                onLimitChange={() => navigate(`${ROOT_PATH}instances`)}
+                onLimitChange={() => navigate("/instances")}
                 totalCount={getTotalTableItemsCount("upgrades")}
                 className={classes.footer}
               />
@@ -562,7 +562,7 @@ const InfoTablesContainer: FC = () => {
                   plural: "activities",
                 }}
                 itemCount={10}
-                onLimitChange={() => navigate(`${ROOT_PATH}activities`)}
+                onLimitChange={() => navigate("/activities")}
                 totalCount={getTotalTableItemsCount("activities")}
                 className={classes.footer}
               />

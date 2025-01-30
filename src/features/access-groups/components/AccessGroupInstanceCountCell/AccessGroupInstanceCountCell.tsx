@@ -1,4 +1,3 @@
-import { ROOT_PATH } from "@/constants";
 import useInstances from "@/hooks/useInstances";
 import { Spinner } from "@canonical/react-components";
 import type { FC } from "react";
@@ -41,7 +40,7 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
     return (
       <Link
         className={classes.link}
-        to={`${ROOT_PATH}instances?accessGroups=${accessGroup.name}`}
+        to={`/instances?accessGroups=${accessGroup.name}`}
       >
         {getInstancesQueryResult.data.count}
       </Link>

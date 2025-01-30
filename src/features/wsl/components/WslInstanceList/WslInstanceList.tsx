@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
-import { ROOT_PATH } from "@/constants";
 import type {
   WindowsInstance,
   WslInstanceWithoutRelation,
@@ -81,9 +80,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
               )}
               onChange={() => handleInstanceCheck(row.original)}
             />
-            <Link
-              to={`${ROOT_PATH}instances/${instance.id}/${row.original.id}`}
-            >
+            <Link to={`/instances/${instance.id}/${row.original.id}`}>
               {row.original.title}
             </Link>
           </div>

@@ -1,7 +1,6 @@
 import type { FC, ReactNode } from "react";
 import React, { createContext, useEffect, useState } from "react";
 import { useLocation } from "react-router";
-import { ROOT_PATH } from "@/constants";
 import useNotificationHelper from "@/hooks/useNotificationHelper";
 import type { NotificationHelper } from "@/types/Notification";
 
@@ -40,7 +39,7 @@ const NotifyProvider: FC<NotifyProviderProps> = ({ children }) => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (pathname === `${ROOT_PATH}login`) {
+    if (pathname === "/login") {
       return;
     }
 

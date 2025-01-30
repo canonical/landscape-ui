@@ -1,7 +1,6 @@
 import type { FC } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ConfirmationButton, Icon } from "@canonical/react-components";
-import { ROOT_PATH } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -30,7 +29,7 @@ const UsnPackagesRemoveButton: FC<UsnPackagesRemoveButtonProps> = ({
 
   const handleActivityDetailsView = () => {
     navigate(
-      `${ROOT_PATH}instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`,
+      `/instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`,
     );
     setPageParams({ tab: "activities" });
     notify.clear();

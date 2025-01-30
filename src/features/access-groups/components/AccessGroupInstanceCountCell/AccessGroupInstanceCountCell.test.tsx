@@ -1,4 +1,3 @@
-import { ROOT_PATH } from "@/constants";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -19,7 +18,7 @@ describe("AccessGroupInstanceCountCell", () => {
     const link = await screen.findByRole("link");
     expect(link).toBeInTheDocument();
     expect(link.getAttribute("href")).toBe(
-      `${ROOT_PATH}instances?accessGroups=${props.accessGroup.name}`,
+      `/instances?accessGroups=${props.accessGroup.name}`,
     );
   });
 });

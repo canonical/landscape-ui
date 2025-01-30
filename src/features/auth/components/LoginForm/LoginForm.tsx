@@ -8,7 +8,6 @@ import {
   Input,
   PasswordToggle,
 } from "@canonical/react-components";
-import { ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate, useSearchParams } from "react-router";
 import classes from "./LoginForm.module.scss";
@@ -65,10 +64,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
             setUser(data);
           }
 
-          const url = new URL(
-            redirectTo ?? `${ROOT_PATH}overview`,
-            location.origin,
-          );
+          const url = new URL(redirectTo ?? "/overview", location.origin);
 
           navigate(url.toString().replace(url.origin, ""), { replace: true });
         }

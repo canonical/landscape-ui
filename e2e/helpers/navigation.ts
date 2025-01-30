@@ -1,8 +1,8 @@
-import { Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 const PORT = process.env.CI ? 4173 : 5173;
-const BASE_URL = `http://localhost:${PORT}`;
 const ROOT_PATH = process.env.VITE_ROOT_PATH ?? "/";
+const BASE_URL = `http://localhost:${PORT}`;
 
 export async function navigateTo(
   page: Page,
@@ -10,7 +10,6 @@ export async function navigateTo(
   params?: Record<string, string>,
 ): Promise<void> {
   const urlWithRootPath = `${ROOT_PATH}${path.replace(/^\//, "")}`;
-
   const url = new URL(urlWithRootPath, BASE_URL);
 
   if (params) {

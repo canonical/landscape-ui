@@ -23,7 +23,7 @@ test("should redirect after login if 'redirect-to' arg provided", async ({
   const loginPage = new LoginPage(page);
   await loginPage.login(USER.email, USER.password);
 
-  await expect(page).toHaveURL("/scripts/");
+  await expect(page).toHaveURL(/\/scripts/);
 });
 
 test("should have disclaimer popup after login", async ({ page }) => {

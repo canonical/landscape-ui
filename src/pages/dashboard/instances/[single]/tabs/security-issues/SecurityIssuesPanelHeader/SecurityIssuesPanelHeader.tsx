@@ -7,7 +7,6 @@ import {
   Icon,
   SearchBox,
 } from "@canonical/react-components";
-import { ROOT_PATH } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { useUsns } from "@/features/usns";
@@ -40,7 +39,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 
   const handleActivityDetailsView = () => {
     navigate(
-      `${ROOT_PATH}instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`,
+      `/instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`,
     );
     setPageParams({ tab: "activities" });
     notify.clear();

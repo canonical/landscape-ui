@@ -1,110 +1,109 @@
-import { ROOT_PATH } from "@/constants";
 import type { MenuItem } from "./types";
 
 export const MENU_ITEMS: MenuItem[] = [
   {
     label: "Overview",
-    path: `${ROOT_PATH}overview`,
+    path: "/overview",
     icon: "switcher-dashboard",
   },
   {
     label: "Instances",
-    path: `${ROOT_PATH}instances`,
+    path: "/instances",
     icon: "machines",
   },
   {
     label: "Activities",
-    path: `${ROOT_PATH}activities`,
+    path: "/activities",
     icon: "switcher-environments",
   },
   {
     label: "Scripts",
-    path: `${ROOT_PATH}scripts`,
+    path: "/scripts",
     icon: "code",
   },
   {
     label: "Events log",
-    path: `${ROOT_PATH}events-log`,
+    path: "/events-log",
     icon: "status",
   },
   {
     label: "Profiles",
-    path: `${ROOT_PATH}profile`,
+    path: "/profile",
     icon: "cluster",
     items: [
       {
         label: "Repository profiles",
-        path: `${ROOT_PATH}profiles/repositories`,
+        path: "/profiles/repositories",
       },
       {
         label: "Package profiles",
-        path: `${ROOT_PATH}profiles/package`,
+        path: "/profiles/package",
       },
       {
         label: "Upgrade profiles",
-        path: `${ROOT_PATH}profiles/upgrade`,
+        path: "/profiles/upgrade",
       },
       {
         label: "Removal profiles",
-        path: `${ROOT_PATH}profiles/removal`,
+        path: "/profiles/removal",
       },
       {
         label: "WSL profiles",
-        path: `${ROOT_PATH}profiles/wsl`,
+        path: "/profiles/wsl",
         env: "selfHosted",
       },
     ],
   },
   {
     label: "Repositories",
-    path: `${ROOT_PATH}repositories`,
+    path: "/repositories",
     icon: "fork",
     items: [
       {
         label: "Mirrors",
-        path: `${ROOT_PATH}repositories/mirrors`,
+        path: "/repositories/mirrors",
         env: "selfHosted",
       },
       {
         label: "GPG Keys",
-        path: `${ROOT_PATH}repositories/gpg-keys`,
+        path: "/repositories/gpg-keys",
       },
       {
         label: "APT Sources",
-        path: `${ROOT_PATH}repositories/apt-sources`,
+        path: "/repositories/apt-sources",
       },
     ],
   },
   {
     label: "Org. settings",
-    path: `${ROOT_PATH}settings`,
+    path: "/settings",
     icon: "settings",
     items: [
       {
         label: "General",
-        path: `${ROOT_PATH}settings/general`,
+        path: "/settings/general",
       },
       {
         label: "Administrators",
-        path: `${ROOT_PATH}settings/administrators`,
+        path: "/settings/administrators",
       },
       {
         label: "Roles",
-        path: `${ROOT_PATH}settings/roles`,
+        path: "/settings/roles",
       },
       {
         label: "Access groups",
-        path: `${ROOT_PATH}settings/access-groups`,
+        path: "/settings/access-groups",
       },
       {
         label: "Identity providers",
-        path: `${ROOT_PATH}settings/identity-providers`,
+        path: "/settings/identity-providers",
       },
     ],
   },
   {
     label: "Help",
-    path: `${ROOT_PATH}Help`,
+    path: "/help",
     icon: "help",
     items: [
       {

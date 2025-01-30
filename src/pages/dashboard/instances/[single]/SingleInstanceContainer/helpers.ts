@@ -1,4 +1,3 @@
-import { ROOT_PATH } from "@/constants";
 import type { KernelStatus } from "@/features/kernel";
 import type { Breadcrumb } from "@/types/Breadcrumb";
 import type { Instance } from "@/types/Instance";
@@ -12,7 +11,7 @@ export const getBreadcrumbs = (
 
   if (!instance.parent) {
     return [
-      { label: "Instances", path: `${ROOT_PATH}instances` },
+      { label: "Instances", path: "/instances" },
       { label: instance.title, current: true },
     ];
   }
@@ -20,11 +19,11 @@ export const getBreadcrumbs = (
   return [
     {
       label: "Instances",
-      path: `${ROOT_PATH}instances`,
+      path: "/instances",
     },
     {
       label: instance.parent.title,
-      path: `${ROOT_PATH}instances/${instance.parent.id}`,
+      path: `/instances/${instance.parent.id}`,
     },
     {
       label: instance.title,

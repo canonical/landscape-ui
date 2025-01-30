@@ -4,7 +4,6 @@ import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import AppNotification from "@/components/layout/AppNotification";
 import LoadingState from "@/components/layout/LoadingState";
-import { ROOT_PATH } from "@/constants";
 import FetchProvider from "@/context/fetch";
 import FetchOldProvider from "@/context/fetchOld";
 import useAuth from "@/hooks/useAuth";
@@ -95,7 +94,7 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
 
     const redirectTo = encodeURIComponent(`${pathname}${search}`);
 
-    navigate(`${ROOT_PATH}login?redirect-to=${redirectTo}`, {
+    navigate(`login?redirect-to=${redirectTo}`, {
       replace: true,
     });
     queryClient.removeQueries({
@@ -119,7 +118,7 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
       return;
     }
 
-    navigate(ROOT_PATH, { replace: true });
+    navigate("/", { replace: true });
   }, [authorized, authLoading]);
 
   if (authLoading) {
@@ -138,7 +137,7 @@ const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
       return;
     }
 
-    navigate(`${ROOT_PATH}env-error`, { replace: true });
+    navigate("/env-error", { replace: true });
   }, [isSelfHosted, envLoading]);
 
   if (envLoading) {
@@ -166,7 +165,7 @@ const App: FC = () => {
               </AuthRoute>
             }
           >
-            <Route path={ROOT_PATH} element={<DashboardPage />}>
+            <Route path="/" element={<DashboardPage />}>
               <Route
                 element={
                   <SelfHostedRoute>
@@ -266,18 +265,15 @@ const App: FC = () => {
               </GuestRoute>
             }
           >
-            <Route path={`${ROOT_PATH}login`} element={<LoginPage />} />
+            <Route path={"/login"} element={<LoginPage />} />
+            <Route path={"/handle-auth/oidc"} element={<OidcAuthPage />} />
             <Route
-              path={`${ROOT_PATH}handle-auth/oidc`}
-              element={<OidcAuthPage />}
-            />
-            <Route
-              path={`${ROOT_PATH}handle-auth/ubuntu-one`}
+              path={"/handle-auth/ubuntu-one"}
               element={<UbuntuOneAuthPage />}
             />
           </Route>
           <Route
-            path={`${ROOT_PATH}*`}
+            path={"/*"}
             element={
               <Suspense fallback={<LoadingState />}>
                 <PageNotFound />

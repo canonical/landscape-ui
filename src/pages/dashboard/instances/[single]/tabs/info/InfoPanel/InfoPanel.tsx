@@ -16,7 +16,6 @@ import {
 import TagMultiSelect from "@/components/form/TagMultiSelect";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import { ROOT_PATH } from "@/constants";
 import { useWsl } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -146,7 +145,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         computer_ids: [instance.id],
       });
 
-      navigate(`${ROOT_PATH}instances`, { replace: true });
+      navigate("/instances", { replace: true });
     } catch (error) {
       debug(error);
     }
@@ -176,7 +175,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         computer_ids: [instance.id],
       });
 
-      navigate(`${ROOT_PATH}instances`, { replace: true });
+      navigate("/instances", { replace: true });
     } catch (error) {
       debug(error);
     }

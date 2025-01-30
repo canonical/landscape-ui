@@ -9,7 +9,6 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import { ROOT_PATH } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { InstancePackage } from "../../types";
 import PackageListActions from "../PackageListActions";
@@ -117,7 +116,7 @@ const PackageList: FC<PackageListProps> = ({
                 <div>
                   <p className="u-no-padding--top">Ubuntu Pro is required</p>
                   <Link
-                    to={`${ROOT_PATH}instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`}
+                    to={`/instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`}
                     state={{ tab: "ubuntu-pro" }}
                     className={classes.tooltipLink}
                   >

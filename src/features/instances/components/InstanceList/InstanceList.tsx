@@ -6,7 +6,7 @@ import { Link } from "react-router";
 import type { CellProps, Column, Row } from "react-table";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import NoData from "@/components/layout/NoData";
-import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
 import classes from "./InstanceList.module.scss";
@@ -122,8 +122,8 @@ const InstanceList: FC<InstanceListProps> = ({
             <Link
               to={
                 row.original.parent
-                  ? `${ROOT_PATH}instances/${row.original.parent.id}/${row.original.id}`
-                  : `${ROOT_PATH}instances/${row.original.id}`
+                  ? `/instances/${row.original.parent.id}/${row.original.id}`
+                  : `/instances/${row.original.id}`
               }
             >
               {row.original.title}

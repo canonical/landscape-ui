@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { CONTACT_SUPPORT_TEAM_MESSAGE, ROOT_PATH } from "@/constants";
+import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 import { useUnsigned } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import classes from "./UbuntuOneAuthPage.module.scss";
@@ -41,8 +41,7 @@ const UbuntuOneAuthPage: FC = () => {
       setUser(getUbuntuOneStateQueryResult.data);
 
       const url = new URL(
-        getUbuntuOneStateQueryResult.data.return_to?.url ??
-          `${ROOT_PATH}overview`,
+        getUbuntuOneStateQueryResult.data.return_to?.url ?? "/overview",
         location.origin,
       );
 
@@ -63,7 +62,7 @@ const UbuntuOneAuthPage: FC = () => {
       ) : (
         <div>
           <p>{CONTACT_SUPPORT_TEAM_MESSAGE}</p>
-          <Link to={`${ROOT_PATH}login`} className="p-button">
+          <Link to="/login" className="p-button">
             Back to login
           </Link>
         </div>

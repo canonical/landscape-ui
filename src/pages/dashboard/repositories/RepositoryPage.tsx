@@ -1,13 +1,12 @@
 import type { FC } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { ROOT_PATH } from "@/constants";
 
 const RepositoryPage: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`${ROOT_PATH}repositories/mirrors`, { replace: true });
+    navigate("/repositories/mirrors", { replace: true });
   }, []);
 
   return null;

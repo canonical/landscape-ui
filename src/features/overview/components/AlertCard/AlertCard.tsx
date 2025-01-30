@@ -4,7 +4,6 @@ import classes from "./AlertCard.module.scss";
 import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
 import { Link } from "react-router";
-import { ROOT_PATH } from "@/constants";
 import type { Status } from "@/features/instances";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -104,7 +103,7 @@ const AlertCard: FC<Status> = ({
           {!isPendingComputersAlert && alertCount > 0 && (
             <Link
               className={classNames("u-no-margin u-no-padding", classes.link)}
-              to={`${ROOT_PATH}instances?status=${filterValue}`}
+              to={`/instances?status=${filterValue}`}
             >
               <span className={classes.instancesNumber}>{alertCount}</span>{" "}
               {alertCount === 1 ? "instance" : "instances"}

@@ -42,24 +42,28 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "Environments",
+      name: "saas",
       use: { ...devices["Desktop Chrome"] },
-      testMatch: "environments/**/*.spec.ts",
+      testMatch: "saas.spec.ts",
     },
     {
-      name: "Auth",
+      name: "self-hosted",
       use: { ...devices["Desktop Chrome"] },
-      testMatch: "auth/**/*.spec.ts",
+      testMatch: "self-hosted.spec.ts",
     },
     {
-      name: "Pages",
+      name: "standalone",
       use: { ...devices["Desktop Chrome"] },
-      testMatch: "pages/**/*.spec.ts",
+      testMatch: "standalone.spec.ts",
     },
     {
-      name: "Components",
+      name: "common",
       use: { ...devices["Desktop Chrome"] },
-      testMatch: "components/**/*.spec.ts",
+      testMatch: [
+        "auth/**/*.spec.ts",
+        "pages/**/*.spec.ts",
+        "components/**/*.spec.ts",
+      ],
     },
   ],
 });

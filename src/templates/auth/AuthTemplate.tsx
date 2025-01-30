@@ -1,7 +1,7 @@
 import type { FC, ReactNode } from "react";
 import { LoginPageLayout, Notification } from "@canonical/react-components";
 import Logo from "@/assets/images/logo-white-character.svg";
-import { APP_TITLE, ROOT_PATH } from "@/constants";
+import { APP_TITLE } from "@/constants";
 import classes from "./AuthTemplate.module.scss";
 import { useInvitation } from "@/features/auth";
 
@@ -20,7 +20,7 @@ const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
         logo={{
           src: Logo,
           title: APP_TITLE,
-          url: ROOT_PATH,
+          url: "/",
         }}
       >
         {invitationAccount?.account_title && (

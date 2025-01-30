@@ -29,10 +29,26 @@ jobs:
         run: npm run build
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      - name: Run tests
-        run: npx playwright test
+      - name: Run common tests
+        run: npx playwright test --project=common
         env:
           HOME: /root
+          VITE_SELF_HOSTED_ENV: true
+      - name: Run SaaS tests
+        run: npx playwright test --project=saas
+        env:
+          HOME: /root
+          VITE_SELF_HOSTED_ENV: false
+      - name: Run self-hosted tests
+        run: npx playwright test --project=self-hosted
+        env:
+          HOME: /root
+          VITE_SELF_HOSTED_ENV: true
+      - name: Run standalone tests
+        run: npx playwright test --project=standalone
+        env:
+          HOME: /root
+          VITE_SELF_HOSTED_ENV: true
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()

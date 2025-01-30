@@ -1,21 +1,20 @@
-import { ROOT_PATH } from "@/constants";
 import type { MenuItem } from "../Navigation/types";
 
 export const ACCOUNT_SETTINGS: MenuItem = {
   label: "Account settings",
-  path: `${ROOT_PATH}account`,
+  path: "/account",
   items: [
     {
       label: "General",
-      path: `${ROOT_PATH}account/general`,
+      path: "/account/general",
     },
     {
       label: "Alerts",
-      path: `${ROOT_PATH}account/alerts`,
+      path: "/account/alerts",
     },
     {
       label: "API credentials",
-      path: `${ROOT_PATH}account/api-credentials`,
+      path: "/account/api-credentials",
     },
   ],
 };

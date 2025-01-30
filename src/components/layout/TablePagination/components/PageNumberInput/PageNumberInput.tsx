@@ -8,11 +8,13 @@ const PageNumberInput = ({
   max,
   min,
   setCurrentPage,
+  name,
 }: {
   readonly currentPage: number;
   readonly max: number;
   readonly min: number;
   readonly setCurrentPage: (page: number) => void;
+  readonly name?: string;
 }) => {
   const [error, setError] = useState("");
   const [page, setPage] = useState<number | "">(currentPage);
@@ -91,6 +93,7 @@ const PageNumberInput = ({
           value={page}
           min={min}
           max={max}
+          name={name}
           step={1}
         />
 

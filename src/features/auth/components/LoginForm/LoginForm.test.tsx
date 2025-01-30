@@ -3,7 +3,6 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/tests/render";
 import { authUser } from "@/tests/mocks/auth";
-import { ROOT_PATH } from "@/constants";
 
 const user = {
   email: "john@example.com",
@@ -80,7 +79,7 @@ describe("LoginForm", () => {
 
     it("should sign in and redirect to default url", async () => {
       expect(navigate).toHaveBeenCalledWith(
-        new URL(`${ROOT_PATH}overview`, location.origin).pathname,
+        new URL("/overview", location.origin).pathname,
         { replace: true },
       );
 
@@ -143,7 +142,7 @@ describe("LoginForm", () => {
 
     it("should sign in and redirect to default url", async () => {
       expect(navigate).toHaveBeenCalledWith(
-        new URL(`${ROOT_PATH}overview`, location.origin).pathname,
+        new URL("/overview", location.origin).pathname,
         { replace: true },
       );
     });

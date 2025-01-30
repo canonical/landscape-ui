@@ -1,13 +1,12 @@
 import type { FC } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { ROOT_PATH } from "../../../constants";
 
 const ProfilesPage: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`${ROOT_PATH}profiles/package`, { replace: true });
+    navigate("/profiles/package", { replace: true });
   }, []);
 
   return null;

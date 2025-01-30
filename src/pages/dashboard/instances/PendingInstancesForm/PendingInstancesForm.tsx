@@ -6,7 +6,6 @@ import {
   ConfirmationButton,
   Select,
 } from "@canonical/react-components";
-import { ROOT_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -108,7 +107,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
           for manual approval of each computer. You can enable this feature in
           the{" "}
         </span>
-        <Link to={`${ROOT_PATH}settings/general`}>Org. settings</Link>
+        <Link to="/settings/general">Org. settings</Link>
         <span> or </span>
         <a
           href="https://ubuntu.com/landscape/docs/managing-computers"

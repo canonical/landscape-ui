@@ -67,6 +67,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
       {hasControls && (
         <div className={classes.paginationContainer}>
           <Select
+            name="pageSize"
             label="Instances per page"
             labelClassName="u-off-screen"
             className="u-no-margin--bottom"
@@ -96,6 +97,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
               <strong>Page </strong>
 
               <PageNumberInput
+                name="currentPage"
                 currentPage={currentPage}
                 max={totalPages}
                 min={1}

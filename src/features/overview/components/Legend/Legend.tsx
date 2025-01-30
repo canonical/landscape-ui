@@ -5,7 +5,6 @@ import { Link } from "react-router";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./Legend.module.scss";
 import { STATUSES } from "@/features/instances";
-import { ROOT_PATH } from "@/constants";
 
 interface LegendProps {
   readonly data: ChartData<"pie">;
@@ -65,7 +64,7 @@ const Legend: FC<LegendProps> = ({
                   <span>{item.text}</span>
                 </div>
                 <Link
-                  to={`${ROOT_PATH}instances?status=${statusItem.filterValue}`}
+                  to={`/instances?status=${statusItem.filterValue}`}
                   className={classNames(
                     "u-no-margin u-no-padding",
                     classes.link,

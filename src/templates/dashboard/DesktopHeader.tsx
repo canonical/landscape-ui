@@ -3,7 +3,7 @@ import { Button, Icon } from "@canonical/react-components";
 import { Link } from "react-router";
 import Logo from "../../assets/images/logo-white-full.svg";
 import LogoIcon from "../../assets/images/logo-white-icon.svg";
-import { APP_TITLE, ROOT_PATH } from "../../constants";
+import { APP_TITLE } from "@/constants";
 import classes from "./DesktopHeader.module.scss";
 import classNames from "classnames";
 
@@ -19,7 +19,7 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
         classes.container,
       )}
     >
-      <Link to={ROOT_PATH} className={classes.link}>
+      <Link to="/" className={classes.link}>
         <img
           className={classNames("is-fading-when-collapsed", classes.logoImg)}
           src={Logo}

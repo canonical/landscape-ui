@@ -9,7 +9,6 @@ import {
 } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { ROOT_PATH } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import type { AuthUser } from "@/features/auth";
 import { redirectToExternalUrl, useUnsigned } from "@/features/auth";
@@ -157,7 +156,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const handleLogout = () => {
     setUser(null);
-    navigate(`${ROOT_PATH}login`, { replace: true });
+    navigate("/login", { replace: true });
     queryClient.removeQueries({
       predicate: (query) => query.queryKey[0] !== "authUser",
     });

@@ -1,5 +1,4 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { ROOT_PATH } from "@/constants";
 import { STATUSES } from "@/features/instances";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { PendingInstance } from "@/types/Instance";
@@ -57,7 +56,7 @@ const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
           </Button>
         ) : (
           <Link
-            to={`${ROOT_PATH}instances?status=${status.filterValue}`}
+            to={`/instances?status=${status.filterValue}`}
             className={classNames(
               "u-no-margin u-no-padding",
               classes.listItem__link,

@@ -5,7 +5,6 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { ROOT_PATH } from "@/constants";
 import { usePackages } from "@/features/packages";
 import useAuth from "@/hooks/useAuth";
 import useInstances from "@/hooks/useInstances";
@@ -54,7 +53,7 @@ const SingleInstanceContainer: FC = () => {
       return;
     }
 
-    navigate(`${ROOT_PATH}instances`, { replace: true });
+    navigate("/instances", { replace: true });
   }, [user?.current_account]);
 
   const {

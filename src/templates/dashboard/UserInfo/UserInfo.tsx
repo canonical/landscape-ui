@@ -5,7 +5,6 @@ import { Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router";
-import { ROOT_PATH } from "@/constants";
 import { useMediaQuery } from "usehooks-ts";
 import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
 import { useAuthHandle } from "@/features/auth";
@@ -104,7 +103,7 @@ const UserInfo: FC = () => {
           )}
           {!isSmallerScreen && (
             <Link
-              to={`${ROOT_PATH}account/general`}
+              to="/account/general"
               className={classNames(
                 "p-side-navigation__link",
                 classes.accordionButton,
@@ -133,10 +132,8 @@ const UserInfo: FC = () => {
         <li className="p-side-navigation__item">
           <Link
             className={classNames("p-side-navigation__link", classes.link)}
-            to={`${ROOT_PATH}alerts`}
-            aria-current={
-              pathname === `${ROOT_PATH}alerts` ? "page" : undefined
-            }
+            to="/alerts"
+            aria-current={pathname === "/alerts" ? "page" : undefined}
           >
             <Icon
               name="bell"

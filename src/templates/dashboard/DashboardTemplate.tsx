@@ -6,7 +6,6 @@ import SecondaryNavigation from "./SecondaryNavigation";
 import classes from "./DashboardTemplate.module.scss";
 import classNames from "classnames";
 import { useMediaQuery } from "usehooks-ts";
-import { ROOT_PATH } from "@/constants";
 import WelcomePopup from "@/features/welcome-banner";
 
 interface DashboardTemplateProps {
@@ -15,7 +14,7 @@ interface DashboardTemplateProps {
 
 const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
   const { pathname } = useLocation();
-  const hasSecondaryNav = matchPath(`${ROOT_PATH}account/*`, pathname);
+  const hasSecondaryNav = matchPath("/account/*", pathname);
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
 
   return (

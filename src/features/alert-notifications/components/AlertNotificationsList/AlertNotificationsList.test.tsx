@@ -1,4 +1,3 @@
-import { ROOT_PATH } from "@/constants";
 import { STATUSES } from "@/features/instances";
 import { alertsSummary } from "@/tests/mocks/alerts";
 import { pendingInstances } from "@/tests/mocks/instance";
@@ -87,7 +86,7 @@ describe("AlertNotificationsList", () => {
       );
       expect(link).toHaveAttribute(
         "href",
-        `${ROOT_PATH}instances?status=${STATUSES[alert?.alert_type ?? "Unknown"].filterValue}`,
+        `/instances?status=${STATUSES[alert?.alert_type ?? "Unknown"].filterValue}`,
       );
     });
   });

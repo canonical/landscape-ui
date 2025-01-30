@@ -7,10 +7,11 @@ import EnvProvider from "@/context/env";
 import NotifyProvider from "@/context/notify";
 import ReactQueryProvider from "@/context/reactQuery";
 import App from "./App";
+import { ROOT_PATH } from "@/constants";
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={ROOT_PATH}>
       <EnvProvider>
         <NotifyProvider>
           <ReactQueryProvider>
