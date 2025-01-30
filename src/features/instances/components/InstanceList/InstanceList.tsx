@@ -6,7 +6,7 @@ import type { Instance } from "@/types/Instance";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
-import type { FC, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column, Row } from "react-table";
@@ -30,7 +30,7 @@ interface InstanceListProps {
   readonly setSelectedInstances: (instances: readonly Instance[]) => void;
 }
 
-const InstanceList: FC<InstanceListProps> = ({
+const InstanceList = ({
   instances,
   selectedInstances,
   setColumnFilterOptions,
