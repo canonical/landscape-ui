@@ -1,16 +1,15 @@
-import classNames from "classnames";
-import moment from "moment";
-import type { FC } from "react";
-import { useEffect, useMemo } from "react";
-import { Link } from "react-router";
-import type { CellProps, Column, Row } from "react-table";
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import classes from "./InstanceList.module.scss";
-import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
+import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import classNames from "classnames";
+import moment from "moment";
+import type { FC, ReactNode } from "react";
+import { useEffect, useMemo } from "react";
+import { Link } from "react-router";
+import type { CellProps, Column, Row } from "react-table";
 import {
   getCheckboxState,
   getColumnFilterOptions,
@@ -19,6 +18,7 @@ import {
   handleCheckboxChange,
   handleHeaderProps,
 } from "./helpers";
+import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
 
 interface InstanceListProps {
@@ -38,14 +38,16 @@ const InstanceList: FC<InstanceListProps> = ({
 
   const isFilteringInstances = Object.values(filters).some((filter) => {
     if (typeof filter === "string") {
-      return filter.length > 0;
+      return filter;
     } else if (Array.isArray(filter)) {
-      return filter.length > 0;
+      return filter.length;
     }
+
+    return undefined;
   });
 
-  const toggleAll = () => {
-    setSelectedInstances(selectedInstances.length !== 0 ? [] : instances);
+  const toggleAll = (): void => {
+    setSelectedInstances(selectedInstances.length ? [] : instances);
   };
 
   const instancesData = useMemo(() => {
@@ -73,24 +75,24 @@ const InstanceList: FC<InstanceListProps> = ({
               label={<span className="u-off-screen">Toggle all instances</span>}
               inline
               onChange={toggleAll}
-              disabled={instances.length === 0}
+              disabled={!instances.length}
               checked={
                 selectedInstances.length === instances.length &&
-                instances.length !== 0
+                !!instances.length
               }
               indeterminate={
-                selectedInstances.length !== 0 &&
+                !!selectedInstances.length &&
                 selectedInstances.length < instances.length
               }
             />
             <span id="column-1-label">Name</span>
           </>
         ),
-        Cell: ({ row }: CellProps<Instance>) => (
+        Cell: ({ row }: CellProps<Instance>): ReactNode => (
           <div
             className={classNames(classes.rowHeader, {
-              [classes.nested]:
-                (row as Row<Instance> & { depth: number }).depth > 0,
+              [classes.nested]: (row as Row<Instance> & { depth: number })
+                .depth,
             })}
           >
             <CheckboxInput
@@ -136,11 +138,11 @@ const InstanceList: FC<InstanceListProps> = ({
         canBeHidden: true,
         optionLabel: "Status",
         Header: "Status",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
+        Cell: ({ row: { original } }: CellProps<Instance>): ReactNode => {
           const { label } = getStatusCellIconAndLabel(original);
           return label;
         },
-        getCellIcon: ({ row: { original } }) => {
+        getCellIcon: ({ row: { original } }): string | undefined => {
           const { icon } = getStatusCellIconAndLabel(original);
           return icon;
         },
@@ -150,11 +152,13 @@ const InstanceList: FC<InstanceListProps> = ({
         canBeHidden: true,
         optionLabel: "Upgrades",
         Header: "Upgrades",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
+        Cell: ({ row: { original } }: CellProps<Instance>): ReactNode => {
           const { label } = getUpgradesCellIconAndLabel(original);
           return label;
         },
-        getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
+        getCellIcon: ({
+          row: { original },
+        }: CellProps<Instance>): string | undefined => {
           const { icon } = getUpgradesCellIconAndLabel(original);
           return icon;
         },
@@ -164,7 +168,7 @@ const InstanceList: FC<InstanceListProps> = ({
         canBeHidden: true,
         optionLabel: "OS",
         Header: "OS",
-        Cell: ({ row: { original } }: CellProps<Instance>) => (
+        Cell: ({ row: { original } }: CellProps<Instance>): ReactNode => (
           <>{original.distribution_info?.description ?? <NoData />}</>
         ),
       },
@@ -173,8 +177,8 @@ const InstanceList: FC<InstanceListProps> = ({
         canBeHidden: true,
         optionLabel: "Availability zone",
         Header: "Availability zone",
-        Cell: ({ row: { original } }: CellProps<Instance>) => (
-          <>{original.cloud_init?.availability_zone ?? <NoData />}</>
+        Cell: ({ row: { original } }: CellProps<Instance>): ReactNode => (
+          <>{original.cloud_init.availability_zone ?? <NoData />}</>
         ),
       },
       {
@@ -182,7 +186,7 @@ const InstanceList: FC<InstanceListProps> = ({
         canBeHidden: true,
         optionLabel: "Ubuntu pro",
         Header: "Ubuntu pro",
-        Cell: ({ row }: CellProps<Instance>) => (
+        Cell: ({ row }: CellProps<Instance>): ReactNode => (
           <>
             {row.original.ubuntu_pro_info &&
             moment(row.original.ubuntu_pro_info.expires).isValid() ? (
@@ -200,7 +204,7 @@ const InstanceList: FC<InstanceListProps> = ({
         canBeHidden: true,
         optionLabel: "Last ping",
         Header: "Last ping time",
-        Cell: ({ row }: CellProps<Instance>) => (
+        Cell: ({ row }: CellProps<Instance>): ReactNode => (
           <>
             {moment(row.original.last_ping_time).isValid() ? (
               moment(row.original.last_ping_time).format(

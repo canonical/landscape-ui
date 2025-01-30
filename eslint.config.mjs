@@ -1,10 +1,10 @@
 // @ts-check
 
 import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
-import reactPlugin from "eslint-plugin-react";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import reactPlugin from "eslint-plugin-react";
 import globals from "globals";
+import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
@@ -37,6 +37,12 @@ export default tseslint.config(
       },
 
       ecmaVersion: 5,
+
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+
       sourceType: "module",
     },
 
@@ -67,7 +73,11 @@ export default tseslint.config(
       "@typescript-eslint/consistent-type-imports": "error",
 
       /* These rules are set to warning to meet TICS rules. They will be changed to errors in the future. */
+      "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/no-unnecessary-condition": "warn",
       complexity: ["warn", 20],
+      "consistent-return": "warn",
+      "no-magic-numbers": "warn",
     },
   },
 );
