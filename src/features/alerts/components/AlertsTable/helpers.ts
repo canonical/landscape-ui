@@ -1,9 +1,6 @@
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { HTMLProps } from "react";
-import { Alert } from "../../types";
+import type { Cell, TableCellProps } from "react-table";
+import type { HTMLProps } from "react";
+import type { Alert } from "../../types";
 
 export const handleCellProps = (cell: Cell<Alert>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =

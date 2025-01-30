@@ -1,14 +1,11 @@
-import { ColumnFilterOption } from "@/components/form/ColumnFilter";
-import { InstanceColumn } from "./types";
-import { Instance } from "@/types/Instance";
-import { HTMLProps, ReactNode } from "react";
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
+import type { InstanceColumn } from "./types";
+import type { Instance } from "@/types/Instance";
+import type { HTMLProps, ReactNode } from "react";
 import { STATUSES } from "@/features/instances";
 import classes from "./InstanceList.module.scss";
 import { Icon, Tooltip } from "@canonical/react-components";
-import {
-  HeaderGroup,
-  TableHeaderProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { HeaderGroup, TableHeaderProps } from "react-table";
 import NoData from "@/components/layout/NoData";
 
 export const getColumnFilterOptions = (

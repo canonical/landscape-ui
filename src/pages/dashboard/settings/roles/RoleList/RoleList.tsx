@@ -1,26 +1,24 @@
-import { FC, useMemo, useRef, useState } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
 import { ModularTable } from "@canonical/react-components";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import useRoles from "@/hooks/useRoles";
 import RoleListActions from "@/pages/dashboard/settings/roles/RoleListActions";
 import { getPermissionOptions } from "@/pages/dashboard/settings/roles/helpers";
-import { Role } from "@/types/Role";
+import type { Role } from "@/types/Role";
 import {
   getPermissionListByType,
   getTableRows,
   handleCellProps,
   handleRowProps,
 } from "./helpers";
-import { CellCoordinates } from "./types";
+import type { CellCoordinates } from "./types";
 import classes from "./RoleList.module.scss";
 
 interface RoleListProps {
-  roleList: Role[];
+  readonly roleList: Role[];
 }
 
 const RoleList: FC<RoleListProps> = ({ roleList }) => {

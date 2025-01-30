@@ -1,10 +1,8 @@
 import classNames from "classnames";
 import moment from "moment/moment";
-import { FC, useMemo, useRef, useState } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
 import {
   Button,
@@ -18,8 +16,8 @@ import SelectAllButton from "@/components/layout/SelectAllButton";
 import { TablePagination } from "@/components/layout/TablePagination";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { Instance } from "@/types/Instance";
-import { Usn } from "@/types/Usn";
+import type { Instance } from "@/types/Instance";
+import type { Usn } from "@/types/Usn";
 import UsnPackagesContainer from "../UsnPackagesContainer";
 import {
   getTableRows,
@@ -27,16 +25,16 @@ import {
   handleCellProps,
   handleRowProps,
 } from "./helpers";
-import { ExpandedCell } from "./types";
+import type { ExpandedCell } from "./types";
 import classes from "./UsnList.module.scss";
 
 type UsnListProps = {
-  instances: Instance[];
-  isUsnsLoading: boolean;
-  onSelectedUsnsChange: (usns: string[]) => void;
-  selectedUsns: string[];
-  totalUsnCount: number;
-  usns: Usn[];
+  readonly instances: Instance[];
+  readonly isUsnsLoading: boolean;
+  readonly onSelectedUsnsChange: (usns: string[]) => void;
+  readonly selectedUsns: string[];
+  readonly totalUsnCount: number;
+  readonly usns: Usn[];
 } & (
   | {
       tableType: "paginated";

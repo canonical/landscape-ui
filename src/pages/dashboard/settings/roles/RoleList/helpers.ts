@@ -1,13 +1,8 @@
-import { HTMLProps, MutableRefObject } from "react";
-import {
-  Cell,
-  Row,
-  TableCellProps,
-  TableRowProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { PermissionOption } from "@/pages/dashboard/settings/roles/types";
-import { Role } from "@/types/Role";
-import { CellCoordinates } from "./types";
+import type { HTMLProps, MutableRefObject } from "react";
+import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
+import type { PermissionOption } from "@/pages/dashboard/settings/roles/types";
+import type { Role } from "@/types/Role";
+import type { CellCoordinates } from "./types";
 import classes from "./RoleList.module.scss";
 
 export const getPermissionListByType = (

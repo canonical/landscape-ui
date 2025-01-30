@@ -1,20 +1,18 @@
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import { Instance } from "@/types/Instance";
-import { UsnPackage } from "@/types/Usn";
+import type { Instance } from "@/types/Instance";
+import type { UsnPackage } from "@/types/Usn";
 import { handleCellProps } from "./helpers";
 import classes from "./UsnInstanceList.module.scss";
 
 interface UsnInstanceListProps {
-  instances: Instance[];
-  limit: number;
-  onLimitChange: () => void;
-  usn: string;
-  usnPackages: UsnPackage[];
+  readonly instances: Instance[];
+  readonly limit: number;
+  readonly onLimitChange: () => void;
+  readonly usn: string;
+  readonly usnPackages: UsnPackage[];
 }
 
 const UsnInstanceList: FC<UsnInstanceListProps> = ({

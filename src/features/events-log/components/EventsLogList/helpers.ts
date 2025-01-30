@@ -1,12 +1,7 @@
-import {
-  Cell,
-  Row,
-  TableCellProps,
-  TableRowProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 
-import { HTMLProps } from "react";
-import { EventLog } from "../../types";
+import type { HTMLProps } from "react";
+import type { EventLog } from "../../types";
 import classes from "./EventsLogList.module.scss";
 
 export const handleRowProps =

@@ -1,13 +1,11 @@
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import { CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import SelectAllButton from "@/components/layout/SelectAllButton";
-import { InstancePackagesToExclude, Package } from "@/features/packages";
-import { Instance } from "@/types/Instance";
+import type { InstancePackagesToExclude, Package } from "@/features/packages";
+import type { Instance } from "@/types/Instance";
 import { getToggledPackage } from "../helpers";
 import {
   checkIsPackageUpdateRequiredForInstance,
@@ -19,14 +17,14 @@ import {
 } from "./helpers";
 
 interface AffectedInstancesProps {
-  currentPackage: Package;
-  excludedPackages: InstancePackagesToExclude[];
-  limit: number;
-  onExcludedPackagesChange: (
+  readonly currentPackage: Package;
+  readonly excludedPackages: InstancePackagesToExclude[];
+  readonly limit: number;
+  readonly onExcludedPackagesChange: (
     newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
-  onLimitChange: () => void;
-  selectedInstances: Instance[];
+  readonly onLimitChange: () => void;
+  readonly selectedInstances: Instance[];
 }
 
 const AffectedInstances: FC<AffectedInstancesProps> = ({

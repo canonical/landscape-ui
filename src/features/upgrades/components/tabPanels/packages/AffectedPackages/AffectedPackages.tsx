@@ -1,15 +1,13 @@
 import classNames from "classnames";
-import { FC, useMemo, useState } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
+import type { CellProps, Column } from "react-table";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import SelectAllButton from "@/components/layout/SelectAllButton";
-import { InstancePackagesToExclude, Package } from "@/features/packages";
-import { Instance } from "@/types/Instance";
+import type { InstancePackagesToExclude, Package } from "@/features/packages";
+import type { Instance } from "@/types/Instance";
 import AffectedInstances from "../AffectedInstances";
 import { checkIsPackageUpdateRequired, getToggledPackage } from "../helpers";
 import {
@@ -23,16 +21,16 @@ import {
 import classes from "./AffectedPackages.module.scss";
 
 interface AffectedPackagesProps {
-  excludedPackages: InstancePackagesToExclude[];
-  hasNoMoreItems: boolean;
-  instances: Instance[];
-  isPackagesLoading: boolean;
-  onExcludedPackagesChange: (
+  readonly excludedPackages: InstancePackagesToExclude[];
+  readonly hasNoMoreItems: boolean;
+  readonly instances: Instance[];
+  readonly isPackagesLoading: boolean;
+  readonly onExcludedPackagesChange: (
     newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
-  onTableLimitChange: () => void;
-  packages: Package[];
-  totalPackageCount: number;
+  readonly onTableLimitChange: () => void;
+  readonly packages: Package[];
+  readonly totalPackageCount: number;
 }
 
 const AffectedPackages: FC<AffectedPackagesProps> = ({

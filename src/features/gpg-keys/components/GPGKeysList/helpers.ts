@@ -1,9 +1,6 @@
-import { GPGKey } from "../../types";
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { HTMLProps } from "react";
+import type { GPGKey } from "../../types";
+import type { Cell, TableCellProps } from "react-table";
+import type { HTMLProps } from "react";
 
 export const handleCellProps = (cell: Cell<GPGKey>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =

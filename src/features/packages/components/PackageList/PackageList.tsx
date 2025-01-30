@@ -1,9 +1,7 @@
-import { FC, lazy, Suspense, useEffect, useMemo, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column } from "react-table";
 import {
   Button,
   CheckboxInput,
@@ -13,7 +11,7 @@ import {
 import LoadingState from "@/components/layout/LoadingState";
 import { ROOT_PATH } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import { InstancePackage } from "../../types";
+import type { InstancePackage } from "../../types";
 import PackageListActions from "../PackageListActions";
 import UbuntuProNotification from "../UbuntuProNotification";
 import { LOADING_PACKAGE } from "./constants";
@@ -23,17 +21,17 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
-import { UrlParams } from "@/types/UrlParams";
+import type { UrlParams } from "@/types/UrlParams";
 
 const PackageDetails = lazy(() => import("../PackageDetails"));
 
 interface PackageListProps {
-  emptyMsg: string;
-  onPackagesSelect: (packages: InstancePackage[]) => void;
-  packages: InstancePackage[];
-  packagesLoading: boolean;
-  selectedPackages: InstancePackage[];
-  selectAll?: boolean;
+  readonly emptyMsg: string;
+  readonly onPackagesSelect: (packages: InstancePackage[]) => void;
+  readonly packages: InstancePackage[];
+  readonly packagesLoading: boolean;
+  readonly selectedPackages: InstancePackage[];
+  readonly selectAll?: boolean;
 }
 
 const PackageList: FC<PackageListProps> = ({

@@ -1,15 +1,13 @@
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, useMemo } from "react";
-import { Process } from "../../types";
+import type { CellProps, Column } from "react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { Process } from "../../types";
 
 interface ProcessesListProps {
-  processes: Process[];
-  selectedPids: number[];
-  setSelectedPids: (pids: number[]) => void;
+  readonly processes: Process[];
+  readonly selectedPids: number[];
+  readonly setSelectedPids: (pids: number[]) => void;
 }
 
 const ProcessesList: FC<ProcessesListProps> = ({

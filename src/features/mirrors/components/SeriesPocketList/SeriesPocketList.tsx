@@ -1,25 +1,23 @@
 import InfoItem from "@/components/layout/InfoItem";
 import { Col, ModularTable, Row } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column } from "react-table";
 import classNames from "classnames";
-import { FC, useMemo } from "react";
+import type { FC } from "react";
+import { useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import { Distribution, Pocket, Series, SyncPocketRef } from "../../types";
+import type { Distribution, Pocket, Series, SyncPocketRef } from "../../types";
 import PocketSyncActivity from "../PocketSyncActivity";
 import SeriesPocketDetailsButton from "../SeriesPocketDetailsButton";
 import SeriesPocketListActions from "../SeriesPocketListActions";
 import { getCellProps } from "./helpers";
 import classes from "./SeriesPocketList.module.scss";
-import { CommonPocket } from "./types";
+import type { CommonPocket } from "./types";
 
 interface SeriesPocketListProps {
-  distributionName: Distribution["name"];
-  series: Series;
-  syncPocketRefAdd: (ref: SyncPocketRef) => void;
-  syncPocketRefs: SyncPocketRef[];
+  readonly distributionName: Distribution["name"];
+  readonly series: Series;
+  readonly syncPocketRefAdd: (ref: SyncPocketRef) => void;
+  readonly syncPocketRefs: SyncPocketRef[];
 }
 
 const SeriesPocketList: FC<SeriesPocketListProps> = ({

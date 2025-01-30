@@ -1,9 +1,6 @@
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { RepositoryProfile } from "../../types";
-import { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
+import type { RepositoryProfile } from "../../types";
+import type { HTMLProps } from "react";
 
 export const handleCellProps = ({ column }: Cell<RepositoryProfile>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =

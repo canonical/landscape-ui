@@ -1,13 +1,10 @@
 import moment from "moment/moment";
-import { HTMLProps } from "react";
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { PendingInstance } from "@/types/Instance";
-import { SelectOption } from "@/types/SelectOption";
+import type { PendingInstance } from "@/types/Instance";
+import type { SelectOption } from "@/types/SelectOption";
 
 export const getCellProps = ({
   column: { id },

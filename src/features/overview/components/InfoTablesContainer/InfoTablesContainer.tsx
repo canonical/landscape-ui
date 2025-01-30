@@ -1,7 +1,8 @@
 import EmptyState from "@/components/layout/EmptyState";
 import ExpandableTableFooter from "@/components/layout/ExpandableTableFooter";
 import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
-import { Activity, ActivityCommon, useActivities } from "@/features/activities";
+import type { Activity, ActivityCommon } from "@/features/activities";
+import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import {
@@ -14,19 +15,18 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
-import { FC, useMemo, useState } from "react";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column } from "react-table";
 import classes from "./InfoTablesContainer.module.scss";
-import { Usn } from "@/types/Usn";
+import type { Usn } from "@/types/Usn";
 import useNotify from "@/hooks/useNotify";
 import LoadingState from "@/components/layout/LoadingState";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import NoData from "@/components/layout/NoData";
-import { Package, usePackages } from "@/features/packages";
+import type { Package } from "@/features/packages";
+import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
 
 const InfoTablesContainer: FC = () => {

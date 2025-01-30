@@ -6,18 +6,16 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, useMemo } from "react";
+import type { CellProps, Column } from "react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
 import { useGPGKeys } from "../../hooks";
-import { GPGKey } from "../../types";
+import type { GPGKey } from "../../types";
 import classes from "./GPGKeysList.module.scss";
 import { handleCellProps } from "./helpers";
 
 interface GPGKeysListProps {
-  items: GPGKey[];
+  readonly items: GPGKey[];
 }
 
 const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {

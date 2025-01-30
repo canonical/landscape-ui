@@ -1,19 +1,16 @@
 import classNames from "classnames";
 import moment from "moment";
-import { FC, useEffect, useMemo } from "react";
+import type { FC } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "react-router";
-import {
-  CellProps,
-  Column,
-  Row,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column, Row } from "react-table";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, ROOT_PATH } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import classes from "./InstanceList.module.scss";
-import { ColumnFilterOption } from "@/components/form/ColumnFilter";
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import {
   getCheckboxState,
   getColumnFilterOptions,
@@ -22,13 +19,13 @@ import {
   handleCheckboxChange,
   handleHeaderProps,
 } from "./helpers";
-import { InstanceColumn } from "./types";
+import type { InstanceColumn } from "./types";
 
 interface InstanceListProps {
-  instances: Instance[];
-  selectedInstances: Instance[];
-  setColumnFilterOptions: (options: ColumnFilterOption[]) => void;
-  setSelectedInstances: (instances: Instance[]) => void;
+  readonly instances: Instance[];
+  readonly selectedInstances: Instance[];
+  readonly setColumnFilterOptions: (options: ColumnFilterOption[]) => void;
+  readonly setSelectedInstances: (instances: Instance[]) => void;
 }
 
 const InstanceList: FC<InstanceListProps> = ({

@@ -4,7 +4,7 @@ import AlertsList from "./AlertsList";
 import { alerts } from "@/tests/mocks/alerts";
 import { renderWithProviders } from "@/tests/render";
 import useAuth from "@/hooks/useAuth";
-import { AuthContextProps } from "@/context/auth";
+import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
@@ -20,6 +20,7 @@ const authProps: AuthContextProps = {
   logout: vi.fn(),
   authorized: true,
   authLoading: false,
+  setAuthLoading: vi.fn(),
   setUser: vi.fn(),
   account: {
     current: authUser.current_account,

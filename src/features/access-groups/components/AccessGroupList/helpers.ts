@@ -1,9 +1,6 @@
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { HTMLProps } from "react";
-import { AccessGroup, AccessGroupWithInstancesCount } from "../../types";
+import type { Cell, TableCellProps } from "react-table";
+import type { HTMLProps } from "react";
+import type { AccessGroup, AccessGroupWithInstancesCount } from "../../types";
 
 export const handleCellProps = (cell: Cell<AccessGroupWithInstancesCount>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =

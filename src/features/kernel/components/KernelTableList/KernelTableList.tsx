@@ -1,18 +1,16 @@
 import EmptyState from "@/components/layout/EmptyState";
 import NoData from "@/components/layout/NoData";
 import { Link, ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, useMemo } from "react";
-import { Fix } from "../../types";
+import type { CellProps, Column } from "react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { Fix } from "../../types";
 import { EMPTY_TABLE_MESSAGE } from "./constants";
 import { generateCveLink, handleCellProps } from "./helpers";
 import classes from "./KernelTableList.module.scss";
 
 interface KernelTableListProps {
-  kernelData: Fix[];
+  readonly kernelData: Fix[];
 }
 
 const KernelTableList: FC<KernelTableListProps> = ({ kernelData }) => {

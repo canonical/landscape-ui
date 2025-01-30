@@ -3,12 +3,10 @@ import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, lazy, Suspense, useMemo } from "react";
-import { RemovalProfile } from "../../types";
+import type { CellProps, Column } from "react-table";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo } from "react";
+import type { RemovalProfile } from "../../types";
 import RemovalProfileListContextualMenu from "../RemovalProfileListContextualMenu";
 import classes from "./RemovalProfileList.module.scss";
 import NoData from "@/components/layout/NoData";
@@ -16,7 +14,7 @@ import NoData from "@/components/layout/NoData";
 const RemovalProfileDetails = lazy(() => import("../RemovalProfileDetails"));
 
 interface RemovalProfileListProps {
-  profiles: RemovalProfile[];
+  readonly profiles: RemovalProfile[];
 }
 
 const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {

@@ -1,19 +1,17 @@
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import { ModularTable } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import ScriptListActions from "../ScriptListActions";
-import { Script } from "../../types";
+import type { Script } from "../../types";
 import { LOADING_SCRIPT } from "./constants";
 import { getCellProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
 
 interface ScriptListProps {
-  isScriptsLoading: boolean;
-  scripts: Script[];
+  readonly isScriptsLoading: boolean;
+  readonly scripts: Script[];
 }
 
 const ScriptList: FC<ScriptListProps> = ({ isScriptsLoading, scripts }) => {

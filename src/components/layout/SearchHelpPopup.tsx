@@ -1,15 +1,13 @@
-import { FC, isValidElement, useMemo } from "react";
+import type { FC } from "react";
+import { isValidElement, useMemo } from "react";
 import { Modal, ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column } from "react-table";
 import classes from "./SearchHelpPopup.module.scss";
 
 interface SearchHelpPopupProps {
-  open: boolean;
-  onClose: () => void;
-  data: Record<string, unknown>[];
+  readonly open: boolean;
+  readonly onClose: () => void;
+  readonly data: Record<string, unknown>[];
 }
 
 const SearchHelpPopup: FC<SearchHelpPopupProps> = ({ open, onClose, data }) => {

@@ -2,7 +2,7 @@ import InfoItem from "@/components/layout/InfoItem";
 import { NOT_AVAILABLE } from "@/constants";
 import { distributionCardClasses, seriesCardClasses } from "@/features/mirrors";
 import useDebug from "@/hooks/useDebug";
-import { UserDetails } from "@/features/general-settings";
+import type { UserDetails } from "@/features/general-settings";
 
 import {
   Col,
@@ -10,12 +10,13 @@ import {
   ModularTable,
   Row,
 } from "@canonical/react-components";
-import { Column } from "@canonical/react-components/node_modules/@types/react-table";
+import type { Column } from "react-table";
 import classNames from "classnames";
-import React, { FC, useMemo } from "react";
+import type { FC } from "react";
+import React, { useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { useApiCredentials } from "../../hooks";
-import { Credential } from "../../types";
+import type { Credential } from "../../types";
 import classes from "./ApiCredentialsTables.module.scss";
 
 interface ApiCredentialsTablesProps {

@@ -2,21 +2,19 @@ import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { Button, ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, lazy, Suspense, useMemo } from "react";
-import { UpgradeProfile } from "../../types";
+import type { CellProps, Column } from "react-table";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo } from "react";
+import type { UpgradeProfile } from "../../types";
 import UpgradeProfileListContextualMenu from "../UpgradeProfileListContextualMenu";
 import classes from "./UpgradeProfileList.module.scss";
 
 const UpgradeProfileDetails = lazy(() => import("../UpgradeProfileDetails"));
 
 interface UpgradeProfileListProps {
-  profiles: UpgradeProfile[];
+  readonly profiles: UpgradeProfile[];
 }
 
 const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {

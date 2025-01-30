@@ -1,19 +1,17 @@
 import classNames from "classnames";
-import { FC, lazy, Suspense, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import {
   Button,
   Icon,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import { WslProfile } from "../../types";
+import type { WslProfile } from "../../types";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
@@ -25,7 +23,7 @@ import WslProfilesListContextualMenu from "../WslProfilesListContextualMenu";
 const WslProfileDetails = lazy(() => import("../WslProfileDetails"));
 
 interface WslProfileListProps {
-  wslProfiles: WslProfile[];
+  readonly wslProfiles: WslProfile[];
 }
 
 const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {

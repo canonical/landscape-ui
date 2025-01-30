@@ -1,18 +1,16 @@
-import { FC, useMemo } from "react";
-import { PermissionOption } from "@/pages/dashboard/settings/roles/types";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { PermissionOption } from "@/pages/dashboard/settings/roles/types";
+import type { CellProps, Column } from "react-table";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import classes from "./PermissionBlock.module.scss";
 
 interface PermissionBlockProps {
-  description: string;
-  onPermissionChange: (newPermissions: string[]) => void;
-  options: PermissionOption[];
-  permissions: string[];
-  title: string;
+  readonly description: string;
+  readonly onPermissionChange: (newPermissions: string[]) => void;
+  readonly options: PermissionOption[];
+  readonly permissions: string[];
+  readonly title: string;
 }
 
 const PermissionBlock: FC<PermissionBlockProps> = ({

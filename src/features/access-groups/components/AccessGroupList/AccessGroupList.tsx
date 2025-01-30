@@ -9,19 +9,16 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-  Row,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, useMemo } from "react";
+import type { CellProps, Column, Row } from "react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
 import AccessGroupInstanceCountCell from "../AccessGroupInstanceCountCell";
 import classes from "./AccessGroupList.module.scss";
 import { buildHierarchy, findAncestors, handleCellProps } from "./helpers";
-import { AccessGroup, AccessGroupWithInstancesCount } from "../../types";
+import type { AccessGroup, AccessGroupWithInstancesCount } from "../../types";
 
 interface AccessGroupListProps {
-  accessGroups: AccessGroup[];
+  readonly accessGroups: AccessGroup[];
 }
 
 const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {

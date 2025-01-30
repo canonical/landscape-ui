@@ -1,19 +1,17 @@
 import useRoles from "@/hooks/useRoles";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, useMemo } from "react";
-import { RepositoryProfile } from "../../types";
+import type { CellProps, Column } from "react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { RepositoryProfile } from "../../types";
 import RepositoryProfileListContextualMenu from "../RepositoryProfileListContextualMenu";
 import { handleCellProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
 import NoData from "@/components/layout/NoData";
 
 interface RepositoryProfileListProps {
-  repositoryProfiles: RepositoryProfile[];
+  readonly repositoryProfiles: RepositoryProfile[];
 }
 
 const RepositoryProfileList: FC<RepositoryProfileListProps> = ({

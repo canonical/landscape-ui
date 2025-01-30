@@ -1,24 +1,22 @@
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import {
   CheckboxInput,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
 import NoData from "@/components/layout/NoData";
-import { PendingInstance } from "@/types/Instance";
-import { SelectOption } from "@/types/SelectOption";
+import type { PendingInstance } from "@/types/Instance";
+import type { SelectOption } from "@/types/SelectOption";
 import { getAccessGroup, getCellProps, getCreationTime } from "./helpers";
 import classes from "./PendingInstanceList.module.scss";
 
 interface PendingInstanceListProps {
-  accessGroupOptions: SelectOption[];
-  instances: PendingInstance[];
-  onSelectedIdsChange: (value: number[]) => void;
-  selectedIds: number[];
+  readonly accessGroupOptions: SelectOption[];
+  readonly instances: PendingInstance[];
+  readonly onSelectedIdsChange: (value: number[]) => void;
+  readonly selectedIds: number[];
 }
 
 const PendingInstanceList: FC<PendingInstanceListProps> = ({

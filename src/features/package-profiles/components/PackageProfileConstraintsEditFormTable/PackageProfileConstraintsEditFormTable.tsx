@@ -1,9 +1,7 @@
-import { FormikContextType } from "formik";
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import {
   CheckboxInput,
   ModularTable,
@@ -17,7 +15,7 @@ import {
   CONSTRAINT_RULE_OPTIONS,
   LOADING_CONSTRAINT,
 } from "../../constants";
-import { Constraint, PackageProfileConstraint } from "../../types";
+import type { Constraint, PackageProfileConstraint } from "../../types";
 import {
   getCellProps,
   getConstraintPropHandlers,
@@ -26,14 +24,14 @@ import {
 import classes from "./PackageProfileConstraintsEditFormTable.module.scss";
 
 interface PackageProfileConstraintsEditFormTableProps {
-  filter: string;
-  formik: FormikContextType<Constraint>;
-  isConstraintsLoading: boolean;
-  onSelectedIdsChange: (value: number[]) => void;
-  pageSize: number;
-  profileConstraints: PackageProfileConstraint[] | undefined;
-  search: string;
-  selectedIds: number[];
+  readonly filter: string;
+  readonly formik: FormikContextType<Constraint>;
+  readonly isConstraintsLoading: boolean;
+  readonly onSelectedIdsChange: (value: number[]) => void;
+  readonly pageSize: number;
+  readonly profileConstraints: PackageProfileConstraint[] | undefined;
+  readonly search: string;
+  readonly selectedIds: number[];
 }
 
 const PackageProfileConstraintsEditFormTable: FC<

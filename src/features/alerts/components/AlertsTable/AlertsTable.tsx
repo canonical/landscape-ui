@@ -2,31 +2,29 @@ import InfoItem from "@/components/layout/InfoItem";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import { boolToLabel } from "@/utils/output";
+import type { MultiSelectItem } from "@canonical/react-components";
 import {
   Col,
   Icon,
   ModularTable,
-  MultiSelectItem,
   Row,
   Switch,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column } from "react-table";
 import classNames from "classnames";
-import { FC, useMemo } from "react";
+import type { FC } from "react";
+import { useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { useAlerts } from "../../hooks";
-import { Alert } from "../../types";
+import type { Alert } from "../../types";
 import AlertTagsCell from "../AlertTagsCell";
 import classes from "./AlertsTable.module.scss";
 import { handleCellProps } from "./helpers";
 
 interface AlertsTableProps {
-  alerts: Alert[];
-  availableTagOptions: MultiSelectItem[];
+  readonly alerts: Alert[];
+  readonly availableTagOptions: MultiSelectItem[];
 }
 
 const AlertsTable: FC<AlertsTableProps> = ({ alerts, availableTagOptions }) => {

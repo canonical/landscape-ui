@@ -1,19 +1,20 @@
-import { FC, useMemo, useState } from "react";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column } from "react-table";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import { ROOT_PATH } from "@/constants";
-import { WindowsInstance, WslInstanceWithoutRelation } from "@/types/Instance";
+import type {
+  WindowsInstance,
+  WslInstanceWithoutRelation,
+} from "@/types/Instance";
 import WslInstanceListActions from "../WslInstanceListActions";
 import WslInstancesHeader from "../WslInstancesHeader";
 import classes from "./WslInstanceList.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 
 interface WslInstanceListProps {
-  instance: WindowsInstance;
+  readonly instance: WindowsInstance;
 }
 
 const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {

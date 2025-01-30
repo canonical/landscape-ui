@@ -1,9 +1,6 @@
-import { HTMLProps } from "react";
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { Instance } from "@/types/Instance";
+import type { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
+import type { Instance } from "@/types/Instance";
 import classes from "./InstancesPanel.module.scss";
 
 export const handleCellProps =

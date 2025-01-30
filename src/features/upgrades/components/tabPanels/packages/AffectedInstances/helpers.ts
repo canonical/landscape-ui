@@ -1,10 +1,7 @@
-import { HTMLProps } from "react";
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { InstancePackagesToExclude, Package } from "@/features/packages";
-import { Instance } from "@/types/Instance";
+import type { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
+import type { InstancePackagesToExclude, Package } from "@/features/packages";
+import type { Instance } from "@/types/Instance";
 import { toggleCurrentPackage } from "../helpers";
 
 export const getCellProps =

@@ -8,23 +8,20 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-  Row,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column, Row } from "react-table";
 import moment from "moment";
-import { FC, Suspense, useMemo } from "react";
-import { InstalledSnap } from "../../types";
+import type { FC } from "react";
+import { Suspense, useMemo } from "react";
+import type { InstalledSnap } from "../../types";
 import SnapDetails from "../SnapDetails";
 import classes from "./SnapsList.module.scss";
 import { handleCellProps } from "./helpers";
 
 interface SnapsListProps {
-  installedSnaps: InstalledSnap[];
-  selectedSnapIds: string[];
-  setSelectedSnapIds: (items: string[]) => void;
-  isSnapsLoading: boolean;
+  readonly installedSnaps: InstalledSnap[];
+  readonly selectedSnapIds: string[];
+  readonly setSelectedSnapIds: (items: string[]) => void;
+  readonly isSnapsLoading: boolean;
 }
 
 const SnapsList: FC<SnapsListProps> = ({

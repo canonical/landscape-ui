@@ -6,18 +6,16 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, useMemo } from "react";
+import type { CellProps, Column } from "react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
 import { useAPTSources } from "../../hooks";
-import { APTSource } from "../../types";
+import type { APTSource } from "../../types";
 import classes from "./APTSourcesList.module.scss";
 import { handleCellProps } from "./helpers";
 
 interface APTSourcesListProps {
-  items: APTSource[];
+  readonly items: APTSource[];
 }
 
 const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {

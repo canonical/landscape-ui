@@ -1,11 +1,8 @@
 import classNames from "classnames";
-import { FormikContextType } from "formik";
-import { HTMLProps } from "react";
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { Constraint } from "../../types";
+import type { FormikContextType } from "formik";
+import type { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
+import type { Constraint } from "../../types";
 import classes from "./PackageProfileConstraintsEditFormTable.module.scss";
 
 const handleConstraintPropChange = async (

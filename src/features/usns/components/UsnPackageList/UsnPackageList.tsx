@@ -1,17 +1,18 @@
-import { FC, useMemo } from "react";
-import { Column } from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { Column } from "react-table";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import { UsnPackage } from "@/types/Usn";
+import type { UsnPackage } from "@/types/Usn";
 import UsnPackagesRemoveButton from "../UsnPackagesRemoveButton";
 import { handleCellProps } from "./helpers";
 
 interface UsnPackageListProps {
-  instanceTitle: string;
-  limit: number;
-  onLimitChange: () => void;
-  showRemoveButton: boolean;
-  usn: string;
-  usnPackages: UsnPackage[];
+  readonly instanceTitle: string;
+  readonly limit: number;
+  readonly onLimitChange: () => void;
+  readonly showRemoveButton: boolean;
+  readonly usn: string;
+  readonly usnPackages: UsnPackage[];
 }
 
 const UsnPackageList: FC<UsnPackageListProps> = ({

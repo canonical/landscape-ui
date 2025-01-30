@@ -1,8 +1,6 @@
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import { ModularTable } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import {
@@ -10,14 +8,14 @@ import {
   CONSTRAINT_RULE_OPTIONS,
   LOADING_CONSTRAINT,
 } from "../../constants";
-import { Constraint, PackageProfileConstraint } from "../../types";
+import type { Constraint, PackageProfileConstraint } from "../../types";
 import { getCellProps } from "./helpers";
 import classes from "./PackageProfileDetailsConstraintsInfo.module.scss";
 
 interface PackageProfileDetailsConstraintsInfoProps {
-  isConstraintsLoading: boolean;
-  profileConstraints: PackageProfileConstraint[] | undefined;
-  search: string;
+  readonly isConstraintsLoading: boolean;
+  readonly profileConstraints: PackageProfileConstraint[] | undefined;
+  readonly search: string;
 }
 
 const PackageProfileDetailsConstraintsInfo: FC<

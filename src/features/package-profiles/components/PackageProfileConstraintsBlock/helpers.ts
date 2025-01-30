@@ -1,11 +1,12 @@
-import { HTMLProps } from "react";
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { AddFormProps, Constraint, ConstraintsFormProps } from "../../types";
+import type { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
+import type {
+  AddFormProps,
+  Constraint,
+  ConstraintsFormProps,
+} from "../../types";
 import classes from "./PackageProfileConstraintsBlock.module.scss";
-import { FormikContextType } from "formik";
+import type { FormikContextType } from "formik";
 
 const handleConstraintPropChange = async (
   formik:

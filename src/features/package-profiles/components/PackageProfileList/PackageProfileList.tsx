@@ -1,9 +1,7 @@
 import classNames from "classnames";
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import {
   Button,
   Icon,
@@ -12,17 +10,17 @@ import {
 } from "@canonical/react-components";
 import PackageProfileDetails from "../PackageProfileDetails";
 import PackageProfileListContextualMenu from "../PackageProfileListContextualMenu";
-import { PackageProfile } from "../../types";
+import type { PackageProfile } from "../../types";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps } from "./helpers";
 import classes from "./PackageProfileList.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 
 interface PackageProfileListProps {
-  packageProfiles: PackageProfile[];
+  readonly packageProfiles: PackageProfile[];
 }
 
 const PackageProfileList: FC<PackageProfileListProps> = ({

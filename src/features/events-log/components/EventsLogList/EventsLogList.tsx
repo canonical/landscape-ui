@@ -2,19 +2,17 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { getTableRows } from "@/features/usns";
 import { ModularTable } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column } from "react-table";
 import moment from "moment";
-import { FC, useMemo, useRef, useState } from "react";
+import type { FC } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
-import { EventLog } from "../../types";
+import type { EventLog } from "../../types";
 import classes from "./EventsLogList.module.scss";
 import { handleEventLogsCellProps, handleRowProps } from "./helpers";
 
 interface EventsLogListProps {
-  eventsLog: EventLog[];
+  readonly eventsLog: EventLog[];
 }
 
 const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {

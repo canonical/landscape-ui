@@ -1,4 +1,5 @@
-import { FC, HTMLProps, useMemo } from "react";
+import type { FC, HTMLProps } from "react";
+import { useMemo } from "react";
 import {
   Button,
   ConfirmationButton,
@@ -7,26 +8,21 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  Cell,
-  CellProps,
-  Column,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { Cell, CellProps, Column, TableCellProps } from "react-table";
 import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Administrator } from "@/types/Administrator";
-import { Role } from "@/types/Role";
-import { SelectOption } from "@/types/SelectOption";
+import type { Administrator } from "@/types/Administrator";
+import type { Role } from "@/types/Role";
+import type { SelectOption } from "@/types/SelectOption";
 import EditAdministratorForm from "@/pages/dashboard/settings/administrators/tabs/administrators/EditAdministratorForm";
 import AdministratorRolesCell from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorRolesCell";
 import classes from "./AdministratorList.module.scss";
 
 interface AdministratorListProps {
-  administrators: Administrator[];
-  emptyMessage: string;
-  roles: Role[];
+  readonly administrators: Administrator[];
+  readonly emptyMessage: string;
+  readonly roles: Role[];
 }
 
 const AdministratorList: FC<AdministratorListProps> = ({

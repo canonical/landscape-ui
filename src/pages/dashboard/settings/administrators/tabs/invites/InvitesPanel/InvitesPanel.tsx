@@ -1,17 +1,13 @@
 import moment from "moment";
-import { FC, HTMLProps, useMemo } from "react";
-import {
-  Cell,
-  CellProps,
-  Column,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC, HTMLProps } from "react";
+import { useMemo } from "react";
+import type { Cell, CellProps, Column, TableCellProps } from "react-table";
 import { ConfirmationButton, ModularTable } from "@canonical/react-components";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useInvitations from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { Invitation } from "@/types/Invitation";
+import type { Invitation } from "@/types/Invitation";
 
 const InvitesPanel: FC = () => {
   const debug = useDebug();

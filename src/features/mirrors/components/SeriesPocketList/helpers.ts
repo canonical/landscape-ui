@@ -1,9 +1,6 @@
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { HTMLProps } from "react";
-import { CommonPocket } from "./types";
+import type { Cell, TableCellProps } from "react-table";
+import type { HTMLProps } from "react";
+import type { CommonPocket } from "./types";
 
 export const getCellProps = ({ column }: Cell<CommonPocket>) => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =

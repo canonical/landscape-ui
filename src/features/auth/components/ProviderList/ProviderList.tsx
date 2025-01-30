@@ -1,18 +1,16 @@
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import { ModularTable } from "@canonical/react-components";
 import ProviderListActions from "../ProviderListActions";
-import { IdentityProvider } from "../../types";
+import type { IdentityProvider } from "../../types";
 import { UBUNTU_ONE_PROVIDER } from "./constants";
 
 interface ProviderListProps {
-  oidcAvailable: boolean;
-  oidcProviders: IdentityProvider[];
-  ubuntuOneAvailable: boolean;
-  ubuntuOneEnabled: boolean;
+  readonly oidcAvailable: boolean;
+  readonly oidcProviders: IdentityProvider[];
+  readonly ubuntuOneAvailable: boolean;
+  readonly ubuntuOneEnabled: boolean;
 }
 
 const ProviderList: FC<ProviderListProps> = ({

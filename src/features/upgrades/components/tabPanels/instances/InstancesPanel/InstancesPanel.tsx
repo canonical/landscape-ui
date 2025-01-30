@@ -1,25 +1,23 @@
 import classNames from "classnames";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { CellProps, Column } from "react-table";
 import { Button } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import {
+import type {
   InstancePackage,
   InstancePackagesToExclude,
-  usePackages,
 } from "@/features/packages";
-import { Instance } from "@/types/Instance";
+import { usePackages } from "@/features/packages";
+import type { Instance } from "@/types/Instance";
 import AffectedPackages from "../AffectedPackages";
 import { handleCellProps } from "./helpers";
 import classes from "./InstancesPanel.module.scss";
 
 interface InstancesPanelProps {
-  excludedPackages: InstancePackagesToExclude[];
-  instances: Instance[];
-  onExcludedPackagesChange: (
+  readonly excludedPackages: InstancePackagesToExclude[];
+  readonly instances: Instance[];
+  readonly onExcludedPackagesChange: (
     newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
 }

@@ -1,15 +1,13 @@
 import { ModularTable } from "@canonical/react-components";
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import classes from "./UbuntuProList.module.scss";
-import { UbuntuProService } from "@/types/Instance";
+import type { UbuntuProService } from "@/types/Instance";
 import NoData from "@/components/layout/NoData";
 
 interface UbuntuProServicesListProps {
-  services: UbuntuProService[];
+  readonly services: UbuntuProService[];
 }
 
 const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {

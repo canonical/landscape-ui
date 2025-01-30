@@ -13,16 +13,13 @@ import {
   SearchBox,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-  HeaderProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column, HeaderProps } from "react-table";
 import classNames from "classnames";
-import { FC, lazy, Suspense, useMemo, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { usePockets } from "../../hooks";
-import { Distribution, Pocket, Series } from "../../types";
+import type { Distribution, Pocket, Series } from "../../types";
 import classes from "./PackageList.module.scss";
 
 const EditPocketForm = lazy(() => import("../EditPocketForm"));
@@ -35,9 +32,9 @@ interface FormattedPackage extends Record<string, unknown> {
 }
 
 interface PackageListProps {
-  distributionName: Distribution["name"];
-  pocket: Pocket;
-  seriesName: Series["name"];
+  readonly distributionName: Distribution["name"];
+  readonly pocket: Pocket;
+  readonly seriesName: Series["name"];
 }
 
 const PackageList: FC<PackageListProps> = ({

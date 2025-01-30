@@ -1,9 +1,7 @@
-import { FormikContextType, FormikTouched } from "formik";
-import { FC, useEffect, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FormikContextType, FormikTouched } from "formik";
+import type { FC } from "react";
+import { useEffect, useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import {
   Button,
   Icon,
@@ -18,12 +16,16 @@ import {
   EMPTY_CONSTRAINT,
   TOUCHED_CONSTRAINT,
 } from "../../constants";
-import { AddFormProps, Constraint, ConstraintsFormProps } from "../../types";
+import type {
+  AddFormProps,
+  Constraint,
+  ConstraintsFormProps,
+} from "../../types";
 import { getCellProps, getConstraintPropHandlers } from "./helpers";
 import classes from "./PackageProfileConstraintsBlock.module.scss";
 
 interface PackageProfileConstraintsBlockProps {
-  formik:
+  readonly formik:
     | FormikContextType<AddFormProps>
     | FormikContextType<ConstraintsFormProps>;
 }

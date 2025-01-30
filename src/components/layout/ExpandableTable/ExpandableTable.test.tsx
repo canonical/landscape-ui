@@ -1,5 +1,5 @@
-import { ComponentProps } from "react";
-import { Column } from "@canonical/react-components/node_modules/@types/react-table";
+import type { ComponentProps } from "react";
+import type { Column } from "react-table";
 import { vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import ExpandableTable from "./ExpandableTable";

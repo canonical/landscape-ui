@@ -1,4 +1,4 @@
-import { MenuItem } from "./types";
+import type { MenuItem } from "./types";
 import { MENU_ITEMS } from "./constants";
 
 const getFilteredByEnvItems = ({

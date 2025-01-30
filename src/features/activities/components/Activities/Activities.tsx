@@ -1,9 +1,7 @@
 import moment from "moment/moment";
-import { FC, lazy, Suspense, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import {
   Button,
   CheckboxInput,
@@ -17,7 +15,7 @@ import ActivitiesHeader from "../ActivitiesHeader";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities, useOpenActivityDetails } from "../../hooks";
 import useSidePanel from "@/hooks/useSidePanel";
-import { ActivityCommon } from "../../types";
+import type { ActivityCommon } from "../../types";
 import classes from "./Activities.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 import NoData from "@/components/layout/NoData";
@@ -29,9 +27,9 @@ const ActivityDetails = lazy(
 );
 
 interface ActivitiesProps {
-  selectedIds: number[];
-  setSelectedIds: (ids: number[]) => void;
-  instanceId?: number;
+  readonly selectedIds: number[];
+  readonly setSelectedIds: (ids: number[]) => void;
+  readonly instanceId?: number;
 }
 
 const Activities: FC<ActivitiesProps> = ({

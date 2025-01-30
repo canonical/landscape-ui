@@ -1,17 +1,15 @@
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import { CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import SelectAllButton from "@/components/layout/SelectAllButton";
-import {
+import type {
   InstancePackage,
   InstancePackagesToExclude,
 } from "@/features/packages";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import {
   getPackageData,
   getToggleAllCheckboxState,
@@ -19,15 +17,15 @@ import {
 } from "./helpers";
 
 interface AffectedPackagesProps {
-  excludedPackages: InstancePackagesToExclude[];
-  instance: Instance;
-  onExcludedPackagesChange: (
+  readonly excludedPackages: InstancePackagesToExclude[];
+  readonly instance: Instance;
+  readonly onExcludedPackagesChange: (
     newExcludedPackages: InstancePackagesToExclude[],
   ) => void;
-  onLimitChange: () => void;
-  packages: InstancePackage[];
-  packagesCount: number;
-  packagesLoading: boolean;
+  readonly onLimitChange: () => void;
+  readonly packages: InstancePackage[];
+  readonly packagesCount: number;
+  readonly packagesLoading: boolean;
 }
 
 const AffectedPackages: FC<AffectedPackagesProps> = ({

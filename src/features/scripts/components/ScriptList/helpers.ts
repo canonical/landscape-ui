@@ -1,9 +1,6 @@
-import { HTMLProps } from "react";
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { Script } from "../../types";
+import type { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
+import type { Script } from "../../types";
 import classes from "./ScriptList.module.scss";
 
 export const getCellProps = ({ column, row: { original } }: Cell<Script>) => {

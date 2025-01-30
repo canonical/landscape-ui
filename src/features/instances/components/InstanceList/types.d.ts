@@ -1,8 +1,5 @@
-import { Instance } from "@/types/Instance";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { Instance } from "@/types/Instance";
+import type { CellProps, Column } from "react-table";
 
 export interface InstanceColumn extends Column<Instance> {
   accessor: string;

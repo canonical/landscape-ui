@@ -1,9 +1,6 @@
-import { HTMLProps } from "react";
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { InstancePackagesToExclude, Package } from "@/features/packages";
+import type { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
+import type { InstancePackagesToExclude, Package } from "@/features/packages";
 import { checkIsPackageUpdateRequired, toggleCurrentPackage } from "../helpers";
 import { EMPTY_PACKAGE } from "./constants";
 import classes from "./AffectedPackages.module.scss";

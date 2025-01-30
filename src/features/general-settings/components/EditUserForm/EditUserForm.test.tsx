@@ -1,17 +1,18 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
+import type { Mock } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import EditUserForm from "./EditUserForm";
 import useEnv from "@/hooks/useEnv";
 import useAuth from "@/hooks/useAuth";
-import { AuthContextProps } from "@/context/auth";
+import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { useUserGeneralSettings } from "../../hooks";
-import { EditUserDetailsParams, UserDetails } from "../../types";
-import { UseMutationResult } from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import { ApiError } from "@/types/ApiError";
+import type { EditUserDetailsParams, UserDetails } from "../../types";
+import type { UseMutationResult } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { ApiError } from "@/types/ApiError";
 import { getTestErrorParams } from "@/tests/mocks/error";
 
 vi.mock("@/hooks/useEnv");
@@ -40,6 +41,7 @@ const authContextValues: AuthContextProps = {
   logout: vi.fn(),
   authorized: true,
   authLoading: false,
+  setAuthLoading: vi.fn(),
   setUser: vi.fn(),
   account: {
     current: authUser.current_account,
