@@ -38,9 +38,9 @@ describe("SnapsPanel", () => {
     renderWithProviders(<SnapsPanel />);
     await expectLoadingState();
 
-    for (let i = 0; i < installedSnaps.length; i++) {
+    for (const installedSnap of installedSnaps) {
       const snap = await screen.findByRole("button", {
-        name: `Show details of snap ${installedSnaps[i].snap.name}`,
+        name: `Show details of snap ${installedSnap.snap.name}`,
       });
       expect(snap).toBeInTheDocument();
     }

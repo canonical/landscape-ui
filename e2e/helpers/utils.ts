@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 export async function waitForLoadingSpinner(page: Page): Promise<void> {
   await page.waitForSelector(".spinner", { state: "hidden" });

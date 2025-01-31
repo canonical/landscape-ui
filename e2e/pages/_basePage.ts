@@ -1,5 +1,5 @@
 import { expect } from "../fixtures/auth";
-import { Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 export class _basePage {
   constructor(public readonly page: Page) {}

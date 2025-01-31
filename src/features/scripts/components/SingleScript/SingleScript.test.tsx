@@ -3,6 +3,7 @@ import SingleScript from "./SingleScript";
 import { scripts } from "@/tests/mocks/script";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { useScripts } from "../../hooks";
 
 describe("SingleScript", () => {
   const copyScript = vi.hoisted(() => vi.fn());
@@ -12,10 +13,9 @@ describe("SingleScript", () => {
   const removeScriptAttachment = vi.hoisted(() => vi.fn());
 
   vi.mock("../../hooks", async (importOriginal) => {
-    const original = await importOriginal<typeof import("../../hooks")>();
+    const original = await importOriginal<{ useScripts: typeof useScripts }>();
 
     return {
-      ...original,
       useScripts: () => ({
         ...original.useScripts(),
         copyScriptQuery: { mutateAsync: copyScript },
