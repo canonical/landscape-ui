@@ -13,10 +13,10 @@ import {
   SearchBox,
   Tooltip,
 } from "@canonical/react-components";
-import type { CellProps, Column, HeaderProps } from "react-table";
 import classNames from "classnames";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
+import type { CellProps, Column, HeaderProps } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
 import { usePockets } from "../../hooks";
 import type { Distribution, Pocket, Series } from "../../types";
@@ -76,6 +76,7 @@ const PackageList: FC<PackageListProps> = ({
         series: seriesName,
         distribution: distributionName,
       });
+      return;
     } else if ("pull" === pocket.mode) {
       pullPackagesToPocket({
         name: pocket.name,
@@ -137,6 +138,12 @@ const PackageList: FC<PackageListProps> = ({
     }
   };
 
+  const noQueryIsPending =
+    !isSynchronizingMirrorPocket &&
+    !isPullingPackagesToPocket &&
+    !isRemovingPackagesFromPocket &&
+    !isRemovingPocket;
+
   const { data: listPocketData, isLoading: listPocketLoading } =
     listPocketQuery(
       {
@@ -148,11 +155,7 @@ const PackageList: FC<PackageListProps> = ({
         offset: (currentPage - 1) * itemsPerPage,
       },
       {
-        enabled:
-          !isSynchronizingMirrorPocket &&
-          !isPullingPackagesToPocket &&
-          !isRemovingPackagesFromPocket &&
-          !isRemovingPocket,
+        enabled: noQueryIsPending,
       },
     );
 
@@ -174,13 +177,7 @@ const PackageList: FC<PackageListProps> = ({
       distribution: distributionName,
     },
     {
-      enabled:
-        "pull" === pocket.mode &&
-        !listPocketLoading &&
-        !isSynchronizingMirrorPocket &&
-        !isPullingPackagesToPocket &&
-        !isRemovingPackagesFromPocket &&
-        !isRemovingPocket,
+      enabled: "pull" === pocket.mode && !listPocketLoading && noQueryIsPending,
     },
   );
 
@@ -335,7 +332,7 @@ const PackageList: FC<PackageListProps> = ({
               message={
                 "delete" === row.original.difference
                   ? "Package deleted"
-                  : `Version differs\nfrom parent pocket.\nParent version:\n${row.original?.newVersion}`
+                  : `Version differs\nfrom parent pocket.\nParent version:\n${row.original.newVersion}`
               }
             >
               <span>{row.original.packageVersion}</span>
@@ -347,6 +344,12 @@ const PackageList: FC<PackageListProps> = ({
     ],
     [packagesToShow, selectedPackages.length],
   );
+
+  const hasNoPackages =
+    !search &&
+    currentPage === 1 &&
+    itemsPerPage === 20 &&
+    !listPocketData?.data.count;
 
   return (
     <>
@@ -362,7 +365,7 @@ const PackageList: FC<PackageListProps> = ({
         >
           <div className="p-segmented-control">
             <div className="p-segmented-control__list">
-              {("mirror" == pocket.mode || "pull" == pocket.mode) && (
+              {"upload" !== pocket.mode && (
                 <Button
                   className="p-segmented-control__button"
                   type="button"
@@ -440,97 +443,84 @@ const PackageList: FC<PackageListProps> = ({
             </div>
           </div>
         </Col>
-        {("pull" === pocket.mode || "mirror" === pocket.mode) &&
-          (search ||
-            currentPage !== 1 ||
-            itemsPerPage !== 20 ||
-            (!listPocketLoading &&
-              listPocketData &&
-              listPocketData.data.count > 0)) && (
-            <Col size={6} medium={3}>
-              <Form
-                onSubmit={(event) => {
-                  event.preventDefault();
+        {"upload" !== pocket.mode && !hasNoPackages && (
+          <Col size={6} medium={3}>
+            <Form
+              onSubmit={(event) => {
+                event.preventDefault();
+                setSearch(inputText);
+                setCurrentPage(1);
+              }}
+              noValidate
+            >
+              <SearchBox
+                externallyControlled
+                shouldRefocusAfterReset
+                aria-label="Package search"
+                onChange={(inputValue) => {
+                  setInputText(inputValue);
+                }}
+                value={inputText}
+                onClear={() => {
+                  setInputText("");
+                  setSearch("");
+                  setCurrentPage(1);
+                }}
+                className={classNames({
+                  "is-dense": !isSmallerScreen,
+                  "u-no-margin--bottom": isSmallerScreen,
+                })}
+                onSearch={() => {
                   setSearch(inputText);
                   setCurrentPage(1);
                 }}
-                noValidate
-              >
-                <SearchBox
-                  externallyControlled
-                  shouldRefocusAfterReset
-                  aria-label="Package search"
-                  onChange={(inputValue) => {
-                    setInputText(inputValue);
-                  }}
-                  value={inputText}
-                  onClear={() => {
-                    setInputText("");
-                    setSearch("");
-                    setCurrentPage(1);
-                  }}
-                  className={classNames({
-                    "is-dense": !isSmallerScreen,
-                    "u-no-margin--bottom": isSmallerScreen,
-                  })}
-                  onSearch={() => {
-                    setSearch(inputText);
-                    setCurrentPage(1);
-                  }}
-                  autocomplete="off"
-                />
-              </Form>
-            </Col>
-          )}
+                autocomplete="off"
+              />
+            </Form>
+          </Col>
+        )}
       </Row>
-      {listPocketLoading && <LoadingState />}
-      {!search &&
-        currentPage === 1 &&
-        itemsPerPage === 20 &&
-        !listPocketLoading &&
-        (!listPocketData || !listPocketData.data.count) && (
-          <p>No packages found</p>
-        )}
-      {!listPocketLoading &&
-        (search ||
-          currentPage !== 1 ||
-          itemsPerPage !== 20 ||
-          (listPocketData && listPocketData.data.count > 0)) && (
-          <>
-            <ModularTable
-              columns={columns}
-              data={packagesToShow}
-              emptyMsg={
-                search
-                  ? `No packages found with the search: "${search}".`
-                  : undefined
+
+      {listPocketLoading ? (
+        <LoadingState />
+      ) : hasNoPackages ? (
+        <p>No packages found</p>
+      ) : (
+        <>
+          <ModularTable
+            columns={columns}
+            data={packagesToShow}
+            emptyMsg={
+              search
+                ? `No packages found with the search: "${search}".`
+                : undefined
+            }
+            className={classes.content}
+            getCellProps={({ column }) => {
+              switch (column.id) {
+                case "packageName":
+                  return { role: "rowheader" };
+                case "packageVersion":
+                  return { "aria-label": "Version" };
+                default:
+                  return {};
               }
-              className={classes.content}
-              getCellProps={({ column }) => {
-                switch (column.id) {
-                  case "packageName":
-                    return { role: "rowheader" };
-                  case "packageVersion":
-                    return { "aria-label": "Version" };
-                  default:
-                    return {};
-                }
-              }}
-            />
-            <SidePanelTablePagination
-              currentPage={currentPage}
-              totalItems={listPocketData?.data.count}
-              paginate={(page) => {
-                setSelectedPackages([]);
-                setCurrentPage(page);
-              }}
-              pageSize={itemsPerPage}
-              setPageSize={(itemsNumber) => {
-                setItemsPerPage(itemsNumber);
-              }}
-            />
-          </>
-        )}
+            }}
+          />
+          <SidePanelTablePagination
+            currentPage={currentPage}
+            totalItems={listPocketData?.data.count}
+            paginate={(page) => {
+              setSelectedPackages([]);
+              setCurrentPage(page);
+            }}
+            pageSize={itemsPerPage}
+            setPageSize={(itemsNumber) => {
+              setItemsPerPage(itemsNumber);
+            }}
+          />
+        </>
+      )}
     </>
   );
 };

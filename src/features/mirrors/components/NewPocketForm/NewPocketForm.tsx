@@ -8,6 +8,7 @@ import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
 import { useGPGKeys } from "@/features/gpg-keys";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
   Form,
@@ -52,16 +53,16 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   const { mutateAsync: createPocket } = createPocketQuery;
   const { mutateAsync: addUploaderGPGKeysToPocket } =
     addUploaderGPGKeysToPocketQuery;
-  const { data: gpgKeysData } = getGPGKeysQuery();
+  const { data: { data: gpgKeys } = { data: [] } } = getGPGKeysQuery();
 
-  const privateGPGKeysOptions = (gpgKeysData?.data ?? [])
+  const privateGPGKeysOptions = gpgKeys
     .filter(({ has_secret }) => has_secret)
     .map((item) => ({
       label: item.name,
       value: item.name,
     }));
 
-  const publicGPGKeysOptions = (gpgKeysData?.data ?? [])
+  const publicGPGKeysOptions = gpgKeys
     .filter(({ has_secret }) => !has_secret)
     .map((item) => ({
       label: item.name,
@@ -150,11 +151,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         ]}
         {...formik.getFieldProps("type")}
         onChange={handleTypeChange}
-        error={
-          formik.touched.type && formik.errors.type
-            ? formik.errors.type
-            : undefined
-        }
+        error={getFormikError(formik, "type")}
       />
 
       <Select
@@ -163,11 +160,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
         options={PRE_DEFINED_POCKET_MODE_OPTIONS}
         {...formik.getFieldProps("mode")}
         onChange={handleModeChange}
-        error={
-          formik.touched.mode && formik.errors.mode
-            ? formik.errors.mode
-            : undefined
-        }
+        error={getFormikError(formik, "mode")}
       />
 
       {"mirror" === formik.values.mode && (
@@ -176,11 +169,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           label="Mirror URI"
           required
           {...formik.getFieldProps("mirror_uri")}
-          error={
-            formik.touched.mirror_uri && formik.errors.mirror_uri
-              ? formik.errors.mirror_uri
-              : undefined
-          }
+          error={getFormikError(formik, "mirror_uri")}
         />
       )}
 
@@ -200,11 +189,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           })}
           style={{ display: "block !important" }}
           {...formik.getFieldProps("name")}
-          error={
-            formik.touched.name && formik.errors.name
-              ? formik.errors.name
-              : undefined
-          }
+          error={getFormikError(formik, "name")}
         />
 
         {"pull" == formik.values.mode && (
@@ -222,11 +207,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               await formik.setFieldValue("pull_series", newGroup);
             }}
             onBlur={formik.handleBlur}
-            error={
-              formik.touched.pull_pocket && formik.errors.pull_pocket
-                ? formik.errors.pull_pocket
-                : undefined
-            }
+            error={getFormikError(formik, "pull_pocket")}
           />
         )}
       </div>
@@ -239,11 +220,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
           ...privateGPGKeysOptions,
         ]}
         {...formik.getFieldProps("gpg_key")}
-        error={
-          formik.touched.gpg_key && formik.errors.gpg_key
-            ? formik.errors.gpg_key
-            : undefined
-        }
+        error={getFormikError(formik, "gpg_key")}
       />
 
       {"mirror" === formik.values.mode && (
@@ -279,11 +256,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               />
             }
             {...formik.getFieldProps("mirror_suite")}
-            error={
-              formik.touched.mirror_suite && formik.errors.mirror_suite
-                ? formik.errors.mirror_suite
-                : undefined
-            }
+            error={getFormikError(formik, "mirror_suite")}
           />
 
           <Select
@@ -293,11 +266,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
               ...publicGPGKeysOptions,
             ]}
             {...formik.getFieldProps("mirror_gpg_key")}
-            error={
-              formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
-                ? formik.errors.mirror_gpg_key
-                : undefined
-            }
+            error={getFormikError(formik, "mirror_gpg_key")}
             help="If none is given, the stock Ubuntu archive one will be used."
           />
         </>
@@ -309,11 +278,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             label="Filter type"
             options={filterTypeOptions}
             {...formik.getFieldProps("filter_type")}
-            error={
-              formik.touched.filter_type && formik.errors.filter_type
-                ? formik.errors.filter_type
-                : undefined
-            }
+            error={getFormikError(formik, "filter_type")}
           />
 
           {"" !== formik.values.filter_type && (
@@ -329,11 +294,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
                 );
               }}
               value={formik.values.filter_packages.join(",")}
-              error={
-                formik.touched.filter_packages && formik.errors.filter_packages
-                  ? formik.errors.filter_packages
-                  : undefined
-              }
+              error={getFormikError(formik, "filter_packages")}
             />
           )}
         </>
@@ -382,11 +343,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             onChange={(newOptions) => {
               formik.setFieldValue("components", newOptions);
             }}
-            error={
-              formik.touched.components && formik.errors.components
-                ? formik.errors.components
-                : undefined
-            }
+            error={getFormikError(formik, "components")}
           />
 
           <CheckboxGroup
@@ -397,11 +354,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             onChange={(newOptions) => {
               formik.setFieldValue("architectures", newOptions);
             }}
-            error={
-              formik.touched.architectures && formik.errors.architectures
-                ? formik.errors.architectures
-                : undefined
-            }
+            error={getFormikError(formik, "architectures")}
           />
         </>
       )}
@@ -420,11 +373,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
                 event.target.value.replace(/\s/g, "").split(","),
               );
             }}
-            error={
-              formik.touched.components && formik.errors.components
-                ? formik.errors.components
-                : undefined
-            }
+            error={getFormikError(formik, "components")}
           />
 
           <Input
@@ -439,11 +388,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
                 event.target.value.replace(/\s/g, "").split(","),
               );
             }}
-            error={
-              formik.touched.architectures && formik.errors.architectures
-                ? formik.errors.architectures
-                : undefined
-            }
+            error={getFormikError(formik, "architectures")}
           />
         </>
       )}

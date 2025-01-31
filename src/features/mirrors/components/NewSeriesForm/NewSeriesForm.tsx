@@ -7,6 +7,7 @@ import { useGPGKeys } from "@/features/gpg-keys";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { getFormikError } from "@/utils/formikErrors";
 import { Col, Form, Input, Row, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
@@ -225,11 +226,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
         ]}
         {...formik.getFieldProps("type")}
         onChange={handleTypeChange}
-        error={
-          formik.touched.type && formik.errors.type
-            ? formik.errors.type
-            : undefined
-        }
+        error={getFormikError(formik, "type")}
       />
 
       {"ubuntu-snapshot" !== formik.values.type && (
@@ -242,11 +239,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
           onBlur={(event) => {
             setMirrorUri(event.target.value);
           }}
-          error={
-            formik.touched.mirror_uri && formik.errors.mirror_uri
-              ? formik.errors.mirror_uri
-              : undefined
-          }
+          error={getFormikError(formik, "mirror_uri")}
         />
       )}
 
@@ -259,11 +252,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
           required
           {...formik.getFieldProps("snapshotDate")}
           onChange={handleSnapshotDateChange}
-          error={
-            formik.touched.snapshotDate && formik.errors.snapshotDate
-              ? formik.errors.snapshotDate
-              : undefined
-          }
+          error={getFormikError(formik, "snapshotDate")}
           help={`Starting from approximately ${moment(
             SNAPSHOT_START_DATE,
           ).format(DISPLAY_DATE_FORMAT)} in dd.mm.yyyy format`}
@@ -279,11 +268,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
             ...distributionOptions,
           ]}
           {...formik.getFieldProps("distribution")}
-          error={
-            formik.touched.distribution && formik.errors.distribution
-              ? formik.errors.distribution
-              : undefined
-          }
+          error={getFormikError(formik, "distribution")}
         />
       )}
 
@@ -294,11 +279,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
             options={[{ label: "Select series", value: "" }, ...seriesOptions]}
             {...formik.getFieldProps("mirror_series")}
             onChange={handleMirrorSeriesChange}
-            error={
-              formik.touched.mirror_series && formik.errors.mirror_series
-                ? formik.errors.mirror_series
-                : undefined
-            }
+            error={getFormikError(formik, "mirror_series")}
           />
         </Col>
         <Col size={6} medium={3} small={2}>
@@ -307,11 +288,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
             label="Series name"
             required
             {...formik.getFieldProps("name")}
-            error={
-              formik.touched.name && formik.errors.name
-                ? formik.errors.name
-                : undefined
-            }
+            error={getFormikError(formik, "name")}
           />
         </Col>
       </Row>
@@ -331,11 +308,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
                   })),
               ]}
               {...formik.getFieldProps("mirror_gpg_key")}
-              error={
-                formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
-                  ? formik.errors.mirror_gpg_key
-                  : undefined
-              }
+              error={getFormikError(formik, "mirror_gpg_key")}
               help="If none is given, the stock Ubuntu archive one will be used."
             />
           </Col>
@@ -355,11 +328,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
                 })),
             ]}
             {...formik.getFieldProps("gpg_key")}
-            error={
-              formik.touched.gpg_key && formik.errors.gpg_key
-                ? formik.errors.gpg_key
-                : undefined
-            }
+            error={getFormikError(formik, "gpg_key")}
           />
         </Col>
       </Row>
@@ -375,11 +344,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
               await formik.setFieldValue("pockets", newOptions);
               await formik.setFieldValue("hasPockets", !!newOptions.length);
             }}
-            error={
-              formik.touched.pockets && formik.errors.pockets
-                ? formik.errors.pockets
-                : undefined
-            }
+            error={getFormikError(formik, "pockets")}
           />
           <CheckboxGroup
             label="Components"
@@ -389,11 +354,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
             onChange={async (newOptions) => {
               await formik.setFieldValue("components", newOptions);
             }}
-            error={
-              formik.touched.components && formik.errors.components
-                ? formik.errors.components
-                : undefined
-            }
+            error={getFormikError(formik, "components")}
           />
           <CheckboxGroup
             label="Architectures"
@@ -403,11 +364,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
             onChange={async (newOptions) => {
               await formik.setFieldValue("architectures", newOptions);
             }}
-            error={
-              formik.touched.architectures && formik.errors.architectures
-                ? formik.errors.architectures
-                : undefined
-            }
+            error={getFormikError(formik, "architectures")}
           />
         </>
       )}
@@ -428,11 +385,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
 
               await formik.setFieldValue("hasPockets", !!event.target.value);
             }}
-            error={
-              formik.touched.pockets && formik.errors.pockets
-                ? formik.errors.pockets
-                : undefined
-            }
+            error={getFormikError(formik, "pockets")}
             help="List the pocket names separated by commas"
           />
           <Input
@@ -448,11 +401,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
                 event.target.value.replace(/\s/g, "").split(","),
               );
             }}
-            error={
-              formik.touched.components && formik.errors.components
-                ? formik.errors.components
-                : undefined
-            }
+            error={getFormikError(formik, "components")}
             help="List the component names separated by commas"
           />
           <Input
@@ -468,11 +417,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
                 event.target.value.replace(/\s/g, "").split(","),
               );
             }}
-            error={
-              formik.touched.architectures && formik.errors.architectures
-                ? formik.errors.architectures
-                : undefined
-            }
+            error={getFormikError(formik, "architectures")}
             help="List the architectures separated by commas"
           />
         </>
