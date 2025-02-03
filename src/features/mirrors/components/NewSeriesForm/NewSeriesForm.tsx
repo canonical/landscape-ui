@@ -3,6 +3,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
 import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT } from "@/constants";
 
+import type { GPGKey } from "@/features/gpg-keys";
 import { useGPGKeys } from "@/features/gpg-keys";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -54,18 +55,16 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
   const { createSeriesQuery, getRepoInfo } = useSeries();
   const { getDistributionsQuery } = useDistributions();
 
-  const { data: getDistributionsQueryResult } = getDistributionsQuery(
-    { include_latest_sync: true },
-    { enabled: !distribution },
-  );
+  const { data: { data: distributions } = { data: [] as Distribution[] } } =
+    getDistributionsQuery(
+      { include_latest_sync: true },
+      { enabled: !distribution },
+    );
 
-  const distributions = getDistributionsQueryResult?.data ?? [];
-
-  const { data: gpgKeysData } = getGPGKeysQuery();
+  const { data: { data: gpgKeys } = { data: [] as GPGKey[] } } =
+    getGPGKeysQuery();
 
   const { mutateAsync: createSeries } = createSeriesQuery;
-
-  const gpgKeys = gpgKeysData?.data ?? [];
 
   const distributionOptions: SelectOption[] = distributions.map(({ name }) => ({
     label: name,
@@ -122,10 +121,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
         PRE_SELECTED_ARCHITECTURES.ubuntu,
       );
 
-      if (
-        "ubuntu" === event.target.value &&
-        !formik.values.mirror_uri?.startsWith(DEFAULT_MIRROR_URI)
-      ) {
+      if (!formik.values.mirror_uri?.startsWith(DEFAULT_MIRROR_URI)) {
         await formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
       }
 
@@ -178,7 +174,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
     );
   };
 
-  const { data: getRepoInfoResult } = getRepoInfo(
+  const { data: { data: repoInfo } = { data: undefined } } = getRepoInfo(
     {
       mirror_uri: getStrippedUrl(mirrorUri),
     },
@@ -187,20 +183,16 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
     },
   );
 
-  const repoInfo = getRepoInfoResult?.data;
-
   useEffect(() => {
     if (!repoInfo) {
       setSeriesOptions([]);
       return;
     }
 
-    if (repoInfo.ubuntu) {
-      if (formik.values.mirror_uri?.startsWith(DEFAULT_MIRROR_URI)) {
-        formik.setFieldValue("type", "ubuntu");
-      }
-    } else {
+    if (!repoInfo.ubuntu) {
       formik.setFieldValue("type", "third-party");
+    } else if (formik.values.mirror_uri?.startsWith(DEFAULT_MIRROR_URI)) {
+      formik.setFieldValue("type", "ubuntu");
     }
 
     setSeriesOptions(
@@ -229,7 +221,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
         error={getFormikError(formik, "type")}
       />
 
-      {"ubuntu-snapshot" !== formik.values.type && (
+      {"ubuntu-snapshot" !== formik.values.type ? (
         <Input
           type="text"
           label="Mirror URI"
@@ -241,9 +233,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
           }}
           error={getFormikError(formik, "mirror_uri")}
         />
-      )}
-
-      {"ubuntu-snapshot" === formik.values.type && (
+      ) : (
         <Input
           type="date"
           min={moment(SNAPSHOT_START_DATE).format(INPUT_DATE_FORMAT)}
@@ -333,7 +323,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
         </Col>
       </Row>
 
-      {["ubuntu", "ubuntu-snapshot"].includes(formik.values.type) && (
+      {"third-party" !== formik.values.type ? (
         <>
           <CheckboxGroup
             label="Pockets"
@@ -367,9 +357,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
             error={getFormikError(formik, "architectures")}
           />
         </>
-      )}
-
-      {"third-party" === formik.values.type && (
+      ) : (
         <>
           <Input
             type="text"

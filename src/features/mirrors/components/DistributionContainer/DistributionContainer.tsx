@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useDistributions } from "../../hooks";
-import type { SyncPocketRef } from "../../types";
+import type { Distribution, SyncPocketRef } from "../../types";
 import DistributionCard from "../DistributionCard";
 import DistributionsEmptyState from "../DistributionsEmptyState";
 
@@ -17,7 +17,10 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
 
   const { getDistributionsQuery } = useDistributions();
 
-  const { data, isLoading } = getDistributionsQuery(
+  const {
+    data: { data: distributions } = { data: [] as Distribution[] },
+    isLoading,
+  } = getDistributionsQuery(
     {
       include_latest_sync: true,
     },
@@ -26,17 +29,11 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
     },
   );
 
-  const distributions = data?.data ?? [];
-
   useEffect(() => {
     onDistributionsLengthChange(distributions.length);
   }, [distributions.length]);
 
   useEffect(() => {
-    if (!syncPocketRefs.length) {
-      return;
-    }
-
     for (const syncPocketRef of syncPocketRefs) {
       const pocket = distributions
         .find(({ name }) => name === syncPocketRef.distributionName)
@@ -60,24 +57,28 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
     }
   }, [distributions]);
 
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (!distributions.length) {
+    return <DistributionsEmptyState />;
+  }
+
   const handleSyncPocketRefAdd = (ref: SyncPocketRef) => {
     setSyncPocketRefs((prevState) => [...prevState, ref]);
   };
 
   return (
     <>
-      {isLoading && <LoadingState />}
-      {!isLoading && distributions.length === 0 && <DistributionsEmptyState />}
-      {!isLoading &&
-        distributions.length > 0 &&
-        distributions.map((distribution) => (
-          <DistributionCard
-            key={distribution.name}
-            distribution={distribution}
-            syncPocketRefAdd={handleSyncPocketRefAdd}
-            syncPocketRefs={syncPocketRefs}
-          />
-        ))}
+      {distributions.map((distribution) => (
+        <DistributionCard
+          key={distribution.name}
+          distribution={distribution}
+          syncPocketRefAdd={handleSyncPocketRefAdd}
+          syncPocketRefs={syncPocketRefs}
+        />
+      ))}
     </>
   );
 };

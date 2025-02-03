@@ -3,7 +3,6 @@ import FieldDescription from "@/components/form/FieldDescription";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
-import { useGPGKeys } from "@/features/gpg-keys";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
@@ -22,7 +21,7 @@ import {
   COMPONENT_OPTIONS,
   DEFAULT_SNAPSHOT_URI,
 } from "../../constants";
-import { usePockets } from "../../hooks";
+import { useGPGKeysOptions, usePockets } from "../../hooks";
 import type { Distribution, Pocket, Series } from "../../types";
 import {
   getEditPocketParams,
@@ -51,7 +50,6 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     addUploaderGPGKeysToPocketQuery,
     removeUploaderGPGKeysFromPocketQuery,
   } = usePockets();
-  const { getGPGKeysQuery } = useGPGKeys();
 
   const { mutateAsync: editPocket } = editPocketQuery;
   const { mutateAsync: addPackageFiltersToPocket } =
@@ -62,21 +60,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     addUploaderGPGKeysToPocketQuery;
   const { mutateAsync: removeUploaderGPGKeysFromPocket } =
     removeUploaderGPGKeysFromPocketQuery;
-  const { data: gpgKeysData } = getGPGKeysQuery();
-
-  const privateGPGKeysOptions = (gpgKeysData?.data ?? [])
-    .filter(({ has_secret }) => has_secret)
-    .map((item) => ({
-      label: item.name,
-      value: item.name,
-    }));
-
-  const publicGPGKeysOptions = (gpgKeysData?.data ?? [])
-    .filter(({ has_secret }) => !has_secret)
-    .map((item) => ({
-      label: item.name,
-      value: item.name,
-    }));
+  const { privateGPGKeysOptions, publicGPGKeysOptions } = useGPGKeysOptions();
 
   const mode = pocket.mode;
 

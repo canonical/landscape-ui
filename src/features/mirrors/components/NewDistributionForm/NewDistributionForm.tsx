@@ -1,8 +1,10 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import type { AccessGroup } from "@/features/access-groups";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { getFormikError } from "@/utils/formikErrors";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -10,6 +12,7 @@ import type { FC } from "react";
 import * as Yup from "yup";
 import { string } from "yup";
 import { useDistributions } from "../../hooks";
+import type { Distribution } from "../../types";
 import { INITIAL_VALUES } from "./constants";
 import type { FormProps } from "./types";
 
@@ -20,16 +23,19 @@ const NewDistributionForm: FC = () => {
   const { getAccessGroupQuery } = useRoles();
 
   const { mutateAsync: createDistribution } = createDistributionQuery;
-  const { data: getAccessGroupResponse } = getAccessGroupQuery();
+  const { data: { data: accessGroups } = { data: [] as AccessGroup[] } } =
+    getAccessGroupQuery();
 
-  const accessGroupsOptions: SelectOption[] = (
-    getAccessGroupResponse?.data ?? []
-  ).map((accessGroup) => ({
-    label: accessGroup.title,
-    value: accessGroup.name,
-  }));
+  const accessGroupsOptions: SelectOption[] = accessGroups.map(
+    (accessGroup) => ({
+      label: accessGroup.title,
+      value: accessGroup.name,
+    }),
+  );
 
-  const { data: getDistributionsResponse } = getDistributionsQuery({
+  const {
+    data: { data: getDistributionsResponse } = { data: [] as Distribution[] },
+  } = getDistributionsQuery({
     include_latest_sync: true,
   });
 
@@ -45,9 +51,7 @@ const NewDistributionForm: FC = () => {
         .test({
           params: { getDistributionsResponse },
           test: (value) => {
-            return !(getDistributionsResponse?.data ?? [])
-              .map(({ name }) => name)
-              .includes(value);
+            return !getDistributionsResponse.some(({ name }) => name == value);
           },
           message: "It must be unique within the account.",
         }),
@@ -71,11 +75,7 @@ const NewDistributionForm: FC = () => {
         label="Distribution name"
         required
         {...formik.getFieldProps("name")}
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFormikError(formik, "name")}
       />
 
       <Select
@@ -85,11 +85,7 @@ const NewDistributionForm: FC = () => {
           ...accessGroupsOptions,
         ]}
         {...formik.getFieldProps("access_group")}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
       />
 
       <SidePanelFormButtons

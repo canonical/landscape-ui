@@ -42,7 +42,6 @@ const SeriesCard: FC<SeriesCardProps> = ({
 
   useEffect(() => {
     if (
-      !series ||
       !series.pockets.length ||
       series.pockets[0].mode !== "mirror" ||
       !series.pockets[0].mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI)

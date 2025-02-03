@@ -133,7 +133,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
 
   return (
     <div className="divided-blocks">
-      {("mirror" == pocket.mode || "pull" == pocket.mode) && (
+      {"upload" != pocket.mode && (
         <div className="divided-blocks__item">
           <ConfirmationButton
             type="button"

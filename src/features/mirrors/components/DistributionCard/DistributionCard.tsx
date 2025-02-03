@@ -154,10 +154,9 @@ const DistributionCard: FC<DistributionCardProps> = ({
             />
           )}
         </div>
-        {0 === distribution.series.length && (
+        {!distribution.series.length ? (
           <EmptyDistribution distribution={distribution} />
-        )}
-        {distribution.series.length > 0 &&
+        ) : (
           distribution.series.map((series) => (
             <SeriesCard
               key={series.name}
@@ -166,7 +165,8 @@ const DistributionCard: FC<DistributionCardProps> = ({
               syncPocketRefAdd={syncPocketRefAdd}
               syncPocketRefs={syncPocketRefs}
             />
-          ))}
+          ))
+        )}
       </div>
       {modalOpen && (
         <ConfirmationModal

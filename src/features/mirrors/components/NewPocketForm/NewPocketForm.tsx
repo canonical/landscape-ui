@@ -5,7 +5,6 @@ import type { groupedOption } from "@/components/form/SelectGrouped";
 import SelectGrouped from "@/components/form/SelectGrouped";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
-import { useGPGKeys } from "@/features/gpg-keys";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
@@ -26,7 +25,7 @@ import {
   PRE_SELECTED_ARCHITECTURES,
   PRE_SELECTED_COMPONENTS,
 } from "../../constants";
-import { usePockets } from "../../hooks";
+import { useGPGKeysOptions, usePockets } from "../../hooks";
 import type { Distribution, Series } from "../../types";
 import {
   filterTypeOptions,
@@ -48,26 +47,11 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { createPocketQuery, addUploaderGPGKeysToPocketQuery } = usePockets();
-  const { getGPGKeysQuery } = useGPGKeys();
 
   const { mutateAsync: createPocket } = createPocketQuery;
   const { mutateAsync: addUploaderGPGKeysToPocket } =
     addUploaderGPGKeysToPocketQuery;
-  const { data: { data: gpgKeys } = { data: [] } } = getGPGKeysQuery();
-
-  const privateGPGKeysOptions = gpgKeys
-    .filter(({ has_secret }) => has_secret)
-    .map((item) => ({
-      label: item.name,
-      value: item.name,
-    }));
-
-  const publicGPGKeysOptions = gpgKeys
-    .filter(({ has_secret }) => !has_secret)
-    .map((item) => ({
-      label: item.name,
-      value: item.name,
-    }));
+  const { privateGPGKeysOptions, publicGPGKeysOptions } = useGPGKeysOptions();
 
   const formik = useFormik<FormProps>({
     initialValues: getInitialValues(distribution.name, series.name),
