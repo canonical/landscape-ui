@@ -52,7 +52,7 @@ describe("OidcAuthPage", () => {
 
     expect(
       await screen.findByText(
-        "Oops! Something went wrong. Please try again or contact our support team.",
+        "Something went wrong. Please try again or contact our support team.",
       ),
     ).toBeInTheDocument();
 
@@ -102,7 +102,7 @@ describe("OidcAuthPage", () => {
     it("should render error message when an error occurs", async () => {
       expect(
         screen.getByText(
-          "Oops! Something went wrong. Please try again or contact our support team.",
+          "Something went wrong. Please try again or contact our support team.",
         ),
       ).toBeInTheDocument();
 

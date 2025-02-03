@@ -84,6 +84,7 @@ const PackageProfileConstraintsEditFormActions: FC<
     <div className={classes.container}>
       <Select
         label="Constraint type"
+        className="u-no-margin--bottom"
         labelClassName="u-no-padding--top"
         options={CONSTRAINT_TYPE_OPTIONS}
         value={filter}
@@ -95,7 +96,7 @@ const PackageProfileConstraintsEditFormActions: FC<
       />
 
       <ConfirmationButton
-        className="has-icon u-no-margin--right"
+        className="has-icon u-no-margin--right u-no-margin--bottom"
         type="button"
         disabled={selectedIds.length === 0 || formik.values.id !== 0}
         aria-label={`Remove selected ${selectedIds.length === 1 ? "constraint" : "constraints"}`}
@@ -119,6 +120,7 @@ const PackageProfileConstraintsEditFormActions: FC<
       </ConfirmationButton>
 
       <Button
+        className="u-no-margin--bottom"
         type="button"
         hasIcon
         onClick={handleConstraintsAdd}

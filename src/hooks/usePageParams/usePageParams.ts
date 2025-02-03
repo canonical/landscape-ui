@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import { useSearchParams } from "react-router";
 import { PARAMS } from "./constants";
 import {
   getParsedParams,
-  modifyUrlParameters,
+  sanitizeSearchParams,
   shouldResetPage,
 } from "./helpers";
 import type { PageParams } from "./types";
@@ -10,12 +11,22 @@ import type { PageParams } from "./types";
 const usePageParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { tab, ...rest } = getParsedParams(searchParams);
+  useEffect(() => {
+    const sanitizedParams = sanitizeSearchParams(searchParams);
+    if (sanitizedParams.toString() !== searchParams.toString()) {
+      setSearchParams(sanitizedParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  const parsedSearchParams = getParsedParams(searchParams);
 
   const setPageParams = (newParams: PageParams) => {
     setSearchParams(
       (prevSearchParams) => {
-        if (newParams.tab && newParams.tab !== tab) {
+        const switchedTabs =
+          newParams.tab && newParams.tab !== parsedSearchParams.tab;
+
+        if (switchedTabs) {
           return new URLSearchParams({
             tab: newParams.tab,
           });
@@ -26,14 +37,14 @@ const usePageParams = () => {
         );
 
         if (shouldResetPage(newParams)) {
-          updatedSearchParams.delete(PARAMS.CURRENT_PAGE);
+          updatedSearchParams.delete(PARAMS.CURRENT_PAGE.urlParam);
         }
 
         Object.entries(newParams).forEach(([key, value]) => {
-          modifyUrlParameters(updatedSearchParams, key, value);
+          updatedSearchParams.set(key, String(value));
         });
 
-        return updatedSearchParams;
+        return sanitizeSearchParams(updatedSearchParams);
       },
       {
         replace: true,
@@ -42,8 +53,7 @@ const usePageParams = () => {
   };
 
   return {
-    tab,
-    ...rest,
+    ...parsedSearchParams,
     setPageParams,
   };
 };

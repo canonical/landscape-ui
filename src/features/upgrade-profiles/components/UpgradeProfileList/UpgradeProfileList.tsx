@@ -107,7 +107,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
     <ModularTable
       columns={columns}
       data={filteredProfiles}
-      emptyMsg={`No profiles found with the search: "${search}"`}
+      emptyMsg={`No upgrade profiles found with the search: "${search}"`}
     />
   );
 };

@@ -1,7 +1,8 @@
 import type { FC } from "react";
 import { TableFilter } from "@/components/filter";
-import usePageParams from "@/hooks/usePageParams";
+import usePageParams, { PARAMS } from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface GroupFilterProps {
   readonly options: SelectOption[];
@@ -9,6 +10,11 @@ interface GroupFilterProps {
 
 const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
   const { groupBy, setPageParams } = usePageParams();
+
+  useSetDynamicFilterValidation(
+    PARAMS.GROUP_BY.urlParam,
+    options.map((opt) => opt.value),
+  );
 
   return (
     <TableFilter

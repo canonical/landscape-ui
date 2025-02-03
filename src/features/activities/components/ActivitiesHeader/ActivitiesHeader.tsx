@@ -22,7 +22,7 @@ interface ActivitiesHeaderProps {
 }
 
 const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
-  const { search, setPageParams } = usePageParams();
+  const { query, setPageParams } = usePageParams();
   const { instanceId } = useParams<UrlParams>();
   const { getActivityTypesQuery } = useActivities();
 
@@ -51,14 +51,14 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
     }
 
     setPageParams({
-      search: search ? `${search},${searchText}` : `${searchText}`,
+      query: query ? `${query},${searchText}` : `${searchText}`,
     });
     setSearchText("");
     resetSelectedIds();
   };
 
   const handleClear = () => {
-    setPageParams({ search: "" });
+    setPageParams({ query: "" });
   };
 
   const handleSubmit = (event: SyntheticEvent) => {
@@ -98,10 +98,9 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
         onClose={() => setShowSearchHelp(false)}
       />
       <TableFilterChips
-        filtersToDisplay={["search", "status", "type", "fromDate", "toDate"]}
+        filtersToDisplay={["status", "type", "fromDate", "toDate", "query"]}
         statusOptions={ACTIVITY_STATUS_OPTIONS}
         typeOptions={ACTIVITY_TYPE_OPTIONS}
-        useSearchAsQuery
       />
     </>
   );

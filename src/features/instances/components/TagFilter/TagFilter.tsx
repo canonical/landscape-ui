@@ -3,6 +3,7 @@ import { useState } from "react";
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface TagFilterProps {
   readonly options: SelectOption[];
@@ -15,6 +16,11 @@ const TagFilter: FC<TagFilterProps> = ({ options }) => {
 
   const filteredOptions = options.filter(({ value }) =>
     value.includes(searchText),
+  );
+
+  useSetDynamicFilterValidation(
+    "tags",
+    filteredOptions.map((opt) => opt.value),
   );
 
   return (

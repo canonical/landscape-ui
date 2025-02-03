@@ -3,8 +3,8 @@ import classes from "./UserPanelHeader.module.scss";
 import UserPanelActionButtons from "../UserPanelActionButtons";
 import type { User } from "@/types/User";
 import { getSelectedUsers } from "./helpers";
-import usePageParams from "@/hooks/usePageParams";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import { TableFilterChips } from "@/components/filter";
 
 interface UserPanelHeaderProps {
   readonly selected: number[];
@@ -17,25 +17,20 @@ const UserPanelHeader: FC<UserPanelHeaderProps> = ({
   handleClearSelection,
   users,
 }) => {
-  const { setPageParams } = usePageParams();
-
-  const handleSearch = (searchText: string) => {
-    setPageParams({ search: searchText });
-    handleClearSelection();
-  };
-
   return (
-    <HeaderWithSearch
-      onSearch={handleSearch}
-      actions={
-        <div className={classes.actions}>
-          <UserPanelActionButtons
-            handleClearSelection={handleClearSelection}
-            selectedUsers={getSelectedUsers(users, selected)}
-          />
-        </div>
-      }
-    />
+    <>
+      <HeaderWithSearch
+        actions={
+          <div className={classes.actions}>
+            <UserPanelActionButtons
+              handleClearSelection={handleClearSelection}
+              selectedUsers={getSelectedUsers(users, selected)}
+            />
+          </div>
+        }
+      />
+      <TableFilterChips filtersToDisplay={["search"]} />
+    </>
   );
 };
 

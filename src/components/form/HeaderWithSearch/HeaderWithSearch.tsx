@@ -1,54 +1,71 @@
-import type { FC, ReactNode } from "react";
-import { isValidElement, useState } from "react";
-import type { SearchBoxProps } from "@canonical/react-components";
+import usePageParams from "@/hooks/usePageParams";
 import { Form, SearchBox } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { isValidElement } from "react";
+import * as Yup from "yup";
 import classes from "./HeaderWithSearch.module.scss";
-
-interface HeaderWithSearchProps
-  extends Omit<
-    SearchBoxProps,
-    | "onSearch"
-    | "externallyControlled"
-    | "shouldRefocusAfterReset"
-    | "value"
-    | "onClear"
-    | "onChange"
-    | "ref"
-  > {
-  readonly onSearch: (searchText: string) => void;
-  readonly actions?: ReactNode;
-}
+import type { FormProps, HeaderWithSearchProps } from "./types";
+import classNames from "classnames";
 
 const HeaderWithSearch: FC<HeaderWithSearchProps> = ({
   actions,
+  afterSearch,
   autocomplete,
   onSearch,
+  className: customClassName,
   ...inputProps
 }) => {
-  const [inputText, setInputText] = useState("");
+  const { search, setPageParams } = usePageParams();
+
+  const handleSearch = ({ inputText }: { inputText: string }) => {
+    if (onSearch) {
+      onSearch(inputText.trim());
+    } else {
+      setPageParams({ search: inputText.trim() });
+      if (afterSearch) {
+        afterSearch();
+      }
+    }
+  };
+
+  const formik = useFormik<FormProps>({
+    initialValues: {
+      inputText: search,
+    },
+    enableReinitialize: true,
+    validationSchema: Yup.object().shape({
+      inputText: Yup.string(),
+    }),
+    onSubmit: handleSearch,
+  });
+
+  const handleClear = () => {
+    if (onSearch) {
+      onSearch("");
+    } else {
+      setPageParams({ search: "" });
+    }
+    formik.resetForm();
+  };
+
+  const handleChange = async (value: string) => {
+    await formik.setFieldValue("inputText", value);
+  };
 
   return (
-    <div className={classes.container}>
+    <div className={classNames(customClassName, classes.container)}>
       <div className={classes.search}>
-        <Form
-          className="u-no-margin--bottom"
-          onSubmit={(event) => {
-            event.preventDefault();
-
-            onSearch(inputText.trim());
-          }}
-        >
+        <Form className="u-no-margin--bottom" onSubmit={formik.handleSubmit}>
           <SearchBox
+            className="u-no-margin--bottom"
             externallyControlled
             shouldRefocusAfterReset
             autocomplete={autocomplete ?? "off"}
-            onSearch={() => onSearch(inputText.trim())}
-            value={inputText}
-            onChange={(inputValue) => setInputText(inputValue)}
-            onClear={() => {
-              setInputText("");
-              onSearch("");
-            }}
+            onSearch={() => handleSearch(formik.values)}
+            value={formik.values.inputText}
+            onChange={handleChange}
+            onClear={handleClear}
             {...inputProps}
           />
         </Form>
