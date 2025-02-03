@@ -15,4 +15,4 @@ export const FEEDBACK_LINK =
 export const REPORT_VIEW_ENABLED =
   import.meta.env.VITE_REPORT_VIEW_ENABLED === "true";
 export const CONTACT_SUPPORT_TEAM_MESSAGE =
-  "Oops! Something went wrong. Please try again or contact our support team.";
+  "Something went wrong. Please try again or contact our support team.";

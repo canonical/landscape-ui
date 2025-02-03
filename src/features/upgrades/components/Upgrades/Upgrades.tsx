@@ -14,6 +14,7 @@ import UpgradeInfo from "../UpgradeInfo";
 import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
 import { getInitialValues, getTabLinks } from "./helpers";
 import type { UpgradesFormProps } from "./types";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
@@ -84,37 +85,39 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
         })}
       />
 
-      <div tabIndex={0} role="tabpanel" aria-labelledby={activeTabLinkId}>
-        <Suspense fallback={<LoadingState />}>
-          {activeTabLinkId === "tab-link-instances" && (
-            <TAB_PANELS.instances
-              excludedPackages={formik.values.excludedPackages}
-              instances={affectedInstances}
-              onExcludedPackagesChange={(newExcludedPackages) =>
-                formik.setFieldValue("excludedPackages", newExcludedPackages)
-              }
-            />
-          )}
-          {activeTabLinkId === "tab-link-packages" && (
-            <TAB_PANELS.packages
-              excludedPackages={formik.values.excludedPackages}
-              instances={affectedInstances}
-              onExcludedPackagesChange={(newExcludedPackages) =>
-                formik.setFieldValue("excludedPackages", newExcludedPackages)
-              }
-            />
-          )}
-          {activeTabLinkId === "tab-link-usns" && (
-            <TAB_PANELS.usns
-              excludedUsns={formik.values.excludedUsns}
-              instances={instancesWithUsn}
-              onExcludedUsnsChange={(usns) =>
-                formik.setFieldValue("excludedUsns", usns)
-              }
-            />
-          )}
-        </Suspense>
-      </div>
+      <AppErrorBoundary>
+        <div tabIndex={0} role="tabpanel" aria-labelledby={activeTabLinkId}>
+          <Suspense fallback={<LoadingState />}>
+            {activeTabLinkId === "tab-link-instances" && (
+              <TAB_PANELS.instances
+                excludedPackages={formik.values.excludedPackages}
+                instances={affectedInstances}
+                onExcludedPackagesChange={(newExcludedPackages) =>
+                  formik.setFieldValue("excludedPackages", newExcludedPackages)
+                }
+              />
+            )}
+            {activeTabLinkId === "tab-link-packages" && (
+              <TAB_PANELS.packages
+                excludedPackages={formik.values.excludedPackages}
+                instances={affectedInstances}
+                onExcludedPackagesChange={(newExcludedPackages) =>
+                  formik.setFieldValue("excludedPackages", newExcludedPackages)
+                }
+              />
+            )}
+            {activeTabLinkId === "tab-link-usns" && (
+              <TAB_PANELS.usns
+                excludedUsns={formik.values.excludedUsns}
+                instances={instancesWithUsn}
+                onExcludedUsnsChange={(usns) =>
+                  formik.setFieldValue("excludedUsns", usns)
+                }
+              />
+            )}
+          </Suspense>
+        </div>
+      </AppErrorBoundary>
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}

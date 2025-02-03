@@ -20,6 +20,7 @@ import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { CTA_INFO, INITIAL_VALUES } from "./constants";
 import { getValidationSchema } from "./helpers";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
 type RepositoryProfileFormProps =
   | {
@@ -116,39 +117,42 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         onCurrentTabChange={(tab) => setCurrentTab(tab)}
       />
 
-      {0 === currentTab && (
-        <RepositoryProfileFormDetailsPanel
-          accessGroups={accessGroupsResult?.data ?? []}
-          isTitleRequired={props.action === "add"}
-          formik={formik}
-        />
-      )}
+      <AppErrorBoundary>
+        {0 === currentTab && (
+          <RepositoryProfileFormDetailsPanel
+            accessGroups={accessGroupsResult?.data ?? []}
+            isTitleRequired={props.action === "add"}
+            formik={formik}
+          />
+        )}
 
-      {1 === currentTab && (
-        <>
-          {!getDistributionsResult?.data.length && (
-            <p>No distributions found.</p>
-          )}
-          {getDistributionsResult && getDistributionsResult.data.length > 0 && (
-            <RepositoryProfileFormPocketsPanel
-              distributions={getDistributionsResult.data}
-              formik={formik}
-            />
-          )}
-        </>
-      )}
+        {1 === currentTab && (
+          <>
+            {!getDistributionsResult?.data.length && (
+              <p>No distributions found.</p>
+            )}
+            {getDistributionsResult &&
+              getDistributionsResult.data.length > 0 && (
+                <RepositoryProfileFormPocketsPanel
+                  distributions={getDistributionsResult.data}
+                  formik={formik}
+                />
+              )}
+          </>
+        )}
 
-      {2 === currentTab && (
-        <>
-          {!getAPTSourcesResult?.data.length && <p>No APT sources found.</p>}
-          {getAPTSourcesResult && getAPTSourcesResult.data.length > 0 && (
-            <RepositoryProfileFormAptSourcesPanel
-              aptSources={getAPTSourcesResult.data}
-              formik={formik}
-            />
-          )}
-        </>
-      )}
+        {2 === currentTab && (
+          <>
+            {!getAPTSourcesResult?.data.length && <p>No APT sources found.</p>}
+            {getAPTSourcesResult && getAPTSourcesResult.data.length > 0 && (
+              <RepositoryProfileFormAptSourcesPanel
+                aptSources={getAPTSourcesResult.data}
+                formik={formik}
+              />
+            )}
+          </>
+        )}
+      </AppErrorBoundary>
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}

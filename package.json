@@ -21,6 +21,7 @@
   "dependencies": {
     "@canonical/react-components": "1.9.0",
     "@monaco-editor/react": "4.6.0",
+    "@sentry/react": "^8.53.0",
     "@tanstack/react-query": "5.64.2",
     "axios": "1.7.9",
     "buffer": "6.0.3",

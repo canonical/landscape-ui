@@ -7,6 +7,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { getTabLinks } from "./helpers";
 import classes from "./SingleInstanceTabs.module.scss";
 import usePageParams from "@/hooks/usePageParams";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
 const InfoPanel = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info"),
@@ -90,33 +91,35 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
         aria-labelledby={currentTabLinkId}
         className={classes.tabPanel}
       >
-        <Suspense fallback={<LoadingState />}>
-          {"tab-link-info" === currentTabLinkId && (
-            <InfoPanel instance={instance} />
-          )}
-          {"tab-link-wsl" === currentTabLinkId && (
-            <WslPanel instance={instance as WindowsInstance} />
-          )}
-          {"tab-link-activities" === currentTabLinkId && (
-            <ActivityPanel instanceId={instance.id} />
-          )}
-          {"tab-link-kernel" === currentTabLinkId && (
-            <KernelPanel instanceTitle={instance.title} />
-          )}
-          {"tab-link-security-issues" === currentTabLinkId && (
-            <SecurityIssuesPanel instance={instance} />
-          )}
-          {"tab-link-packages" === currentTabLinkId && <PackagesPanel />}
-          {"tab-link-snaps" === currentTabLinkId && <SnapsPanel />}
-          {"tab-link-processes" === currentTabLinkId && <ProcessesPanel />}
-          {"tab-link-ubuntu-pro" === currentTabLinkId && (
-            <UbuntuProPanel instance={instance} />
-          )}
-          {"tab-link-users" === currentTabLinkId && <UserPanel />}
-          {"tab-link-hardware" === currentTabLinkId && (
-            <HardwarePanel instance={instance} />
-          )}
-        </Suspense>
+        <AppErrorBoundary>
+          <Suspense fallback={<LoadingState />}>
+            {"tab-link-info" === currentTabLinkId && (
+              <InfoPanel instance={instance} />
+            )}
+            {"tab-link-wsl" === currentTabLinkId && (
+              <WslPanel instance={instance as WindowsInstance} />
+            )}
+            {"tab-link-activities" === currentTabLinkId && (
+              <ActivityPanel instanceId={instance.id} />
+            )}
+            {"tab-link-kernel" === currentTabLinkId && (
+              <KernelPanel instanceTitle={instance.title} />
+            )}
+            {"tab-link-security-issues" === currentTabLinkId && (
+              <SecurityIssuesPanel instance={instance} />
+            )}
+            {"tab-link-packages" === currentTabLinkId && <PackagesPanel />}
+            {"tab-link-snaps" === currentTabLinkId && <SnapsPanel />}
+            {"tab-link-processes" === currentTabLinkId && <ProcessesPanel />}
+            {"tab-link-ubuntu-pro" === currentTabLinkId && (
+              <UbuntuProPanel instance={instance} />
+            )}
+            {"tab-link-users" === currentTabLinkId && <UserPanel />}
+            {"tab-link-hardware" === currentTabLinkId && (
+              <HardwarePanel instance={instance} />
+            )}
+          </Suspense>
+        </AppErrorBoundary>
       </div>
     </>
   );

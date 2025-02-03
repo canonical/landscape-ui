@@ -6,6 +6,7 @@ import AppNotification from "@/components/layout/AppNotification";
 import useNotify from "@/hooks/useNotify";
 import classes from "./SidePanelProvider.module.scss";
 import { Button, Icon, ICONS } from "@canonical/react-components";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
 interface SidePanelContextProps {
   changeSidePanelSize: (size: "small" | "medium" | "large") => void;
@@ -93,7 +94,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
         })}
       >
         {open && (
-          <>
+          <AppErrorBoundary>
             <div className={classNames("p-panel__header", classes.header)}>
               <h3 className="p-panel__title">{title}</h3>
               <p className="u-text--muted">
@@ -118,7 +119,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
                 {body}
               </div>
             </div>
-          </>
+          </AppErrorBoundary>
         )}
       </aside>
     </SidePanelContext.Provider>

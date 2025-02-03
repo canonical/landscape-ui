@@ -1,4 +1,5 @@
 import type { FC, ReactNode } from "react";
+import React from "react";
 import Sidebar from "./Sidebar";
 import SidePanelProvider from "../../context/sidePanel";
 import { matchPath, useLocation } from "react-router";
@@ -22,7 +23,7 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
       <SidePanelProvider>
         <Sidebar />
         <main className={classNames("l-main", classes.wrapper)}>
-          {hasSecondaryNav && isLargeScreen ? (
+          {hasSecondaryNav && isLargeScreen && (
             <div
               className={classNames(
                 "l-navigation__drawer",
@@ -31,7 +32,7 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
             >
               <SecondaryNavigation />
             </div>
-          ) : null}
+          )}
           <div className={classes.pageContent}>{children}</div>
         </main>
       </SidePanelProvider>
