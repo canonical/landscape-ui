@@ -72,7 +72,7 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
         type="button"
         onClick={handlePackagesInstall}
         hasIcon
-        className={classes.noWrap}
+        className={classNames("u-no-margin--bottom", classes.noWrap)}
       >
         <i className="p-icon--plus" />
         <span>Install</span>
@@ -93,7 +93,7 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
             <Button
               key={packageAction}
               type="button"
-              className="p-segmented-control__button has-icon"
+              className="p-segmented-control__button has-icon u-no-margin--bottom"
               disabled={actionDisabledCondition[packageAction]}
               onClick={() => handleExistingPackages(packageAction)}
             >

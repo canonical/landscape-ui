@@ -1,10 +1,10 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { getSelectedSnaps } from "../../helpers";
 import type { InstalledSnap } from "../../types";
 import SnapsActions from "../SnapsActions";
 import classes from "./SnapsHeader.module.scss";
+import { TableFilterChips } from "@/components/filter";
 
 interface SnapsHeaderProps {
   readonly handleClearSelection: () => void;
@@ -17,25 +17,21 @@ const SnapsHeader: FC<SnapsHeaderProps> = ({
   selectedSnapIds,
   installedSnaps,
 }) => {
-  const { setPageParams } = usePageParams();
-
-  const handleSearch = (searchText: string) => {
-    setPageParams({ search: searchText });
-    handleClearSelection();
-  };
-
   return (
-    <HeaderWithSearch
-      onSearch={handleSearch}
-      actions={
-        <div className={classes.actions}>
-          <SnapsActions
-            selectedSnapIds={selectedSnapIds}
-            installedSnaps={getSelectedSnaps(installedSnaps, selectedSnapIds)}
-          />
-        </div>
-      }
-    />
+    <>
+      <HeaderWithSearch
+        afterSearch={handleClearSelection}
+        actions={
+          <div className={classes.actions}>
+            <SnapsActions
+              selectedSnapIds={selectedSnapIds}
+              installedSnaps={getSelectedSnaps(installedSnaps, selectedSnapIds)}
+            />
+          </div>
+        }
+      />
+      <TableFilterChips filtersToDisplay={["search"]} />
+    </>
   );
 };
 

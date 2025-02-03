@@ -62,7 +62,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
           type="button"
           onClick={handleInstallSnap}
           hasIcon
-          className={classes.noWrap}
+          className={classNames("u-no-margin--bottom", classes.noWrap)}
         >
           <Icon name={ICONS.plus} />
           <span>Install</span>
@@ -70,12 +70,15 @@ const SnapsActions: FC<SnapsActionProps> = ({
       )}
       <div
         key="buttons"
-        className={classNames("p-segmented-control is-small", classes.noWrap)}
+        className={classNames(
+          "p-segmented-control is-small u-no-margin--bottom",
+          classes.noWrap,
+        )}
       >
         {singleSnap && sidePanel && (
           <Button
             type="button"
-            className="p-segmented-control__button has-icon"
+            className="p-segmented-control__button has-icon u-no-margin--bottom"
             disabled={0 === selectedSnapIds.length}
             onClick={() => handleEditSnap(EditSnapType.Switch)}
           >
@@ -85,7 +88,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
         )}
         <Button
           type="button"
-          className="p-segmented-control__button has-icon"
+          className="p-segmented-control__button has-icon u-no-margin--bottom"
           disabled={0 === selectedSnapIds.length}
           onClick={() => {
             handleEditSnap(EditSnapType.Uninstall);
@@ -97,7 +100,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
         {(singleSnap?.held_until === null || !sidePanel) && (
           <Button
             type="button"
-            className="p-segmented-control__button has-icon"
+            className="p-segmented-control__button has-icon u-no-margin--bottom"
             disabled={0 === unheld}
             onClick={() => {
               handleEditSnap(EditSnapType.Hold);
@@ -110,7 +113,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
         {(singleSnap?.held_until !== null || !sidePanel) && (
           <Button
             type="button"
-            className="p-segmented-control__button has-icon"
+            className="p-segmented-control__button has-icon u-no-margin--bottom"
             disabled={0 === held}
             onClick={() => {
               handleEditSnap(EditSnapType.Unhold);
@@ -122,7 +125,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
         )}
         <Button
           type="button"
-          className="p-segmented-control__button has-icon"
+          className="p-segmented-control__button has-icon u-no-margin--bottom"
           disabled={0 === selectedSnapIds.length}
           onClick={() => {
             handleEditSnap(EditSnapType.Refresh);

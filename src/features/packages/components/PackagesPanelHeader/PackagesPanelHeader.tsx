@@ -1,11 +1,10 @@
+import { StatusFilter, TableFilterChips } from "@/components/filter";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import type { FC } from "react";
-import { Select } from "@canonical/react-components";
-import usePageParams from "@/hooks/usePageParams";
 import type { InstancePackage } from "../../types";
 import PackageActions from "../PackageActions";
-import { filterOptions } from "./constants";
+import { STATUS_OPTIONS } from "./constants";
 import classes from "./PackagesPanelHeader.module.scss";
-import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 
 interface PackagesPanelHeaderProps {
   readonly handleClearSelection: () => void;
@@ -16,34 +15,22 @@ const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
   handleClearSelection,
   selectedPackages,
 }) => {
-  const { setPageParams, status } = usePageParams();
-
-  const handleSearch = (searchText: string) => {
-    setPageParams({ search: searchText });
-    handleClearSelection();
-  };
-
-  const handleFilterChange = (newStatus: string) => {
-    setPageParams({ status: newStatus });
-    handleClearSelection();
-  };
-
   return (
-    <HeaderWithSearch
-      onSearch={handleSearch}
-      actions={
-        <div className={classes.actions}>
-          <Select
-            label="Status"
-            wrapperClassName={classes.selectContainer}
-            options={filterOptions}
-            value={status}
-            onChange={(event) => handleFilterChange(event.target.value)}
-          />
-          <PackageActions selectedPackages={selectedPackages} />
-        </div>
-      }
-    />
+    <>
+      <HeaderWithSearch
+        afterSearch={handleClearSelection}
+        actions={
+          <div className={classes.actions}>
+            <StatusFilter options={STATUS_OPTIONS} />
+            <PackageActions selectedPackages={selectedPackages} />
+          </div>
+        }
+      />
+      <TableFilterChips
+        filtersToDisplay={["search", "status"]}
+        statusOptions={STATUS_OPTIONS}
+      />
+    </>
   );
 };
 

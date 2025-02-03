@@ -4,6 +4,7 @@ import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
 import type { ColumnFilterOption } from "./types";
 import classes from "./ColumnFilter.module.scss";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface ColumnFilterProps {
   readonly options: ColumnFilterOption[];
@@ -17,6 +18,11 @@ const ColumnFilter: FC<ColumnFilterProps> = ({ options }) => {
       .filter(({ value }) => !disabledValues.includes(value))
       .map(({ value }) => value);
   };
+
+  useSetDynamicFilterValidation(
+    "disabledColumns",
+    options.filter((item) => item.canBeHidden).map((opt) => opt.value),
+  );
 
   return (
     <TableFilter

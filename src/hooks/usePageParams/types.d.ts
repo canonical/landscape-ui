@@ -2,31 +2,12 @@ import type { PARAMS } from "./constants";
 
 export type SortDirection = "asc" | "desc";
 
-type ParamValue = string | string[] | number | number[];
+export type ParamKeyMapping = {
+  [K in keyof typeof PARAMS as (typeof PARAMS)[K]["urlParam"]]: ReturnType<
+    (typeof PARAMS)[K]["getDefaultValue"]
+  >;
+};
 
-type ArrayParams = Record<
-  | typeof PARAMS.ACCESS_GROUPS
-  | typeof PARAMS.AVAILABILITY_ZONES
-  | typeof PARAMS.DISABLED_COLUMNS
-  | typeof PARAMS.TAGS,
-  string[]
->;
+export type PageParams = Partial<ParamKeyMapping>;
 
-type NumberParams = Record<
-  typeof PARAMS.CURRENT_PAGE | typeof PARAMS.PAGE_SIZE | typeof PARAMS.DAYS,
-  number
->;
-
-type SortParams = Record<typeof PARAMS.SORT, SortDirection | null>;
-
-type StringParams = Record<
-  Exclude<
-    (typeof PARAMS)[keyof typeof PARAMS],
-    keyof ArrayParams | keyof NumberParams | keyof SortParams
-  >,
-  string
->;
-
-type PageParams = Partial<
-  ArrayParams & NumberParams & SortParams & StringParams
->;
+export type PossibleDefaultValues = string | number | string[] | null;

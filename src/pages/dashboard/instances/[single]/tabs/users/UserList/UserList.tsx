@@ -15,6 +15,7 @@ import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import { SORT_KEYS } from "../constants";
 import classes from "./UserList.module.scss";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 const EditUserForm = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
@@ -32,6 +33,8 @@ interface UserListProps {
 const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
   const { setPageParams, sortBy, sort } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
+  useSetDynamicFilterValidation("sortBy", Object.values(SORT_KEYS));
+  useSetDynamicFilterValidation("sort", ["asc", "desc"]);
 
   const handleEditUser = (user: User) => {
     setSidePanelContent(

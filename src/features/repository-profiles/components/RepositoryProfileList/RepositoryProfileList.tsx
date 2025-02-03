@@ -9,6 +9,7 @@ import RepositoryProfileListContextualMenu from "../RepositoryProfileListContext
 import { handleCellProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
 import NoData from "@/components/layout/NoData";
+import usePageParams from "@/hooks/usePageParams";
 
 interface RepositoryProfileListProps {
   readonly repositoryProfiles: RepositoryProfile[];
@@ -17,6 +18,7 @@ interface RepositoryProfileListProps {
 const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
   repositoryProfiles,
 }) => {
+  const { search } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
 
@@ -27,7 +29,15 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
     value: name,
   }));
 
-  const profiles = useMemo(() => repositoryProfiles, [repositoryProfiles]);
+  const profiles = useMemo(() => {
+    if (!search) {
+      return repositoryProfiles;
+    }
+
+    return repositoryProfiles.filter((profile) => {
+      return profile.title.toLowerCase().includes(search.toLowerCase());
+    });
+  }, [repositoryProfiles, search]);
 
   const columns = useMemo<Column<RepositoryProfile>[]>(
     () => [
@@ -68,7 +78,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
       columns={columns}
       data={profiles}
       getCellProps={handleCellProps}
-      emptyMsg="No profiles yet."
+      emptyMsg={`No repository profiles found with the search "${search}"`}
     />
   );
 };

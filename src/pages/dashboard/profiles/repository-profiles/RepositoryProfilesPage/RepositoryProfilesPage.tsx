@@ -7,6 +7,7 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import {
+  RepositoryProfileHeader,
   RepositoryProfileList,
   useRepositoryProfiles,
 } from "@/features/repository-profiles";
@@ -81,7 +82,10 @@ const RepositoryProfilesPage: FC = () => {
           />
         )}
         {!isLoading && repositoryProfiles.length > 0 && (
-          <RepositoryProfileList repositoryProfiles={repositoryProfiles} />
+          <>
+            <RepositoryProfileHeader />
+            <RepositoryProfileList repositoryProfiles={repositoryProfiles} />
+          </>
         )}
       </PageContent>
     </PageMain>

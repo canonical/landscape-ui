@@ -1,15 +1,14 @@
-import classNames from "classnames";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
-import { Button, Col, Row } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import PackageProfileDetailsConstraintsInfo from "../PackageProfileDetailsConstraintsInfo";
 import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";
 import useSidePanel from "@/hooks/useSidePanel";
-import classes from "./PackageProfileDetailsConstraints.module.scss";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import classes from "./PackageProfileDetailsConstraints.module.scss";
 
 const PackageProfileConstraintsEditForm = lazy(
   () => import("../PackageProfileConstraintsEditForm"),
@@ -63,24 +62,19 @@ const PackageProfileDetailsConstraints: FC<
           getPackageProfileConstraintsQueryResult &&
           getPackageProfileConstraintsQueryResult.data.results.length > 0)) && (
         <>
-          <Row
-            className={classNames(
-              "u-no-padding--left u-no-padding--right",
-              classes.actions,
-            )}
-          >
-            <Col size={6}>
-              <HeaderWithSearch
-                onSearch={(searchText) => setSearch(searchText)}
-              />
-            </Col>
-
-            <Col size={6} className="u-align-text--right">
-              <Button type="button" onClick={handlePackageConstraintsChange}>
+          <HeaderWithSearch
+            className={classes.actions}
+            onSearch={(searchText) => setSearch(searchText)}
+            actions={
+              <Button
+                className="u-no-margin--bottom"
+                type="button"
+                onClick={handlePackageConstraintsChange}
+              >
                 Change package constraints
               </Button>
-            </Col>
-          </Row>
+            }
+          />
 
           <PackageProfileDetailsConstraintsInfo
             isConstraintsLoading={getPackageProfileConstraintsQueryLoading}

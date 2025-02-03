@@ -89,7 +89,7 @@ const PackageProfileConstraintsEditFormTable: FC<
       {
         accessor: "constraint",
         Header: () => (
-          <div className={classes.checkboxContainer}>
+          <>
             <CheckboxInput
               inline
               label={
@@ -108,7 +108,7 @@ const PackageProfileConstraintsEditFormTable: FC<
               onChange={handleToggleAllConstraints}
             />
             <span>Constraint</span>
-          </div>
+          </>
         ),
         Cell: ({ row: { original } }: CellProps<Constraint>) =>
           formik.values.id === original.id ? (

@@ -7,9 +7,9 @@ import { useEffect, useRef, useState } from "react";
 import { defaultFiltersToDisplay } from "./constants";
 import {
   checkRenderConditions,
-  filterSearch,
+  filterSearchQuery,
   getChipLabel,
-  parseSearch,
+  parseSearchQuery,
 } from "./helpers";
 import classes from "./TableFilterChips.module.scss";
 import type { FilterKey } from "./types";
@@ -22,7 +22,6 @@ interface TableFilterChipsProps {
   readonly statusOptions?: SelectOption[];
   readonly tagOptions?: SelectOption[];
   readonly typeOptions?: SelectOption[];
-  readonly useSearchAsQuery?: boolean;
 }
 
 const TableFilterChips: FC<TableFilterChipsProps> = ({
@@ -33,7 +32,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   statusOptions,
   tagOptions,
   typeOptions,
-  useSearchAsQuery = false,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [hiddenChipCount, setHiddenChipCount] = useState(0);
@@ -53,6 +51,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     toDate,
     type,
     search,
+    query,
   } = usePageParams();
 
   const handleClearAllFilters = () => {
@@ -66,6 +65,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       toDate: "",
       type: "",
       search: "",
+      query: "",
     });
     setIsExpanded(false);
   };
@@ -131,7 +131,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     tags,
     toDate,
     type,
-    useSearchAsQuery,
+    query,
   });
 
   if (renderResults.totalChipsToRenderCount === 0) {
@@ -159,12 +159,12 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           </Button>
         )}
         {renderResults.areSearchQueryChipsRender &&
-          parseSearch(search).map((value) => (
+          parseSearchQuery(query).map((value, idx) => (
             <Chip
-              key={value}
-              value={`Search: ${value}`}
+              key={value + idx}
+              value={`Query: ${value}`}
               onDismiss={() =>
-                setPageParams({ search: filterSearch(search, value) })
+                setPageParams({ query: filterSearchQuery(query, value) })
               }
               className="u-no-margin--bottom u-no-margin--right"
             />

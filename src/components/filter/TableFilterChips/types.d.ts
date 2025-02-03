@@ -12,6 +12,7 @@ export type FilterType = Pick<
   | "tags"
   | "toDate"
   | "type"
+  | "query"
 >;
 
 export type FilterKey = keyof FilterType;
@@ -22,7 +23,6 @@ export interface ExtendedSearchAndFilterChip extends SearchAndFilterChip {
 
 interface CheckRenderConditionsParams extends FilterType {
   filtersToMonitor: FilterKey[];
-  useSearchAsQuery: boolean;
 }
 
 export type PluralChipsKey = keyof {

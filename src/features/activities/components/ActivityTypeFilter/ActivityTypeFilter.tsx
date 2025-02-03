@@ -1,4 +1,5 @@
 import { TableFilter } from "@/components/filter";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
 import type { FC } from "react";
@@ -15,6 +16,11 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({ options }) => {
 
   const newOptions = options.filter((option) =>
     option.label.toLowerCase().includes(searchText.toLowerCase()),
+  );
+
+  useSetDynamicFilterValidation(
+    "type",
+    newOptions.map((opt) => opt.value),
   );
 
   return (
