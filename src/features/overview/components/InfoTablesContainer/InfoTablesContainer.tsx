@@ -1,10 +1,19 @@
 import EmptyState from "@/components/layout/EmptyState";
 import ExpandableTableFooter from "@/components/layout/ExpandableTableFooter";
+import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
 import { useActivities } from "@/features/activities";
+import type { Package } from "@/features/packages";
+import { usePackages } from "@/features/packages";
+import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
+import useNotify from "@/hooks/useNotify";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { Instance } from "@/types/Instance";
+import type { Usn } from "@/types/Usn";
 import {
   Button,
   Col,
@@ -13,25 +22,23 @@ import {
   Row,
   Tabs,
 } from "@canonical/react-components";
+import type { AxiosResponse } from "axios";
 import classNames from "classnames";
 import moment from "moment";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import type { CellProps, Column } from "react-table";
 import classes from "./InfoTablesContainer.module.scss";
-import type { Usn } from "@/types/Usn";
-import useNotify from "@/hooks/useNotify";
-import LoadingState from "@/components/layout/LoadingState";
-import type { Instance } from "@/types/Instance";
-import NoData from "@/components/layout/NoData";
-import type { Package } from "@/features/packages";
-import { usePackages } from "@/features/packages";
-import { useUsns } from "@/features/usns";
+import { MAX_ACTIVITY_COUNT, MAX_UPGRADE_COUNT } from "./constants";
 
 const InfoTablesContainer: FC = () => {
-  const [currentUpgradesTab, setCurrentUpgradesTab] = useState(0);
-  const [currentActivitiesTab, setCurrentActivitiesTab] = useState(0);
+  const [currentUpgradesTab, setCurrentUpgradesTab] = useState<
+    "instances" | "packages" | "usns"
+  >("instances");
+  const [currentActivitiesTab, setCurrentActivitiesTab] = useState<
+    "unapproved" | "inProgress"
+  >("unapproved");
 
   const navigate = useNavigate();
   const debug = useDebug();
@@ -47,42 +54,50 @@ const InfoTablesContainer: FC = () => {
     approveActivitiesQuery;
 
   const {
-    data: unapprovedActivitiesRes,
+    data: unapprovedActivitiesRes = {
+      data: { results: [] as Activity[], count: 0 },
+    } as AxiosResponse<ApiPaginatedResponse<Activity>>,
     refetch: refetchUnapprovedActivities,
     isLoading: isLoadingUnapprovedActivitiesData,
   } = getActivitiesQuery({
     query: "status:unapproved",
-    limit: 10,
+    limit: MAX_ACTIVITY_COUNT,
   });
 
   const {
-    data: inProgressActivitiesRes,
+    data: inProgressActivitiesRes = {
+      data: { results: [] as Activity[], count: 0 },
+    } as AxiosResponse<ApiPaginatedResponse<Activity>>,
     refetch: refetchInProgressActivities,
     isLoading: isLoadingInProgressActivitiesData,
   } = getActivitiesQuery(
     {
       query: "status:delivered",
-      limit: 10,
+      limit: MAX_ACTIVITY_COUNT,
     },
     {
-      enabled: currentActivitiesTab === 1,
+      enabled: currentActivitiesTab === "inProgress",
     },
   );
 
   const {
-    data: instancesUpgradesRes,
+    data: instancesUpgradesRes = {
+      data: { results: [] as Instance[], count: 0 },
+    } as AxiosResponse<ApiPaginatedResponse<Instance>>,
     refetch: refetchInstanceUpgrades,
     isLoading: isLoadingInstanceUpgrades,
   } = getInstancesQuery({
     query: "alert:security-upgrades OR alert:package-upgrades",
-    limit: 10,
+    limit: MAX_UPGRADE_COUNT,
     with_upgrades: true,
   });
 
-  const instancesData = instancesUpgradesRes?.data.results ?? [];
+  const instancesData = instancesUpgradesRes.data.results;
 
   const {
-    data: usnsData,
+    data: usnsData = {
+      data: { results: [] as Usn[], count: 0 },
+    } as AxiosResponse<ApiPaginatedResponse<Usn>>,
     refetch: refetchUsns,
     isLoading: isLoadingUsns,
   } = getUsnsQuery(
@@ -91,11 +106,13 @@ const InfoTablesContainer: FC = () => {
       limit: 11,
     },
     {
-      enabled: instancesData.length > 0 && currentUpgradesTab === 2,
+      enabled: !!instancesData.length && currentUpgradesTab === "usns",
     },
   );
   const {
-    data: packageDataRes,
+    data: packageDataRes = {
+      data: { results: [] as Package[], count: 0 },
+    } as AxiosResponse<ApiPaginatedResponse<Package>>,
     refetch: refetchPackages,
     isLoading: isLoadingPackages,
   } = getPackagesQuery(
@@ -105,73 +122,67 @@ const InfoTablesContainer: FC = () => {
       limit: 10,
     },
     {
-      enabled: instancesData.length > 0 && currentUpgradesTab === 1,
+      enabled: !!instancesData.length && currentUpgradesTab === "packages",
     },
   );
 
-  const packagesData = packageDataRes?.data.results ?? [];
-  const usnsUpgradesData = usnsData?.data.results ?? [];
-  const unapprovedActivitiesData = unapprovedActivitiesRes?.data.results ?? [];
-  const inProgressActivitiesData = inProgressActivitiesRes?.data.results ?? [];
+  const packagesData = packageDataRes.data.results;
+  const usnsUpgradesData = usnsData.data.results;
+  const unapprovedActivitiesData = unapprovedActivitiesRes.data.results;
+  const inProgressActivitiesData = inProgressActivitiesRes.data.results;
 
-  const getTotalTableItemsCount = (table: "activities" | "upgrades") => {
+  const getTotalTableItemsCount = (
+    table: "activities" | "upgrades",
+  ): number => {
     if (table === "upgrades") {
       switch (currentUpgradesTab) {
-        case 0:
-          return instancesUpgradesRes?.data.count ?? 0;
-        case 1:
-          return packageDataRes?.data.count ?? 0;
-        case 2:
-          return usnsData?.data.count ?? 0;
-        default:
-          return 0;
+        case "instances":
+          return instancesUpgradesRes.data.count;
+        case "packages":
+          return packageDataRes.data.count;
+        case "usns":
+          return usnsData.data.count;
       }
     } else {
       switch (currentActivitiesTab) {
-        case 0:
-          return unapprovedActivitiesRes?.data.count ?? 0;
-        case 1:
-          return inProgressActivitiesRes?.data.count ?? 0;
-        default:
-          return 0;
+        case "unapproved":
+          return unapprovedActivitiesRes.data.count;
+        case "inProgress":
+          return inProgressActivitiesRes.data.count;
       }
     }
   };
 
-  const getUpgradesTableFooterName = () => {
+  const getUpgradesTableFooterName = (): string => {
     switch (currentUpgradesTab) {
-      case 0:
+      case "instances":
         return "instance";
-      case 1:
+      case "packages":
         return "package";
-      default:
+      case "usns":
         return "USN";
     }
   };
 
-  const getUpgradesTableData = () => {
+  const getUpgradesTableData = (): (Instance | Package | Usn)[] => {
     switch (currentUpgradesTab) {
-      case 0:
+      case "instances":
         return instancesData;
-      case 1:
+      case "packages":
         return packagesData;
-      case 2:
+      case "usns":
         return usnsUpgradesData;
-      default:
-        return [];
     }
   };
 
-  const getIsLoadingUpgrades = () => {
+  const getIsLoadingUpgrades = (): boolean => {
     switch (currentUpgradesTab) {
-      case 0:
+      case "instances":
         return isLoadingInstanceUpgrades;
-      case 1:
+      case "packages":
         return isLoadingPackages;
-      case 2:
+      case "usns":
         return isLoadingUsns;
-      default:
-        return false;
     }
   };
 
@@ -184,12 +195,12 @@ const InfoTablesContainer: FC = () => {
     Column<Instance | Package | Usn>[]
   >(() => {
     switch (currentUpgradesTab) {
-      case 0:
+      case "instances":
         return [
           {
             Header: "Instance Name",
             accessor: "instanceName",
-            Cell: ({ row }: CellProps<Instance>) => (
+            Cell: ({ row }: CellProps<Instance>): ReactNode => (
               <Link
                 to={`/instances/${row.original.id}`}
                 className={classNames("u-no-margin--bottom", classes.link)}
@@ -201,16 +212,18 @@ const InfoTablesContainer: FC = () => {
           {
             Header: "Affected Packages",
             accessor: "upgrades",
-            Cell: ({ row }: CellProps<Instance>) => (
-              <>
-                {(row.original.upgrades?.security ?? 0) +
-                  (row.original.upgrades?.regular ?? 0)}
-              </>
-            ),
+            Cell: ({ row }: CellProps<Instance>): ReactNode => {
+              return (
+                <>
+                  {(row.original.upgrades?.security ?? 0) +
+                    (row.original.upgrades?.regular ?? 0)}
+                </>
+              );
+            },
             className: classes.lastCol,
           },
         ];
-      case 1:
+      case "packages":
         return [
           {
             Header: "Package Name",
@@ -219,7 +232,7 @@ const InfoTablesContainer: FC = () => {
           {
             Header: "Affected Instances",
             accessor: "computers",
-            Cell: ({ row }: CellProps<Package>) => (
+            Cell: ({ row }: CellProps<Package>): ReactNode => (
               <Link
                 to="/instances"
                 className={classNames("u-no-margin--bottom", classes.link)}
@@ -230,7 +243,7 @@ const InfoTablesContainer: FC = () => {
             className: classes.lastCol,
           },
         ];
-      case 2:
+      case "usns":
         return [
           {
             Header: "USN",
@@ -239,7 +252,7 @@ const InfoTablesContainer: FC = () => {
           {
             Header: "Affected Instances",
             accessor: "computers_count",
-            Cell: ({ row }: CellProps<Usn>) => (
+            Cell: ({ row }: CellProps<Usn>): ReactNode => (
               <Link
                 to="/instances"
                 className={classNames("u-no-margin--bottom", classes.link)}
@@ -255,11 +268,11 @@ const InfoTablesContainer: FC = () => {
     }
   }, [currentUpgradesTab]);
 
-  const getActivitiesTableData = () => {
+  const getActivitiesTableData = (): Activity[] => {
     switch (currentActivitiesTab) {
-      case 0:
+      case "unapproved":
         return unapprovedActivitiesData;
-      case 1:
+      case "inProgress":
         return inProgressActivitiesData;
       default:
         return [];
@@ -271,11 +284,11 @@ const InfoTablesContainer: FC = () => {
     [currentActivitiesTab, unapprovedActivitiesData, inProgressActivitiesData],
   );
 
-  const getIsLoadingActivities = () => {
+  const getIsLoadingActivities = (): boolean => {
     switch (currentActivitiesTab) {
-      case 0:
+      case "unapproved":
         return isLoadingUnapprovedActivitiesData;
-      case 1:
+      case "inProgress":
         return isLoadingInProgressActivitiesData;
       default:
         return false;
@@ -288,7 +301,7 @@ const InfoTablesContainer: FC = () => {
         Header: "Description",
         accessor: "summary",
         className: classes.description,
-        Cell: ({ row }: CellProps<ActivityCommon>) => (
+        Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => (
           <Link
             to="/activities"
             state={{ activity: row.original as Activity }}
@@ -301,14 +314,14 @@ const InfoTablesContainer: FC = () => {
       {
         Header: "Creator",
         accessor: "creator.name",
-        Cell: ({ row }: CellProps<ActivityCommon>) => (
+        Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => (
           <>{row.original.creator?.name ?? <NoData />}</>
         ),
       },
       {
         Header: "Created at",
         accessor: "creation_time",
-        Cell: ({ row }: CellProps<ActivityCommon>) => {
+        Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => {
           const date = moment(row.original.creation_time);
           return <>{date.local().format(DISPLAY_DATE_TIME_FORMAT)}</>;
         },
@@ -317,45 +330,45 @@ const InfoTablesContainer: FC = () => {
     [currentUpgradesTab],
   );
 
-  const handleClickUpgradesTab = (tabIndex: number) => {
-    setCurrentUpgradesTab(tabIndex);
+  const handleClickUpgradesTab = (tab: typeof currentUpgradesTab): void => {
+    setCurrentUpgradesTab(tab);
   };
 
-  const handleClickActivitiesTab = (tabIndex: number) => {
-    setCurrentActivitiesTab(tabIndex);
+  const handleClickActivitiesTab = (tab: typeof currentActivitiesTab): void => {
+    setCurrentActivitiesTab(tab);
   };
 
-  const handleUpgradesRefresh = () => {
+  const handleUpgradesRefresh = (): void => {
     switch (currentUpgradesTab) {
-      case 0:
+      case "instances":
         refetchInstanceUpgrades();
         break;
-      case 1:
-        if (instancesData.length > 0) {
+      case "packages":
+        if (instancesData.length) {
           refetchPackages();
         }
         break;
-      case 2:
-        if (instancesData.length > 0) {
+      case "usns":
+        if (instancesData.length) {
           refetchUsns();
         }
         break;
     }
   };
 
-  const handleActivitiesRefresh = () => {
+  const handleActivitiesRefresh = (): void => {
     switch (currentActivitiesTab) {
-      case 0:
+      case "unapproved":
         refetchUnapprovedActivities();
         break;
-      case 1:
+      case "inProgress":
         refetchInProgressActivities();
         break;
     }
   };
 
-  const handleUpgradeAll = async () => {
-    const isSecurityOnly = currentUpgradesTab === 2;
+  const handleUpgradeAll = async (): Promise<void> => {
+    const isSecurityOnly = currentUpgradesTab === "usns";
     try {
       await upgradePackages({
         query: instancesData
@@ -368,7 +381,7 @@ const InfoTablesContainer: FC = () => {
     }
   };
 
-  const handleApproveActivities = async () => {
+  const handleApproveActivities = async (): Promise<void> => {
     try {
       await approveActivities({
         query: "status:unapproved",
@@ -393,11 +406,11 @@ const InfoTablesContainer: FC = () => {
             type="button"
             className="is-small u-no-margin--bottom"
             confirmationModalProps={{
-              title: `Upgrade ${currentUpgradesTab === 2 ? "USNs" : "packages"}`,
+              title: `Upgrade ${currentUpgradesTab === "usns" ? "USNs" : "packages"}`,
               children: (
                 <p>
                   Are you sure you want to upgrade all{" "}
-                  {currentUpgradesTab === 2 ? "USNs" : "packages"}
+                  {currentUpgradesTab === "usns" ? "USNs" : "packages"}
                 </p>
               ),
               confirmButtonLabel: "Upgrade",
@@ -415,31 +428,32 @@ const InfoTablesContainer: FC = () => {
             {
               label: "Instances",
               role: "tab",
-              active: 0 === currentUpgradesTab,
-              onClick: () => {
-                handleClickUpgradesTab(0);
+              active: "instances" === currentUpgradesTab,
+              onClick: (): void => {
+                handleClickUpgradesTab("instances");
               },
             },
             {
               label: "Packages",
               role: "tab",
-              active: 1 === currentUpgradesTab,
-              onClick: () => {
-                handleClickUpgradesTab(1);
+              active: "packages" === currentUpgradesTab,
+              onClick: (): void => {
+                handleClickUpgradesTab("packages");
               },
             },
             {
               label: "USNs",
               role: "tab",
-              active: 2 === currentUpgradesTab,
-              onClick: () => {
-                handleClickUpgradesTab(2);
+              active: "usns" === currentUpgradesTab,
+              onClick: (): void => {
+                handleClickUpgradesTab("usns");
               },
             },
           ]}
         />
-        {getIsLoadingUpgrades() && <LoadingState />}
-        {!getIsLoadingUpgrades() && upgradesTableData.length === 0 && (
+        {getIsLoadingUpgrades() ? (
+          <LoadingState />
+        ) : !upgradesTableData.length ? (
           <EmptyState
             title="All instances are up to date"
             body="Your instances are up to date. Check back later for any new upgrades."
@@ -453,22 +467,21 @@ const InfoTablesContainer: FC = () => {
               </Button>,
             ]}
           />
-        )}
-        {!getIsLoadingUpgrades() && upgradesTableData.length > 0 && (
+        ) : (
           <>
             <ModularTable
               data={upgradesTableData}
               columns={upgradesTableColumns}
               className="u-no-margin--bottom"
             />
-            {getTotalTableItemsCount("upgrades") > 10 && (
+            {getTotalTableItemsCount("upgrades") > MAX_UPGRADE_COUNT && (
               <ExpandableTableFooter
                 viewAll
                 itemNames={{
                   singular: getUpgradesTableFooterName(),
                   plural: `${getUpgradesTableFooterName()}s`,
                 }}
-                itemCount={10}
+                itemCount={MAX_UPGRADE_COUNT}
                 onLimitChange={() => navigate("/instances")}
                 totalCount={getTotalTableItemsCount("upgrades")}
                 className={classes.footer}
@@ -481,7 +494,7 @@ const InfoTablesContainer: FC = () => {
       <Col size={6} className={classes.tableContainer}>
         <div className={classes.tableHeader}>
           <p className="p-heading--5 u-no-margin--bottom">Activities</p>
-          {currentActivitiesTab === 0 && (
+          {currentActivitiesTab === "unapproved" && (
             <ConfirmationButton
               className="is-small u-no-margin--bottom"
               type="button"
@@ -507,32 +520,33 @@ const InfoTablesContainer: FC = () => {
               label: "Requires approval",
               role: "tab",
               ["data-testid"]: "activities-requires-approval-tab",
-              active: 0 === currentActivitiesTab,
-              onClick: () => {
-                handleClickActivitiesTab(0);
+              active: "unapproved" === currentActivitiesTab,
+              onClick: (): void => {
+                handleClickActivitiesTab("unapproved");
               },
             },
             {
               label: "In progress",
               role: "tab",
               ["data-testid"]: "activities-in-progress-tab",
-              active: 1 === currentActivitiesTab,
-              onClick: () => {
-                handleClickActivitiesTab(1);
+              active: "inProgress" === currentActivitiesTab,
+              onClick: (): void => {
+                handleClickActivitiesTab("inProgress");
               },
             },
           ]}
         />
-        {getIsLoadingActivities() && <LoadingState />}
-        {!getIsLoadingActivities() && activitiesTableData.length === 0 && (
+        {getIsLoadingActivities() ? (
+          <LoadingState />
+        ) : !activitiesTableData.length ? (
           <EmptyState
             title={
-              currentActivitiesTab === 0
+              currentActivitiesTab === "unapproved"
                 ? "All activities have been approved"
                 : "There are no activities in progress"
             }
             body={
-              currentActivitiesTab === 0
+              currentActivitiesTab === "unapproved"
                 ? "There are currently no pending approval requests. Check back later for any new approval activities"
                 : "There are currently no activities in progress. Check back later."
             }
@@ -546,22 +560,21 @@ const InfoTablesContainer: FC = () => {
               </Button>,
             ]}
           />
-        )}
-        {!getIsLoadingActivities() && activitiesTableData.length > 0 && (
+        ) : (
           <>
             <ModularTable
               data={activitiesTableData}
               columns={activitiesTableColumns}
               className="u-no-margin--bottom"
             />
-            {getTotalTableItemsCount("activities") > 10 && (
+            {getTotalTableItemsCount("activities") > MAX_ACTIVITY_COUNT && (
               <ExpandableTableFooter
                 viewAll
                 itemNames={{
                   singular: "activity",
                   plural: "activities",
                 }}
-                itemCount={10}
+                itemCount={MAX_ACTIVITY_COUNT}
                 onLimitChange={() => navigate("/activities")}
                 totalCount={getTotalTableItemsCount("activities")}
                 className={classes.footer}
