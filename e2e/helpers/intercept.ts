@@ -1,11 +1,11 @@
-import { Page, Request } from "@playwright/test";
+import type { Page, Request } from "@playwright/test";
 
 export async function interceptRequest(
   page: Page,
   method: "POST" | "PATCH" | "PUT" | "DELETE",
   endpoint: string,
-  expectedPayload?: Record<string, any>,
-  mockResponse?: Record<string, any>,
+  expectedPayload?: Record<string, unknown>,
+  mockResponse?: Record<string, unknown>,
 ) {
   await page.route(`${endpoint}`, async (route) => {
     const request = route.request();

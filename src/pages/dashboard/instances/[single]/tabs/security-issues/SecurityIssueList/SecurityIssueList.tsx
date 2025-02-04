@@ -21,18 +21,10 @@ const SecurityIssueList: FC<SecurityIssueListProps> = ({
 }) => {
   const [selectedUsns, setSelectedUsns] = useState<string[]>([]);
 
-  const { search, setPageParams } = usePageParams();
-
-  const handleSearch = (searchText: string) => {
-    setPageParams({
-      search: searchText,
-    });
-    setSelectedUsns([]);
-  };
-
+  const { search } = usePageParams();
   return (
     <>
-      <SecurityIssuesPanelHeader onSearch={handleSearch} usns={selectedUsns} />
+      <SecurityIssuesPanelHeader usns={selectedUsns} />
       <UsnList
         tableType="paginated"
         instances={[instance]}

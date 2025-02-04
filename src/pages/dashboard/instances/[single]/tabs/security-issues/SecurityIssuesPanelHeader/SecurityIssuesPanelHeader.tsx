@@ -1,30 +1,23 @@
-import type { FC } from "react";
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import {
-  ConfirmationButton,
-  Form,
-  Icon,
-  SearchBox,
-} from "@canonical/react-components";
+import { TableFilterChips } from "@/components/filter";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { useUsns } from "@/features/usns";
-import classes from "./SecurityIssuesPanelHeader.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
+import { ConfirmationButton, Icon } from "@canonical/react-components";
+import classNames from "classnames";
+import type { FC } from "react";
+import { useNavigate, useParams } from "react-router";
+import classes from "./SecurityIssuesPanelHeader.module.scss";
 
 interface SecurityIssuesPanelHeaderProps {
-  readonly onSearch: (searchText: string) => void;
   readonly usns: string[];
 }
 
 const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
-  onSearch,
   usns,
 }) => {
-  const [inputText, setInputText] = useState("");
-
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { setPageParams } = usePageParams();
   const navigate = useNavigate();
@@ -68,57 +61,40 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
   };
 
   return (
-    <div className={classes.container}>
-      <div className={classes.searchContainer}>
-        <Form
-          onSubmit={(event) => {
-            event.preventDefault();
-            onSearch(inputText);
-          }}
-          noValidate
-        >
-          <SearchBox
-            shouldRefocusAfterReset
-            externallyControlled
-            autocomplete="off"
-            value={inputText}
-            onChange={(inputValue) => setInputText(inputValue)}
-            onSearch={() => onSearch(inputText)}
-            onClear={() => {
-              setInputText("");
-              onSearch("");
-            }}
-          />
-        </Form>
-      </div>
-      <div className="p-segmented-control">
-        <ConfirmationButton
-          className="p-segmented-control__button has-icon"
-          type="button"
-          disabled={usns.length === 0}
-          confirmationModalProps={{
-            title: "Upgrade affected packages",
-            children: (
-              <p>
-                This will upgrade affected packages for{" "}
-                {usns.length === 1
-                  ? `"${usns[0]}" security issue`
-                  : `${usns.length} selected security issues`}
-                .
-              </p>
-            ),
-            confirmButtonLabel: "Upgrade",
-            confirmButtonAppearance: "positive",
-            confirmButtonLoading: isUpgrading,
-            confirmButtonDisabled: isUpgrading,
-            onConfirm: handleUpgradePackages,
-          }}
-        >
-          <Icon name="change-version" />
-          <span>Upgrade</span>
-        </ConfirmationButton>
-      </div>
-    </div>
+    <>
+      <HeaderWithSearch
+        actions={
+          <div className={classNames("p-segmented-control", classes.actions)}>
+            <ConfirmationButton
+              className="p-segmented-control__button has-icon u-no-margin--bottom"
+              type="button"
+              disabled={usns.length === 0}
+              confirmationModalProps={{
+                title: "Upgrade affected packages",
+                children: (
+                  <p>
+                    This will upgrade affected packages for{" "}
+                    {usns.length === 1
+                      ? `"${usns[0]}" security issue`
+                      : `${usns.length} selected security issues`}
+                    .
+                  </p>
+                ),
+                confirmButtonLabel: "Upgrade",
+                confirmButtonAppearance: "positive",
+                confirmButtonLoading: isUpgrading,
+                confirmButtonDisabled: isUpgrading,
+                onConfirm: handleUpgradePackages,
+              }}
+            >
+              <Icon name="change-version" />
+              <span>Upgrade</span>
+            </ConfirmationButton>
+          </div>
+        }
+      />
+      <TableFilterChips filtersToDisplay={["search"]} />
+    </>
   );
 };
 

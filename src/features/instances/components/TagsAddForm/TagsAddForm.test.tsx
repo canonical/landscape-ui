@@ -4,6 +4,7 @@ import { instances } from "@/tests/mocks/instance";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { getTestErrorParams } from "@/tests/mocks/error";
+import type useInstances from "@/hooks/useInstances";
 
 describe("TagsAddForm", async () => {
   const addTagsToInstances = vi.hoisted(() =>
@@ -18,11 +19,9 @@ describe("TagsAddForm", async () => {
   const selected = instances;
 
   vi.mock("@/hooks/useInstances", async (importOriginal) => {
-    const original =
-      await importOriginal<typeof import("@/hooks/useInstances")>();
+    const original = await importOriginal<{ default: typeof useInstances }>();
 
     return {
-      ...original,
       default: () => ({
         ...original.default(),
         addTagsToInstancesQuery: {

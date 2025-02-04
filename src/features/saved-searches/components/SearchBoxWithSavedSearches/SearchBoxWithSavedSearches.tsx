@@ -20,7 +20,7 @@ interface SearchBoxWithSavedSearchesProps {
 const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   onHelpButtonClick,
 }) => {
-  const { search, setPageParams } = usePageParams();
+  const { query, setPageParams } = usePageParams();
   const [inputText, setInputText] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -49,9 +49,9 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
       getFilteredSavedSearches({
         inputText,
         savedSearches: getSavedSearchesQueryResult?.data,
-        search,
+        search: query,
       }),
-    [getSavedSearchesQueryResult, inputText, search],
+    [getSavedSearchesQueryResult, inputText, query],
   );
 
   const handleSearch = () => {
@@ -62,7 +62,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
     const searches = getFilteredSavedSearches({
       inputText: "",
       savedSearches: getSavedSearchesQueryResult?.data,
-      search,
+      search: query,
     });
 
     const prefix = searches.some(
@@ -72,9 +72,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
       : "";
 
     setPageParams({
-      search: search
-        ? `${search},${prefix}${inputText}`
-        : `${prefix}${inputText}`,
+      query: query ? `${query},${prefix}${inputText}` : `${prefix}${inputText}`,
     });
 
     setInputText("");
@@ -82,8 +80,8 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
 
   const handleSavedSearchClick = (savedSearch: SavedSearch) => {
     setPageParams({
-      search: search
-        ? `${search},search:${savedSearch.name}`
+      query: query
+        ? `${query},search:${savedSearch.name}`
         : `search:${savedSearch.name}`,
     });
   };

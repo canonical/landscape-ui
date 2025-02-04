@@ -12,7 +12,7 @@ interface GetQueryProps {
   accessGroups: string[];
   availabilityZones: string[];
   os: string;
-  search: string;
+  query: string;
   status: string;
   tags: string[];
 }
@@ -21,7 +21,7 @@ export const getQuery = ({
   accessGroups,
   availabilityZones,
   os,
-  search,
+  query,
   status,
   tags,
 }: GetQueryProps) => {
@@ -35,8 +35,8 @@ export const getQuery = ({
     queryParts.push(getOptionQuery(FILTERS.status, status));
   }
 
-  if (search) {
-    queryParts.push(...search.split(","));
+  if (query) {
+    queryParts.push(...query.split(","));
   }
 
   if (tags.length) {

@@ -94,14 +94,13 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           "availabilityZones",
           "status",
           "tags",
-          "search",
+          "query",
         ]}
         accessGroupOptions={accessGroupOptions}
         availabilityZonesOptions={availabilityZoneOptions}
         osOptions={osOptions}
         statusOptions={statusOptions}
         tagOptions={tagOptions}
-        useSearchAsQuery
       />
 
       <SearchHelpPopup

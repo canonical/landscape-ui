@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { GroupedOption } from "@/components/filter";
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface AvailabilityZoneFilterProps {
   readonly options: GroupedOption[];
@@ -21,6 +22,11 @@ const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
           ({ value }) => value !== "none" && value.includes(searchText),
         )
       : options;
+
+  useSetDynamicFilterValidation(
+    "availabilityZones",
+    filteredOptions.map((opt) => opt.value),
+  );
 
   const handleItemsSelect = (items: string[]) => {
     if (items[items.length - 1] === "none") {

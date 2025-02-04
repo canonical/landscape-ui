@@ -1,4 +1,5 @@
-import usePageParams from "@/hooks/usePageParams";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams, { PARAMS } from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
 import type { FC } from "react";
 import TableFilter from "../TableFilter";
@@ -9,6 +10,11 @@ interface StatusFilterProps {
 
 const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
   const { setPageParams, status } = usePageParams();
+
+  useSetDynamicFilterValidation(
+    PARAMS.STATUS.urlParam,
+    options.map((opt) => opt.value),
+  );
 
   return (
     <TableFilter

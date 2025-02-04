@@ -1,6 +1,6 @@
 import type { SelectOption } from "@/types/SelectOption";
 
-export const filterOptions: SelectOption[] = [
+export const STATUS_OPTIONS: SelectOption[] = [
   {
     label: "All",
     value: "",

@@ -1,3 +1,23 @@
+# [1.12.0](https://github.com/canonical/landscape-dashboard/compare/v1.11.1...v1.12.0) (2025-02-03)
+
+
+### Bug Fixes
+
+* change events days filter to display label, remove events table sorting, change "events log message" to "message" ([7d02a6b](https://github.com/canonical/landscape-dashboard/commit/7d02a6bc7b32067c33ff1c50b31569eacc29af8a))
+* disable option to run scripts on windows instances ([#152](https://github.com/canonical/landscape-dashboard/issues/152)) ([e3dae02](https://github.com/canonical/landscape-dashboard/commit/e3dae02be0936d78b2d1f5353ad1bda9b71d4856))
+* improve page number input validation ([#175](https://github.com/canonical/landscape-dashboard/issues/175)) ([1272a8a](https://github.com/canonical/landscape-dashboard/commit/1272a8a6ff4b356cc453c975d07e6011221fcaf2))
+* modal closing when trying to remove saved search ([cd98b10](https://github.com/canonical/landscape-dashboard/commit/cd98b105a3a7a481cba37b46be9db426e01ec393))
+* prevent double redirection while signing in ([e90e0f1](https://github.com/canonical/landscape-dashboard/commit/e90e0f18011100aa0e8de087799a035c2aa86bb6))
+* remove '\r' characters from script code if present ([#167](https://github.com/canonical/landscape-dashboard/issues/167)) ([b4314c4](https://github.com/canonical/landscape-dashboard/commit/b4314c4425689476d2e29e7b6388c2676f8c6922))
+
+
+### Features
+
+* add ability to assign tags to the selected instances ([#166](https://github.com/canonical/landscape-dashboard/issues/166)) ([c95e517](https://github.com/canonical/landscape-dashboard/commit/c95e517dd26909ba19a9edb20c18d32d6c3d0ae3))
+* add error boundaries, connect Sentry service ([a6fd328](https://github.com/canonical/landscape-dashboard/commit/a6fd3287e21a2fba8cdc1f87f3964194e9c77bb8))
+* add search chip to all pages with search, add query param validation ([9d77f75](https://github.com/canonical/landscape-dashboard/commit/9d77f75fa8744eeeb5b4fc647b9736039f9f8747))
+* add table sorting to url ([15d094f](https://github.com/canonical/landscape-dashboard/commit/15d094fb69b6309980d59d8fb367bd9a821a8264))
+
 ## [1.11.1](https://github.com/canonical/landscape-dashboard/compare/v1.11.0...v1.11.1) (2025-01-07)
 
 

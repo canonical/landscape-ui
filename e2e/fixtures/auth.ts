@@ -1,4 +1,5 @@
-import { Page, test as base } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { test as base } from "@playwright/test";
 import { login } from "../helpers/auth";
 import { USER } from "../constants";
 import { closeWelcomeModal } from "../helpers/utils";

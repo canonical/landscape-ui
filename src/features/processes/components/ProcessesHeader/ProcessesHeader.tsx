@@ -1,7 +1,6 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import { useProcesses } from "../../hooks";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";
@@ -9,6 +8,7 @@ import classNames from "classnames";
 import type { FC } from "react";
 import { useParams } from "react-router";
 import classes from "./ProcessesHeader.module.scss";
+import { TableFilterChips } from "@/components/filter";
 
 interface ProcessesHeaderProps {
   readonly handleClearSelection: () => void;
@@ -20,7 +20,6 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   handleClearSelection,
 }) => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
-  const { setPageParams } = usePageParams();
   const { notify } = useNotify();
   const debug = useDebug();
   const { killProcessQuery, terminateProcessQuery } = useProcesses();
@@ -28,13 +27,6 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   const instanceId = Number(urlInstanceId);
   const { mutateAsync: terminateProcess } = terminateProcessQuery;
   const { mutateAsync: killProcess } = killProcessQuery;
-
-  const handleSearch = (searchText: string) => {
-    setPageParams({
-      search: searchText,
-    });
-    handleClearSelection();
-  };
 
   const handleEndProcess = async () => {
     try {
@@ -67,31 +59,34 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   };
 
   return (
-    <HeaderWithSearch
-      onSearch={handleSearch}
-      actions={
-        <div className={classNames("p-segmented-control", classes.actions)}>
-          <div className="p-segmented-control__list">
-            <Button
-              type="button"
-              className="p-segmented-control__button"
-              disabled={0 === selectedPids.length}
-              onClick={handleEndProcess}
-            >
-              End process
-            </Button>
-            <Button
-              type="button"
-              className="p-segmented-control__button"
-              disabled={0 === selectedPids.length}
-              onClick={handleKillProcess}
-            >
-              Kill process
-            </Button>
+    <>
+      <HeaderWithSearch
+        actions={
+          <div className={classNames("p-segmented-control", classes.actions)}>
+            <div className="p-segmented-control__list">
+              <Button
+                type="button"
+                className="p-segmented-control__button u-no-margin--bottom"
+                disabled={0 === selectedPids.length}
+                onClick={handleEndProcess}
+              >
+                End process
+              </Button>
+              <Button
+                type="button"
+                className="p-segmented-control__button u-no-margin--bottom"
+                disabled={0 === selectedPids.length}
+                onClick={handleKillProcess}
+              >
+                Kill process
+              </Button>
+            </div>
           </div>
-        </div>
-      }
-    />
+        }
+        afterSearch={handleClearSelection}
+      />
+      <TableFilterChips filtersToDisplay={["search"]} />
+    </>
   );
 };
 

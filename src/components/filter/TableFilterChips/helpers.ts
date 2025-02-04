@@ -6,27 +6,33 @@ import type {
 } from "./types";
 import type { SelectOption } from "@/types/SelectOption";
 
-export const parseSearch = (search: string) => {
-  if (!search) {
+export const parseSearchQuery = (searchQuery: string) => {
+  if (!searchQuery) {
     return [];
   }
 
-  return search.split(",").map((searchParam) => {
-    return searchParam.startsWith("search:")
-      ? searchParam.replace("search:", "")
-      : `'${searchParam}'`;
-  });
+  return searchQuery
+    .split(",")
+    .filter((searchQueryParam) => searchQueryParam.trim() !== "")
+    .map((searchQueryParam) => `'${searchQueryParam}'`);
 };
 
-export const filterSearch = (search: string, chipValue: string) => {
-  return search
-    .split(",")
-    .filter((searchParam) =>
-      chipValue.startsWith("'")
-        ? searchParam !== chipValue.replace(/'/g, "")
-        : searchParam !== `search:${chipValue}`,
-    )
-    .join(",");
+export const filterSearchQuery = (searchQuery: string, chipValue: string) => {
+  const cleanedChipValue = chipValue.replace(/^'|'$/g, "");
+  const searchParams = searchQuery.split(",");
+
+  const indexToRemove = searchParams.indexOf(cleanedChipValue);
+
+  if (indexToRemove === -1) {
+    return searchQuery;
+  }
+
+  const updatedSearchParams = [
+    ...searchParams.slice(0, indexToRemove),
+    ...searchParams.slice(indexToRemove + 1),
+  ];
+
+  return updatedSearchParams.join(",");
 };
 
 export const getChipLabel = (
@@ -41,19 +47,20 @@ export const getChipLabel = (
 
 export const checkRenderConditions: CheckRenderConditions = ({
   filtersToMonitor,
-  useSearchAsQuery,
   search,
+  query,
   ...urlParams
 }) => {
   const result = { totalChipsToRenderCount: 0 } as CheckRenderConditionsReturn;
 
-  if (filtersToMonitor.includes("search")) {
-    result.areSearchQueryChipsRender = useSearchAsQuery && Boolean(search);
-    result.isSearchChipRender = !useSearchAsQuery && Boolean(search);
-
-    result.totalChipsToRenderCount += result.areSearchQueryChipsRender
-      ? search.split(",").length
-      : Number(result.isSearchChipRender);
+  if (filtersToMonitor.includes("query")) {
+    result.areSearchQueryChipsRender = Boolean(query);
+    result.totalChipsToRenderCount += query.trim()
+      ? query.split(",").length
+      : 0;
+  } else if (filtersToMonitor.includes("search")) {
+    result.isSearchChipRender = Boolean(search);
+    result.totalChipsToRenderCount += Number(result.isSearchChipRender);
   }
 
   for (const [paramKey, value] of Object.entries(urlParams)) {
