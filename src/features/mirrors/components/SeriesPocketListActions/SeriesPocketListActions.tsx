@@ -1,6 +1,10 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import type {
+  ConfirmationModalProps,
+  SubComponentProps,
+} from "@canonical/react-components";
 import {
   Button,
   ConfirmationButton,
@@ -41,7 +45,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
   const { mutateAsync: removePocket, isPending: isRemovingPocket } =
     removePocketQuery;
 
-  const handleRemovePocket = async () => {
+  const handleRemovePocket = async (): Promise<void> => {
     try {
       await removePocket({
         distribution: distributionName,
@@ -62,7 +66,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     isPending: isPullingPackagesToPocket,
   } = pullPackagesToPocketQuery;
 
-  const handleSyncPocket = async () => {
+  const handleSyncPocket = async (): Promise<void> => {
     try {
       await syncMirrorPocket({
         name: pocket.name,
@@ -74,7 +78,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     }
   };
 
-  const handlePullPackagesToPocket = async () => {
+  const handlePullPackagesToPocket = async (): Promise<void> => {
     try {
       await pullPackagesToPocket({
         name: pocket.name,
@@ -86,7 +90,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     }
   };
 
-  const getPocketModal = () => {
+  const getPocketModal = (): SubComponentProps<ConfirmationModalProps> => {
     if ("mirror" === pocket.mode) {
       return {
         title: `Synchronizing ${pocket.name} pocket`,
@@ -116,7 +120,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
   const handleEditPocket = (
     event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
     pocket: Pocket,
-  ) => {
+  ): void => {
     event.currentTarget.blur();
 
     setSidePanelContent(

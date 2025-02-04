@@ -5,6 +5,7 @@ import { useDistributions } from "../../hooks";
 import type { Distribution, SyncPocketRef } from "../../types";
 import DistributionCard from "../DistributionCard";
 import DistributionsEmptyState from "../DistributionsEmptyState";
+import { REFETCH_INTERVAL } from "./constants";
 
 interface DistributionContainerProps {
   readonly onDistributionsLengthChange: (length: number) => void;
@@ -25,7 +26,7 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
       include_latest_sync: true,
     },
     {
-      refetchInterval: !syncPocketRefs.length ? undefined : 1000,
+      refetchInterval: !syncPocketRefs.length ? undefined : REFETCH_INTERVAL,
     },
   );
 
@@ -65,7 +66,7 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
     return <DistributionsEmptyState />;
   }
 
-  const handleSyncPocketRefAdd = (ref: SyncPocketRef) => {
+  const handleSyncPocketRefAdd = (ref: SyncPocketRef): void => {
     setSyncPocketRefs((prevState) => [...prevState, ref]);
   };
 

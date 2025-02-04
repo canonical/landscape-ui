@@ -1,10 +1,11 @@
 import InfoItem from "@/components/layout/InfoItem";
 import { Col, ModularTable, Row } from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
 import classNames from "classnames";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
+import { pluralize } from "../../helpers";
 import type { Distribution, Pocket, Series, SyncPocketRef } from "../../types";
 import PocketSyncActivity from "../PocketSyncActivity";
 import SeriesPocketDetailsButton from "../SeriesPocketDetailsButton";
@@ -38,7 +39,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
       {
         accessor: "name",
         Header: "Pocket",
-        Cell: ({ row: { original } }: CellProps<CommonPocket>) => (
+        Cell: ({ row: { original } }: CellProps<CommonPocket>): ReactNode => (
           <SeriesPocketDetailsButton
             distributionName={distributionName}
             pocket={original as Pocket}
@@ -53,7 +54,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
       {
         accessor: "last_sync",
         Header: "Last synced",
-        Cell: ({ row: { original } }: CellProps<CommonPocket>) => (
+        Cell: ({ row: { original } }: CellProps<CommonPocket>): ReactNode => (
           <PocketSyncActivity
             pocket={original as Pocket}
             syncPocketRefAdd={syncPocketRefAdd}
@@ -64,16 +65,18 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
       {
         accessor: "package_count",
         Header: "Content",
-        Cell: ({ row: { original } }: CellProps<CommonPocket>) => (
-          <>{`${original.package_count} ${
-            original.package_count === 1 ? "package" : "packages"
-          }`}</>
+        Cell: ({ row: { original } }: CellProps<CommonPocket>): ReactNode => (
+          <>{`${original.package_count} ${pluralize(
+            original.package_count,
+            "package",
+            "packages",
+          )}`}</>
         ),
       },
       {
         accessor: "actions",
         className: classes.actions,
-        Cell: ({ row: { original } }: CellProps<CommonPocket>) => (
+        Cell: ({ row: { original } }: CellProps<CommonPocket>): ReactNode => (
           <SeriesPocketListActions
             distributionName={distributionName}
             pocket={original as Pocket}
@@ -133,9 +136,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           <InfoItem
             label="Content"
             value={
-              <>{`${pocket.package_count} ${
-                pocket.package_count === 1 ? "package" : "packages"
-              }`}</>
+              <>{`${pocket.package_count} ${pluralize(pocket.package_count, "package", "packages")}`}</>
             }
           />
         </Col>

@@ -108,7 +108,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
           if (pocket.upload_allow_unsigned) {
             await Promise.all(promises);
 
-            promises.splice(0);
+            promises.length = 0;
           }
 
           const pocketUploadGPGKeyNames = pocket.upload_gpg_keys.map(

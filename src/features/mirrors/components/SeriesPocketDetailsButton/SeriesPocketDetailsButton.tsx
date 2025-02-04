@@ -20,7 +20,7 @@ const SeriesPocketDetailsButton: FC<SeriesPocketDetailsButtonProps> = ({
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleListPocket = () => {
+  const handleListPocket = (): void => {
     setSidePanelContent(
       `${seriesName} ${pocket.name}`,
       <Suspense fallback={<LoadingState />}>

@@ -15,7 +15,7 @@ interface EmptyDistributionProps {
 const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleAddMirror = () =>
+  const handleAddMirror = (): void =>
     setSidePanelContent(
       `Add mirror for ${distribution.name}`,
       <Suspense fallback={<LoadingState />}>

@@ -98,7 +98,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
 
   const handleSnapshotDateChange = async (
     event: ChangeEvent<HTMLInputElement>,
-  ) => {
+  ): Promise<void> => {
     await formik.setFieldValue("snapshotDate", event.target.value);
     await formik.setFieldValue(
       "mirror_uri",
@@ -108,7 +108,9 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
     );
   };
 
-  const handleTypeChange = async (event: ChangeEvent<HTMLSelectElement>) => {
+  const handleTypeChange = async (
+    event: ChangeEvent<HTMLSelectElement>,
+  ): Promise<void> => {
     await formik.setFieldValue("type", event.target.value);
 
     if ("ubuntu" === event.target.value) {
@@ -155,7 +157,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
 
   const handleMirrorSeriesChange = async (
     event: ChangeEvent<HTMLSelectElement>,
-  ) => {
+  ): Promise<void> => {
     const value = event.target.value;
 
     await formik.setFieldValue("mirror_series", value);

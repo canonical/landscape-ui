@@ -48,3 +48,5 @@ export const ARCHITECTURE_OPTIONS: SelectOption[] = [
     value: "i386",
   },
 ];
+
+export const MIN_SELECTION_COUNT = 1;

@@ -1,6 +1,7 @@
 import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/ApiError";
 import type { QueryFnType } from "@/types/QueryFnType";
+import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
@@ -12,7 +13,24 @@ import type {
   Series,
 } from "../types";
 
-export default function useSeries() {
+export default function useSeries(): {
+  createSeriesQuery: UseMutationResult<
+    AxiosResponse<Series>,
+    AxiosError<ApiError>,
+    CreateSeriesParams
+  >;
+  deriveSeriesQuery: UseMutationResult<
+    AxiosResponse<Series>,
+    AxiosError<ApiError>,
+    DeriveSeriesParams
+  >;
+  getRepoInfo: QueryFnType<AxiosResponse<RepoInfo>, GetRepoInfoParams>;
+  removeSeriesQuery: UseMutationResult<
+    AxiosResponse<void>,
+    AxiosError<ApiError>,
+    RemoveSeriesParams
+  >;
+} {
   const queryClient = useQueryClient();
   const authFetch = useFetchOld();
 

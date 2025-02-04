@@ -10,7 +10,7 @@ const NewDistributionForm = lazy(() => import("../NewDistributionForm"));
 const DistributionsEmptyState: FC = () => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleCreateDistribution = () => {
+  const handleCreateDistribution = (): void => {
     setSidePanelContent(
       "Add distribution",
       <Suspense fallback={<LoadingState />}>

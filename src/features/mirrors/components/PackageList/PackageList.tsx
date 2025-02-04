@@ -12,9 +12,10 @@ import {
   SearchBox,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import type { FC } from "react";
+import type { ComponentProps, FC } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import { pluralize } from "../../helpers";
 import { usePockets } from "../../hooks";
 import type { Distribution, Pocket, Series } from "../../types";
 import type { FormattedPackage } from "../../types/FormattedPackage";
@@ -29,13 +30,16 @@ interface PackageListProps {
   readonly seriesName: Series["name"];
 }
 
+const defaultPage = 1;
+const defaultItemsPerPage = 20;
+
 const PackageList: FC<PackageListProps> = ({
   distributionName,
   pocket,
   seriesName,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(defaultPage);
+  const [itemsPerPage, setItemsPerPage] = useState(defaultItemsPerPage);
   const [selectedPackages, setSelectedPackages] = useState<number[]>([]);
   const [hasUpdatedOrDeletedPackages, setHasUpdatedOrDeletedPackages] =
     useState(false);
@@ -61,7 +65,7 @@ const PackageList: FC<PackageListProps> = ({
   const { mutate: pullPackagesToPocket, isPending: isPullingPackagesToPocket } =
     pullPackagesToPocketQuery;
 
-  const handleSync = () => {
+  const handleSync = (): void => {
     if ("mirror" === pocket.mode) {
       syncMirrorPocket({
         name: pocket.name,
@@ -77,7 +81,7 @@ const PackageList: FC<PackageListProps> = ({
     }
   };
 
-  const handleEditPocket = () => {
+  const handleEditPocket = (): void => {
     setSidePanelContent(
       `Edit ${pocket.name} pocket`,
       <Suspense fallback={<LoadingState />}>
@@ -93,7 +97,7 @@ const PackageList: FC<PackageListProps> = ({
   const { mutateAsync: removePocket, isPending: isRemovingPocket } =
     removePocketQuery;
 
-  const handleRemovePocket = async () => {
+  const handleRemovePocket = async (): Promise<void> => {
     try {
       await removePocket({
         distribution: distributionName,
@@ -112,7 +116,7 @@ const PackageList: FC<PackageListProps> = ({
     isPending: isRemovingPackagesFromPocket,
   } = removePackagesFromPocketQuery;
 
-  const handleRemovePackages = async () => {
+  const handleRemovePackages = async (): Promise<void> => {
     const packages = packagesToShow
       .filter((_, index) => selectedPackages.includes(index))
       .map(({ packageName }) => packageName);
@@ -147,7 +151,7 @@ const PackageList: FC<PackageListProps> = ({
       distribution: distributionName,
       search,
       limit: itemsPerPage,
-      offset: (currentPage - 1) * itemsPerPage,
+      offset: currentPage * itemsPerPage - itemsPerPage,
     },
     {
       enabled: noQueryIsPending,
@@ -190,10 +194,10 @@ const PackageList: FC<PackageListProps> = ({
       ...diffPullPocketData[dataKey],
     };
 
-    for (const addElement of diff.add) {
+    for (const [packageName, newVersion] of diff.add) {
       diffPullPocket.push({
-        packageName: addElement[0],
-        newVersion: addElement[1],
+        packageName,
+        newVersion,
         difference: "add",
       });
     }
@@ -202,17 +206,17 @@ const PackageList: FC<PackageListProps> = ({
       setHasUpdatedOrDeletedPackages(true);
     }
 
-    for (const updateElement of diff.update) {
+    for (const [packageName, , newVersion] of diff.update) {
       diffPullPocket.push({
-        packageName: updateElement[0],
-        newVersion: updateElement[2],
+        packageName,
+        newVersion,
         difference: "update",
       });
     }
 
-    for (const deleteElement of diff.delete) {
+    for (const [packageName] of diff.delete) {
       diffPullPocket.push({
-        packageName: deleteElement[0],
+        packageName,
         difference: "delete",
         newVersion: "",
       });
@@ -238,15 +242,10 @@ const PackageList: FC<PackageListProps> = ({
       }
     });
 
-    return pocketPackages.sort((a, b) => {
-      if (a.difference && !b.difference) {
-        return -1;
-      }
-      if (!a.difference && b.difference) {
-        return 1;
-      }
-      return 0;
-    });
+    return [
+      ...pocketPackages.filter(({ difference }) => difference),
+      ...pocketPackages.filter(({ difference }) => !difference),
+    ];
   };
 
   const packagesToShow = useMemo(
@@ -263,9 +262,20 @@ const PackageList: FC<PackageListProps> = ({
 
   const hasNoPackages =
     !search &&
-    currentPage === 1 &&
-    itemsPerPage === 20 &&
+    currentPage === defaultPage &&
+    itemsPerPage === defaultItemsPerPage &&
     !listPocketData.count;
+
+  const colProps: ComponentProps<typeof Col> =
+    "upload" === pocket.mode
+      ? {
+          size: 8,
+          medium: 4,
+        }
+      : {
+          size: 6,
+          medium: 3,
+        };
 
   return (
     <>
@@ -275,10 +285,7 @@ const PackageList: FC<PackageListProps> = ({
           classes.ctaRow,
         )}
       >
-        <Col
-          size={"upload" === pocket.mode ? 8 : 6}
-          medium={"upload" === pocket.mode ? 4 : 3}
-        >
+        <Col {...colProps}>
           <div className="p-segmented-control">
             <div className="p-segmented-control__list">
               {"upload" !== pocket.mode && (
@@ -332,8 +339,7 @@ const PackageList: FC<PackageListProps> = ({
                   className="p-segmented-control__button"
                   type="button"
                   disabled={
-                    0 === selectedPackages.length ||
-                    isRemovingPackagesFromPocket
+                    !selectedPackages.length || isRemovingPackagesFromPocket
                   }
                   aria-label={`Remove selected packages from ${pocket.name} pocket of ${distributionName}/${seriesName}`}
                   confirmationModalProps={{
@@ -341,7 +347,11 @@ const PackageList: FC<PackageListProps> = ({
                     children: (
                       <p>
                         This will delete {selectedPackages.length} selected{" "}
-                        {selectedPackages.length === 1 ? "package" : "packages"}{" "}
+                        {pluralize(
+                          selectedPackages.length,
+                          "package",
+                          "packages",
+                        )}{" "}
                         from {pocket.name} pocket {seriesName} series of{" "}
                         {distributionName} distribution
                       </p>
@@ -365,7 +375,7 @@ const PackageList: FC<PackageListProps> = ({
               onSubmit={(event) => {
                 event.preventDefault();
                 setSearch(inputText);
-                setCurrentPage(1);
+                setCurrentPage(defaultPage);
               }}
               noValidate
             >
@@ -380,7 +390,7 @@ const PackageList: FC<PackageListProps> = ({
                 onClear={() => {
                   setInputText("");
                   setSearch("");
-                  setCurrentPage(1);
+                  setCurrentPage(defaultPage);
                 }}
                 className={classNames({
                   "is-dense": !isSmallerScreen,
@@ -388,7 +398,7 @@ const PackageList: FC<PackageListProps> = ({
                 })}
                 onSearch={() => {
                   setSearch(inputText);
-                  setCurrentPage(1);
+                  setCurrentPage(defaultPage);
                 }}
                 autocomplete="off"
               />

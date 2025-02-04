@@ -80,7 +80,9 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
     },
   });
 
-  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleTypeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ): void => {
     const newType = event.target.value as "ubuntu" | "third-party";
     const newFields: Partial<FormProps> =
       newType === "ubuntu"
@@ -104,7 +106,9 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
     });
   };
 
-  const handleModeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleModeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ): void => {
     const newMode = event.target.value;
     if (newMode === "mirror" && formik.values.type === "ubuntu") {
       formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
@@ -306,13 +310,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
                 items.map(({ value }) => value),
               );
             }}
-            error={
-              (formik.touched.upload_gpg_keys &&
-                (Array.isArray(formik.errors.upload_gpg_keys)
-                  ? formik.errors.upload_gpg_keys[0]
-                  : formik.errors.upload_gpg_keys)) ||
-              undefined
-            }
+            error={getFormikError(formik, "upload_gpg_keys")}
           />
         </>
       )}

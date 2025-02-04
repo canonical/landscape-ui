@@ -3,7 +3,7 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import type { Dispatch, SetStateAction } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { useMemo, type FC } from "react";
 import type { CellProps, Column, HeaderProps } from "react-table";
 import type { FormattedPackage } from "../../types/FormattedPackage";
@@ -28,24 +28,24 @@ const PackageTable: FC<PackageTableProps> = ({
     () => [
       {
         accessor: "packageName",
-        Header: ({ rows }: HeaderProps<FormattedPackage>) =>
+        Header: ({ rows }: HeaderProps<FormattedPackage>): ReactNode =>
           isUpload ? (
             <>
               <CheckboxInput
                 inline
                 label={<span className="u-off-screen">Toggle all</span>}
-                disabled={0 === rows.length}
+                disabled={!rows.length}
                 indeterminate={
-                  selectedPackages.length > 0 &&
+                  !!selectedPackages.length &&
                   selectedPackages.length < rows.length
                 }
                 checked={
                   selectedPackages.length === rows.length &&
-                  selectedPackages.length > 0
+                  !!selectedPackages.length
                 }
                 onChange={() => {
                   setSelectedPackages((prevState) =>
-                    prevState.length > 0 ? [] : rows.map((_, index) => index),
+                    prevState.length ? [] : rows.map((_, index) => index),
                   );
                 }}
               />
@@ -54,7 +54,7 @@ const PackageTable: FC<PackageTableProps> = ({
           ) : (
             "Package"
           ),
-        Cell: ({ row }: CellProps<FormattedPackage>) =>
+        Cell: ({ row }: CellProps<FormattedPackage>): ReactNode =>
           isUpload ? (
             <CheckboxInput
               inline
@@ -77,10 +77,10 @@ const PackageTable: FC<PackageTableProps> = ({
       {
         accessor: "packageVersion",
         Header: "Version",
-        getCellIcon: ({ row }: CellProps<FormattedPackage>) =>
+        getCellIcon: ({ row }: CellProps<FormattedPackage>): string | false =>
           row.original.difference ? "warning" : false,
         className: classes.version,
-        Cell: ({ row }: CellProps<FormattedPackage>) =>
+        Cell: ({ row }: CellProps<FormattedPackage>): ReactNode =>
           row.original.difference ? (
             <Tooltip
               position="top-center"

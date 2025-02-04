@@ -1,6 +1,7 @@
 import { assertNever } from "@/utils/debug";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import * as Yup from "yup";
+import { MIN_SELECTION_COUNT } from "../../constants";
 import type {
   CreateMirrorPocketParams,
   CreatePullPocketParams,
@@ -63,7 +64,7 @@ export const getCreatePocketParams = (
   }
 };
 
-export const getValidationSchema = (series: Series) =>
+export const getValidationSchema = (series: Series): Yup.Schema =>
   Yup.object().shape({
     type: Yup.string<FormProps["type"]>().required("This field is required."),
     name: Yup.string()
@@ -84,7 +85,7 @@ export const getValidationSchema = (series: Series) =>
     components: Yup.array()
       .defined()
       .of(Yup.string().defined())
-      .min(1, "Please choose at least one component")
+      .min(MIN_SELECTION_COUNT, "Please choose at least one component")
       .test({
         name: "flat-mirror-sub-directory",
         message: "A single component must be passed",
@@ -92,7 +93,7 @@ export const getValidationSchema = (series: Series) =>
           const { mode, mirror_suite } = context.parent;
 
           if ("mirror" === mode && /\/$/.test(mirror_suite)) {
-            return 1 === value.length;
+            return MIN_SELECTION_COUNT === value.length;
           }
 
           return true;
@@ -102,7 +103,7 @@ export const getValidationSchema = (series: Series) =>
     architectures: Yup.array()
       .defined()
       .of(Yup.string().defined())
-      .min(1, "Please choose at least one architecture"),
+      .min(MIN_SELECTION_COUNT, "Please choose at least one architecture"),
     mode: Yup.string<FormProps["mode"]>().required("This field is required"),
     gpg_key: Yup.string().required("This field is required"),
     include_udeb: Yup.boolean().required("This field is required"),

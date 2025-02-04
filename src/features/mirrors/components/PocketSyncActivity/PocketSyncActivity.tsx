@@ -81,7 +81,7 @@ const PocketSyncActivity: FC<PocketSyncActivityProps> = ({
       ? "undelivered"
       : pocket.last_sync_status;
 
-  const handleActivityClick = () => {
+  const handleActivityClick = (): void => {
     setSidePanelContent(
       pocket.last_sync_activity.summary,
       <ActivityDetails activityId={pocket.last_sync_activity.id} />,
