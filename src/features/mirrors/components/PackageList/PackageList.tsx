@@ -404,8 +404,8 @@ const PackageList: FC<PackageListProps> = ({
       ) : (
         <>
           <PackageTable
+            isUpload={"upload" === pocket.mode}
             packagesToShow={packagesToShow}
-            pocketMode={pocket.mode}
             search={search}
             selectedPackages={selectedPackages}
             setSelectedPackages={setSelectedPackages}

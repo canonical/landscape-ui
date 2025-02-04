@@ -6,21 +6,20 @@ import {
 import type { Dispatch, SetStateAction } from "react";
 import { useMemo, type FC } from "react";
 import type { CellProps, Column, HeaderProps } from "react-table";
-import type { Pocket } from "../../types";
 import type { FormattedPackage } from "../../types/FormattedPackage";
 import classes from "./PackageTable.module.scss";
 
 interface PackageTableProps {
+  readonly isUpload: boolean;
   readonly packagesToShow: FormattedPackage[];
-  readonly pocketMode: Pocket["mode"];
   readonly search: string;
   readonly selectedPackages: number[];
   readonly setSelectedPackages: Dispatch<SetStateAction<number[]>>;
 }
 
 const PackageTable: FC<PackageTableProps> = ({
+  isUpload,
   packagesToShow,
-  pocketMode,
   search,
   selectedPackages,
   setSelectedPackages,
@@ -30,7 +29,7 @@ const PackageTable: FC<PackageTableProps> = ({
       {
         accessor: "packageName",
         Header: ({ rows }: HeaderProps<FormattedPackage>) =>
-          "upload" === pocketMode ? (
+          isUpload ? (
             <>
               <CheckboxInput
                 inline
@@ -56,7 +55,7 @@ const PackageTable: FC<PackageTableProps> = ({
             "Package"
           ),
         Cell: ({ row }: CellProps<FormattedPackage>) =>
-          "upload" === pocketMode ? (
+          isUpload ? (
             <CheckboxInput
               inline
               label={row.original.packageName}
