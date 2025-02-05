@@ -1,3 +1,10 @@
+## [1.12.2](https://github.com/canonical/landscape-dashboard/compare/v1.12.1...v1.12.2) (2025-02-05)
+
+
+### Bug Fixes
+
+* table pagination disappearing briefly when going to next page on instances page ([c92e7db](https://github.com/canonical/landscape-dashboard/commit/c92e7dba6eb488f858965c7e293acedbcd801788))
+
 ## [1.12.1](https://github.com/canonical/landscape-dashboard/compare/v1.12.0...v1.12.1) (2025-02-05)
 
 
