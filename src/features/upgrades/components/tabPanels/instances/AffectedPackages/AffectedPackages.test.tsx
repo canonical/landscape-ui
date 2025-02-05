@@ -8,7 +8,7 @@ import { getInstancePackages } from "@/tests/mocks/packages";
 import AffectedPackages from "./AffectedPackages";
 
 const increasedLimit = 10;
-const instance = instances[instances.length - 1];
+const instance = instances[instances.length - 2]; // the last one is Ubuntu Core instance now
 const limit = 5;
 const excludedPackages: InstancePackagesToExclude[] = [
   { id: instance.id, exclude_packages: [] },

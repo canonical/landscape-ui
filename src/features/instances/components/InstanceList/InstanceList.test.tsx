@@ -1,10 +1,10 @@
-import { instances } from "@/tests/mocks/instance";
+import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
+import { instances, ubuntuCoreInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import InstanceList from "./InstanceList";
-import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
-import userEvent from "@testing-library/user-event";
 
 const props = {
   instances,
@@ -55,5 +55,13 @@ describe("InstanceList", () => {
       checked: true,
     });
     expect(checkedCheckboxes).toHaveLength(instances.length + 1);
+  });
+
+  it("should show upgrades for an ubuntu core instance", async () => {
+    renderWithProviders(
+      <InstanceList {...props} instances={[ubuntuCoreInstance]} />,
+    );
+
+    expect(screen.getByText("Up to date")).toBeInTheDocument();
   });
 });

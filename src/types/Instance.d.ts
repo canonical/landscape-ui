@@ -178,7 +178,7 @@ interface UbuntuProInfo {
 }
 
 interface DistributionInfo {
-  code_name: string;
+  code_name: string | null;
   description: string;
   distributor: string;
   release: string;
