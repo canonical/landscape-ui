@@ -1,13 +1,14 @@
-import type { FC } from "react";
-import { useState } from "react";
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import useInstances from "@/hooks/useInstances";
-import type { Instance } from "@/types/Instance";
-import usePageParams from "@/hooks/usePageParams";
-import { getQuery } from "./helpers";
+import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { InstanceList, InstancesHeader } from "@/features/instances";
-import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
+import useInstances from "@/hooks/useInstances";
+import usePageParams from "@/hooks/usePageParams";
+import type { Instance } from "@/types/Instance";
+import type { FC } from "react";
+import { useState } from "react";
+import { getQuery } from "./helpers";
 
 interface InstancesContainerProps {
   readonly selectedInstances: Instance[];
@@ -29,7 +30,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
       query: getQuery(filters),
       root_only: groupBy === "parent",
       with_alerts: true,
-      with_upgrades: true,
+      with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
     });

@@ -1,12 +1,13 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
-import type { InstanceColumn } from "./types";
-import type { Instance } from "@/types/Instance";
-import type { HTMLProps, ReactNode } from "react";
-import { STATUSES } from "@/features/instances";
-import classes from "./InstanceList.module.scss";
-import { Icon, Tooltip } from "@canonical/react-components";
-import type { HeaderGroup, TableHeaderProps } from "react-table";
 import NoData from "@/components/layout/NoData";
+import { STATUSES } from "@/features/instances";
+import type { Instance } from "@/types/Instance";
+import { Icon, Tooltip } from "@canonical/react-components";
+import type { HTMLProps, ReactNode } from "react";
+import type { HeaderGroup, TableHeaderProps } from "react-table";
+import classes from "./InstanceList.module.scss";
+import type { GetUpgradesResult, InstanceColumn } from "./types";
+import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 
 export const getColumnFilterOptions = (
   columns: InstanceColumn[],
@@ -131,6 +132,63 @@ export const getStatusCellIconAndLabel = (
   };
 };
 
+const getUpgradesFromAlerts = (
+  alerts: Instance["alerts"],
+): GetUpgradesResult => {
+  if (!alerts) {
+    return { regular: false, security: false };
+  }
+
+  const regularAvailable = alerts.some(
+    ({ type }) => type === "PackageUpgradesAlert",
+  );
+  const securityAvailable = alerts.some(
+    ({ type }) => type === "SecurityUpgradesAlert",
+  );
+
+  return {
+    regular: regularAvailable
+      ? {
+          icon: STATUSES.PackageUpgradesAlert.icon.color ?? "",
+          label: STATUSES.PackageUpgradesAlert.label,
+        }
+      : false,
+    security: securityAvailable
+      ? {
+          icon: STATUSES.SecurityUpgradesAlert.icon.color ?? "",
+          label: STATUSES.SecurityUpgradesAlert.label,
+        }
+      : false,
+  };
+};
+
+const getUpgradesFromUpgrades = (
+  upgrades: Instance["upgrades"],
+): GetUpgradesResult => {
+  if (!upgrades) {
+    return { regular: false, security: false };
+  }
+
+  return {
+    regular: upgrades.regular
+      ? {
+          icon: STATUSES.PackageUpgradesAlert.icon.color ?? "",
+          label: `${upgrades.regular} regular ${
+            upgrades.regular === 1 ? "upgrade" : "upgrades"
+          }`,
+        }
+      : false,
+    security: upgrades.security
+      ? {
+          icon: STATUSES.SecurityUpgradesAlert.icon.color ?? "",
+          label: `${upgrades.security} security ${
+            upgrades.security === 1 ? "upgrade" : "upgrades"
+          }`,
+        }
+      : false,
+  };
+};
+
 export const getUpgradesCellIconAndLabel = (instance: Instance) => {
   if (!instance.distribution || !/\d{1,2}\.\d{2}/.test(instance.distribution)) {
     return {
@@ -139,44 +197,34 @@ export const getUpgradesCellIconAndLabel = (instance: Instance) => {
     };
   }
 
-  if (
-    !instance.upgrades ||
-    (!instance.upgrades.security && !instance.upgrades.regular)
-  ) {
+  const { regular, security } = DETAILED_UPGRADES_VIEW_ENABLED
+    ? getUpgradesFromUpgrades(instance.upgrades)
+    : getUpgradesFromAlerts(instance.alerts);
+
+  if (regular && security) {
     return {
-      icon: STATUSES.UpToDate.icon.color,
-      label: STATUSES.UpToDate.label,
+      icon: security.icon,
+      label: `${regular.label}, ${security.label.toLowerCase()}`,
     };
   }
 
-  if (!instance.upgrades.security) {
+  if (regular) {
     return {
-      icon: STATUSES.PackageUpgradesAlert.icon.color,
-      label: (
-        <>
-          {instance.upgrades.regular} regular{" "}
-          {instance.upgrades.regular === 1 ? "upgrade" : "upgrades"}
-        </>
-      ),
+      icon: regular.icon,
+      label: regular.label,
     };
   }
 
-  if (!instance.upgrades.regular) {
+  if (security) {
     return {
-      icon: STATUSES.SecurityUpgradesAlert.icon.color,
-      label: (
-        <>
-          {instance.upgrades.security} security{" "}
-          {instance.upgrades.security === 1 ? "upgrade" : "upgrades"}
-        </>
-      ),
+      icon: security.icon,
+      label: security.label,
     };
   }
 
-  const label = `${instance.upgrades.security} security, ${instance.upgrades.regular} regular ${instance.upgrades.regular === 1 ? "upgrade" : "upgrades"}`;
   return {
-    icon: STATUSES.SecurityUpgradesAlert.icon.color,
-    label: <>{label}</>,
+    icon: STATUSES.UpToDate.icon.color,
+    label: STATUSES.UpToDate.label,
   };
 };
 
