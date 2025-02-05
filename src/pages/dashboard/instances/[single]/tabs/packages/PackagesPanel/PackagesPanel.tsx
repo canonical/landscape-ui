@@ -1,6 +1,3 @@
-import type { FC } from "react";
-import { useState } from "react";
-import { useLocation, useParams } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import type { InstancePackage } from "@/features/packages";
@@ -10,8 +7,11 @@ import {
   usePackages,
 } from "@/features/packages";
 import usePageParams from "@/hooks/usePageParams";
-import { getEmptyMessage } from "./helpers";
 import type { UrlParams } from "@/types/UrlParams";
+import type { FC } from "react";
+import { useState } from "react";
+import { useLocation, useParams } from "react-router";
+import { getEmptyMessage } from "./helpers";
 
 const PackagesPanel: FC = () => {
   const [selected, setSelected] = useState<InstancePackage[]>([]);
@@ -35,8 +35,7 @@ const PackagesPanel: FC = () => {
     search: search,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
-    available: false,
-    installed: status === "installed" || !status || undefined,
+    installed: !status || undefined,
     upgrade: status === "upgrade" || undefined,
     held: status === "held" || undefined,
     security: status === "security" || undefined,

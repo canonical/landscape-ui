@@ -6,10 +6,6 @@ export const STATUS_OPTIONS: SelectOption[] = [
     value: "",
   },
   {
-    label: "Installed",
-    value: "installed",
-  },
-  {
     label: "Upgrades",
     value: "upgrade",
   },
