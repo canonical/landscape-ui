@@ -78,6 +78,7 @@ export default tseslint.config(
       "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/promise-function-async": "warn",
       "no-use-before-define": "warn",
+      "prefer-destructuring": "warn",
     },
   },
 );

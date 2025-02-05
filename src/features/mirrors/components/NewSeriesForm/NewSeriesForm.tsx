@@ -158,7 +158,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
   const handleMirrorSeriesChange = async (
     event: ChangeEvent<HTMLSelectElement>,
   ): Promise<void> => {
-    const value = event.target.value;
+    const { value } = event.target;
 
     await formik.setFieldValue("mirror_series", value);
 

@@ -62,7 +62,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     removeUploaderGPGKeysFromPocketQuery;
   const { privateGPGKeysOptions, publicGPGKeysOptions } = useGPGKeysOptions();
 
-  const mode = pocket.mode;
+  const { mode } = pocket;
 
   const formik = useFormik<FormProps>({
     validationSchema: getValidationSchema(mode),
