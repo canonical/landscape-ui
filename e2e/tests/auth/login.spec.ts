@@ -5,7 +5,6 @@ import { navigateTo } from "../../helpers/navigation";
 import { login } from "../../helpers/auth";
 
 test("should log in successfully", async ({ page }) => {
-  // await page.goto(`${process.env.VITE_ROOT_PATH}login`);
   await navigateTo(page, "/login");
 
   const loginPage = new LoginPage(page);
@@ -28,7 +27,9 @@ test("should redirect after login if 'redirect-to' arg provided", async ({
 
 test("should have disclaimer popup after login", async ({ page }) => {
   await navigateTo(page, "/login");
+
   await login(page, USER.email, USER.password);
+
   await expect(
     page.getByText("Welcome to the new Landscape web portal (Preview)"),
   ).toBeVisible();
