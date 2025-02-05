@@ -16,13 +16,13 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { DEFAULT_SNAPSHOT_URI } from "../../constants";
 import { useSeries } from "../../hooks";
-import type { Distribution, Pocket, Series, SyncPocketRef } from "../../types";
+import type { Distribution, Series, SyncPocketRef } from "../../types";
 import SeriesPocketList from "../SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
 
-const NewPocketForm = lazy(() => import("../NewPocketForm"));
+const NewPocketForm = lazy(async () => import("../NewPocketForm"));
 
-const DeriveSeriesForm = lazy(() => import("../DeriveSeriesForm"));
+const DeriveSeriesForm = lazy(async () => import("../DeriveSeriesForm"));
 
 interface SeriesCardProps {
   readonly distribution: Distribution;
@@ -40,20 +40,18 @@ const SeriesCard: FC<SeriesCardProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [snapshotDate, setSnapshotDate] = useState("");
 
-  const setFirstPocketDate = ([pocket]: Pocket[]): void => {
+  useEffect(() => {
+    const [pocket] = series.pockets;
+
     if (
       !pocket ||
       pocket.mode !== "mirror" ||
-      pocket.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI)
+      !pocket.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI)
     ) {
       return;
     }
 
     setSnapshotDate(pocket.mirror_uri.replace(/^.*\/(\d{8})T\d{6}Z$/, "$1"));
-  };
-
-  useEffect(() => {
-    setFirstPocketDate(series.pockets);
   }, [series]);
 
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
