@@ -5,9 +5,10 @@ import type { Instance } from "@/types/Instance";
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { HTMLProps, ReactNode } from "react";
 import type { HeaderGroup, TableHeaderProps } from "react-table";
-import classes from "./InstanceList.module.scss";
 import type { GetUpgradesResult, InstanceColumn } from "./types";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
+import { currentInstanceIs } from "../../helpers";
+import classes from "./InstanceList.module.scss";
 
 export const getColumnFilterOptions = (
   columns: InstanceColumn[],
@@ -190,7 +191,7 @@ const getUpgradesFromUpgrades = (
 };
 
 export const getUpgradesCellIconAndLabel = (instance: Instance) => {
-  if (!instance.distribution || !/\d{1,2}\.\d{2}/.test(instance.distribution)) {
+  if (!currentInstanceIs("ubuntu", instance)) {
     return {
       icon: "",
       label: <NoData />,
