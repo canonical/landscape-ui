@@ -35,7 +35,6 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
     });
 
   const instances = getInstancesQueryResult?.data.results ?? [];
-  const instancesCount = getInstancesQueryResult?.data.count ?? 0;
 
   const handleClearSelection = () => {
     setSelectedInstances([]);
@@ -56,7 +55,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
         />
       )}
       <TablePagination
-        totalItems={instancesCount}
+        totalItems={getInstancesQueryResult?.data.count}
         handleClearSelection={handleClearSelection}
         currentItemCount={instances.length}
       />
