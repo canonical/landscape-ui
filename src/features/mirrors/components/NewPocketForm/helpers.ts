@@ -92,7 +92,7 @@ export const getValidationSchema = (series: Series): Yup.Schema =>
         test: (value, context) => {
           const { mode, mirror_suite } = context.parent;
 
-          if ("mirror" === mode && /\/$/.test(mirror_suite)) {
+          if ("mirror" === mode && mirror_suite.endsWith("/")) {
             return MIN_SELECTION_COUNT === value.length;
           }
 

@@ -119,7 +119,6 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
 
   const handleEditPocket = (
     event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
-    pocket: Pocket,
   ): void => {
     event.currentTarget.blur();
 
@@ -181,7 +180,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
               "u-no-padding--right": isLargerScreen,
             })}
             aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-            onClick={(event) => handleEditPocket(event, pocket)}
+            onClick={handleEditPocket}
             disabled={syncPocketRefs.some(
               (ref) => ref.distributionName === distributionName,
             )}

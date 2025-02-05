@@ -79,6 +79,9 @@ export default tseslint.config(
       "@typescript-eslint/promise-function-async": "warn",
       "no-use-before-define": "warn",
       "prefer-destructuring": "warn",
+      "@typescript-eslint/prefer-string-starts-ends-with": "warn",
+      "@typescript-eslint/no-confusing-void-expression": "warn",
+      "no-shadow": "warn",
     },
   },
 );

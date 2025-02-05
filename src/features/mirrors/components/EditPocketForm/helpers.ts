@@ -28,7 +28,7 @@ export const getValidationSchema = (
         test: (value, context) => {
           const { mirror_suite } = context.parent;
 
-          if ("mirror" === mode && /\/$/.test(mirror_suite)) {
+          if ("mirror" === mode && mirror_suite.endsWith("/")) {
             return MIN_SELECTION_COUNT === value.length;
           }
 

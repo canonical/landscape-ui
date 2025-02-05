@@ -40,8 +40,8 @@ export default function useSeries(): {
     CreateSeriesParams
   >({
     mutationKey: ["series", "new"],
-    mutationFn: (params) => authFetch.get("CreateSeries", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.get("CreateSeries", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
@@ -51,8 +51,8 @@ export default function useSeries(): {
     DeriveSeriesParams
   >({
     mutationKey: ["series", "derive"],
-    mutationFn: (params) => authFetch.get("DeriveSeries", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.get("DeriveSeries", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
@@ -62,8 +62,8 @@ export default function useSeries(): {
     RemoveSeriesParams
   >({
     mutationKey: ["series", "remove"],
-    mutationFn: (params) => authFetch.get("RemoveSeries", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.get("RemoveSeries", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
@@ -73,7 +73,7 @@ export default function useSeries(): {
   ) =>
     useQuery<AxiosResponse<RepoInfo>, AxiosError<ApiError>>({
       queryKey: ["repoInfo", { queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get("GetRepoInfo", {
           params: queryParams,
         }),
