@@ -18,7 +18,7 @@ import EmptyDistribution from "../EmptyDistribution/EmptyDistribution";
 import SeriesCard from "../SeriesCard";
 import classes from "./DistributionCard.module.scss";
 
-const NewSeriesForm = lazy(() => import("../NewSeriesForm"));
+const NewSeriesForm = lazy(async () => import("../NewSeriesForm"));
 
 interface DistributionCardProps {
   readonly distribution: Distribution;

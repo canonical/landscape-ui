@@ -22,7 +22,7 @@ import type { FormattedPackage } from "../../types/FormattedPackage";
 import PackageTable from "../PackageTable";
 import classes from "./PackageList.module.scss";
 
-const EditPocketForm = lazy(() => import("../EditPocketForm"));
+const EditPocketForm = lazy(async () => import("../EditPocketForm"));
 
 interface PackageListProps {
   readonly distributionName: Distribution["name"];

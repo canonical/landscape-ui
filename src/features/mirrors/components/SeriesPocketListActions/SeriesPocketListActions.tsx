@@ -19,7 +19,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { usePockets } from "../../hooks";
 import type { Pocket, SyncPocketRef } from "../../types";
 
-const EditPocketForm = lazy(() => import("../EditPocketForm"));
+const EditPocketForm = lazy(async () => import("../EditPocketForm"));
 
 interface SeriesPocketListActionsProps {
   readonly distributionName: string;
