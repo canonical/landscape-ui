@@ -5,8 +5,8 @@ on:
     branches: [dev]
 
 env:
-  VITE_API_URL: http://onward.landscape.yuriy.works:9091/api/v2/
-  VITE_API_URL_OLD: http://onward.landscape.yuriy.works:9091/api/
+  VITE_API_URL: http://landscape.yuriy.works:9091/api/v2/
+  VITE_API_URL_OLD: http://landscape.yuriy.works:9091/api/
   VITE_APP_TITLE: Landscape
   VITE_ROOT_PATH: /new_dashboard/
 

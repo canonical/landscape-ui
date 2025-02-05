@@ -1,16 +1,15 @@
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
+import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import usePageParams from "@/hooks/usePageParams";
+import type { Instance } from "@/types/Instance";
+import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column, Row } from "react-table";
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
-import NoData from "@/components/layout/NoData";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import usePageParams from "@/hooks/usePageParams";
-import type { Instance } from "@/types/Instance";
-import classes from "./InstanceList.module.scss";
-import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import {
   getCheckboxState,
   getColumnFilterOptions,
@@ -19,6 +18,7 @@ import {
   handleCheckboxChange,
   handleHeaderProps,
 } from "./helpers";
+import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
 
 interface InstanceListProps {

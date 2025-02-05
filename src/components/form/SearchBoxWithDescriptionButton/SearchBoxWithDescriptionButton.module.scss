@@ -1,0 +1,37 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.wrapper {
+  align-items: flex-start;
+  display: flex;
+  flex-basis: 30rem;
+}
+
+.formContainer {
+  flex: 1;
+}
+
+.helpButton {
+  &,
+  &:active,
+  &:focus,
+  &:hover {
+    background-color: $colors--theme--background-inputs;
+    border-bottom: $input-border-thickness solid
+      $colors--light-theme--border-high-contrast;
+    border-left: 0;
+    border-right: 0;
+    padding-left: calc($sph--large + $sph--x-small);
+    padding-right: calc($sph--large + $sph--x-small);
+    position: relative;
+  }
+
+  &::before {
+    border-left: 1px solid $color-mid-light;
+    bottom: 2px;
+    content: "";
+    left: 0;
+    position: absolute;
+    top: 2px;
+  }
+}

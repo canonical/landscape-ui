@@ -1,10 +1,10 @@
 // @ts-check
 
 import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
-import reactPlugin from "eslint-plugin-react";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import reactPlugin from "eslint-plugin-react";
 import globals from "globals";
+import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
@@ -68,6 +68,8 @@ export default tseslint.config(
 
       /* These rules are set to warning to meet TICS rules. They will be changed to errors in the future. */
       complexity: ["warn", 20],
+      "no-magic-numbers": "warn",
+      "@typescript-eslint/explicit-function-return-type": "warn",
     },
   },
 );
