@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import { useLayoutEffect, useRef, type FC, type ReactNode } from "react";
 import classes from "./PageHeader.module.scss";
 import classNames from "classnames";
 import { Link } from "react-router";
@@ -27,8 +27,23 @@ const PageHeader: FC<PageHeaderProps> = ({
   sticky = false,
 }) => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!headerRef.current) {
+      return;
+    }
+
+    const height = headerRef.current.getBoundingClientRect().height;
+    document.documentElement.style.setProperty(
+      "--pageheader-height",
+      `${height}px`,
+    );
+  }, []);
+
   return (
     <div
+      ref={headerRef}
       className={classNames(
         "p-panel__header",
         {

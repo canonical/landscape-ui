@@ -1,22 +1,18 @@
-@import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
 
-.container {
+.top {
   align-items: flex-start;
   background-color: $color-x-light;
   column-gap: $sph--x-large;
   display: flex;
   padding-bottom: $spv--large;
-}
 
-.sticky {
-  position: sticky;
-  top: 4.5rem;
-  z-index: 1;
-}
-
-.searchContainer {
-  flex-basis: 30rem;
+  &.sticky {
+    position: sticky;
+    top: var(--pageheader-height);
+    z-index: 1;
+  }
 }
 
 .filters {
