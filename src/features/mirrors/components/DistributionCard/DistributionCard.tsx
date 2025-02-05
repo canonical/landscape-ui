@@ -41,16 +41,6 @@ const DistributionCard: FC<DistributionCardProps> = ({
   const { mutateAsync: removeDistribution, isPending: isRemoving } =
     removeDistributionQuery;
 
-  const handleRemoveDistribution = async (): Promise<void> => {
-    try {
-      await removeDistribution({ name: distribution.name });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
-
   const handleAddSeries = (): void => {
     setSidePanelContent(
       `Add series to ${distribution.name}`,
@@ -66,6 +56,16 @@ const DistributionCard: FC<DistributionCardProps> = ({
 
   const handleCloseModal = (): void => {
     setModalOpen(false);
+  };
+
+  const handleRemoveDistribution = async (): Promise<void> => {
+    try {
+      await removeDistribution({ name: distribution.name });
+    } catch (error) {
+      debug(error);
+    } finally {
+      handleCloseModal();
+    }
   };
 
   const addSeriesButton = {

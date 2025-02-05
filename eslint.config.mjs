@@ -77,6 +77,7 @@ export default tseslint.config(
       "no-magic-numbers": "warn",
       "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/promise-function-async": "warn",
+      "no-use-before-define": "warn",
     },
   },
 );

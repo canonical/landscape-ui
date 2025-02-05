@@ -116,23 +116,6 @@ const PackageList: FC<PackageListProps> = ({
     isPending: isRemovingPackagesFromPocket,
   } = removePackagesFromPocketQuery;
 
-  const handleRemovePackages = async (): Promise<void> => {
-    const packages = packagesToShow
-      .filter((_, index) => selectedPackages.includes(index))
-      .map(({ packageName }) => packageName);
-
-    try {
-      await removePackagesFromPocket({
-        name: pocket.name,
-        series: seriesName,
-        distribution: distributionName,
-        packages,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
   const noQueryIsPending =
     !isSynchronizingMirrorPocket &&
     !isPullingPackagesToPocket &&
@@ -259,6 +242,23 @@ const PackageList: FC<PackageListProps> = ({
       diffPullPocket.length,
     ],
   );
+
+  const handleRemovePackages = async (): Promise<void> => {
+    const packages = packagesToShow
+      .filter((_, index) => selectedPackages.includes(index))
+      .map(({ packageName }) => packageName);
+
+    try {
+      await removePackagesFromPocket({
+        name: pocket.name,
+        series: seriesName,
+        distribution: distributionName,
+        packages,
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
 
   const hasNoPackages =
     !search &&

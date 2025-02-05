@@ -62,6 +62,10 @@ const SeriesCard: FC<SeriesCardProps> = ({
   const { mutateAsync: removeSeries, isPending: isRemoving } =
     removeSeriesQuery;
 
+  const handleCloseModal = (): void => {
+    setModalOpen(false);
+  };
+
   const handleRemoveSeries = async (): Promise<void> => {
     try {
       await removeSeries({
@@ -73,10 +77,6 @@ const SeriesCard: FC<SeriesCardProps> = ({
     } finally {
       handleCloseModal();
     }
-  };
-
-  const handleCloseModal = (): void => {
-    setModalOpen(false);
   };
 
   const handleOpenModal = (): void => {
