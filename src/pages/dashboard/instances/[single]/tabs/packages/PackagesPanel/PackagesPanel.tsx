@@ -1,6 +1,3 @@
-import type { FC } from "react";
-import { useState } from "react";
-import { useLocation, useParams } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import type { InstancePackage } from "@/features/packages";
@@ -10,8 +7,11 @@ import {
   usePackages,
 } from "@/features/packages";
 import usePageParams from "@/hooks/usePageParams";
-import { getEmptyMessage } from "./helpers";
 import type { UrlParams } from "@/types/UrlParams";
+import type { FC } from "react";
+import { useState } from "react";
+import { useLocation, useParams } from "react-router";
+import { getEmptyMessage } from "./helpers";
 
 const PackagesPanel: FC = () => {
   const [selected, setSelected] = useState<InstancePackage[]>([]);
@@ -19,24 +19,25 @@ const PackagesPanel: FC = () => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { status, search, currentPage, pageSize } = usePageParams();
   const { getInstancePackagesQuery } = usePackages();
-  const { state } = useLocation() as { state: { selectAll?: boolean } };
+  const { state } = useLocation() as {
+    state: { selectAll?: boolean } | null;
+  };
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
-  const handleClearSelection = () => {
+  const handleClearSelection = (): void => {
     setSelected([]);
   };
 
   const {
-    data: getInstancePackagesQueryResult,
+    data: { data: instancePackages } = { data: { count: 0, results: [] } },
     isLoading: getInstancePackagesQueryLoading,
   } = getInstancePackagesQuery({
     instance_id: instanceId,
     search: search,
     limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-    available: false,
-    installed: status === "installed" || !status || undefined,
+    offset: currentPage * pageSize - pageSize,
+    installed: !status || undefined,
     upgrade: status === "upgrade" || undefined,
     held: status === "held" || undefined,
     security: status === "security" || undefined,
@@ -45,37 +46,34 @@ const PackagesPanel: FC = () => {
   return (
     <>
       {!search &&
-        !status &&
-        currentPage === 1 &&
-        pageSize === 20 &&
-        getInstancePackagesQueryLoading && <LoadingState />}
-
-      {(search ||
-        status ||
-        currentPage !== 1 ||
-        pageSize !== 20 ||
-        !getInstancePackagesQueryLoading) && (
+      !status &&
+      currentPage === 1 &&
+      pageSize === 20 &&
+      getInstancePackagesQueryLoading ? (
+        <LoadingState />
+      ) : (
         <>
           <PackagesPanelHeader
             selectedPackages={selected}
             handleClearSelection={handleClearSelection}
           />
           <PackageList
-            packages={getInstancePackagesQueryResult?.data.results ?? []}
+            packages={instancePackages.results}
             packagesLoading={getInstancePackagesQueryLoading}
             selectedPackages={selected}
             onPackagesSelect={(packageNames) => {
               setSelected(packageNames);
             }}
             emptyMsg={getEmptyMessage(status, search)}
-            selectAll={state?.selectAll ?? false}
+            selectAll={!!state?.selectAll}
           />
         </>
       )}
+
       <TablePagination
         handleClearSelection={handleClearSelection}
-        totalItems={getInstancePackagesQueryResult?.data.count}
-        currentItemCount={getInstancePackagesQueryResult?.data.results.length}
+        totalItems={instancePackages.count}
+        currentItemCount={instancePackages.results.length}
       />
     </>
   );
