@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/canonical/landscape-dashboard/compare/v1.12.2...v1.12.3) (2025-02-06)
+
+
+### Bug Fixes
+
+* display all instance packages ([#185](https://github.com/canonical/landscape-dashboard/issues/185)) ([58789e2](https://github.com/canonical/landscape-dashboard/commit/58789e203458a5cbaeb26ee2cecaafd16d89f07c))
+
 ## [1.12.2](https://github.com/canonical/landscape-dashboard/compare/v1.12.1...v1.12.2) (2025-02-05)
 
 
