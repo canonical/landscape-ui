@@ -1,3 +1,3 @@
 export { default } from "./usePageParams";
-export { PARAMS } from "./constants";
-export { setDynamicAllowedValues } from "./helpers";
+export { default as PageParamsManager } from "./PageParamsManager";
+export type { PageParams } from "./types";

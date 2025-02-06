@@ -1,54 +1,47 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router";
-import { PARAMS } from "./constants";
-import {
-  getParsedParams,
-  sanitizeSearchParams,
-  shouldResetPage,
-} from "./helpers";
-import type { PageParams } from "./types";
+import PageParamsManager from "./PageParamsManager";
+import type { PageParams, UsePageParamsReturnType } from "./types";
 
-const usePageParams = () => {
+const usePageParams = (): UsePageParamsReturnType => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const pageParamsManager = PageParamsManager.getInstance();
 
   useEffect(() => {
-    const sanitizedParams = sanitizeSearchParams(searchParams);
+    const sanitizedParams =
+      pageParamsManager.sanitizeSearchParams(searchParams);
     if (sanitizedParams.toString() !== searchParams.toString()) {
       setSearchParams(sanitizedParams, { replace: true });
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, pageParamsManager]);
 
-  const parsedSearchParams = getParsedParams(searchParams);
+  const parsedSearchParams = pageParamsManager.getParsedParams(searchParams);
 
-  const setPageParams = (newParams: PageParams) => {
+  const setPageParams = (newParams: PageParams): void => {
     setSearchParams(
       (prevSearchParams) => {
         const switchedTabs =
           newParams.tab && newParams.tab !== parsedSearchParams.tab;
 
         if (switchedTabs) {
-          return new URLSearchParams({
-            tab: newParams.tab,
-          });
+          return new URLSearchParams({ tab: newParams.tab });
         }
 
         const updatedSearchParams = new URLSearchParams(
           prevSearchParams.toString(),
         );
 
-        if (shouldResetPage(newParams)) {
-          updatedSearchParams.delete(PARAMS.CURRENT_PAGE.urlParam);
+        if (pageParamsManager.shouldResetPage(newParams)) {
+          updatedSearchParams.delete(pageParamsManager.getCurrentPageParam());
         }
 
         Object.entries(newParams).forEach(([key, value]) => {
           updatedSearchParams.set(key, String(value));
         });
 
-        return sanitizeSearchParams(updatedSearchParams);
+        return pageParamsManager.sanitizeSearchParams(updatedSearchParams);
       },
-      {
-        replace: true,
-      },
+      { replace: true },
     );
   };
 

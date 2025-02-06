@@ -1,13 +1,24 @@
-import type { PARAMS } from "./constants";
+import type PageParamsManager from "./PageParamsManager";
 
-export type SortDirection = "asc" | "desc";
+type ParamsType = (typeof PageParamsManager.prototype)["PARAMS"];
 
-export type ParamKeyMapping = {
-  [K in keyof typeof PARAMS as (typeof PARAMS)[K]["urlParam"]]: ReturnType<
-    (typeof PARAMS)[K]["getDefaultValue"]
-  >;
+type ParamKeyMapping<T> = {
+  [K in keyof T as T[K]["urlParam"]]: ReturnType<T[K]["getDefaultValue"]>;
 };
 
-export type PageParams = Partial<ParamKeyMapping>;
+type PossibleDefaultValues = string | number | string[] | null;
 
-export type PossibleDefaultValues = string | number | string[] | null;
+interface ParamConfig {
+  readonly urlParam: string;
+  readonly shouldResetPage: boolean;
+  readonly getDefaultValue: () => PossibleDefaultValues;
+  readonly isValid: (value: string) => boolean;
+}
+
+export type SortDirection = "asc" | "desc";
+export type PageParams = Partial<ParamKeyMapping<ParamsType>>;
+export type ParamsConfig = Record<string, ParamConfig>;
+
+export type UsePageParamsReturnType = ParamKeyMapping<ParamsType> & {
+  setPageParams: (newParams: PageParams) => void;
+};
