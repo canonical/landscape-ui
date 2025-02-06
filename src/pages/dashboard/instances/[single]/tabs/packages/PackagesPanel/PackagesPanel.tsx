@@ -36,8 +36,6 @@ const PackagesPanel: FC = () => {
   } = getInstancePackagesQueryOld({
     instance_id: instanceId,
     search: search,
-    limit: pageSize,
-    offset: currentPage * pageSize - pageSize,
     installed: !status || undefined,
     upgrade: status === "upgrade" || undefined,
     held: status === "held" || undefined,
@@ -77,7 +75,10 @@ const PackagesPanel: FC = () => {
             handleClearSelection={handleClearSelection}
           />
           <PackageList
-            packages={instancePackages}
+            packages={instancePackages.slice(
+              currentPage * pageSize - pageSize,
+              currentPage * pageSize,
+            )}
             packagesLoading={getInstancePackagesQueryLoading}
             selectedPackages={selected}
             onPackagesSelect={(packageNames) => {
@@ -91,8 +92,13 @@ const PackagesPanel: FC = () => {
 
       <TablePagination
         handleClearSelection={handleClearSelection}
-        totalItems={undefined}
-        currentItemCount={instancePackages.length}
+        totalItems={instancePackages.length}
+        currentItemCount={
+          instancePackages.slice(
+            currentPage * pageSize - pageSize,
+            currentPage * pageSize,
+          ).length
+        }
       />
     </>
   );
