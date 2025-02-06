@@ -1,3 +1,19 @@
+## [1.12.2](https://github.com/canonical/landscape-dashboard/compare/v1.12.1...v1.12.2) (2025-02-05)
+
+
+### Bug Fixes
+
+* table pagination disappearing briefly when going to next page on instances page ([c92e7db](https://github.com/canonical/landscape-dashboard/commit/c92e7dba6eb488f858965c7e293acedbcd801788))
+
+## [1.12.1](https://github.com/canonical/landscape-dashboard/compare/v1.12.0...v1.12.1) (2025-02-05)
+
+
+### Bug Fixes
+
+* activities page header help icon misalignment ([#181](https://github.com/canonical/landscape-dashboard/issues/181)) ([ee9c985](https://github.com/canonical/landscape-dashboard/commit/ee9c98544b4de37f198e80503687dd946005d3fc))
+* remove instance upgrades column ([#183](https://github.com/canonical/landscape-dashboard/issues/183)) ([807ff6c](https://github.com/canonical/landscape-dashboard/commit/807ff6cd3b844838d300a171bdb9fd0b6970fcbf))
+* show features for ubuntu core instances ([#182](https://github.com/canonical/landscape-dashboard/issues/182)) ([c2c156f](https://github.com/canonical/landscape-dashboard/commit/c2c156fd9035dbbf83075343e96612eb37a57dbf))
+
 # [1.12.0](https://github.com/canonical/landscape-dashboard/compare/v1.11.1...v1.12.0) (2025-02-03)
 
 

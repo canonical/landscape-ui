@@ -1,6 +1,7 @@
 import type { KernelStatus } from "@/features/kernel";
 import type { Breadcrumb } from "@/types/Breadcrumb";
 import type { Instance } from "@/types/Instance";
+import { currentInstanceIs } from "../../../../../features/instances/helpers";
 
 export const getBreadcrumbs = (
   instance: Instance | null,
@@ -69,8 +70,8 @@ export const isInstancePackagesQueryEnabled = (
   instanceId: string | undefined,
   childInstanceId: string | undefined,
 ) =>
-  !!instance?.distribution &&
-  /\d{1,2}\.\d{2}/.test(instance.distribution) &&
+  !!instance &&
+  currentInstanceIs("ubuntu", instance) &&
   (!childInstanceId || instance.parent?.id === parseInt(instanceId ?? ""));
 
 export const isLivepatchInfoQueryEnabled = (
@@ -78,8 +79,8 @@ export const isLivepatchInfoQueryEnabled = (
   instanceId: string | undefined,
   childInstanceId: string | undefined,
 ) =>
-  !!instance?.distribution &&
-  /\d{1,2}\.\d{2}/.test(instance.distribution) &&
+  !!instance &&
+  currentInstanceIs("ubuntu", instance) &&
   (!childInstanceId || instance.parent?.id === parseInt(instanceId ?? ""));
 
 export const isUsnQueryEnabled = (
@@ -87,8 +88,8 @@ export const isUsnQueryEnabled = (
   instanceId: string | undefined,
   childInstanceId: string | undefined,
 ) =>
-  !!instance?.distribution &&
-  /\d{1,2}\.\d{2}/.test(instance.distribution) &&
+  !!instance &&
+  currentInstanceIs("ubuntu", instance) &&
   (!childInstanceId || instance.parent?.id === parseInt(instanceId ?? ""));
 
 export const getQueryComputerIdsParam = (instance: Instance | null) =>

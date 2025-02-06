@@ -9,7 +9,7 @@
   justify-content: space-between;
   padding-bottom: $spv--large;
   position: sticky;
-  top: 4.5rem;
+  top: var(--pageheader-height);
   z-index: 1;
 }
 
