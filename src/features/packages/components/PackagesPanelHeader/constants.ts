@@ -10,10 +10,6 @@ export const STATUS_OPTIONS: SelectOption[] = [
     value: "upgrade",
   },
   {
-    label: "Security upgrades",
-    value: "security",
-  },
-  {
     label: "Held",
     value: "held",
   },

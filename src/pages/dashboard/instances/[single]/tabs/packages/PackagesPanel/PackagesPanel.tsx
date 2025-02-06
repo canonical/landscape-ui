@@ -41,7 +41,6 @@ const PackagesPanel: FC = () => {
     installed: !status || undefined,
     upgrade: status === "upgrade" || undefined,
     held: status === "held" || undefined,
-    security: status === "security" || undefined,
   });
 
   const instancePackages: InstancePackage[] = instancePackagesOld.map(
@@ -92,7 +91,7 @@ const PackagesPanel: FC = () => {
 
       <TablePagination
         handleClearSelection={handleClearSelection}
-        totalItems={0}
+        totalItems={instancePackages.length + 1}
         currentItemCount={instancePackages.length}
       />
     </>
