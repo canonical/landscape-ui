@@ -48,3 +48,16 @@ export interface PackageObject {
 export interface DowngradePackageVersion extends CommonPackageInfo {
   version: string;
 }
+
+export interface PackageOld {
+  id: number;
+  name: string;
+  summary: string;
+  computers: {
+    available: number[];
+    installed: number[];
+    upgrades: number[];
+    held: number[];
+  };
+  version: string;
+}

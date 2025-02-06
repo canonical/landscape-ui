@@ -11,6 +11,7 @@ import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
 import { useState } from "react";
 import { useLocation, useParams } from "react-router";
+import type { PackageOld } from "../../../../../../../features/packages/types/Package";
 import { getEmptyMessage } from "./helpers";
 
 const PackagesPanel: FC = () => {
@@ -18,7 +19,7 @@ const PackagesPanel: FC = () => {
 
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { status, search, currentPage, pageSize } = usePageParams();
-  const { getInstancePackagesQuery } = usePackages();
+  const { getInstancePackagesQueryOld } = usePackages();
   const { state } = useLocation() as {
     state: { selectAll?: boolean } | null;
   };
@@ -30,9 +31,9 @@ const PackagesPanel: FC = () => {
   };
 
   const {
-    data: { data: instancePackages } = { data: { count: 0, results: [] } },
+    data: { data: instancePackagesOld } = { data: [] as PackageOld[] },
     isLoading: getInstancePackagesQueryLoading,
-  } = getInstancePackagesQuery({
+  } = getInstancePackagesQueryOld({
     instance_id: instanceId,
     search: search,
     limit: pageSize,
@@ -42,6 +43,25 @@ const PackagesPanel: FC = () => {
     held: status === "held" || undefined,
     security: status === "security" || undefined,
   });
+
+  const instancePackages: InstancePackage[] = instancePackagesOld.map(
+    (instancePackageOld) => {
+      return {
+        id: instancePackageOld.id,
+        name: instancePackageOld.name,
+        summary: instancePackageOld.summary,
+        available_version: !instancePackageOld.computers.upgrades.includes(
+          instanceId,
+        )
+          ? instancePackageOld.version
+          : "Upgrades available",
+        current_version: instancePackageOld.version,
+        status: instancePackageOld.computers.held.includes(instanceId)
+          ? "held"
+          : "installed",
+      };
+    },
+  );
 
   return (
     <>
@@ -58,7 +78,7 @@ const PackagesPanel: FC = () => {
             handleClearSelection={handleClearSelection}
           />
           <PackageList
-            packages={instancePackages.results}
+            packages={instancePackages}
             packagesLoading={getInstancePackagesQueryLoading}
             selectedPackages={selected}
             onPackagesSelect={(packageNames) => {
@@ -72,8 +92,8 @@ const PackagesPanel: FC = () => {
 
       <TablePagination
         handleClearSelection={handleClearSelection}
-        totalItems={instancePackages.count}
-        currentItemCount={instancePackages.results.length}
+        totalItems={0}
+        currentItemCount={instancePackages.length}
       />
     </>
   );

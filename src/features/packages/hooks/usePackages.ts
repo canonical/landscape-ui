@@ -1,17 +1,18 @@
-import type { AxiosError, AxiosResponse } from "axios";
-import type { UseQueryOptions } from "@tanstack/react-query";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/ApiError";
 import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import type { QueryFnType } from "@/types/QueryFnType";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
 import type {
   DowngradePackageVersion,
   InstancePackage,
   Package,
 } from "../types";
+import type { PackageOld } from "../types/Package";
 
 export interface GetPackagesParams {
   query: string;
@@ -120,6 +121,24 @@ export default function usePackages() {
     });
   };
 
+  const getInstancePackagesQueryOld = (
+    { instance_id, ...queryParams }: GetInstancePackagesParams,
+    config: Omit<
+      UseQueryOptions<AxiosResponse<PackageOld[]>, AxiosError<ApiError>>,
+      "queryKey" | "queryFn"
+    > = {},
+  ) => {
+    return useQuery<AxiosResponse<PackageOld[]>, AxiosError<ApiError>>({
+      queryKey: ["packages", { instance_id, ...queryParams }],
+      queryFn: () => {
+        return authFetchOld.get("GetPackages", {
+          params: { query: `id:${instance_id}`, ...queryParams },
+        });
+      },
+      ...config,
+    });
+  };
+
   const upgradePackagesQuery = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
@@ -187,6 +206,7 @@ export default function usePackages() {
   return {
     getPackagesQuery,
     getInstancePackagesQuery,
+    getInstancePackagesQueryOld,
     upgradePackagesQuery,
     getDowngradePackageVersionsQuery,
     downgradePackageVersionQuery,
