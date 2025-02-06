@@ -91,7 +91,7 @@ const PackagesPanel: FC = () => {
 
       <TablePagination
         handleClearSelection={handleClearSelection}
-        totalItems={instancePackages.length + 1}
+        totalItems={undefined}
         currentItemCount={instancePackages.length}
       />
     </>
