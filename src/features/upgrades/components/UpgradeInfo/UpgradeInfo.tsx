@@ -1,20 +1,25 @@
-import type { FC } from "react";
+import {
+  hasRegularUpgrades,
+  hasSecurityUpgrades,
+  hasUpgrades,
+} from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import classNames from "classnames";
+import type { FC } from "react";
 
 interface UpgradeInfoProps {
   readonly instances: Instance[];
 }
 
 const UpgradeInfo: FC<UpgradeInfoProps> = ({ instances }) => {
-  const instancesWithSecurityUpgradeCount = instances.filter(
-    ({ upgrades }) => upgrades?.security,
+  const instancesWithSecurityUpgradeCount = instances.filter(({ alerts }) =>
+    hasSecurityUpgrades(alerts),
   ).length;
-  const instancesWithRegularUpgradeCount = instances.filter(
-    ({ upgrades }) => upgrades?.regular,
+  const instancesWithRegularUpgradeCount = instances.filter(({ alerts }) =>
+    hasRegularUpgrades(alerts),
   ).length;
   const notAffectedInstancesCount = instances.filter(
-    ({ upgrades }) => !upgrades?.security && !upgrades?.regular,
+    ({ alerts }) => !hasUpgrades(alerts),
   ).length;
 
   return (
