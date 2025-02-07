@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import type { InstancePackage } from "@/features/packages";
+import type { InstancePackage, PackageOld } from "@/features/packages";
 import {
   PackageList,
   PackagesPanelHeader,
@@ -11,7 +11,6 @@ import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
 import { useState } from "react";
 import { useLocation, useParams } from "react-router";
-import type { PackageOld } from "../../../../../../../features/packages/types/Package";
 import { getEmptyMessage } from "./helpers";
 
 const PackagesPanel: FC = () => {

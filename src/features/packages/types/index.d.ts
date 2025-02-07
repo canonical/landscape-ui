@@ -2,12 +2,13 @@ export {
   DowngradePackageVersion,
   InstancePackage,
   Package,
-  PackageObject,
   PackageDiff,
+  PackageObject,
+  PackageOld,
   PocketPackage,
   PocketPackageName,
-  PocketPackageVersion,
   PocketPackagesList,
+  PocketPackageVersion,
 } from "./Package";
 
 export {

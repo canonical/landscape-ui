@@ -5,6 +5,7 @@ export type { GetPackagesParams, InstancePackagesToExclude } from "./hooks";
 export type {
   InstancePackage,
   Package,
-  PackageObject,
   PackageDiff,
+  PackageObject,
+  PackageOld,
 } from "./types";
