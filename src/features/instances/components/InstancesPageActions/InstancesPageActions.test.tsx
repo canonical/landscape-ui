@@ -1,10 +1,10 @@
+import * as Constants from "@/constants";
+import { instances, ubuntuInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import InstancesPageActions from "./InstancesPageActions";
-import { instances } from "@/tests/mocks/instance";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
-import * as Constants from "@/constants";
+import InstancesPageActions from "./InstancesPageActions";
 
 const selected = instances.slice(0, 2);
 
@@ -80,6 +80,29 @@ describe("InstancesPageActions", () => {
 
     const button = screen.queryByRole("button", { name: /view report/i });
     expect(button).not.toBeInTheDocument();
+  });
+
+  it("'Upgrade' button should be enabled without upgrades info", async () => {
+    renderWithProviders(
+      <InstancesPageActions
+        selected={[
+          {
+            ...ubuntuInstance,
+            alerts: [
+              {
+                type: "PackageUpgradesAlert",
+                summary: "",
+                severity: "info",
+              },
+            ],
+            upgrades: undefined,
+          },
+        ]}
+      />,
+    );
+
+    const button = screen.queryByRole("button", { name: /upgrade/i });
+    expect(button).not.toHaveClass("is-disabled");
   });
 
   describe("should proper handle button clicks", () => {
