@@ -88,13 +88,6 @@ describe("InstancesPageActions", () => {
         selected={[
           {
             ...ubuntuInstance,
-            alerts: [
-              {
-                type: "PackageUpgradesAlert",
-                summary: "",
-                severity: "info",
-              },
-            ],
             upgrades: undefined,
           },
         ]}

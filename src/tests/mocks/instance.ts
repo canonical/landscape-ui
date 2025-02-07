@@ -1,6 +1,6 @@
 import type { Instance, PendingInstance } from "@/types/Instance";
 
-export const ubuntuInstance = {
+export const ubuntuInstance: Instance = {
   id: 1,
   title: "Application Server 1",
   comment: "my awesome instance comment",
@@ -29,6 +29,13 @@ export const ubuntuInstance = {
     regular: 7,
     security: 0,
   },
+  alerts: [
+    {
+      type: "PackageUpgradesAlert",
+      summary: "",
+      severity: "info",
+    },
+  ],
   distribution_info: {
     code_name: "lucid",
     description: "Ubuntu 10.04 LTS",
@@ -690,6 +697,13 @@ export const instances: Instance[] = [
       regular: 6,
       security: 6,
     },
+    alerts: [
+      {
+        type: "SecurityUpgradesAlert",
+        summary: "",
+        severity: "info",
+      },
+    ],
     distribution_info: {
       code_name: "jammy",
       description: "Ubuntu 22.04 LTS",

@@ -1,5 +1,10 @@
-import { render } from "@testing-library/react";
+import {
+  hasRegularUpgrades,
+  hasSecurityUpgrades,
+  hasUpgrades,
+} from "@/features/instances";
 import { instances } from "@/tests/mocks/instance";
+import { render } from "@testing-library/react";
 import UpgradeInfo from "./UpgradeInfo";
 
 describe("UpgradeInfo", () => {
@@ -11,13 +16,13 @@ describe("UpgradeInfo", () => {
       `${instances.length}`,
       "instances:",
       "Security upgrades are available for",
-      `${instances.filter(({ upgrades }) => upgrades?.security).length}`,
+      `${instances.filter(({ alerts }) => hasSecurityUpgrades(alerts)).length}`,
       "instances",
       "Regular upgrades are available for",
-      `${instances.filter(({ upgrades }) => upgrades?.regular).length}`,
+      `${instances.filter(({ alerts }) => hasRegularUpgrades(alerts)).length}`,
       "instances",
       "No upgrades for",
-      `${instances.filter(({ upgrades }) => !upgrades?.security && !upgrades?.regular).length}`,
+      `${instances.filter(({ alerts }) => !hasUpgrades(alerts)).length}`,
       "instances needed.",
     ]);
   });
