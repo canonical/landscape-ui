@@ -1,20 +1,21 @@
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { Suspense, useState } from "react";
-import { Form, Tabs } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
+import LoadingState from "@/components/layout/LoadingState";
+import { hasSecurityUpgrades, hasUpgrades } from "@/features/instances";
 import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
+import { Form, Tabs } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { Suspense, useState } from "react";
 import UpgradeInfo from "../UpgradeInfo";
 import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
 import { getInitialValues, getTabLinks } from "./helpers";
 import type { UpgradesFormProps } from "./types";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
@@ -23,12 +24,12 @@ interface UpgradesProps {
 const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
   const [activeTabLinkId, setActiveTabLinkId] = useState(TAB_LINKS[0].id);
 
-  const affectedInstances = selectedInstances.filter(
-    ({ upgrades }) => upgrades?.security || upgrades?.regular,
+  const affectedInstances = selectedInstances.filter(({ alerts }) =>
+    hasUpgrades(alerts),
   );
 
-  const instancesWithUsn = affectedInstances.filter(
-    ({ upgrades }) => upgrades?.security,
+  const instancesWithUsn = affectedInstances.filter(({ alerts }) =>
+    hasSecurityUpgrades(alerts),
   );
 
   const debug = useDebug();

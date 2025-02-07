@@ -34,3 +34,21 @@ export function currentInstanceIs(
 
   return false;
 }
+
+export const hasRegularUpgrades = (
+  alerts: InstanceWithoutRelation["alerts"],
+): boolean => {
+  return !!alerts?.some(({ type }) => type === "PackageUpgradesAlert");
+};
+
+export const hasSecurityUpgrades = (
+  alerts: InstanceWithoutRelation["alerts"],
+): boolean => {
+  return !!alerts?.some(({ type }) => type === "SecurityUpgradesAlert");
+};
+
+export const hasUpgrades = (
+  alerts: InstanceWithoutRelation["alerts"],
+): boolean => {
+  return hasRegularUpgrades(alerts) || hasSecurityUpgrades(alerts);
+};

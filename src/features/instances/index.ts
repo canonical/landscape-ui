@@ -1,6 +1,11 @@
+export { default as InstanceList } from "./components/InstanceList";
 export { default as InstancesHeader } from "./components/InstancesHeader";
 export { default as InstancesPageActions } from "./components/InstancesPageActions";
-export { default as InstanceList } from "./components/InstanceList";
 export { FILTERS, STATUSES } from "./constants";
-export { currentInstanceCan } from "./helpers";
+export {
+  currentInstanceCan,
+  hasRegularUpgrades,
+  hasSecurityUpgrades,
+  hasUpgrades,
+} from "./helpers";
 export type { Status } from "./types";
