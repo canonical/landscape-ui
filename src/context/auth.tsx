@@ -138,12 +138,25 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       return initialState.account;
     }
 
-    const options: SelectOption[] = user.accounts
-      .filter(({ subdomain }) => !subdomain)
-      .map(({ title, name }) => ({
-        label: title,
-        value: name,
-      }));
+    const options: SelectOption[] = [];
+
+    const maybeSubdomain = user.accounts
+      .filter(({ subdomain }) => !!subdomain)
+      .find(({ name }) => name === user.current_account);
+
+    // We're on a subdomain account
+    if (maybeSubdomain) {
+      options.push({ label: maybeSubdomain.title, value: maybeSubdomain.name });
+    } else {
+      options.push(
+        ...user.accounts
+          .filter(({ subdomain }) => !subdomain)
+          .map(({ title, name }) => ({
+            label: title,
+            value: name,
+          })),
+      );
+    }
 
     return {
       current: options.some(({ value }) => value === user.current_account)

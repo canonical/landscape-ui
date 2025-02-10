@@ -1,8 +1,8 @@
 export interface Account {
-  classic_dashboard_url: string;
   name: string;
-  subdomain: string | null;
   title: string;
+  subdomain: string | null;
+  classic_dashboard_url: string;
   default?: boolean;
 }
 
