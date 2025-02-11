@@ -1,12 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { StatusFilter } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationButton,
+  Icon,
+  ICONS,
+} from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import type { EmployeeGroup } from "../../types";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
+import useNotify from "@/hooks/useNotify";
+import { getRemoveEmployeeGroupsModalTexts } from "./helpers";
 
 const EmployeeGroupIdentityProviderForm = lazy(
   () => import("../EmployeeGroupIdentityProviderForm"),
@@ -22,6 +29,7 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
   selectedEmployeeGroups,
 }) => {
   const { setSidePanelContent } = useSidePanel();
+  const { notify } = useNotify();
 
   const STATUS_OPTIONS = [
     {
@@ -47,12 +55,23 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
     );
   };
 
+  const { title, body, notificationText, notificationTitle } =
+    getRemoveEmployeeGroupsModalTexts(
+      employeeGroups.filter((employeeGroup) =>
+        selectedEmployeeGroups.includes(employeeGroup.id),
+      ),
+    );
+
   const handleEditPriority = () => {
     //
   };
 
   const handleRemove = () => {
-    //
+    //TODO: implement
+    notify.success({
+      title: notificationTitle,
+      message: notificationText,
+    });
   };
 
   const handleAssignAutoinstallFile = () => {
@@ -102,14 +121,20 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
               </div>
               <div className="p-segmented-control">
                 <div className="p-segmented-control__list">
-                  <Button
-                    className="p-segmented-control__button"
-                    hasIcon
+                  <ConfirmationButton
+                    className="p-segmented-control__button has-icon"
                     disabled={selectedEmployeeGroups.length === 0}
+                    confirmationModalProps={{
+                      title: title,
+                      children: body,
+                      confirmButtonLabel: "Remove",
+                      confirmButtonAppearance: "negative",
+                      onConfirm: handleRemove,
+                    }}
                   >
                     <Icon name={ICONS.delete} />
                     <span>Remove</span>
-                  </Button>
+                  </ConfirmationButton>
                   <Button
                     className="p-segmented-control__button"
                     hasIcon

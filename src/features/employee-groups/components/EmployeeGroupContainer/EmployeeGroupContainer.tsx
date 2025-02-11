@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
 import { useState } from "react";
@@ -38,7 +39,7 @@ const EmployeeGroupContainer: FC<EmployeeGroupContainerProps> = ({
       {!isLoading && employees.length === 0 && (
         <EmptyState
           title="No employees found"
-          body="Employees will appear here once they authenticate using your organization’s OIDC provider. You’ll see details about each user, their status, and associated instances."
+          body="Employees will appear here once they authenticate using your organization’s OIDC provider. You will see details about each user, their status, and associated instances."
         />
       )}
     </>

@@ -43,3 +43,7 @@ export interface EmployeeGroup extends Record<string, unknown> {
 export interface RecoveryKey {
   fde_recovery_key: string;
 }
+
+export interface ConfigurationLimit {
+  limit: number;
+}

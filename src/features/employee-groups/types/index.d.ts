@@ -1,1 +1,6 @@
-export { Employee, EmployeeGroup, RecoveryKey } from "./Employee";
+export {
+  Employee,
+  EmployeeGroup,
+  RecoveryKey,
+  ConfigurationLimit,
+} from "./Employee";

@@ -3,13 +3,13 @@ import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
+  Form,
   Icon,
   ICONS,
   Input,
   PasswordToggle,
 } from "@canonical/react-components";
 import type { FC } from "react";
-import { useState } from "react";
 import { useNavigate } from "react-router";
 import classes from "./EmployeeDetailsContextualMenu.module.scss";
 import useNotify from "@/hooks/useNotify";
@@ -18,6 +18,9 @@ import { activities } from "@/tests/mocks/activity";
 import type { Instance } from "@/types/Instance";
 import useEmployees from "../../hooks";
 import LoadingState from "@/components/layout/LoadingState";
+import useInstances from "@/hooks/useInstances";
+import useDebug from "@/hooks/useDebug";
+import { useFormik } from "formik";
 
 interface EmployeeDetailsContextualMenuProps {
   readonly instance: Instance; //TODO change to truncated type
@@ -26,31 +29,48 @@ interface EmployeeDetailsContextualMenuProps {
 const EmployeeDetailsContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({
   instance,
 }) => {
-  const [selectedAction, setSelectedAction] = useState<string>("");
-  const [confirmationText, setConfirmationText] = useState("");
-
+  const debug = useDebug();
   const { notify } = useNotify();
   const navigate = useNavigate();
   const { getRecoveryKey } = useEmployees();
   const { openActivityDetails } = useActivities();
+  const { removeInstancesQuery } = useInstances();
+
+  const { mutateAsync: removeInstances, isPending: isRemoving } =
+    removeInstancesQuery;
+
+  const formik = useFormik({
+    initialValues: {
+      confirmationText: "",
+      selectedAction: "",
+    },
+    onSubmit: (values) => {
+      console.log("values", values); //TODO change
+    },
+  });
 
   const { data: recoveryKeyQueryResult, isLoading: isLoadingRecoveryKey } =
     getRecoveryKey(
       {},
       {
-        enabled: selectedAction === "recoveryKey",
+        enabled: formik.values.selectedAction === "recoveryKey",
       },
     );
 
-  const recoveryKey = recoveryKeyQueryResult?.data.fde_recovery_key || "";
+  const handleRemoveInstance = async () => {
+    try {
+      await removeInstances({
+        computer_ids: [instance.id],
+      });
 
-  const handleCloseModal = () => {
-    setSelectedAction("");
-    setConfirmationText("");
+      navigate(`${ROOT_PATH}instances`, { replace: true });
+    } catch (error) {
+      debug(error);
+    }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmationText(e.target.value);
+  const handleCloseModal = () => {
+    formik.resetForm();
   };
 
   const contextualMenuLinks: MenuLink[] = [
@@ -61,7 +81,7 @@ const EmployeeDetailsContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({
           <span>View details</span>
         </>
       ),
-      "aria-label": `View ${instance.name} instance details`,
+      "aria-label": `View ${instance.title} instance details`,
       hasIcon: true,
       onClick: () => navigate(`${ROOT_PATH}instances/${instance.id}`),
     },
@@ -72,9 +92,9 @@ const EmployeeDetailsContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({
           <span>View recovery key</span>
         </>
       ),
-      "aria-label": `View ${instance.name} recovery key`,
+      "aria-label": `View ${instance.title} recovery key`,
       hasIcon: true,
-      onClick: () => setSelectedAction("recoveryKey"),
+      onClick: () => formik.setFieldValue("selectedAction", "recoveryKey"),
     },
     {
       children: (
@@ -83,9 +103,9 @@ const EmployeeDetailsContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({
           <span>Sanitize</span>
         </>
       ),
-      "aria-label": `Sanitize ${instance.name} instance`,
+      "aria-label": `Sanitize ${instance.title} instance`,
       hasIcon: true,
-      onClick: () => setSelectedAction("sanitize"),
+      onClick: () => formik.setFieldValue("selectedAction", "sanitize"),
     },
     {
       children: (
@@ -96,9 +116,11 @@ const EmployeeDetailsContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({
       ),
       "aria-label": `Remove from Landscape`,
       hasIcon: true,
-      onClick: () => setSelectedAction("remove"),
+      onClick: () => formik.setFieldValue("selectedAction", "remove"),
     },
   ];
+
+  const recoveryKey = recoveryKeyQueryResult?.data.fde_recovery_key || "";
 
   return (
     <>
@@ -108,10 +130,10 @@ const EmployeeDetailsContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({
         toggleClassName={classes.toggleButton}
         toggleAppearance="base"
         toggleLabel={<Icon name="contextual-menu" aria-hidden />}
-        toggleProps={{ "aria-label": `${instance.name} profile actions` }}
+        toggleProps={{ "aria-label": `${instance.title} profile actions` }}
         links={contextualMenuLinks}
       />
-      {selectedAction === "recoveryKey" && (
+      {formik.values.selectedAction === "recoveryKey" && (
         <ConfirmationModal
           title="View recovery key"
           confirmButtonLabel="Done"
@@ -131,37 +153,42 @@ const EmployeeDetailsContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({
               id="recoveryKey"
               label="Recovery key"
               defaultValue={recoveryKey}
-              // defaultValue={instance.recovery_key}
               readOnly
             />
           )}
         </ConfirmationModal>
       )}
-      {selectedAction === "remove" && (
+      {formik.values.selectedAction === "remove" && (
         <ConfirmationModal
-          title={`Remove ${instance.name} instance`}
+          title={`Remove ${instance.title} instance`}
           confirmButtonLabel="Remove"
           confirmButtonAppearance="negative"
-          //   confirmButtonDisabled={
-          //     isRemoving || confirmationText !== `remove ${profile.name}`
-          //   }
-          //   confirmButtonLoading={isRemoving}
-          //   onConfirm={handleRemoveWslProfile}
-          onConfirm={() => {
-            console.log("implement");
-          }}
+          confirmButtonDisabled={
+            isRemoving ||
+            formik.values.confirmationText !== `remove ${instance.title}`
+          }
+          onConfirm={handleRemoveInstance}
           close={handleCloseModal}
         >
-          <p>You are about to remove this instance from the user.</p>
+          <Form onSubmit={formik.handleSubmit} noValidate>
+            <p>
+              Removing this {instance.title} will delete all associated data and
+              free up one license slot for another computer to be registered.
+            </p>
+            <p>
+              Type <b>remove {instance.title}</b> to confirm.
+            </p>
+            <Input type="text" {...formik.getFieldProps("confirmationText")} />
+          </Form>
         </ConfirmationModal>
       )}
-      {selectedAction === "sanitize" && (
+      {formik.values.selectedAction === "sanitize" && (
         <ConfirmationModal
           title={`Sanitize "${instance.title}" instance`}
           confirmButtonLabel="Sanitize"
           confirmButtonAppearance="negative"
           confirmButtonDisabled={
-            confirmationText !== `sanitize ${instance.title}`
+            formik.values.confirmationText !== `sanitize ${instance.title}`
           }
           onConfirm={() => {
             notify.success({
@@ -178,15 +205,17 @@ const EmployeeDetailsContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({
           }}
           close={handleCloseModal}
         >
-          <p>
-            Sanitization will permanently delete the encryption keys for{" "}
-            {instance.title}, making its data completely irrecoverable. This
-            action cannot be undone. Please confirm your wish to proceed.
-          </p>
-          <p>
-            Type <b>sanitize {instance.title}</b> to confirm.
-          </p>
-          <Input type="text" value={confirmationText} onChange={handleChange} />
+          <Form onSubmit={formik.handleSubmit} noValidate>
+            <p>
+              Sanitization will permanently delete the encryption keys for{" "}
+              {instance.title}, making its data completely irrecoverable. This
+              action cannot be undone. Please confirm your wish to proceed.
+            </p>
+            <p>
+              Type <b>sanitize {instance.title}</b> to confirm.
+            </p>
+            <Input type="text" {...formik.getFieldProps("confirmationText")} />
+          </Form>
         </ConfirmationModal>
       )}
     </>

@@ -1,4 +1,5 @@
 import type {
+  ConfigurationLimit,
   Employee,
   EmployeeGroup,
   RecoveryKey,
@@ -45,57 +46,8 @@ export const employees: Employee[] = [
     subject: "00u1x0f8xq6z2c2",
     is_active: true,
     email: "alice@gmail.com",
-    // associated_instances: [
-    //   {
-    //     id: 1,
-    //     name: "Instance with a long name to trigger truncation",
-    //     status: "running",
-    //     recovery_key: "recovery-key1",
-    //   },
-    //   {
-    //     id: 2,
-    //     name: "Instance 2",
-    //     status: "stopped",
-    //     recovery_key: "recovery-key2",
-    //   },
-    // ],
-    // autoinstall_file: "autoinstall_file",
-    // email: "alice@gmail.com",
-    // status: "active",
-    // user_groups: ["group1longlonglonglongasdasdasdasd", "group2"],
   },
 ];
-
-// export const employeeGroups: EmployeeGroup[] = [
-//   {
-//     id: 1,
-//     name: "Group 1",
-//     employees: employees,
-//     autoinstall_file: "asd",
-//     priority: 1,
-//   },
-//   {
-//     id: 5,
-//     name: "Group 1",
-//     employees: employees,
-//     autoinstall_file: "asd",
-//     priority: 1,
-//   },
-//   {
-//     id: 2,
-//     name: "Group 2",
-//     employees: employees,
-//     autoinstall_file: "test-file",
-//     priority: 2,
-//   },
-//   {
-//     id: 3,
-//     name: "Group 3",
-//     employees: employees,
-//     autoinstall_file: "test-file 2",
-//     priority: 3,
-//   },
-// ];
 
 export const employeeGroups: EmployeeGroup[] = [
   {
@@ -126,4 +78,8 @@ export const employeeGroups: EmployeeGroup[] = [
 
 export const recoveryKey: RecoveryKey = {
   fde_recovery_key: "recovery-key",
+};
+
+export const configurationLimit: ConfigurationLimit = {
+  limit: 100_000,
 };

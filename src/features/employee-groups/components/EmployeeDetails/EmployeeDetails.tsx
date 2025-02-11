@@ -125,12 +125,15 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
             title: `Deactivate ${employee.name}`,
             children: (
               <>
-                <p>
-                  This will prevent {employee.name} from logging in to Landscape
-                  and from registering any new instances with their account.
-                </p>
-                Type <b>deactivate {employee.name}</b> to confirm
                 <Form noValidate>
+                  <p>
+                    This will prevent {employee.name} from logging in to
+                    Landscape and from registering any new instances with their
+                    account.
+                  </p>
+                  <p>
+                    Type <b>deactivate {employee.name}</b> to confirm
+                  </p>
                   <Input
                     type="text"
                     {...formik.getFieldProps("confirmationText")}
