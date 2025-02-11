@@ -5,6 +5,8 @@ import ViewAutoinstallFileDetailsPanel from ".";
 
 describe("ViewAutoinstallFileDetailsPanel", () => {
   it("should render", async () => {
-    renderWithProviders(<ViewAutoinstallFileDetailsPanel file={files[0]} />);
+    renderWithProviders(
+      <ViewAutoinstallFileDetailsPanel file={files[0]} isDefault={false} />,
+    );
   });
 });

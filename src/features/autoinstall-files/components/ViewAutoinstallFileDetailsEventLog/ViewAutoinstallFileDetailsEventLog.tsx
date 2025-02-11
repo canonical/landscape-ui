@@ -1,14 +1,12 @@
-import { FC, useMemo } from "react";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import { ModularTable } from "@canonical/react-components";
-import { AutoinstallFileEvent } from "../../types";
+import type { AutoinstallFileEvent } from "../../types";
 import classes from "./ViewAutoinstallFileDetailsEventLog.module.scss";
 
 const ViewAutoinstallFileDetailsEventLog: FC<{
-  events: AutoinstallFileEvent[];
+  readonly events: AutoinstallFileEvent[];
 }> = ({ events }) => {
   const columns = useMemo<Column<AutoinstallFileEvent>[]>(
     () => [

@@ -1,9 +1,6 @@
-import {
-  Cell,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { AutoinstallFile } from "../../types";
-import { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
+import type { AutoinstallFile } from "../../types";
+import type { HTMLProps } from "react";
 
 export const getCellProps = ({
   column,

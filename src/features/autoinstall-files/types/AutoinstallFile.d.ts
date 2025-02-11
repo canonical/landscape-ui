@@ -1,4 +1,4 @@
-import { AutoinstallFileEvent } from "./AutoinstallFileEvent";
+import type { AutoinstallFileEvent } from "./AutoinstallFileEvent";
 
 export interface AutoinstallFile extends Record<string, unknown> {
   name: string;

@@ -1,10 +1,11 @@
-import { FC } from "react";
-import { ContextualMenu, Icon, MenuLink } from "@canonical/react-components";
-import { AutoinstallFile } from "../../types";
+import type { FC } from "react";
+import type { MenuLink } from "@canonical/react-components";
+import { ContextualMenu, Icon } from "@canonical/react-components";
+import type { AutoinstallFile } from "../../types";
 import classes from "./AutoinstallFilesListContextualMenu.module.scss";
 
 interface AutoinstallFilesListContextualMenuProps {
-  file: AutoinstallFile;
+  readonly file: AutoinstallFile;
 }
 
 const AutoinstallFilesListContextualMenu: FC<

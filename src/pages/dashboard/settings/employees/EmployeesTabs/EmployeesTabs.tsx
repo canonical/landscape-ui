@@ -1,4 +1,5 @@
-import { FC, Suspense, useState } from "react";
+import type { FC } from "react";
+import { Suspense, useState } from "react";
 import { Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./EmployeesTabs.module.scss";

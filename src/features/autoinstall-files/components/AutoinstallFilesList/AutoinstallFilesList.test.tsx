@@ -14,7 +14,7 @@ describe("AutoinstallFilesList", () => {
       accessGroups: [""],
       availabilityZones: [""],
       currentPage: 0,
-      days: 0,
+      days: "7",
       disabledColumns: [""],
       employeeGroups: [],
       fromDate: "",
@@ -28,10 +28,24 @@ describe("AutoinstallFilesList", () => {
       tags: [""],
       toDate: "",
       type: "",
+      sort: null,
+      sortBy: "",
+      query: "",
     });
 
     renderWithProviders(
-      <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />,
+      <AutoinstallFilesList
+        defaultFile={{
+          name: "default.yaml",
+          content: "default content",
+          employeeGroupsAssociated: [],
+          dateCreated: new Date().toISOString(),
+          events: [],
+          lastModified: new Date().toISOString(),
+          version: 1,
+        }}
+        autoinstallFiles={autoinstallFiles}
+      />,
     );
 
     await userEvent.click(screen.getByRole("button", { name: "default.yaml" }));
@@ -42,7 +56,7 @@ describe("AutoinstallFilesList", () => {
       accessGroups: [""],
       availabilityZones: [""],
       currentPage: 0,
-      days: 0,
+      days: "7",
       disabledColumns: [""],
       employeeGroups: [],
       fromDate: "",
@@ -56,10 +70,24 @@ describe("AutoinstallFilesList", () => {
       tags: [""],
       toDate: "",
       type: "",
+      sort: null,
+      sortBy: "",
+      query: "",
     });
 
     renderWithProviders(
-      <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />,
+      <AutoinstallFilesList
+        defaultFile={{
+          name: "default.yaml",
+          content: "default content",
+          employeeGroupsAssociated: [],
+          dateCreated: new Date().toISOString(),
+          events: [],
+          lastModified: new Date().toISOString(),
+          version: 1,
+        }}
+        autoinstallFiles={autoinstallFiles}
+      />,
     );
 
     expect(screen.getByText("default.yaml")).toBeInTheDocument();

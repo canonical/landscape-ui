@@ -4,7 +4,8 @@ import {
   Icon,
   Modal,
 } from "@canonical/react-components";
-import { FC, useEffect, useState } from "react";
+import type { FC } from "react";
+import { useEffect, useState } from "react";
 import classes from "./ViewAutoinstallFileDetailsEditButton.module.scss";
 import {
   CANCEL_BUTTON_TEXT,
@@ -16,9 +17,9 @@ import {
 import useSidePanel from "@/hooks/useSidePanel";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 
-const ViewAutoinstallFileDetailsEditButton: FC<{ fileName: string }> = ({
-  fileName,
-}) => {
+const ViewAutoinstallFileDetailsEditButton: FC<{
+  readonly fileName: string;
+}> = ({ fileName }) => {
   const [modalState, setModalState] = useState<
     "visible" | "invisible" | "ignored"
   >("invisible");
@@ -87,9 +88,11 @@ const ViewAutoinstallFileDetailsEditButton: FC<{ fileName: string }> = ({
       {modalState === "visible" && (
         <Modal
           close={closeModal}
-          title=<span className={classes.capitalize}>
-            Edit history limit reached
-          </span>
+          title={
+            <span className={classes.capitalize}>
+              Edit history limit reached
+            </span>
+          }
           buttonRow={
             <>
               <Button appearance="base" onClick={closeModal}>
