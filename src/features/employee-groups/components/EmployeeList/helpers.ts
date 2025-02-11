@@ -1,13 +1,8 @@
-import {
-  Cell,
-  Row,
-  TableRowProps,
-  TableCellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { HTMLProps, MutableRefObject } from "react";
-import { Employee } from "../../types";
+import type { HTMLProps, MutableRefObject } from "react";
+import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
+import type { Employee } from "../../types";
+import type { ExpandedCell } from "../EmployeeGroupsList/types";
 import classes from "./EmployeeList.module.scss";
-import { ExpandedCell } from "../EmployeeGroupsList/types";
 
 export const handleRowProps =
   (expandedCell: ExpandedCell) =>

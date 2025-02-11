@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { FC, lazy, Suspense, useMemo, useRef, useState } from "react";
-import {
-  Column,
-  CellProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo, useRef, useState } from "react";
+import type { Column, CellProps } from "react-table";
 import ExpandableTable from "@/components/layout/ExpandableTable";
-import { Employee } from "../../types";
+import type { Employee } from "../../types";
 import TruncatedCell from "@/components/layout/TruncatedCell";
-import { Link } from "react-router-dom";
-import { ExpandedCell } from "../EmployeeGroupsList/types";
+import { Link } from "react-router";
+import type { ExpandedCell } from "../EmployeeGroupsList/types";
 import { useOnClickOutside } from "usehooks-ts";
 import classes from "./EmployeeList.module.scss";
 import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
@@ -20,9 +18,9 @@ import EmployeeListContextualMenu from "../EmployeeListContextualMenu";
 const EmployeeDetails = lazy(() => import("../EmployeeDetails"));
 
 interface EmployeeListProps {
-  limit: number;
-  onLimitChange: () => void;
-  employees: Employee[];
+  readonly limit: number;
+  readonly onLimitChange: () => void;
+  readonly employees: Employee[];
 }
 
 const EmployeeList: FC<EmployeeListProps> = ({

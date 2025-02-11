@@ -1,11 +1,12 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import EmployeeList from "../EmployeeList";
 import useEmployees from "../../hooks";
 
 interface EmployeeGroupContainerProps {
-  employeesGroupId: number;
+  readonly employeesGroupId: number;
   // autoInstallFile: string;
 }
 

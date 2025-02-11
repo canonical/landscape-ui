@@ -1,8 +1,8 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { SelectOption } from "@/types/SelectOption";
+import type { SelectOption } from "@/types/SelectOption";
 import { CodeSnippet, Form, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { FC } from "react";
+import type { FC } from "react";
 import * as Yup from "yup";
 import classes from "./AssignAutoInstallFileForm.module.scss";
 

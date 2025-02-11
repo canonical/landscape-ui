@@ -1,13 +1,8 @@
-import { HTMLProps, MutableRefObject } from "react";
-import {
-  Cell,
-  Row,
-  TableCellProps,
-  TableRowProps,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { ExpandedCell } from "./types";
+import type { HTMLProps, MutableRefObject } from "react";
+import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
+import type { ExpandedCell } from "./types";
 import classes from "./EmployeeGroupsList.module.scss";
-import { EmployeeGroup } from "../../types";
+import type { EmployeeGroup } from "../../types";
 
 const EMPTY_EMPLOYEE_GROUP: EmployeeGroup = {
   id: 0,
@@ -15,6 +10,8 @@ const EMPTY_EMPLOYEE_GROUP: EmployeeGroup = {
   autoinstall_file: "",
   employees: [],
   priority: 0,
+  issuer: "",
+  group_id: "",
 };
 
 export const getEmployeeGroupsWithExpanded = ({

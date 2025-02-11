@@ -10,13 +10,11 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
-import { FC, lazy, Suspense, useMemo, useState } from "react";
+import type { CellProps, Column } from "react-table";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { isNotUnique } from "../../helpers";
-import { EmployeeGroup } from "../../types";
+import type { EmployeeGroup } from "../../types";
 
 const EmployeeGroupIdentityProviderForm = lazy(
   () => import("../EmployeeGroupIdentityProviderForm"),
@@ -27,7 +25,7 @@ const EmployeeGroupsOrganiserForm = lazy(
 );
 
 interface ImportEmployeeGroupsFormProps {
-  providerId: number;
+  readonly providerId: number;
 }
 
 const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({

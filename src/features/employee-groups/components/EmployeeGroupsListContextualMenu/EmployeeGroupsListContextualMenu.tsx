@@ -1,15 +1,16 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
   ICONS,
-  MenuLink,
 } from "@canonical/react-components";
-import { FC, lazy, Suspense, useState } from "react";
-import { EmployeeGroup } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import type { EmployeeGroup } from "../../types";
 import classes from "./EmployeeGroupsListContextualMenu.module.scss";
 
 const AssignAutoInstallFileForm = lazy(
@@ -17,7 +18,7 @@ const AssignAutoInstallFileForm = lazy(
 );
 
 interface EmployeeDetailsContextualMenuProps {
-  employeeGroup: EmployeeGroup;
+  readonly employeeGroup: EmployeeGroup;
 }
 
 const EmployeeGroupsListContextualMenu: FC<

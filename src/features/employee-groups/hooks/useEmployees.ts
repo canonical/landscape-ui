@@ -1,14 +1,14 @@
 // import useFetch from "@/hooks/useFetch";
-import { ApiError } from "@/types/ApiError";
-import {
-  useQuery,
+import type { ApiError } from "@/types/ApiError";
+import type {
   //   useQueryClient,
   UseQueryOptions,
 } from "@tanstack/react-query";
-import { AxiosError, AxiosResponse } from "axios";
-import { Employee, RecoveryKey } from "../types";
+import { useQuery } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { Employee, RecoveryKey } from "../types";
 import { employees, recoveryKey } from "@/tests/mocks/employees";
-import { QueryFnType } from "@/types/QueryFnType";
+import type { QueryFnType } from "@/types/QueryFnType";
 
 export interface GetEmployeesParams {
   id: number;

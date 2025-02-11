@@ -7,13 +7,11 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
+import type { CellProps, Column } from "react-table";
 import classNames from "classnames";
-import { FC, useMemo, useRef, useState } from "react";
-import { EmployeeGroup } from "../../types";
+import type { FC } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { EmployeeGroup } from "../../types";
 import EmployeeGroupContainer from "../EmployeeGroupContainer";
 import EmployeeGroupsListContextualMenu from "../EmployeeGroupsListContextualMenu";
 import classes from "./EmployeeGroupsList.module.scss";
@@ -23,15 +21,15 @@ import {
   handleCellProps,
   handleRowProps,
 } from "./helpers";
-import { ExpandedCell } from "./types";
+import type { ExpandedCell } from "./types";
 import { isNotUnique } from "../../helpers";
 
 interface EmployeeGroupsListProps {
-  isEmployeeGroupsLoading: boolean;
-  onSelectedEmployeeGroupsChange: (employeeGroups: number[]) => void;
-  selectedEmployeeGroups: number[];
-  totalEmployeeGroupsCount: number;
-  employeeGroups: EmployeeGroup[];
+  readonly isEmployeeGroupsLoading: boolean;
+  readonly onSelectedEmployeeGroupsChange: (employeeGroups: number[]) => void;
+  readonly selectedEmployeeGroups: number[];
+  readonly totalEmployeeGroupsCount: number;
+  readonly employeeGroups: EmployeeGroup[];
 }
 
 const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({

@@ -1,6 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { MenuLink } from "@canonical/react-components";
 import {
   CheckboxInput,
   ConfirmationModal,
@@ -8,11 +9,11 @@ import {
   Form,
   Icon,
   Input,
-  MenuLink,
   Tooltip,
 } from "@canonical/react-components";
-import { FC, lazy, Suspense, useState } from "react";
-import { Employee } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import type { Employee } from "../../types";
 import classes from "./EmployeeListContextualMenu.module.scss";
 import {
   REMOVE_FROM_LANDSCAPE_TOOLTIP_MESSAGE,
@@ -23,7 +24,7 @@ import { useFormik } from "formik";
 const EmployeeDetails = lazy(() => import("../EmployeeDetails"));
 
 interface EmployeeDetailsContextualMenuProps {
-  employee: Employee;
+  readonly employee: Employee;
 }
 
 const EmployeeListContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({

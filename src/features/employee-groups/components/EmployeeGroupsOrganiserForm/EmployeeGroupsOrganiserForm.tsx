@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { FC, lazy, Suspense } from "react";
-import { EmployeeGroup } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import type { EmployeeGroup } from "../../types";
 import { Form, List } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
@@ -12,7 +13,7 @@ const ImportEmployeeGroupsForm = lazy(
 );
 
 interface EmployeeGroupsOrganiserFormProps {
-  employeeGroups: EmployeeGroup[];
+  readonly employeeGroups: EmployeeGroup[];
 }
 
 const EmployeeGroupsOrganiserForm: FC<EmployeeGroupsOrganiserFormProps> = ({

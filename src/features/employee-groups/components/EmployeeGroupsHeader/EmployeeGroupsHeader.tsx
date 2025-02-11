@@ -2,8 +2,9 @@
 import { StatusFilter } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import { Button, Icon, ICONS } from "@canonical/react-components";
-import { FC, lazy, Suspense } from "react";
-import { EmployeeGroup } from "../../types";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import type { EmployeeGroup } from "../../types";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 
@@ -12,8 +13,8 @@ const EmployeeGroupIdentityProviderForm = lazy(
 );
 
 interface EmployeeGroupsHeaderProps {
-  employeeGroups: EmployeeGroup[];
-  selectedEmployeeGroups: number[];
+  readonly employeeGroups: EmployeeGroup[];
+  readonly selectedEmployeeGroups: number[];
 }
 
 const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({

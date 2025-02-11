@@ -1,25 +1,26 @@
 import { ROOT_PATH } from "@/constants";
+import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
   ICONS,
   Input,
-  MenuLink,
   PasswordToggle,
 } from "@canonical/react-components";
-import { FC, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import type { FC } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 import classes from "./EmployeeDetailsContextualMenu.module.scss";
 import useNotify from "@/hooks/useNotify";
 import { useActivities } from "@/features/activities";
 import { activities } from "@/tests/mocks/activity";
-import { Instance } from "@/types/Instance";
+import type { Instance } from "@/types/Instance";
 import useEmployees from "../../hooks";
 import LoadingState from "@/components/layout/LoadingState";
 
 interface EmployeeDetailsContextualMenuProps {
-  instance: Instance; //TODO change to truncated type
+  readonly instance: Instance; //TODO change to truncated type
 }
 
 const EmployeeDetailsContextualMenu: FC<EmployeeDetailsContextualMenuProps> = ({

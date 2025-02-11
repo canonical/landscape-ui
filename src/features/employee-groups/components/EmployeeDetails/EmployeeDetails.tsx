@@ -14,27 +14,24 @@ import {
   Row,
   Tooltip,
 } from "@canonical/react-components";
-import {
-  CellProps,
-  Column,
-} from "@canonical/react-components/node_modules/@types/react-table";
 import { useFormik } from "formik";
-import { FC, useMemo } from "react";
-import { Link } from "react-router-dom";
+import type { FC } from "react";
+import { useMemo } from "react";
+import { Link } from "react-router";
+import type { CellProps, Column } from "react-table";
 import {
   REMOVE_FROM_LANDSCAPE_TOOLTIP_MESSAGE,
   SANITIZATION_TOOLTIP_MESSAGE,
 } from "../../constants";
-import { Employee } from "../../types";
-// import { Instance } from "../../types/Employee";
+import type { Employee } from "../../types";
+import useInstances from "@/hooks/useInstances";
+import type { Instance } from "@/types/Instance";
+import classNames from "classnames";
 import EmployeeDetailsContextualMenu from "../EmployeeDetailsContextualMenu/EmployeeDetailsContextualMenu";
 import classes from "./EmployeeDetails.module.scss";
-import { Instance } from "@/types/Instance";
-import useInstances from "@/hooks/useInstances";
-import classNames from "classnames";
 
 interface EmployeeDetailsProps {
-  employee: Employee;
+  readonly employee: Employee;
 }
 
 const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
@@ -118,8 +115,6 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
     ],
     [employee],
   );
-
-  console.log(employee);
 
   return (
     <>

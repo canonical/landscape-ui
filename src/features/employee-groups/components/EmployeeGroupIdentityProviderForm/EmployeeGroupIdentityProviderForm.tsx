@@ -1,10 +1,12 @@
 import { supportedProviders } from "@/tests/mocks/identityProviders";
 import { Button, Icon } from "@canonical/react-components";
-import { FC, lazy, Suspense } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import classes from "./EmployeeGroupIdentityProviderForm.module.scss";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
-import { getProviderIcon, SupportedIdentityProvider } from "@/features/auth";
+import type { SupportedIdentityProvider } from "@/features/auth";
+import { getProviderIcon } from "@/features/auth";
 
 const ImportEmployeeGroupsForm = lazy(
   () => import("../ImportEmployeeGroupsForm"),
