@@ -20,7 +20,3 @@ export const getTableSortOrder = (sort: string | null) => {
       return "none";
   }
 };
-
-export const numberWithCommas = (x: number) => {
-  return x.toLocaleString();
-};

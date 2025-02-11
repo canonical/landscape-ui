@@ -22,7 +22,7 @@ import {
   handleRowProps,
 } from "./helpers";
 import type { ExpandedCell } from "./types";
-import { isNotUnique } from "../../helpers";
+import { getEmployeeGroupLabel, isNotUnique } from "../../helpers";
 
 interface EmployeeGroupsListProps {
   readonly isEmployeeGroupsLoading: boolean;
@@ -157,11 +157,8 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       {
         accessor: "name",
         Header: "name",
-        Cell: ({
-          row: {
-            original: { name, group_id },
-          },
-        }: CellProps<EmployeeGroup>) => {
+        Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => {
+          const label = getEmployeeGroupLabel(original, employeeGroups, true);
           return (
             <>
               <span
@@ -170,16 +167,8 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
                   "p-text--small-caps",
                 )}
               >
-                {name}
-                {isNotUnique(employeeGroups, name) && (
-                  <Tooltip
-                    message={`group id: ${group_id}`} //TODO change
-                  >
-                    <span>&nbsp;(...{group_id.slice(-3)}) </span>
-                  </Tooltip>
-                )}
+                {label}
               </span>
-              {/* <Badge className={classes.badge} value={employees.length} /> */}
             </>
           );
         },

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { StatusFilter } from "@/components/filter";
+import { StatusFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import {
   Button,
@@ -14,6 +14,9 @@ import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import useNotify from "@/hooks/useNotify";
 import { getRemoveEmployeeGroupsModalTexts } from "./helpers";
+import EmployeeGroupsFilter from "../EmployeeGroupsFilter";
+import type { SelectOption } from "@/types/SelectOption";
+import { getEmployeeGroupOptions, isNotUnique } from "../../helpers";
 
 const EmployeeGroupIdentityProviderForm = lazy(
   () => import("../EmployeeGroupIdentityProviderForm"),
@@ -30,21 +33,6 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
 }) => {
   const { setSidePanelContent } = useSidePanel();
   const { notify } = useNotify();
-
-  const STATUS_OPTIONS = [
-    {
-      label: "All",
-      value: "all",
-    },
-    {
-      label: "Active",
-      value: "active",
-    },
-    {
-      label: "Inactive",
-      value: "inactive",
-    },
-  ];
 
   const handleImportEmployeeGroups = () => {
     setSidePanelContent(
@@ -78,12 +66,11 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
     //
   };
 
+  const employeeGroupOptions = getEmployeeGroupOptions(employeeGroups, false);
+
   return (
     <>
       <HeaderWithSearch
-        onSearch={() => {
-          // handleSearch
-        }}
         actions={
           <div
             style={{
@@ -93,9 +80,7 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
             }}
           >
             <div>
-              <StatusFilter options={STATUS_OPTIONS} />
-              <StatusFilter options={STATUS_OPTIONS} />
-              <StatusFilter options={STATUS_OPTIONS} />
+              <EmployeeGroupsFilter employeeGroupsData={employeeGroups} />
             </div>
             <div
               style={{
@@ -106,14 +91,17 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
               <div className="p-segmented-control">
                 <div className="p-segmented-control__list">
                   <Button
-                    className="p-segmented-control__button"
+                    className="p-segmented-control__button u-no-margin--bottom"
                     hasIcon
                     onClick={handleImportEmployeeGroups}
                   >
                     <Icon name={ICONS.plus} />
                     <span>Import employee groups</span>
                   </Button>
-                  <Button className="p-segmented-control__button" hasIcon>
+                  <Button
+                    className="p-segmented-control__button u-no-margin--bottom"
+                    hasIcon
+                  >
                     <Icon name="sort-both" />
                     <span>Edit priority</span>
                   </Button>
@@ -122,7 +110,7 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
               <div className="p-segmented-control">
                 <div className="p-segmented-control__list">
                   <ConfirmationButton
-                    className="p-segmented-control__button has-icon"
+                    className="p-segmented-control__button has-icon u-no-margin--bottom"
                     disabled={selectedEmployeeGroups.length === 0}
                     confirmationModalProps={{
                       title: title,
@@ -136,7 +124,7 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
                     <span>Remove</span>
                   </ConfirmationButton>
                   <Button
-                    className="p-segmented-control__button"
+                    className="p-segmented-control__button u-no-margin--bottom"
                     hasIcon
                     disabled={selectedEmployeeGroups.length === 0}
                   >
@@ -148,6 +136,10 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
             </div>
           </div>
         }
+      />
+      <TableFilterChips
+        filtersToDisplay={["employeeGroups"]}
+        employeeGroupOptions={employeeGroupOptions}
       />
     </>
   );

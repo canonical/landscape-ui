@@ -5,7 +5,6 @@ import {
   useEmployees,
 } from "@/features/employee-groups";
 import { employeeGroups } from "@/tests/mocks/employees";
-import { numberWithCommas } from "@/utils/output";
 import { Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
@@ -33,8 +32,8 @@ const EmployeesPanel: FC = () => {
       {isLimitReached && (
         <Notification severity="caution">
           <span>
-            You have reached the limit of {numberWithCommas(limit)} employees.
-            To allow new registrations, delete deactivated users.
+            You have reached the limit of {limit.toLocaleString()} employees. To
+            allow new registrations, delete deactivated users.
           </span>
         </Notification>
       )}
