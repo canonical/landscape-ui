@@ -66,14 +66,6 @@ describe("GeneralSettings", () => {
     vi.mocked(useAuth, { partial: true }).mockReturnValue({
       user: authUser,
       setUser: vi.fn(),
-      account: {
-        switch: vi.fn(),
-        current: authUser.current_account,
-        options: authUser.accounts.map(({ name, title }) => ({
-          label: title,
-          value: name,
-        })),
-      },
     });
     vi.mocked(useEnv, { partial: true }).mockReturnValue({
       isSaas: false,
@@ -96,14 +88,6 @@ describe("GeneralSettings", () => {
     vi.mocked(useAuth, { partial: true }).mockReturnValue({
       user: authUser,
       setUser: vi.fn(),
-      account: {
-        switch: vi.fn(),
-        current: authUser.current_account,
-        options: authUser.accounts.map(({ name, title }) => ({
-          label: title,
-          value: name,
-        })),
-      },
     });
     vi.mocked(useEnv, { partial: true }).mockReturnValue({ isSaas: true });
 
