@@ -1,13 +1,12 @@
 import { useEffect } from "react";
-import type { PageParams } from "../usePageParams";
-import { PageParamsManager } from "../usePageParams";
+import type { PageParams } from "@/libs/pageParamsManager";
+import { pageParamsManager } from "@/libs/pageParamsManager";
 
 const useSetDynamicFilterValidation = (
   urlParam: keyof PageParams,
   allowedValues: string[],
 ): void => {
   const allowedValuesString = JSON.stringify(allowedValues);
-  const pageParamsManager = PageParamsManager.getInstance();
 
   useEffect(() => {
     pageParamsManager.setDynamicAllowedValues(urlParam, allowedValues);

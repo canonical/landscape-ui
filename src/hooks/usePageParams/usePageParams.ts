@@ -1,11 +1,17 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router";
-import PageParamsManager from "./PageParamsManager";
-import type { PageParams, UsePageParamsReturnType } from "./types";
+import type {
+  PageParams,
+  UsePageParamsReturnType,
+} from "@/libs/pageParamsManager";
+import { pageParamsManager } from "@/libs/pageParamsManager";
+
+export interface UsePageParamsReturnType extends Required<PageParams> {
+  setPageParams: (newParams: PageParams) => void;
+}
 
 const usePageParams = (): UsePageParamsReturnType => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const pageParamsManager = PageParamsManager.getInstance();
 
   useEffect(() => {
     const sanitizedParams =

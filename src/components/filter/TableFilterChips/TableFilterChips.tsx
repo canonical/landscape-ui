@@ -13,6 +13,7 @@ import {
 } from "./helpers";
 import classes from "./TableFilterChips.module.scss";
 import type { FilterKey } from "./types";
+import type { UsePageParamsReturnType } from "@/hooks/usePageParams/usePageParams";
 
 interface TableFilterChipsProps {
   readonly accessGroupOptions?: SelectOption[];
@@ -52,7 +53,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     type,
     search,
     query,
-  } = usePageParams();
+  }: UsePageParamsReturnType = usePageParams();
 
   const handleClearAllFilters = () => {
     setPageParams({
