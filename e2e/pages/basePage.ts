@@ -1,7 +1,7 @@
 import { expect } from "../fixtures/auth";
 import type { Page } from "@playwright/test";
 
-export class _basePage {
+export class basePage {
   constructor(public readonly page: Page) {}
 
   async checkPageHeading(title: string): Promise<void> {
