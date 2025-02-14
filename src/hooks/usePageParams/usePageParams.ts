@@ -1,11 +1,14 @@
+import type { PageParams } from "@/libs/pageParamsManager";
+import { pageParamsManager } from "@/libs/pageParamsManager";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router";
-import PageParamsManager from "./PageParamsManager";
-import type { PageParams, UsePageParamsReturnType } from "./types";
+
+interface UsePageParamsReturnType extends PageParams {
+  setPageParams: (newParams: Partial<PageParams>) => void;
+}
 
 const usePageParams = (): UsePageParamsReturnType => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const pageParamsManager = PageParamsManager.getInstance();
 
   useEffect(() => {
     const sanitizedParams =
@@ -17,13 +20,10 @@ const usePageParams = (): UsePageParamsReturnType => {
 
   const parsedSearchParams = pageParamsManager.getParsedParams(searchParams);
 
-  const setPageParams = (newParams: PageParams): void => {
+  const setPageParams = (newParams: Partial<PageParams>): void => {
     setSearchParams(
       (prevSearchParams) => {
-        const switchedTabs =
-          newParams.tab && newParams.tab !== parsedSearchParams.tab;
-
-        if (switchedTabs) {
+        if (newParams.tab && newParams.tab !== parsedSearchParams.tab) {
           return new URLSearchParams({ tab: newParams.tab });
         }
 
