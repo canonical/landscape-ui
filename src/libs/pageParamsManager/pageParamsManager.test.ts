@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import pageParamsManager from "./pageParamsManager";
 import {
   DEFAULT_CURRENT_PAGE,
   DEFAULT_DAYS,
@@ -6,7 +7,6 @@ import {
   DEFAULT_EMPTY_STRING,
   DEFAULT_PAGE_SIZE,
 } from "./constants";
-import pageParamsManager from "./pageParamsManager";
 
 describe("PageParamsManager (Refactored)", () => {
   describe("shouldResetPage", () => {

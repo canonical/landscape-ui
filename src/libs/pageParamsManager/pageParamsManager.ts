@@ -61,9 +61,10 @@ class PageParamsManager {
    */
   public sanitizeSearchParams(params: URLSearchParams): URLSearchParams {
     const newParams = new URLSearchParams(params);
+    const keys = Array.from(newParams.keys());
 
     // Check each key/value to see if we should keep or remove
-    for (const key of newParams.keys()) {
+    for (const key of keys) {
       const value = newParams.get(key);
       if (!this.shouldKeepParam(key, value)) {
         newParams.delete(key);
