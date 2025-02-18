@@ -4,6 +4,18 @@ landscape-dashboard (1.12.4-0landscape0) jammy; urgency=medium
 
  -- Bill Kronholm <bill.kronholm@canonical.com>  Fri, 14 Feb 2025 15:22:27 -0800
 
+landscape-dashboard (1.11.1-0landscape0) jammy; urgency=medium
+
+  * Release 1.11.1 for jammy
+
+ -- Mitch Burton <mitch.burton@canonical.com>  Fri, 31 Jan 2025 11:47:50 -0800
+
+landscape-dashboard (1.11.0-0landscape0) jammy; urgency=medium
+
+  * Release 1.11.0 for jammy
+
+ -- Kevin Nasto <kevin.nasto@canonical.com>  Mon, 16 Dec 2024 12:53:07 -0600
+
 landscape-dashboard (1.9.0-0landscape0) jammy; urgency=medium
 
   * Release 1.9.0 for jammy
