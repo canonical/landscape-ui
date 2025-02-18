@@ -1,0 +1,1 @@
+function e(n,r){return u("ubuntu",r)}function u(n,r){return r.distribution_info?r.distribution_info.description.includes("Ubuntu"):!1}const i=n=>!!(n!=null&&n.some(({type:r})=>r==="PackageUpgradesAlert")),t=n=>!!(n!=null&&n.some(({type:r})=>r==="SecurityUpgradesAlert")),s=n=>i(n)||t(n);export{i as a,s as b,e as c,u as d,t as h};
