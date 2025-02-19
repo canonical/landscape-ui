@@ -1,21 +1,21 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import LoadingState from "@/components/layout/LoadingState";
+import { REPORT_VIEW_ENABLED } from "@/constants";
+import { useActivities } from "@/features/activities";
+import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { Instance } from "@/types/Instance";
 import {
   Button,
   ConfirmationButton,
   ContextualMenu,
   Icon,
 } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
-import useInstances from "@/hooks/useInstances";
-import type { Instance } from "@/types/Instance";
-import useNotify from "@/hooks/useNotify";
-import { useActivities } from "@/features/activities";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import { currentInstanceCan, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
-import { REPORT_VIEW_ENABLED } from "@/constants";
-import { currentInstanceCan } from "../../helpers";
 import classes from "./InstancesPageActions.module.scss";
 
 const RunInstanceScriptForm = lazy(() =>
@@ -244,13 +244,9 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
             className="p-segmented-control__button"
             type="button"
             onClick={handleUpgradesRequest}
-            disabled={
-              0 === selected.length ||
-              selected.every(
-                ({ upgrades }) =>
-                  !upgrades || (!upgrades.regular && !upgrades.security),
-              )
-            }
+            disabled={selected.every(
+              (instance) => !hasUpgrades(instance.alerts),
+            )}
           >
             <Icon name="change-version" />
             <span>Upgrade</span>

@@ -1,15 +1,16 @@
-import classNames from "classnames";
-import type { FC } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { CellProps, Column } from "react-table";
-import { Button } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
+import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import type {
   InstancePackage,
   InstancePackagesToExclude,
 } from "@/features/packages";
 import { usePackages } from "@/features/packages";
 import type { Instance } from "@/types/Instance";
+import { Button } from "@canonical/react-components";
+import classNames from "classnames";
+import type { FC } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { CellProps, Column } from "react-table";
 import AffectedPackages from "../AffectedPackages";
 import { handleCellProps } from "./helpers";
 import classes from "./InstancesPanel.module.scss";
@@ -136,7 +137,9 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
             aria-expanded={expandedRow === index}
             onClick={() => handleExpandCellClick(index)}
           >
-            {original.upgrades?.regular ?? original.upgrades?.security ?? 0}
+            {DETAILED_UPGRADES_VIEW_ENABLED
+              ? (original.upgrades?.regular ?? original.upgrades?.security ?? 0)
+              : null}
           </Button>
         ),
       },

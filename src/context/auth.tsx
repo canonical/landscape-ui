@@ -12,15 +12,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import useNotify from "@/hooks/useNotify";
 import type { AuthUser } from "@/features/auth";
 import { redirectToExternalUrl, useUnsigned } from "@/features/auth";
-import type { SelectOption } from "@/types/SelectOption";
 import Redirecting from "@/components/layout/Redirecting";
 
 export interface AuthContextProps {
-  account: {
-    current: string;
-    options: SelectOption[];
-    switch: (newToken: string, newAccount: string) => void;
-  };
   authLoading: boolean;
   authorized: boolean;
   isOidcAvailable: boolean;
@@ -32,11 +26,6 @@ export interface AuthContextProps {
 }
 
 const initialState: AuthContextProps = {
-  account: {
-    current: "",
-    options: [],
-    switch: () => undefined,
-  },
   authLoading: false,
   authorized: false,
   isOidcAvailable: false,
@@ -118,42 +107,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const handleSetUser = (user: AuthUser) => {
     setUser(user);
   };
-
-  const handleSwitchAccount = (newToken: string, newAccount: string) => {
-    if (!user) {
-      return;
-    }
-
-    const newUser = {
-      ...user,
-      current_account: newAccount,
-      token: newToken,
-    };
-
-    setUser(newUser);
-  };
-
-  const account = useMemo<AuthContextProps["account"]>(() => {
-    if (!user) {
-      return initialState.account;
-    }
-
-    const options: SelectOption[] = user.accounts
-      .filter(({ subdomain }) => !subdomain)
-      .map(({ title, name }) => ({
-        label: title,
-        value: name,
-      }));
-
-    return {
-      current: options.some(({ value }) => value === user.current_account)
-        ? user.current_account
-        : options[0].value,
-      options,
-      switch: handleSwitchAccount,
-    };
-  }, [user]);
-
   const handleLogout = () => {
     setUser(null);
     navigate("/login", { replace: true });
@@ -181,7 +134,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        account,
         authLoading: loading,
         authorized: null !== user,
         isOidcAvailable: !!getLoginMethodsQueryResult?.data.oidc.available,

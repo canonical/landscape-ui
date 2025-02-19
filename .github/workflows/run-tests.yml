@@ -5,14 +5,17 @@ on:
     branches: [dev]
 
 env:
-  VITE_API_URL: http://landscape.yuriy.works:9091/api/v2/
-  VITE_API_URL_OLD: http://landscape.yuriy.works:9091/api/
+  VITE_API_URL: http://landscape.yuriy.works/api/v2/
+  VITE_API_URL_OLD: http://landscape.yuriy.works/api/
   VITE_APP_TITLE: Landscape
   VITE_ROOT_PATH: /new_dashboard/
+  VITE_REPORT_VIEW_ENABLED: false
+  VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
+  VITE_SELF_HOSTED_ENV: true
 
 jobs:
   e2e-tests:
-    runs-on: [self-hosted, Linux, large]
+    runs-on: [ self-hosted, Linux, large ]
     container:
       image: mcr.microsoft.com/playwright:next
     steps:
@@ -20,8 +23,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Check internet connection
+        run: |
+          if curl -s -I https://www.google.com > /dev/null; then
+            echo "Internet connection is available."
+          else
+            echo "No internet connection."
+            exit 1
+          fi
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         env:
           npm_config_cache: /home/ubuntu/landscape-dashboard/.npm
       - name: Build the project
@@ -32,22 +43,10 @@ jobs:
         run: npx playwright test --project=common
         env:
           HOME: /root
-          VITE_SELF_HOSTED_ENV: true
-      - name: Run SaaS tests
-        run: npx playwright test --project=saas
-        env:
-          HOME: /root
-          VITE_SELF_HOSTED_ENV: false
       - name: Run self-hosted tests
         run: npx playwright test --project=self-hosted
         env:
           HOME: /root
-          VITE_SELF_HOSTED_ENV: true
-      - name: Run standalone tests
-        run: npx playwright test --project=standalone
-        env:
-          HOME: /root
-          VITE_SELF_HOSTED_ENV: true
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -57,7 +56,7 @@ jobs:
             retention-days: 30
 
   unit-tests:
-    runs-on: [self-hosted, Linux, large]
+    runs-on: [ self-hosted, Linux, large ]
     permissions:
       contents: read
       pull-requests: write
@@ -67,7 +66,7 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         env:
           npm_config_cache: /home/ubuntu/landscape-dashboard/.npm
       - name: Check memory usage

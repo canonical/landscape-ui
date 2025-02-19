@@ -1,8 +1,4 @@
 import { defineConfig, devices } from "@playwright/test";
-import dotenv from "dotenv";
-
-// Load environment variables from .env.local
-dotenv.config({ path: ".env.local" });
 
 const PORT = process.env.CI ? 4173 : 5173;
 

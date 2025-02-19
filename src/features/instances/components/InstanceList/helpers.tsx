@@ -1,14 +1,18 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import NoData from "@/components/layout/NoData";
+import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { STATUSES } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { HTMLProps, ReactNode } from "react";
 import type { HeaderGroup, TableHeaderProps } from "react-table";
-import type { GetUpgradesResult, InstanceColumn } from "./types";
-import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { currentInstanceIs } from "../../helpers";
+import {
+  currentInstanceIs,
+  hasRegularUpgrades,
+  hasSecurityUpgrades,
+} from "../../helpers";
 import classes from "./InstanceList.module.scss";
+import type { GetUpgradesResult, InstanceColumn } from "./types";
 
 export const getColumnFilterOptions = (
   columns: InstanceColumn[],
@@ -136,25 +140,14 @@ export const getStatusCellIconAndLabel = (
 const getUpgradesFromAlerts = (
   alerts: Instance["alerts"],
 ): GetUpgradesResult => {
-  if (!alerts) {
-    return { regular: false, security: false };
-  }
-
-  const regularAvailable = alerts.some(
-    ({ type }) => type === "PackageUpgradesAlert",
-  );
-  const securityAvailable = alerts.some(
-    ({ type }) => type === "SecurityUpgradesAlert",
-  );
-
   return {
-    regular: regularAvailable
+    regular: hasRegularUpgrades(alerts)
       ? {
           icon: STATUSES.PackageUpgradesAlert.icon.color ?? "",
           label: STATUSES.PackageUpgradesAlert.label,
         }
       : false,
-    security: securityAvailable
+    security: hasSecurityUpgrades(alerts)
       ? {
           icon: STATUSES.SecurityUpgradesAlert.icon.color ?? "",
           label: STATUSES.SecurityUpgradesAlert.label,

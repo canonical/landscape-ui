@@ -22,13 +22,6 @@ const authProps: AuthContextProps = {
   authLoading: false,
   setAuthLoading: vi.fn(),
   setUser: vi.fn(),
-  account: {
-    current: authUser.current_account,
-    options: [
-      { label: authUser.accounts[0].title, value: authUser.accounts[0].name },
-    ],
-    switch: vi.fn(),
-  },
   user: authUser,
   isOidcAvailable: true,
   redirectToExternalUrl: vi.fn(),
