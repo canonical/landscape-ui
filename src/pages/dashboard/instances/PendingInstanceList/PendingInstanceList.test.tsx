@@ -1,8 +1,9 @@
 import { renderWithProviders } from "@/tests/render";
-import { fireEvent, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import PendingInstanceList from "./PendingInstanceList";
 import { accessGroups } from "@/tests/mocks/accessGroup";
+import userEvent from "@testing-library/user-event";
 import { pendingInstances } from "@/tests/mocks/instance";
 
 describe("PendingInstanceList", () => {
@@ -39,7 +40,8 @@ describe("PendingInstanceList", () => {
     expect(screen.getByText("Pending since")).toBeInTheDocument();
   });
 
-  it("clicking a checkbox calls onSelectedIdsChange with the correct ID", () => {
+  it("clicking a checkbox calls onSelectedIdsChange with the correct ID", async () => {
+    const user = userEvent.setup();
     renderWithProviders(
       <PendingInstanceList
         accessGroupOptions={mockAccessGroupOptions}
@@ -49,13 +51,14 @@ describe("PendingInstanceList", () => {
       />,
     );
     const checkbox = screen.getAllByRole("checkbox")[1]; // Get the first instance checkbox (if index 0 is "select all")
-    fireEvent.click(checkbox);
+    await user.click(checkbox);
     expect(mockOnSelectedIdsChange).toHaveBeenCalledWith([
       pendingInstances[0].id,
     ]);
   });
 
-  it("clicking the 'toggle all' checkbox selects all instances when none are selected", () => {
+  it("clicking the 'toggle all' checkbox selects all instances when none are selected", async () => {
+    const user = userEvent.setup();
     renderWithProviders(
       <PendingInstanceList
         accessGroupOptions={mockAccessGroupOptions}
@@ -67,13 +70,14 @@ describe("PendingInstanceList", () => {
     const toggleAllCheckbox = screen.getByRole("checkbox", {
       name: /toggle all instances/i,
     });
-    fireEvent.click(toggleAllCheckbox);
+    await user.click(toggleAllCheckbox);
     const expectedIds = pendingInstances.map((instance) => instance.id);
     expect(mockOnSelectedIdsChange).toHaveBeenCalledWith(expectedIds);
   });
 
-  it("clicking the 'toggle all' checkbox deselects all instances when all are selected", () => {
+  it("clicking the 'toggle all' checkbox deselects all instances when all are selected", async () => {
     const allSelectedIds = pendingInstances.map((instance) => instance.id);
+    const user = userEvent.setup();
     renderWithProviders(
       <PendingInstanceList
         accessGroupOptions={mockAccessGroupOptions}
@@ -85,7 +89,7 @@ describe("PendingInstanceList", () => {
     const toggleAllCheckbox = screen.getByRole("checkbox", {
       name: /toggle all instances/i,
     });
-    fireEvent.click(toggleAllCheckbox);
+    await user.click(toggleAllCheckbox);
     expect(mockOnSelectedIdsChange).toHaveBeenCalledWith([]);
   });
 });
