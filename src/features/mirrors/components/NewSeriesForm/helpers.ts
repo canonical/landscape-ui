@@ -61,8 +61,8 @@ export const getValidationSchema = (
     snapshotDate: Yup.string().when("type", ([value], schema) =>
       value === "ubuntu-snapshot"
         ? schema.required("This field is required.").test({
-            test: (value) => {
-              return moment(value).isBetween(
+            test: (valueToTest) => {
+              return moment(valueToTest).isBetween(
                 moment(SNAPSHOT_START_DATE),
                 moment(),
               );
