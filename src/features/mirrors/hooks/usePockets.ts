@@ -4,7 +4,6 @@ import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/ApiError";
 import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import type { QueryFnType } from "@/types/QueryFnType";
-import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
@@ -26,67 +25,9 @@ import type {
   RemoveUploaderGPGKeysFromPocketParams,
   SyncMirrorPocketParams,
 } from "../types";
+import type { UsePocketsResult } from "../types/UsePocketsResult";
 
-export default function usePockets(): {
-  addPackageFiltersToPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    AddPackageFiltersToPocketParams
-  >;
-  addUploaderGPGKeysToPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    AddUploaderGPGKeysToPocketParams
-  >;
-  createPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    CreateMirrorPocketParams | CreatePullPocketParams | CreateUploadPocketParams
-  >;
-  diffPullPocketQuery: QueryFnType<
-    AxiosResponse<PackageDiff>,
-    DiffPullPocketParams
-  >;
-  editPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    EditMirrorPocketParams | EditPullPocketParams | EditUploadPocketParams
-  >;
-  listPocketQuery: QueryFnType<
-    AxiosResponse<ApiPaginatedResponse<PackageObject>>,
-    ListPocketParams
-  >;
-  pullPackagesToPocketQuery: UseMutationResult<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    PullPackagesToPocketParams
-  >;
-  removePackageFiltersFromPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    RemovePackageFiltersFromPocketParams
-  >;
-  removePackagesFromPocketQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    RemovePackagesFromPocketParams
-  >;
-  removePocketQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    RemovePocketParams
-  >;
-  removeUploaderGPGKeysFromPocketQuery: UseMutationResult<
-    AxiosResponse<Pocket>,
-    AxiosError<ApiError>,
-    RemoveUploaderGPGKeysFromPocketParams
-  >;
-  syncMirrorPocketQuery: UseMutationResult<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    SyncMirrorPocketParams
-  >;
-} {
+export default function usePockets(): UsePocketsResult {
   const queryClient = useQueryClient();
   const authFetch = useFetchOld();
 

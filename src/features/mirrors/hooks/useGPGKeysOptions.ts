@@ -1,11 +1,8 @@
 import type { GPGKey } from "@/features/gpg-keys";
 import { useGPGKeys } from "@/features/gpg-keys";
-import type { SelectOption } from "@/types/SelectOption";
+import type { UseGPGKeysOptionsResult } from "../types/UseGPGKeysOptionsResult";
 
-const useGPGKeysOptions = (): {
-  privateGPGKeysOptions: SelectOption[];
-  publicGPGKeysOptions: SelectOption[];
-} => {
+const useGPGKeysOptions = (): UseGPGKeysOptionsResult => {
   const { getGPGKeysQuery } = useGPGKeys();
 
   const { data: { data: gpgKeys } = { data: [] as GPGKey[] } } =

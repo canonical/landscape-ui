@@ -1,7 +1,6 @@
 import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/ApiError";
 import type { QueryFnType } from "@/types/QueryFnType";
-import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
@@ -10,23 +9,9 @@ import type {
   GetDistributionsParams,
   RemoveDistributionParams,
 } from "../types";
+import type { UseDistributionsResult } from "../types/UseDistributionsResult";
 
-export default function useDistributions(): {
-  createDistributionQuery: UseMutationResult<
-    AxiosResponse<Distribution>,
-    AxiosError<ApiError>,
-    RemoveDistributionParams
-  >;
-  getDistributionsQuery: QueryFnType<
-    AxiosResponse<Distribution[]>,
-    GetDistributionsParams
-  >;
-  removeDistributionQuery: UseMutationResult<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    RemoveDistributionParams
-  >;
-} {
+export default function useDistributions(): UseDistributionsResult {
   const queryClient = useQueryClient();
   const authFetch = useFetchOld();
 
