@@ -1,3 +1,13 @@
+import type { ApiError } from "@/types/ApiError";
+import type { QueryFnType } from "@/types/QueryFnType";
+import type { UseMutationResult } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import type {
+  Distribution,
+  GetDistributionsParams,
+  RemoveDistributionParams,
+} from "../types";
+
 export interface UseDistributionsResult {
   createDistributionQuery: UseMutationResult<
     AxiosResponse<Distribution>,

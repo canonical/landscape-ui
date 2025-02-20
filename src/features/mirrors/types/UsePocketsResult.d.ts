@@ -1,3 +1,7 @@
+import type { ApiError } from "@/types/ApiError";
+import type { QueryFnType } from "@/types/QueryFnType";
+import type { AxiosError, AxiosResponse } from "axios";
+
 export interface UsePocketsResult {
   addPackageFiltersToPocketQuery: UseMutationResult<
     AxiosResponse<Pocket>,
