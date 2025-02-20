@@ -15,13 +15,14 @@ interface EmptyDistributionProps {
 const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleAddMirror = (): void =>
+  const handleAddMirror = (): void => {
     setSidePanelContent(
       `Add mirror for ${distribution.name}`,
       <Suspense fallback={<LoadingState />}>
         <NewSeriesForm distribution={distribution} />
       </Suspense>,
     );
+  };
 
   return (
     <div className={classes.card}>

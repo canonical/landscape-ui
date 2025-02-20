@@ -133,7 +133,9 @@ const SeriesCard: FC<SeriesCardProps> = ({
       type="button"
       className="is-small"
       aria-label={item.ariaLabel}
-      onMouseDown={(event) => event.preventDefault()}
+      onMouseDown={(event) => {
+        event.preventDefault();
+      }}
       onClick={item.onClick}
     >
       {item.label}
