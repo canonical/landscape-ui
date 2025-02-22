@@ -5,7 +5,6 @@ import ReportForm from "./ReportForm";
 import useReports from "@/hooks/useReports";
 import userEvent from "@testing-library/user-event";
 
-// Mock hooks
 vi.mock("@/hooks/useReports");
 
 describe("ReportForm Component", () => {
@@ -31,19 +30,14 @@ describe("ReportForm Component", () => {
 
     const checkbox = screen.getByLabelText(/Report by CVE/i);
 
-    // Initially checked
     expect(checkbox).toBeChecked();
 
-    // Uncheck the checkbox
     await user.click(checkbox);
 
-    // Assert that it is now unchecked
     expect(checkbox).not.toBeChecked();
 
-    // Check it again
     await user.click(checkbox);
 
-    // Assert that it is checked again
     expect(checkbox).toBeChecked();
   });
 });

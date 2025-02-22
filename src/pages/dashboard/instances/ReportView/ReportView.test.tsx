@@ -4,30 +4,31 @@ import { describe, it, expect, vi } from "vitest";
 import ReportView from "./ReportView";
 import useReports from "@/hooks/useReports";
 import useSidePanel from "@/hooks/useSidePanel";
+import {
+  notPingingComputers,
+  computersNotUpgraded,
+  usnTimeToFix,
+} from "@/tests/mocks/reportIds";
 
 vi.mock("@/hooks/useReports");
 vi.mock("@/hooks/useSidePanel");
 
 describe("ReportView", () => {
-  const instanceIds = [1, 2, 3];
+  const instanceIds = [1, 2, 3]; //Replace with new mock
 
   beforeEach(() => {
-    (useReports as jest.Mock).mockReturnValue({
+    vi.mocked(useReports, { partial: true }).mockReturnValue({
       getNotPingingInstances: vi.fn().mockReturnValue({
-        data: { data: [] },
-        isLoading: false,
+        notPingingComputers,
       }),
       getInstancesNotUpgraded: vi.fn().mockReturnValue({
-        data: { data: [] },
-        isLoading: false,
+        computersNotUpgraded,
       }),
       getUsnTimeToFix: vi.fn().mockReturnValue({
-        data: { data: { "2": [], "14": [], "30": [], "60": [], pending: [] } },
-        isLoading: false,
+        usnTimeToFix,
       }),
     });
-
-    (useSidePanel as jest.Mock).mockReturnValue({
+    vi.mocked(useSidePanel, { partial: true }).mockReturnValue({
       setSidePanelContent: vi.fn(),
     });
   });
