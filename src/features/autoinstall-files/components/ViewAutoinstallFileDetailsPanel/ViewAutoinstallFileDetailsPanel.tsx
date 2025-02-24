@@ -1,18 +1,26 @@
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
+import type {
+  AutoinstallFile,
+  AutoinstallFileWithGroups,
+} from "../../types/AutoinstallFile";
 import ViewAutoinstallFileDetailsEditButton from "../ViewAutoinstallFileDetailsEditButton";
 import ViewAutoinstallFileDetailsTabs from "../ViewAutoinstallFileDetailsTabs";
 import classes from "./ViewAutoinstallFileDetailsPanel.module.scss";
 
 const ViewAutoinstallFileDetailsPanel: FC<{
   readonly file: AutoinstallFileWithGroups;
-}> = ({ file }) => {
+  readonly openEditPanel: (file: AutoinstallFile) => void;
+}> = ({ file, openEditPanel }) => {
   return (
     <>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
-          <ViewAutoinstallFileDetailsEditButton file={file} />
+          <ViewAutoinstallFileDetailsEditButton
+            openEditPanel={() => {
+              openEditPanel(file);
+            }}
+          />
 
           <Button
             className="p-segmented-control__button"

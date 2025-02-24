@@ -1,16 +1,18 @@
-import type { FC } from "react";
 import type { MenuLink } from "@canonical/react-components";
 import { ContextualMenu, Icon } from "@canonical/react-components";
-import type { AutoinstallFile } from "../../types";
+import type { FC } from "react";
+import type { AutoinstallFileWithGroups } from "../../types";
 import classes from "./AutoinstallFilesListContextualMenu.module.scss";
 
 interface AutoinstallFilesListContextualMenuProps {
-  readonly file: AutoinstallFile;
+  readonly file: AutoinstallFileWithGroups;
+  readonly openDetailsPanel: (file: AutoinstallFileWithGroups) => void;
+  readonly openEditPanel: (file: AutoinstallFileWithGroups) => void;
 }
 
 const AutoinstallFilesListContextualMenu: FC<
   AutoinstallFilesListContextualMenuProps
-> = ({ file }) => {
+> = ({ file, openDetailsPanel, openEditPanel }) => {
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
@@ -21,7 +23,7 @@ const AutoinstallFilesListContextualMenu: FC<
       ),
       "aria-label": `View ${file.title} details`,
       hasIcon: true,
-      onClick: undefined,
+      onClick: () => openDetailsPanel(file),
     },
     {
       children: (
@@ -32,7 +34,7 @@ const AutoinstallFilesListContextualMenu: FC<
       ),
       "aria-label": `Edit ${file.title}`,
       hasIcon: true,
-      onClick: undefined,
+      onClick: () => openEditPanel(file),
     },
     {
       children: (

@@ -1,4 +1,7 @@
+import LoadingState from "@/components/layout/LoadingState";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ModularTable } from "@canonical/react-components";
+import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -11,12 +14,16 @@ const AutoinstallFileVersionHistory: FC<{
 }> = ({ file }) => {
   const { getAutoinstallFileQuery } = useAutoinstallFiles();
 
-  const files = [...Array(file.version)].map((_, i) => {
-    const { data: { data: pastFile } = { data: {} as AutoinstallFile } } =
-      getAutoinstallFileQuery({ id: file.id, version: i + 1 });
+  const filesQuery = [...Array(file.version)].map((_, i) => {
+    const {
+      data: { data: pastFile } = { data: {} as AutoinstallFile },
+      isLoading,
+    } = getAutoinstallFileQuery({ id: file.id, version: i + 1 });
 
-    return pastFile;
+    return [pastFile, isLoading] as [AutoinstallFile, boolean];
   });
+
+  const files = filesQuery.map(([file]) => file);
 
   const columns = useMemo<Column<AutoinstallFile>[]>(
     () => [
@@ -43,11 +50,17 @@ const AutoinstallFileVersionHistory: FC<{
           row: {
             original: { created_at },
           },
-        }: CellProps<AutoinstallFile>): ReactNode => <div>{created_at}</div>,
+        }: CellProps<AutoinstallFile>): ReactNode => (
+          <div>{moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
+        ),
       },
     ],
     [files],
   );
+
+  if (filesQuery.some(([_, isLoading]) => isLoading)) {
+    return <LoadingState />;
+  }
 
   return <ModularTable columns={columns} data={files} />;
 };

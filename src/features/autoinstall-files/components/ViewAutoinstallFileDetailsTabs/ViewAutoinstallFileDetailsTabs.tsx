@@ -1,5 +1,7 @@
 import InfoItem from "@/components/layout/InfoItem";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { Tabs } from "@canonical/react-components";
+import moment from "moment";
 import type { FC } from "react";
 import { useState } from "react";
 import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
@@ -16,10 +18,6 @@ const tabs: {
   {
     label: "Info",
     id: "info",
-  },
-  {
-    label: "Event log",
-    id: "event-log",
   },
   {
     label: "Version history",
@@ -54,8 +52,16 @@ const ViewAutoinstallFileDetailsTabs: FC<{
           </div>
 
           <div className={classes.row}>
-            <InfoItem label="Last modified" value={file.last_modified_at} />
-            <InfoItem label="Date created" value={file.created_at} />
+            <InfoItem
+              label="Last modified"
+              value={`${moment(file.last_modified_at).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )}, by Stephanie Domas`}
+            />
+            <InfoItem
+              label="Date created"
+              value={moment(file.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+            />
           </div>
 
           <InfoItem
@@ -68,10 +74,6 @@ const ViewAutoinstallFileDetailsTabs: FC<{
           />
         </div>
       )}
-
-      {/* {tabId === "event-log" && (
-        <ViewAutoinstallFileDetailsEventLog events={file.events} />
-      )} */}
 
       {tabId === "version-history" && (
         <AutoinstallFileVersionHistory file={file} />

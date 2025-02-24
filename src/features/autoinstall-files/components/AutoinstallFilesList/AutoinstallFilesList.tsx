@@ -1,14 +1,31 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Chip, ModularTable } from "@canonical/react-components";
+import {
+  Button,
+  CheckboxInput,
+  Chip,
+  Modal,
+  ModularTable,
+} from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
-import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
+import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import type {
+  AutoinstallFile,
+  AutoinstallFileWithGroups,
+} from "../../types/AutoinstallFile";
 import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
+import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
+import {
+  CANCEL_BUTTON_TEXT,
+  CONTINUE_BUTTON_TEXT,
+  LOCAL_STORAGE_ITEM,
+  SUBMIT_BUTTON_TEXT,
+} from "../ViewAutoinstallFileDetailsEditButton/constants";
 import ViewAutoinstallFileDetailsPanel from "../ViewAutoinstallFileDetailsPanel";
 import classes from "./AutoinstallFilesList.module.scss";
 import { getCellProps } from "./helpers";
@@ -22,15 +39,75 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 }) => {
   const { employeeGroups, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalIgnored, setIsModalIgnored] = useState(false);
+  const [modalFile, setModalFile] = useState<AutoinstallFile | null>(null);
 
-  const handleAutoinstallFileDetailsOpen = (
-    file: AutoinstallFileWithGroups,
-  ): void => {
+  const {
+    updateAutoinstallFileQuery: { mutateAsync: updateAutoinstallFile },
+  } = useAutoinstallFiles();
+
+  useEffect(() => {
+    if (localStorage.getItem(LOCAL_STORAGE_ITEM)) {
+      setIsModalIgnored(true);
+    }
+  }, []);
+
+  const closeModal = (): void => {
+    setIsModalVisible(false);
+    setIsModalIgnored(false);
+  };
+
+  const continueEditing = (): void => {
+    if (isModalIgnored) {
+      localStorage.setItem(LOCAL_STORAGE_ITEM, "true");
+    }
+
+    setIsModalVisible(false);
+
+    if (modalFile) {
+      openEditPanelWithoutModal(modalFile);
+      setModalFile(null);
+    }
+  };
+
+  const openDetailsPanel = (file: AutoinstallFileWithGroups): void => {
     setSidePanelContent(
       `${file.filename}${file.is_default ? " (default)" : ""}`,
-      <ViewAutoinstallFileDetailsPanel file={file} />,
+      <ViewAutoinstallFileDetailsPanel
+        file={file}
+        openEditPanel={openEditPanel}
+      />,
       "large",
     );
+  };
+
+  const openEditPanelWithoutModal = (file: AutoinstallFile): void => {
+    setSidePanelContent(
+      `Edit ${file.filename}`,
+      <AutoinstallFileForm
+        buttonText={SUBMIT_BUTTON_TEXT}
+        description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
+        initialFile={file}
+        notification={{
+          message:
+            "has been edited and all the changes made have been saved successfully.",
+          title: "You have successfully saved changes for",
+        }}
+        query={async ({ contents }) => {
+          await updateAutoinstallFile({ contents, id: file.id });
+        }}
+      />,
+    );
+  };
+
+  const openEditPanel = (file: AutoinstallFile): void => {
+    if (isModalIgnored) {
+      openEditPanelWithoutModal(file);
+    } else {
+      setIsModalVisible(true);
+      setModalFile(file);
+    }
   };
 
   const files = useMemo(() => {
@@ -60,7 +137,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => handleAutoinstallFileDetailsOpen(original)}
+              onClick={() => openDetailsPanel(original)}
             >
               {`${original.filename}, v${original.version}`}
             </Button>
@@ -119,7 +196,11 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         Cell: ({
           row: { original },
         }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
-          <AutoinstallFilesListContextualMenu file={original} />
+          <AutoinstallFilesListContextualMenu
+            file={original}
+            openDetailsPanel={openDetailsPanel}
+            openEditPanel={openEditPanel}
+          />
         ),
       },
     ],
@@ -127,7 +208,56 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   );
 
   return (
-    <ModularTable columns={columns} data={files} getCellProps={getCellProps} />
+    <>
+      <ModularTable
+        columns={columns}
+        data={files}
+        getCellProps={getCellProps}
+      />
+
+      {isModalVisible && (
+        <Modal
+          close={closeModal}
+          title={
+            <span className={classes.capitalize}>
+              Edit history limit reached
+            </span>
+          }
+          buttonRow={
+            <>
+              <Button appearance="base" onClick={closeModal}>
+                {CANCEL_BUTTON_TEXT}
+              </Button>
+
+              <Button
+                appearance="positive"
+                className="u-no-margin--bottom"
+                onClick={continueEditing}
+              >
+                <span className={classes.capitalize}>
+                  {CONTINUE_BUTTON_TEXT}
+                </span>
+              </Button>
+            </>
+          }
+        >
+          <p className={classes.message}>
+            You&apos;ve reached the maximum of 100 saved edits for this file. To
+            continue editing, the system will remove the oldest version to make
+            space for your new changes. This ensures that the most recent 100
+            versions are always retained in the history.
+          </p>
+
+          <CheckboxInput
+            label="I understand. Don't show this message again."
+            onChange={() => {
+              setIsModalIgnored(!isModalIgnored);
+            }}
+            checked={isModalIgnored}
+          />
+        </Modal>
+      )}
+    </>
   );
 };
 
