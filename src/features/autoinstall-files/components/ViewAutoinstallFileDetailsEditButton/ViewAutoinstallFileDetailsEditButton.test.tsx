@@ -1,9 +1,9 @@
+import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 import { renderWithProviders } from "@/tests/render";
-import { describe } from "vitest";
-import ViewAutoinstallFileDetailsEditButton from ".";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
+import { describe } from "vitest";
+import ViewAutoinstallFileDetailsEditButton from ".";
 import {
   CANCEL_BUTTON_TEXT,
   CONTINUE_BUTTON_TEXT,
@@ -13,11 +13,11 @@ import {
 } from "./constants";
 
 describe("ViewAutoinstallFileDetailsEditButton", () => {
+  const [autoinstallFile] = autoinstallFiles;
+
   it("should show a modal once", async () => {
     renderWithProviders(
-      <ViewAutoinstallFileDetailsEditButton
-        fileName={autoinstallFiles[0].name}
-      />,
+      <ViewAutoinstallFileDetailsEditButton file={autoinstallFile} />,
     );
 
     await userEvent.click(
@@ -35,9 +35,7 @@ describe("ViewAutoinstallFileDetailsEditButton", () => {
 
   it("should show a modal every time", async () => {
     renderWithProviders(
-      <ViewAutoinstallFileDetailsEditButton
-        fileName={autoinstallFiles[0].name}
-      />,
+      <ViewAutoinstallFileDetailsEditButton file={autoinstallFile} />,
     );
 
     await userEvent.click(
@@ -57,9 +55,7 @@ describe("ViewAutoinstallFileDetailsEditButton", () => {
     localStorage.setItem(LOCAL_STORAGE_ITEM, "true");
 
     renderWithProviders(
-      <ViewAutoinstallFileDetailsEditButton
-        fileName={autoinstallFiles[0].name}
-      />,
+      <ViewAutoinstallFileDetailsEditButton file={autoinstallFile} />,
     );
 
     await userEvent.click(
@@ -71,9 +67,7 @@ describe("ViewAutoinstallFileDetailsEditButton", () => {
 
   it("should be able to cancel", async () => {
     renderWithProviders(
-      <ViewAutoinstallFileDetailsEditButton
-        fileName={autoinstallFiles[0].name}
-      />,
+      <ViewAutoinstallFileDetailsEditButton file={autoinstallFile} />,
     );
 
     await userEvent.click(

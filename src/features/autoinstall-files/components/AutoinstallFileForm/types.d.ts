@@ -1,4 +1,4 @@
-export interface FormProps {
-  fileName: string;
-  code: string;
+export interface FormikProps {
+  readonly contents: string;
+  readonly filename: string;
 }

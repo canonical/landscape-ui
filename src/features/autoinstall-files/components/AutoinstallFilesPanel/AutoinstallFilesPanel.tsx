@@ -1,16 +1,37 @@
+import LoadingState from "@/components/layout/LoadingState";
+import type { ApiError } from "@/types/ApiError";
+import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { UseQueryResult } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
 import type { FC } from "react";
+import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
 import AutoinstallFilesHeader from "../AutoinstallFilesHeader";
 import AutoinstallFilesList from "../AutoinstallFilesList";
-import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 
 const AutoinstallFilesPanel: FC = () => {
+  const { getAutoinstallFilesQuery } = useAutoinstallFiles();
+
+  const {
+    data: { data: { results: autoinstallFiles } } = {
+      data: { results: [] as AutoinstallFileWithGroups[] },
+    },
+    isLoading,
+  } = getAutoinstallFilesQuery({
+    with_groups: true,
+  }) as UseQueryResult<
+    AxiosResponse<ApiPaginatedResponse<AutoinstallFileWithGroups>>,
+    AxiosError<ApiError>
+  >;
+
   return (
     <>
       <AutoinstallFilesHeader />
-      <AutoinstallFilesList
-        autoinstallFiles={autoinstallFiles}
-        defaultFile={autoinstallFiles[0]}
-      />
+      {isLoading ? (
+        <LoadingState />
+      ) : (
+        <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />
+      )}
     </>
   );
 };

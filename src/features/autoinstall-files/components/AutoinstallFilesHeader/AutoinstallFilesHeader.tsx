@@ -1,22 +1,27 @@
+import { TableFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import usePageParams from "@/hooks/usePageParams";
-import type { FC } from "react";
-import classes from "./AutoinstallFilesHeader.module.scss";
-import { TableFilter, TableFilterChips } from "@/components/filter";
+import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
+import type { FC } from "react";
+import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import AutoinstallFileForm from "../AutoinstallFileForm";
+import classes from "./AutoinstallFilesHeader.module.scss";
 import {
   ADD_BUTTON_TEXT,
   AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS,
   SUBMIT_BUTTON_TEXT,
 } from "./constants";
-import useSidePanel from "@/hooks/useSidePanel";
-import AutoinstallFileForm from "../AutoinstallFileForm";
 
 const AutoinstallFilesHeader: FC = () => {
   const { setPageParams, employeeGroups } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
-  const handleSearch = (searchText: string) => {
+  const {
+    addAutoinstallFileQuery: { mutateAsync: addAutoinstallFile },
+  } = useAutoinstallFiles();
+
+  const handleSearch = (searchText: string): void => {
     setPageParams({ search: searchText });
   };
 
@@ -43,17 +48,14 @@ const AutoinstallFilesHeader: FC = () => {
             setSidePanelContent(
               "Add new autoinstall file",
               <AutoinstallFileForm
-                createNotificationMessage={() => {
-                  return "Autoinstall file can now be assigned to Employee groups.";
+                buttonText={SUBMIT_BUTTON_TEXT}
+                description="Add autoinstall file. It can be applied during the initial setup of associated instances."
+                notification={{
+                  message: "can now be assigned to Employee groups.",
+                  title: "You have successfully added",
                 }}
-                createNotificationTitle={(fileName) => {
-                  return `You have successfully added ${fileName}`;
-                }}
-                submitButtonText={SUBMIT_BUTTON_TEXT}
-              >
-                Add autoinstall file. It can be applied during the initial setup
-                of associated instances.
-              </AutoinstallFileForm>,
+                query={addAutoinstallFile}
+              />,
             )
           }
         >

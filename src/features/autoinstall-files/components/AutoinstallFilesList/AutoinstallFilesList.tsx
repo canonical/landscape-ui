@@ -1,34 +1,34 @@
-import type { FC } from "react";
-import { useMemo } from "react";
-import { Button, ModularTable } from "@canonical/react-components";
-import type { AutoinstallFile } from "../../types";
-import useSidePanel from "@/hooks/useSidePanel";
-import { getCellProps } from "./helpers";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
-import classes from "./AutoinstallFilesList.module.scss";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Button, Chip, ModularTable } from "@canonical/react-components";
+import moment from "moment";
+import type { FC, ReactNode } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
+import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
+import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 import ViewAutoinstallFileDetailsPanel from "../ViewAutoinstallFileDetailsPanel";
-import type { CellProps, Column } from "react-table";
-import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
+import classes from "./AutoinstallFilesList.module.scss";
+import { getCellProps } from "./helpers";
 
 interface AutoinstallFilesListProps {
-  readonly autoinstallFiles: AutoinstallFile[];
-  readonly defaultFile: AutoinstallFile;
+  readonly autoinstallFiles: AutoinstallFileWithGroups[];
 }
 
 const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   autoinstallFiles,
-  defaultFile,
 }) => {
   const { employeeGroups, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
-  const handleAutoinstallFileDetailsOpen = (file: AutoinstallFile) => {
-    const isDefault = file === defaultFile;
-
+  const handleAutoinstallFileDetailsOpen = (
+    file: AutoinstallFileWithGroups,
+  ): void => {
     setSidePanelContent(
-      `${file.name}${isDefault ? " (default)" : ""}`,
-      <ViewAutoinstallFileDetailsPanel file={file} isDefault={isDefault} />,
+      `${file.filename}${file.is_default ? " (default)" : ""}`,
+      <ViewAutoinstallFileDetailsPanel file={file} />,
       "large",
     );
   };
@@ -36,71 +36,89 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const files = useMemo(() => {
     return autoinstallFiles.filter((file) => {
       return (
-        file.name.toLowerCase().includes(search.toLowerCase()) &&
-        file.employeeGroupsAssociated.some((group) => {
-          return employeeGroups.length === 0 || employeeGroups.includes(group);
+        file.filename.toLowerCase().includes(search.toLowerCase()) &&
+        file.groups.some((group) => {
+          return (
+            !employeeGroups.length || employeeGroups.includes(group.group_id)
+          );
         })
       );
     });
   }, [autoinstallFiles, employeeGroups, search]);
 
-  const columns = useMemo<Column<AutoinstallFile>[]>(
+  const columns = useMemo<Column<AutoinstallFileWithGroups>[]>(
     () => [
       {
-        accessor: "name",
+        accessor: "filename",
         className: classes.cell,
         Header: "Name",
-        Cell: ({ row: { original } }: CellProps<AutoinstallFile>) => (
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => handleAutoinstallFileDetailsOpen(original)}
-          >
-            {original.name}
-            {original === defaultFile && " (default)"}
-          </Button>
+        Cell: ({
+          row: { original },
+        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
+          <div>
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              onClick={() => handleAutoinstallFileDetailsOpen(original)}
+            >
+              {`${original.filename}, v${original.version}`}
+            </Button>
+
+            {original.is_default && (
+              <Chip value="default" className={classes.chip} />
+            )}
+          </div>
         ),
       },
       {
-        accessor: "employeeGroupsAssociated",
+        accessor: "groups",
         className: classes.cell,
         Header: "Employee Groups Associated",
         Cell: ({
           row: {
-            original: { employeeGroupsAssociated },
+            original: { groups },
           },
-        }: CellProps<AutoinstallFile>) => (
+        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
           <AutoinstallFileEmployeeGroupsList
-            groups={employeeGroupsAssociated}
+            groupNames={groups.map((group) => group.name)}
           />
         ),
       },
       {
-        accessor: "lastModified",
-        className: classes.cell,
+        accessor: "last_modified_at",
+        className: classes.largeCell,
         Header: "Last modified",
         Cell: ({
           row: {
-            original: { lastModified },
+            original: { last_modified_at },
           },
-        }: CellProps<AutoinstallFile>) => <div>{lastModified}</div>,
+        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
+          <div>
+            {moment(last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}, by
+            Stephanie Domas
+          </div>
+        ),
       },
       {
-        accessor: "dateCreated",
+        accessor: "created_at",
         className: classes.cell,
         Header: "Date created",
         Cell: ({
           row: {
-            original: { dateCreated },
+            original: { created_at },
           },
-        }: CellProps<AutoinstallFile>) => <div>{dateCreated}</div>,
+        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
+          <div>{moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
+        ),
       },
       {
         accessor: "actions",
         className: classes.actions,
         Header: "Actions",
-        Cell: ({ row: { original } }: CellProps<AutoinstallFile>) => (
+        Cell: ({
+          row: { original },
+        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
           <AutoinstallFilesListContextualMenu file={original} />
         ),
       },

@@ -1,3 +1,4 @@
+import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
   CheckboxInput,
@@ -6,6 +7,9 @@ import {
 } from "@canonical/react-components";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
+import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import type { AutoinstallFile } from "../../types";
+import AutoinstallFileForm from "../AutoinstallFileForm";
 import classes from "./ViewAutoinstallFileDetailsEditButton.module.scss";
 import {
   CANCEL_BUTTON_TEXT,
@@ -14,17 +18,19 @@ import {
   LOCAL_STORAGE_ITEM,
   SUBMIT_BUTTON_TEXT,
 } from "./constants";
-import useSidePanel from "@/hooks/useSidePanel";
-import AutoinstallFileForm from "../AutoinstallFileForm";
 
 const ViewAutoinstallFileDetailsEditButton: FC<{
-  readonly fileName: string;
-}> = ({ fileName }) => {
+  readonly file: AutoinstallFile;
+}> = ({ file }) => {
   const [modalState, setModalState] = useState<
     "visible" | "invisible" | "ignored"
   >("invisible");
   const [isChecked, setIsChecked] = useState(false);
   const { setSidePanelContent } = useSidePanel();
+
+  const {
+    updateAutoinstallFileQuery: { mutateAsync: updateAutoinstallFile },
+  } = useAutoinstallFiles();
 
   useEffect(() => {
     if (localStorage.getItem(LOCAL_STORAGE_ITEM)) {
@@ -32,12 +38,12 @@ const ViewAutoinstallFileDetailsEditButton: FC<{
     }
   }, []);
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     setModalState("invisible");
     setIsChecked(false);
   };
 
-  const continueEditing = () => {
+  const continueEditing = (): void => {
     if (isChecked) {
       setModalState("ignored");
 
@@ -49,23 +55,22 @@ const ViewAutoinstallFileDetailsEditButton: FC<{
     showSidePanel();
   };
 
-  const showSidePanel = () => {
+  const showSidePanel = (): void => {
     setSidePanelContent(
-      `Edit ${fileName}`,
+      `Edit ${file.filename}`,
       <AutoinstallFileForm
-        createNotificationMessage={(fileName) => {
-          return `${fileName} has been edited and all the changes made have been saved successfully.`;
+        buttonText={SUBMIT_BUTTON_TEXT}
+        description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
+        initialFile={file}
+        notification={{
+          message:
+            "has been edited and all the changes made have been saved successfully.",
+          title: "You have successfully saved changes for",
         }}
-        createNotificationTitle={(fileName) => {
-          return `You have successfully saved changes for ${fileName}`;
+        query={async ({ contents }) => {
+          await updateAutoinstallFile({ contents, id: file.id });
         }}
-        fileName={fileName}
-        fileNameInputDisabled
-        submitButtonText={SUBMIT_BUTTON_TEXT}
-      >
-        The duplicated {fileName} will inherit the Employee group assignments of
-        the original file.
-      </AutoinstallFileForm>,
+      />,
     );
   };
 

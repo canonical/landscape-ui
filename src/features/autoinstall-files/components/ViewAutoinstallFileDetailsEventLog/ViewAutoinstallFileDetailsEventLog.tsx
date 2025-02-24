@@ -1,7 +1,7 @@
-import type { FC } from "react";
+import { ModularTable } from "@canonical/react-components";
+import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import { ModularTable } from "@canonical/react-components";
 import type { AutoinstallFileEvent } from "../../types";
 import classes from "./ViewAutoinstallFileDetailsEventLog.module.scss";
 
@@ -17,7 +17,9 @@ const ViewAutoinstallFileDetailsEventLog: FC<{
           row: {
             original: { description },
           },
-        }: CellProps<AutoinstallFileEvent>) => <div>{description}</div>,
+        }: CellProps<AutoinstallFileEvent>): ReactNode => (
+          <div>{description}</div>
+        ),
       },
       {
         accessor: "author",
@@ -27,7 +29,7 @@ const ViewAutoinstallFileDetailsEventLog: FC<{
           row: {
             original: { author },
           },
-        }: CellProps<AutoinstallFileEvent>) => <div>{author}</div>,
+        }: CellProps<AutoinstallFileEvent>): ReactNode => <div>{author}</div>,
       },
       {
         accessor: "createdAt",
@@ -37,7 +39,9 @@ const ViewAutoinstallFileDetailsEventLog: FC<{
           row: {
             original: { createdAt },
           },
-        }: CellProps<AutoinstallFileEvent>) => <div>{createdAt}</div>,
+        }: CellProps<AutoinstallFileEvent>): ReactNode => (
+          <div>{createdAt}</div>
+        ),
       },
     ],
     [events],

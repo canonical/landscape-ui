@@ -1,53 +1,52 @@
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
 import classes from "./AutoinstallFileEmployeeGroupsList.module.scss";
-import { AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS } from "../AutoinstallFilesHeader/constants";
 
 interface AutoinstallFileEmployeeGroupsListProps {
-  readonly groups: string[];
+  readonly groupNames: readonly string[];
 }
 
 const AutoinstallFileEmployeeGroupsList: FC<
   AutoinstallFileEmployeeGroupsListProps
-> = ({ groups }) => {
-  const [hiddenGroupCount, setHiddenGroupCount] = useState(0);
+> = ({ groupNames }) => {
+  const [hiddenGroupCount, setHiddenGroupCount] = useState<number | undefined>(
+    undefined,
+  );
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const divElementBoundingClientRect =
-        containerRef.current.getBoundingClientRect();
-
-      setHiddenGroupCount(
-        [...containerRef.current.children].filter((element) => {
-          return (
-            element.getBoundingClientRect().right >
-            divElementBoundingClientRect.right
-          );
-        }).length,
-      );
+    if (!containerRef.current) {
+      return;
     }
+
+    const divElementBoundingClientRect =
+      containerRef.current.getBoundingClientRect();
+
+    setHiddenGroupCount(
+      [...containerRef.current.children].filter((element) => {
+        return (
+          element.getBoundingClientRect().right >
+          divElementBoundingClientRect.right
+        );
+      }).length,
+    );
   }, []);
+
+  const [firstGroupName, ...lastGroupNames] = groupNames;
 
   return (
     <div className={classes.container}>
       <div className={classes.truncated} ref={containerRef}>
-        {groups.map((group, key) => {
-          return (
-            <span key={key}>
-              {
-                AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS.find(({ value }) => {
-                  return value === group;
-                })?.label
-              }
-              {key < groups.length - 1 && ", "}
-            </span>
-          );
+        <span>{firstGroupName}</span>
+
+        {lastGroupNames.map((groupName, key) => {
+          return <span key={key}>, {groupName}</span>;
         })}
       </div>
-      <span className="u-text--muted">
-        {hiddenGroupCount > 0 && `+${hiddenGroupCount}`}
-      </span>
+
+      {hiddenGroupCount ? (
+        <span className="u-text--muted">+{hiddenGroupCount}</span>
+      ) : null}
     </div>
   );
 };

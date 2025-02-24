@@ -7,12 +7,37 @@
 
 .cell {
   padding: 0.5rem;
+  position: relative;
+
+  > * {
+    justify-content: left;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 13rem;
+  }
+
+  button {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.largeCell {
+  padding: 0.5rem;
+  position: relative;
 
   > * {
     justify-content: left;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 13rem;
+    width: 19.25rem;
   }
+}
+
+.chip {
+  border: none;
+  margin-left: 0.25rem;
+  position: absolute;
 }

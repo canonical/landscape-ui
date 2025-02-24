@@ -1,10 +1,10 @@
-import type { Cell, TableCellProps } from "react-table";
-import type { AutoinstallFile } from "../../types";
 import type { HTMLProps } from "react";
+import type { Cell, TableCellProps } from "react-table";
+import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
 
 export const getCellProps = ({
   column,
-}: Cell<AutoinstallFile>): Partial<
+}: Cell<AutoinstallFileWithGroups>): Partial<
   TableCellProps & HTMLProps<HTMLTableCellElement>
 > => {
   const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
