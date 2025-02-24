@@ -1,6 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import type { PackageDiff, PackageObject } from "@/features/packages";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
@@ -122,24 +121,25 @@ const PackageList: FC<PackageListProps> = ({
     !isRemovingPackagesFromPocket &&
     !isRemovingPocket;
 
-  const {
-    data: { data: listPocketData } = {
-      data: { count: 0, results: [] as PackageObject[] },
-    },
-    isLoading: listPocketLoading,
-  } = listPocketQuery(
-    {
-      name: pocket.name,
-      series: seriesName,
-      distribution: distributionName,
-      search,
-      limit: itemsPerPage,
-      offset: currentPage * itemsPerPage - itemsPerPage,
-    },
-    {
-      enabled: noQueryIsPending,
-    },
-  );
+  const { data: listPocketQueryResult, isLoading: listPocketLoading } =
+    listPocketQuery(
+      {
+        name: pocket.name,
+        series: seriesName,
+        distribution: distributionName,
+        search,
+        limit: itemsPerPage,
+        offset: currentPage * itemsPerPage - itemsPerPage,
+      },
+      {
+        enabled: noQueryIsPending,
+      },
+    );
+
+  const listPocketData = listPocketQueryResult?.data ?? {
+    count: 0,
+    results: [],
+  };
 
   const pocketPackages: FormattedPackage[] = listPocketData.results.map(
     (newPackage) => {
@@ -150,18 +150,18 @@ const PackageList: FC<PackageListProps> = ({
     },
   );
 
-  const { data: { data: diffPullPocketData } = { data: {} as PackageDiff } } =
-    diffPullPocketQuery(
-      {
-        name: pocket.name,
-        series: seriesName,
-        distribution: distributionName,
-      },
-      {
-        enabled:
-          "pull" === pocket.mode && !listPocketLoading && noQueryIsPending,
-      },
-    );
+  const { data: diffPullPocketQueryResult } = diffPullPocketQuery(
+    {
+      name: pocket.name,
+      series: seriesName,
+      distribution: distributionName,
+    },
+    {
+      enabled: "pull" === pocket.mode && !listPocketLoading && noQueryIsPending,
+    },
+  );
+
+  const diffPullPocketData = diffPullPocketQueryResult?.data ?? {};
 
   const diffPullPocket: {
     packageName: string;

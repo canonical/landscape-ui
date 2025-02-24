@@ -3,7 +3,6 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
 import { DISPLAY_DATE_FORMAT, INPUT_DATE_FORMAT } from "@/constants";
 
-import type { GPGKey } from "@/features/gpg-keys";
 import { useGPGKeys } from "@/features/gpg-keys";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -55,16 +54,18 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
   const { createSeriesQuery, getRepoInfo } = useSeries();
   const { getDistributionsQuery } = useDistributions();
 
-  const { data: { data: distributions } = { data: [] as Distribution[] } } =
-    getDistributionsQuery(
-      { include_latest_sync: true },
-      { enabled: !distribution },
-    );
+  const { data: getDistributionsQueryResult } = getDistributionsQuery(
+    { include_latest_sync: true },
+    { enabled: !distribution },
+  );
 
-  const { data: { data: gpgKeys } = { data: [] as GPGKey[] } } =
-    getGPGKeysQuery();
+  const distributions = getDistributionsQueryResult?.data ?? [];
+
+  const { data: gpgKeysData } = getGPGKeysQuery();
 
   const { mutateAsync: createSeries } = createSeriesQuery;
+
+  const gpgKeys = gpgKeysData?.data ?? [];
 
   const distributionOptions: SelectOption[] = distributions.map(({ name }) => ({
     label: name,

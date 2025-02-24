@@ -1,12 +1,12 @@
-import type { GPGKey } from "@/features/gpg-keys";
 import { useGPGKeys } from "@/features/gpg-keys";
 import type { UseGPGKeysOptionsResult } from "../types/UseGPGKeysOptionsResult";
 
 const useGPGKeysOptions = (): UseGPGKeysOptionsResult => {
   const { getGPGKeysQuery } = useGPGKeys();
 
-  const { data: { data: gpgKeys } = { data: [] as GPGKey[] } } =
-    getGPGKeysQuery();
+  const { data: getGPGKeysQueryResult } = getGPGKeysQuery();
+
+  const gpgKeys = getGPGKeysQueryResult?.data ?? [];
 
   return {
     privateGPGKeysOptions: gpgKeys

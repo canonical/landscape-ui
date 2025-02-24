@@ -12,7 +12,6 @@ import type { FC } from "react";
 import * as Yup from "yup";
 import { string } from "yup";
 import { useDistributions } from "../../hooks";
-import type { Distribution } from "../../types";
 import { INITIAL_VALUES } from "./constants";
 import type { FormProps } from "./types";
 
@@ -33,9 +32,7 @@ const NewDistributionForm: FC = () => {
     }),
   );
 
-  const {
-    data: { data: getDistributionsResponse } = { data: [] as Distribution[] },
-  } = getDistributionsQuery({
+  const { data: getDistributionsResponse } = getDistributionsQuery({
     include_latest_sync: true,
   });
 
@@ -51,7 +48,9 @@ const NewDistributionForm: FC = () => {
         .test({
           params: { getDistributionsResponse },
           test: (value) => {
-            return !getDistributionsResponse.some(({ name }) => name == value);
+            return !(getDistributionsResponse?.data ?? []).some(
+              ({ name }) => name == value,
+            );
           },
           message: "It must be unique within the account.",
         }),

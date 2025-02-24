@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useDistributions } from "../../hooks";
-import type { Distribution, SyncPocketRef } from "../../types";
+import type { SyncPocketRef } from "../../types";
 import DistributionCard from "../DistributionCard";
 import DistributionsEmptyState from "../DistributionsEmptyState";
 import { REFETCH_INTERVAL } from "./constants";
@@ -18,10 +18,7 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
 
   const { getDistributionsQuery } = useDistributions();
 
-  const {
-    data: { data: distributions } = { data: [] as Distribution[] },
-    isLoading,
-  } = getDistributionsQuery(
+  const { data, isLoading } = getDistributionsQuery(
     {
       include_latest_sync: true,
     },
@@ -29,6 +26,8 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
       refetchInterval: !syncPocketRefs.length ? undefined : REFETCH_INTERVAL,
     },
   );
+
+  const distributions = data?.data ?? [];
 
   useEffect(() => {
     onDistributionsLengthChange(distributions.length);
