@@ -54,7 +54,7 @@ const APTSourcesList: FC<APTSourcesListProps> = ({ items }) => {
         className: classes.actions,
         Cell: ({ row }: CellProps<APTSource>) => (
           <ConfirmationButton
-            className="u-no-margin--bottom u-no-padding--left is-small has-icon"
+            className="u-no-margin--bottom is-small has-icon"
             type="button"
             appearance="base"
             aria-label={`Remove ${row.original.name} APT source`}
