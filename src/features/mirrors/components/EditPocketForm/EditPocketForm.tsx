@@ -13,7 +13,6 @@ import {
   Select,
   Textarea,
 } from "@canonical/react-components";
-import type { AxiosResponse } from "axios";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import {
@@ -23,6 +22,7 @@ import {
 } from "../../constants";
 import { useGPGKeysOptions, usePockets } from "../../hooks";
 import type { Distribution, Pocket, Series } from "../../types";
+import type { PullPocket, UploadPocket } from "../../types/Pocket";
 import {
   getEditPocketParams,
   getInitialValues,
@@ -64,89 +64,109 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
 
   const { mode } = pocket;
 
+  const handlePullMode = async (
+    editPocketPromise: Promise<unknown>,
+    pullPocket: PullPocket,
+    values: FormProps,
+  ): Promise<unknown> => {
+    const promises: Promise<unknown>[] = [editPocketPromise];
+
+    const deletedPackages = pullPocket.filters.filter(
+      (originalPackage) => !values.filters.includes(originalPackage),
+    );
+    const addedPackages = values.filters
+      .filter((x) => x)
+      .filter((newPackage) => !pullPocket.filters.includes(newPackage));
+
+    if (deletedPackages.length) {
+      promises.push(
+        removePackageFiltersFromPocket({
+          name: values.name,
+          distribution: values.distribution,
+          series: values.series,
+          packages: deletedPackages,
+        }),
+      );
+    }
+
+    if (addedPackages.length) {
+      promises.push(
+        addPackageFiltersToPocket({
+          name: values.name,
+          distribution: values.distribution,
+          series: values.series,
+          packages: addedPackages,
+        }),
+      );
+    }
+
+    return Promise.all(promises);
+  };
+
+  const handleUploadMode = async (
+    editPocketPromise: Promise<unknown>,
+    pullPocket: UploadPocket,
+    values: FormProps,
+  ): Promise<unknown> => {
+    const promises: Promise<unknown>[] = [];
+
+    if (pullPocket.upload_allow_unsigned) {
+      await editPocketPromise;
+    } else {
+      promises.push(editPocketPromise);
+    }
+
+    const pocketUploadGPGKeyNames = pullPocket.upload_gpg_keys.map(
+      ({ name }) => name,
+    );
+
+    const addedUploaderGPGKeys = values.upload_gpg_keys.filter(
+      (gpgKey) => !pocketUploadGPGKeyNames.includes(gpgKey),
+    );
+
+    const removedUploaderGPGKeys = pocketUploadGPGKeyNames.filter(
+      (gpgKey) => !values.upload_gpg_keys.includes(gpgKey),
+    );
+
+    if (addedUploaderGPGKeys.length) {
+      promises.push(
+        addUploaderGPGKeysToPocket({
+          name: values.name,
+          series: values.series,
+          distribution: values.distribution,
+          gpg_keys: addedUploaderGPGKeys,
+        }),
+      );
+    }
+
+    if (removedUploaderGPGKeys.length) {
+      promises.push(
+        removeUploaderGPGKeysFromPocket({
+          name: values.name,
+          series: values.series,
+          distribution: values.distribution,
+          gpg_keys: removedUploaderGPGKeys,
+        }),
+      );
+    }
+
+    return Promise.all(promises);
+  };
+
   const formik = useFormik<FormProps>({
     validationSchema: getValidationSchema(mode),
     initialValues: getInitialValues(distributionName, seriesName, pocket),
     onSubmit: async (values) => {
       try {
-        const promises: Promise<AxiosResponse<Pocket>>[] = [];
+        const editPocketPromise = editPocket(getEditPocketParams(values, mode));
 
-        promises.push(editPocket(getEditPocketParams(values, mode)));
-
-        if ("pull" === pocket.mode) {
-          if (pocket.filter_type) {
-            const deletedPackages = pocket.filters.filter(
-              (originalPackage) => !values.filters.includes(originalPackage),
-            );
-            const addedPackages = values.filters
-              .filter((x) => x)
-              .filter((newPackage) => !pocket.filters.includes(newPackage));
-
-            if (deletedPackages.length) {
-              promises.push(
-                removePackageFiltersFromPocket({
-                  name: values.name,
-                  distribution: values.distribution,
-                  series: values.series,
-                  packages: deletedPackages,
-                }),
-              );
-            }
-
-            if (addedPackages.length) {
-              promises.push(
-                addPackageFiltersToPocket({
-                  name: values.name,
-                  distribution: values.distribution,
-                  series: values.series,
-                  packages: addedPackages,
-                }),
-              );
-            }
-          }
+        if ("pull" === pocket.mode && pocket.filter_type) {
+          await handlePullMode(editPocketPromise, pocket, values);
         } else if ("upload" === pocket.mode && !values.upload_allow_unsigned) {
-          if (pocket.upload_allow_unsigned) {
-            await Promise.all(promises);
-
-            promises.length = 0;
-          }
-
-          const pocketUploadGPGKeyNames = pocket.upload_gpg_keys.map(
-            ({ name }) => name,
-          );
-
-          const addedUploaderGPGKeys = values.upload_gpg_keys.filter(
-            (gpgKey) => !pocketUploadGPGKeyNames.includes(gpgKey),
-          );
-
-          const removedUploaderGPGKeys = pocketUploadGPGKeyNames.filter(
-            (gpgKey) => !values.upload_gpg_keys.includes(gpgKey),
-          );
-
-          if (addedUploaderGPGKeys.length) {
-            promises.push(
-              addUploaderGPGKeysToPocket({
-                name: values.name,
-                series: values.series,
-                distribution: values.distribution,
-                gpg_keys: addedUploaderGPGKeys,
-              }),
-            );
-          }
-
-          if (removedUploaderGPGKeys.length) {
-            promises.push(
-              removeUploaderGPGKeysFromPocket({
-                name: values.name,
-                series: values.series,
-                distribution: values.distribution,
-                gpg_keys: removedUploaderGPGKeys,
-              }),
-            );
-          }
+          await handleUploadMode(editPocketPromise, pocket, values);
+        } else {
+          await editPocketPromise;
         }
-
-        await Promise.all(promises);
 
         closeSidePanel();
       } catch (error) {
