@@ -20,9 +20,9 @@ import type { Distribution, Series, SyncPocketRef } from "../../types";
 import SeriesPocketList from "../SeriesPocketList";
 import classes from "./SeriesCard.module.scss";
 
-const NewPocketForm = lazy(() => import("../NewPocketForm"));
+const NewPocketForm = lazy(async () => import("../NewPocketForm"));
 
-const DeriveSeriesForm = lazy(() => import("../DeriveSeriesForm"));
+const DeriveSeriesForm = lazy(async () => import("../DeriveSeriesForm"));
 
 interface SeriesCardProps {
   readonly distribution: Distribution;
@@ -41,18 +41,17 @@ const SeriesCard: FC<SeriesCardProps> = ({
   const [snapshotDate, setSnapshotDate] = useState("");
 
   useEffect(() => {
+    const [pocket] = series.pockets;
+
     if (
-      !series ||
-      !series.pockets.length ||
-      series.pockets[0].mode !== "mirror" ||
-      !series.pockets[0].mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI)
+      !pocket ||
+      pocket.mode !== "mirror" ||
+      !pocket.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI)
     ) {
       return;
     }
 
-    setSnapshotDate(
-      series.pockets[0].mirror_uri.replace(/^.*\/(\d{8})T\d{6}Z$/, "$1"),
-    );
+    setSnapshotDate(pocket.mirror_uri.replace(/^.*\/(\d{8})T\d{6}Z$/, "$1"));
   }, [series]);
 
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
@@ -63,7 +62,11 @@ const SeriesCard: FC<SeriesCardProps> = ({
   const { mutateAsync: removeSeries, isPending: isRemoving } =
     removeSeriesQuery;
 
-  const handleRemoveSeries = async () => {
+  const handleCloseModal = (): void => {
+    setModalOpen(false);
+  };
+
+  const handleRemoveSeries = async (): Promise<void> => {
     try {
       await removeSeries({
         name: series.name,
@@ -76,15 +79,11 @@ const SeriesCard: FC<SeriesCardProps> = ({
     }
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
-  const handleOpenModal = () => {
+  const handleOpenModal = (): void => {
     setModalOpen(true);
   };
 
-  const handleDeriveSeries = () => {
+  const handleDeriveSeries = (): void => {
     setSidePanelContent(
       "Derive series",
       <Suspense fallback={<LoadingState />}>
@@ -93,7 +92,7 @@ const SeriesCard: FC<SeriesCardProps> = ({
     );
   };
 
-  const handleAddPocket = () => {
+  const handleAddPocket = (): void => {
     setSidePanelContent(
       `New pocket for ${series.name}`,
       <Suspense fallback={<LoadingState />}>
@@ -134,7 +133,9 @@ const SeriesCard: FC<SeriesCardProps> = ({
       type="button"
       className="is-small"
       aria-label={item.ariaLabel}
-      onMouseDown={(event) => event.preventDefault()}
+      onMouseDown={(event) => {
+        event.preventDefault();
+      }}
       onClick={item.onClick}
     >
       {item.label}

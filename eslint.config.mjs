@@ -37,6 +37,12 @@ export default tseslint.config(
       },
 
       ecmaVersion: 5,
+
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+
       sourceType: "module",
     },
 
@@ -70,6 +76,12 @@ export default tseslint.config(
       complexity: ["warn", 20],
       "no-magic-numbers": "warn",
       "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/promise-function-async": "warn",
+      "no-use-before-define": "warn",
+      "prefer-destructuring": "warn",
+      "@typescript-eslint/prefer-string-starts-ends-with": "warn",
+      "@typescript-eslint/no-confusing-void-expression": "warn",
+      "no-shadow": "warn",
     },
   },
 );

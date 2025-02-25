@@ -4,32 +4,24 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
-  CheckboxInput,
   Col,
   ConfirmationButton,
   Form,
-  ModularTable,
   Row,
   SearchBox,
-  Tooltip,
 } from "@canonical/react-components";
-import type { CellProps, Column, HeaderProps } from "react-table";
 import classNames from "classnames";
-import type { FC } from "react";
+import type { ComponentProps, FC } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import { pluralize } from "../../helpers";
 import { usePockets } from "../../hooks";
 import type { Distribution, Pocket, Series } from "../../types";
+import type { FormattedPackage } from "../../types/FormattedPackage";
+import PackageTable from "../PackageTable";
 import classes from "./PackageList.module.scss";
 
-const EditPocketForm = lazy(() => import("../EditPocketForm"));
-
-interface FormattedPackage extends Record<string, unknown> {
-  packageName: string;
-  packageVersion: string;
-  difference?: "update" | "delete" | "add";
-  newVersion?: string;
-}
+const EditPocketForm = lazy(async () => import("../EditPocketForm"));
 
 interface PackageListProps {
   readonly distributionName: Distribution["name"];
@@ -37,13 +29,16 @@ interface PackageListProps {
   readonly seriesName: Series["name"];
 }
 
+const defaultPage = 1;
+const defaultItemsPerPage = 20;
+
 const PackageList: FC<PackageListProps> = ({
   distributionName,
   pocket,
   seriesName,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(defaultPage);
+  const [itemsPerPage, setItemsPerPage] = useState(defaultItemsPerPage);
   const [selectedPackages, setSelectedPackages] = useState<number[]>([]);
   const [hasUpdatedOrDeletedPackages, setHasUpdatedOrDeletedPackages] =
     useState(false);
@@ -69,7 +64,7 @@ const PackageList: FC<PackageListProps> = ({
   const { mutate: pullPackagesToPocket, isPending: isPullingPackagesToPocket } =
     pullPackagesToPocketQuery;
 
-  const handleSync = () => {
+  const handleSync = (): void => {
     if ("mirror" === pocket.mode) {
       syncMirrorPocket({
         name: pocket.name,
@@ -85,7 +80,7 @@ const PackageList: FC<PackageListProps> = ({
     }
   };
 
-  const handleEditPocket = () => {
+  const handleEditPocket = (): void => {
     setSidePanelContent(
       `Edit ${pocket.name} pocket`,
       <Suspense fallback={<LoadingState />}>
@@ -101,7 +96,7 @@ const PackageList: FC<PackageListProps> = ({
   const { mutateAsync: removePocket, isPending: isRemovingPocket } =
     removePocketQuery;
 
-  const handleRemovePocket = async () => {
+  const handleRemovePocket = async (): Promise<void> => {
     try {
       await removePocket({
         distribution: distributionName,
@@ -120,24 +115,13 @@ const PackageList: FC<PackageListProps> = ({
     isPending: isRemovingPackagesFromPocket,
   } = removePackagesFromPocketQuery;
 
-  const handleRemovePackages = async () => {
-    const packages = packagesToShow
-      .filter((_, index) => selectedPackages.includes(index))
-      .map(({ packageName }) => packageName);
+  const noQueryIsPending =
+    !isSynchronizingMirrorPocket &&
+    !isPullingPackagesToPocket &&
+    !isRemovingPackagesFromPocket &&
+    !isRemovingPocket;
 
-    try {
-      await removePackagesFromPocket({
-        name: pocket.name,
-        series: seriesName,
-        distribution: distributionName,
-        packages,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const { data: listPocketData, isLoading: listPocketLoading } =
+  const { data: listPocketQueryResult, isLoading: listPocketLoading } =
     listPocketQuery(
       {
         name: pocket.name,
@@ -145,44 +129,39 @@ const PackageList: FC<PackageListProps> = ({
         distribution: distributionName,
         search,
         limit: itemsPerPage,
-        offset: (currentPage - 1) * itemsPerPage,
+        offset: currentPage * itemsPerPage - itemsPerPage,
       },
       {
-        enabled:
-          !isSynchronizingMirrorPocket &&
-          !isPullingPackagesToPocket &&
-          !isRemovingPackagesFromPocket &&
-          !isRemovingPocket,
+        enabled: noQueryIsPending,
       },
     );
 
-  const pocketPackages: FormattedPackage[] = [];
+  const listPocketData = listPocketQueryResult?.data ?? {
+    count: 0,
+    results: [],
+  };
 
-  if (listPocketData) {
-    for (const newPackage of listPocketData.data.results) {
-      pocketPackages.push({
+  const pocketPackages: FormattedPackage[] = listPocketData.results.map(
+    (newPackage) => {
+      return {
         packageName: newPackage.name,
         packageVersion: newPackage.version,
-      });
-    }
-  }
+      };
+    },
+  );
 
-  const { data: diffPullPocketData } = diffPullPocketQuery(
+  const { data: diffPullPocketQueryResult } = diffPullPocketQuery(
     {
       name: pocket.name,
       series: seriesName,
       distribution: distributionName,
     },
     {
-      enabled:
-        "pull" === pocket.mode &&
-        !listPocketLoading &&
-        !isSynchronizingMirrorPocket &&
-        !isPullingPackagesToPocket &&
-        !isRemovingPackagesFromPocket &&
-        !isRemovingPocket,
+      enabled: "pull" === pocket.mode && !listPocketLoading && noQueryIsPending,
     },
   );
+
+  const diffPullPocketData = diffPullPocketQueryResult?.data ?? {};
 
   const diffPullPocket: {
     packageName: string;
@@ -190,43 +169,40 @@ const PackageList: FC<PackageListProps> = ({
     difference: "update" | "delete" | "add";
   }[] = [];
 
-  if (diffPullPocketData) {
-    for (const dataKey in diffPullPocketData.data) {
-      const diff = diffPullPocketData.data[dataKey];
+  for (const dataKey in diffPullPocketData) {
+    const diff = {
+      add: [],
+      update: [],
+      delete: [],
+      ...diffPullPocketData[dataKey],
+    };
 
-      if (diff.add) {
-        for (const addElement of diff.add) {
-          diffPullPocket.push({
-            packageName: addElement[0],
-            newVersion: addElement[1],
-            difference: "add",
-          });
-        }
-      }
+    for (const [packageName, newVersion] of diff.add) {
+      diffPullPocket.push({
+        packageName,
+        newVersion,
+        difference: "add",
+      });
+    }
 
-      if (diff.update) {
-        setHasUpdatedOrDeletedPackages(true);
+    if (diff.update.length || diff.delete.length) {
+      setHasUpdatedOrDeletedPackages(true);
+    }
 
-        for (const updateElement of diff.update) {
-          diffPullPocket.push({
-            packageName: updateElement[0],
-            newVersion: updateElement[2],
-            difference: "update",
-          });
-        }
-      }
+    for (const [packageName, , newVersion] of diff.update) {
+      diffPullPocket.push({
+        packageName,
+        newVersion,
+        difference: "update",
+      });
+    }
 
-      if (diff.delete) {
-        setHasUpdatedOrDeletedPackages(true);
-
-        for (const deleteElement of diff.delete) {
-          diffPullPocket.push({
-            packageName: deleteElement[0],
-            difference: "delete",
-            newVersion: "",
-          });
-        }
-      }
+    for (const [packageName] of diff.delete) {
+      diffPullPocket.push({
+        packageName,
+        difference: "delete",
+        newVersion: "",
+      });
     }
   }
 
@@ -249,15 +225,10 @@ const PackageList: FC<PackageListProps> = ({
       }
     });
 
-    return pocketPackages.sort((a, b) => {
-      if (a.difference && !b.difference) {
-        return -1;
-      }
-      if (!a.difference && b.difference) {
-        return 1;
-      }
-      return 0;
-    });
+    return [
+      ...pocketPackages.filter(({ difference }) => difference),
+      ...pocketPackages.filter(({ difference }) => !difference),
+    ];
   };
 
   const packagesToShow = useMemo(
@@ -272,81 +243,39 @@ const PackageList: FC<PackageListProps> = ({
     ],
   );
 
-  const columns = useMemo<Column<FormattedPackage>[]>(
-    () => [
-      {
-        accessor: "packageName",
-        Header: ({ rows }: HeaderProps<FormattedPackage>) =>
-          "upload" === pocket.mode ? (
-            <>
-              <CheckboxInput
-                inline
-                label={<span className="u-off-screen">Toggle all</span>}
-                disabled={0 === rows.length}
-                indeterminate={
-                  selectedPackages.length > 0 &&
-                  selectedPackages.length < rows.length
-                }
-                checked={
-                  selectedPackages.length === rows.length &&
-                  selectedPackages.length > 0
-                }
-                onChange={() => {
-                  setSelectedPackages((prevState) =>
-                    prevState.length > 0 ? [] : rows.map((_, index) => index),
-                  );
-                }}
-              />
-              <span>Package</span>
-            </>
-          ) : (
-            "Package"
-          ),
-        Cell: ({ row }: CellProps<FormattedPackage>) =>
-          "upload" === pocket.mode ? (
-            <CheckboxInput
-              inline
-              label={row.original.packageName}
-              checked={selectedPackages.includes(row.index)}
-              onChange={() => {
-                setSelectedPackages((prevState) =>
-                  prevState.includes(row.index)
-                    ? prevState.filter(
-                        (selectedPackage) => selectedPackage !== row.index,
-                      )
-                    : [...prevState, row.index],
-                );
-              }}
-            />
-          ) : (
-            row.original.packageName
-          ),
-      },
-      {
-        accessor: "packageVersion",
-        Header: "Version",
-        getCellIcon: ({ row }: CellProps<FormattedPackage>) =>
-          row.original.difference ? "warning" : false,
-        className: classes.version,
-        Cell: ({ row }: CellProps<FormattedPackage>) =>
-          row.original.difference ? (
-            <Tooltip
-              position="top-center"
-              message={
-                "delete" === row.original.difference
-                  ? "Package deleted"
-                  : `Version differs\nfrom parent pocket.\nParent version:\n${row.original?.newVersion}`
-              }
-            >
-              <span>{row.original.packageVersion}</span>
-            </Tooltip>
-          ) : (
-            row.original.packageVersion
-          ),
-      },
-    ],
-    [packagesToShow, selectedPackages.length],
-  );
+  const handleRemovePackages = async (): Promise<void> => {
+    const packages = packagesToShow
+      .filter((_, index) => selectedPackages.includes(index))
+      .map(({ packageName }) => packageName);
+
+    try {
+      await removePackagesFromPocket({
+        name: pocket.name,
+        series: seriesName,
+        distribution: distributionName,
+        packages,
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const hasNoPackages =
+    !search &&
+    currentPage === defaultPage &&
+    itemsPerPage === defaultItemsPerPage &&
+    !listPocketData.count;
+
+  const colProps: ComponentProps<typeof Col> =
+    "upload" === pocket.mode
+      ? {
+          size: 8,
+          medium: 4,
+        }
+      : {
+          size: 6,
+          medium: 3,
+        };
 
   return (
     <>
@@ -356,13 +285,10 @@ const PackageList: FC<PackageListProps> = ({
           classes.ctaRow,
         )}
       >
-        <Col
-          size={"upload" === pocket.mode ? 8 : 6}
-          medium={"upload" === pocket.mode ? 4 : 3}
-        >
+        <Col {...colProps}>
           <div className="p-segmented-control">
             <div className="p-segmented-control__list">
-              {("mirror" == pocket.mode || "pull" == pocket.mode) && (
+              {"upload" !== pocket.mode && (
                 <Button
                   className="p-segmented-control__button"
                   type="button"
@@ -413,8 +339,7 @@ const PackageList: FC<PackageListProps> = ({
                   className="p-segmented-control__button"
                   type="button"
                   disabled={
-                    0 === selectedPackages.length ||
-                    isRemovingPackagesFromPocket
+                    !selectedPackages.length || isRemovingPackagesFromPocket
                   }
                   aria-label={`Remove selected packages from ${pocket.name} pocket of ${distributionName}/${seriesName}`}
                   confirmationModalProps={{
@@ -422,7 +347,11 @@ const PackageList: FC<PackageListProps> = ({
                     children: (
                       <p>
                         This will delete {selectedPackages.length} selected{" "}
-                        {selectedPackages.length === 1 ? "package" : "packages"}{" "}
+                        {pluralize(
+                          selectedPackages.length,
+                          "package",
+                          "packages",
+                        )}{" "}
                         from {pocket.name} pocket {seriesName} series of{" "}
                         {distributionName} distribution
                       </p>
@@ -440,97 +369,71 @@ const PackageList: FC<PackageListProps> = ({
             </div>
           </div>
         </Col>
-        {("pull" === pocket.mode || "mirror" === pocket.mode) &&
-          (search ||
-            currentPage !== 1 ||
-            itemsPerPage !== 20 ||
-            (!listPocketLoading &&
-              listPocketData &&
-              listPocketData.data.count > 0)) && (
-            <Col size={6} medium={3}>
-              <Form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  setSearch(inputText);
-                  setCurrentPage(1);
+        {"upload" !== pocket.mode && !hasNoPackages && (
+          <Col size={6} medium={3}>
+            <Form
+              onSubmit={(event) => {
+                event.preventDefault();
+                setSearch(inputText);
+                setCurrentPage(defaultPage);
+              }}
+              noValidate
+            >
+              <SearchBox
+                externallyControlled
+                shouldRefocusAfterReset
+                aria-label="Package search"
+                onChange={(inputValue) => {
+                  setInputText(inputValue);
                 }}
-                noValidate
-              >
-                <SearchBox
-                  externallyControlled
-                  shouldRefocusAfterReset
-                  aria-label="Package search"
-                  onChange={(inputValue) => {
-                    setInputText(inputValue);
-                  }}
-                  value={inputText}
-                  onClear={() => {
-                    setInputText("");
-                    setSearch("");
-                    setCurrentPage(1);
-                  }}
-                  className={classNames({
-                    "is-dense": !isSmallerScreen,
-                    "u-no-margin--bottom": isSmallerScreen,
-                  })}
-                  onSearch={() => {
-                    setSearch(inputText);
-                    setCurrentPage(1);
-                  }}
-                  autocomplete="off"
-                />
-              </Form>
-            </Col>
-          )}
+                value={inputText}
+                onClear={() => {
+                  setInputText("");
+                  setSearch("");
+                  setCurrentPage(defaultPage);
+                }}
+                className={classNames({
+                  "is-dense": !isSmallerScreen,
+                  "u-no-margin--bottom": isSmallerScreen,
+                })}
+                onSearch={() => {
+                  setSearch(inputText);
+                  setCurrentPage(defaultPage);
+                }}
+                autocomplete="off"
+              />
+            </Form>
+          </Col>
+        )}
       </Row>
-      {listPocketLoading && <LoadingState />}
-      {!search &&
-        currentPage === 1 &&
-        itemsPerPage === 20 &&
-        !listPocketLoading &&
-        (!listPocketData || !listPocketData.data.count) && (
-          <p>No packages found</p>
-        )}
-      {!listPocketLoading &&
-        (search ||
-          currentPage !== 1 ||
-          itemsPerPage !== 20 ||
-          (listPocketData && listPocketData.data.count > 0)) && (
-          <>
-            <ModularTable
-              columns={columns}
-              data={packagesToShow}
-              emptyMsg={
-                search
-                  ? `No packages found with the search: "${search}".`
-                  : undefined
-              }
-              className={classes.content}
-              getCellProps={({ column }) => {
-                switch (column.id) {
-                  case "packageName":
-                    return { role: "rowheader" };
-                  case "packageVersion":
-                    return { "aria-label": "Version" };
-                  default:
-                    return {};
-                }
-              }}
-            />
-            <SidePanelTablePagination
-              currentPage={currentPage}
-              totalItems={listPocketData?.data.count}
-              paginate={(page) => {
-                setSelectedPackages([]);
-                setCurrentPage(page);
-              }}
-              pageSize={itemsPerPage}
-              setPageSize={(itemsNumber) => {
-                setItemsPerPage(itemsNumber);
-              }}
-            />
-          </>
-        )}
+
+      {listPocketLoading ? (
+        <LoadingState />
+      ) : hasNoPackages ? (
+        <p>No packages found</p>
+      ) : (
+        <>
+          <PackageTable
+            isUpload={"upload" === pocket.mode}
+            packagesToShow={packagesToShow}
+            search={search}
+            selectedPackages={selectedPackages}
+            setSelectedPackages={setSelectedPackages}
+          />
+          <SidePanelTablePagination
+            currentPage={currentPage}
+            totalItems={listPocketData.count}
+            paginate={(page) => {
+              setSelectedPackages([]);
+              setCurrentPage(page);
+            }}
+            pageSize={itemsPerPage}
+            setPageSize={(itemsNumber) => {
+              setItemsPerPage(itemsNumber);
+            }}
+          />
+        </>
+      )}
     </>
   );
 };
