@@ -46,6 +46,7 @@ const AutoinstallFilesListContextualMenu: FC<
       "aria-label": `Set ${file.title} as default`,
       hasIcon: true,
       onClick: undefined,
+      disabled: file.is_default,
     },
     {
       children: (
@@ -57,6 +58,7 @@ const AutoinstallFilesListContextualMenu: FC<
       "aria-label": `Remove ${file.title}`,
       hasIcon: true,
       onClick: undefined,
+      disabled: file.is_default,
     },
   ];
 
