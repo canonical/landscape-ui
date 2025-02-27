@@ -11,7 +11,7 @@ interface GetAutoinstallFileParams {
 export default function useAutoinstallFile(
   id: number,
   params: GetAutoinstallFileParams,
-): AutoinstallFile | null {
+): AutoinstallFile | undefined {
   const authFetch = useFetch();
 
   const { data: response } = useQuery<
@@ -25,5 +25,5 @@ export default function useAutoinstallFile(
       }),
   });
 
-  return response ? response.data : null;
+  return response?.data;
 }
