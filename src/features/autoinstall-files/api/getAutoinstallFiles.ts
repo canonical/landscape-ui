@@ -11,15 +11,15 @@ interface GetAutoinstallFilesParams {
 
 export default function useAutoinstallFiles(params: {
   with_groups: false;
-}): AutoinstallFile[] | null;
+}): AutoinstallFile[] | undefined;
 
 export default function useAutoinstallFiles(params: {
   with_groups: true;
-}): AutoinstallFileWithGroups[] | null;
+}): AutoinstallFileWithGroups[] | undefined;
 
 export default function useAutoinstallFiles(
   params: GetAutoinstallFilesParams,
-): (AutoinstallFile | AutoinstallFileWithGroups)[] | null {
+): (AutoinstallFile | AutoinstallFileWithGroups)[] | undefined {
   const authFetch = useFetch();
 
   const { data: response } = useQuery<
@@ -33,5 +33,5 @@ export default function useAutoinstallFiles(
       }),
   });
 
-  return response ? response.data.results : null;
+  return response?.data.results;
 }
