@@ -12,7 +12,7 @@ import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
-import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import { useUpdateAutoinstallFile } from "../../api";
 import type {
   AutoinstallFile,
   AutoinstallFileWithGroups,
@@ -39,13 +39,10 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 }) => {
   const { employeeGroups, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
+  const updateAutoinstallFile = useUpdateAutoinstallFile();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalIgnored, setIsModalIgnored] = useState(false);
   const [modalFile, setModalFile] = useState<AutoinstallFile | null>(null);
-
-  const {
-    updateAutoinstallFileQuery: { mutateAsync: updateAutoinstallFile },
-  } = useAutoinstallFiles();
 
   useEffect(() => {
     if (localStorage.getItem(LOCAL_STORAGE_ITEM)) {
@@ -95,7 +92,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           title: "You have successfully saved changes for",
         }}
         query={async ({ contents }) => {
-          await updateAutoinstallFile({ contents, id: file.id });
+          await updateAutoinstallFile(file.id, { contents });
         }}
       />,
     );
