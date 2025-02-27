@@ -18,10 +18,10 @@ import { getTestErrorParams } from "@/tests/mocks/error";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
 import type { Account } from "@/features/auth";
 
-vi.mock("@/hooks/useEnv");
-vi.mock("@/hooks/useAuth");
-vi.mock("../../hooks");
-vi.mock("@/hooks/useAuthAccounts");
+vi.mock("@/api/useEnv");
+vi.mock("@/api/useAuth");
+vi.mock("../../api");
+vi.mock("@/api/useAuthAccounts");
 
 vi.mocked(useAuthAccounts).mockReturnValue({
   currentAccount: accountsDefault.find(

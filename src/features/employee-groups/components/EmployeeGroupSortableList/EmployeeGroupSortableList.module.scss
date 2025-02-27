@@ -1,0 +1,20 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.chosen {
+  background-color: $color-light;
+  cursor: grabbing;
+}
+
+.listItem {
+  padding: $sp-small;
+
+  &:hover:not(.chosen) {
+    background-color: $color-light;
+    cursor: grab;
+  }
+}
+
+.icon {
+  margin-right: $sp-medium;
+}

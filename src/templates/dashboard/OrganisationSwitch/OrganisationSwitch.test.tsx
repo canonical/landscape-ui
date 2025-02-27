@@ -9,8 +9,8 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { accountsDefault, accountsForSubdomain } from "@/tests/mocks/accounts";
 import type { Account } from "@/features/auth";
 
-vi.mock("@/hooks/useAuthAccounts");
-vi.mock("@/hooks/useSidePanel");
+vi.mock("@/api/useAuthAccounts");
+vi.mock("@/api/useSidePanel");
 
 const subdomainAccounts: AccountsContextProps = {
   currentAccount: accountsForSubdomain.find(

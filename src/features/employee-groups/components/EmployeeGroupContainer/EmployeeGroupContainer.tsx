@@ -1,11 +1,12 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { FC, useState } from "react";
+import type { FC } from "react";
+import { useState } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import EmployeeList from "../EmployeeList";
-import useEmployees from "../../hooks";
+import { useEmployees } from "../../api";
 
 interface EmployeeGroupContainerProps {
-  employeesGroupId: number;
+  readonly employeesGroupId: number;
   // autoInstallFile: string;
 }
 
@@ -26,18 +27,18 @@ const EmployeeGroupContainer: FC<EmployeeGroupContainerProps> = ({
   return (
     <>
       {isLoading && <LoadingState />}
-      {!isLoading && (
+      {!isLoading && employees.length === 0 && (
+        <EmptyState
+          title="No employees found"
+          body="Employees will appear here once they authenticate using your organization’s OIDC provider. You’ll see details about each user, their status, and associated instances."
+        />
+      )}
+      {!isLoading && employees.length > 0 && (
         <EmployeeList
           employees={employees}
           limit={limit}
           onLimitChange={() => setLimit((prevState) => prevState + 5)}
           key={limit}
-        />
-      )}
-      {!isLoading && employees.length === 0 && (
-        <EmptyState
-          title="No employees found"
-          body="Employees will appear here once they authenticate using your organization’s OIDC provider. You’ll see details about each user, their status, and associated instances."
         />
       )}
     </>

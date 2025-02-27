@@ -7,7 +7,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import usePageParams from "@/hooks/usePageParams";
 
-vi.mock("@/hooks/usePageParams");
+vi.mock("@/api/usePageParams");
 
 describe("AutoinstallFilesList", () => {
   it("should open a side panel", async () => {
@@ -24,6 +24,8 @@ describe("AutoinstallFilesList", () => {
       pageSize: 20,
       search: "",
       setPageParams: () => undefined,
+      sort: null,
+      sortBy: "",
       status: "",
       tab: "",
       tags: [""],
@@ -68,6 +70,8 @@ describe("AutoinstallFilesList", () => {
       pageSize: 0,
       search: "def",
       setPageParams: () => undefined,
+      sort: null,
+      sortBy: "",
       status: "",
       tab: "",
       tags: [""],

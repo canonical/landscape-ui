@@ -19,7 +19,7 @@ const DaysFilter: FC = () => {
       showSelectionOnToggleLabel
       hasToggleIcon
       options={DAYS_FILTER_OPTIONS}
-      onItemSelect={(item) => setPageParams({ days: item })}
+      onItemSelect={(item) => setPageParams({ days: parseInt(item, 10) })}
       selectedItem={days.toString()}
     />
   );

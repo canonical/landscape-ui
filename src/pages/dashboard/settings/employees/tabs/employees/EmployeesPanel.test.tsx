@@ -8,39 +8,39 @@ import { EMPTY_STATE } from "./constants";
 import { employees } from "@/tests/mocks/employees";
 
 describe("EmployeesPanel", () => {
-  it("renders list of employees", async () => {
-    setEndpointStatus("default");
+    it("renders list of employees", async () => {
+        setEndpointStatus("default");
 
-    renderWithProviders(<EmployeesPanel />);
+        renderWithProviders(<EmployeesPanel />);
 
-    await expectLoadingState();
+        await expectLoadingState();
 
-    for (const employee of employees) {
-      expect(screen.getByText(employee.name)).toBeInTheDocument();
-    }
-  });
+        for (const employee of employees) {
+            expect(screen.getByText(employee.name)).toBeInTheDocument();
+        }
+    });
 
-  it("renders empty state when no employees are found", async () => {
-    setEndpointStatus("empty");
+    it("renders empty state when no employees are found", async () => {
+        setEndpointStatus("empty");
 
-    renderWithProviders(<EmployeesPanel />);
+        renderWithProviders(<EmployeesPanel />);
 
-    await expectLoadingState();
+        await expectLoadingState();
 
-    expect(screen.getByText(EMPTY_STATE.title)).toBeInTheDocument();
-    expect(screen.getByText(EMPTY_STATE.body)).toBeInTheDocument();
-  });
+        expect(screen.getByText(EMPTY_STATE.title)).toBeInTheDocument();
+        expect(screen.getByText(EMPTY_STATE.body)).toBeInTheDocument();
+    });
 
-  it("renders employee limit notification when limit is reached", async () => {
-    vi.mock("./constants", () => ({
-      EMPLOYEE_LIMIT: 0,
-      EMPTY_STATE: { title: "No employees", body: "No employees found" },
-    }));
+    it("renders employee limit notification when limit is reached", async () => {
+        vi.mock("./constants", () => ({
+            EMPLOYEE_LIMIT: 0,
+            EMPTY_STATE: { title: "No employees", body: "No employees found" },
+        }));
 
-    renderWithProviders(<EmployeesPanel />);
+        renderWithProviders(<EmployeesPanel />);
 
-    await expectLoadingState();
+        await expectLoadingState();
 
-    expect(screen.getByText(/Employee limit reached/i)).toBeInTheDocument();
-  });
+        expect(screen.getByText(/Employee limit reached/i)).toBeInTheDocument();
+    });
 });

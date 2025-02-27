@@ -17,7 +17,7 @@ const useGetEmployeeGroups = (
 ) => {
   const authFetch = useFetch();
 
-  const { data, isPending } = useQuery<
+  const { data, isLoading } = useQuery<
     AxiosResponse<ApiPaginatedResponse<EmployeeGroup>>,
     AxiosError<ApiError>
   >({
@@ -27,8 +27,8 @@ const useGetEmployeeGroups = (
   });
 
   return {
-    employeeGroupsResult: data?.data?.results || [],
-    isPending,
+    employeeGroups: data?.data.results ?? [],
+    isEmployeeGroupsLoading: isLoading,
   };
 };
 

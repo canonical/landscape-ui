@@ -1,9 +1,12 @@
 import type { GroupedOption } from "@/components/filter";
 import { Tooltip } from "@canonical/react-components";
 import classes from "./components/EmployeeGroupsFilter/EmployeeGroupsFilter.module.scss";
-import type { EmployeeGroup } from "./types";
+import type { EmployeeGroup, StagedOidcGroup } from "./types";
 
-export const isNotUnique = (employeeGroups: EmployeeGroup[], name: string) => {
+export const isNotUnique = (
+  employeeGroups: EmployeeGroup[] | StagedOidcGroup[],
+  name: string,
+) => {
   return employeeGroups.filter((employee) => employee.name === name).length > 1;
 };
 

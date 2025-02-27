@@ -3,8 +3,10 @@ import activity from "./activity";
 import alerts from "./alerts";
 import aptSource from "./aptSource";
 import auth from "./auth";
-import availabilityZones from "@/tests/server/handlers/availabilityZones";
+import oidcIssuers from "./oidcIssuers";
+import availabilityZones from "./availabilityZones";
 import distributions from "./distributions";
+import employeeGroups from "./employeeGroups";
 import eventsLog from "./eventsLog";
 import gpgKey from "./gpgKey";
 import instance from "./instance";
@@ -31,9 +33,11 @@ export default [
   ...alerts,
   ...aptSource,
   ...auth,
+  ...oidcIssuers,
   ...availabilityZones,
   ...distributions,
   ...employees,
+  ...employeeGroups,
   ...eventsLog,
   ...gpgKey,
   ...instance,

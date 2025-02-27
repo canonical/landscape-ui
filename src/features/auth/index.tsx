@@ -19,6 +19,8 @@ export type {
   Account,
   AuthUser,
   IdentityProvider,
+  IdentityProviderFeature,
+  SupportedIdentityProviderBase,
   SingleIdentityProvider,
   SupportedIdentityProvider,
 } from "./types";

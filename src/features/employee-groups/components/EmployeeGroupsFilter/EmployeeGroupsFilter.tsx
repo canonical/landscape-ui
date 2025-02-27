@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useState } from "react";
 import { getEmployeeGroupOptions } from "../../helpers";
 import type { EmployeeGroup } from "../../types";
-import { useGetEmployeeGroups } from "../../api";
 
 interface EmployeeGroupsFilterProps {
   readonly employeeGroupsData: EmployeeGroup[];
@@ -18,27 +16,12 @@ const EmployeeGroupsFilter: FC<EmployeeGroupsFilterProps> = ({
 }) => {
   const [searchText, setSearchText] = useState("");
 
-  const { employeeGroups, setPageParams } = usePageParams();
+  const { employeeGroups: employeeGroupsParam, setPageParams } =
+    usePageParams();
 
-  // TODO implement when Spencer adds filtering
-  const { employeeGroupsResult } = useGetEmployeeGroups(
-    {
-      search: searchText,
-    },
-    {
-      enabled: !!searchText,
-    },
-  );
-
-  // const { data: employeeGroupsQueryResult } = getEmployeeGroupsQuery(
-  //   {
-  //     search: searchText,
-  //   },
-  //   { enabled: !!searchText },
-  // );
-
+  // TODO: implement server-side search when the API is ready
   const searchFilteredOptions = employeeGroupsData.filter(({ name }) =>
-    name.includes(searchText),
+    name.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   const filteredOptions = getEmployeeGroupOptions(searchFilteredOptions, true);
@@ -53,7 +36,7 @@ const EmployeeGroupsFilter: FC<EmployeeGroupsFilterProps> = ({
       onItemsSelect={(items) => setPageParams({ employeeGroups: items })}
       onSearch={(search) => setSearchText(search)}
       searchLabel={searchLabel}
-      selectedItems={employeeGroups}
+      selectedItems={employeeGroupsParam}
     />
   );
 };

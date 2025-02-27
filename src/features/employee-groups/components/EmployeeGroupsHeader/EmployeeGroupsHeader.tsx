@@ -2,7 +2,6 @@
 import { TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
-import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
@@ -17,10 +16,10 @@ import { getEmployeeGroupOptions } from "../../helpers";
 import type { EmployeeGroup } from "../../types";
 import EmployeeGroupsFilter from "../EmployeeGroupsFilter";
 import classes from "./EmployeeGroupsHeader.module.scss";
-import { useRemoveEmployeeGroupsModal } from "../../hooks";
+import { useRemoveEmployeeGroupsModal } from "../../api";
 
-const EmployeeGroupIdentityProviderForm = lazy(
-  () => import("../EmployeeGroupIdentityProviderForm"),
+const EmployeeGroupIdentityIssuerList = lazy(
+  () => import("../EmployeeGroupIdentityIssuerList"),
 );
 
 interface EmployeeGroupsHeaderProps {
@@ -35,13 +34,12 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
   setSelectedEmployeeGroups,
 }) => {
   const { setSidePanelContent } = useSidePanel();
-  const { notify } = useNotify();
 
   const handleImportEmployeeGroups = () => {
     setSidePanelContent(
-      "Choose an identity provider",
+      "Choose an identity issuer",
       <Suspense fallback={<LoadingState />}>
-        <EmployeeGroupIdentityProviderForm />
+        <EmployeeGroupIdentityIssuerList />
       </Suspense>,
     );
   };

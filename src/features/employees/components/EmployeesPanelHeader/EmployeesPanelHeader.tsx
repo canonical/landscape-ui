@@ -9,12 +9,9 @@ import type { FC } from "react";
 import { STATUS_OPTIONS } from "./constants";
 
 const EmployeesPanelHeader: FC = () => {
-  const { employeeGroupsResult } = useGetEmployeeGroups();
+  const { employeeGroups } = useGetEmployeeGroups();
 
-  const employeeGroupOptions = getEmployeeGroupOptions(
-    employeeGroupsResult,
-    false,
-  );
+  const employeeGroupOptions = getEmployeeGroupOptions(employeeGroups, false);
 
   return (
     <>
@@ -22,7 +19,7 @@ const EmployeesPanelHeader: FC = () => {
         actions={
           <>
             <EmployeeGroupsFilter
-              employeeGroupsData={employeeGroupsResult}
+              employeeGroupsData={employeeGroups}
               searchLabel="Showing employee groups for listed employees. Search to filter from all available groups."
             />
             <StatusFilter options={STATUS_OPTIONS} />

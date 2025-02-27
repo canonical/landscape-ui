@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { EmployeeGroup } from "../../types";
 import { getRemoveEmployeeGroupsModalTexts } from "./helpers";
-import { useDeleteEmployeeGroups } from "../../api";
+import { useDeleteEmployeeGroups } from "../index";
 
 interface UseRemoveEmployeeGroupsModalProps {
   readonly selectedEmployeeGroups: EmployeeGroup[];
