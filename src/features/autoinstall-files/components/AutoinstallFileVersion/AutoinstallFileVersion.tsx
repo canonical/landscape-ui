@@ -4,9 +4,8 @@ import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import { Button, Icon, Input } from "@canonical/react-components";
 import moment from "moment";
-import type { ComponentProps } from "react";
 import { useState, type FC } from "react";
-import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import { useAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
 import classes from "./AutoinstallFileVersion.module.scss";
 import { BUTTON_TIMEOUT } from "./constants";
@@ -22,10 +21,7 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
   goBack,
   version,
 }) => {
-  const { getAutoinstallFileQuery } = useAutoinstallFiles();
-
-  const { data: { data: file } = { data: {} as AutoinstallFile }, isLoading } =
-    getAutoinstallFileQuery({ id, version });
+  const file = useAutoinstallFile(id, { version });
 
   const copyButtonProps = {
     children: (
@@ -34,7 +30,7 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
         <span>Copy</span>
       </>
     ),
-    onClick: (): void => {
+    onClick: (file: AutoinstallFile): void => {
       navigator.clipboard.writeText(file.contents);
       setButtonProps(copiedButtonProps);
 
@@ -51,12 +47,15 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
         <span>Copied</span>
       </>
     ),
+    onClick: (_: AutoinstallFile): void => undefined,
   };
 
-  const [buttonProps, setButtonProps] =
-    useState<ComponentProps<typeof Button>>(copyButtonProps);
+  const [buttonProps, setButtonProps] = useState<{
+    children: JSX.Element;
+    onClick: (file: AutoinstallFile) => void;
+  }>(copyButtonProps);
 
-  if (isLoading) {
+  if (!file) {
     return <LoadingState />;
   }
 
@@ -84,8 +83,12 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
                 className="u-no-margin--bottom"
                 appearance="base"
                 hasIcon
-                {...buttonProps}
-              />
+                onClick={() => {
+                  buttonProps.onClick(file);
+                }}
+              >
+                {buttonProps.children}
+              </Button>
             }
           />
         </div>

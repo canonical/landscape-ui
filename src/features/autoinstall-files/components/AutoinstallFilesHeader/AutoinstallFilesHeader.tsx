@@ -4,7 +4,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import { useAddAutoinstallFile } from "../../api";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import classes from "./AutoinstallFilesHeader.module.scss";
 import {
@@ -17,9 +17,7 @@ const AutoinstallFilesHeader: FC = () => {
   const { setPageParams, employeeGroups } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
-  const {
-    addAutoinstallFileQuery: { mutateAsync: addAutoinstallFile },
-  } = useAutoinstallFiles();
+  const addAutoinstallFile = useAddAutoinstallFile();
 
   const handleSearch = (searchText: string): void => {
     setPageParams({ search: searchText });
