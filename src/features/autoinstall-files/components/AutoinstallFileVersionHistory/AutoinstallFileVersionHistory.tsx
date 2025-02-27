@@ -1,18 +1,27 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { ModularTable } from "@canonical/react-components";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
-import type { AutoinstallFile } from "../../types";
+import type { AutoinstallFile, TabId } from "../../types";
+import AutoinstallFileVersion from "../AutoinstallFileVersion/AutoinstallFileVersion";
 import classes from "./AutoinstallFileVersionHistory.module.scss";
 
-const AutoinstallFileVersionHistory: FC<{
+interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
-}> = ({ file }) => {
+  readonly openDetailsPanel: (defaultTabId: TabId) => void;
+}
+
+const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
+  file,
+  openDetailsPanel,
+}) => {
   const { getAutoinstallFileQuery } = useAutoinstallFiles();
+  const { setSidePanelContent } = useSidePanel();
 
   const filesQuery = [...Array(file.version)].map((_, i) => {
     const {
@@ -34,7 +43,26 @@ const AutoinstallFileVersionHistory: FC<{
           row: {
             original: { version },
           },
-        }: CellProps<AutoinstallFile>): ReactNode => <div>{version}</div>,
+        }: CellProps<AutoinstallFile>): ReactNode => (
+          <Button
+            appearance="link"
+            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+            onClick={() => {
+              setSidePanelContent(
+                `${file.filename}, v${version}`,
+                <AutoinstallFileVersion
+                  goBack={() => {
+                    openDetailsPanel("version-history");
+                  }}
+                  id={file.id}
+                  version={version}
+                />,
+              );
+            }}
+          >
+            {version}
+          </Button>
+        ),
       },
       {
         accessor: "author",

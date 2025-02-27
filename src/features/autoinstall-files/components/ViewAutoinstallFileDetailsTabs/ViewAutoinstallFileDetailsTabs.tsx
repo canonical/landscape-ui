@@ -4,37 +4,29 @@ import { Tabs } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { useState } from "react";
+import type { TabId } from "../../types";
 import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
 import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 import AutoinstallFileVersionHistory from "../AutoinstallFileVersionHistory";
 import classes from "./ViewAutoinstallFileDetailsTabs.module.scss";
+import { TABS } from "./constants";
 
-type TabId = "info" | "event-log" | "version-history";
-
-const tabs: {
-  label: string;
-  id: TabId;
-}[] = [
-  {
-    label: "Info",
-    id: "info",
-  },
-  {
-    label: "Version history",
-    id: "version-history",
-  },
-];
-
-const ViewAutoinstallFileDetailsTabs: FC<{
+interface ViewAutoinstallFileDetailsTabsProps {
+  readonly defaultTabId?: TabId;
   readonly file: AutoinstallFileWithGroups;
-}> = ({ file }) => {
-  const [tabId, setTabId] = useState<TabId>("info");
+  readonly openDetailsPanel: (defaultTabId: TabId) => void;
+}
+
+const ViewAutoinstallFileDetailsTabs: FC<
+  ViewAutoinstallFileDetailsTabsProps
+> = ({ file, defaultTabId = "info", openDetailsPanel }) => {
+  const [tabId, setTabId] = useState<TabId>(defaultTabId);
 
   return (
     <>
       <Tabs
         listClassName="u-no-margin--bottom"
-        links={tabs.map(({ label, id }) => ({
+        links={TABS.map(({ label, id }) => ({
           label,
           active: id === tabId,
           role: "tab",
@@ -76,7 +68,10 @@ const ViewAutoinstallFileDetailsTabs: FC<{
       )}
 
       {tabId === "version-history" && (
-        <AutoinstallFileVersionHistory file={file} />
+        <AutoinstallFileVersionHistory
+          file={file}
+          openDetailsPanel={openDetailsPanel}
+        />
       )}
     </>
   );

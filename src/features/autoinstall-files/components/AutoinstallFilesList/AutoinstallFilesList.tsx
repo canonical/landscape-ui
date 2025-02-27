@@ -5,6 +5,7 @@ import {
   Button,
   CheckboxInput,
   Chip,
+  Icon,
   Modal,
   ModularTable,
 } from "@canonical/react-components";
@@ -13,6 +14,7 @@ import type { FC, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import type { TabId } from "../../types";
 import type {
   AutoinstallFile,
   AutoinstallFileWithGroups,
@@ -20,13 +22,14 @@ import type {
 import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
+import ViewAutoinstallFileDetailsEditButton from "../ViewAutoinstallFileDetailsEditButton";
 import {
   CANCEL_BUTTON_TEXT,
   CONTINUE_BUTTON_TEXT,
   LOCAL_STORAGE_ITEM,
   SUBMIT_BUTTON_TEXT,
 } from "../ViewAutoinstallFileDetailsEditButton/constants";
-import ViewAutoinstallFileDetailsPanel from "../ViewAutoinstallFileDetailsPanel";
+import ViewAutoinstallFileDetailsTabs from "../ViewAutoinstallFileDetailsTabs";
 import classes from "./AutoinstallFilesList.module.scss";
 import { getCellProps } from "./helpers";
 
@@ -71,13 +74,43 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     }
   };
 
-  const openDetailsPanel = (file: AutoinstallFileWithGroups): void => {
+  const openDetailsPanel = (
+    file: AutoinstallFileWithGroups,
+    defaultTabId?: TabId,
+  ): void => {
     setSidePanelContent(
       `${file.filename}${file.is_default ? " (default)" : ""}`,
-      <ViewAutoinstallFileDetailsPanel
-        file={file}
-        openEditPanel={openEditPanel}
-      />,
+
+      <>
+        <div className="p-segmented-control">
+          <div className="p-segmented-control__list">
+            <ViewAutoinstallFileDetailsEditButton
+              openEditPanel={() => {
+                openEditPanel(file);
+              }}
+            />
+
+            <Button
+              className="p-segmented-control__button"
+              disabled={file.is_default}
+            >
+              <Icon name="delete" />
+              <span>Remove</span>
+            </Button>
+          </div>
+        </div>
+
+        <div className={classes.container}>
+          <ViewAutoinstallFileDetailsTabs
+            defaultTabId={defaultTabId}
+            file={file}
+            openDetailsPanel={(defaultTabId: TabId) => {
+              openDetailsPanel(file, defaultTabId);
+            }}
+          />
+        </div>
+      </>,
+
       "large",
     );
   };
