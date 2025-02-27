@@ -8,4 +8,5 @@ export {
   hasSecurityUpgrades,
   hasUpgrades,
 } from "./helpers";
+export { getStatusCellIconAndLabel } from "./components/InstanceList/helpers";
 export type { Status } from "./types";

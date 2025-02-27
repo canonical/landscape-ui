@@ -2,7 +2,7 @@ import type { AutoinstallFile } from "@/features/autoinstall-files";
 
 export const autoinstallFiles: AutoinstallFile[] = [
   {
-    name: "autoinstall.yaml",
+    filename: "autoinstall.yaml",
     employeeGroupsAssociated: [
       "Employee group 1",
       "Employee group 2",
@@ -70,9 +70,10 @@ export const autoinstallFiles: AutoinstallFile[] = [
         createdAt: "Nov 23, 2024, 10:16",
       },
     ],
+    is_default: false,
   },
   {
-    name: "medium.yaml",
+    filename: "medium.yaml",
     employeeGroupsAssociated: [
       "employeeGroup1",
       "employeeGroup2",
@@ -83,9 +84,10 @@ export const autoinstallFiles: AutoinstallFile[] = [
     dateCreated: "Nov 23, 2024, 10:16",
     version: 3,
     events: [],
+    is_default: false,
   },
   {
-    name: "strict.yaml",
+    filename: "strict.yaml",
     employeeGroupsAssociated: [
       "employeeGroup1",
       "employeeGroup2",
@@ -96,6 +98,7 @@ export const autoinstallFiles: AutoinstallFile[] = [
     dateCreated: "Nov 23, 2024, 10:16",
     version: 3,
     events: [],
+    is_default: false,
   },
 ];
 

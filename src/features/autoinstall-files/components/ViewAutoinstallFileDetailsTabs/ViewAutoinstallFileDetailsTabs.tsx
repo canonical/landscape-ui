@@ -45,7 +45,7 @@ const ViewAutoinstallFileDetailsTabs: FC<{
       {tabId === "info" && (
         <div className={classes.info}>
           <div className={classes.row}>
-            <InfoItem label="Name" value={file.name} />
+            <InfoItem label="Name" value={file.filename} />
             <InfoItem label="Version" value={file.version} />
           </div>
 

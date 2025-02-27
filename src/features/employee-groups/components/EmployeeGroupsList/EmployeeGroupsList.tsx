@@ -1,34 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import LoadingState from "@/components/layout/LoadingState";
-import {
-  Badge,
-  Button,
-  CheckboxInput,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
+import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
+import { Link } from "react-router";
+import type { CellProps, Column } from "react-table";
+import { getEmployeeGroupLabel } from "../../helpers";
 import type { EmployeeGroup } from "../../types";
-import EmployeeGroupContainer from "../EmployeeGroupContainer";
+import AutoinstallFileTableCell from "../AutoinstallFileTableCell";
 import EmployeeGroupsListContextualMenu from "../EmployeeGroupsListContextualMenu";
 import classes from "./EmployeeGroupsList.module.scss";
-import {
-  getEmployeeGroupsWithExpanded,
-  getTableRows,
-  handleCellProps,
-  handleRowProps,
-} from "./helpers";
-import type { ExpandedCell } from "./types";
-import { getEmployeeGroupLabel, isNotUnique } from "../../helpers";
+import { handleCellProps } from "./helpers";
 
 interface EmployeeGroupsListProps {
   readonly isEmployeeGroupsLoading: boolean;
   readonly onSelectedEmployeeGroupsChange: (employeeGroups: number[]) => void;
   readonly selectedEmployeeGroups: number[];
-  readonly totalEmployeeGroupsCount: number;
   readonly employeeGroups: EmployeeGroup[];
 }
 
@@ -36,21 +22,11 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
   isEmployeeGroupsLoading,
   onSelectedEmployeeGroupsChange,
   selectedEmployeeGroups,
-  totalEmployeeGroupsCount,
   employeeGroups,
 }) => {
-  const [expandedCell, setExpandedCell] = useState<ExpandedCell>(null);
-
-  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
-
   const tableEmployeeGroups = useMemo<EmployeeGroup[]>(
-    (): EmployeeGroup[] =>
-      getEmployeeGroupsWithExpanded({
-        expandedCell,
-        isEmployeeGroupsLoading,
-        employeeGroups,
-      }),
-    [employeeGroups, expandedCell, isEmployeeGroupsLoading],
+    (): EmployeeGroup[] => employeeGroups,
+    [employeeGroups],
   );
 
   const handleToggleSingleEmployeeGroup = (id: number) => {
@@ -61,57 +37,8 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
     );
   };
 
-  const handleExpandCellClick = (columnId: string, rowIndex: number) => {
-    setExpandedCell((prevState) => {
-      if (prevState?.column === columnId && prevState.row === rowIndex) {
-        return null;
-      }
-
-      return {
-        column: columnId,
-        row:
-          prevState &&
-          ["id"].includes(prevState.column) &&
-          prevState.row < rowIndex
-            ? rowIndex - 1
-            : rowIndex,
-      };
-    });
-  };
-
   const employeeGroupsColumns = useMemo<Column<EmployeeGroup>[]>(
     () => [
-      {
-        accessor: "id",
-        className: classNames(classes.expandColumn, classes.row),
-        Header: "",
-        Cell: ({
-          column,
-          row: { original, index },
-        }: CellProps<EmployeeGroup>) => {
-          if (expandedCell?.row === index - 1 && expandedCell.column === "id") {
-            return <EmployeeGroupContainer employeesGroupId={original.id} />;
-          }
-
-          if (
-            isEmployeeGroupsLoading &&
-            index === tableEmployeeGroups.length - 1
-          ) {
-            return <LoadingState />;
-          }
-
-          return (
-            <Button
-              type="button"
-              className={classNames("p-accordion__tab", classes.expandButton)}
-              aria-expanded={
-                expandedCell?.column === column.id && expandedCell.row === index
-              }
-              onClick={() => handleExpandCellClick(column.id, index)}
-            />
-          );
-        },
-      },
       {
         accessor: "employees",
         className: "checkbox-column",
@@ -160,31 +87,43 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => {
           const label = getEmployeeGroupLabel(original, employeeGroups, true);
           return (
-            <>
-              <span
-                className={classNames(
-                  classes.employeeGroupName,
-                  "p-text--small-caps",
-                )}
-              >
-                {label}
-              </span>
-            </>
+            <span className={classNames(classes.employeeGroupName)}>
+              {label}
+            </span>
           );
         },
       },
       {
-        accessor: "autoinstall_file",
-        Header: "autoinstall file",
+        accessor: "employee_count",
+        Header: "employees",
+        Cell: ({ row: { original } }: CellProps<EmployeeGroup>) =>
+          original.employee_count ? (
+            <Link
+              to={`/settings/employees?tab=employees&employeeGroups=${original.name}`}
+              className={classes.link}
+            >
+              {original.employee_count}
+            </Link>
+          ) : (
+            <>0</>
+          ),
+      },
+      {
+        accessor: "autoinstall_file.filename",
+        Header: "assigned autoinstall file",
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
-          <>{original.autoinstall_file}</>
+          <AutoinstallFileTableCell
+            fileName={original.autoinstall_file?.filename}
+            isDefault={original.autoinstall_file?.is_default}
+            version={original.autoinstall_file?.version}
+          />
         ),
       },
       {
         accessor: "priority",
         Header: "priority",
         Cell: ({ row }: CellProps<EmployeeGroup>) => (
-          <>{row.original.priority}</>
+          <>{row.original.priority || "N/A"}</>
         ),
       },
       {
@@ -196,28 +135,16 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
         ),
       },
     ],
-    [
-      tableEmployeeGroups,
-      isEmployeeGroupsLoading,
-      selectedEmployeeGroups,
-      expandedCell,
-    ],
+    [tableEmployeeGroups, isEmployeeGroupsLoading, selectedEmployeeGroups],
   );
 
   return (
-    <div ref={getTableRows(tableRowsRef)}>
-      <ModularTable
-        columns={employeeGroupsColumns}
-        data={tableEmployeeGroups}
-        getCellProps={handleCellProps({
-          expandedCell,
-          isEmployeeGroupsLoading,
-          lastEmployeeGroupIndex: employeeGroups.length,
-        })}
-        getRowProps={handleRowProps(expandedCell)}
-        // emptyMsg={`No security issues found with the search "${otherProps.search}"`}
-      />
-    </div>
+    <ModularTable
+      columns={employeeGroupsColumns}
+      data={tableEmployeeGroups}
+      getCellProps={handleCellProps()}
+      emptyMsg="No employee groups found according to your search parameters."
+    />
   );
 };
 

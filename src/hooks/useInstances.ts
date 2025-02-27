@@ -8,7 +8,6 @@ import type { Instance, PendingInstance } from "@/types/Instance";
 import type { QueryFnType } from "@/types/QueryFnType";
 import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
-import { instances } from "@/tests/mocks/instance";
 
 export interface GetInstancesParams {
   query?: string;
@@ -30,11 +29,6 @@ interface GetSingleInstanceParams {
   with_grouped_hardware?: boolean;
   with_hardware?: boolean;
   with_network?: boolean;
-}
-
-interface GetEmployeeInstancesParams {
-  employeeId: number;
-  with_provisioning_info: true;
 }
 
 interface EditInstanceParams {
@@ -71,7 +65,7 @@ interface ChangeInstancesAccessGroupParams {
   access_group: string;
 }
 
-interface RemoveInstances {
+export interface RemoveInstances {
   computer_ids: number[];
 }
 
@@ -105,6 +99,10 @@ interface RenameInstancesParams {
   computer_titles: string[];
 }
 
+export interface SanitizeInstancesParams {
+  computer_id: number;
+}
+
 export default function useInstances() {
   const queryClient = useQueryClient();
   const authFetchOld = useFetchOld();
@@ -134,32 +132,6 @@ export default function useInstances() {
       queryKey: ["instances", { instanceId, ...queryParams }],
       queryFn: () =>
         authFetch.get(`computers/${instanceId}`, { params: queryParams }),
-      ...config,
-    });
-
-  const getEmployeeInstancesQuery = (
-    { employeeId, ...queryParams }: GetEmployeeInstancesParams,
-    config: Omit<
-      UseQueryOptions<AxiosResponse<Instance[]>, AxiosError<ApiError>>,
-      "queryKey" | "queryFn"
-    > = {}, //TODO change the return type to the truncated version
-  ) =>
-    useQuery<AxiosResponse<Instance[]>, AxiosError<ApiError>>({
-      queryKey: ["instances", { employeeId, ...queryParams }],
-      // queryFn: () =>
-      //   authFetch.get(`computers/${employeeId}`, { params: queryParams }),
-      queryFn: () =>
-        new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({
-              data: instances.slice(0, 5),
-              status: 200,
-              statusText: "OK",
-              headers: {},
-              config: {},
-            } as AxiosResponse<Instance[]>);
-          }, 200); // Simulate delay
-        }),
       ...config,
     });
 
@@ -339,10 +311,20 @@ export default function useInstances() {
       ...config,
     });
 
+  const sanitizeInstanceQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    SanitizeInstancesParams
+  >({
+    mutationKey: ["instance", "sanitize"],
+    mutationFn: ({ computer_id }) =>
+      authFetch.post(`computers/${computer_id}/sanitize`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+  });
+
   return {
     getInstancesQuery,
     getSingleInstanceQuery,
-    getEmployeeInstancesQuery,
     editInstanceQuery,
     addAnnotationToInstancesQuery,
     removeAnnotationFromInstancesQuery,
@@ -360,5 +342,6 @@ export default function useInstances() {
     renameInstancesQuery,
     getAllInstanceTagsQuery,
     getAvailabilityZonesQuery,
+    sanitizeInstanceQuery,
   };
 }

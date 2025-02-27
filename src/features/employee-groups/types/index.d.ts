@@ -1,6 +1,7 @@
-export {
-  Employee,
-  EmployeeGroup,
-  RecoveryKey,
-  ConfigurationLimit,
-} from "./Employee";
+export { ConfigurationLimit, EmployeeGroup } from "./EmployeeGroup";
+export type {
+  DeleteEmployeeGroupsParams,
+  GetEmployeeGroupsParams,
+  PatchEmployeeGroupParams,
+  PatchEmployeeGroupsParams,
+} from "./EmployeeGroupParams";

@@ -1,1 +1,1 @@
-export { default } from "./useEmployees";
+export { default as useRemoveEmployeeGroupsModal } from "./useRemoveEmployeeGroupsModal";

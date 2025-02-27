@@ -1,22 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { StatusFilter, TableFilterChips } from "@/components/filter";
+import { TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import LoadingState from "@/components/layout/LoadingState";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
   ConfirmationButton,
   Icon,
   ICONS,
 } from "@canonical/react-components";
+import classNames from "classnames";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import { getEmployeeGroupOptions } from "../../helpers";
 import type { EmployeeGroup } from "../../types";
-import useSidePanel from "@/hooks/useSidePanel";
-import LoadingState from "@/components/layout/LoadingState";
-import useNotify from "@/hooks/useNotify";
-import { getRemoveEmployeeGroupsModalTexts } from "./helpers";
 import EmployeeGroupsFilter from "../EmployeeGroupsFilter";
-import type { SelectOption } from "@/types/SelectOption";
-import { getEmployeeGroupOptions, isNotUnique } from "../../helpers";
+import classes from "./EmployeeGroupsHeader.module.scss";
+import { useRemoveEmployeeGroupsModal } from "../../hooks";
 
 const EmployeeGroupIdentityProviderForm = lazy(
   () => import("../EmployeeGroupIdentityProviderForm"),
@@ -25,11 +26,13 @@ const EmployeeGroupIdentityProviderForm = lazy(
 interface EmployeeGroupsHeaderProps {
   readonly employeeGroups: EmployeeGroup[];
   readonly selectedEmployeeGroups: number[];
+  readonly setSelectedEmployeeGroups: (groupIds: number[]) => void;
 }
 
 const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
   employeeGroups,
   selectedEmployeeGroups,
+  setSelectedEmployeeGroups,
 }) => {
   const { setSidePanelContent } = useSidePanel();
   const { notify } = useNotify();
@@ -43,23 +46,28 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
     );
   };
 
-  const { title, body, notificationText, notificationTitle } =
-    getRemoveEmployeeGroupsModalTexts(
-      employeeGroups.filter((employeeGroup) =>
-        selectedEmployeeGroups.includes(employeeGroup.id),
-      ),
-    );
+  const selectedGroups = employeeGroups.filter((employeeGroup) =>
+    selectedEmployeeGroups.includes(employeeGroup.id),
+  );
+
+  const handleClearSelection = () => {
+    setSelectedEmployeeGroups([]);
+  };
+
+  const {
+    body,
+    confirmButtonLabel,
+    confirmButtonAppearance,
+    deleteEmployeeGroups,
+    isLoading,
+    title,
+  } = useRemoveEmployeeGroupsModal({
+    selectedEmployeeGroups: selectedGroups,
+    onSuccess: handleClearSelection,
+  });
 
   const handleEditPriority = () => {
     //
-  };
-
-  const handleRemove = () => {
-    //TODO: implement
-    notify.success({
-      title: notificationTitle,
-      message: notificationText,
-    });
   };
 
   const handleAssignAutoinstallFile = () => {
@@ -72,23 +80,20 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
     <>
       <HeaderWithSearch
         actions={
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <div className={classes.container}>
             <div>
-              <EmployeeGroupsFilter employeeGroupsData={employeeGroups} />
+              <EmployeeGroupsFilter
+                employeeGroupsData={employeeGroups}
+                searchLabel="Showing employee groups from the current table page. Search to filter from all available groups."
+              />
             </div>
-            <div
-              style={{
-                display: "flex",
-                gap: "1rem",
-              }}
-            >
-              <div className="p-segmented-control">
+            <div className={classes.buttons}>
+              <div
+                className={classNames(
+                  "p-segmented-control",
+                  classes.segmentedButtons,
+                )}
+              >
                 <div className="p-segmented-control__list">
                   <Button
                     className="p-segmented-control__button u-no-margin--bottom"
@@ -107,38 +112,36 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
                   </Button>
                 </div>
               </div>
-              <div className="p-segmented-control">
-                <div className="p-segmented-control__list">
-                  <ConfirmationButton
-                    className="p-segmented-control__button has-icon u-no-margin--bottom"
-                    disabled={selectedEmployeeGroups.length === 0}
-                    confirmationModalProps={{
-                      title: title,
-                      children: body,
-                      confirmButtonLabel: "Remove",
-                      confirmButtonAppearance: "negative",
-                      onConfirm: handleRemove,
-                    }}
-                  >
-                    <Icon name={ICONS.delete} />
-                    <span>Remove</span>
-                  </ConfirmationButton>
-                  <Button
-                    className="p-segmented-control__button u-no-margin--bottom"
-                    hasIcon
-                    disabled={selectedEmployeeGroups.length === 0}
-                  >
-                    <Icon name="file" />
-                    <span>Assign autoinstall file</span>
-                  </Button>
-                </div>
-              </div>
+              <ConfirmationButton
+                className="p-segmented-control__button has-icon u-no-margin--bottom"
+                disabled={selectedEmployeeGroups.length === 0}
+                confirmationModalProps={{
+                  title: title,
+                  children: body,
+                  confirmButtonLabel: confirmButtonLabel,
+                  confirmButtonAppearance: confirmButtonAppearance,
+                  onConfirm: deleteEmployeeGroups,
+                  confirmButtonDisabled: isLoading,
+                  confirmButtonLoading: isLoading,
+                }}
+              >
+                <Icon name={ICONS.delete} />
+                <span>Remove</span>
+              </ConfirmationButton>
+              <Button
+                className="p-segmented-control__button u-no-margin--bottom"
+                hasIcon
+                disabled={selectedEmployeeGroups.length === 0}
+              >
+                <Icon name="file" />
+                <span>Assign autoinstall file</span>
+              </Button>
             </div>
           </div>
         }
       />
       <TableFilterChips
-        filtersToDisplay={["employeeGroups"]}
+        filtersToDisplay={["employeeGroups", "search"]}
         employeeGroupOptions={employeeGroupOptions}
       />
     </>

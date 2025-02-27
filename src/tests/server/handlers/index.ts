@@ -23,6 +23,7 @@ import usn from "./usn";
 import wsl from "./wsl";
 import savedSearches from "@/tests/server/handlers/savedSearches";
 import script from "@/tests/server/handlers/script";
+import employees from "./employees";
 
 export default [
   ...accessGroup,
@@ -32,6 +33,7 @@ export default [
   ...auth,
   ...availabilityZones,
   ...distributions,
+  ...employees,
   ...eventsLog,
   ...gpgKey,
   ...instance,

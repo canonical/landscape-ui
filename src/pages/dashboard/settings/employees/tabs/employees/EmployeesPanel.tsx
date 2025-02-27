@@ -1,60 +1,47 @@
 import { TablePagination } from "@/components/layout/TablePagination";
 import {
-  EmployeeGroupsHeader,
-  EmployeeGroupsList,
-  useEmployees,
-} from "@/features/employee-groups";
-import { employeeGroups } from "@/tests/mocks/employees";
+  EmployeeList,
+  EmployeesPanelHeader,
+  useGetEmployees,
+} from "@/features/employees";
+import LoadingState from "@/components/layout/LoadingState";
+import { useMemo, type FC } from "react";
+import EmptyState from "@/components/layout/EmptyState";
+import { EMPLOYEE_LIMIT, EMPTY_STATE } from "./constants";
 import { Notification } from "@canonical/react-components";
-import type { FC } from "react";
-import { useState } from "react";
 
 const EmployeesPanel: FC = () => {
-  const [selectedEmployeeGroups, setSelectedEmployeeGroups] = useState<
-    number[]
-  >([]);
+  const { employees, isPending, count } = useGetEmployees({
+    with_autoinstall_file: true,
+    with_computers: true,
+    with_groups: true,
+  });
 
-  const { getEmployeesConfigurationLimit } = useEmployees();
+  const memoizedEmployees = useMemo(() => employees, [employees]);
 
-  const { data: employeesConfigurationLimitResult } =
-    getEmployeesConfigurationLimit();
-
-  const limit = employeesConfigurationLimitResult?.data?.limit || 0;
-
-  const isLimitReached = limit !== employeeGroups.length; //TODO change
+  const isLimitReached = employees && count && count >= EMPLOYEE_LIMIT;
 
   return (
     <>
-      <EmployeeGroupsHeader
-        selectedEmployeeGroups={selectedEmployeeGroups}
-        employeeGroups={employeeGroups}
-      />
+      <EmployeesPanelHeader />
       {isLimitReached && (
         <Notification severity="caution">
           <span>
-            You have reached the limit of {limit.toLocaleString()} employees. To
-            allow new registrations, delete deactivated users.
+            <strong>Employee limit reached:</strong> You have reached the limit
+            of {EMPLOYEE_LIMIT.toLocaleString()} employees. To allow new
+            registrations, delete deactivated users.
           </span>
         </Notification>
       )}
-      <EmployeeGroupsList
-        employeeGroups={employeeGroups}
-        isEmployeeGroupsLoading={false}
-        onSelectedEmployeeGroupsChange={(groups: number[]) => {
-          setSelectedEmployeeGroups(groups);
-        }}
-        selectedEmployeeGroups={selectedEmployeeGroups}
-        totalEmployeeGroupsCount={employeeGroups.length}
-      />
-      {employeeGroups.length > 0 && (
-        <TablePagination
-          handleClearSelection={() => {
-            //test
-          }}
-          totalItems={employeeGroups.length}
-          currentItemCount={employeeGroups.length}
-        />
+      {isPending ? (
+        <LoadingState />
+      ) : (
+        <EmployeeList employees={memoizedEmployees} />
       )}
+      {!isPending && employees.length === 0 && (
+        <EmptyState title={EMPTY_STATE.title} body={EMPTY_STATE.body} />
+      )}
+      <TablePagination totalItems={count} currentItemCount={employees.length} />
     </>
   );
 };

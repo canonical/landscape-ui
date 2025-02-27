@@ -1,5 +1,4 @@
 import LoadingState from "@/components/layout/LoadingState";
-import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { MenuLink } from "@canonical/react-components";
 import {
@@ -12,6 +11,7 @@ import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import type { EmployeeGroup } from "../../types";
 import classes from "./EmployeeGroupsListContextualMenu.module.scss";
+import { useRemoveEmployeeGroupsModal } from "../../hooks";
 
 const AssignAutoInstallFileForm = lazy(
   () => import("../AssignAutoInstallFileForm"),
@@ -27,7 +27,6 @@ const EmployeeGroupsListContextualMenu: FC<
   const [open, setOpen] = useState(false);
 
   const { setSidePanelContent } = useSidePanel();
-  const { notify } = useNotify();
 
   const handleOpenModal = () => {
     setOpen(true);
@@ -36,6 +35,18 @@ const EmployeeGroupsListContextualMenu: FC<
   const handleCloseModal = () => {
     setOpen(false);
   };
+
+  const {
+    body,
+    confirmButtonAppearance,
+    confirmButtonLabel,
+    deleteEmployeeGroups,
+    isLoading,
+    title,
+  } = useRemoveEmployeeGroupsModal({
+    selectedEmployeeGroups: [employeeGroup],
+    onSuccess: handleCloseModal,
+  });
 
   const handleAssignAutoinstallFile = () => {
     setSidePanelContent(
@@ -84,30 +95,15 @@ const EmployeeGroupsListContextualMenu: FC<
       />
       {open && (
         <ConfirmationModal
-          title={`Remove ${employeeGroup.name} group`}
-          confirmButtonLabel="Remove"
-          confirmButtonAppearance="negative"
-          //   confirmButtonDisabled={
-          //     isRemoving || confirmationText !== `remove ${profile.name}`
-          //   }
-          //   confirmButtonLoading={isRemoving}
-          //   onConfirm={handleRemoveWslProfile}
-          onConfirm={() => {
-            console.log("implement");
-            handleCloseModal();
-            notify.success({
-              title: `You have successfully removed ${employeeGroup.name} group`,
-              message: `${employeeGroup.name} has been permanently removed from Landscape.`,
-            });
-          }}
+          title={title}
+          confirmButtonLabel={confirmButtonLabel}
+          confirmButtonAppearance={confirmButtonAppearance}
+          confirmButtonDisabled={isLoading}
+          confirmButtonLoading={isLoading}
+          onConfirm={deleteEmployeeGroups}
           close={handleCloseModal}
         >
-          <p>
-            You are about to remove Beta testers employee group from Landscape.
-            This action is irreversible and will permanently remove the group
-            from the Landscape. However, it will <b>NOT</b> remove the users
-            associated with this group.
-          </p>
+          {body}
         </ConfirmationModal>
       )}
     </>

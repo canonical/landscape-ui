@@ -36,7 +36,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const files = useMemo(() => {
     return autoinstallFiles.filter((file) => {
       return (
-        file.name.toLowerCase().includes(search.toLowerCase()) &&
+        file.filename.toLowerCase().includes(search.toLowerCase()) &&
         file.employeeGroupsAssociated.some((group) => {
           return employeeGroups.length === 0 || employeeGroups.includes(group);
         })
@@ -57,7 +57,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={() => handleAutoinstallFileDetailsOpen(original)}
           >
-            {original.name}
+            {original.filename}
             {original === defaultFile && " (default)"}
           </Button>
         ),

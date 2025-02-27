@@ -1,7 +1,7 @@
-import type { SelectOption } from "@/types/SelectOption";
-import type { EmployeeGroup } from "./types";
+import type { GroupedOption } from "@/components/filter";
 import { Tooltip } from "@canonical/react-components";
 import classes from "./components/EmployeeGroupsFilter/EmployeeGroupsFilter.module.scss";
+import type { EmployeeGroup } from "./types";
 
 export const isNotUnique = (employeeGroups: EmployeeGroup[], name: string) => {
   return employeeGroups.filter((employee) => employee.name === name).length > 1;
@@ -11,11 +11,11 @@ const getSuffix = (word: string): string => {
   return `(...${word.slice(-3)})`;
 };
 
-export const getEmployeeGroupLabel = (
+export const getEmployeeGroupLabel = <T extends boolean>(
   employeeGroup: EmployeeGroup,
   employeeGroups: EmployeeGroup[],
-  includeTooltip = false,
-): React.ReactNode => {
+  includeTooltip?: T,
+): T extends true ? React.ReactNode : string => {
   const unique = !isNotUnique(employeeGroups, employeeGroup.name);
   const suffix = getSuffix(employeeGroup.group_id);
 
@@ -31,16 +31,18 @@ export const getEmployeeGroupLabel = (
           <span>{suffix}</span>
         </Tooltip>
       </>
-    );
+    ) as T extends true ? React.ReactNode : string;
   }
 
-  return !unique ? `${employeeGroup.name} ${suffix}` : employeeGroup.name;
+  return (
+    !unique ? `${employeeGroup.name} ${suffix}` : employeeGroup.name
+  ) as T extends true ? React.ReactNode : string;
 };
 
 export const getEmployeeGroupOptions = (
   employeeGroups: EmployeeGroup[],
   includeTooltip = false,
-): SelectOption[] => {
+): GroupedOption[] => {
   return employeeGroups.map((employeeGroup) => {
     const suffix = getSuffix(employeeGroup.group_id);
 

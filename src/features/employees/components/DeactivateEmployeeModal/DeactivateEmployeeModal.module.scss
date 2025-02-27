@@ -1,0 +1,18 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.title {
+  margin-right: $sph--x-small;
+}
+
+.tooltipPositionElement {
+  display: inline !important;
+}
+
+.additionalActionContainer {
+  border-left: 1px solid $colors--light-theme--border-default;
+  margin-bottom: $spv--x-large;
+  margin-left: $sph--small;
+  padding-left: $sph--large;
+  padding-top: $sph--small;
+}
