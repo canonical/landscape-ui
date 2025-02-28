@@ -42,8 +42,6 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     validationSchema: VALIDATION_SCHEMA,
 
     onSubmit: async (autoinstallFile) => {
-      console.log(formik.getFieldProps("contents"));
-
       try {
         await query(autoinstallFile);
         closeSidePanel();
