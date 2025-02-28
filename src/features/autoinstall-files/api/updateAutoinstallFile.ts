@@ -8,7 +8,7 @@ interface UpdateAutoinstallFileParams {
   contents: string;
 }
 
-const useAddAutoinstallFile = (): ((
+const useUpdateAutoinstallFile = (): ((
   id: number,
   params: UpdateAutoinstallFileParams,
 ) => Promise<AutoinstallFile>) => {
@@ -31,4 +31,4 @@ const useAddAutoinstallFile = (): ((
   };
 };
 
-export default useAddAutoinstallFile;
+export default useUpdateAutoinstallFile;
