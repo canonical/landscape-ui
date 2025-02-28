@@ -13,6 +13,7 @@ import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
+import { useUpdateAutoinstallFile } from "../../api";
 import type {
   AutoinstallFile,
   AutoinstallFileWithGroups,
