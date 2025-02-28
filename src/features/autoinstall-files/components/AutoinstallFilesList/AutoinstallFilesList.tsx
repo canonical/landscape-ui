@@ -1,4 +1,5 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
@@ -13,7 +14,8 @@ import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
-import { useUpdateAutoinstallFile } from "../../api";
+import { useRemoveAutoinstallFile, useUpdateAutoinstallFile } from "../../api";
+import type { TabId } from "../../types";
 import type {
   AutoinstallFile,
   AutoinstallFileWithGroups,
@@ -21,15 +23,14 @@ import type {
 import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
-import ViewAutoinstallFileDetailsEditButton from "../ViewAutoinstallFileDetailsEditButton";
+import ViewAutoinstallFileDetailsTabs from "../ViewAutoinstallFileDetailsTabs";
+import classes from "./AutoinstallFilesList.module.scss";
 import {
   CANCEL_BUTTON_TEXT,
   CONTINUE_BUTTON_TEXT,
   LOCAL_STORAGE_ITEM,
   SUBMIT_BUTTON_TEXT,
-} from "../ViewAutoinstallFileDetailsEditButton/constants";
-import ViewAutoinstallFileDetailsTabs from "../ViewAutoinstallFileDetailsTabs";
-import classes from "./AutoinstallFilesList.module.scss";
+} from "./constants";
 import { getCellProps } from "./helpers";
 
 interface AutoinstallFilesListProps {
@@ -39,35 +40,53 @@ interface AutoinstallFilesListProps {
 const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   autoinstallFiles,
 }) => {
+  const { notify } = useNotify();
   const { employeeGroups, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const updateAutoinstallFile = useUpdateAutoinstallFile();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isModalIgnored, setIsModalIgnored] = useState(false);
+  const removeAutoinstallFile = useRemoveAutoinstallFile();
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isEditModalIgnored, setIsEditModalIgnored] = useState(false);
+  const [isRemoveModalVisible, setIsRemoveModalVisible] = useState(false);
   const [modalFile, setModalFile] = useState<AutoinstallFile | null>(null);
 
   useEffect(() => {
     if (localStorage.getItem(LOCAL_STORAGE_ITEM)) {
-      setIsModalIgnored(true);
+      setIsEditModalIgnored(true);
     }
   }, []);
 
-  const closeModal = (): void => {
-    setIsModalVisible(false);
-    setIsModalIgnored(false);
+  const closeEditModal = (): void => {
+    setIsEditModalVisible(false);
+    setIsEditModalIgnored(false);
   };
 
-  const continueEditing = (): void => {
-    if (isModalIgnored) {
+  const submitEditModal = (file: AutoinstallFile): void => {
+    if (isEditModalIgnored) {
       localStorage.setItem(LOCAL_STORAGE_ITEM, "true");
     }
 
-    setIsModalVisible(false);
+    setIsEditModalVisible(false);
+    openEditPanelWithoutModal(file);
+    setModalFile(null);
+  };
 
-    if (modalFile) {
-      openEditPanelWithoutModal(modalFile);
-      setModalFile(null);
-    }
+  const closeRemoveModal = (): void => {
+    setIsRemoveModalVisible(false);
+  };
+
+  const submitRemoveModal = async (file: AutoinstallFile): Promise<void> => {
+    const promise = removeAutoinstallFile(file.id);
+
+    setIsRemoveModalVisible(false);
+    setModalFile(null);
+
+    await promise;
+
+    notify.success({
+      message: `The ${file.filename} Autoinstall file has been permanently removed. All Employee groups associated with this file are now using the default Autoinstall file.`,
+      title: `You have successfully removed ${file.filename} Autoinstall File`,
+    });
   };
 
   const openDetailsPanel = (
@@ -80,15 +99,22 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       <>
         <div className="p-segmented-control">
           <div className="p-segmented-control__list">
-            <ViewAutoinstallFileDetailsEditButton
-              openEditPanel={() => {
+            <Button
+              className="p-segmented-control__button"
+              onClick={() => {
                 openEditPanel(file);
               }}
-            />
+            >
+              <Icon name="edit" />
+              <span>Edit</span>
+            </Button>
 
             <Button
               className="p-segmented-control__button"
               disabled={file.is_default}
+              onClick={() => {
+                removeFile(file);
+              }}
             >
               <Icon name="delete" />
               <span>Remove</span>
@@ -131,12 +157,17 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   };
 
   const openEditPanel = (file: AutoinstallFile): void => {
-    if (isModalIgnored) {
+    if (isEditModalIgnored) {
       openEditPanelWithoutModal(file);
     } else {
-      setIsModalVisible(true);
+      setIsEditModalVisible(true);
       setModalFile(file);
     }
+  };
+
+  const removeFile = (file: AutoinstallFile): void => {
+    setIsRemoveModalVisible(true);
+    setModalFile(file);
   };
 
   const files = useMemo(() => {
@@ -229,6 +260,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             file={original}
             openDetailsPanel={openDetailsPanel}
             openEditPanel={openEditPanel}
+            remove={removeFile}
           />
         ),
       },
@@ -244,9 +276,9 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         getCellProps={getCellProps}
       />
 
-      {isModalVisible && (
+      {isEditModalVisible && modalFile && (
         <Modal
-          close={closeModal}
+          close={closeEditModal}
           title={
             <span className={classes.capitalize}>
               Edit history limit reached
@@ -254,14 +286,16 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           }
           buttonRow={
             <>
-              <Button appearance="base" onClick={closeModal}>
+              <Button appearance="base" onClick={closeEditModal}>
                 {CANCEL_BUTTON_TEXT}
               </Button>
 
               <Button
                 appearance="positive"
                 className="u-no-margin--bottom"
-                onClick={continueEditing}
+                onClick={() => {
+                  submitEditModal(modalFile);
+                }}
               >
                 <span className={classes.capitalize}>
                   {CONTINUE_BUTTON_TEXT}
@@ -280,10 +314,45 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           <CheckboxInput
             label="I understand. Don't show this message again."
             onChange={() => {
-              setIsModalIgnored(!isModalIgnored);
+              setIsEditModalIgnored(!isEditModalIgnored);
             }}
-            checked={isModalIgnored}
+            checked={isEditModalIgnored}
           />
+        </Modal>
+      )}
+
+      {isRemoveModalVisible && modalFile && (
+        <Modal
+          close={closeRemoveModal}
+          title={
+            <span className={classes.capitalize}>
+              Remove {modalFile.filename}, Autoinstall file
+            </span>
+          }
+          buttonRow={
+            <>
+              <Button appearance="base" onClick={closeRemoveModal}>
+                {CANCEL_BUTTON_TEXT}
+              </Button>
+
+              <Button
+                appearance="negative"
+                className="u-no-margin--bottom"
+                onClick={() => {
+                  submitRemoveModal(modalFile);
+                }}
+              >
+                <span className={classes.capitalize}>Remove</span>
+              </Button>
+            </>
+          }
+        >
+          <p className={classes.message}>
+            You are about to remove {modalFile.filename}, an Autoinstall file.
+            This action is irreversible. All Employee groups this file is
+            associated with, will have the default Autoinstall file associated
+            instead.
+          </p>
         </Modal>
       )}
     </>
