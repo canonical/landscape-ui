@@ -1,6 +1,6 @@
 import type { EmployeeGroup } from "./EmployeeGroup";
 
-export interface AutoinstallFile extends Record<string, unknown> {
+export interface AutoinstallFile {
   contents: string;
   created_at: string;
   filename: string;

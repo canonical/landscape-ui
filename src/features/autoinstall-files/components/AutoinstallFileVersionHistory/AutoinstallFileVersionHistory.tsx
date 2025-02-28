@@ -65,12 +65,6 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
         ),
       },
       {
-        accessor: "author",
-        className: classes.cell,
-        Header: "Author",
-        Cell: (): ReactNode => <div>Stephanie Domas</div>,
-      },
-      {
         accessor: "created_at",
         className: classes.cell,
         Header: "Created at",
