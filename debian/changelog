@@ -1,3 +1,9 @@
+landscape-dashboard (1.12.4-0landscape0) jammy; urgency=medium
+
+  * Release 1.12.4 for jammy 
+
+ -- Kevin Nasto <kevin.nasto@canonical.com>  Fri, 28 Feb 2025 18:35:16 -0600
+
 landscape-dashboard (1.11.1-0landscape0) jammy; urgency=medium
 
   * Release 1.11.1 for jammy
