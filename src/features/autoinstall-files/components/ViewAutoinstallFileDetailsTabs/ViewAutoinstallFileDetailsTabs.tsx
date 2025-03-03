@@ -12,9 +12,9 @@ import classes from "./ViewAutoinstallFileDetailsTabs.module.scss";
 import { TABS } from "./constants";
 
 interface ViewAutoinstallFileDetailsTabsProps {
-  readonly defaultTabId?: TabId;
   readonly file: AutoinstallFileWithGroups;
   readonly openDetailsPanel: (defaultTabId: TabId) => void;
+  readonly defaultTabId?: TabId;
 }
 
 const ViewAutoinstallFileDetailsTabs: FC<

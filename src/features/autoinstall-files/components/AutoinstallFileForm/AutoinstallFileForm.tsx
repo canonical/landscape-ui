@@ -16,9 +16,9 @@ import type { FormikProps } from "./types";
 interface AutoinstallFileFormProps {
   readonly buttonText: string;
   readonly description: string;
-  readonly initialFile?: FormikProps;
   readonly notification: NotificationMethodArgs;
   readonly query: (params: FormikProps) => Promise<unknown>;
+  readonly initialFile?: FormikProps;
 }
 
 const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
