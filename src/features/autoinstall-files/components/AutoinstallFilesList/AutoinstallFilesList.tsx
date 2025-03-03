@@ -5,7 +5,7 @@ import {
   Button,
   CheckboxInput,
   Chip,
-  Modal,
+  ConfirmationModal,
   ModularTable,
 } from "@canonical/react-components";
 import moment from "moment";
@@ -213,40 +213,30 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       />
 
       {isModalVisible && (
-        <Modal
-          close={closeModal}
-          title="Edit History Limit Reached"
-          buttonRow={
-            <>
-              <Button appearance="base" onClick={closeModal}>
-                Cancel
-              </Button>
+        <>
+          <ConfirmationModal
+            close={closeModal}
+            confirmButtonAppearance="positive"
+            confirmButtonLabel="Continue Editing"
+            onConfirm={continueEditing}
+            title="Edit History Limit Reached"
+          >
+            <p>
+              You&apos;ve reached the maximum of 100 saved edits for this file.
+              To continue editing, the system will remove the oldest version to
+              make space for your new changes. This ensures that the most recent
+              100 versions are always retained in the history.
+            </p>
 
-              <Button
-                appearance="positive"
-                className="u-no-margin--bottom"
-                onClick={continueEditing}
-              >
-                Continue Editing
-              </Button>
-            </>
-          }
-        >
-          <p>
-            You&apos;ve reached the maximum of 100 saved edits for this file. To
-            continue editing, the system will remove the oldest version to make
-            space for your new changes. This ensures that the most recent 100
-            versions are always retained in the history.
-          </p>
-
-          <CheckboxInput
-            label="I understand. Don't show this message again."
-            onChange={() => {
-              setIsModalIgnored(!isModalIgnored);
-            }}
-            checked={isModalIgnored}
-          />
-        </Modal>
+            <CheckboxInput
+              label="I understand. Don't show this message again."
+              onChange={() => {
+                setIsModalIgnored(!isModalIgnored);
+              }}
+              checked={isModalIgnored}
+            />
+          </ConfirmationModal>
+        </>
       )}
     </>
   );
