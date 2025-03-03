@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
-import AutoinstallFileForm from ".";
+import AutoinstallFileForm from "./AutoinstallFileForm";
 
 describe("AutoinstallFileForm", () => {
   const props = {

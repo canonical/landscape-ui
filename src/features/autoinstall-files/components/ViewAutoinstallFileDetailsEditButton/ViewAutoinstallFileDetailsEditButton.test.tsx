@@ -3,7 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
-import ViewAutoinstallFileDetailsEditButton from ".";
+import ViewAutoinstallFileDetailsEditButton from "./ViewAutoinstallFileDetailsEditButton";
 import {
   CANCEL_BUTTON_TEXT,
   CONTINUE_BUTTON_TEXT,
