@@ -1,11 +1,12 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { describe } from "vitest";
 import AutoinstallFileForm from "./AutoinstallFileForm";
 
 describe("AutoinstallFileForm", () => {
-  const props = {
+  const props: ComponentProps<typeof AutoinstallFileForm> = {
     buttonText: "Add",
     description: "Add an autoinstall file.",
     initialFile: {
@@ -41,13 +42,13 @@ describe("AutoinstallFileForm", () => {
 
     expect(
       screen.queryByText(
-        `${props.initialFile.filename} ${props.notification.message}`,
+        `${props.initialFile?.filename} ${props.notification.message}`,
       ),
     ).toBeInTheDocument();
 
     expect(props.query).toHaveBeenLastCalledWith({
-      contents: props.initialFile.contents,
-      filename: props.initialFile.filename,
+      contents: props.initialFile?.contents,
+      filename: props.initialFile?.filename,
     });
   });
 
