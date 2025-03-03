@@ -4,10 +4,18 @@ import react from "@vitejs/plugin-react";
 import eslint from "vite-plugin-eslint";
 import * as path from "path";
 import packageJson from "./package.json";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), eslint()],
+  plugins: [
+    react(),
+    eslint(),
+    sentryVitePlugin({
+      org: "canonical",
+      project: "landscape-dashboard",
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
