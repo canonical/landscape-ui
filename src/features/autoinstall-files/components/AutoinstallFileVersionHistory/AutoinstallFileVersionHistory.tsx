@@ -7,17 +7,17 @@ import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
-import type { AutoinstallFile, TabId } from "../../types";
+import type { AutoinstallFile } from "../../types";
 import AutoinstallFileVersion from "../AutoinstallFileVersion/AutoinstallFileVersion";
 
 interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
-  readonly openDetailsPanel: (defaultTabId: TabId) => void;
+  readonly goBack: () => void;
 }
 
 const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
   file,
-  openDetailsPanel,
+  goBack,
 }) => {
   const { getAutoinstallFileQuery } = useAutoinstallFiles();
   const { setSidePanelContent } = useSidePanel();
@@ -50,9 +50,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
               setSidePanelContent(
                 `${file.filename}, v${version}`,
                 <AutoinstallFileVersion
-                  goBack={() => {
-                    openDetailsPanel("version-history");
-                  }}
+                  goBack={goBack}
                   id={file.id}
                   version={version}
                 />,

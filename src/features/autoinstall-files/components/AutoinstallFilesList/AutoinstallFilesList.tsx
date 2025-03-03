@@ -5,7 +5,6 @@ import {
   Button,
   CheckboxInput,
   Chip,
-  Icon,
   Modal,
   ModularTable,
 } from "@canonical/react-components";
@@ -19,18 +18,12 @@ import type {
   AutoinstallFile,
   AutoinstallFileWithGroups,
 } from "../../types/AutoinstallFile";
+import AutoinstallFileDetails from "../AutoinstallFileDetails";
 import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
-import ViewAutoinstallFileDetailsEditButton from "../ViewAutoinstallFileDetailsEditButton";
-import {
-  CANCEL_BUTTON_TEXT,
-  CONTINUE_BUTTON_TEXT,
-  LOCAL_STORAGE_ITEM,
-  SUBMIT_BUTTON_TEXT,
-} from "../ViewAutoinstallFileDetailsEditButton/constants";
-import ViewAutoinstallFileDetailsTabs from "../ViewAutoinstallFileDetailsTabs";
 import classes from "./AutoinstallFilesList.module.scss";
+import { LOCAL_STORAGE_ITEM } from "./constants";
 import { getCellProps } from "./helpers";
 
 interface AutoinstallFilesListProps {
@@ -80,35 +73,16 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   ): void => {
     setSidePanelContent(
       `${file.filename}${file.is_default ? " (default)" : ""}`,
-
-      <>
-        <div className="p-segmented-control">
-          <div className="p-segmented-control__list">
-            <ViewAutoinstallFileDetailsEditButton
-              openEditPanel={() => {
-                openEditPanel(file);
-              }}
-            />
-
-            <Button
-              className="p-segmented-control__button"
-              disabled={file.is_default}
-            >
-              <Icon name="delete" />
-              <span>Remove</span>
-            </Button>
-          </div>
-        </div>
-
-        <ViewAutoinstallFileDetailsTabs
-          defaultTabId={defaultTabId}
-          file={file}
-          openDetailsPanel={(defaultTabId: TabId) => {
-            openDetailsPanel(file, defaultTabId);
-          }}
-        />
-      </>,
-
+      <AutoinstallFileDetails
+        defaultTabId={defaultTabId}
+        file={file}
+        openDetailsPanel={(defaultTabId: TabId) => {
+          openDetailsPanel(file, defaultTabId);
+        }}
+        openEditPanel={() => {
+          openEditPanel(file);
+        }}
+      />,
       "large",
     );
   };
@@ -117,7 +91,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     setSidePanelContent(
       `Edit ${file.filename}`,
       <AutoinstallFileForm
-        buttonText={SUBMIT_BUTTON_TEXT}
+        buttonText="Save changes"
         description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
         initialFile={file}
         notification={{
@@ -245,7 +219,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           buttonRow={
             <>
               <Button appearance="base" onClick={closeModal}>
-                {CANCEL_BUTTON_TEXT}
+                Cancel
               </Button>
 
               <Button
@@ -253,7 +227,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
                 className="u-no-margin--bottom"
                 onClick={continueEditing}
               >
-                {CONTINUE_BUTTON_TEXT}
+                Continue Editing
               </Button>
             </>
           }
