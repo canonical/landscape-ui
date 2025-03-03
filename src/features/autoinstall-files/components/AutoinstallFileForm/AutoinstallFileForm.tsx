@@ -10,7 +10,7 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import { useRef } from "react";
 import classes from "./AutoinstallFileForm.module.scss";
-import { VALIDATION_SCHEMA } from "./constants";
+import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
 import type { FormikProps } from "./types";
 
 interface AutoinstallFileFormProps {
@@ -24,10 +24,7 @@ interface AutoinstallFileFormProps {
 const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   buttonText,
   description,
-  initialFile = {
-    contents: "",
-    filename: "",
-  },
+  initialFile = DEFAULT_FILE,
   notification,
   query,
 }) => {
@@ -56,6 +53,24 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     },
   });
 
+  const handleInputChange = async ({
+    target: { files },
+  }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    if (!files) {
+      return;
+    }
+
+    const [file] = files;
+
+    formik.setFieldValue("contents", await file.text());
+
+    if (formik.values.filename) {
+      return;
+    }
+
+    formik.setFieldValue("filename", file.name);
+  };
+
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <div className={classes.container}>
@@ -76,21 +91,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
             className={classes.hidden}
             type="file"
             accept=".yaml"
-            onChange={async ({ target: { files } }) => {
-              if (!files) {
-                return;
-              }
-
-              const [file] = files;
-
-              formik.setFieldValue("contents", await file.text());
-
-              if (formik.values.filename) {
-                return;
-              }
-
-              formik.setFieldValue("filename", file.name);
-            }}
+            onChange={handleInputChange}
           />
 
           <CodeEditor
