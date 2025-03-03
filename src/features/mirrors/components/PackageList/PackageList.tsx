@@ -168,9 +168,9 @@ const PackageList: FC<PackageListProps> = ({
     },
   );
 
-  const diffPullPocketData = diffPullPocketQueryResult?.data ?? {};
-
   useEffect(() => {
+    const diffPullPocketData = diffPullPocketQueryResult?.data ?? {};
+
     const diffs: {
       packageName: string;
       newVersion: string;
