@@ -72,52 +72,48 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   };
 
   return (
-    <Form noValidate onSubmit={formik.handleSubmit}>
-      <div className={classes.container}>
-        <span>{description}</span>
+    <Form className={classes.form} noValidate onSubmit={formik.handleSubmit}>
+      <span>{description}</span>
 
-        <div className={classes.inputs}>
-          <Input
-            type="text"
-            label="File name"
-            {...formik.getFieldProps("filename")}
-            error={getFormikError(formik, "filename")}
-            disabled={!!initialFile.filename}
-            required
-          />
+      <Input
+        type="text"
+        label="File name"
+        {...formik.getFieldProps("filename")}
+        error={getFormikError(formik, "filename")}
+        disabled={!!initialFile.filename}
+        required
+      />
 
-          <input
-            ref={inputRef}
-            className={classes.hidden}
-            type="file"
-            accept=".yaml"
-            onChange={handleInputChange}
-          />
+      <input
+        ref={inputRef}
+        className="u-hide"
+        type="file"
+        accept=".yaml"
+        onChange={handleInputChange}
+      />
 
-          <CodeEditor
-            label="Code"
-            value={formik.values.contents}
-            onChange={(value) => formik.setFieldValue("contents", value)}
-            error={getFormikError(formik, "contents")}
-            required
-            language="yaml"
-            headerContent={
-              <Button
-                className="u-no-margin--bottom"
-                appearance="base"
-                hasIcon
-                onClick={() => {
-                  inputRef.current?.click();
-                }}
-                type="button"
-              >
-                <Icon name="upload" />
-                <span>Populate from file</span>
-              </Button>
-            }
-          />
-        </div>
-      </div>
+      <CodeEditor
+        label="Code"
+        value={formik.values.contents}
+        onChange={(value) => formik.setFieldValue("contents", value)}
+        error={getFormikError(formik, "contents")}
+        required
+        language="yaml"
+        headerContent={
+          <Button
+            className="u-no-margin--bottom"
+            appearance="base"
+            hasIcon
+            onClick={() => {
+              inputRef.current?.click();
+            }}
+            type="button"
+          >
+            <Icon name="upload" />
+            <span>Populate from file</span>
+          </Button>
+        }
+      />
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}

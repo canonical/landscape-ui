@@ -2,7 +2,6 @@ import type { MenuLink } from "@canonical/react-components";
 import { ContextualMenu, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import type { AutoinstallFileWithGroups } from "../../types";
-import classes from "./AutoinstallFilesListContextualMenu.module.scss";
 
 interface AutoinstallFilesListContextualMenuProps {
   readonly file: AutoinstallFileWithGroups;
@@ -66,8 +65,7 @@ const AutoinstallFilesListContextualMenu: FC<
     <>
       <ContextualMenu
         position="left"
-        className={classes.menu}
-        toggleClassName={classes.toggleButton}
+        toggleClassName="u-no-margin u-no-padding"
         toggleAppearance="base"
         toggleLabel={<Icon name="contextual-menu" />}
         toggleProps={{ "aria-label": `${file.title} profile actions` }}

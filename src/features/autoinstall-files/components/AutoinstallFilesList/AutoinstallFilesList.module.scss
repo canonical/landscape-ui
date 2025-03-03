@@ -5,60 +5,8 @@
   width: 6rem;
 }
 
-.cell {
-  padding: 0.5rem;
-  position: relative;
-
-  > * {
-    justify-content: left;
-    overflow: hidden;
-    white-space: nowrap;
-    width: 13rem;
-  }
-
-  button {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-.largeCell {
-  padding: 0.5rem;
-  position: relative;
-
-  > * {
-    justify-content: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 19.25rem;
-  }
-}
-
 .chip {
   border: none;
   margin-left: 0.25rem;
   position: absolute;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.message {
-  margin: 0;
-  padding-bottom: 0.375rem;
-  padding-top: 0;
-  width: 36rem;
-}
-
-.checkbox {
-  padding-top: 0.5rem;
-}
-
-.capitalize {
-  text-transform: capitalize;
 }

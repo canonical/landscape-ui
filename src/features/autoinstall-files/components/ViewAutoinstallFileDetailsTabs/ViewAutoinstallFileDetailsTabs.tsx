@@ -1,6 +1,6 @@
 import InfoItem from "@/components/layout/InfoItem";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { Tabs } from "@canonical/react-components";
+import { Col, Row, Tabs } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { useState } from "react";
@@ -8,7 +8,6 @@ import type { TabId } from "../../types";
 import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
 import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 import AutoinstallFileVersionHistory from "../AutoinstallFileVersionHistory";
-import classes from "./ViewAutoinstallFileDetailsTabs.module.scss";
 import { TABS } from "./constants";
 
 interface ViewAutoinstallFileDetailsTabsProps {
@@ -37,24 +36,34 @@ const ViewAutoinstallFileDetailsTabs: FC<
       />
 
       {tabId === "info" && (
-        <div className={classes.info}>
-          <div className={classes.row}>
-            <InfoItem label="Name" value={file.filename} />
-            <InfoItem label="Version" value={file.version} />
-          </div>
+        <>
+          <Row className="u-no-padding">
+            <Col size={6}>
+              <InfoItem label="Name" value={file.filename} />
+            </Col>
 
-          <div className={classes.row}>
-            <InfoItem
-              label="Last modified"
-              value={moment(file.last_modified_at).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )}
-            />
-            <InfoItem
-              label="Date created"
-              value={moment(file.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
-            />
-          </div>
+            <Col size={6}>
+              <InfoItem label="Version" value={file.version} />
+            </Col>
+          </Row>
+
+          <Row className="u-no-padding">
+            <Col size={6}>
+              <InfoItem
+                label="Last modified"
+                value={moment(file.last_modified_at).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              />
+            </Col>
+
+            <Col size={6}>
+              <InfoItem
+                label="Date created"
+                value={moment(file.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+              />
+            </Col>
+          </Row>
 
           <InfoItem
             label="Employee groups associated"
@@ -64,7 +73,7 @@ const ViewAutoinstallFileDetailsTabs: FC<
               />
             }
           />
-        </div>
+        </>
       )}
 
       {tabId === "version-history" && (

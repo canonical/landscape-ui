@@ -100,15 +100,13 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           </div>
         </div>
 
-        <div className={classes.container}>
-          <ViewAutoinstallFileDetailsTabs
-            defaultTabId={defaultTabId}
-            file={file}
-            openDetailsPanel={(defaultTabId: TabId) => {
-              openDetailsPanel(file, defaultTabId);
-            }}
-          />
-        </div>
+        <ViewAutoinstallFileDetailsTabs
+          defaultTabId={defaultTabId}
+          file={file}
+          openDetailsPanel={(defaultTabId: TabId) => {
+            openDetailsPanel(file, defaultTabId);
+          }}
+        />
       </>,
 
       "large",
@@ -160,7 +158,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     () => [
       {
         accessor: "filename",
-        className: classes.cell,
         Header: "Name",
         Cell: ({
           row: { original },
@@ -183,7 +180,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       },
       {
         accessor: "groups",
-        className: classes.cell,
         Header: "Employee Groups Associated",
         Cell: ({
           row: {
@@ -197,7 +193,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       },
       {
         accessor: "last_modified_at",
-        className: classes.largeCell,
         Header: "Last modified",
         Cell: ({
           row: {
@@ -209,7 +204,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       },
       {
         accessor: "created_at",
-        className: classes.cell,
         Header: "Date created",
         Cell: ({
           row: {
@@ -220,7 +214,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         ),
       },
       {
-        accessor: "actions",
         className: classes.actions,
         Header: "Actions",
         Cell: ({
@@ -248,11 +241,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       {isModalVisible && (
         <Modal
           close={closeModal}
-          title={
-            <span className={classes.capitalize}>
-              Edit history limit reached
-            </span>
-          }
+          title="Edit History Limit Reached"
           buttonRow={
             <>
               <Button appearance="base" onClick={closeModal}>
@@ -264,14 +253,12 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
                 className="u-no-margin--bottom"
                 onClick={continueEditing}
               >
-                <span className={classes.capitalize}>
-                  {CONTINUE_BUTTON_TEXT}
-                </span>
+                {CONTINUE_BUTTON_TEXT}
               </Button>
             </>
           }
         >
-          <p className={classes.message}>
+          <p>
             You&apos;ve reached the maximum of 100 saved edits for this file. To
             continue editing, the system will remove the oldest version to make
             space for your new changes. This ensures that the most recent 100
