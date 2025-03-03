@@ -9,7 +9,6 @@ import type { CellProps, Column } from "react-table";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
 import type { AutoinstallFile, TabId } from "../../types";
 import AutoinstallFileVersion from "../AutoinstallFileVersion/AutoinstallFileVersion";
-import classes from "./AutoinstallFileVersionHistory.module.scss";
 
 interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
@@ -66,7 +65,6 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
       },
       {
         accessor: "created_at",
-        className: classes.cell,
         Header: "Created at",
         Cell: ({
           row: {
