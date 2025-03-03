@@ -204,10 +204,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             original: { last_modified_at },
           },
         }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
-          <div>
-            {moment(last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}, by
-            Stephanie Domas
-          </div>
+          <div>{moment(last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
         ),
       },
       {

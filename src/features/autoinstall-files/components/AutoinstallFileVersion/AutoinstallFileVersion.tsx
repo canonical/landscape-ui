@@ -66,13 +66,10 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
         <div className={classes.inputs}>
           <Input type="text" label="File name" value={file.filename} disabled />
 
-          <div className={classes.row}>
-            <InfoItem
-              label="Date created"
-              value={moment(file.created_at).format(DISPLAY_DATE_FORMAT)}
-            />
-            <InfoItem label="Author" value="Stephanie Domas" />
-          </div>
+          <InfoItem
+            label="Date created"
+            value={moment(file.created_at).format(DISPLAY_DATE_FORMAT)}
+          />
 
           <CodeEditor
             label="Code"

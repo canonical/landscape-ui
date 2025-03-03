@@ -46,9 +46,9 @@ const ViewAutoinstallFileDetailsTabs: FC<
           <div className={classes.row}>
             <InfoItem
               label="Last modified"
-              value={`${moment(file.last_modified_at).format(
+              value={moment(file.last_modified_at).format(
                 DISPLAY_DATE_TIME_FORMAT,
-              )}, by Stephanie Domas`}
+              )}
             />
             <InfoItem
               label="Date created"
