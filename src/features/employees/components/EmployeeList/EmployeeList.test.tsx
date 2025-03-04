@@ -5,7 +5,6 @@ import { describe, it, expect } from "vitest";
 import EmployeeList from "./EmployeeList";
 import { employees } from "@/tests/mocks/employees";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import { getEmployeeGroupLabel } from "@/features/employee-groups";
 
 describe("EmployeeList", () => {
   const user = userEvent.setup();
@@ -65,9 +64,7 @@ describe("EmployeeList", () => {
           name: /employee group/i,
         }),
       ).toHaveTextContent(
-        employeeGroups
-          .map((group) => getEmployeeGroupLabel(group, employeeGroups, false))
-          .join("") || NO_DATA_TEXT,
+        employeeGroups.map((group) => group.name).join("") || NO_DATA_TEXT,
       );
 
       expect(
@@ -120,7 +117,7 @@ describe("EmployeeList", () => {
     const groupCellTextContent = groupsCell.textContent;
 
     for (const group of employeeGroups) {
-      const groupLabel = getEmployeeGroupLabel(group, employeeGroups, false);
+      const groupLabel = group.name;
       expect(groupCellTextContent).toContain(groupLabel);
     }
   });

@@ -1,8 +1,8 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import type { EmployeeGroup } from "../../types";
+import { useDeleteEmployeeGroups } from "../api";
+import type { EmployeeGroup } from "../types";
 import { getRemoveEmployeeGroupsModalTexts } from "./helpers";
-import { useDeleteEmployeeGroups } from "../index";
 
 interface UseRemoveEmployeeGroupsModalProps {
   readonly selectedEmployeeGroups: EmployeeGroup[];

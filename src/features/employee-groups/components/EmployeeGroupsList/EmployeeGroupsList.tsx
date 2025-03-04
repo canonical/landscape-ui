@@ -1,10 +1,8 @@
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
-import classNames from "classnames";
 import type { FC } from "react";
 import { useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import { getEmployeeGroupLabel } from "../../helpers";
 import type { EmployeeGroup } from "../../types";
 import AutoinstallFileTableCell from "../AutoinstallFileTableCell";
 import EmployeeGroupsListContextualMenu from "../EmployeeGroupsListContextualMenu";
@@ -84,14 +82,9 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       {
         accessor: "name",
         Header: "name",
-        Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => {
-          const label = getEmployeeGroupLabel(original, employeeGroups, true);
-          return (
-            <span className={classNames(classes.employeeGroupName)}>
-              {label}
-            </span>
-          );
-        },
+        Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
+          <>{original.name}</>
+        ),
       },
       {
         accessor: "employee_count",

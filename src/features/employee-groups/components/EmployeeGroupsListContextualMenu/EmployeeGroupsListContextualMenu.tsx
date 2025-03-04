@@ -11,7 +11,7 @@ import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import type { EmployeeGroup } from "../../types";
 import classes from "./EmployeeGroupsListContextualMenu.module.scss";
-import { useRemoveEmployeeGroupsModal } from "../../api";
+import { useRemoveEmployeeGroupsModal } from "../../hooks";
 
 const AssignAutoInstallFileForm = lazy(
   () => import("../AssignAutoInstallFileForm"),

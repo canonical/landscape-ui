@@ -1,7 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import TruncatedCell from "@/components/layout/TruncatedCell";
-import { getEmployeeGroupLabel } from "@/features/employee-groups";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
@@ -106,11 +105,11 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
             <TruncatedCell
               content={employeeGroups.map((group) => (
                 <Link
-                  to={`/settings/employees?tab=employee-groups&employeeGroups=${getEmployeeGroupLabel(group, employeeGroups, false)}`}
+                  to={`/settings/employees?tab=employee-groups&employeeGroups=${group.name}`}
                   key={group.group_id}
                   className={classes.truncatedItem}
                 >
-                  {getEmployeeGroupLabel(group, employeeGroups, true)}
+                  {group.name}
                 </Link>
               ))}
               isExpanded={

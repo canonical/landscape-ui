@@ -3,7 +3,7 @@ import { Tooltip } from "@canonical/react-components";
 import classes from "./components/EmployeeGroupsFilter/EmployeeGroupsFilter.module.scss";
 import type { EmployeeGroup, StagedOidcGroup } from "./types";
 
-export const isNotUnique = (
+const isNotUnique = (
   employeeGroups: EmployeeGroup[] | StagedOidcGroup[],
   name: string,
 ) => {
@@ -14,6 +14,9 @@ const getSuffix = (word: string): string => {
   return `(...${word.slice(-3)})`;
 };
 
+/**
+ * This function is currently NOT used. The backend does not provide the uniqueness of a group in its paginated response.
+ */
 export const getEmployeeGroupLabel = <T extends boolean>(
   employeeGroup: EmployeeGroup,
   employeeGroups: EmployeeGroup[],

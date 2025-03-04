@@ -16,7 +16,7 @@ import { getEmployeeGroupOptions } from "../../helpers";
 import type { EmployeeGroup } from "../../types";
 import EmployeeGroupsFilter from "../EmployeeGroupsFilter";
 import classes from "./EmployeeGroupsHeader.module.scss";
-import { useRemoveEmployeeGroupsModal } from "../../api";
+import { useRemoveEmployeeGroupsModal } from "../../hooks";
 
 const EmployeeGroupIdentityIssuerListContainer = lazy(
   () => import("../EmployeeGroupIdentityIssuerListContainer"),

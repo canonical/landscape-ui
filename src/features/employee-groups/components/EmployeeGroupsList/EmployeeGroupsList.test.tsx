@@ -1,11 +1,10 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import { employeeGroups } from "@/tests/mocks/employees";
+import { employeeGroups } from "@/tests/mocks/employeeGroups";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { getEmployeeGroupLabel } from "../../helpers";
 import EmployeeGroupsList from "./EmployeeGroupsList";
 
 const onSelectedEmployeeGroupsChangeMock = vi.fn();
@@ -38,11 +37,7 @@ describe("EmployeeGroupsList", () => {
     ]);
 
     employeeGroups.forEach((group) => {
-      const groupLabel = getEmployeeGroupLabel(
-        group,
-        props.employeeGroups,
-        false,
-      );
+      const groupLabel = group.name;
 
       const row = screen.getByRole("row", {
         name: (name) => name.toLowerCase().includes(groupLabel.toLowerCase()),
@@ -93,12 +88,7 @@ describe("EmployeeGroupsList", () => {
   it("toggles individual row checkbox to select a single employee group", async () => {
     renderWithProviders(<EmployeeGroupsList {...props} />);
     const group = employeeGroups[0];
-
-    const groupLabel = getEmployeeGroupLabel(
-      group,
-      props.employeeGroups,
-      false,
-    );
+    const groupLabel = group.name;
 
     const row = screen.getByRole("row", {
       name: (name) => name.toLowerCase().includes(groupLabel.toLowerCase()),

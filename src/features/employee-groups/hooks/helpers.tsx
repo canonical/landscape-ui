@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { EmployeeGroup } from "../../types";
+import type { EmployeeGroup } from "../types";
 
 export const getRemoveEmployeeGroupsModalTexts = (
   employeeGroupsSelected: EmployeeGroup[],
