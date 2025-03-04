@@ -1,3 +1,5 @@
+import type { TabId } from "../../types/TabId";
+
 export const TABS: {
   label: string;
   id: TabId;
