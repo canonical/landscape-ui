@@ -4,7 +4,6 @@ import { Col, Row } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import type { AutoinstallFileWithGroups } from "../../types";
-import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 
 interface AutoinstallFileInfoProps {
   readonly file: AutoinstallFileWithGroups;
@@ -43,11 +42,7 @@ const AutoinstallFileInfo: FC<AutoinstallFileInfoProps> = ({ file }) => {
 
       <InfoItem
         label="Employee groups associated"
-        value={
-          <AutoinstallFileEmployeeGroupsList
-            groupNames={file.groups.map((group) => group.name)}
-          />
-        }
+        value={file.groups.map((group) => group.name).join(", ")}
       />
     </>
   );
