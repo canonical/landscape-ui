@@ -7,13 +7,3 @@ export interface GetEmployeeGroupsParams {
 export interface DeleteEmployeeGroupsParams {
   ids: number[];
 }
-
-interface PatchEmployeeGroup {
-  id: number;
-  priority: number;
-  autoinstall_file_id: string;
-}
-
-export interface PatchEmployeeGroupsParams {
-  requests: PatchEmployeeGroup[];
-}

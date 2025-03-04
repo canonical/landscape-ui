@@ -5,7 +5,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import { EMPTY_STATE } from "./constants";
 import EmployeeGroupsPanel from "./EmployeeGroupsPanel";
-import { employeeGroups } from "@/tests/mocks/employees";
+import { employeeGroups } from "@/tests/mocks/employeeGroups";
 
 describe("EmployeeGroupsPanel", () => {
   it("renders list of employees", async () => {

@@ -1,12 +1,12 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import ReportView from "./ReportView";
 import useReports from "@/hooks/useReports";
 import useSidePanel from "@/hooks/useSidePanel";
 
-vi.mock("@/hooks/useReports");
-vi.mock("@/hooks/useSidePanel");
+vi.mock("@/api/useReports");
+vi.mock("@/api/useSidePanel");
 
 describe("ReportView", () => {
   const instanceIds = [1, 2, 3];

@@ -2,7 +2,6 @@
 import { TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
-import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
@@ -17,10 +16,14 @@ import { getEmployeeGroupOptions } from "../../helpers";
 import type { EmployeeGroup } from "../../types";
 import EmployeeGroupsFilter from "../EmployeeGroupsFilter";
 import classes from "./EmployeeGroupsHeader.module.scss";
-import { useRemoveEmployeeGroupsModal } from "../../hooks";
+import { useRemoveEmployeeGroupsModal } from "../../api";
 
-const EmployeeGroupIdentityProviderForm = lazy(
-  () => import("../EmployeeGroupIdentityProviderForm"),
+const EmployeeGroupIdentityIssuerListContainer = lazy(
+  () => import("../EmployeeGroupIdentityIssuerListContainer"),
+);
+
+const EmployeeGroupsOrganiserForm = lazy(
+  () => import("../EmployeeGroupsOrganiserForm"),
 );
 
 interface EmployeeGroupsHeaderProps {
@@ -35,13 +38,12 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
   setSelectedEmployeeGroups,
 }) => {
   const { setSidePanelContent } = useSidePanel();
-  const { notify } = useNotify();
 
   const handleImportEmployeeGroups = () => {
     setSidePanelContent(
-      "Choose an identity provider",
+      "Choose an identity issuer",
       <Suspense fallback={<LoadingState />}>
-        <EmployeeGroupIdentityProviderForm />
+        <EmployeeGroupIdentityIssuerListContainer />
       </Suspense>,
     );
   };
@@ -67,7 +69,12 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
   });
 
   const handleEditPriority = () => {
-    //
+    setSidePanelContent(
+      "Organize Employee groups priority",
+      <Suspense fallback={<LoadingState />}>
+        <EmployeeGroupsOrganiserForm groups={selectedGroups} />
+      </Suspense>,
+    );
   };
 
   const handleAssignAutoinstallFile = () => {
@@ -88,6 +95,14 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
               />
             </div>
             <div className={classes.buttons}>
+              <Button
+                className="p-segmented-control__button u-no-margin--bottom"
+                hasIcon
+                onClick={handleImportEmployeeGroups}
+              >
+                <Icon name={ICONS.plus} />
+                <span>Import employee groups</span>
+              </Button>
               <div
                 className={classNames(
                   "p-segmented-control",
@@ -98,44 +113,38 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
                   <Button
                     className="p-segmented-control__button u-no-margin--bottom"
                     hasIcon
-                    onClick={handleImportEmployeeGroups}
-                  >
-                    <Icon name={ICONS.plus} />
-                    <span>Import employee groups</span>
-                  </Button>
-                  <Button
-                    className="p-segmented-control__button u-no-margin--bottom"
-                    hasIcon
+                    disabled={selectedEmployeeGroups.length === 0}
+                    onClick={handleEditPriority}
                   >
                     <Icon name="sort-both" />
                     <span>Edit priority</span>
                   </Button>
+                  <ConfirmationButton
+                    className="p-segmented-control__button has-icon u-no-margin--bottom"
+                    disabled={selectedEmployeeGroups.length === 0}
+                    confirmationModalProps={{
+                      title: title,
+                      children: body,
+                      confirmButtonLabel: confirmButtonLabel,
+                      confirmButtonAppearance: confirmButtonAppearance,
+                      onConfirm: deleteEmployeeGroups,
+                      confirmButtonDisabled: isLoading,
+                      confirmButtonLoading: isLoading,
+                    }}
+                  >
+                    <Icon name={ICONS.delete} />
+                    <span>Remove</span>
+                  </ConfirmationButton>
+                  <Button
+                    className="p-segmented-control__button u-no-margin--bottom"
+                    hasIcon
+                    disabled={selectedEmployeeGroups.length === 0}
+                  >
+                    <Icon name="file" />
+                    <span>Assign autoinstall file</span>
+                  </Button>
                 </div>
               </div>
-              <ConfirmationButton
-                className="p-segmented-control__button has-icon u-no-margin--bottom"
-                disabled={selectedEmployeeGroups.length === 0}
-                confirmationModalProps={{
-                  title: title,
-                  children: body,
-                  confirmButtonLabel: confirmButtonLabel,
-                  confirmButtonAppearance: confirmButtonAppearance,
-                  onConfirm: deleteEmployeeGroups,
-                  confirmButtonDisabled: isLoading,
-                  confirmButtonLoading: isLoading,
-                }}
-              >
-                <Icon name={ICONS.delete} />
-                <span>Remove</span>
-              </ConfirmationButton>
-              <Button
-                className="p-segmented-control__button u-no-margin--bottom"
-                hasIcon
-                disabled={selectedEmployeeGroups.length === 0}
-              >
-                <Icon name="file" />
-                <span>Assign autoinstall file</span>
-              </Button>
             </div>
           </div>
         }

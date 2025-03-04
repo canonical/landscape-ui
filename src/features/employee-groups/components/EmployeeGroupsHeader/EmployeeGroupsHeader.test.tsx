@@ -1,4 +1,4 @@
-import { employeeGroups } from "@/tests/mocks/employees";
+import { employeeGroups } from "@/tests/mocks/employeeGroups";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

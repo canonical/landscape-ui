@@ -13,3 +13,11 @@ export interface EmployeeGroup extends Record<string, unknown> {
 export interface ConfigurationLimit {
   limit: number;
 }
+
+export interface StagedOidcGroup extends Record<string, unknown> {
+  id: number;
+  issuer_id: number;
+  group_id: string;
+  name: string;
+  import_session_id: number;
+}

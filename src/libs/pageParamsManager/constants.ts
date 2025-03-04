@@ -107,4 +107,9 @@ export const PARAMS_CONFIG: ParamsConfig = [
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,
   },
+  {
+    urlParam: "employeeGroups",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
+  },
 ];

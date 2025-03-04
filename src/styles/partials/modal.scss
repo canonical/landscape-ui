@@ -1,0 +1,13 @@
+.p-modal {
+  &__footer {
+    & > button {
+      margin-bottom: 0 !important;
+    }
+  }
+}
+
+.p-modal__dialog {
+  @media (min-width: $breakpoint-large) {
+    min-width: 40rem;
+  }
+}

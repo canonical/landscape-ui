@@ -1,0 +1,11 @@
+.u-off-screen:not(:focus, :active) {
+  top: 0;
+}
+
+.fade-in--down {
+  &[aria-hidden="true"] {
+    .multi-select__dropdown {
+      bottom: 0;
+    }
+  }
+}

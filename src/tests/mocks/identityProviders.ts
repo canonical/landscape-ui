@@ -18,6 +18,12 @@ export const identityProviders: IdentityProvider[] = [
     enabled: false,
     id: 2,
   },
+  {
+    name: "Google Workspace",
+    provider: "google",
+    enabled: true,
+    id: 3,
+  },
 ];
 
 const oktaProviderConfiguration = {

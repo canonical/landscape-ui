@@ -1,72 +1,7 @@
-import type {
-  ConfigurationLimit,
-  EmployeeGroup,
-} from "@/features/employee-groups";
+import type { ConfigurationLimit } from "@/features/employee-groups";
 import type { Employee, RecoveryKey } from "@/features/employees";
 import { instances } from "./instance";
-
-export const employeeGroups: EmployeeGroup[] = [
-  {
-    id: 1,
-    issuer: "https://myorg.okta.com",
-    group_id: "akr019jvcvi2n2cv",
-    name: "Marketing",
-    priority: 1,
-    autoinstall_file: {
-      dateCreated: "2021-09-01T00:00:00Z",
-      id: 1,
-      employeeGroupsAssociated: ["Marketing"],
-      name: "high-security-policy.yaml",
-      events: [],
-      filename: "high-security-policy.yaml",
-      is_default: false,
-      lastModified: "2021-09-01T00:00:00Z",
-      version: 1,
-    },
-    employee_count: 5,
-    issuer_id: 0,
-  },
-  {
-    id: 2,
-    issuer: "https://myorg.okta.com",
-    group_id: "923ijgbxvz21239fzz",
-    name: "Engineering",
-    priority: 2,
-    autoinstall_file: null,
-    employee_count: null,
-    issuer_id: 0,
-  },
-  {
-    id: 3,
-    issuer: "https://myorg.okta.com",
-    group_id: "923ijgbxvz21239faa",
-    name: "Engineering",
-    priority: 2,
-    autoinstall_file: null,
-    employee_count: null,
-    issuer_id: 0,
-  },
-  {
-    id: 4,
-    issuer: "https://myorg.okta.com",
-    group_id: "923ijgbxvz21239fbb",
-    name: "Finance",
-    priority: 3,
-    autoinstall_file: null,
-    employee_count: null,
-    issuer_id: 0,
-  },
-  {
-    id: 5,
-    issuer: "https://myorg.okta.com",
-    group_id: "923ijgbxvz21239fcc",
-    name: "Support",
-    priority: 4,
-    autoinstall_file: null,
-    employee_count: null,
-    issuer_id: 0,
-  },
-];
+import { employeeGroups } from "./employeeGroups";
 
 export const employees: Employee[] = [
   {

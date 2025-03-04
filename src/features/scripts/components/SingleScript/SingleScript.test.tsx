@@ -12,7 +12,7 @@ describe("SingleScript", () => {
   const editScript = vi.hoisted(() => vi.fn());
   const removeScriptAttachment = vi.hoisted(() => vi.fn());
 
-  vi.mock("../../hooks", async (importOriginal) => {
+  vi.mock("../../api", async (importOriginal) => {
     const original = await importOriginal<{ useScripts: typeof useScripts }>();
 
     return {

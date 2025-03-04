@@ -1,3 +1,5 @@
+export const IMPORT_GROUPS_LIMIT = 10_000;
+
 export const SANITIZATION_TOOLTIP_MESSAGE =
   "Irreversibly deletes all data on disks of associated instances. Proceed with caution";
 

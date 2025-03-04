@@ -25,7 +25,7 @@ const mockTestParams = (searchParams?: Record<string, string>) => {
     useNavigate: () => navigate,
   }));
 
-  vi.doMock("@/hooks/useAuth", () => ({
+  vi.doMock("@/api/useAuth", () => ({
     default: () => ({
       redirectToExternalUrl,
       setAuthLoading,
@@ -33,7 +33,7 @@ const mockTestParams = (searchParams?: Record<string, string>) => {
     }),
   }));
 
-  vi.doMock("../../hooks", () => ({
+  vi.doMock("../../api", () => ({
     useUnsigned: () => ({
       signInWithEmailAndPasswordQuery: {
         mutateAsync: signInWithEmailAndPassword,
@@ -46,7 +46,7 @@ describe("LoginForm", () => {
   describe("without additional test params", () => {
     beforeEach(async ({ task: { id } }) => {
       vi.doUnmock("react-router");
-      vi.doUnmock("@/hooks/useAuth");
+      vi.doUnmock("@/api/useAuth");
       vi.resetModules();
 
       const taskId = Number(id.substring(id.length - 1));
@@ -101,7 +101,7 @@ describe("LoginForm", () => {
 
     beforeEach(async ({ task: { id } }) => {
       vi.doUnmock("react-router");
-      vi.doUnmock("@/hooks/useAuth");
+      vi.doUnmock("@/api/useAuth");
       vi.resetModules();
 
       const taskId = Number(id.substring(id.length - 1));

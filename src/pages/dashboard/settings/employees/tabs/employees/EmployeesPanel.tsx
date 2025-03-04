@@ -5,7 +5,7 @@ import {
   useGetEmployees,
 } from "@/features/employees";
 import LoadingState from "@/components/layout/LoadingState";
-import { useMemo, type FC } from "react";
+import { type FC, useMemo } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import { EMPLOYEE_LIMIT, EMPTY_STATE } from "./constants";
 import { Notification } from "@canonical/react-components";

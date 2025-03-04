@@ -26,6 +26,7 @@ export interface PageParams {
   toDate: string;
   type: string;
   query: string;
+  employeeGroups: string[];
 }
 
 /**

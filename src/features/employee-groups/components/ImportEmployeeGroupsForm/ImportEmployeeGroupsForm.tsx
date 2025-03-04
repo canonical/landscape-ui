@@ -1,175 +1,196 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { employeeGroups } from "@/tests/mocks/employees";
-import {
-  CheckboxInput,
-  Form,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
+import { CheckboxInput, Form, ModularTable } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
-import type { FC } from "react";
+import type { FC, FormEvent } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
-import { isNotUnique } from "../../helpers";
-import type { EmployeeGroup } from "../../types";
+import type { StagedOidcGroup } from "../../types";
+import SearchBoxWithForm from "@/components/form/SearchBoxWithForm";
+import { useImportEmployeeGroups, useStagedOidcGroups } from "../../api";
+import type { OidcIssuer } from "@/features/oidc";
+import MaybeExceededLimitNotification from "../MaybeExceededLimitNotification";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import classes from "./ImportEmployeeGroupsForm.module.scss";
 
-const EmployeeGroupIdentityProviderForm = lazy(
-  () => import("../EmployeeGroupIdentityProviderForm"),
+const EmployeeGroupIdentityIssuerListContainer = lazy(
+  () => import("../EmployeeGroupIdentityIssuerListContainer"),
 );
 
-const EmployeeGroupsOrganiserForm = lazy(
-  () => import("../EmployeeGroupsOrganiserForm"),
+const Description = () => (
+  <p className={classes.description}>
+    Choose employee groups to import into Landscape. Once imported, you can set
+    their priority, assign Autoinstall files, and manage associated employees.
+  </p>
 );
 
 interface ImportEmployeeGroupsFormProps {
-  readonly providerId: number;
+  readonly issuer: OidcIssuer;
 }
 
 const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
-  providerId,
+  issuer,
 }) => {
   const [searchText, setSearchText] = useState("");
-  const [selectedEmployeeGroups, setSelectedEmployeeGroups] = useState<
-    number[]
-  >([]);
+  const [selectedGroupIds, setSelectedGroupIds] = useState<number[]>([]);
+  const [importAll, setImportAll] = useState(true);
 
-  const { setSidePanelContent } = useSidePanel();
+  const { setSidePanelContent, closeSidePanel } = useSidePanel();
+  const { stagedOidcGroups, isStagedOidcGroupsLoading } = useStagedOidcGroups(
+    issuer.id,
+  );
 
-  const isEmployeeGroupsLoading = false;
+  const debug = useDebug();
+  const { notify } = useNotify();
 
-  const filteredEmployeeGroups = employeeGroups.filter((employeeGroup) =>
+  const { importEmployeeGroups, isEmployeeGroupsImporting } =
+    useImportEmployeeGroups();
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      const { count } = await importEmployeeGroups({
+        importAll,
+        stagedOidcGroupIds: selectedGroupIds,
+      });
+
+      closeSidePanel();
+
+      notify.success({
+        title: `You’ve successfully Imported ${count} Employee ${count > 1 ? "groups" : "group"}.`,
+        message:
+          "Newly added Employee groups can now be managed within Landscape.",
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const filteredEmployeeGroups = stagedOidcGroups.filter((employeeGroup) =>
     employeeGroup.name.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   const handleToggleSingleEmployeeGroup = (id: number) => {
-    setSelectedEmployeeGroups(
-      selectedEmployeeGroups.includes(id)
-        ? selectedEmployeeGroups.filter((selectedGroup) => selectedGroup !== id)
-        : [...selectedEmployeeGroups, id],
+    setSelectedGroupIds(
+      selectedGroupIds.includes(id)
+        ? selectedGroupIds.filter((selectedGroup) => selectedGroup !== id)
+        : [...selectedGroupIds, id],
     );
   };
 
   const handleBackButtonPress = () => {
     setSidePanelContent(
-      "Choose an identity provider",
+      "Choose an identity issuer",
       <Suspense fallback={<LoadingState />}>
-        <EmployeeGroupIdentityProviderForm />
+        <EmployeeGroupIdentityIssuerListContainer />
       </Suspense>,
     );
   };
 
-  const handleSubmit = () => {
-    setSidePanelContent(
-      "Organise employee groups",
-      <Suspense fallback={<LoadingState />}>
-        <EmployeeGroupsOrganiserForm
-          employeeGroups={employeeGroups.filter((group) =>
-            selectedEmployeeGroups.includes(group.id),
-          )}
-        />
-      </Suspense>,
-    );
-  };
-
-  const columns = useMemo<Column<EmployeeGroup>[]>(
-    () => [
-      {
-        accessor: "id",
-        className: "checkbox-column",
-        Header: () => (
-          <CheckboxInput
-            inline
-            label={
-              <span className="u-off-screen">Toggle all employee groups</span>
-            }
-            disabled={
-              filteredEmployeeGroups.length === 0 || isEmployeeGroupsLoading
-            }
-            indeterminate={
-              selectedEmployeeGroups.length > 0 &&
-              selectedEmployeeGroups.length < employeeGroups.length
-            }
-            checked={
-              selectedEmployeeGroups.length > 0 &&
-              selectedEmployeeGroups.length === employeeGroups.length
-            }
-            onChange={() =>
-              setSelectedEmployeeGroups(
-                selectedEmployeeGroups.length > 0
-                  ? []
-                  : employeeGroups.map(({ id }) => id),
-              )
-            }
-          />
-        ),
-        Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
-          <CheckboxInput
-            labelClassName="u-no-margin--bottom u-no-padding--top"
-            label={
-              <span className="u-off-screen">{`Toggle ${original.name}`}</span>
-            }
-            disabled={isEmployeeGroupsLoading}
-            name="employee-group-checkbox"
-            checked={selectedEmployeeGroups.includes(original.id)}
-            onChange={() => handleToggleSingleEmployeeGroup(original.id)}
-          />
-        ),
-      },
-      {
-        accessor: "name",
-        Header: "name",
-        Cell: ({
-          row: {
-            original: { name },
-          },
-        }: CellProps<EmployeeGroup>) => {
-          return (
-            <>
-              <span className="p-text--small-caps">
-                {name}
-                {isNotUnique(employeeGroups, name) && (
-                  <Tooltip
-                    message={`group id: 19872981yf938v6986136EEF`} //TODO change
-                  >
-                    <span>&nbsp;(...6EEF)</span>
-                  </Tooltip>
-                )}
-              </span>
-            </>
-          );
+  const columns = useMemo<Column<StagedOidcGroup>[]>(() => {
+    const nameColumn = {
+      accessor: "name",
+      Header: "name",
+      Cell: ({
+        row: {
+          original: { name },
         },
+      }: CellProps<StagedOidcGroup>) => {
+        return (
+          <>
+            <span>{name}</span>
+          </>
+        );
       },
-    ],
-    [selectedEmployeeGroups],
-  );
+    };
 
-  console.log(providerId);
+    if (importAll) {
+      return [nameColumn];
+    } else {
+      return [
+        {
+          accessor: "id",
+          className: "checkbox-column",
+          Header: () => (
+            <CheckboxInput
+              inline
+              label={
+                <span className="u-off-screen">Toggle all employee groups</span>
+              }
+              disabled={
+                filteredEmployeeGroups.length === 0 || isStagedOidcGroupsLoading
+              }
+              indeterminate={
+                selectedGroupIds.length > 0 &&
+                selectedGroupIds.length < stagedOidcGroups.length
+              }
+              checked={
+                selectedGroupIds.length > 0 &&
+                selectedGroupIds.length === stagedOidcGroups.length
+              }
+              onChange={() =>
+                setSelectedGroupIds(
+                  selectedGroupIds.length > 0
+                    ? []
+                    : stagedOidcGroups.map(({ id }) => id),
+                )
+              }
+            />
+          ),
+          Cell: ({ row: { original } }: CellProps<StagedOidcGroup>) => (
+            <CheckboxInput
+              labelClassName="u-no-margin--bottom u-no-padding--top"
+              label={
+                <span className="u-off-screen">{`Toggle ${original.name}`}</span>
+              }
+              disabled={isStagedOidcGroupsLoading}
+              name="employee-group-checkbox"
+              checked={selectedGroupIds.includes(original.id)}
+              onChange={() => handleToggleSingleEmployeeGroup(original.id)}
+            />
+          ),
+        },
+        nameColumn,
+      ];
+    }
+  }, [
+    selectedGroupIds,
+    isStagedOidcGroupsLoading,
+    stagedOidcGroups,
+    importAll,
+  ]);
+
+  if (isStagedOidcGroupsLoading) {
+    return <LoadingState />;
+  }
 
   return (
-    <Form noValidate>
-      <HeaderWithSearch onSearch={(input) => setSearchText(input)} />
-      <ModularTable
-        data={[
-          ...filteredEmployeeGroups,
-          ...filteredEmployeeGroups,
-          ...filteredEmployeeGroups,
-          ...filteredEmployeeGroups,
-          ...filteredEmployeeGroups,
-          ...filteredEmployeeGroups,
-        ]}
-        columns={columns}
-      />
-      <SidePanelFormButtons
-        hasBackButton
-        onBackButtonPress={handleBackButtonPress}
-        submitButtonText="Import"
-        submitButtonDisabled={selectedEmployeeGroups.length === 0}
-        onSubmit={handleSubmit}
-      />
-    </Form>
+    <>
+      <MaybeExceededLimitNotification />
+      <Description />
+      <div className={classes.checkbox}>
+        <CheckboxInput
+          label="Import all groups"
+          onChange={() => setImportAll((prev) => !prev)}
+          checked={importAll}
+        />
+      </div>
+      <SearchBoxWithForm onSearch={(input) => setSearchText(input)} />
+      <Form noValidate onSubmit={handleSubmit}>
+        <ModularTable data={filteredEmployeeGroups} columns={columns} />
+        <SidePanelFormButtons
+          hasBackButton
+          onBackButtonPress={handleBackButtonPress}
+          submitButtonText="Import"
+          submitButtonDisabled={
+            (!importAll && selectedGroupIds.length === 0) ||
+            isEmployeeGroupsImporting
+          }
+        />
+      </Form>
+    </>
   );
 };
 
