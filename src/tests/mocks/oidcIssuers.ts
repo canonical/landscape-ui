@@ -1,4 +1,5 @@
 import type { OidcIssuer } from "@/features/oidc";
+import type { OidcGroupImportSession } from "@/features/employee-groups";
 
 export const oidcIssuers: OidcIssuer[] = [
   {
@@ -32,3 +33,10 @@ export const oidcIssuers: OidcIssuer[] = [
     available_features: ["directory-import"],
   },
 ];
+
+export const oidcGroupImportSession: OidcGroupImportSession = {
+  id: 4,
+  status: "IN PROGRESS",
+  issuer_id: 2,
+  imported_at: "2025-02-02T17:55:23.806269",
+};

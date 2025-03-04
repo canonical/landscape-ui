@@ -45,7 +45,9 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
     event.preventDefault();
 
     try {
-      const { count } = await importEmployeeGroups({
+      const {
+        data: { count },
+      } = await importEmployeeGroups({
         importAll,
         stagedOidcGroupIds: selectedGroupIds,
       });

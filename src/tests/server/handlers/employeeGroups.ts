@@ -5,6 +5,8 @@ import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import type {
   EmployeeGroup,
   GetEmployeeGroupsParams,
+  ImportEmployeeGroupsCallParams,
+  ImportOidcSessionParams,
   OidcGroupImportSession,
   StagedOidcGroup,
 } from "@/features/employee-groups";
@@ -12,6 +14,7 @@ import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import type { Employee } from "@/features/employees";
+import { oidcGroupImportSession } from "@/tests/mocks/oidcIssuers";
 
 export default [
   http.get<never, GetEmployeeGroupsParams, ApiPaginatedResponse<EmployeeGroup>>(
@@ -70,19 +73,16 @@ export default [
     },
   ),
 
-  http.post<never, { issuer: string }, OidcGroupImportSession>(
+  http.post<never, ImportOidcSessionParams, OidcGroupImportSession>(
     `${API_URL}oidc/groups/import_session`,
     async ({ request }) => {
       await delay();
 
-      const { issuer } = await request.json();
+      const { issuer_id } = await request.json();
 
       return HttpResponse.json({
-        id: 1,
-        issuer,
-        account_id: 1,
-        status: "IN_PROGRESS",
-        synced_at: new Date().toISOString(),
+        ...oidcGroupImportSession,
+        issuer_id,
       });
     },
   ),
@@ -111,14 +111,27 @@ export default [
     );
   }),
 
-  http.post<never, number[], { results: number[] }>(
-    `${API_URL}employee_groups`,
-    async ({ request }) => {
-      const groupIds = await request.json();
+  http.post<
+    never,
+    ImportEmployeeGroupsCallParams,
+    ApiPaginatedResponse<number>
+  >(`${API_URL}employee_groups`, async ({ request }) => {
+    await delay();
 
-      await delay();
+    const { staged_oidc_group_ids, import_all } = await request.json();
 
-      return HttpResponse.json({ results: groupIds });
-    },
-  ),
+    const preFilteredGroups = import_all
+      ? stagedOidcGroups
+      : stagedOidcGroups.filter((group) =>
+          staged_oidc_group_ids.includes(group.id),
+        );
+
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: preFilteredGroups.map((group) => group.id),
+        limit: undefined,
+        offset: undefined,
+      }),
+    );
+  }),
 ];
