@@ -19,6 +19,7 @@ const EmployeeGroupsOrganiserForm: FC<EmployeeGroupsOrganiserFormProps> = ({
   groups,
 }) => {
   const [updatedGroups, setUpdatedGroups] = useState(groups);
+  const [submissionBlocked, setSubmissionBlocked] = useState(false);
 
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
@@ -71,10 +72,11 @@ const EmployeeGroupsOrganiserForm: FC<EmployeeGroupsOrganiserFormProps> = ({
               ),
             );
           }}
+          setSubmissionBlocked={setSubmissionBlocked}
         />
         <SidePanelFormButtons
           submitButtonText="Update priorities"
-          submitButtonDisabled={isUpdatingEmployeeGroups}
+          submitButtonDisabled={isUpdatingEmployeeGroups || submissionBlocked}
         />
       </Form>
     </>

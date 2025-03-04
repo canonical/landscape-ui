@@ -11,11 +11,13 @@ interface EmployeeGroupWithPriority {
 interface EmployeeGroupSortableListProps {
   readonly groups: EmployeeGroup[];
   readonly onPriorityChange: (id: number, priority: number) => void;
+  readonly setSubmissionBlocked: (state: boolean) => void;
 }
 
 const EmployeeGroupSortableList: FC<EmployeeGroupSortableListProps> = ({
   groups,
   onPriorityChange,
+  setSubmissionBlocked,
 }) => {
   const [priorityValues, setPriorityValues] = useState<
     EmployeeGroupWithPriority[]
@@ -43,6 +45,7 @@ const EmployeeGroupSortableList: FC<EmployeeGroupSortableListProps> = ({
             onPriorityChange={(priority) =>
               handlePriorityChange(employeeGroup.id, priority)
             }
+            setSubmissionBlocked={setSubmissionBlocked}
           />
         </li>
       ))}
