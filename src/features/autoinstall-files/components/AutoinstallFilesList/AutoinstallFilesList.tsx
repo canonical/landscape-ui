@@ -1,3 +1,4 @@
+import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -9,9 +10,17 @@ import {
   ModularTable,
 } from "@canonical/react-components";
 import moment from "moment";
-import type { FC, ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
-import type { CellProps, Column } from "react-table";
+import type { FC, HTMLProps, ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type {
+  Cell,
+  CellProps,
+  Column,
+  Row,
+  TableCellProps,
+  TableRowProps,
+} from "react-table";
+import { useOnClickOutside } from "usehooks-ts";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
 import type { TabId } from "../../types";
 import type {
@@ -19,12 +28,10 @@ import type {
   AutoinstallFileWithGroups,
 } from "../../types/AutoinstallFile";
 import AutoinstallFileDetails from "../AutoinstallFileDetails";
-import AutoinstallFileEmployeeGroupsList from "../AutoinstallFileEmployeeGroupsList";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 import classes from "./AutoinstallFilesList.module.scss";
 import { LOCAL_STORAGE_ITEM } from "./constants";
-import { getCellProps } from "./helpers";
 
 interface AutoinstallFilesListProps {
   readonly autoinstallFiles: AutoinstallFileWithGroups[];
@@ -38,6 +45,22 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalIgnored, setIsModalIgnored] = useState(false);
   const [modalFile, setModalFile] = useState<AutoinstallFile | null>(null);
+  const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
+  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
+
+  const toggleIsModalIgnored = (): void => {
+    setIsModalIgnored(!isModalIgnored);
+  };
+
+  useOnClickOutside(
+    {
+      current:
+        expandedRowIndex == null
+          ? null
+          : tableRowsRef.current[expandedRowIndex],
+    },
+    () => setExpandedRowIndex(null),
+  );
 
   const {
     updateAutoinstallFileQuery: { mutateAsync: updateAutoinstallFile },
@@ -128,6 +151,62 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     });
   }, [autoinstallFiles, employeeGroups, search]);
 
+  const getTableRowsRef = (instance: HTMLDivElement | null): void => {
+    if (!instance) {
+      return;
+    }
+
+    tableRowsRef.current = [
+      ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
+    ];
+  };
+
+  const getCellProps = ({
+    column,
+    row: { index },
+  }: Cell<AutoinstallFileWithGroups>): Partial<
+    TableCellProps & HTMLProps<HTMLTableCellElement>
+  > => {
+    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
+      {};
+
+    switch (column.id) {
+      case "filename":
+        cellProps.role = "rowheader";
+        break;
+      case "groups":
+        cellProps["aria-label"] = "employee groups";
+
+        if (expandedRowIndex === index) {
+          cellProps.className = classes.expandedCell;
+        }
+        break;
+      case "last_modified_at":
+        cellProps["aria-label"] = "last modified at";
+        break;
+      case "created_at":
+        cellProps["aria-label"] = "created at";
+        break;
+    }
+
+    return cellProps;
+  };
+
+  const getRowProps = ({
+    index,
+  }: Row<AutoinstallFileWithGroups>): Partial<
+    TableRowProps & HTMLProps<HTMLTableRowElement>
+  > => {
+    const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
+      {};
+
+    if (expandedRowIndex === index) {
+      rowProps.className = classes.expandedRow;
+    }
+
+    return rowProps;
+  };
+
   const columns = useMemo<Column<AutoinstallFileWithGroups>[]>(
     () => [
       {
@@ -158,10 +237,15 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         Cell: ({
           row: {
             original: { groups },
+            index,
           },
         }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
-          <AutoinstallFileEmployeeGroupsList
-            groupNames={groups.map((group) => group.name)}
+          <TruncatedCell
+            content={groups.map((group) => group.name).join(", ")}
+            isExpanded={index == expandedRowIndex}
+            onExpand={() => {
+              setExpandedRowIndex(index);
+            }}
           />
         ),
       },
@@ -206,11 +290,14 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   return (
     <>
-      <ModularTable
-        columns={columns}
-        data={files}
-        getCellProps={getCellProps}
-      />
+      <div ref={getTableRowsRef}>
+        <ModularTable
+          columns={columns}
+          data={files}
+          getCellProps={getCellProps}
+          getRowProps={getRowProps}
+        />
+      </div>
 
       {isModalVisible && (
         <>
@@ -230,9 +317,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
             <CheckboxInput
               label="I understand. Don't show this message again."
-              onChange={() => {
-                setIsModalIgnored(!isModalIgnored);
-              }}
+              onChange={toggleIsModalIgnored}
               checked={isModalIgnored}
             />
           </ConfirmationModal>
