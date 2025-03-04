@@ -30,7 +30,10 @@ import AutoinstallFileDetails from "../AutoinstallFileDetails";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 import classes from "./AutoinstallFilesList.module.scss";
-import { LOCAL_STORAGE_ITEM } from "./constants";
+import {
+  EDIT_AUTOINSTALL_FILE_NOTIFICATION,
+  LOCAL_STORAGE_ITEM,
+} from "./constants";
 
 interface AutoinstallFilesListProps {
   readonly autoinstallFiles: AutoinstallFileWithGroups[];
@@ -83,12 +86,12 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     setIsModalVisible(false);
 
     if (modalFile) {
-      openEditPanelWithoutModal(modalFile);
+      openEditFormWithoutModal(modalFile);
       setModalFile(null);
     }
   };
 
-  const openDetailsPanel = (
+  const openDetails = (
     file: AutoinstallFileWithGroups,
     defaultTabId?: TabId,
   ): void => {
@@ -97,29 +100,25 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       <AutoinstallFileDetails
         defaultTabId={defaultTabId}
         file={file}
-        openDetailsPanel={(defaultTabId: TabId) => {
-          openDetailsPanel(file, defaultTabId);
-        }}
         openEditPanel={() => {
-          openEditPanel(file);
+          openEditForm(file);
+        }}
+        openVersionHistory={() => {
+          openDetails(file, "version-history");
         }}
       />,
       "large",
     );
   };
 
-  const openEditPanelWithoutModal = (file: AutoinstallFile): void => {
+  const openEditFormWithoutModal = (file: AutoinstallFile): void => {
     setSidePanelContent(
       `Edit ${file.filename}`,
       <AutoinstallFileForm
         buttonText="Save changes"
         description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
         initialFile={file}
-        notification={{
-          message:
-            "has been edited and all the changes made have been saved successfully.",
-          title: "You have successfully saved changes for",
-        }}
+        notification={EDIT_AUTOINSTALL_FILE_NOTIFICATION}
         query={async ({ contents }) => {
           await updateAutoinstallFile({ contents, id: file.id });
         }}
@@ -127,9 +126,9 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     );
   };
 
-  const openEditPanel = (file: AutoinstallFile): void => {
+  const openEditForm = (file: AutoinstallFile): void => {
     if (isModalIgnored) {
-      openEditPanelWithoutModal(file);
+      openEditFormWithoutModal(file);
     } else {
       setIsModalVisible(true);
       setModalFile(file);
@@ -205,7 +204,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => openDetailsPanel(original)}
+              onClick={() => openDetails(original)}
             >
               {`${original.filename}, v${original.version}`}
             </Button>
@@ -264,8 +263,8 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
           <AutoinstallFilesListContextualMenu
             file={original}
-            openDetailsPanel={openDetailsPanel}
-            openEditPanel={openEditPanel}
+            openDetailsPanel={openDetails}
+            openEditPanel={openEditForm}
           />
         ),
       },

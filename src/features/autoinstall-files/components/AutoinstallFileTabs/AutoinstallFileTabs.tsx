@@ -7,43 +7,42 @@ import AutoinstallFileInfo from "../AutoinstallFileInfo";
 import AutoinstallFileVersionHistory from "../AutoinstallFileVersionHistory";
 import { TABS } from "./constants";
 
-interface ViewAutoinstallFileDetailsTabsProps {
+interface AutoinstallFileTabsProps {
   readonly file: AutoinstallFileWithGroups;
-  readonly openDetailsPanel: (defaultTabId: TabId) => void;
+  readonly openVersionHistory: () => void;
   readonly defaultTabId?: TabId;
 }
 
-const ViewAutoinstallFileDetailsTabs: FC<
-  ViewAutoinstallFileDetailsTabsProps
-> = ({ file, defaultTabId = "info", openDetailsPanel }) => {
-  const [tabId, setTabId] = useState<TabId>(defaultTabId);
+const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
+  file,
+  openVersionHistory,
+  defaultTabId = "info",
+}) => {
+  const [tabId, setTabId] = useState(defaultTabId);
+
+  const links = TABS.map(({ label, id }) => ({
+    label,
+    active: id === tabId,
+    role: "tab",
+    onClick: (): void => {
+      setTabId(id);
+    },
+  }));
 
   return (
     <>
-      <Tabs
-        listClassName="u-no-margin--bottom"
-        links={TABS.map(({ label, id }) => ({
-          label,
-          active: id === tabId,
-          role: "tab",
-          onClick: (): void => {
-            setTabId(id);
-          },
-        }))}
-      />
+      <Tabs links={links} />
 
       {tabId === "info" && <AutoinstallFileInfo file={file} />}
 
       {tabId === "version-history" && (
         <AutoinstallFileVersionHistory
           file={file}
-          goBack={() => {
-            openDetailsPanel("version-history");
-          }}
+          goBack={openVersionHistory}
         />
       )}
     </>
   );
 };
 
-export default ViewAutoinstallFileDetailsTabs;
+export default AutoinstallFileTabs;

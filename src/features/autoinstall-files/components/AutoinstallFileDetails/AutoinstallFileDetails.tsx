@@ -1,20 +1,20 @@
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import type { AutoinstallFileWithGroups, TabId } from "../../types";
-import ViewAutoinstallFileDetailsTabs from "../ViewAutoinstallFileDetailsTabs";
+import AutoinstallFileTabs from "../AutoinstallFileTabs";
 
 interface AutoinstallFileDetailsProps {
   readonly file: AutoinstallFileWithGroups;
-  readonly openDetailsPanel: (defaultTabId: TabId) => void;
   readonly openEditPanel: () => void;
+  readonly openVersionHistory: () => void;
   readonly defaultTabId?: TabId;
 }
 
 const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
   defaultTabId,
   file,
-  openDetailsPanel,
   openEditPanel,
+  openVersionHistory,
 }) => {
   return (
     <>
@@ -38,10 +38,10 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
         </div>
       </div>
 
-      <ViewAutoinstallFileDetailsTabs
+      <AutoinstallFileTabs
         defaultTabId={defaultTabId}
         file={file}
-        openDetailsPanel={openDetailsPanel}
+        openVersionHistory={openVersionHistory}
       />
     </>
   );

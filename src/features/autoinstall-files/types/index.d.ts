@@ -1,4 +1,3 @@
 export { AutoinstallFile, AutoinstallFileWithGroups } from "./AutoinstallFile";
-export { AutoinstallFileEvent } from "./AutoinstallFileEvent";
+export { AutoinstallFileTabId as TabId } from "./AutoinstallFileTabId";
 export { EmployeeGroup } from "./EmployeeGroup";
-export { TabId } from "./TabId";

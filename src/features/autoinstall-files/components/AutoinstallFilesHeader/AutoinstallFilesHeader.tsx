@@ -8,9 +8,9 @@ import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import classes from "./AutoinstallFilesHeader.module.scss";
 import {
+  ADD_AUTOINTALL_FILE_NOTIFICATION,
   ADD_BUTTON_TEXT,
   AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS,
-  SUBMIT_BUTTON_TEXT,
 } from "./constants";
 
 const AutoinstallFilesHeader: FC = () => {
@@ -20,6 +20,10 @@ const AutoinstallFilesHeader: FC = () => {
   const {
     addAutoinstallFileQuery: { mutateAsync: addAutoinstallFile },
   } = useAutoinstallFiles();
+
+  const handleGroupsSelect = (employeeGroups: string[]): void => {
+    setPageParams({ employeeGroups });
+  };
 
   return (
     <>
@@ -32,9 +36,7 @@ const AutoinstallFilesHeader: FC = () => {
               hasToggleIcon
               hasBadge
               options={AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS}
-              onItemsSelect={(items) =>
-                setPageParams({ employeeGroups: items })
-              }
+              onItemsSelect={handleGroupsSelect}
               selectedItems={employeeGroups}
             />
 
@@ -45,12 +47,9 @@ const AutoinstallFilesHeader: FC = () => {
                 setSidePanelContent(
                   "Add new autoinstall file",
                   <AutoinstallFileForm
-                    buttonText={SUBMIT_BUTTON_TEXT}
+                    buttonText="Add"
                     description="Add autoinstall file. It can be applied during the initial setup of associated instances."
-                    notification={{
-                      message: "can now be assigned to Employee groups.",
-                      title: "You have successfully added",
-                    }}
+                    notification={ADD_AUTOINTALL_FILE_NOTIFICATION}
                     query={addAutoinstallFile}
                   />,
                 )

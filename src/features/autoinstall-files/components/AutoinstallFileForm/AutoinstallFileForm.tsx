@@ -71,6 +71,14 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     formik.setFieldValue("filename", file.name);
   };
 
+  const handleEditorChange = async (value?: string): Promise<void> => {
+    formik.setFieldValue("contents", value);
+  };
+
+  const clickFileInput = (): void => {
+    inputRef.current?.click();
+  };
+
   return (
     <Form className={classes.form} noValidate onSubmit={formik.handleSubmit}>
       <span>{description}</span>
@@ -95,7 +103,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
       <CodeEditor
         label="Code"
         value={formik.values.contents}
-        onChange={(value) => formik.setFieldValue("contents", value)}
+        onChange={handleEditorChange}
         error={getFormikError(formik, "contents")}
         required
         language="yaml"
@@ -104,9 +112,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
             className="u-no-margin--bottom"
             appearance="base"
             hasIcon
-            onClick={() => {
-              inputRef.current?.click();
-            }}
+            onClick={clickFileInput}
             type="button"
           >
             <Icon name="upload" />
