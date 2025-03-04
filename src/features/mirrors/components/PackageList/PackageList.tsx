@@ -186,7 +186,7 @@ const PackageList: FC<PackageListProps> = ({
       };
 
       for (const [packageName, newVersion] of diff.add) {
-        diffPullPocket.push({
+        diffs.push({
           packageName,
           newVersion,
           difference: "add",
@@ -198,7 +198,7 @@ const PackageList: FC<PackageListProps> = ({
       }
 
       for (const [packageName, , newVersion] of diff.update) {
-        diffPullPocket.push({
+        diffs.push({
           packageName,
           newVersion,
           difference: "update",
@@ -206,7 +206,7 @@ const PackageList: FC<PackageListProps> = ({
       }
 
       for (const [packageName] of diff.delete) {
-        diffPullPocket.push({
+        diffs.push({
           packageName,
           difference: "delete",
           newVersion: "",
