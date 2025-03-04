@@ -13,16 +13,10 @@ import MaybeExceededLimitNotification from "../MaybeExceededLimitNotification";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import classes from "./ImportEmployeeGroupsForm.module.scss";
+import SidePanelDescription from "../SidePanelDescription";
 
 const EmployeeGroupIdentityIssuerListContainer = lazy(
   () => import("../EmployeeGroupIdentityIssuerListContainer"),
-);
-
-const Description = () => (
-  <p className={classes.description}>
-    Choose employee groups to import into Landscape. Once imported, you can set
-    their priority, assign Autoinstall files, and manage associated employees.
-  </p>
 );
 
 interface ImportEmployeeGroupsFormProps {
@@ -169,7 +163,11 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
   return (
     <>
       <MaybeExceededLimitNotification />
-      <Description />
+      <SidePanelDescription>
+        Choose employee groups to import into Landscape. Once imported, you can
+        set their priority, assign Autoinstall files, and manage associated
+        employees.
+      </SidePanelDescription>
       <div className={classes.checkbox}>
         <CheckboxInput
           label="Import all groups"

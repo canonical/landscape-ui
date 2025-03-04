@@ -17,6 +17,10 @@ const AssignAutoInstallFileForm = lazy(
   () => import("../AssignAutoInstallFileForm"),
 );
 
+const EditEmployeeGroupPriorityForm = lazy(
+  () => import("../EditEmployeeGroupPriorityForm"),
+);
+
 interface EmployeeDetailsContextualMenuProps {
   readonly employeeGroup: EmployeeGroup;
 }
@@ -57,7 +61,27 @@ const EmployeeGroupsListContextualMenu: FC<
     );
   };
 
+  const handleEditPriority = () => {
+    setSidePanelContent(
+      `Edit priority for ${employeeGroup.name} group`,
+      <Suspense fallback={<LoadingState />}>
+        <EditEmployeeGroupPriorityForm group={employeeGroup} />
+      </Suspense>,
+    );
+  };
+
   const contextualMenuLinks: MenuLink[] = [
+    {
+      children: (
+        <>
+          <Icon name="sort-both" />
+          <span>Edit priority</span>
+        </>
+      ),
+      "aria-label": `Edit priority for ${employeeGroup.name} employee group`,
+      hasIcon: true,
+      onClick: handleEditPriority,
+    },
     {
       children: (
         <>

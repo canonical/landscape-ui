@@ -8,7 +8,7 @@ const useUpdateEmployeeGroups = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
-  const { mutate, isPending } = useMutation<
+  const { mutateAsync, isPending } = useMutation<
     AxiosResponse<EmployeeGroup[]>,
     AxiosError<ApiError>,
     Pick<EmployeeGroup, "id" | "priority" | "autoinstall_file">[]
@@ -33,7 +33,7 @@ const useUpdateEmployeeGroups = () => {
 
   return {
     isUpdatingEmployeeGroups: isPending,
-    updateEmployeeGroups: mutate,
+    updateEmployeeGroups: mutateAsync,
   };
 };
 

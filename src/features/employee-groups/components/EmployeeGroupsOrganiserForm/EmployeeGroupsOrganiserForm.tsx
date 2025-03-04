@@ -8,6 +8,8 @@ import { Form } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { useUpdateEmployeeGroups } from "../../api";
+import { EDIT_PRIORITY_DESCRIPTION } from "../../constants";
+import SidePanelDescription from "../SidePanelDescription";
 
 interface EmployeeGroupsOrganiserFormProps {
   readonly groups: EmployeeGroup[];
@@ -57,22 +59,25 @@ const EmployeeGroupsOrganiserForm: FC<EmployeeGroupsOrganiserFormProps> = ({
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <EmployeeGroupSortableList
-        groups={updatedGroups}
-        onPriorityChange={(id, priority) => {
-          setUpdatedGroups(
-            updatedGroups.map((group) =>
-              group.id === id ? { ...group, priority } : group,
-            ),
-          );
-        }}
-      />
-      <SidePanelFormButtons
-        submitButtonText="Update priorities"
-        submitButtonDisabled={isUpdatingEmployeeGroups}
-      />
-    </Form>
+    <>
+      <SidePanelDescription>{EDIT_PRIORITY_DESCRIPTION}</SidePanelDescription>
+      <Form onSubmit={handleSubmit}>
+        <EmployeeGroupSortableList
+          groups={updatedGroups}
+          onPriorityChange={(id, priority) => {
+            setUpdatedGroups(
+              updatedGroups.map((group) =>
+                group.id === id ? { ...group, priority } : group,
+              ),
+            );
+          }}
+        />
+        <SidePanelFormButtons
+          submitButtonText="Update priorities"
+          submitButtonDisabled={isUpdatingEmployeeGroups}
+        />
+      </Form>
+    </>
   );
 };
 
