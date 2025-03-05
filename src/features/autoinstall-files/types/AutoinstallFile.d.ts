@@ -13,3 +13,12 @@ export interface AutoinstallFile extends Record<string, unknown> {
 export interface AutoinstallFileWithGroups extends AutoinstallFile {
   groups: EmployeeGroup[];
 }
+
+export interface AutoinstallFileVersionInfo extends Record<string, unknown> {
+  version: number;
+  created_at: string;
+}
+
+export interface AutoinstallFileWithVersions extends AutoinstallFile {
+  versions: AutoinstallFileVersionInfo[];
+}

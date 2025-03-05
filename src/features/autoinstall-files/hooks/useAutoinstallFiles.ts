@@ -19,6 +19,7 @@ interface GetAutoinstallFileParams {
   id: number;
   version?: number;
   with_groups?: boolean;
+  with_versions?: boolean;
 }
 
 interface GetAutoinstallFilesParams {
