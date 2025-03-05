@@ -11,7 +11,7 @@ import {
 } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
@@ -40,13 +40,15 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const { employeeGroups, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isModalIgnored, setIsModalIgnored] = useState(false);
+  const [isModalIgnored, setIsModalIgnored] = useState(
+    !!localStorage.getItem(LOCAL_STORAGE_ITEM),
+  );
   const [modalFile, setModalFile] = useState<AutoinstallFile | null>(null);
   const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
 
   const toggleIsModalIgnored = (): void => {
-    setIsModalIgnored(!isModalIgnored);
+    setIsModalIgnored((isModalIgnored) => !isModalIgnored);
   };
 
   useOnClickOutside(
@@ -62,12 +64,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const {
     updateAutoinstallFileQuery: { mutateAsync: updateAutoinstallFile },
   } = useAutoinstallFiles();
-
-  useEffect(() => {
-    if (localStorage.getItem(LOCAL_STORAGE_ITEM)) {
-      setIsModalIgnored(true);
-    }
-  }, []);
 
   const closeModal = (): void => {
     setIsModalVisible(false);
@@ -221,7 +217,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         ),
       },
     ],
-    [files],
+    [expandedRowIndex, files, openDetails, openEditForm],
   );
 
   return (
