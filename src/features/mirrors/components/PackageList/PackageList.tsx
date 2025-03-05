@@ -12,7 +12,7 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import type { ComponentProps, FC } from "react";
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { pluralize } from "../../helpers";
 import { usePockets } from "../../hooks";
@@ -44,6 +44,13 @@ const PackageList: FC<PackageListProps> = ({
     useState(false);
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
+  const [diffPullPocket, setDiffPullPocket] = useState<
+    {
+      packageName: string;
+      newVersion: string;
+      difference: "update" | "delete" | "add";
+    }[]
+  >([]);
 
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
 
@@ -161,50 +168,54 @@ const PackageList: FC<PackageListProps> = ({
     },
   );
 
-  const diffPullPocketData = diffPullPocketQueryResult?.data ?? {};
+  useEffect(() => {
+    const diffPullPocketData = diffPullPocketQueryResult?.data ?? {};
 
-  const diffPullPocket: {
-    packageName: string;
-    newVersion: string;
-    difference: "update" | "delete" | "add";
-  }[] = [];
+    const diffs: {
+      packageName: string;
+      newVersion: string;
+      difference: "update" | "delete" | "add";
+    }[] = [];
 
-  for (const dataKey in diffPullPocketData) {
-    const diff = {
-      add: [],
-      update: [],
-      delete: [],
-      ...diffPullPocketData[dataKey],
-    };
+    for (const dataKey in diffPullPocketData) {
+      const diff = {
+        add: [],
+        update: [],
+        delete: [],
+        ...diffPullPocketData[dataKey],
+      };
 
-    for (const [packageName, newVersion] of diff.add) {
-      diffPullPocket.push({
-        packageName,
-        newVersion,
-        difference: "add",
-      });
+      for (const [packageName, newVersion] of diff.add) {
+        diffs.push({
+          packageName,
+          newVersion,
+          difference: "add",
+        });
+      }
+
+      if (diff.update.length || diff.delete.length) {
+        setHasUpdatedOrDeletedPackages(true);
+      }
+
+      for (const [packageName, , newVersion] of diff.update) {
+        diffs.push({
+          packageName,
+          newVersion,
+          difference: "update",
+        });
+      }
+
+      for (const [packageName] of diff.delete) {
+        diffs.push({
+          packageName,
+          difference: "delete",
+          newVersion: "",
+        });
+      }
     }
 
-    if (diff.update.length || diff.delete.length) {
-      setHasUpdatedOrDeletedPackages(true);
-    }
-
-    for (const [packageName, , newVersion] of diff.update) {
-      diffPullPocket.push({
-        packageName,
-        newVersion,
-        difference: "update",
-      });
-    }
-
-    for (const [packageName] of diff.delete) {
-      diffPullPocket.push({
-        packageName,
-        difference: "delete",
-        newVersion: "",
-      });
-    }
-  }
+    setDiffPullPocket(diffs);
+  }, [diffPullPocketQueryResult]);
 
   const getSortedPackages = (): FormattedPackage[] => {
     if (!hasUpdatedOrDeletedPackages) {
