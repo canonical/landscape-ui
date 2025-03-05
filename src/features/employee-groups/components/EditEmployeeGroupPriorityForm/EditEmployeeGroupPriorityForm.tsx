@@ -11,6 +11,7 @@ import useNotify from "@/hooks/useNotify";
 import classes from "./EditEmployeeGroupPriorityForm.module.scss";
 import { EDIT_PRIORITY_DESCRIPTION } from "../../constants";
 import SidePanelDescription from "../SidePanelDescription";
+import { NOT_AVAILABLE } from "@/constants";
 
 interface EditEmployeeGroupPriorityFormProps {
   readonly group: EmployeeGroup;
@@ -31,7 +32,9 @@ const EditEmployeeGroupPriorityForm: FC<EditEmployeeGroupPriorityFormProps> = ({
       priority: group.priority,
     },
     validationSchema: Yup.object().shape({
-      priority: Yup.number().positive().required("Required"),
+      priority: Yup.number()
+        .nullable()
+        .min(0, "Must be greater than or equal to 0"),
     }),
     onSubmit: async (values) => {
       try {
@@ -63,12 +66,23 @@ const EditEmployeeGroupPriorityForm: FC<EditEmployeeGroupPriorityFormProps> = ({
         type="number"
         label="Priority"
         autoComplete="off"
+        min="0"
+        placeholder={
+          null === formik.getFieldProps("priority").value
+            ? NOT_AVAILABLE
+            : undefined
+        }
         wrapperClassName={classes.input}
         {...formik.getFieldProps("priority")}
+        error={
+          formik.touched.priority && formik.errors.priority
+            ? formik.errors.priority
+            : undefined
+        }
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={isUpdatingEmployeeGroups}
+        submitButtonDisabled={isUpdatingEmployeeGroups || !formik.isValid}
         submitButtonText="Update priority"
       />
     </Form>

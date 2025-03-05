@@ -7,7 +7,7 @@ export interface EmployeeGroup extends Record<string, unknown> {
   id: number;
   issuer_id: number;
   name: string;
-  priority: number;
+  priority: number | null;
 }
 
 export interface ConfigurationLimit {

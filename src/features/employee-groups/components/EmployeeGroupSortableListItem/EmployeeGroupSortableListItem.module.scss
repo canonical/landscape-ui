@@ -4,10 +4,6 @@
 
 .listItem {
   padding: $sp-small;
-
-  &:hover:not(.chosen) {
-    cursor: grab;
-  }
 }
 
 .listItemContent {

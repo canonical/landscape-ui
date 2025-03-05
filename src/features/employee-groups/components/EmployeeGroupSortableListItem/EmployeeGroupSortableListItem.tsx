@@ -3,6 +3,7 @@ import { useRef } from "react";
 import type { EmployeeGroup } from "../../types";
 import classes from "./EmployeeGroupSortableListItem.module.scss";
 import { Button, Icon, Input } from "@canonical/react-components";
+import { NOT_AVAILABLE } from "@/constants";
 
 interface EmployeeGroupSortableListItemProps {
   readonly group: EmployeeGroup;
@@ -43,16 +44,17 @@ const EmployeeGroupSortableListItem: FC<EmployeeGroupSortableListItemProps> = ({
             type="button"
             appearance="base"
             className={classes.priorityButton}
-            onClick={() => handlePriorityChange(priority - 1)}
+            onClick={() => handlePriorityChange((priority ?? 0) - 1)}
             aria-label={`Decrease priority for ${group.name}`}
-            disabled={priority === 0}
+            disabled={priority === 0 || priority === null}
           >
             <Icon name="minus" className={classes.minusIcon} />
           </Button>
           <Input
             type="number"
             className={classes.priorityInput}
-            value={priority}
+            value={priority ?? undefined}
+            placeholder={null === priority ? NOT_AVAILABLE : undefined}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               handlePriorityChange(parseInt(e.target.value, 10))
             }
@@ -64,7 +66,7 @@ const EmployeeGroupSortableListItem: FC<EmployeeGroupSortableListItemProps> = ({
             type="button"
             appearance="base"
             className={classes.priorityButton}
-            onClick={() => handlePriorityChange(priority + 1)}
+            onClick={() => handlePriorityChange((priority ?? 0) + 1)}
             aria-label={`Increase priority for ${group.name}`}
           >
             <Icon name="plus" className={classes.plusIcon} />
