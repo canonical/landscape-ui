@@ -1,17 +1,17 @@
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 import { renderWithProviders } from "@/tests/render";
 import { describe } from "vitest";
-import AutoinstallFilesListContextualMenu from "./AutoinstallFilesListContextualMenu";
+import AutoinstallFileDetails from "./AutoinstallFileDetails";
 
-describe("AutoinstallFilesListContextualMenu", () => {
+describe("AutoinstallFileDetails", () => {
   it("should render", async () => {
     const [file] = autoinstallFiles;
 
     renderWithProviders(
-      <AutoinstallFilesListContextualMenu
+      <AutoinstallFileDetails
         file={file}
-        openDetailsPanel={vi.fn()}
         openEditPanel={vi.fn()}
+        openVersionHistory={vi.fn()}
       />,
     );
   });

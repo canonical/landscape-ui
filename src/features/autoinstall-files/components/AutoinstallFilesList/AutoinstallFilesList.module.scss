@@ -1,3 +1,4 @@
+@import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
 .actions {
@@ -5,14 +6,18 @@
   width: 6rem;
 }
 
-.cell {
-  padding: 0.5rem;
+.chip {
+  border: none;
+  margin-left: 0.25rem;
+  position: absolute;
+}
 
-  > * {
-    justify-content: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 13rem;
-  }
+.expandedCell {
+  overflow: visible;
+  padding: 0;
+}
+
+.expandedRow {
+  background-color: $color-x-light;
+  filter: drop-shadow(0 4px 8px $color-mid-light);
 }

@@ -1,20 +1,21 @@
-import type { FC, ReactNode } from "react";
-import classNames from "classnames";
 import { Editor } from "@monaco-editor/react";
+import classNames from "classnames";
+import type { ComponentProps, FC, ReactNode } from "react";
 import LoadingState from "../layout/LoadingState";
 import classes from "./CodeEditor.module.scss";
 
 interface CodeEditorProps {
   readonly label: string;
-  readonly onChange: (value: string | undefined) => void;
   readonly value: string | undefined;
   readonly className?: string;
   readonly error?: string | false;
   readonly labelClassName?: string;
+  readonly onChange?: (value: string | undefined) => void;
   readonly required?: boolean;
   readonly language?: string;
   readonly defaultValue?: string;
   readonly headerContent?: ReactNode;
+  readonly options?: ComponentProps<typeof Editor>["options"];
 }
 
 const CodeEditor: FC<CodeEditorProps> = ({
@@ -28,6 +29,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
   language = "shell",
   defaultValue,
   headerContent,
+  options,
 }) => {
   return (
     <div
@@ -74,6 +76,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
             minimap: { enabled: false },
             renderLineHighlight: "none",
             padding: { top: 8, bottom: 8 },
+            ...options,
           }}
         />
 

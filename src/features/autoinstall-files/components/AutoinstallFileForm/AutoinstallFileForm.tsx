@@ -1,51 +1,51 @@
-import { useFormik } from "formik";
-import type { FC, ReactNode } from "react";
-import { useRef } from "react";
-import { Button, Form, Icon, Input } from "@canonical/react-components";
+import CodeEditor from "@/components/form/CodeEditor";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { VALIDATION_SCHEMA } from "./constants";
-import type { FormProps } from "./types";
+import type { NotificationMethodArgs } from "@/types/Notification";
+import { getFormikError } from "@/utils/formikErrors";
+import { Button, Form, Icon, Input } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useRef } from "react";
 import classes from "./AutoinstallFileForm.module.scss";
-import CodeEditor from "@/components/form/CodeEditor";
+import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
+import type { FormikProps } from "./types";
 
-const AutoinstallFileForm: FC<{
-  readonly children?: ReactNode;
-  readonly code?: string;
-  readonly createNotificationTitle: (fileName: string) => string | undefined;
-  readonly createNotificationMessage: (fileName: string) => string;
-  readonly fileName?: string;
-  readonly fileNameInputDisabled?: boolean;
-  readonly submitButtonText: string;
-}> = ({
-  children,
-  code = "",
-  createNotificationMessage,
-  createNotificationTitle,
-  fileName = "",
-  fileNameInputDisabled,
-  submitButtonText,
+interface AutoinstallFileFormProps {
+  readonly buttonText: string;
+  readonly description: string;
+  readonly notification: NotificationMethodArgs;
+  readonly query: (params: FormikProps) => Promise<unknown>;
+  readonly initialFile?: FormikProps;
+}
+
+const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
+  buttonText,
+  description,
+  initialFile = DEFAULT_FILE,
+  notification,
+  query,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const formik = useFormik<FormProps>({
-    initialValues: {
-      fileName,
-      code,
-    },
+  const formik = useFormik<FormikProps>({
+    initialValues: initialFile,
+
     validationSchema: VALIDATION_SCHEMA,
-    onSubmit: async ({ fileName }) => {
+
+    onSubmit: async (autoinstallFile) => {
       try {
+        await query(autoinstallFile);
         closeSidePanel();
 
         notify.success({
-          title: createNotificationTitle(fileName),
-          message: createNotificationMessage(fileName),
+          message: `${autoinstallFile.filename} ${notification.message}`,
+          title: `${notification.title} ${autoinstallFile.filename}`,
         });
       } catch (error) {
         debug(error);
@@ -53,72 +53,77 @@ const AutoinstallFileForm: FC<{
     },
   });
 
+  const handleInputChange = async ({
+    target: { files },
+  }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    if (!files) {
+      return;
+    }
+
+    const [file] = files;
+
+    await formik.setFieldValue("contents", await file.text());
+
+    if (formik.values.filename) {
+      return;
+    }
+
+    await formik.setFieldValue("filename", file.name);
+  };
+
+  const handleEditorChange = async (value?: string): Promise<void> => {
+    await formik.setFieldValue("contents", value);
+  };
+
+  const clickFileInput = (): void => {
+    inputRef.current?.click();
+  };
+
   return (
-    <Form noValidate onSubmit={formik.handleSubmit}>
-      <div className={classes.container}>
-        <span>{children}</span>
+    <Form className={classes.form} noValidate onSubmit={formik.handleSubmit}>
+      <span>{description}</span>
 
-        <div className={classes.inputs}>
-          <Input
-            type="text"
-            label="File name"
-            {...formik.getFieldProps("fileName")}
-            error={
-              formik.touched.fileName && formik.errors.fileName
-                ? formik.errors.fileName
-                : undefined
-            }
-            disabled={fileNameInputDisabled}
-            required
-          />
+      <Input
+        type="text"
+        label="File name"
+        {...formik.getFieldProps("filename")}
+        error={getFormikError(formik, "filename")}
+        disabled={!!initialFile.filename}
+        required
+      />
 
-          <input
-            ref={inputRef}
-            className={classes.hidden}
-            type="file"
-            accept=".yaml"
-            onChange={async ({ target: { files } }) => {
-              if (!files) {
-                return;
-              }
+      <input
+        ref={inputRef}
+        className="u-hide"
+        type="file"
+        accept=".yaml"
+        onChange={handleInputChange}
+      />
 
-              formik.setFieldValue("code", await files[0].text());
-
-              if (formik.values.fileName) {
-                return;
-              }
-
-              formik.setFieldValue("fileName", files[0].name);
-            }}
-          />
-
-          <CodeEditor
-            className={classes.editor}
-            label="Code"
-            {...formik.getFieldProps("code")}
-            required
-            language="yaml"
-            headerContent={
-              <Button
-                className="u-no-margin--bottom"
-                appearance="base"
-                hasIcon
-                onClick={() => {
-                  inputRef.current?.click();
-                }}
-                type="button"
-              >
-                <Icon name="upload" />
-                <span>Populate from file</span>
-              </Button>
-            }
-          />
-        </div>
-      </div>
+      <CodeEditor
+        label="Code"
+        value={formik.values.contents}
+        onChange={handleEditorChange}
+        error={getFormikError(formik, "contents")}
+        required
+        language="yaml"
+        headerContent={
+          <Button
+            className="u-no-margin--bottom"
+            appearance="base"
+            hasIcon
+            onClick={clickFileInput}
+            type="button"
+          >
+            <Icon name="upload" />
+            <span>Populate from file</span>
+          </Button>
+        }
+      />
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText={submitButtonText}
+        submitButtonText={buttonText}
       />
     </Form>
   );

@@ -1,16 +1,17 @@
-import type { FC } from "react";
 import type { MenuLink } from "@canonical/react-components";
 import { ContextualMenu, Icon } from "@canonical/react-components";
-import type { AutoinstallFile } from "../../types";
-import classes from "./AutoinstallFilesListContextualMenu.module.scss";
+import type { FC } from "react";
+import type { AutoinstallFileWithGroups } from "../../types";
 
 interface AutoinstallFilesListContextualMenuProps {
-  readonly file: AutoinstallFile;
+  readonly file: AutoinstallFileWithGroups;
+  readonly openDetailsPanel: (file: AutoinstallFileWithGroups) => void;
+  readonly openEditPanel: (file: AutoinstallFileWithGroups) => void;
 }
 
 const AutoinstallFilesListContextualMenu: FC<
   AutoinstallFilesListContextualMenuProps
-> = ({ file }) => {
+> = ({ file, openDetailsPanel, openEditPanel }) => {
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
@@ -21,7 +22,7 @@ const AutoinstallFilesListContextualMenu: FC<
       ),
       "aria-label": `View ${file.title} details`,
       hasIcon: true,
-      onClick: undefined,
+      onClick: () => openDetailsPanel(file),
     },
     {
       children: (
@@ -32,7 +33,7 @@ const AutoinstallFilesListContextualMenu: FC<
       ),
       "aria-label": `Edit ${file.title}`,
       hasIcon: true,
-      onClick: undefined,
+      onClick: () => openEditPanel(file),
     },
     {
       children: (
@@ -44,6 +45,7 @@ const AutoinstallFilesListContextualMenu: FC<
       "aria-label": `Set ${file.title} as default`,
       hasIcon: true,
       onClick: undefined,
+      disabled: file.is_default,
     },
     {
       children: (
@@ -55,6 +57,7 @@ const AutoinstallFilesListContextualMenu: FC<
       "aria-label": `Remove ${file.title}`,
       hasIcon: true,
       onClick: undefined,
+      disabled: file.is_default,
     },
   ];
 
@@ -62,8 +65,7 @@ const AutoinstallFilesListContextualMenu: FC<
     <>
       <ContextualMenu
         position="left"
-        className={classes.menu}
-        toggleClassName={classes.toggleButton}
+        toggleClassName="u-no-margin u-no-padding"
         toggleAppearance="base"
         toggleLabel={<Icon name="contextual-menu" />}
         toggleProps={{ "aria-label": `${file.title} profile actions` }}

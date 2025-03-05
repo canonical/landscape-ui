@@ -1,14 +1,16 @@
-import { renderWithProviders } from "@/tests/render";
-import { describe } from "vitest";
-import AutoinstallFilesList from ".";
+import usePageParams from "@/hooks/usePageParams";
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import usePageParams from "@/hooks/usePageParams";
+import { describe } from "vitest";
+import AutoinstallFilesList from "./AutoinstallFilesList";
 
 vi.mock("@/hooks/usePageParams");
 
 describe("AutoinstallFilesList", () => {
+  const [autoinstallFile1, autoinstallFile2] = autoinstallFiles;
+
   it("should open a side panel", async () => {
     vi.mocked(usePageParams).mockReturnValue({
       accessGroups: [""],
@@ -34,21 +36,14 @@ describe("AutoinstallFilesList", () => {
     });
 
     renderWithProviders(
-      <AutoinstallFilesList
-        defaultFile={{
-          name: "default.yaml",
-          content: "default content",
-          employeeGroupsAssociated: [],
-          dateCreated: new Date().toISOString(),
-          events: [],
-          lastModified: new Date().toISOString(),
-          version: 1,
-        }}
-        autoinstallFiles={autoinstallFiles}
-      />,
+      <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />,
     );
 
-    await userEvent.click(screen.getByRole("button", { name: "default.yaml" }));
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: `${autoinstallFile1.filename}, v${autoinstallFile1.version}`,
+      }),
+    );
   });
 
   it("should use search params", async () => {
@@ -76,21 +71,19 @@ describe("AutoinstallFilesList", () => {
     });
 
     renderWithProviders(
-      <AutoinstallFilesList
-        defaultFile={{
-          name: "default.yaml",
-          content: "default content",
-          employeeGroupsAssociated: [],
-          dateCreated: new Date().toISOString(),
-          events: [],
-          lastModified: new Date().toISOString(),
-          version: 1,
-        }}
-        autoinstallFiles={autoinstallFiles}
-      />,
+      <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />,
     );
 
-    expect(screen.getByText("default.yaml")).toBeInTheDocument();
-    expect(screen.queryByText("medium.yaml")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        `${autoinstallFile1.filename}, v${autoinstallFile1.version}`,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        `${autoinstallFile2.filename}, v${autoinstallFile2.version}`,
+      ),
+    ).not.toBeInTheDocument();
   });
 });
