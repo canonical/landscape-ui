@@ -1,22 +1,23 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { type FC } from "react";
-import { useAutoinstallFiles } from "../../api";
+import { useGetAutoinstallFiles } from "../../api";
 import AutoinstallFilesHeader from "../AutoinstallFilesHeader";
 import AutoinstallFilesList from "../AutoinstallFilesList";
 
 const AutoinstallFilesPanel: FC = () => {
-  const files = useAutoinstallFiles({
-    with_groups: true,
-  });
+  const { autoinstallFiles, isAutoinstallFilesLoading } =
+    useGetAutoinstallFiles({
+      with_groups: true,
+    });
 
   return (
     <>
       <AutoinstallFilesHeader />
 
-      {!files ? (
+      {isAutoinstallFilesLoading ? (
         <LoadingState />
       ) : (
-        <AutoinstallFilesList autoinstallFiles={files} />
+        <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />
       )}
     </>
   );

@@ -6,7 +6,7 @@ import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import { useAutoinstallFile } from "../../api";
+import { useGetAutoinstallFile } from "../../api";
 
 import type { AutoinstallFile } from "../../types";
 import AutoinstallFileVersion from "../AutoinstallFileVersion/AutoinstallFileVersion";
@@ -22,8 +22,8 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const files = [...Array(file.version)].map((_, i) => {
-    return useAutoinstallFile(file.id, { version: i + 1 });
+  const fileQueries = [...Array(file.version)].map((_, i) => {
+    return useGetAutoinstallFile(file.id, { version: i + 1 });
   });
 
   const columns = useMemo<Column<AutoinstallFile>[]>(
@@ -66,14 +66,21 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
         ),
       },
     ],
-    [files],
+    [fileQueries],
   );
 
-  if (files.some((file) => !file)) {
+  if (fileQueries.some((query) => query.isAutoinstallFileLoading)) {
     return <LoadingState />;
   }
 
-  return <ModularTable columns={columns} data={files as AutoinstallFile[]} />;
+  return (
+    <ModularTable
+      columns={columns}
+      data={fileQueries.map(
+        (query) => query.autoinstallFile as AutoinstallFile,
+      )}
+    />
+  );
 };
 
 export default AutoinstallFileVersionHistory;

@@ -5,7 +5,7 @@ import { DISPLAY_DATE_FORMAT } from "@/constants";
 import { Button, Icon, Input } from "@canonical/react-components";
 import moment from "moment";
 import { useState, type FC } from "react";
-import { useAutoinstallFile } from "../../api";
+import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
 import classes from "./AutoinstallFileVersion.module.scss";
 import { BUTTON_TIMEOUT } from "./constants";
@@ -21,7 +21,7 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
   goBack,
   version,
 }) => {
-  const file = useAutoinstallFile(id, { version });
+  const { autoinstallFile } = useGetAutoinstallFile(id, { version });
 
   const copyButtonProps = {
     children: (
@@ -55,22 +55,27 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
     onClick: (file: AutoinstallFile) => void;
   }>(copyButtonProps);
 
-  if (!file) {
+  if (!autoinstallFile) {
     return <LoadingState />;
   }
 
   return (
     <>
-      <Input type="text" label="File name" value={file.filename} disabled />
+      <Input
+        type="text"
+        label="File name"
+        value={autoinstallFile.filename}
+        disabled
+      />
 
       <InfoItem
         label="Date created"
-        value={moment(file.created_at).format(DISPLAY_DATE_FORMAT)}
+        value={moment(autoinstallFile.created_at).format(DISPLAY_DATE_FORMAT)}
       />
 
       <CodeEditor
         label="Code"
-        value={file.contents}
+        value={autoinstallFile.contents}
         options={{ readOnly: true }}
         language="yaml"
         headerContent={
@@ -79,7 +84,7 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
             appearance="base"
             hasIcon
             onClick={() => {
-              buttonProps.onClick(file);
+              buttonProps.onClick(autoinstallFile);
             }}
           >
             {buttonProps.children}

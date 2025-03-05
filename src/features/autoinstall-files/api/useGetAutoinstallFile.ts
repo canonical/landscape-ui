@@ -8,13 +8,16 @@ interface GetAutoinstallFileParams {
   version?: number;
 }
 
-export default function useAutoinstallFile(
+export default function useGetAutoinstallFile(
   id: number,
   params: GetAutoinstallFileParams,
-): AutoinstallFile | undefined {
+): {
+  autoinstallFile: AutoinstallFile | null;
+  isAutoinstallFileLoading: boolean;
+} {
   const authFetch = useFetch();
 
-  const { data: response } = useQuery<
+  const { data: response, isLoading } = useQuery<
     AxiosResponse<AutoinstallFile>,
     AxiosError<ApiError>
   >({
@@ -25,5 +28,8 @@ export default function useAutoinstallFile(
       }),
   });
 
-  return response?.data;
+  return {
+    autoinstallFile: response ? response.data : null,
+    isAutoinstallFileLoading: isLoading,
+  };
 }

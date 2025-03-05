@@ -4,31 +4,34 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type { AutoinstallFile } from "../types";
 
-interface UpdateAutoinstallFileParams {
+interface AddAutoinstallFileParams {
   contents: string;
+  filename: string;
 }
 
-const useUpdateAutoinstallFile = (): ((
-  id: number,
-  params: UpdateAutoinstallFileParams,
-) => Promise<AutoinstallFile>) => {
+const useAddAutoinstallFile = (): {
+  isAutoinstallFileAdding: boolean;
+  addAutoinstallFile: (
+    params: AddAutoinstallFileParams,
+  ) => Promise<AutoinstallFile>;
+} => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
-  const { mutateAsync } = useMutation<
+  const { isPending, mutateAsync } = useMutation<
     AutoinstallFile,
     AxiosError<ApiError>,
-    { id: number } & UpdateAutoinstallFileParams
+    AddAutoinstallFileParams
   >({
-    mutationFn: ({ id, ...params }) =>
-      authFetch.patch(`autoinstall/${id}`, params),
+    mutationFn: (params) => authFetch.post("autoinstall", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["autoinstallFiles"] }),
   });
 
-  return (id: number, params: UpdateAutoinstallFileParams) => {
-    return mutateAsync({ id, ...params });
+  return {
+    isAutoinstallFileAdding: isPending,
+    addAutoinstallFile: mutateAsync,
   };
 };
 
-export default useUpdateAutoinstallFile;
+export default useAddAutoinstallFile;

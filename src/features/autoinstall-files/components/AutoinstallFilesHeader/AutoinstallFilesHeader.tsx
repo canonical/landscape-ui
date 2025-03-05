@@ -17,7 +17,7 @@ const AutoinstallFilesHeader: FC = () => {
   const { setPageParams, employeeGroups } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
-  const addAutoinstallFile = useAddAutoinstallFile();
+  const { addAutoinstallFile } = useAddAutoinstallFile();
 
   const handleGroupsSelect = (employeeGroups: string[]): void => {
     setPageParams({ employeeGroups });
