@@ -7,7 +7,7 @@ import endpointsToIntercept from "./endpointsToIntercept.json";
 
 const handlers: RequestHandler[] = [
   http.all("*", async ({ request }) => {
-    if (!request.url.includes(API_URL) || !request.url.includes(API_URL_OLD)) {
+    if (!request.url.includes(API_URL) && !request.url.includes(API_URL_OLD)) {
       return passthrough();
     }
 
