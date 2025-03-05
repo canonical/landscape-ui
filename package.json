@@ -1,7 +1,7 @@
 {
   "name": "landscape-webapp-new",
   "private": true,
-  "version": "1.12.4",
+  "version": "1.12.5",
   "type": "module",
   "engines": {
     "node": ">=20.11.0"
