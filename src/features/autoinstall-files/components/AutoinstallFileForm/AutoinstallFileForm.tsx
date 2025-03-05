@@ -62,17 +62,17 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
 
     const [file] = files;
 
-    formik.setFieldValue("contents", await file.text());
+    await formik.setFieldValue("contents", await file.text());
 
     if (formik.values.filename) {
       return;
     }
 
-    formik.setFieldValue("filename", file.name);
+    await formik.setFieldValue("filename", file.name);
   };
 
   const handleEditorChange = async (value?: string): Promise<void> => {
-    formik.setFieldValue("contents", value);
+    await formik.setFieldValue("contents", value);
   };
 
   const clickFileInput = (): void => {
