@@ -6,10 +6,9 @@
   width: 6rem;
 }
 
-.chip {
-  border: none;
-  margin-left: 0.25rem;
-  position: absolute;
+.heading {
+  align-items: center;
+  display: flex;
 }
 
 .expandedCell {

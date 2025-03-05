@@ -1,3 +1,4 @@
+import Chip from "@/components/layout/Chip";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
@@ -5,7 +6,6 @@ import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
   CheckboxInput,
-  Chip,
   ConfirmationModal,
   ModularTable,
 } from "@canonical/react-components";
@@ -88,7 +88,12 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     defaultTabId?: TabId,
   ): void => {
     setSidePanelContent(
-      `${file.filename}${file.is_default ? " (default)" : ""}`,
+      <>
+        <div className={classes.heading}>
+          {file.filename}
+          {file.is_default && <Chip text="default" />}
+        </div>
+      </>,
       <AutoinstallFileDetails
         defaultTabId={defaultTabId}
         file={file}
@@ -148,17 +153,21 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           row: { original },
         }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
           <div>
-            <Button
-              type="button"
-              appearance="link"
-              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => openDetails(original)}
-            >
-              {`${original.filename}, v${original.version}`}
-            </Button>
+            <span>
+              <Button
+                type="button"
+                appearance="link"
+                className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+                onClick={() => openDetails(original)}
+              >
+                {`${original.filename}, v${original.version}`}
+              </Button>
+            </span>
 
             {original.is_default && (
-              <Chip value="default" className={classes.chip} />
+              <span>
+                <Chip text="default" />
+              </span>
             )}
           </div>
         ),
