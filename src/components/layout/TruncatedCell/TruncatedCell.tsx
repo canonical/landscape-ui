@@ -1,7 +1,7 @@
+import { Button } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { useState } from "react";
-import { Button } from "@canonical/react-components";
 import classes from "./TruncatedCell.module.scss";
 
 interface TruncatedCellProps {
@@ -10,23 +10,31 @@ interface TruncatedCellProps {
   readonly onExpand: (
     event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
+  readonly showCount?: boolean;
 }
 
 const TruncatedCell: FC<TruncatedCellProps> = ({
   content,
   isExpanded,
   onExpand,
+  showCount,
 }) => {
-  const [isExpandable, setIsExpandable] = useState(false);
+  const [overflownChildCount, setOverflownChildCount] = useState<
+    number | undefined
+  >(undefined);
 
-  const expandabilityCheck = (instance: HTMLSpanElement | null) => {
+  const expandabilityCheck = (instance: HTMLSpanElement | null): void => {
     if (!instance) {
       return;
     }
 
-    if (instance.clientHeight > 24) {
-      setIsExpandable(true);
-    }
+    const overflownChildCount = [...instance.children].filter(
+      (child) =>
+        child.getBoundingClientRect().right >
+        instance.getBoundingClientRect().right,
+    ).length;
+
+    setOverflownChildCount(overflownChildCount);
   };
 
   return (
@@ -40,12 +48,12 @@ const TruncatedCell: FC<TruncatedCellProps> = ({
           ref={expandabilityCheck}
           className={classNames({
             [classes.expandedContent]: isExpanded,
-            [classes.truncated]: isExpandable && !isExpanded,
+            [classes.truncated]: !isExpanded,
           })}
         >
           {content}
         </span>
-        {isExpandable && !isExpanded && (
+        {!!overflownChildCount && !isExpanded && (
           <Button
             type="button"
             appearance="link"
@@ -56,7 +64,7 @@ const TruncatedCell: FC<TruncatedCellProps> = ({
             onClick={onExpand}
           >
             <span className={classNames("u-text--muted", classes.buttonText)}>
-              show more
+              {showCount ? `+${overflownChildCount}` : "show more"}
             </span>
           </Button>
         )}
