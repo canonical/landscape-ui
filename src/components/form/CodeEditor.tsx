@@ -6,11 +6,11 @@ import classes from "./CodeEditor.module.scss";
 
 interface CodeEditorProps {
   readonly label: string;
-  readonly onChange?: (value: string | undefined) => void;
   readonly value: string | undefined;
   readonly className?: string;
   readonly error?: string | false;
   readonly labelClassName?: string;
+  readonly onChange?: (value: string | undefined) => void;
   readonly required?: boolean;
   readonly language?: string;
   readonly defaultValue?: string;

@@ -60,39 +60,32 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
   }
 
   return (
-    <div className={classes.form}>
-      <div className={classes.container}>
-        <div className={classes.inputs}>
-          <Input type="text" label="File name" value={file.filename} disabled />
+    <>
+      <Input type="text" label="File name" value={file.filename} disabled />
 
-          <div className={classes.row}>
-            <InfoItem
-              label="Date created"
-              value={moment(file.created_at).format(DISPLAY_DATE_FORMAT)}
-            />
-            <InfoItem label="Author" value="Stephanie Domas" />
-          </div>
+      <InfoItem
+        label="Date created"
+        value={moment(file.created_at).format(DISPLAY_DATE_FORMAT)}
+      />
 
-          <CodeEditor
-            label="Code"
-            value={file.contents}
-            options={{ readOnly: true }}
-            language="yaml"
-            headerContent={
-              <Button
-                className="u-no-margin--bottom"
-                appearance="base"
-                hasIcon
-                onClick={() => {
-                  buttonProps.onClick(file);
-                }}
-              >
-                {buttonProps.children}
-              </Button>
-            }
-          />
-        </div>
-      </div>
+      <CodeEditor
+        label="Code"
+        value={file.contents}
+        options={{ readOnly: true }}
+        language="yaml"
+        headerContent={
+          <Button
+            className="u-no-margin--bottom"
+            appearance="base"
+            hasIcon
+            onClick={() => {
+              buttonProps.onClick(file);
+            }}
+          >
+            {buttonProps.children}
+          </Button>
+        }
+      />
 
       <div className={classes.buttons}>
         <Button
@@ -106,7 +99,7 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
           <span>Back</span>
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 

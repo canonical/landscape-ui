@@ -8,4 +8,8 @@ export const AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS: SelectOption[] = [
 ];
 
 export const ADD_BUTTON_TEXT = "Add new";
-export const SUBMIT_BUTTON_TEXT = "Add";
+
+export const ADD_AUTOINTALL_FILE_NOTIFICATION = {
+  message: "can now be assigned to Employee groups.",
+  title: "You have successfully added",
+};

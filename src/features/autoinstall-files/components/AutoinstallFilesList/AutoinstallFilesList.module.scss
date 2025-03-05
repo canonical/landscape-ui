@@ -1,39 +1,9 @@
+@import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
 .actions {
   text-align: right;
   width: 6rem;
-}
-
-.cell {
-  padding: 0.5rem;
-  position: relative;
-
-  > * {
-    justify-content: left;
-    overflow: hidden;
-    white-space: nowrap;
-    width: 13rem;
-  }
-
-  button {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-.largeCell {
-  padding: 0.5rem;
-  position: relative;
-
-  > * {
-    justify-content: left;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 19.25rem;
-  }
 }
 
 .chip {
@@ -42,8 +12,12 @@
   position: absolute;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.expandedCell {
+  overflow: visible;
+  padding: 0;
+}
+
+.expandedRow {
+  background-color: $color-x-light;
+  filter: drop-shadow(0 4px 8px $color-mid-light);
 }

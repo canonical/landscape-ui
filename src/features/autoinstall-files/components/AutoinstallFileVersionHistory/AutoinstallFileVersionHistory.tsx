@@ -7,18 +7,17 @@ import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useAutoinstallFile } from "../../api";
-import type { AutoinstallFile, TabId } from "../../types";
+import type { AutoinstallFile } from "../../types";
 import AutoinstallFileVersion from "../AutoinstallFileVersion/AutoinstallFileVersion";
-import classes from "./AutoinstallFileVersionHistory.module.scss";
 
 interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
-  readonly openDetailsPanel: (defaultTabId: TabId) => void;
+  readonly goBack: () => void;
 }
 
 const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
   file,
-  openDetailsPanel,
+  goBack,
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
@@ -43,9 +42,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
               setSidePanelContent(
                 `${file.filename}, v${version}`,
                 <AutoinstallFileVersion
-                  goBack={() => {
-                    openDetailsPanel("version-history");
-                  }}
+                  goBack={goBack}
                   id={file.id}
                   version={version}
                 />,
@@ -57,14 +54,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
         ),
       },
       {
-        accessor: "author",
-        className: classes.cell,
-        Header: "Author",
-        Cell: (): ReactNode => <div>Stephanie Domas</div>,
-      },
-      {
         accessor: "created_at",
-        className: classes.cell,
         Header: "Created at",
         Cell: ({
           row: {

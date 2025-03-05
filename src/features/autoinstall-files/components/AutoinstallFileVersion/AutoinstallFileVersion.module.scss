@@ -1,40 +1,5 @@
 @import "vanilla-framework/scss/patterns_lists";
 
-.form {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.container {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.inputs {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.hidden {
-  display: none;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
-  justify-content: space-between;
-
-  & div {
-    width: 21.75rem;
-  }
-}
-
 .buttons {
   background-color: $color-x-light;
   border-top: 1px solid $colors--light-theme--border-default;

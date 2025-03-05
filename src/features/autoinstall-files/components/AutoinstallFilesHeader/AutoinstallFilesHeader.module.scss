@@ -1,13 +1,4 @@
-.header {
+.container {
   display: flex;
-  gap: 1rem;
-  justify-content: left;
-}
-
-.search {
-  width: 25rem;
-}
-
-.filters {
-  flex: 1;
+  justify-content: space-between;
 }

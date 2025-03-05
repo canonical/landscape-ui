@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
-import AutoinstallFilesHeader from ".";
+import AutoinstallFilesHeader from "./AutoinstallFilesHeader";
 import { ADD_BUTTON_TEXT } from "./constants";
 
 describe("AutoinstallFilesHeader", () => {
