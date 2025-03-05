@@ -103,7 +103,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           openDetails(file, "version-history");
         }}
       />,
-      "large",
     );
   };
 
