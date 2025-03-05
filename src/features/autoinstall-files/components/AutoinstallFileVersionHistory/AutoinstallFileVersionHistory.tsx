@@ -1,3 +1,4 @@
+import Chip from "@/components/layout/Chip";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -9,6 +10,7 @@ import type { CellProps, Column } from "react-table";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
 import type { AutoinstallFile } from "../../types";
 import AutoinstallFileVersion from "../AutoinstallFileVersion/AutoinstallFileVersion";
+import classes from "./AutoinstallFileVersionHistory.module.scss";
 
 interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
@@ -48,7 +50,10 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={() => {
               setSidePanelContent(
-                `${file.filename}, v${version}`,
+                <div className={classes.heading}>
+                  {file.filename}, v{version}
+                  {file.is_default && <Chip text="default" />}
+                </div>,
                 <AutoinstallFileVersion
                   goBack={goBack}
                   id={file.id}

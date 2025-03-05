@@ -90,7 +90,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     setSidePanelContent(
       <>
         <div className={classes.heading}>
-          {file.filename}
+          {file.filename}, v{file.version}
           {file.is_default && <Chip text="default" />}
         </div>
       </>,
@@ -109,7 +109,10 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   const openEditFormWithoutModal = (file: AutoinstallFile): void => {
     setSidePanelContent(
-      `Edit ${file.filename}`,
+      <div className={classes.heading}>
+        Edit {file.filename}, v{file.version}
+        {file.is_default && <Chip text="default" />}
+      </div>,
       <AutoinstallFileForm
         buttonText="Save changes"
         description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
