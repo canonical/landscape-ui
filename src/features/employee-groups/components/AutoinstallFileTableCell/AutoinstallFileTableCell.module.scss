@@ -1,0 +1,14 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.defaultAutoinstallFileChip {
+  background-color: $colors--theme--background-neutral-default;
+  border-radius: $sph--large;
+  padding: $spv--x-small $sph--small;
+}
+
+.container {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
+}

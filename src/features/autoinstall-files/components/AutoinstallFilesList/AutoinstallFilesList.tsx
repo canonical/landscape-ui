@@ -8,18 +8,18 @@ import {
   Chip,
   ConfirmationModal,
   ModularTable,
-  useOnClickOutside,
 } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
+import { useOnClickOutside } from "usehooks-ts";
 import { useUpdateAutoinstallFile } from "../../api";
-import type { TabId } from "../../types";
 import type {
   AutoinstallFile,
   AutoinstallFileWithGroups,
-} from "../../types/AutoinstallFile";
+  TabId,
+} from "../../types";
 import AutoinstallFileDetails from "../AutoinstallFileDetails";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";

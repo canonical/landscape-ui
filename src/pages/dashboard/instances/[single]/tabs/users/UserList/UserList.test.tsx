@@ -36,17 +36,17 @@ describe("UserList", () => {
   describe("Table Interactions", () => {
     it("shows locked and unlocked user icon in the user table", async () => {
       renderWithProviders(<UserList {...props} />);
-      expect(lockedUser).toBeDefined();
 
-      const unlockedStatusesLength = screen.getAllByRole("gridcell", {
-        name: /unlocked/i,
-      }).length;
+      const unlockedStatuses = screen.getAllByRole("gridcell", {
+        name: "Unlocked",
+      });
 
-      const lockedStatusesLength = screen.getAllByRole("gridcell", {
-        name: /locked/i,
-      }).length;
-      expect(unlockedStatusesLength).toBeGreaterThanOrEqual(1);
-      expect(lockedStatusesLength).toBeGreaterThanOrEqual(1);
+      const lockedStatuses = screen.getAllByRole("gridcell", {
+        name: "Locked",
+      });
+
+      expect(lockedStatuses[0]).toHaveIcon("lock-locked-active");
+      expect(unlockedStatuses[0]).toHaveIcon("lock-unlock");
     });
 
     it("should select all users when clicking ToggleAll checkbox", async () => {

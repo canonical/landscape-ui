@@ -9,8 +9,8 @@ import { userDetails } from "@/tests/mocks/user";
 import { screen } from "@testing-library/react";
 
 describe("GeneralSettings", () => {
-  vi.mock("@/hooks/useAuth");
-  vi.mock("@/hooks/useEnv");
+  vi.mock("@/api/useAuth");
+  vi.mock("@/api/useEnv");
 
   it("should show user info instead of user edit form and no helper content", async () => {
     vi.mocked(useAuth, { partial: true }).mockReturnValue({
@@ -66,14 +66,6 @@ describe("GeneralSettings", () => {
     vi.mocked(useAuth, { partial: true }).mockReturnValue({
       user: authUser,
       setUser: vi.fn(),
-      account: {
-        switch: vi.fn(),
-        current: authUser.current_account,
-        options: authUser.accounts.map(({ name, title }) => ({
-          label: title,
-          value: name,
-        })),
-      },
     });
     vi.mocked(useEnv, { partial: true }).mockReturnValue({
       isSaas: false,
@@ -96,14 +88,6 @@ describe("GeneralSettings", () => {
     vi.mocked(useAuth, { partial: true }).mockReturnValue({
       user: authUser,
       setUser: vi.fn(),
-      account: {
-        switch: vi.fn(),
-        current: authUser.current_account,
-        options: authUser.accounts.map(({ name, title }) => ({
-          label: title,
-          value: name,
-        })),
-      },
     });
     vi.mocked(useEnv, { partial: true }).mockReturnValue({ isSaas: true });
 

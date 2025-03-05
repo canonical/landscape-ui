@@ -38,10 +38,9 @@ describe("AlertNotificationsList", () => {
           ? alert.summary === item.textContent
           : null,
       );
-      const icon = item.querySelector("i");
 
-      if (icon && alert) {
-        expect(icon.className).toContain(
+      if (alert) {
+        expect(item).toHaveIcon(
           `p-icon--${STATUSES[alert.alert_type].icon.color ?? STATUSES[alert.alert_type].icon.gray}`,
         );
       }

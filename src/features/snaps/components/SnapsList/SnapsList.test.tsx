@@ -58,9 +58,7 @@ describe("SnapsList", () => {
 
       assert(cellWithVersion);
 
-      const iconElement = cellWithVersion.querySelector("i");
-      expect(iconElement).toBeInTheDocument();
-      expect(iconElement).toHaveClass("p-icon--pause");
+      expect(cellWithVersion).toHaveIcon("pause");
     });
 
     it("shows version tooltip when hovering on held snap", async () => {
