@@ -16,7 +16,8 @@ const useRemoveEmployeeGroupsModal = ({
   const { notify } = useNotify();
   const debug = useDebug();
 
-  const { deleteEmployeeGroups, isPending } = useDeleteEmployeeGroups();
+  const { deleteEmployeeGroups, isDeletingEmployeeGroups } =
+    useDeleteEmployeeGroups();
 
   const { title, body, notificationText, notificationTitle } =
     getRemoveEmployeeGroupsModalTexts(selectedEmployeeGroups);
@@ -45,7 +46,7 @@ const useRemoveEmployeeGroupsModal = ({
     confirmButtonLabel: "Remove",
     confirmButtonAppearance: "negative",
     deleteEmployeeGroups: handleDeleteEmployeeGroups,
-    isLoading: isPending,
+    isLoading: isDeletingEmployeeGroups,
     title,
   };
 };

@@ -1,9 +1,9 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import EmployeeGroupsListContextualMenu from "./EmployeeGroupsListContextualMenu";
-import { employeeGroups } from "@/tests/mocks/employees";
+import { employeeGroups } from "@/tests/mocks/employeeGroups";
 
 const employeeGroup = employeeGroups[0];
 

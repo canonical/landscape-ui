@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { renderWithProviders } from "@/tests/render";
 import { describe } from "vitest";
 import AutoinstallFilesList from ".";
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import usePageParams from "@/hooks/usePageParams";
 
 vi.mock("@/api/usePageParams");
@@ -31,8 +28,6 @@ describe("AutoinstallFilesList", () => {
       tags: [""],
       toDate: "",
       type: "",
-      sort: null,
-      sortBy: "",
       query: "",
     });
 
@@ -77,8 +72,6 @@ describe("AutoinstallFilesList", () => {
       tags: [""],
       toDate: "",
       type: "",
-      sort: null,
-      sortBy: "",
       query: "",
     });
 

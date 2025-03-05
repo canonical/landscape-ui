@@ -16,8 +16,6 @@ interface SidePanelFormButtonsProps {
   readonly hasBackButton?: boolean;
   readonly onBackButtonPress?: () => void;
   readonly onSubmit?: (event: SyntheticEvent) => Promise<void> | void;
-  readonly hasBackButton?: boolean;
-  readonly onBackButtonPress?: () => void;
 }
 
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({

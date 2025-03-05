@@ -1,2 +1,2 @@
 export * from "./useAutoinstallFiles";
-export * from "./useAutoinstallFileCreate";
+export * from "./useCreateAutoinstallFile";

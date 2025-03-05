@@ -16,7 +16,7 @@ describe("ViewAutoinstallFileDetailsEditButton", () => {
   it("should show a modal once", async () => {
     renderWithProviders(
       <ViewAutoinstallFileDetailsEditButton
-        fileName={autoinstallFiles[0].name}
+        fileName={autoinstallFiles[0].filename}
       />,
     );
 
@@ -36,7 +36,7 @@ describe("ViewAutoinstallFileDetailsEditButton", () => {
   it("should show a modal every time", async () => {
     renderWithProviders(
       <ViewAutoinstallFileDetailsEditButton
-        fileName={autoinstallFiles[0].name}
+        fileName={autoinstallFiles[0].filename}
       />,
     );
 
@@ -58,7 +58,7 @@ describe("ViewAutoinstallFileDetailsEditButton", () => {
 
     renderWithProviders(
       <ViewAutoinstallFileDetailsEditButton
-        fileName={autoinstallFiles[0].name}
+        fileName={autoinstallFiles[0].filename}
       />,
     );
 
@@ -72,7 +72,7 @@ describe("ViewAutoinstallFileDetailsEditButton", () => {
   it("should be able to cancel", async () => {
     renderWithProviders(
       <ViewAutoinstallFileDetailsEditButton
-        fileName={autoinstallFiles[0].name}
+        fileName={autoinstallFiles[0].filename}
       />,
     );
 

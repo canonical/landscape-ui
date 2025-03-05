@@ -2,9 +2,9 @@ import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { EmployeeGroup } from "../../types";
+import type { EmployeeGroup } from "../types";
 
-const useUpdateEmployeeGroups = () => {
+export const useUpdateEmployeeGroups = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
@@ -36,5 +36,3 @@ const useUpdateEmployeeGroups = () => {
     updateEmployeeGroups: mutateAsync,
   };
 };
-
-export default useUpdateEmployeeGroups;

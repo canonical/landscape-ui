@@ -4,9 +4,9 @@ import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { EmployeeGroup, GetEmployeeGroupsParams } from "../../types";
+import type { EmployeeGroup, GetEmployeeGroupsParams } from "../types";
 
-const useGetEmployeeGroups = (
+export const useGetEmployeeGroups = (
   queryParams: GetEmployeeGroupsParams = {},
   config: Omit<
     UseQueryOptions<
@@ -32,5 +32,3 @@ const useGetEmployeeGroups = (
     isEmployeeGroupsLoading: isLoading,
   };
 };
-
-export default useGetEmployeeGroups;

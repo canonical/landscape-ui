@@ -1,19 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useFetch from "@/hooks/useFetch";
-import type { Autoinstall } from "../types";
+import type { AutoinstallFile } from "../types";
 
-interface AutoinstallFileCreateParams {
+interface useCreateAutoinstallFileParams {
   filename: string;
   contents: string;
 }
 
-export const useAutoinstallFileCreate = () => {
+export const useCreateAutoinstallFile = () => {
   const queryClient = useQueryClient();
   const authFetch = useFetch();
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (params: AutoinstallFileCreateParams) =>
-      authFetch.post<Autoinstall>("/autoinstall", params),
+    mutationFn: (params: useCreateAutoinstallFileParams) =>
+      authFetch.post<AutoinstallFile>("/autoinstall", params),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["employeeGroups"] }),
   });

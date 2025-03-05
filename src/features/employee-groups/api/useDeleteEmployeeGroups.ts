@@ -2,9 +2,9 @@ import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { DeleteEmployeeGroupsParams } from "../../types";
+import type { DeleteEmployeeGroupsParams } from "../types";
 
-const useDeleteEmployeeGroups = () => {
+export const useDeleteEmployeeGroups = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
@@ -29,8 +29,6 @@ const useDeleteEmployeeGroups = () => {
 
   return {
     deleteEmployeeGroups: mutateAsync,
-    isPending,
+    isDeletingEmployeeGroups: isPending,
   };
 };
-
-export default useDeleteEmployeeGroups;
