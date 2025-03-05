@@ -5,7 +5,7 @@ import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import type {
   EmployeeGroup,
   GetEmployeeGroupsParams,
-  ImportEmployeeGroupsCallParams,
+  ImportEmployeeGroupsParams,
   ImportOidcSessionParams,
   OidcGroupImportSession,
   StagedOidcGroup,
@@ -111,27 +111,26 @@ export default [
     );
   }),
 
-  http.post<
-    never,
-    ImportEmployeeGroupsCallParams,
-    ApiPaginatedResponse<number>
-  >(`${API_URL}employee_groups`, async ({ request }) => {
-    await delay();
+  http.post<never, ImportEmployeeGroupsParams, ApiPaginatedResponse<number>>(
+    `${API_URL}employee_groups`,
+    async ({ request }) => {
+      await delay();
 
-    const { staged_oidc_group_ids, import_all } = await request.json();
+      const { staged_oidc_group_ids, import_all } = await request.json();
 
-    const preFilteredGroups = import_all
-      ? stagedOidcGroups
-      : stagedOidcGroups.filter((group) =>
-          staged_oidc_group_ids.includes(group.id),
-        );
+      const preFilteredGroups = import_all
+        ? stagedOidcGroups
+        : stagedOidcGroups.filter((group) =>
+            staged_oidc_group_ids.includes(group.id),
+          );
 
-    return HttpResponse.json(
-      generatePaginatedResponse({
-        data: preFilteredGroups.map((group) => group.id),
-        limit: undefined,
-        offset: undefined,
-      }),
-    );
-  }),
+      return HttpResponse.json(
+        generatePaginatedResponse({
+          data: preFilteredGroups.map((group) => group.id),
+          limit: undefined,
+          offset: undefined,
+        }),
+      );
+    },
+  ),
 ];

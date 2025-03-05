@@ -48,8 +48,8 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
       const {
         data: { count },
       } = await importEmployeeGroups({
-        importAll,
-        stagedOidcGroupIds: selectedGroupIds,
+        staged_oidc_group_ids: selectedGroupIds,
+        import_all: importAll,
       });
 
       closeSidePanel();
