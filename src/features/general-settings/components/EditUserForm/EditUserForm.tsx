@@ -16,6 +16,7 @@ import classes from "./EditUserForm.module.scss";
 import { getAccountOptions } from "./helpers";
 import type { EditUserFormValues } from "./types";
 import { getFormikError } from "@/utils/formikErrors";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 
 const ChangePasswordForm = lazy(() => import("../ChangePasswordForm"));
 
@@ -28,7 +29,8 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
   const { notify } = useNotify();
   const { isSaas, isSelfHosted } = useEnv();
   const { setSidePanelContent } = useSidePanel();
-  const { user, setUser, account } = useAuth();
+  const { user, setUser } = useAuth();
+  const { isOnSubdomain, options } = useAuthAccounts();
   const { editUserDetails } = useUserGeneralSettings();
 
   const { mutateAsync: editUserMutation } = editUserDetails;
@@ -181,13 +183,10 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
         {...formik.getFieldProps("timezone")}
         error={getFormikError(formik, "timezone")}
       />
-      {account.options.length > 1 && (
+      {!isOnSubdomain && options.length > 1 && (
         <Select
           label="Default organisation"
-          options={getAccountOptions(
-            account.options,
-            formik.values.preferred_account,
-          )}
+          options={getAccountOptions(options, formik.values.preferred_account)}
           {...formik.getFieldProps("preferred_account")}
           error={getFormikError(formik, "preferred_account")}
         />

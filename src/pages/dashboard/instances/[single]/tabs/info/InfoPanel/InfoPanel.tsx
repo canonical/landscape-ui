@@ -123,6 +123,13 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     onSubmit: handleSubmit,
   });
 
+  const removeInstancesFormik = useFormik({
+    initialValues: {
+      confirmationText: "",
+    },
+    onSubmit: () => handleRemoveInstance(),
+  });
+
   const handleTagsUpdate = async () => {
     try {
       await editInstance({
@@ -256,14 +263,22 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 confirmationModalProps={{
                   title: "Remove instance from Landscape",
                   children: (
-                    <p>
-                      This will remove the instance <b>{instance.title}</b> from
-                      Landscape.
-                      <br />
-                      <br />
-                      It will remain on the parent machine. You can re-register
-                      it to Landscape at any time.
-                    </p>
+                    <Form onSubmit={formik.handleSubmit} noValidate>
+                      <p>
+                        Removing this {instance.title} will delete all
+                        associated data and free up one license slot for another
+                        computer to be registered.
+                      </p>
+                      <p>
+                        Type <b>remove {instance.title}</b> to confirm.
+                      </p>
+                      <Input
+                        type="text"
+                        {...removeInstancesFormik.getFieldProps(
+                          "confirmationText",
+                        )}
+                      />
+                    </Form>
                   ),
                   confirmButtonLabel: "Remove",
                   confirmButtonAppearance: "negative",

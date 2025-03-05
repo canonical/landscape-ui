@@ -8,7 +8,7 @@ import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
-vi.mock("@/hooks/useAuth");
+vi.mock("@/api/useAuth");
 
 const mockAvailableTagOptions = [
   { value: "All", label: "All instances" },
@@ -22,13 +22,6 @@ const authProps: AuthContextProps = {
   authLoading: false,
   setAuthLoading: vi.fn(),
   setUser: vi.fn(),
-  account: {
-    current: authUser.current_account,
-    options: [
-      { label: authUser.accounts[0].title, value: authUser.accounts[0].name },
-    ],
-    switch: vi.fn(),
-  },
   user: authUser,
   isOidcAvailable: true,
   redirectToExternalUrl: vi.fn(),

@@ -5,9 +5,16 @@ export interface IdentityProvider extends Record<string, unknown> {
   provider: string;
 }
 
-export interface SupportedIdentityProvider {
+export type IdentityProviderFeature = "directory-import";
+
+export interface SupportedIdentityProviderBase {
   provider_slug: string;
   provider_label: string;
+  supported_features: IdentityProviderFeature[];
+}
+
+export interface SupportedIdentityProvider
+  extends SupportedIdentityProviderBase {
   redirect_uri: string;
 }
 

@@ -1,18 +1,19 @@
-import type { FC } from "react";
-import { useState } from "react";
+import { useWsl } from "@/features/wsl";
+import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
 import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
+  Input,
 } from "@canonical/react-components";
-import { useWsl } from "@/features/wsl";
-import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
-import type { WslInstanceWithoutRelation } from "@/types/Instance";
+import type { FC } from "react";
+import { useState } from "react";
 import classes from "./WslInstanceListActions.module.scss";
-import { getModalBody } from "./constants";
+import { getModalBody } from "./helpers";
 import type { Action } from "./types";
+import type { WslInstanceWithoutRelation } from "@/types/Instance";
 
 interface WslInstanceListActionsProps {
   readonly instance: WslInstanceWithoutRelation;
@@ -23,8 +24,8 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   instance,
   parentId,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
   const [action, setAction] = useState<Action>(null);
+  const [confirmationText, setConfirmationText] = useState<string>("");
 
   const debug = useDebug();
   const { setDefaultChildInstanceQuery, deleteChildInstancesQuery } = useWsl();
@@ -86,13 +87,7 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     }
   };
 
-  const handleOpenModal = (action: Action) => {
-    setModalOpen(true);
-    setAction(action);
-  };
-
   const handleCloseModal = () => {
-    setModalOpen(false);
     setAction(null);
   };
 
@@ -100,17 +95,17 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     {
       children: "Set default instance",
       "aria-label": `Set ${instance.title} as default instance`,
-      onClick: () => handleOpenModal("setDefault"),
+      onClick: () => setAction("setDefault"),
     },
     {
       children: "Remove instance from Landscape",
       "aria-label": `Remove ${instance.title} instance from Landscape`,
-      onClick: () => handleOpenModal("remove"),
+      onClick: () => setAction("remove"),
     },
     {
       children: "Delete instance",
       "aria-label": `Delete ${instance.title} instance`,
-      onClick: () => handleOpenModal("delete"),
+      onClick: () => setAction("delete"),
     },
   ].filter((link) => {
     if (link.children === "Set default instance") {
@@ -123,6 +118,9 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   const isPerformingAction =
     isSettingDefaultChildInstance || isRemoving || isDeleting;
 
+  const isWrongConfirmationText =
+    action === "remove" && confirmationText !== `remove ${instance.title}`;
+
   return (
     <>
       <ContextualMenu
@@ -134,17 +132,29 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
         toggleProps={{ "aria-label": `${instance.title} instance actions` }}
         links={contextualMenuLinks}
       />
-      {modalOpen && action && (
+      {action && (
         <ConfirmationModal
           title={title}
           confirmButtonLabel={label}
           confirmButtonAppearance={appearance}
-          confirmButtonDisabled={isPerformingAction}
+          confirmButtonDisabled={isPerformingAction || isWrongConfirmationText}
           confirmButtonLoading={isPerformingAction}
           onConfirm={handleModalAction}
           close={handleCloseModal}
         >
           {body}
+          {action === "remove" && (
+            <>
+              <p>
+                Type <b>{`remove ${instance.title}`}</b> to confirm.
+              </p>
+              <Input
+                type="text"
+                value={confirmationText}
+                onChange={(e) => setConfirmationText(e.target.value)}
+              />
+            </>
+          )}
         </ConfirmationModal>
       )}
     </>

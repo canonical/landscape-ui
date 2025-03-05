@@ -8,16 +8,32 @@ import useEnv from "@/hooks/useEnv";
 import useAuth from "@/hooks/useAuth";
 import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
+import { accountsDefault } from "@/tests/mocks/accounts";
 import { useUserGeneralSettings } from "../../hooks";
 import type { EditUserDetailsParams, UserDetails } from "../../types";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { ApiError } from "@/types/ApiError";
 import { getTestErrorParams } from "@/tests/mocks/error";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
+import type { Account } from "@/features/auth";
 
-vi.mock("@/hooks/useEnv");
-vi.mock("@/hooks/useAuth");
-vi.mock("../../hooks");
+vi.mock("@/api/useEnv");
+vi.mock("@/api/useAuth");
+vi.mock("../../api");
+vi.mock("@/api/useAuthAccounts");
+
+vi.mocked(useAuthAccounts).mockReturnValue({
+  currentAccount: accountsDefault.find(
+    (account) => !!account.default,
+  ) as Account,
+  isOnSubdomain: false,
+  options: accountsDefault.map(({ name, title }) => ({
+    label: title,
+    value: name,
+  })),
+  handleAccountSwitch: vi.fn(),
+});
 
 const props = {
   userDetails: {
@@ -43,14 +59,6 @@ const authContextValues: AuthContextProps = {
   authLoading: false,
   setAuthLoading: vi.fn(),
   setUser: vi.fn(),
-  account: {
-    current: authUser.current_account,
-    options: [
-      { label: authUser.accounts[0].title, value: authUser.accounts[0].name },
-      { label: "Another Account", value: "another-account" },
-    ],
-    switch: vi.fn(),
-  },
   user: authUser,
   isOidcAvailable: true,
   redirectToExternalUrl: vi.fn(),

@@ -1,12 +1,25 @@
-import type { FC } from "react";
-import { Suspense, useState } from "react";
-import { Tabs } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
+import { Tabs } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 import classes from "./EmployeesTabs.module.scss";
-import EmployeesPanel from "../tabs/employees/EmployeesPanel";
-import { AutoinstallFilesPanel } from "@/features/autoinstall-files";
+
+const EmployeeGroupsPanel = lazy(
+  () => import("../tabs/employee-groups/EmployeeGroupsPanel"),
+);
+const EmployeesPanel = lazy(() => import("../tabs/employees/EmployeesPanel"));
+const AutoinstallFilesPanel = lazy(() =>
+  import("@/features/autoinstall-files").then((module) => ({
+    default: module.AutoinstallFilesPanel,
+  })),
+);
 
 const tabLinks = [
+  {
+    label: "Employee groups",
+    id: "tab-link-employee-groups",
+  },
   {
     label: "Employees",
     id: "tab-link-employees",
@@ -18,8 +31,13 @@ const tabLinks = [
 ];
 
 const EmployeesTabs: FC = () => {
-  const [currentTabLinkId, setCurrentTabLinkId] =
-    useState("tab-link-employees");
+  const { tab, setPageParams } = usePageParams();
+
+  const currentTabLinkId = tab ? `tab-link-${tab}` : "tab-link-employee-groups";
+
+  const onActiveTabChange = (tabId: string): void => {
+    setPageParams({ tab: tabId.replace("tab-link-", "") });
+  };
 
   return (
     <>
@@ -30,7 +48,7 @@ const EmployeesTabs: FC = () => {
           id,
           role: "tab",
           active: id === currentTabLinkId,
-          onClick: () => setCurrentTabLinkId(id),
+          onClick: () => onActiveTabChange(id),
         }))}
       />
       <div
@@ -40,6 +58,9 @@ const EmployeesTabs: FC = () => {
         className={classes.tabPanel}
       >
         <Suspense fallback={<LoadingState />}>
+          {"tab-link-employee-groups" === currentTabLinkId && (
+            <EmployeeGroupsPanel />
+          )}
           {"tab-link-employees" === currentTabLinkId && <EmployeesPanel />}
           {"tab-link-autoinstall-files" === currentTabLinkId && (
             <AutoinstallFilesPanel />

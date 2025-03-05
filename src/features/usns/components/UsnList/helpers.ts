@@ -110,7 +110,6 @@ export const getTableRows =
     if (!instance) {
       return;
     }
-
     ref.current = [
       ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
     ];

@@ -1,4 +1,3 @@
-import useAuth from "@/hooks/useAuth";
 import { Select } from "@canonical/react-components";
 import classNames from "classnames";
 import classes from "./OrganisationSwitch.module.scss";
@@ -7,18 +6,20 @@ import useDebug from "@/hooks/useDebug";
 import type { ChangeEvent } from "react";
 import InfoItem from "@/components/layout/InfoItem";
 import useSidePanel from "@/hooks/useSidePanel";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 
 const OrganisationSwitch = () => {
-  const { account } = useAuth();
+  const { isOnSubdomain, options, handleAccountSwitch, currentAccount } =
+    useAuthAccounts();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { switchAccountQuery } = useAuthHandle();
 
-  if (account.options.length === 1) {
+  if (isOnSubdomain || options.length === 1) {
     return (
       <InfoItem
         label="Organisation"
-        value={account.options[0].label}
+        value={currentAccount.title}
         className={classes.organisation}
       />
     );
@@ -28,13 +29,13 @@ const OrganisationSwitch = () => {
 
   const handleOrganisationChange = async (
     event: ChangeEvent<HTMLSelectElement>,
-  ) => {
+  ): Promise<void> => {
     const account_name = event.target.value;
 
     try {
       const { data } = await switchAccount({ account_name });
 
-      account.switch(data.token, account_name);
+      handleAccountSwitch(data.token, account_name);
 
       closeSidePanel();
     } catch (error) {
@@ -50,8 +51,8 @@ const OrganisationSwitch = () => {
           classes.organisation,
           "p-text--small p-text--small-caps u-no-margin--bottom",
         )}
-        options={account.options}
-        value={account.current}
+        options={options}
+        value={currentAccount.name}
         onChange={handleOrganisationChange}
       />
     </div>

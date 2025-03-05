@@ -7,13 +7,22 @@ import EnvProvider from "@/context/env";
 import NotifyProvider from "@/context/notify";
 import ReactQueryProvider from "@/context/reactQuery";
 import App from "./App";
-import { ROOT_PATH } from "@/constants";
+import { IS_DEV_ENV, IS_MSW_ENABLED, ROOT_PATH } from "@/constants";
 import * as Sentry from "@sentry/browser";
 import AppErrorBoundary from "./components/layout/AppErrorBoundary/AppErrorBoundary";
+import AccountsProvider from "@/context/accounts";
 
-Sentry.init({
-  dsn: "https://55a60b44ddfd4ca5a94a8a3bac2d5052@sentry.is.canonical.com//85",
-});
+if (!IS_DEV_ENV) {
+  Sentry.init({
+    dsn: "https://55a60b44ddfd4ca5a94a8a3bac2d5052@sentry.is.canonical.com//85",
+  });
+}
+
+if (IS_DEV_ENV && IS_MSW_ENABLED) {
+  const { worker } = await import("@/tests/browser");
+
+  await worker.start();
+}
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
@@ -23,7 +32,9 @@ createRoot(document.getElementById("root") as HTMLElement).render(
           <NotifyProvider>
             <ReactQueryProvider>
               <AuthProvider>
-                <App />
+                <AccountsProvider>
+                  <App />
+                </AccountsProvider>
               </AuthProvider>
             </ReactQueryProvider>
           </NotifyProvider>
