@@ -46,7 +46,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
         }: CellProps<AutoinstallFile>): ReactNode => (
           <Button
             appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+            className="u-no-margin--bottom u-no-padding--top"
             onClick={() => {
               setSidePanelContent(
                 <div className={classes.container}>

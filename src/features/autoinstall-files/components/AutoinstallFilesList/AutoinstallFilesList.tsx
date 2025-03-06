@@ -163,7 +163,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             <Button
               type="button"
               appearance="link"
-              className="u-no-margin u-no-padding--top u-align-text--left"
+              className="u-no-margin u-no-padding--top"
               onClick={() => openDetails(original)}
             >
               {`${original.filename}, v${original.version}`}
