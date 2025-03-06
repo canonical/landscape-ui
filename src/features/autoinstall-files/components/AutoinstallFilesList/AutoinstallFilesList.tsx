@@ -10,16 +10,9 @@ import {
   ModularTable,
 } from "@canonical/react-components";
 import moment from "moment";
-import type { FC, HTMLProps, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type {
-  Cell,
-  CellProps,
-  Column,
-  Row,
-  TableCellProps,
-  TableRowProps,
-} from "react-table";
+import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
 import type { TabId } from "../../types";
@@ -35,6 +28,7 @@ import {
   EDIT_AUTOINSTALL_FILE_NOTIFICATION,
   LOCAL_STORAGE_ITEM,
 } from "./constants";
+import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
 
 interface AutoinstallFilesListProps {
   readonly autoinstallFiles: AutoinstallFileWithGroups[];
@@ -150,62 +144,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     });
   }, [autoinstallFiles, employeeGroups, search]);
 
-  const getTableRowsRef = (instance: HTMLDivElement | null): void => {
-    if (!instance) {
-      return;
-    }
-
-    tableRowsRef.current = [
-      ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
-    ];
-  };
-
-  const getCellProps = ({
-    column,
-    row: { index },
-  }: Cell<AutoinstallFileWithGroups>): Partial<
-    TableCellProps & HTMLProps<HTMLTableCellElement>
-  > => {
-    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
-      {};
-
-    switch (column.id) {
-      case "filename":
-        cellProps.role = "rowheader";
-        break;
-      case "groups":
-        cellProps["aria-label"] = "employee groups";
-
-        if (expandedRowIndex === index) {
-          cellProps.className = classes.expandedCell;
-        }
-        break;
-      case "last_modified_at":
-        cellProps["aria-label"] = "last modified at";
-        break;
-      case "created_at":
-        cellProps["aria-label"] = "created at";
-        break;
-    }
-
-    return cellProps;
-  };
-
-  const getRowProps = ({
-    index,
-  }: Row<AutoinstallFileWithGroups>): Partial<
-    TableRowProps & HTMLProps<HTMLTableRowElement>
-  > => {
-    const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
-      {};
-
-    if (expandedRowIndex === index) {
-      rowProps.className = classes.expandedRow;
-    }
-
-    return rowProps;
-  };
-
   const columns = useMemo<Column<AutoinstallFileWithGroups>[]>(
     () => [
       {
@@ -289,12 +227,12 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   return (
     <>
-      <div ref={getTableRowsRef}>
+      <div ref={getTableRowsRef(tableRowsRef)}>
         <ModularTable
           columns={columns}
           data={files}
-          getCellProps={getCellProps}
-          getRowProps={getRowProps}
+          getCellProps={getCellProps(expandedRowIndex)}
+          getRowProps={getRowProps(expandedRowIndex)}
         />
       </div>
 

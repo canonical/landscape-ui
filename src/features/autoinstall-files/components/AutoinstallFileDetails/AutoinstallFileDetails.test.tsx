@@ -10,8 +10,8 @@ describe("AutoinstallFileDetails", () => {
     renderWithProviders(
       <AutoinstallFileDetails
         file={file}
-        openDetailsPanel={vi.fn()}
         openEditPanel={vi.fn()}
+        openVersionHistory={vi.fn()}
       />,
     );
   });
