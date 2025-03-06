@@ -1,4 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
 import type { ApiError } from "@/types/ApiError";
 import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import type { UseQueryResult } from "@tanstack/react-query";
@@ -10,6 +11,7 @@ import AutoinstallFilesHeader from "../AutoinstallFilesHeader";
 import AutoinstallFilesList from "../AutoinstallFilesList";
 
 const AutoinstallFilesPanel: FC = () => {
+  const { search } = usePageParams();
   const { getAutoinstallFilesQuery } = useAutoinstallFiles();
 
   const {
@@ -19,6 +21,7 @@ const AutoinstallFilesPanel: FC = () => {
     isLoading,
   } = getAutoinstallFilesQuery({
     with_groups: true,
+    search,
   }) as UseQueryResult<
     AxiosResponse<ApiPaginatedResponse<AutoinstallFileWithGroups>>,
     AxiosError<ApiError>

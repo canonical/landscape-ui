@@ -23,6 +23,7 @@ interface GetAutoinstallFileParams {
 
 interface GetAutoinstallFilesParams {
   with_groups: boolean;
+  search?: string;
 }
 
 interface UpdateAutoinstallFileParams {

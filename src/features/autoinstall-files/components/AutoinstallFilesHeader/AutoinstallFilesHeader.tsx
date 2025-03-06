@@ -1,6 +1,5 @@
 import { TableFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
@@ -14,16 +13,11 @@ import {
 } from "./constants";
 
 const AutoinstallFilesHeader: FC = () => {
-  const { setPageParams, employeeGroups } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const {
     addAutoinstallFileQuery: { mutateAsync: addAutoinstallFile },
   } = useAutoinstallFiles();
-
-  const handleGroupsSelect = (employeeGroups: string[]): void => {
-    setPageParams({ employeeGroups });
-  };
 
   return (
     <>
@@ -31,13 +25,13 @@ const AutoinstallFilesHeader: FC = () => {
         actions={
           <div className={classes.container}>
             <TableFilter
-              multiple
+              multiple={false}
               label="Employee group"
               hasToggleIcon
               hasBadge
-              options={AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS}
-              onItemsSelect={handleGroupsSelect}
-              selectedItems={employeeGroups}
+              options={[]}
+              onItemSelect={() => undefined}
+              selectedItem=""
             />
 
             <Button
