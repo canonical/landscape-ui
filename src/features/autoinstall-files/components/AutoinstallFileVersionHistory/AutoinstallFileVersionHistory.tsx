@@ -1,8 +1,7 @@
-import Chip from "@/components/layout/Chip";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, ModularTable } from "@canonical/react-components";
+import { Button, Chip, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
@@ -50,9 +49,15 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={() => {
               setSidePanelContent(
-                <div className={classes.heading}>
+                <div className={classes.container}>
                   {file.filename}, v{version}
-                  {file.is_default && <Chip text="default" />}
+                  {file.is_default && (
+                    <Chip
+                      value="default"
+                      className="u-no-margin--bottom"
+                      readOnly
+                    />
+                  )}
                 </div>,
                 <AutoinstallFileVersion
                   goBack={goBack}

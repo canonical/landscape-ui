@@ -6,9 +6,10 @@
   width: 6rem;
 }
 
-.heading {
+.container {
   align-items: center;
   display: flex;
+  gap: $sph--small;
 }
 
 .expandedCell {

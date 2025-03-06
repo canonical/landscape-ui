@@ -1,4 +1,3 @@
-import Chip from "@/components/layout/Chip";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
@@ -6,6 +5,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
   CheckboxInput,
+  Chip,
   ConfirmationModal,
   ModularTable,
 } from "@canonical/react-components";
@@ -89,9 +89,11 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   ): void => {
     setSidePanelContent(
       <>
-        <div className={classes.heading}>
+        <div className={classes.container}>
           {file.filename}, v{file.version}
-          {file.is_default && <Chip text="default" />}
+          {file.is_default && (
+            <Chip value="default" className="u-no-margin--bottom" readOnly />
+          )}
         </div>
       </>,
       <AutoinstallFileDetails
@@ -109,9 +111,11 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   const openEditFormWithoutModal = (file: AutoinstallFile): void => {
     setSidePanelContent(
-      <div className={classes.heading}>
+      <div className={classes.container}>
         Edit {file.filename}, v{file.version}
-        {file.is_default && <Chip text="default" />}
+        {file.is_default && (
+          <Chip value="default" className="u-no-margin--bottom" readOnly />
+        )}
       </div>,
       <AutoinstallFileForm
         buttonText="Save changes"
@@ -155,22 +159,18 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         Cell: ({
           row: { original },
         }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
-          <div>
-            <span>
-              <Button
-                type="button"
-                appearance="link"
-                className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-                onClick={() => openDetails(original)}
-              >
-                {`${original.filename}, v${original.version}`}
-              </Button>
-            </span>
+          <div className={classes.container}>
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin u-no-padding--top u-align-text--left"
+              onClick={() => openDetails(original)}
+            >
+              {`${original.filename}, v${original.version}`}
+            </Button>
 
             {original.is_default && (
-              <span>
-                <Chip text="default" />
-              </span>
+              <Chip value="default" className="u-no-margin--bottom" readOnly />
             )}
           </div>
         ),
