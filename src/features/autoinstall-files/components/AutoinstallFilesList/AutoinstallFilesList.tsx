@@ -11,15 +11,15 @@ import {
 } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
-import type { TabId } from "../../types";
 import type {
   AutoinstallFile,
   AutoinstallFileWithGroups,
-} from "../../types/AutoinstallFile";
+  TabId,
+} from "../../types";
 import AutoinstallFileDetails from "../AutoinstallFileDetails";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
@@ -40,13 +40,15 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const { employeeGroups, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isModalIgnored, setIsModalIgnored] = useState(false);
+  const [isModalIgnored, setIsModalIgnored] = useState(
+    !!localStorage.getItem(LOCAL_STORAGE_ITEM),
+  );
   const [modalFile, setModalFile] = useState<AutoinstallFile | null>(null);
   const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
 
   const toggleIsModalIgnored = (): void => {
-    setIsModalIgnored(!isModalIgnored);
+    setIsModalIgnored((isModalIgnored) => !isModalIgnored);
   };
 
   useOnClickOutside(
@@ -62,12 +64,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const {
     updateAutoinstallFileQuery: { mutateAsync: updateAutoinstallFile },
   } = useAutoinstallFiles();
-
-  useEffect(() => {
-    if (localStorage.getItem(LOCAL_STORAGE_ITEM)) {
-      setIsModalIgnored(true);
-    }
-  }, []);
 
   const closeModal = (): void => {
     setIsModalVisible(false);
@@ -92,7 +88,14 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     defaultTabId?: TabId,
   ): void => {
     setSidePanelContent(
-      `${file.filename}${file.is_default ? " (default)" : ""}`,
+      <>
+        <div className={classes.container}>
+          {file.filename}, v{file.version}
+          {file.is_default && (
+            <Chip value="default" className="u-no-margin--bottom" readOnly />
+          )}
+        </div>
+      </>,
       <AutoinstallFileDetails
         defaultTabId={defaultTabId}
         file={file}
@@ -103,13 +106,17 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           openDetails(file, "version-history");
         }}
       />,
-      "large",
     );
   };
 
   const openEditFormWithoutModal = (file: AutoinstallFile): void => {
     setSidePanelContent(
-      `Edit ${file.filename}`,
+      <div className={classes.container}>
+        Edit {file.filename}, v{file.version}
+        {file.is_default && (
+          <Chip value="default" className="u-no-margin--bottom" readOnly />
+        )}
+      </div>,
       <AutoinstallFileForm
         buttonText="Save changes"
         description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
@@ -152,18 +159,18 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         Cell: ({
           row: { original },
         }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
-          <div>
+          <div className={classes.container}>
             <Button
               type="button"
               appearance="link"
-              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              className="u-no-margin u-no-padding--top"
               onClick={() => openDetails(original)}
             >
               {`${original.filename}, v${original.version}`}
             </Button>
 
             {original.is_default && (
-              <Chip value="default" className={classes.chip} />
+              <Chip value="default" className="u-no-margin--bottom" readOnly />
             )}
           </div>
         ),
@@ -222,7 +229,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         ),
       },
     ],
-    [files],
+    [expandedRowIndex, files, openDetails, openEditForm],
   );
 
   return (

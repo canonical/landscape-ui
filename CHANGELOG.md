@@ -1,3 +1,11 @@
+## [1.12.4](https://github.com/canonical/landscape-dashboard/compare/v1.12.3...v1.12.4) (2025-02-12)
+
+
+### Bug Fixes
+
+* enable instance upgrades button without upgrade count ([#188](https://github.com/canonical/landscape-dashboard/issues/188)) ([0f7a8b9](https://github.com/canonical/landscape-dashboard/commit/0f7a8b9ec13def86a261fc23f300812b9e7fbb21))
+* prevent page from crashing when subdomain account is default one ([b74b8a9](https://github.com/canonical/landscape-dashboard/commit/b74b8a90cd75ddde215bffe12b7d2afc515fd381))
+
 ## [1.12.3](https://github.com/canonical/landscape-dashboard/compare/v1.12.2...v1.12.3) (2025-02-06)
 
 

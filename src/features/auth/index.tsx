@@ -9,6 +9,7 @@ export { default as ProvidersEmptyState } from "./components/ProvidersEmptyState
 export { default as ProviderList } from "./components/ProviderList";
 export { redirectToExternalUrl } from "./helpers";
 export { useAuthHandle, useUnsigned, useInvitation } from "./hooks";
+export { getProviderIcon } from "./helpers";
 export type {
   AuthStateResponse,
   LoginMethods,
@@ -18,6 +19,8 @@ export type {
   Account,
   AuthUser,
   IdentityProvider,
+  IdentityProviderFeature,
+  SupportedIdentityProviderBase,
   SingleIdentityProvider,
   SupportedIdentityProvider,
 } from "./types";

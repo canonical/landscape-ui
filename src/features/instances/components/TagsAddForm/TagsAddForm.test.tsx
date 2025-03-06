@@ -18,7 +18,7 @@ describe("TagsAddForm", async () => {
   );
   const selected = instances;
 
-  vi.mock("@/hooks/useInstances", async (importOriginal) => {
+  vi.mock("@/api/useInstances", async (importOriginal) => {
     const original = await importOriginal<{ default: typeof useInstances }>();
 
     return {

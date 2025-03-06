@@ -1,6 +1,11 @@
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import { Button, ConfirmationButton } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationButton,
+  Form,
+  Input,
+} from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -9,6 +14,7 @@ import type { WslInstanceWithoutRelation } from "@/types/Instance";
 import { useWsl } from "../../hooks";
 import classes from "./WslInstancesHeader.module.scss";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import { useFormik } from "formik";
 import { TableFilterChips } from "@/components/filter";
 
 const WslInstanceInstallForm = lazy(() => import("../WslInstanceInstallForm"));
@@ -58,6 +64,25 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       </Suspense>,
     );
   };
+
+  const formik = useFormik({
+    initialValues: {
+      confirmationText: "",
+    },
+    onSubmit: () => handleRemoveInstances(),
+  });
+
+  const getIsWrongConfirmationText = () => {
+    if (selectedInstances.length === 1) {
+      return (
+        formik.values.confirmationText !==
+        `remove ${selectedInstances[0].title}`
+      );
+    }
+    return formik.values.confirmationText !== "remove instances";
+  };
+
+  const isWrongConfirmationText = getIsWrongConfirmationText();
 
   return (
     <>
@@ -111,31 +136,44 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
                       selectedInstances.length !== 1
                         ? "Remove instances from Landscape"
                         : "Remove instance from Landscape",
-                    children:
-                      selectedInstances.length !== 1 ? (
-                        <>
-                          <p>
-                            This will remove the selected instances from
-                            Landscape.
-                            <br />
-                            <br />
-                            They will remain on the parent machine. You can
-                            re-register them to Landscape at any time.
-                          </p>
-                        </>
-                      ) : (
-                        <p>
-                          This will remove the instance{" "}
-                          <b>{selectedInstances[0].title}</b> from Landscape.
-                          <br />
-                          <br />
-                          It will remain on the parent machine. You can
-                          re-register it to Landscape at any time.
-                        </p>
-                      ),
+                    children: (
+                      <Form noValidate onSubmit={formik.handleSubmit}>
+                        {selectedInstances.length !== 1 ? (
+                          <>
+                            <p>
+                              This will remove the selected instances from
+                              Landscape. They will remain on the parent machine.
+                              You can re-register them to Landscape at any time.
+                            </p>
+                            <p>
+                              Type <b>remove instances</b> to confirm.
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p>
+                              This will remove the instance{" "}
+                              <b>{selectedInstances[0].title}</b> from
+                              Landscape. It will remain on the parent machine.
+                              You can re-register it to Landscape at any time.
+                            </p>
+                            <p>
+                              Type <b>remove {selectedInstances[0].title}</b> to
+                              confirm.
+                            </p>
+                          </>
+                        )}
+                        <Input
+                          type="text"
+                          {...formik.getFieldProps("confirmationText")}
+                        />
+                      </Form>
+                    ),
+
                     confirmButtonLabel: "Remove",
                     confirmButtonAppearance: "negative",
-                    confirmButtonDisabled: isRemoving,
+                    confirmButtonDisabled:
+                      isRemoving || isWrongConfirmationText,
                     confirmButtonLoading: isRemoving,
                     onConfirm: handleRemoveInstances,
                   }}

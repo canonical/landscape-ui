@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
+}
+
+.position {
+  display: flex !important;
+}

@@ -89,7 +89,7 @@ export const MENU_ITEMS: MenuItem[] = [
       },
       {
         label: "Employees",
-        path: `/settings/employees`,
+        path: "/settings/employees",
       },
       {
         label: "Roles",

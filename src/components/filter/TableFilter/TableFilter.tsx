@@ -18,6 +18,7 @@ const TableFilter: FC<TableFilterProps> = ({
   label,
   options,
   onSearch,
+  searchLabel,
   position = "left",
   ...otherProps
 }) => {
@@ -98,6 +99,7 @@ const TableFilter: FC<TableFilterProps> = ({
         })}
       >
         {onSearch && <SearchBoxWithForm onSearch={onSearch} />}
+        {searchLabel && <p className="p-form-help-text">{searchLabel}</p>}
         <ul className={classes.list}>
           {options.map(({ label, value, group }, index) => (
             <li

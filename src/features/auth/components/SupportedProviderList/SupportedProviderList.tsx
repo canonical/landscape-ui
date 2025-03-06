@@ -37,7 +37,7 @@ const SupportedProviderList: FC = () => {
               .map((provider) => (
                 <li
                   key={provider.provider_slug}
-                  className="p-list__item u-no-padding--bottom u-no-padding--top"
+                  className="p-list__item u-no-padding--top"
                 >
                   <Button
                     type="button"
