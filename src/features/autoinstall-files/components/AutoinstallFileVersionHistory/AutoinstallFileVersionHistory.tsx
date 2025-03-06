@@ -29,15 +29,14 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
   const { getAutoinstallFileQuery } = useAutoinstallFiles();
   const { setSidePanelContent } = useSidePanel();
 
-  const {
-    data: { data: { versions } } = {
-      data: { versions: [] as AutoinstallFileVersionInfo[] },
-    },
-    isLoading,
-  } = getAutoinstallFileQuery({
-    id: file.id,
-    with_versions: true,
-  }) as UseQueryResult<AxiosResponse<AutoinstallFileWithVersions>>;
+  const { data: getAutoinstallFileQueryResult, isLoading } =
+    getAutoinstallFileQuery({
+      id: file.id,
+      with_versions: true,
+    }) as UseQueryResult<AxiosResponse<AutoinstallFileWithVersions>>;
+
+  const versions =
+    getAutoinstallFileQueryResult?.data.versions.toReversed() ?? [];
 
   const columns = useMemo<Column<AutoinstallFileVersionInfo>[]>(
     () => [
@@ -48,7 +47,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
           row: {
             original: { version },
           },
-        }: CellProps<AutoinstallFile>): ReactNode => (
+        }: CellProps<AutoinstallFileVersionInfo>): ReactNode => (
           <Button
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top"
