@@ -27,6 +27,7 @@ import classes from "./AutoinstallFilesList.module.scss";
 import {
   EDIT_AUTOINSTALL_FILE_NOTIFICATION,
   LOCAL_STORAGE_ITEM,
+  MAX_AUTOINSTALL_FILE_VERSION_COUNT,
 } from "./constants";
 import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
 
@@ -130,7 +131,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   };
 
   const openEditForm = (file: AutoinstallFile): void => {
-    if (isModalIgnored) {
+    if (isModalIgnored || file.version < MAX_AUTOINSTALL_FILE_VERSION_COUNT) {
       openEditFormWithoutModal(file);
     } else {
       setIsModalVisible(true);
