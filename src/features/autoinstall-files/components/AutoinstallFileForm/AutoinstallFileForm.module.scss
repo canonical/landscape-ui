@@ -1,5 +1,20 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .form {
   display: flex;
   flex: 1;
   flex-direction: column;
+}
+
+.inputContainer {
+  display: flex;
+  gap: $sph--x-small;
+}
+
+.inputWrapper {
+  flex: 1;
+}
+
+.inputDescription {
+  margin-top: 2.875rem;
 }

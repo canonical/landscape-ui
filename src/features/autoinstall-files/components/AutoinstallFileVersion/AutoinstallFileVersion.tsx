@@ -62,7 +62,17 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
 
   return (
     <>
-      <Input type="text" label="File name" value={file.filename} disabled />
+      <div className={classes.inputContainer}>
+        <Input
+          wrapperClassName={classes.inputWrapper}
+          type="text"
+          label="File name"
+          value={file.filename.replace(/.yaml$/, "")}
+          disabled
+        />
+
+        <span className={classes.inputDescription}>.yaml</span>
+      </div>
 
       <InfoItem
         label="Date created"

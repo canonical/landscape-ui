@@ -34,7 +34,10 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const formik = useFormik<FormikProps>({
-    initialValues: initialFile,
+    initialValues: {
+      ...initialFile,
+      filename: initialFile.filename.replace(/.yaml$/, ""),
+    },
 
     validationSchema: VALIDATION_SCHEMA,
 
@@ -68,7 +71,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
       return;
     }
 
-    await formik.setFieldValue("filename", file.name);
+    await formik.setFieldValue("filename", file.name.replace(/.yaml$/, ""));
   };
 
   const handleEditorChange = async (value?: string): Promise<void> => {
@@ -83,14 +86,19 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     <Form className={classes.form} noValidate onSubmit={formik.handleSubmit}>
       <span>{description}</span>
 
-      <Input
-        type="text"
-        label="File name"
-        {...formik.getFieldProps("filename")}
-        error={getFormikError(formik, "filename")}
-        disabled={!!initialFile.filename}
-        required
-      />
+      <div className={classes.inputContainer}>
+        <Input
+          wrapperClassName={classes.inputWrapper}
+          type="text"
+          label="File name"
+          {...formik.getFieldProps("filename")}
+          error={getFormikError(formik, "filename")}
+          disabled={!!initialFile.filename}
+          required
+        />
+
+        <span className={classes.inputDescription}>.yaml</span>
+      </div>
 
       <input
         ref={inputRef}
