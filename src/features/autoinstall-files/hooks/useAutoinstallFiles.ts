@@ -23,6 +23,7 @@ interface GetAutoinstallFileParams {
 
 interface GetAutoinstallFilesParams {
   with_groups: boolean;
+  employee_group_id?: number;
   search?: string;
 }
 

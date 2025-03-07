@@ -1,4 +1,8 @@
 import LoadingState from "@/components/layout/LoadingState";
+import {
+  getEmployeeGroupOptions,
+  useGetEmployeeGroups,
+} from "@/features/employee-groups";
 import usePageParams from "@/hooks/usePageParams";
 import type { ApiError } from "@/types/ApiError";
 import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
@@ -11,8 +15,14 @@ import AutoinstallFilesHeader from "../AutoinstallFilesHeader";
 import AutoinstallFilesList from "../AutoinstallFilesList";
 
 const AutoinstallFilesPanel: FC = () => {
-  const { search } = usePageParams();
+  const {
+    employeeGroups: [employeeGroup],
+    search,
+    setPageParams,
+  } = usePageParams();
   const { getAutoinstallFilesQuery } = useAutoinstallFiles();
+
+  const { employeeGroups, isEmployeeGroupsLoading } = useGetEmployeeGroups();
 
   const {
     data: { data: { results: autoinstallFiles } } = {
@@ -20,6 +30,7 @@ const AutoinstallFilesPanel: FC = () => {
     },
     isLoading,
   } = getAutoinstallFilesQuery({
+    employee_group_id: employeeGroup ? parseInt(employeeGroup) : undefined,
     with_groups: true,
     search,
   }) as UseQueryResult<
@@ -27,9 +38,25 @@ const AutoinstallFilesPanel: FC = () => {
     AxiosError<ApiError>
   >;
 
+  if (isEmployeeGroupsLoading) {
+    return <LoadingState />;
+  }
+
+  const handleEmployeeGroupSelect = (employeeGroup: string): void => {
+    setPageParams({ employeeGroups: [employeeGroup] });
+  };
+
   return (
     <>
-      <AutoinstallFilesHeader />
+      <AutoinstallFilesHeader
+        employeeGroupOptions={[
+          { label: "All", value: "" },
+          ...getEmployeeGroupOptions(employeeGroups),
+        ]}
+        handleEmployeeGroupSelect={handleEmployeeGroupSelect}
+        selectedEmployeeGroup={employeeGroup ?? ""}
+      />
+
       {isLoading ? (
         <LoadingState />
       ) : (

@@ -1,3 +1,4 @@
+import type { GroupedOption } from "@/components/filter";
 import { TableFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -12,7 +13,17 @@ import {
   AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS,
 } from "./constants";
 
-const AutoinstallFilesHeader: FC = () => {
+interface AutoinstallFilesHeaderProps {
+  readonly employeeGroupOptions: GroupedOption[];
+  readonly handleEmployeeGroupSelect: (employeeGroup: string) => void;
+  readonly selectedEmployeeGroup: string;
+}
+
+const AutoinstallFilesHeader: FC<AutoinstallFilesHeaderProps> = ({
+  employeeGroupOptions,
+  handleEmployeeGroupSelect,
+  selectedEmployeeGroup,
+}) => {
   const { setSidePanelContent } = useSidePanel();
 
   const {
@@ -25,13 +36,13 @@ const AutoinstallFilesHeader: FC = () => {
         actions={
           <div className={classes.container}>
             <TableFilter
-              multiple={false}
-              label="Employee group"
-              hasToggleIcon
               hasBadge
-              options={[]}
-              onItemSelect={() => undefined}
-              selectedItem=""
+              hasToggleIcon
+              label="Employee group"
+              multiple={false}
+              onItemSelect={handleEmployeeGroupSelect}
+              options={employeeGroupOptions}
+              selectedItem={selectedEmployeeGroup}
             />
 
             <Button
