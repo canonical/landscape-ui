@@ -7,11 +7,7 @@ import type { FC } from "react";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import classes from "./AutoinstallFilesHeader.module.scss";
-import {
-  ADD_AUTOINTALL_FILE_NOTIFICATION,
-  ADD_BUTTON_TEXT,
-  AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS,
-} from "./constants";
+import { ADD_AUTOINTALL_FILE_NOTIFICATION, ADD_BUTTON_TEXT } from "./constants";
 
 interface AutoinstallFilesHeaderProps {
   readonly employeeGroupOptions: GroupedOption[];
@@ -68,8 +64,8 @@ const AutoinstallFilesHeader: FC<AutoinstallFilesHeaderProps> = ({
       />
 
       <TableFilterChips
-        filtersToDisplay={["query", "employeeGroups"]}
-        employeeGroupOptions={AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS}
+        filtersToDisplay={["search", "employeeGroups"]}
+        employeeGroupOptions={employeeGroupOptions}
       />
     </>
   );
