@@ -9,6 +9,8 @@ import { Button, Form, Icon, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useRef } from "react";
+import { AUTOINSTALL_FILE_EXTENSION } from "../../constants";
+import { removeAutoinstallFileExtension } from "../../helpers";
 import classes from "./AutoinstallFileForm.module.scss";
 import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
 import type { FormikProps } from "./types";
@@ -36,7 +38,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   const formik = useFormik<FormikProps>({
     initialValues: {
       ...initialFile,
-      filename: initialFile.filename.replace(/.yaml$/, ""),
+      filename: removeAutoinstallFileExtension(initialFile.filename),
     },
 
     validationSchema: VALIDATION_SCHEMA,
@@ -71,7 +73,10 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
       return;
     }
 
-    await formik.setFieldValue("filename", file.name.replace(/.yaml$/, ""));
+    await formik.setFieldValue(
+      "filename",
+      removeAutoinstallFileExtension(file.name),
+    );
   };
 
   const handleEditorChange = async (value?: string): Promise<void> => {
@@ -97,14 +102,16 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
           required
         />
 
-        <span className={classes.inputDescription}>.yaml</span>
+        <span className={classes.inputDescription}>
+          {AUTOINSTALL_FILE_EXTENSION}
+        </span>
       </div>
 
       <input
         ref={inputRef}
         className="u-hide"
         type="file"
-        accept=".yaml"
+        accept={AUTOINSTALL_FILE_EXTENSION}
         onChange={handleInputChange}
       />
 

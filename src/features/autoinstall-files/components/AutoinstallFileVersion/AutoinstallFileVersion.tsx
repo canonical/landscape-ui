@@ -6,6 +6,8 @@ import { Button, Icon, Input } from "@canonical/react-components";
 import moment from "moment";
 import type { ComponentProps } from "react";
 import { useState, type FC } from "react";
+import { AUTOINSTALL_FILE_EXTENSION } from "../../constants";
+import { removeAutoinstallFileExtension } from "../../helpers";
 import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
 import type { AutoinstallFile } from "../../types";
 import classes from "./AutoinstallFileVersion.module.scss";
@@ -67,11 +69,13 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
           wrapperClassName={classes.inputWrapper}
           type="text"
           label="File name"
-          value={file.filename.replace(/.yaml$/, "")}
+          value={removeAutoinstallFileExtension(file.filename)}
           disabled
         />
 
-        <span className={classes.inputDescription}>.yaml</span>
+        <span className={classes.inputDescription}>
+          {AUTOINSTALL_FILE_EXTENSION}
+        </span>
       </div>
 
       <InfoItem
