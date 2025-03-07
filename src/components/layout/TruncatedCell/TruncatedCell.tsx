@@ -39,17 +39,10 @@ const TruncatedCell: FC<TruncatedCellProps> = ({
 
   return (
     <div className={classNames({ [classes.container]: isExpanded })}>
-      <div
-        className={classNames(
-          isExpanded ? classes.expanded : classes.collapsed,
-        )}
-      >
+      <div className={isExpanded ? classes.expanded : classes.collapsed}>
         <span
           ref={expandabilityCheck}
-          className={classNames({
-            [classes.expandedContent]: isExpanded,
-            [classes.truncated]: !isExpanded,
-          })}
+          className={isExpanded ? classes.expandedContent : classes.truncated}
         >
           {content}
         </span>
