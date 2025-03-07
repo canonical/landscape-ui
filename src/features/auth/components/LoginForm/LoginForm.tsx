@@ -1,17 +1,17 @@
-import type { FC } from "react";
+import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import {
   Button,
   Form,
   Input,
   PasswordToggle,
 } from "@canonical/react-components";
-import useAuth from "@/hooks/useAuth";
+import { useFormik } from "formik";
+import type { FC } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import classes from "./LoginForm.module.scss";
+import * as Yup from "yup";
 import { useUnsigned } from "../../hooks";
+import classes from "./LoginForm.module.scss";
 
 interface FormProps {
   email: string;
@@ -64,9 +64,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
             setUser(data);
           }
 
-          const url = new URL(redirectTo ?? "/overview", location.origin);
-
-          navigate(url.toString().replace(url.origin, ""), { replace: true });
+          navigate(redirectTo ?? "/overview", { replace: true });
         }
       } catch (error) {
         debug(error);

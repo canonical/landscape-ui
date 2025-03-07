@@ -134,9 +134,7 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
 
     const redirectTo = searchParams.get("redirect-to");
 
-    const url = new URL(redirectTo ?? "/overview", location.origin);
-
-    navigate(url.toString().replace(url.origin, ""), { replace: true });
+    navigate(redirectTo ?? "/overview", { replace: true });
   }, [authorized, authLoading]);
 
   if (authLoading) {
