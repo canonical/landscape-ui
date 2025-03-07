@@ -1,19 +1,19 @@
-import type { FC, ReactNode } from "react";
-import React, { createContext, useEffect, useState } from "react";
-import classNames from "classnames";
-import { useLocation } from "react-router";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import AppNotification from "@/components/layout/AppNotification";
 import useNotify from "@/hooks/useNotify";
-import classes from "./SidePanelProvider.module.scss";
 import { Button, Icon, ICONS } from "@canonical/react-components";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
+import classNames from "classnames";
+import type { FC, ReactNode } from "react";
+import { createContext, useEffect, useState } from "react";
+import { useLocation } from "react-router";
+import classes from "./SidePanelProvider.module.scss";
 
 interface SidePanelContextProps {
   changeSidePanelSize: (size: "small" | "medium" | "large") => void;
   changeSidePanelTitleLabel: (title: string) => void;
   closeSidePanel: () => void;
   setSidePanelContent: (
-    title: string,
+    title: ReactNode,
     newState: ReactNode | null,
     size?: "small" | "medium" | "large",
     titleLabel?: string,
@@ -37,7 +37,7 @@ interface SidePanelProviderProps {
 const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState<"small" | "medium" | "large">("small");
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState<ReactNode>("");
   const [titleLabel, setTitleLabel] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
 
@@ -63,7 +63,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   };
 
   const handleContentChange = (
-    newTitle: string,
+    newTitle: ReactNode,
     newBody: ReactNode,
     newSize: "small" | "medium" | "large" = "small",
   ) => {
