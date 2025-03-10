@@ -79,8 +79,8 @@ const AutoinstallFilesPanel: FC = () => {
     );
   }
 
-  const handleEmployeeGroupSelect = (employeeGroup: string): void => {
-    setPageParams({ employeeGroups: [employeeGroup] });
+  const handleEmployeeGroupSelect = (group: string): void => {
+    setPageParams({ employeeGroups: [group] });
   };
 
   return (
