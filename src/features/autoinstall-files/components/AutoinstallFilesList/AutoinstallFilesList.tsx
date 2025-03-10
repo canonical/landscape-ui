@@ -5,10 +5,10 @@ import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
   CheckboxInput,
-  Chip,
   ConfirmationModal,
   ModularTable,
 } from "@canonical/react-components";
+import classNames from "classnames";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo, useRef, useState } from "react";
@@ -84,7 +84,14 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       <div className={classes.container}>
         Edit {file.filename}, v{file.version}
         {file.is_default && (
-          <Chip value="default" className="u-no-margin--bottom" readOnly />
+          <span
+            className={classNames(
+              "p-chip is-dense u-no-margin--bottom",
+              classes.chip,
+            )}
+          >
+            <span className="p-chip__value">default</span>
+          </span>
         )}
       </div>,
       <AutoinstallFileForm
@@ -161,7 +168,14 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         <div className={classes.container}>
           {file.filename}, v{file.version}
           {file.is_default && (
-            <Chip value="default" className="u-no-margin--bottom" readOnly />
+            <span
+              className={classNames(
+                "p-chip is-dense u-no-margin--bottom",
+                classes.chip,
+              )}
+            >
+              <span className="p-chip__value">default</span>
+            </span>
           )}
         </div>
       </>,
@@ -199,7 +213,14 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             </Button>
 
             {original.is_default && (
-              <Chip value="default" className="u-no-margin--bottom" readOnly />
+              <span
+                className={classNames(
+                  "p-chip is-dense u-no-margin--bottom",
+                  classes.chip,
+                )}
+              >
+                <span className="p-chip__value">default</span>
+              </span>
             )}
           </div>
         ),
