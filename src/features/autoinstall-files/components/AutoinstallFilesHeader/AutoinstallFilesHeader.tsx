@@ -4,7 +4,6 @@ import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./AutoinstallFilesHeader.module.scss";
-import { ADD_BUTTON_TEXT } from "./constants";
 
 interface AutoinstallFilesHeaderProps {
   readonly employeeGroupOptions: GroupedOption[];
@@ -40,7 +39,7 @@ const AutoinstallFilesHeader: FC<AutoinstallFilesHeaderProps> = ({
               onClick={openAddForm}
             >
               <Icon name="plus" />
-              <span>{ADD_BUTTON_TEXT}</span>
+              <span>Add new</span>
             </Button>
           </div>
         }
