@@ -52,7 +52,7 @@ const AutoinstallFilesPanel: FC = () => {
     );
   };
 
-  if (!autoinstallFiles.length) {
+  if (!autoinstallFiles.length && !search && !employeeGroup) {
     return (
       <EmptyState
         icon="file"

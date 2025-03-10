@@ -239,6 +239,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         <ModularTable
           columns={columns}
           data={autoinstallFiles}
+          emptyMsg="No autoinstall files found according to your search parameters."
           getCellProps={getCellProps(expandedRowIndex)}
           getRowProps={getRowProps(expandedRowIndex)}
         />
