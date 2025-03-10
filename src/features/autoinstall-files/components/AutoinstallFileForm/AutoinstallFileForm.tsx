@@ -43,11 +43,13 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
       filename: removeAutoinstallFileExtension(initialFile.filename),
     },
     validationSchema: VALIDATION_SCHEMA,
-    onSubmit: async ({ contents, filename }) => {
+    onSubmit: async (file) => {
+      const filename = `${file.filename}${AUTOINSTALL_FILE_EXTENSION}`;
+
       try {
         await onSubmit({
-          contents,
-          filename: `${filename}${AUTOINSTALL_FILE_EXTENSION}`,
+          ...file,
+          filename,
         });
 
         closeSidePanel();

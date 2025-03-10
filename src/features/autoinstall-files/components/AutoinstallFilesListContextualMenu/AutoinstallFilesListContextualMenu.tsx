@@ -22,9 +22,9 @@ const AutoinstallFilesListContextualMenu: FC<
           <span>View details</span>
         </>
       ),
-      "aria-label": `View ${file.title} details`,
+      "aria-label": `View ${file.filename} details`,
       hasIcon: true,
-      onClick: () => {
+      onClick: (): void => {
         viewDetails(file);
       },
     },
@@ -35,9 +35,9 @@ const AutoinstallFilesListContextualMenu: FC<
           <span>Edit</span>
         </>
       ),
-      "aria-label": `Edit ${file.title}`,
+      "aria-label": `Edit ${file.filename}`,
       hasIcon: true,
-      onClick: () => {
+      onClick: (): void => {
         edit(file);
       },
     },
@@ -48,9 +48,9 @@ const AutoinstallFilesListContextualMenu: FC<
           <span>Set as default</span>
         </>
       ),
-      "aria-label": `Set ${file.title} as default`,
+      "aria-label": `Set ${file.filename} as default`,
       hasIcon: true,
-      onClick: () => {
+      onClick: (): void => {
         setAsDefault(file);
       },
       disabled: file.is_default,
@@ -62,9 +62,9 @@ const AutoinstallFilesListContextualMenu: FC<
           <span>Remove</span>
         </>
       ),
-      "aria-label": `Remove ${file.title}`,
+      "aria-label": `Remove ${file.filename}`,
       hasIcon: true,
-      onClick: () => {
+      onClick: (): void => {
         remove(file);
       },
       disabled: file.is_default,
@@ -78,7 +78,7 @@ const AutoinstallFilesListContextualMenu: FC<
         toggleClassName="u-no-margin u-no-padding"
         toggleAppearance="base"
         toggleLabel={<Icon name="contextual-menu" />}
-        toggleProps={{ "aria-label": `${file.title} profile actions` }}
+        toggleProps={{ "aria-label": `${file.filename} actions` }}
         links={contextualMenuButtons}
       />
     </>

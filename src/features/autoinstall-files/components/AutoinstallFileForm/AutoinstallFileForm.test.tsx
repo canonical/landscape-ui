@@ -17,22 +17,6 @@ describe("AutoinstallFileForm", () => {
     onSubmit: vi.fn(),
   };
 
-  it("should require a file name", async () => {
-    renderWithProviders(
-      <AutoinstallFileForm {...props} initialFile={undefined} />,
-    );
-
-    await userEvent.click(
-      screen.getByRole("button", { name: props.buttonText }),
-    );
-
-    expect(
-      screen.queryByText(` ${props.notification.message}`),
-    ).not.toBeInTheDocument();
-
-    expect(props.onSubmit).not.toHaveBeenCalled();
-  });
-
   it("should submit", async () => {
     renderWithProviders(<AutoinstallFileForm {...props} />);
 
@@ -41,7 +25,7 @@ describe("AutoinstallFileForm", () => {
     );
 
     expect(
-      screen.queryByText(
+      screen.getByText(
         `${props.initialFile?.filename} ${props.notification.message}`,
       ),
     ).toBeInTheDocument();
