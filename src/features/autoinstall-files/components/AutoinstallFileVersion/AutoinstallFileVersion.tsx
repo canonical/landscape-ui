@@ -6,6 +6,8 @@ import { Button, Icon, Input } from "@canonical/react-components";
 import moment from "moment";
 import { useState, type FC } from "react";
 import { useGetAutoinstallFile } from "../../api";
+import { AUTOINSTALL_FILE_EXTENSION } from "../../constants";
+import { removeAutoinstallFileExtension } from "../../helpers";
 import type { AutoinstallFile } from "../../types";
 import classes from "./AutoinstallFileVersion.module.scss";
 import { BUTTON_TIMEOUT } from "./constants";
@@ -61,12 +63,19 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
 
   return (
     <>
-      <Input
-        type="text"
-        label="File name"
-        value={autoinstallFile.filename}
-        disabled
-      />
+      <div className={classes.inputContainer}>
+        <Input
+          wrapperClassName={classes.inputWrapper}
+          type="text"
+          label="File name"
+          value={removeAutoinstallFileExtension(autoinstallFile.filename)}
+          disabled
+        />
+
+        <span className={classes.inputDescription}>
+          {AUTOINSTALL_FILE_EXTENSION}
+        </span>
+      </div>
 
       <InfoItem
         label="Date created"
