@@ -10,17 +10,18 @@ import type { CellProps, Column } from "react-table";
 import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
 import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
+
 import AutoinstallFileVersion from "../AutoinstallFileVersion";
 import classes from "./AutoinstallFileVersionHistory.module.scss";
 
 interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
-  readonly goBack: () => void;
+  readonly viewVersionHistory: () => void;
 }
 
 const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
   file,
-  goBack,
+  viewVersionHistory,
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
@@ -42,33 +43,37 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
           row: {
             original: { version },
           },
-        }: CellProps<AutoinstallFileVersionInfo>): ReactNode => (
-          <Button
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top"
-            onClick={() => {
-              setSidePanelContent(
-                <div className={classes.container}>
-                  {file.filename}, v{version}
-                  {file.is_default && (
-                    <Chip
-                      value="default"
-                      className="u-no-margin--bottom"
-                      readOnly
-                    />
-                  )}
-                </div>,
-                <AutoinstallFileVersion
-                  goBack={goBack}
-                  id={file.id}
-                  version={version}
-                />,
-              );
-            }}
-          >
-            {version}
-          </Button>
-        ),
+        }: CellProps<AutoinstallFileVersionInfo>): ReactNode => {
+          const handleVersionButtonClick = (): void => {
+            setSidePanelContent(
+              <div className={classes.container}>
+                {file.filename}, v{version}
+                {file.is_default && (
+                  <Chip
+                    value="default"
+                    className="u-no-margin--bottom"
+                    readOnly
+                  />
+                )}
+              </div>,
+              <AutoinstallFileVersion
+                goBack={viewVersionHistory}
+                id={file.id}
+                version={version}
+              />,
+            );
+          };
+
+          return (
+            <Button
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top"
+              onClick={handleVersionButtonClick}
+            >
+              {version}
+            </Button>
+          );
+        },
       },
       {
         accessor: "created_at",

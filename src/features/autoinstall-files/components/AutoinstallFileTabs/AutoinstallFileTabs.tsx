@@ -1,26 +1,26 @@
 import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
-import type { TabId } from "../../types";
+import type { AutoinstallFileTabId } from "../../types";
 import type { AutoinstallFile, WithGroups } from "../../types/AutoinstallFile";
 import AutoinstallFileInfo from "../AutoinstallFileInfo";
 import AutoinstallFileVersionHistory from "../AutoinstallFileVersionHistory";
-import { TABS } from "./constants";
+import { AUTOINSTALL_FILE_TABS } from "./constants";
 
 interface AutoinstallFileTabsProps {
   readonly file: WithGroups<AutoinstallFile>;
-  readonly openVersionHistory: (file: WithGroups<AutoinstallFile>) => void;
-  readonly defaultTabId?: TabId;
+  readonly viewVersionHistory: (file: WithGroups<AutoinstallFile>) => void;
+  readonly initialTabId?: AutoinstallFileTabId;
 }
 
 const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
   file,
-  openVersionHistory,
-  defaultTabId = "info",
+  viewVersionHistory,
+  initialTabId = "info",
 }) => {
-  const [tabId, setTabId] = useState(defaultTabId);
+  const [tabId, setTabId] = useState(initialTabId);
 
-  const links = TABS.map(({ label, id }) => ({
+  const links = AUTOINSTALL_FILE_TABS.map(({ label, id }) => ({
     label,
     active: id === tabId,
     role: "tab",
@@ -30,7 +30,7 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
   }));
 
   const goBack = (): void => {
-    openVersionHistory(file);
+    viewVersionHistory(file);
   };
 
   return (
@@ -40,7 +40,10 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
       {tabId === "info" && <AutoinstallFileInfo file={file} />}
 
       {tabId === "version-history" && (
-        <AutoinstallFileVersionHistory file={file} goBack={goBack} />
+        <AutoinstallFileVersionHistory
+          file={file}
+          viewVersionHistory={goBack}
+        />
       )}
     </>
   );

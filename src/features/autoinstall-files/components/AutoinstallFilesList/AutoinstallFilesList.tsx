@@ -15,7 +15,11 @@ import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
 import { useDeleteAutoinstallFile, useUpdateAutoinstallFile } from "../../api";
-import type { AutoinstallFile, TabId, WithGroups } from "../../types";
+import type {
+  AutoinstallFile,
+  AutoinstallFileTabId,
+  WithGroups,
+} from "../../types";
 import AutoinstallFileDetails from "../AutoinstallFileDetails";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
@@ -150,7 +154,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   const openDetails = (
     file: WithGroups<AutoinstallFile>,
-    defaultTabId?: TabId,
+    defaultTabId?: AutoinstallFileTabId,
   ): void => {
     setSidePanelContent(
       <>
@@ -162,7 +166,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         </div>
       </>,
       <AutoinstallFileDetails
-        defaultTabId={defaultTabId}
+        initialTabId={defaultTabId}
         file={file}
         edit={openEditModal}
         remove={openRemoveModal}
