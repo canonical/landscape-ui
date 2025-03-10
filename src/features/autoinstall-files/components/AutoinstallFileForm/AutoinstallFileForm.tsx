@@ -43,7 +43,12 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
 
     validationSchema: VALIDATION_SCHEMA,
 
-    onSubmit: async (autoinstallFile) => {
+    onSubmit: async ({ contents, filename }) => {
+      const autoinstallFile = {
+        contents,
+        filename: `${filename}${AUTOINSTALL_FILE_EXTENSION}`,
+      };
+
       try {
         await query(autoinstallFile);
         closeSidePanel();
