@@ -1,18 +1,16 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Chip, ModularTable } from "@canonical/react-components";
+import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-
 import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
 import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
-
+import AutoinstallFileSidePanelTitle from "../AutoinstallFileSidePanelTitle";
 import AutoinstallFileVersion from "../AutoinstallFileVersion";
-import classes from "./AutoinstallFileVersionHistory.module.scss";
 
 interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
@@ -46,16 +44,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
         }: CellProps<AutoinstallFileVersionInfo>): ReactNode => {
           const handleVersionButtonClick = (): void => {
             setSidePanelContent(
-              <div className={classes.container}>
-                {file.filename}, v{version}
-                {file.is_default && (
-                  <Chip
-                    value="default"
-                    className="u-no-margin--bottom"
-                    readOnly
-                  />
-                )}
-              </div>,
+              <AutoinstallFileSidePanelTitle file={file} />,
               <AutoinstallFileVersion
                 goBack={viewVersionHistory}
                 id={file.id}

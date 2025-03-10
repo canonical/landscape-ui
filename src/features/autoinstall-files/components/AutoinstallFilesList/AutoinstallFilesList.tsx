@@ -22,6 +22,7 @@ import type {
 } from "../../types";
 import AutoinstallFileDetails from "../AutoinstallFileDetails";
 import AutoinstallFileForm from "../AutoinstallFileForm";
+import AutoinstallFileSidePanelTitle from "../AutoinstallFileSidePanelTitle";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 import classes from "./AutoinstallFilesList.module.scss";
 import {
@@ -81,19 +82,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   const openEditForm = (file: AutoinstallFile): void => {
     setSidePanelContent(
-      <div className={classes.container}>
-        Edit {file.filename}, v{file.version}
-        {file.is_default && (
-          <span
-            className={classNames(
-              "p-chip is-dense u-no-margin--bottom",
-              classes.chip,
-            )}
-          >
-            <span className="p-chip__value">default</span>
-          </span>
-        )}
-      </div>,
+      <AutoinstallFileSidePanelTitle file={file} title="Edit" />,
       <AutoinstallFileForm
         buttonText="Save changes"
         description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
@@ -164,21 +153,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     defaultTabId?: AutoinstallFileTabId,
   ): void => {
     setSidePanelContent(
-      <>
-        <div className={classes.container}>
-          {file.filename}, v{file.version}
-          {file.is_default && (
-            <span
-              className={classNames(
-                "p-chip is-dense u-no-margin--bottom",
-                classes.chip,
-              )}
-            >
-              <span className="p-chip__value">default</span>
-            </span>
-          )}
-        </div>
-      </>,
+      <AutoinstallFileSidePanelTitle file={file} />,
       <AutoinstallFileDetails
         initialTabId={defaultTabId}
         file={file}
