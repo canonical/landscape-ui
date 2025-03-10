@@ -88,7 +88,14 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     defaultTabId?: TabId,
   ): void => {
     setSidePanelContent(
-      `${file.filename}${file.is_default ? " (default)" : ""}`,
+      <>
+        <div className={classes.container}>
+          {file.filename}, v{file.version}
+          {file.is_default && (
+            <Chip value="default" className="u-no-margin--bottom" readOnly />
+          )}
+        </div>
+      </>,
       <AutoinstallFileDetails
         defaultTabId={defaultTabId}
         file={file}
@@ -104,7 +111,12 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   const openEditFormWithoutModal = (file: AutoinstallFile): void => {
     setSidePanelContent(
-      `Edit ${file.filename}`,
+      <div className={classes.container}>
+        Edit {file.filename}, v{file.version}
+        {file.is_default && (
+          <Chip value="default" className="u-no-margin--bottom" readOnly />
+        )}
+      </div>,
       <AutoinstallFileForm
         buttonText="Save changes"
         description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
@@ -147,18 +159,18 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         Cell: ({
           row: { original },
         }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
-          <div>
+          <div className={classes.container}>
             <Button
               type="button"
               appearance="link"
-              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              className="u-no-margin u-no-padding--top"
               onClick={() => openDetails(original)}
             >
               {`${original.filename}, v${original.version}`}
             </Button>
 
             {original.is_default && (
-              <Chip value="default" className={classes.chip} />
+              <Chip value="default" className="u-no-margin--bottom" readOnly />
             )}
           </div>
         ),
