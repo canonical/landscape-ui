@@ -14,12 +14,12 @@ import type { FC, ReactNode } from "react";
 import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
-import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
-import type { TabId } from "../../types";
+import { useUpdateAutoinstallFile } from "../../api";
 import type {
   AutoinstallFile,
   AutoinstallFileWithGroups,
-} from "../../types/AutoinstallFile";
+  TabId,
+} from "../../types";
 import AutoinstallFileDetails from "../AutoinstallFileDetails";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
@@ -39,6 +39,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 }) => {
   const { employeeGroups, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
+  const { updateAutoinstallFile } = useUpdateAutoinstallFile();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalIgnored, setIsModalIgnored] = useState(
     !!localStorage.getItem(LOCAL_STORAGE_ITEM),
@@ -60,10 +61,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     },
     () => setExpandedRowIndex(null),
   );
-
-  const {
-    updateAutoinstallFileQuery: { mutateAsync: updateAutoinstallFile },
-  } = useAutoinstallFiles();
 
   const closeModal = (): void => {
     setIsModalVisible(false);
@@ -106,6 +103,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           openDetails(file, "version-history");
         }}
       />,
+      "large",
     );
   };
 
@@ -123,7 +121,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         initialFile={file}
         notification={EDIT_AUTOINSTALL_FILE_NOTIFICATION}
         query={async ({ contents }) => {
-          await updateAutoinstallFile({ contents, id: file.id });
+          await updateAutoinstallFile(file.id, { contents });
         }}
       />,
     );

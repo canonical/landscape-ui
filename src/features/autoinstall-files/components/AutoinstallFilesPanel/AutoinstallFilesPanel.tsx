@@ -3,43 +3,28 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { Button } from "@canonical/react-components";
-import type { UseQueryResult } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
 import type { FC } from "react";
-import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
-import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
+import { useAddAutoinstallFile, useGetAutoinstallFiles } from "../../api";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesHeader from "../AutoinstallFilesHeader";
 import AutoinstallFilesList from "../AutoinstallFilesList";
 import { ADD_AUTOINSTALL_FILE_NOTIFICATION } from "./constants";
 
 const AutoinstallFilesPanel: FC = () => {
-  const { getAutoinstallFilesQuery } = useAutoinstallFiles();
   const { currentPage, pageSize } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
-  const {
-    addAutoinstallFileQuery: { mutateAsync: addAutoinstallFile },
-  } = useAutoinstallFiles();
+  const { autoinstallFiles, autoinstallFilesCount, isAutoinstallFilesLoading } =
+    useGetAutoinstallFiles({
+      limit: pageSize,
+      offset: currentPage * pageSize - pageSize,
+      with_groups: true,
+    });
 
-  const { data: response, isLoading } = getAutoinstallFilesQuery({
-    limit: pageSize,
-    offset: currentPage * pageSize - pageSize,
-    with_groups: true,
-  }) as UseQueryResult<
-    AxiosResponse<ApiPaginatedResponse<AutoinstallFileWithGroups>>,
-    AxiosError<ApiError>
-  >;
+  const { addAutoinstallFile } = useAddAutoinstallFile();
 
-  const { results: autoinstallFiles, count } = response?.data ?? {
-    results: [],
-    count: 0,
-  };
-
-  const openAddForm = (): void =>
+  const openAddForm = (): void => {
     setSidePanelContent(
       "Add new autoinstall file",
       <AutoinstallFileForm
@@ -49,40 +34,43 @@ const AutoinstallFilesPanel: FC = () => {
         query={addAutoinstallFile}
       />,
     );
+  };
+
+  if (isAutoinstallFilesLoading) {
+    return <LoadingState />;
+  }
+
+  if (!autoinstallFiles.length) {
+    return (
+      <EmptyState
+        icon="file"
+        title="No autoinstall files found"
+        body={
+          <p className="u-no-margin--bottom">
+            You haven&#39;t added any autoinstall files yet.
+          </p>
+        }
+        cta={[
+          <Button
+            key="add-autoinstall-file"
+            appearance="positive"
+            onClick={openAddForm}
+            className="u-no-margin--right"
+          >
+            Add autoinstall file
+          </Button>,
+        ]}
+      />
+    );
+  }
 
   return (
     <>
-      {isLoading ? (
-        <LoadingState />
-      ) : !autoinstallFiles.length ? (
-        <EmptyState
-          icon="file"
-          title="No autoinstall files found"
-          body={
-            <p className="u-no-margin--bottom">
-              You haven&#39;t added any autoinstall files yet.
-            </p>
-          }
-          cta={[
-            <Button
-              key="add-autoinstall-file"
-              appearance="positive"
-              onClick={openAddForm}
-              className="u-no-margin--right"
-            >
-              Add autoinstall file
-            </Button>,
-          ]}
-        />
-      ) : (
-        <>
-          <AutoinstallFilesHeader openAddForm={openAddForm} />
-          <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />
-        </>
-      )}
+      <AutoinstallFilesHeader openAddForm={openAddForm} />
+      <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />
       <TablePagination
         currentItemCount={autoinstallFiles.length}
-        totalItems={count}
+        totalItems={autoinstallFilesCount}
       />
     </>
   );

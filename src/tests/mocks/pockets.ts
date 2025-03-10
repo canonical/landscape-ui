@@ -48,6 +48,7 @@ export const diffPocket: PackageDiff = {
       ["pocket4", "1.0.0"],
       ["pocket5", "1.0.0"],
     ],
+    delete: [["pocket6", "1.0.0"]],
   },
 };
 

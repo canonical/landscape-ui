@@ -15,6 +15,8 @@ import AccountsProvider from "@/context/accounts";
 if (!IS_DEV_ENV) {
   Sentry.init({
     dsn: "https://55a60b44ddfd4ca5a94a8a3bac2d5052@sentry.is.canonical.com//85",
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
   });
 }
 
