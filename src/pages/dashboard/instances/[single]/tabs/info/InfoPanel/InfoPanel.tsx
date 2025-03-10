@@ -31,6 +31,7 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import type { ModalConfirmationFormProps } from "./types";
 import { useActivities } from "@/features/activities";
 import { currentInstanceCan } from "@/features/instances";
+import { getFormikError } from "@/utils/formikErrors";
 
 const EditInstance = lazy(
   () => import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
@@ -54,8 +55,12 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
-  const { removeInstancesQuery, rebootInstancesQuery, shutdownInstancesQuery } =
-    useInstances();
+  const {
+    removeInstancesQuery,
+    rebootInstancesQuery,
+    sanitizeInstanceQuery,
+    shutdownInstancesQuery,
+  } = useInstances();
   const { deleteChildInstancesQuery } = useWsl();
   const { editInstanceQuery } = useInstances();
 
@@ -80,6 +85,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     shutdownInstancesQuery;
   const { mutateAsync: deleteChildInstances, isPending: isDeleting } =
     deleteChildInstancesQuery;
+  const { mutateAsync: sanitizeInstance, isPending: isSanitizing } =
+    sanitizeInstanceQuery;
 
   const handleSubmit = async (values: ModalConfirmationFormProps) => {
     if (!values.action) {
@@ -130,6 +137,13 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     onSubmit: () => handleRemoveInstance(),
   });
 
+  const sanitizeInstanceFormik = useFormik({
+    initialValues: {
+      confirmationText: "",
+    },
+    onSubmit: () => handleSanitizeInstance(),
+  });
+
   const handleTagsUpdate = async () => {
     try {
       await editInstance({
@@ -153,6 +167,27 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       });
 
       navigate("/instances", { replace: true });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const handleSanitizeInstance = async () => {
+    try {
+      const { data: sanitizeActivity } = await sanitizeInstance({
+        computer_id: instance.id,
+      });
+
+      notify.success({
+        title: `You have successfully initiated Sanitization for ${instance.title}`,
+        message: `Sanitizing for ${instance.title} has been queued in Activities. The data will be permanently irrecoverable once complete.`,
+        actions: [
+          {
+            label: "View details",
+            onClick: () => openActivityDetails(sanitizeActivity),
+          },
+        ],
+      });
     } catch (error) {
       debug(error);
     }
@@ -293,6 +328,48 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               <ConfirmationButton
                 className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"
+                disabled={isSanitizing}
+                confirmationModalProps={{
+                  title: "Sanitize instance",
+                  children: (
+                    <Form
+                      onSubmit={sanitizeInstanceFormik.handleSubmit}
+                      noValidate
+                    >
+                      <p>
+                        Sanitization will permanently delete the encryption keys
+                        for {instance.title}, making its data completely
+                        irrecoverable. This action cannot be undone. Please
+                        confirm your wish to proceed.
+                      </p>
+                      <p>
+                        Type <b>sanitize {instance.title}</b> to confirm.
+                      </p>
+                      <Input
+                        type="text"
+                        {...sanitizeInstanceFormik.getFieldProps(
+                          "confirmationText",
+                        )}
+                      />
+                    </Form>
+                  ),
+                  confirmButtonLabel: "Sanitize",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled:
+                    isSanitizing ||
+                    sanitizeInstanceFormik.values.confirmationText !==
+                      `sanitize ${instance.title}`,
+                  confirmButtonLoading: isSanitizing,
+                  onConfirm: handleSanitizeInstance,
+                }}
+              >
+                <Icon name="tidy" />
+                <span>Sanitize</span>
+              </ConfirmationButton>
+
+              <ConfirmationButton
+                className="p-segmented-control__button u-no-margin--bottom has-icon"
+                type="button"
                 disabled={isRemoving}
                 confirmationModalProps={{
                   title: "Restart instance",
@@ -314,12 +391,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                         placeholder="Scheduled time"
                         {...formik.getFieldProps("deliver_after")}
                         disabled={formik.values.deliverImmediately}
-                        error={
-                          formik.touched.deliver_after &&
-                          formik.errors.deliver_after
-                            ? formik.errors.deliver_after
-                            : undefined
-                        }
+                        error={getFormikError(formik, "deliver_after")}
                       />
                       <p>
                         This will restart &quot;{instance.title}&quot; instance.
@@ -360,12 +432,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                         placeholder="Scheduled time"
                         {...formik.getFieldProps("deliver_after")}
                         disabled={formik.values.deliverImmediately}
-                        error={
-                          formik.touched.deliver_after &&
-                          formik.errors.deliver_after
-                            ? formik.errors.deliver_after
-                            : undefined
-                        }
+                        error={getFormikError(formik, "deliver_after")}
                       />
                       <p>
                         This will shut down &quot;{instance.title}&quot;
