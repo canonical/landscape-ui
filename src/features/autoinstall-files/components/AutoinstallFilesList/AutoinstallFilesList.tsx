@@ -1,5 +1,6 @@
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
@@ -14,6 +15,7 @@ import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
 import { useUpdateAutoinstallFile } from "../../api";
+import useDeleteAutoinstallFile from "../../api/useDeleteAutoinstallFile";
 import type {
   AutoinstallFile,
   AutoinstallFileWithGroups,
@@ -37,19 +39,21 @@ interface AutoinstallFilesListProps {
 const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   autoinstallFiles,
 }) => {
+  const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
+
+  const { deleteAutoinstallFile } = useDeleteAutoinstallFile();
   const { updateAutoinstallFile } = useUpdateAutoinstallFile();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isModalIgnored, setIsModalIgnored] = useState(
+
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isRemoveModalVisible, setIsRemoveModalVisible] = useState(false);
+  const [isEditModalIgnored, setIsEditModalIgnored] = useState(
     !!localStorage.getItem(LOCAL_STORAGE_ITEM),
   );
   const [modalFile, setModalFile] = useState<AutoinstallFile | null>(null);
+
   const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
-
-  const toggleIsModalIgnored = (): void => {
-    setIsModalIgnored((isModalIgnored) => !isModalIgnored);
-  };
 
   useOnClickOutside(
     {
@@ -63,51 +67,20 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     },
   );
 
-  const closeModal = (): void => {
-    setIsModalVisible(false);
-    setIsModalIgnored(false);
+  const toggleIsEditModalIgnored = (): void => {
+    setIsEditModalIgnored((isIgnored) => !isIgnored);
   };
 
-  const continueEditing = (): void => {
-    if (isModalIgnored) {
-      localStorage.setItem(LOCAL_STORAGE_ITEM, "true");
-    }
-
-    setIsModalVisible(false);
-
-    if (modalFile) {
-      openEditFormWithoutModal(modalFile);
-      setModalFile(null);
-    }
+  const handleCloseEditModal = (): void => {
+    setIsEditModalVisible(false);
+    setIsEditModalIgnored(false);
   };
 
-  const openDetails = (
-    file: AutoinstallFileWithGroups,
-    defaultTabId?: TabId,
-  ): void => {
-    setSidePanelContent(
-      <>
-        <div className={classes.container}>
-          {file.filename}, v{file.version}
-          {file.is_default && (
-            <Chip value="default" className="u-no-margin--bottom" readOnly />
-          )}
-        </div>
-      </>,
-      <AutoinstallFileDetails
-        defaultTabId={defaultTabId}
-        file={file}
-        openEditPanel={() => {
-          openEditForm(file);
-        }}
-        openVersionHistory={() => {
-          openDetails(file, "version-history");
-        }}
-      />,
-    );
+  const handleCloseRemoveModal = (): void => {
+    setIsRemoveModalVisible(false);
   };
 
-  const openEditFormWithoutModal = (file: AutoinstallFile): void => {
+  const openEditForm = (file: AutoinstallFile): void => {
     setSidePanelContent(
       <div className={classes.container}>
         Edit {file.filename}, v{file.version}
@@ -127,14 +100,85 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     );
   };
 
-  const openEditForm = (file: AutoinstallFile): void => {
-    if (isModalIgnored || file.version < MAX_AUTOINSTALL_FILE_VERSION_COUNT) {
-      openEditFormWithoutModal(file);
+  const openEditModal = (file: AutoinstallFile): void => {
+    if (
+      isEditModalIgnored ||
+      file.version < MAX_AUTOINSTALL_FILE_VERSION_COUNT
+    ) {
+      openEditForm(file);
     } else {
-      setIsModalVisible(true);
+      setIsEditModalVisible(true);
       setModalFile(file);
     }
   };
+
+  const openRemoveModal = (file: AutoinstallFile): void => {
+    setIsRemoveModalVisible(true);
+    setModalFile(file);
+  };
+
+  const setAsDefault = async (file: AutoinstallFile): Promise<void> => {
+    await updateAutoinstallFile(file.id, { is_default: true });
+
+    notify.success({
+      message:
+        "Employee groups without an Autoinstall file assigned will inherit this default file.",
+      title: `You have successfully set ${file.filename} as the default Autoinstall file`,
+    });
+  };
+
+  const handleConfirmEditModal = (): void => {
+    if (isEditModalIgnored) {
+      localStorage.setItem(LOCAL_STORAGE_ITEM, "true");
+    }
+
+    setIsEditModalVisible(false);
+
+    if (modalFile) {
+      openEditForm(modalFile);
+      setModalFile(null);
+    }
+  };
+
+  const handleConfirmRemoveModal = async (): Promise<void> => {
+    setIsRemoveModalVisible(false);
+
+    if (modalFile) {
+      await deleteAutoinstallFile(modalFile.id);
+
+      notify.success({
+        message: `The ${modalFile.filename} Autoinstall file has been permanently removed. All Employee groups associated with this file are now using the default Autoinstall file.`,
+        title: `You have successfully removed ${modalFile.filename} Autoinstall file`,
+      });
+    }
+  };
+
+  const openDetails = (
+    file: AutoinstallFileWithGroups,
+    defaultTabId?: TabId,
+  ): void => {
+    setSidePanelContent(
+      <>
+        <div className={classes.container}>
+          {file.filename}, v{file.version}
+          {file.is_default && (
+            <Chip value="default" className="u-no-margin--bottom" readOnly />
+          )}
+        </div>
+      </>,
+      <AutoinstallFileDetails
+        defaultTabId={defaultTabId}
+        file={file}
+        edit={openEditModal}
+        remove={openRemoveModal}
+        setAsDefault={setAsDefault}
+        viewVersionHistory={(file: AutoinstallFileWithGroups) => {
+          openDetails(file, "version-history");
+        }}
+      />,
+    );
+  };
+
   const columns = useMemo<Column<AutoinstallFileWithGroups>[]>(
     () => [
       {
@@ -223,14 +267,23 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           row: { original },
         }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
           <AutoinstallFilesListContextualMenu
+            edit={openEditModal}
             file={original}
-            openDetailsPanel={openDetails}
-            openEditPanel={openEditForm}
+            remove={openRemoveModal}
+            setAsDefault={setAsDefault}
+            viewDetails={openDetails}
           />
         ),
       },
     ],
-    [expandedRowIndex, autoinstallFiles, openDetails, openEditForm],
+    [
+      expandedRowIndex,
+      autoinstallFiles,
+      openDetails,
+      openEditModal,
+      openRemoveModal,
+      setAsDefault,
+    ],
   );
 
   return (
@@ -245,29 +298,44 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         />
       </div>
 
-      {isModalVisible && (
-        <>
-          <ConfirmationModal
-            close={closeModal}
-            confirmButtonAppearance="positive"
-            confirmButtonLabel="Continue Editing"
-            onConfirm={continueEditing}
-            title="Edit History Limit Reached"
-          >
-            <p>
-              You&apos;ve reached the maximum of 100 saved edits for this file.
-              To continue editing, the system will remove the oldest version to
-              make space for your new changes. This ensures that the most recent
-              100 versions are always retained in the history.
-            </p>
+      {isEditModalVisible && (
+        <ConfirmationModal
+          close={handleCloseEditModal}
+          confirmButtonAppearance="positive"
+          confirmButtonLabel="Continue Editing"
+          onConfirm={handleConfirmEditModal}
+          title="Edit History Limit Reached"
+        >
+          <p>
+            You&apos;ve reached the maximum of 100 saved edits for this file. To
+            continue editing, the system will remove the oldest version to make
+            space for your new changes. This ensures that the most recent 100
+            versions are always retained in the history.
+          </p>
 
-            <CheckboxInput
-              label="I understand. Don't show this message again."
-              onChange={toggleIsModalIgnored}
-              checked={isModalIgnored}
-            />
-          </ConfirmationModal>
-        </>
+          <CheckboxInput
+            label="I understand. Don't show this message again."
+            onChange={toggleIsEditModalIgnored}
+            checked={isEditModalIgnored}
+          />
+        </ConfirmationModal>
+      )}
+
+      {isRemoveModalVisible && modalFile && (
+        <ConfirmationModal
+          close={handleCloseRemoveModal}
+          confirmButtonAppearance="negative"
+          confirmButtonLabel="Remove"
+          onConfirm={handleConfirmRemoveModal}
+          title={`Remove ${modalFile.filename}, Autoinstall File`}
+        >
+          <p>
+            You are about to remove {modalFile.filename}, an Autoinstall file.
+            This action is irreversible. All Employee groups this file is
+            associated with, will have the default Autoinstall file associated
+            instead.
+          </p>
+        </ConfirmationModal>
       )}
     </>
   );

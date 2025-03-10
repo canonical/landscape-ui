@@ -1,17 +1,19 @@
 import type { MenuLink } from "@canonical/react-components";
 import { ContextualMenu, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import type { AutoinstallFileWithGroups } from "../../types";
+import type { AutoinstallFile, AutoinstallFileWithGroups } from "../../types";
 
 interface AutoinstallFilesListContextualMenuProps {
+  readonly edit: (file: AutoinstallFile) => void;
   readonly file: AutoinstallFileWithGroups;
-  readonly openDetailsPanel: (file: AutoinstallFileWithGroups) => void;
-  readonly openEditPanel: (file: AutoinstallFileWithGroups) => void;
+  readonly remove: (file: AutoinstallFile) => void;
+  readonly setAsDefault: (file: AutoinstallFile) => void;
+  readonly viewDetails: (file: AutoinstallFileWithGroups) => void;
 }
 
 const AutoinstallFilesListContextualMenu: FC<
   AutoinstallFilesListContextualMenuProps
-> = ({ file, openDetailsPanel, openEditPanel }) => {
+> = ({ edit, file, remove, setAsDefault, viewDetails }) => {
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
@@ -22,7 +24,9 @@ const AutoinstallFilesListContextualMenu: FC<
       ),
       "aria-label": `View ${file.title} details`,
       hasIcon: true,
-      onClick: () => openDetailsPanel(file),
+      onClick: () => {
+        viewDetails(file);
+      },
     },
     {
       children: (
@@ -33,7 +37,9 @@ const AutoinstallFilesListContextualMenu: FC<
       ),
       "aria-label": `Edit ${file.title}`,
       hasIcon: true,
-      onClick: () => openEditPanel(file),
+      onClick: () => {
+        edit(file);
+      },
     },
     {
       children: (
@@ -44,7 +50,9 @@ const AutoinstallFilesListContextualMenu: FC<
       ),
       "aria-label": `Set ${file.title} as default`,
       hasIcon: true,
-      onClick: undefined,
+      onClick: () => {
+        setAsDefault(file);
+      },
       disabled: file.is_default,
     },
     {
@@ -56,7 +64,9 @@ const AutoinstallFilesListContextualMenu: FC<
       ),
       "aria-label": `Remove ${file.title}`,
       hasIcon: true,
-      onClick: undefined,
+      onClick: () => {
+        remove(file);
+      },
       disabled: file.is_default,
     },
   ];

@@ -5,7 +5,8 @@ import type { AxiosError } from "axios";
 import type { AutoinstallFile } from "../types";
 
 interface UpdateAutoinstallFileParams {
-  contents: string;
+  contents?: string;
+  is_default?: boolean;
 }
 
 const useUpdateAutoinstallFile = (): {
@@ -23,15 +24,15 @@ const useUpdateAutoinstallFile = (): {
     AxiosError<ApiError>,
     { id: number } & UpdateAutoinstallFileParams
   >({
-    mutationFn: ({ id, ...params }) =>
+    mutationFn: async ({ id, ...params }) =>
       authFetch.patch(`autoinstall/${id}`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["autoinstallFiles"] }),
   });
 
   return {
     isAutoinstallFileUpdating: isPending,
-    updateAutoinstallFile: (
+    updateAutoinstallFile: async (
       id: number,
       params: UpdateAutoinstallFileParams,
     ): Promise<AutoinstallFile> => {

@@ -9,7 +9,7 @@ import { TABS } from "./constants";
 
 interface AutoinstallFileTabsProps {
   readonly file: AutoinstallFileWithGroups;
-  readonly openVersionHistory: () => void;
+  readonly openVersionHistory: (file: AutoinstallFileWithGroups) => void;
   readonly defaultTabId?: TabId;
 }
 
@@ -29,6 +29,10 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
     },
   }));
 
+  const goBack = (): void => {
+    openVersionHistory(file);
+  };
+
   return (
     <>
       <Tabs links={links} />
@@ -36,10 +40,7 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
       {tabId === "info" && <AutoinstallFileInfo file={file} />}
 
       {tabId === "version-history" && (
-        <AutoinstallFileVersionHistory
-          file={file}
-          goBack={openVersionHistory}
-        />
+        <AutoinstallFileVersionHistory file={file} goBack={goBack} />
       )}
     </>
   );
