@@ -1,14 +1,14 @@
 import type { MenuLink } from "@canonical/react-components";
 import { ContextualMenu, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import type { AutoinstallFile, AutoinstallFileWithGroups } from "../../types";
+import type { AutoinstallFile, WithGroups } from "../../types";
 
 interface AutoinstallFilesListContextualMenuProps {
   readonly edit: (file: AutoinstallFile) => void;
-  readonly file: AutoinstallFileWithGroups;
+  readonly file: WithGroups<AutoinstallFile>;
   readonly remove: (file: AutoinstallFile) => void;
   readonly setAsDefault: (file: AutoinstallFile) => void;
-  readonly viewDetails: (file: AutoinstallFileWithGroups) => void;
+  readonly viewDetails: (file: WithGroups<AutoinstallFile>) => void;
 }
 
 const AutoinstallFilesListContextualMenu: FC<

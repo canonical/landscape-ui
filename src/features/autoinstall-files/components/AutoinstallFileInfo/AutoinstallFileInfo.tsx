@@ -3,10 +3,10 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { Col, Row } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import type { AutoinstallFileWithGroups } from "../../types";
+import type { AutoinstallFile, WithGroups } from "../../types";
 
 interface AutoinstallFileInfoProps {
-  readonly file: AutoinstallFileWithGroups;
+  readonly file: WithGroups<AutoinstallFile>;
 }
 
 const AutoinstallFileInfo: FC<AutoinstallFileInfoProps> = ({ file }) => {

@@ -1,6 +1,6 @@
-import type { AutoinstallFileWithGroups } from "@/features/autoinstall-files";
+import type { AutoinstallFile, WithGroups } from "@/features/autoinstall-files";
 
-export const autoinstallFiles: AutoinstallFileWithGroups[] = [
+export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
   {
     id: 1,
     contents: "echo 'Hello World'",

@@ -1,18 +1,14 @@
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import type {
-  AutoinstallFile,
-  AutoinstallFileWithGroups,
-  TabId,
-} from "../../types";
+import type { AutoinstallFile, TabId, WithGroups } from "../../types";
 import AutoinstallFileTabs from "../AutoinstallFileTabs";
 
 interface AutoinstallFileDetailsProps {
   readonly edit: (file: AutoinstallFile) => void;
-  readonly file: AutoinstallFileWithGroups;
+  readonly file: WithGroups<AutoinstallFile>;
   readonly remove: (file: AutoinstallFile) => void;
   readonly setAsDefault: (file: AutoinstallFile) => void;
-  readonly viewVersionHistory: (file: AutoinstallFileWithGroups) => void;
+  readonly viewVersionHistory: (file: WithGroups<AutoinstallFile>) => void;
   readonly defaultTabId?: TabId;
 }
 

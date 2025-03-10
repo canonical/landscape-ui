@@ -23,8 +23,8 @@ const useAddAutoinstallFile = (): {
     AxiosError<ApiError>,
     AddAutoinstallFileParams
   >({
-    mutationFn: (params) => authFetch.post("autoinstall", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.post("autoinstall", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["autoinstallFiles"] }),
   });
 

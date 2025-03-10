@@ -2,14 +2,14 @@ import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
 import type { TabId } from "../../types";
-import type { AutoinstallFileWithGroups } from "../../types/AutoinstallFile";
+import type { AutoinstallFile, WithGroups } from "../../types/AutoinstallFile";
 import AutoinstallFileInfo from "../AutoinstallFileInfo";
 import AutoinstallFileVersionHistory from "../AutoinstallFileVersionHistory";
 import { TABS } from "./constants";
 
 interface AutoinstallFileTabsProps {
-  readonly file: AutoinstallFileWithGroups;
-  readonly openVersionHistory: (file: AutoinstallFileWithGroups) => void;
+  readonly file: WithGroups<AutoinstallFile>;
+  readonly openVersionHistory: (file: WithGroups<AutoinstallFile>) => void;
   readonly defaultTabId?: TabId;
 }
 

@@ -1,6 +1,6 @@
 import type { HTMLProps, MutableRefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
-import type { AutoinstallFileWithGroups } from "../../types";
+import type { AutoinstallFile, WithGroups } from "../../types";
 import classes from "./AutoinstallFilesList.module.scss";
 
 export const getTableRowsRef = (
@@ -21,7 +21,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
   return ({
     column,
     row: { index },
-  }: Cell<AutoinstallFileWithGroups>): Partial<
+  }: Cell<WithGroups<AutoinstallFile>>): Partial<
     TableCellProps & HTMLProps<HTMLTableCellElement>
   > => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
@@ -53,7 +53,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
 export const getRowProps = (expandedRowIndex: number | null) => {
   return ({
     index,
-  }: Row<AutoinstallFileWithGroups>): Partial<
+  }: Row<WithGroups<AutoinstallFile>>): Partial<
     TableRowProps & HTMLProps<HTMLTableRowElement>
   > => {
     const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =

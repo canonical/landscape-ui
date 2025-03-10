@@ -10,7 +10,7 @@ export interface AutoinstallFile extends Record<string, unknown> {
   version: number;
 }
 
-export interface AutoinstallFileWithGroups extends AutoinstallFile {
+export interface WithGroups<T extends AutoinstallFile> extends T {
   groups: EmployeeGroup[];
 }
 
@@ -19,6 +19,6 @@ export interface AutoinstallFileVersionInfo extends Record<string, unknown> {
   created_at: string;
 }
 
-export interface AutoinstallFileWithVersions extends AutoinstallFile {
+export interface WithVersions<T extends AutoinstallFile> extends T {
   versions: AutoinstallFileVersionInfo[];
 }

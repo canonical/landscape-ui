@@ -14,13 +14,8 @@ import type { FC, ReactNode } from "react";
 import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
-import { useUpdateAutoinstallFile } from "../../api";
-import useDeleteAutoinstallFile from "../../api/useDeleteAutoinstallFile";
-import type {
-  AutoinstallFile,
-  AutoinstallFileWithGroups,
-  TabId,
-} from "../../types";
+import { useDeleteAutoinstallFile, useUpdateAutoinstallFile } from "../../api";
+import type { AutoinstallFile, TabId, WithGroups } from "../../types";
 import AutoinstallFileDetails from "../AutoinstallFileDetails";
 import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
@@ -33,7 +28,7 @@ import {
 import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
 
 interface AutoinstallFilesListProps {
-  readonly autoinstallFiles: AutoinstallFileWithGroups[];
+  readonly autoinstallFiles: WithGroups<AutoinstallFile>[];
 }
 
 const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
@@ -154,7 +149,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   };
 
   const openDetails = (
-    file: AutoinstallFileWithGroups,
+    file: WithGroups<AutoinstallFile>,
     defaultTabId?: TabId,
   ): void => {
     setSidePanelContent(
@@ -172,21 +167,21 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         edit={openEditModal}
         remove={openRemoveModal}
         setAsDefault={setAsDefault}
-        viewVersionHistory={(file: AutoinstallFileWithGroups) => {
+        viewVersionHistory={(file: WithGroups<AutoinstallFile>) => {
           openDetails(file, "version-history");
         }}
       />,
     );
   };
 
-  const columns = useMemo<Column<AutoinstallFileWithGroups>[]>(
+  const columns = useMemo<Column<WithGroups<AutoinstallFile>>[]>(
     () => [
       {
         accessor: "filename",
         Header: "Name",
         Cell: ({
           row: { original },
-        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
+        }: CellProps<WithGroups<AutoinstallFile>>): ReactNode => (
           <div className={classes.container}>
             <Button
               type="button"
@@ -213,7 +208,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             original: { groups },
             index,
           },
-        }: CellProps<AutoinstallFileWithGroups>): ReactNode => {
+        }: CellProps<WithGroups<AutoinstallFile>>): ReactNode => {
           const [firstGroupName, ...lastGroupNames] = groups.map(
             (group) => group.name,
           );
@@ -245,7 +240,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           row: {
             original: { last_modified_at },
           },
-        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
+        }: CellProps<WithGroups<AutoinstallFile>>): ReactNode => (
           <div>{moment(last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
         ),
       },
@@ -256,7 +251,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           row: {
             original: { created_at },
           },
-        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
+        }: CellProps<WithGroups<AutoinstallFile>>): ReactNode => (
           <div>{moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
         ),
       },
@@ -265,7 +260,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         Header: "Actions",
         Cell: ({
           row: { original },
-        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
+        }: CellProps<WithGroups<AutoinstallFile>>): ReactNode => (
           <AutoinstallFilesListContextualMenu
             edit={openEditModal}
             file={original}
