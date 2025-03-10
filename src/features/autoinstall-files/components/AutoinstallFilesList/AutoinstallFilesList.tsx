@@ -26,6 +26,7 @@ import classes from "./AutoinstallFilesList.module.scss";
 import {
   EDIT_AUTOINSTALL_FILE_NOTIFICATION,
   LOCAL_STORAGE_ITEM,
+  MAX_AUTOINSTALL_FILE_VERSION_COUNT,
 } from "./constants";
 import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
 
@@ -57,7 +58,9 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           ? null
           : tableRowsRef.current[expandedRowIndex],
     },
-    () => setExpandedRowIndex(null),
+    () => {
+      setExpandedRowIndex(null);
+    },
   );
 
   const closeModal = (): void => {
@@ -101,7 +104,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           openDetails(file, "version-history");
         }}
       />,
-      "large",
     );
   };
 
@@ -126,7 +128,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   };
 
   const openEditForm = (file: AutoinstallFile): void => {
-    if (isModalIgnored) {
+    if (isModalIgnored || file.version < MAX_AUTOINSTALL_FILE_VERSION_COUNT) {
       openEditFormWithoutModal(file);
     } else {
       setIsModalVisible(true);
@@ -146,7 +148,9 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
               type="button"
               appearance="link"
               className="u-no-margin u-no-padding--top"
-              onClick={() => openDetails(original)}
+              onClick={() => {
+                openDetails(original);
+              }}
             >
               {`${original.filename}, v${original.version}`}
             </Button>

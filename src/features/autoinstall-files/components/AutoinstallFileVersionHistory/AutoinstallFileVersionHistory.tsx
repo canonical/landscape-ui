@@ -6,10 +6,11 @@ import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import { useGetAutoinstallFile } from "../../api";
 
+import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
-import AutoinstallFileVersion from "../AutoinstallFileVersion/AutoinstallFileVersion";
+import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
+import AutoinstallFileVersion from "../AutoinstallFileVersion";
 import classes from "./AutoinstallFileVersionHistory.module.scss";
 
 interface AutoinstallFileVersionHistoryProps {
@@ -23,11 +24,16 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const fileQueries = [...Array(file.version)].map((_, i) => {
-    return useGetAutoinstallFile(file.id, { version: i + 1 });
-  });
+  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile(
+    file.id,
+    {
+      with_versions: true,
+    },
+  );
 
-  const columns = useMemo<Column<AutoinstallFile>[]>(
+  const versions = autoinstallFile?.versions.toReversed() ?? [];
+
+  const columns = useMemo<Column<AutoinstallFileVersionInfo>[]>(
     () => [
       {
         accessor: "version",
@@ -36,7 +42,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
           row: {
             original: { version },
           },
-        }: CellProps<AutoinstallFile>): ReactNode => (
+        }: CellProps<AutoinstallFileVersionInfo>): ReactNode => (
           <Button
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top"
@@ -71,26 +77,19 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
           row: {
             original: { created_at },
           },
-        }: CellProps<AutoinstallFile>): ReactNode => (
+        }: CellProps<AutoinstallFileVersionInfo>): ReactNode => (
           <div>{moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
         ),
       },
     ],
-    [fileQueries],
+    [versions],
   );
 
-  if (fileQueries.some((query) => query.isAutoinstallFileLoading)) {
+  if (isAutoinstallFileLoading) {
     return <LoadingState />;
   }
 
-  return (
-    <ModularTable
-      columns={columns}
-      data={fileQueries.map(
-        (query) => query.autoinstallFile as AutoinstallFile,
-      )}
-    />
-  );
+  return <ModularTable columns={columns} data={versions} />;
 };
 
 export default AutoinstallFileVersionHistory;
