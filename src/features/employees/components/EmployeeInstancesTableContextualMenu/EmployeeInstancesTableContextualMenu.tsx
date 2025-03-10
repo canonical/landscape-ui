@@ -3,7 +3,6 @@ import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
-import { activities } from "@/tests/mocks/activity";
 import type { Instance } from "@/types/Instance";
 import type { MenuLink } from "@canonical/react-components";
 import {
@@ -40,7 +39,7 @@ const EmployeeInstancesTableContextualMenu: FC<
 
   const handleSanitizeInstance = async () => {
     try {
-      await sanitizeInstanceMutation({
+      const { data: sanitizeActivity } = await sanitizeInstanceMutation({
         computer_id: instance.id,
       });
 
@@ -50,7 +49,7 @@ const EmployeeInstancesTableContextualMenu: FC<
         actions: [
           {
             label: "View details",
-            onClick: () => openActivityDetails(activities[0]),
+            onClick: () => openActivityDetails(sanitizeActivity),
           },
         ],
       });
