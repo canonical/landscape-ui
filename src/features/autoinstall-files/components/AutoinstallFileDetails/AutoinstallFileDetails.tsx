@@ -8,11 +8,11 @@ import type {
 import AutoinstallFileTabs from "../AutoinstallFileTabs";
 
 interface AutoinstallFileDetailsProps {
-  readonly edit: (file: AutoinstallFile) => void;
+  readonly edit: () => void;
   readonly file: WithGroups<AutoinstallFile>;
-  readonly remove: (file: AutoinstallFile) => void;
-  readonly setAsDefault: (file: AutoinstallFile) => void;
-  readonly viewVersionHistory: (file: WithGroups<AutoinstallFile>) => void;
+  readonly remove: () => void;
+  readonly setAsDefault: () => void;
+  readonly viewVersionHistory: () => void;
   readonly initialTabId?: AutoinstallFileTabId;
 }
 
@@ -24,26 +24,11 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
   viewVersionHistory,
   initialTabId,
 }) => {
-  const handleEditButtonClick = (): void => {
-    edit(file);
-  };
-
-  const handleRemoveButtonClick = (): void => {
-    remove(file);
-  };
-
-  const handleSetAsDefaultButtonClick = (): void => {
-    setAsDefault(file);
-  };
-
   return (
     <>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
-          <Button
-            className="p-segmented-control__button"
-            onClick={handleEditButtonClick}
-          >
+          <Button className="p-segmented-control__button" onClick={edit}>
             <Icon name="edit" />
             <span>Edit</span>
           </Button>
@@ -52,16 +37,13 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
             <>
               <Button
                 className="p-segmented-control__button"
-                onClick={handleSetAsDefaultButtonClick}
+                onClick={setAsDefault}
               >
                 <Icon name="starred" />
                 <span>Set as default</span>
               </Button>
 
-              <Button
-                className="p-segmented-control__button"
-                onClick={handleRemoveButtonClick}
-              >
+              <Button className="p-segmented-control__button" onClick={remove}>
                 <Icon name="delete" />
                 <span>Remove</span>
               </Button>

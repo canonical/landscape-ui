@@ -6,16 +6,18 @@ import classes from "./AutoinstallFileSidePanelTitle.module.scss";
 interface AutoinstallFileSidePanelTitleProps {
   readonly file: AutoinstallFile;
   readonly title?: string;
+  readonly version?: number;
 }
 
 const AutoinstallFileSidePanelTitle: FC<AutoinstallFileSidePanelTitleProps> = ({
   file,
   title,
+  version = file.version,
 }) => {
   return (
     <div className={classes.container}>
       {!!title && `${title} `}
-      {file.filename}, v{file.version}
+      {file.filename}, v{version}
       {file.is_default && (
         <span
           className={classNames(

@@ -9,7 +9,7 @@ import { AUTOINSTALL_FILE_TABS } from "./constants";
 
 interface AutoinstallFileTabsProps {
   readonly file: WithGroups<AutoinstallFile>;
-  readonly viewVersionHistory: (file: WithGroups<AutoinstallFile>) => void;
+  readonly viewVersionHistory: () => void;
   readonly initialTabId?: AutoinstallFileTabId;
 }
 
@@ -29,10 +29,6 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
     },
   }));
 
-  const goBack = (): void => {
-    viewVersionHistory(file);
-  };
-
   return (
     <>
       <Tabs links={links} />
@@ -42,7 +38,7 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
       {tabId === "version-history" && (
         <AutoinstallFileVersionHistory
           file={file}
-          viewVersionHistory={goBack}
+          viewVersionHistory={viewVersionHistory}
         />
       )}
     </>

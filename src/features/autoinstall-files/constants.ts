@@ -1,1 +1,3 @@
-export const AUTOINSTALL_FILE_EXTENSION = ".yaml";
+export const AUTOINSTALL_FILE_LANGUAGE = "yaml";
+
+export const AUTOINSTALL_FILE_EXTENSION = `.${AUTOINSTALL_FILE_LANGUAGE}`;

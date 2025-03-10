@@ -14,7 +14,7 @@ describe("AutoinstallFileForm", () => {
       filename: "autoinstall.yaml",
     },
     notification: { message: "has been added.", title: "You have added" },
-    query: vi.fn(),
+    onSubmit: vi.fn(),
   };
 
   it("should require a file name", async () => {
@@ -30,7 +30,7 @@ describe("AutoinstallFileForm", () => {
       screen.queryByText(` ${props.notification.message}`),
     ).not.toBeInTheDocument();
 
-    expect(props.query).not.toHaveBeenCalled();
+    expect(props.onSubmit).not.toHaveBeenCalled();
   });
 
   it("should submit", async () => {
@@ -46,7 +46,7 @@ describe("AutoinstallFileForm", () => {
       ),
     ).toBeInTheDocument();
 
-    expect(props.query).toHaveBeenLastCalledWith({
+    expect(props.onSubmit).toHaveBeenLastCalledWith({
       contents: props.initialFile?.contents,
       filename: props.initialFile?.filename,
     });
@@ -59,7 +59,7 @@ describe("AutoinstallFileForm", () => {
       throw new Error(message, { cause: "test" });
     };
 
-    renderWithProviders(<AutoinstallFileForm {...props} query={badQuery} />);
+    renderWithProviders(<AutoinstallFileForm {...props} onSubmit={badQuery} />);
 
     await userEvent.click(
       screen.getByRole("button", { name: props.buttonText }),

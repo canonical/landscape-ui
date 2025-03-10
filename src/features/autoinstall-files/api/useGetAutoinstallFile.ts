@@ -10,55 +10,52 @@ interface GetAutoinstallFileParams {
   with_versions?: boolean;
 }
 
+type GetAutoinstallFileResult<T extends AutoinstallFile> =
+  | {
+      autoinstallFile: WithVersions<WithGroups<T>>;
+      isAutoinstallFileLoading: false;
+    }
+  | { autoinstallFile: null; isAutoinstallFileLoading: true };
+
 export default function useGetAutoinstallFile(
   id: number,
   params: {
     with_groups: true;
     with_versions: true;
   } & GetAutoinstallFileParams,
-): {
-  autoinstallFile: WithVersions<WithGroups<AutoinstallFile>> | null;
-  isAutoinstallFileLoading: boolean;
-};
+): GetAutoinstallFileResult<WithVersions<WithGroups<AutoinstallFile>>>;
 
 export default function useGetAutoinstallFile(
   id: number,
   params: {
     with_groups: true;
   } & GetAutoinstallFileParams,
-): {
-  autoinstallFile: WithGroups<AutoinstallFile> | null;
-  isAutoinstallFileLoading: boolean;
-};
+): GetAutoinstallFileResult<WithGroups<AutoinstallFile>>;
 
 export default function useGetAutoinstallFile(
   id: number,
   params: {
     with_versions: true;
   } & GetAutoinstallFileParams,
-): {
-  autoinstallFile: WithVersions<AutoinstallFile> | null;
-  isAutoinstallFileLoading: boolean;
-};
+): GetAutoinstallFileResult<WithVersions<AutoinstallFile>>;
 
 export default function useGetAutoinstallFile(
   id: number,
   params?: GetAutoinstallFileParams,
-): {
-  autoinstallFile: AutoinstallFile | null;
-  isAutoinstallFileLoading: boolean;
-};
+): GetAutoinstallFileResult<AutoinstallFile>;
 
 export default function useGetAutoinstallFile(
   id: number,
   params?: GetAutoinstallFileParams,
-): {
-  autoinstallFile: AutoinstallFile | null;
-  isAutoinstallFileLoading: boolean;
-} {
+):
+  | {
+      autoinstallFile: AutoinstallFile;
+      isAutoinstallFileLoading: false;
+    }
+  | { autoinstallFile: null; isAutoinstallFileLoading: true } {
   const authFetch = useFetch();
 
-  const { data: response, isLoading } = useQuery<
+  const { data: response } = useQuery<
     AxiosResponse<AutoinstallFile>,
     AxiosError<ApiError>
   >({
@@ -69,8 +66,13 @@ export default function useGetAutoinstallFile(
       }),
   });
 
-  return {
-    autoinstallFile: response ? response.data : null,
-    isAutoinstallFileLoading: isLoading,
-  };
+  return response
+    ? {
+        autoinstallFile: response.data,
+        isAutoinstallFileLoading: false,
+      }
+    : {
+        autoinstallFile: null,
+        isAutoinstallFileLoading: true,
+      };
 }

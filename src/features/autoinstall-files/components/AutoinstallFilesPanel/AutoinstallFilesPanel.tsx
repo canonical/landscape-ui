@@ -47,7 +47,7 @@ const AutoinstallFilesPanel: FC = () => {
         buttonText="Add"
         description="Add autoinstall file. It can be applied during the initial setup of associated instances."
         notification={ADD_AUTOINSTALL_FILE_NOTIFICATION}
-        query={addAutoinstallFile}
+        onSubmit={addAutoinstallFile}
       />,
     );
   };

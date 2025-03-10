@@ -42,12 +42,12 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
             original: { version },
           },
         }: CellProps<AutoinstallFileVersionInfo>): ReactNode => {
-          const handleVersionButtonClick = (): void => {
+          const openVersionPanel = (): void => {
             setSidePanelContent(
-              <AutoinstallFileSidePanelTitle file={file} />,
+              <AutoinstallFileSidePanelTitle file={file} version={version} />,
               <AutoinstallFileVersion
+                fileId={file.id}
                 goBack={viewVersionHistory}
-                id={file.id}
                 version={version}
               />,
             );
@@ -57,7 +57,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
             <Button
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top"
-              onClick={handleVersionButtonClick}
+              onClick={openVersionPanel}
             >
               {version}
             </Button>

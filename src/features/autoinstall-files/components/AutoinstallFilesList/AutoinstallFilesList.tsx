@@ -88,7 +88,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
         initialFile={file}
         notification={EDIT_AUTOINSTALL_FILE_NOTIFICATION}
-        query={async ({ contents }) => {
+        onSubmit={async ({ contents }) => {
           await updateAutoinstallFile(file.id, { contents });
         }}
       />,
@@ -150,17 +150,29 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   const openDetails = (
     file: WithGroups<AutoinstallFile>,
-    defaultTabId?: AutoinstallFileTabId,
+    initialTabId?: AutoinstallFileTabId,
   ): void => {
+    const handleEdit = (): void => {
+      openEditModal(file);
+    };
+
+    const handleRemove = (): void => {
+      openRemoveModal(file);
+    };
+
+    const handleSetAsDefault = (): void => {
+      setAsDefault(file);
+    };
+
     setSidePanelContent(
       <AutoinstallFileSidePanelTitle file={file} />,
       <AutoinstallFileDetails
-        initialTabId={defaultTabId}
+        initialTabId={initialTabId}
         file={file}
-        edit={openEditModal}
-        remove={openRemoveModal}
-        setAsDefault={setAsDefault}
-        viewVersionHistory={(file: WithGroups<AutoinstallFile>) => {
+        edit={handleEdit}
+        remove={handleRemove}
+        setAsDefault={handleSetAsDefault}
+        viewVersionHistory={() => {
           openDetails(file, "version-history");
         }}
       />,

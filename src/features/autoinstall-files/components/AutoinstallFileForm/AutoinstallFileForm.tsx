@@ -9,7 +9,10 @@ import { Button, Form, Icon, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useRef } from "react";
-import { AUTOINSTALL_FILE_EXTENSION } from "../../constants";
+import {
+  AUTOINSTALL_FILE_EXTENSION,
+  AUTOINSTALL_FILE_LANGUAGE,
+} from "../../constants";
 import { removeAutoinstallFileExtension } from "../../helpers";
 import classes from "./AutoinstallFileForm.module.scss";
 import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
@@ -19,7 +22,7 @@ interface AutoinstallFileFormProps {
   readonly buttonText: string;
   readonly description: string;
   readonly notification: NotificationMethodArgs;
-  readonly query: (params: FormikProps) => Promise<unknown>;
+  readonly onSubmit: (params: FormikProps) => Promise<unknown>;
   readonly initialFile?: FormikProps;
 }
 
@@ -28,40 +31,38 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   description,
   initialFile = DEFAULT_FILE,
   notification,
-  query,
+  onSubmit,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const formik = useFormik<FormikProps>({
     initialValues: {
       ...initialFile,
       filename: removeAutoinstallFileExtension(initialFile.filename),
     },
-
     validationSchema: VALIDATION_SCHEMA,
-
     onSubmit: async ({ contents, filename }) => {
-      const autoinstallFile = {
-        contents,
-        filename: `${filename}${AUTOINSTALL_FILE_EXTENSION}`,
-      };
-
       try {
-        await query(autoinstallFile);
+        await onSubmit({
+          contents,
+          filename: `${filename}${AUTOINSTALL_FILE_EXTENSION}`,
+        });
+
         closeSidePanel();
 
         notify.success({
-          message: `${autoinstallFile.filename} ${notification.message}`,
-          title: `${notification.title} ${autoinstallFile.filename}`,
+          message: `${filename} ${notification.message}`,
+          title: `${notification.title} ${filename}`,
         });
       } catch (error) {
         debug(error);
       }
     },
   });
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = async ({
     target: { files },
@@ -72,16 +73,20 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
 
     const [file] = files;
 
-    await formik.setFieldValue("contents", await file.text());
+    const contentsPromise = formik.setFieldValue("contents", await file.text());
 
     if (formik.values.filename) {
+      await contentsPromise;
       return;
     }
 
-    await formik.setFieldValue(
-      "filename",
-      removeAutoinstallFileExtension(file.name),
-    );
+    await Promise.all([
+      formik.setFieldValue(
+        "filename",
+        removeAutoinstallFileExtension(file.name),
+      ),
+      contentsPromise,
+    ]);
   };
 
   const handleEditorChange = async (value?: string): Promise<void> => {
@@ -126,7 +131,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
         onChange={handleEditorChange}
         error={getFormikError(formik, "contents")}
         required
-        language="yaml"
+        language={AUTOINSTALL_FILE_LANGUAGE}
         headerContent={
           <Button
             className="u-no-margin--bottom"
