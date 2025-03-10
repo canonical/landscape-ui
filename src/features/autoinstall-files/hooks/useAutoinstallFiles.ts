@@ -22,6 +22,8 @@ interface GetAutoinstallFileParams {
 }
 
 interface GetAutoinstallFilesParams {
+  limit: number;
+  offset: number;
   with_groups: boolean;
 }
 
