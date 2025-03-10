@@ -5,12 +5,12 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 
-const NewDistributionForm = lazy(() => import("../NewDistributionForm"));
+const NewDistributionForm = lazy(async () => import("../NewDistributionForm"));
 
 const DistributionsEmptyState: FC = () => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleCreateDistribution = () => {
+  const handleCreateDistribution = (): void => {
     setSidePanelContent(
       "Add distribution",
       <Suspense fallback={<LoadingState />}>

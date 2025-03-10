@@ -28,18 +28,12 @@ const PocketSyncActivity: FC<PocketSyncActivityProps> = ({
 
   useEffect(() => {
     if (
-      (pocket.mode !== "mirror" && pocket.mode !== "pull") ||
-      !pocket.last_sync_status ||
-      pocket.last_sync_status !== "in progress"
+      pocket.mode === "upload" ||
+      pocket.last_sync_status !== "in progress" ||
+      syncPocketRefs.some(
+        ({ distributionName }) => distributionName === pocket.distribution.name,
+      )
     ) {
-      return;
-    }
-
-    const syncPocket = syncPocketRefs.find(
-      ({ distributionName }) => distributionName === pocket.distribution.name,
-    );
-
-    if (syncPocket) {
       return;
     }
 
@@ -87,7 +81,7 @@ const PocketSyncActivity: FC<PocketSyncActivityProps> = ({
       ? "undelivered"
       : pocket.last_sync_status;
 
-  const handleActivityClick = () => {
+  const handleActivityClick = (): void => {
     setSidePanelContent(
       pocket.last_sync_activity.summary,
       <ActivityDetails activityId={pocket.last_sync_activity.id} />,

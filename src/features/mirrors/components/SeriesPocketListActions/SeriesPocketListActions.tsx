@@ -1,6 +1,10 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import type {
+  ConfirmationModalProps,
+  SubComponentProps,
+} from "@canonical/react-components";
 import {
   Button,
   ConfirmationButton,
@@ -15,7 +19,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { usePockets } from "../../hooks";
 import type { Pocket, SyncPocketRef } from "../../types";
 
-const EditPocketForm = lazy(() => import("../EditPocketForm"));
+const EditPocketForm = lazy(async () => import("../EditPocketForm"));
 
 interface SeriesPocketListActionsProps {
   readonly distributionName: string;
@@ -41,7 +45,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
   const { mutateAsync: removePocket, isPending: isRemovingPocket } =
     removePocketQuery;
 
-  const handleRemovePocket = async () => {
+  const handleRemovePocket = async (): Promise<void> => {
     try {
       await removePocket({
         distribution: distributionName,
@@ -62,7 +66,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     isPending: isPullingPackagesToPocket,
   } = pullPackagesToPocketQuery;
 
-  const handleSyncPocket = async () => {
+  const handleSyncPocket = async (): Promise<void> => {
     try {
       await syncMirrorPocket({
         name: pocket.name,
@@ -74,7 +78,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     }
   };
 
-  const handlePullPackagesToPocket = async () => {
+  const handlePullPackagesToPocket = async (): Promise<void> => {
     try {
       await pullPackagesToPocket({
         name: pocket.name,
@@ -86,7 +90,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     }
   };
 
-  const getPocketModal = () => {
+  const getPocketModal = (): SubComponentProps<ConfirmationModalProps> => {
     if ("mirror" === pocket.mode) {
       return {
         title: `Synchronizing ${pocket.name} pocket`,
@@ -115,8 +119,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
 
   const handleEditPocket = (
     event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
-    pocket: Pocket,
-  ) => {
+  ): void => {
     event.currentTarget.blur();
 
     setSidePanelContent(
@@ -133,7 +136,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
 
   return (
     <div className="divided-blocks">
-      {("mirror" == pocket.mode || "pull" == pocket.mode) && (
+      {"upload" != pocket.mode && (
         <div className="divided-blocks__item">
           <ConfirmationButton
             type="button"
@@ -177,7 +180,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
               "u-no-padding--right": isLargerScreen,
             })}
             aria-label={`Edit ${pocket.name} pocket of ${distributionName}/${seriesName}`}
-            onClick={(event) => handleEditPocket(event, pocket)}
+            onClick={handleEditPocket}
             disabled={syncPocketRefs.some(
               (ref) => ref.distributionName === distributionName,
             )}

@@ -182,6 +182,10 @@ const App: FC = () => {
                   path="repositories/mirrors"
                   element={<DistributionsPage />}
                 />
+                <Route
+                  path="repositories/apt-sources"
+                  element={<APTSourcesPage />}
+                />
                 <Route path="profiles/wsl" element={<WslProfilesPage />} />
               </Route>
               <Route
@@ -197,10 +201,6 @@ const App: FC = () => {
                   element={<RepositoryProfilesPage />}
                 />
                 <Route path="repositories/gpg-keys" element={<GPGKeysPage />} />
-                <Route
-                  path="repositories/apt-sources"
-                  element={<APTSourcesPage />}
-                />
                 <Route path="instances" element={<InstancesPage />} />
                 <Route
                   path="instances/:instanceId"
@@ -234,6 +234,7 @@ const App: FC = () => {
                     element={<IdentityProvidersPage />}
                   />
                 )}
+                <Route path="settings/gpg-keys" element={<GPGKeysPage />} />
                 <Route path="profiles" element={<ProfilesPage />} />
                 <Route
                   path="profiles/package"

@@ -3,7 +3,7 @@ import type { PocketLastSyncProps } from "../../types";
 
 export const getLastSyncStatusIcon = (
   status: PocketLastSyncProps["last_sync_status"],
-) => {
+): string => {
   if (!status || status === "synced" || status === "in progress") {
     return "";
   }

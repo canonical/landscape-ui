@@ -6,7 +6,7 @@ import { lazy, Suspense } from "react";
 import type { Distribution } from "../../types";
 import classes from "./EmptyDistribution.module.scss";
 
-const NewSeriesForm = lazy(() => import("../NewSeriesForm"));
+const NewSeriesForm = lazy(async () => import("../NewSeriesForm"));
 
 interface EmptyDistributionProps {
   readonly distribution: Distribution;
@@ -15,13 +15,14 @@ interface EmptyDistributionProps {
 const EmptyDistribution: FC<EmptyDistributionProps> = ({ distribution }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleAddMirror = () =>
+  const handleAddMirror = (): void => {
     setSidePanelContent(
       `Add mirror for ${distribution.name}`,
       <Suspense fallback={<LoadingState />}>
         <NewSeriesForm distribution={distribution} />
       </Suspense>,
     );
+  };
 
   return (
     <div className={classes.card}>
