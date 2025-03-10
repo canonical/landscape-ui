@@ -1,7 +1,8 @@
 import NoData from "@/components/layout/NoData";
-import { Chip, Tooltip } from "@canonical/react-components";
+import { Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./AutoinstallFileTableCell.module.scss";
+import classNames from "classnames";
 
 interface AutoinstallFileTableCellProps {
   readonly fileName: string | undefined;
@@ -29,7 +30,14 @@ const AutoinstallFileTableCell: FC<AutoinstallFileTableCellProps> = ({
           positionElementClassName={classes.position}
           message="This group will inherit default Autoinstall file since none has been assigned."
         >
-          <Chip value="default" className="u-no-margin" readOnly />
+          <span
+            className={classNames(
+              "p-chip is-dense u-no-margin--bottom",
+              classes.chip,
+            )}
+          >
+            <span className="p-chip__value">default</span>
+          </span>
         </Tooltip>
       )}
     </div>
