@@ -181,15 +181,30 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             original: { groups },
             index,
           },
-        }: CellProps<AutoinstallFileWithGroups>): ReactNode => (
-          <TruncatedCell
-            content={groups.map((group) => group.name).join(", ")}
-            isExpanded={index == expandedRowIndex}
-            onExpand={() => {
-              setExpandedRowIndex(index);
-            }}
-          />
-        ),
+        }: CellProps<AutoinstallFileWithGroups>): ReactNode => {
+          const [firstGroupName, ...lastGroupNames] = groups.map(
+            (group) => group.name,
+          );
+
+          return (
+            <TruncatedCell
+              content={
+                <>
+                  <span>{firstGroupName}</span>
+
+                  {lastGroupNames.map((groupName, key) => {
+                    return <span key={key}>, {groupName}</span>;
+                  })}
+                </>
+              }
+              isExpanded={index == expandedRowIndex}
+              onExpand={() => {
+                setExpandedRowIndex(index);
+              }}
+              showCount
+            />
+          );
+        },
       },
       {
         accessor: "last_modified_at",
