@@ -5,6 +5,7 @@ import { useDistributions } from "../../hooks";
 import type { SyncPocketRef } from "../../types";
 import DistributionCard from "../DistributionCard";
 import DistributionsEmptyState from "../DistributionsEmptyState";
+import { REFETCH_INTERVAL } from "./constants";
 
 interface DistributionContainerProps {
   readonly onDistributionsLengthChange: (length: number) => void;
@@ -22,7 +23,7 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
       include_latest_sync: true,
     },
     {
-      refetchInterval: !syncPocketRefs.length ? undefined : 1000,
+      refetchInterval: !syncPocketRefs.length ? undefined : REFETCH_INTERVAL,
     },
   );
 
@@ -33,10 +34,6 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
   }, [distributions.length]);
 
   useEffect(() => {
-    if (!syncPocketRefs.length) {
-      return;
-    }
-
     for (const syncPocketRef of syncPocketRefs) {
       const pocket = distributions
         .find(({ name }) => name === syncPocketRef.distributionName)
@@ -60,24 +57,28 @@ const DistributionContainer: FC<DistributionContainerProps> = ({
     }
   }, [distributions]);
 
-  const handleSyncPocketRefAdd = (ref: SyncPocketRef) => {
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (!distributions.length) {
+    return <DistributionsEmptyState />;
+  }
+
+  const handleSyncPocketRefAdd = (ref: SyncPocketRef): void => {
     setSyncPocketRefs((prevState) => [...prevState, ref]);
   };
 
   return (
     <>
-      {isLoading && <LoadingState />}
-      {!isLoading && distributions.length === 0 && <DistributionsEmptyState />}
-      {!isLoading &&
-        distributions.length > 0 &&
-        distributions.map((distribution) => (
-          <DistributionCard
-            key={distribution.name}
-            distribution={distribution}
-            syncPocketRefAdd={handleSyncPocketRefAdd}
-            syncPocketRefs={syncPocketRefs}
-          />
-        ))}
+      {distributions.map((distribution) => (
+        <DistributionCard
+          key={distribution.name}
+          distribution={distribution}
+          syncPocketRefAdd={handleSyncPocketRefAdd}
+          syncPocketRefs={syncPocketRefs}
+        />
+      ))}
     </>
   );
 };

@@ -3,9 +3,9 @@ import FieldDescription from "@/components/form/FieldDescription";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import UdebCheckboxInput from "@/components/form/UdebCheckboxInput";
-import { useGPGKeys } from "@/features/gpg-keys";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
   Form,
@@ -13,7 +13,6 @@ import {
   Select,
   Textarea,
 } from "@canonical/react-components";
-import type { AxiosResponse } from "axios";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import {
@@ -21,8 +20,9 @@ import {
   COMPONENT_OPTIONS,
   DEFAULT_SNAPSHOT_URI,
 } from "../../constants";
-import { usePockets } from "../../hooks";
+import { useGPGKeysOptions, usePockets } from "../../hooks";
 import type { Distribution, Pocket, Series } from "../../types";
+import type { PullPocket, UploadPocket } from "../../types/Pocket";
 import {
   getEditPocketParams,
   getInitialValues,
@@ -50,7 +50,6 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     addUploaderGPGKeysToPocketQuery,
     removeUploaderGPGKeysFromPocketQuery,
   } = usePockets();
-  const { getGPGKeysQuery } = useGPGKeys();
 
   const { mutateAsync: editPocket } = editPocketQuery;
   const { mutateAsync: addPackageFiltersToPocket } =
@@ -61,107 +60,113 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
     addUploaderGPGKeysToPocketQuery;
   const { mutateAsync: removeUploaderGPGKeysFromPocket } =
     removeUploaderGPGKeysFromPocketQuery;
-  const { data: gpgKeysData } = getGPGKeysQuery();
+  const { privateGPGKeysOptions, publicGPGKeysOptions } = useGPGKeysOptions();
 
-  const privateGPGKeysOptions = (gpgKeysData?.data ?? [])
-    .filter(({ has_secret }) => has_secret)
-    .map((item) => ({
-      label: item.name,
-      value: item.name,
-    }));
+  const { mode } = pocket;
 
-  const publicGPGKeysOptions = (gpgKeysData?.data ?? [])
-    .filter(({ has_secret }) => !has_secret)
-    .map((item) => ({
-      label: item.name,
-      value: item.name,
-    }));
+  const handlePullMode = async (
+    editPocketPromise: Promise<unknown>,
+    pullPocket: PullPocket,
+    values: FormProps,
+  ): Promise<unknown> => {
+    const promises: Promise<unknown>[] = [editPocketPromise];
 
-  const mode = pocket.mode;
+    const deletedPackages = pullPocket.filters.filter(
+      (originalPackage) => !values.filters.includes(originalPackage),
+    );
+    const addedPackages = values.filters
+      .filter((x) => x)
+      .filter((newPackage) => !pullPocket.filters.includes(newPackage));
+
+    if (deletedPackages.length) {
+      promises.push(
+        removePackageFiltersFromPocket({
+          name: values.name,
+          distribution: values.distribution,
+          series: values.series,
+          packages: deletedPackages,
+        }),
+      );
+    }
+
+    if (addedPackages.length) {
+      promises.push(
+        addPackageFiltersToPocket({
+          name: values.name,
+          distribution: values.distribution,
+          series: values.series,
+          packages: addedPackages,
+        }),
+      );
+    }
+
+    return Promise.all(promises);
+  };
+
+  const handleUploadMode = async (
+    editPocketPromise: Promise<unknown>,
+    pullPocket: UploadPocket,
+    values: FormProps,
+  ): Promise<unknown> => {
+    const promises: Promise<unknown>[] = [];
+
+    if (pullPocket.upload_allow_unsigned) {
+      await editPocketPromise;
+    } else {
+      promises.push(editPocketPromise);
+    }
+
+    const pocketUploadGPGKeyNames = pullPocket.upload_gpg_keys.map(
+      ({ name }) => name,
+    );
+
+    const addedUploaderGPGKeys = values.upload_gpg_keys.filter(
+      (gpgKey) => !pocketUploadGPGKeyNames.includes(gpgKey),
+    );
+
+    const removedUploaderGPGKeys = pocketUploadGPGKeyNames.filter(
+      (gpgKey) => !values.upload_gpg_keys.includes(gpgKey),
+    );
+
+    if (addedUploaderGPGKeys.length) {
+      promises.push(
+        addUploaderGPGKeysToPocket({
+          name: values.name,
+          series: values.series,
+          distribution: values.distribution,
+          gpg_keys: addedUploaderGPGKeys,
+        }),
+      );
+    }
+
+    if (removedUploaderGPGKeys.length) {
+      promises.push(
+        removeUploaderGPGKeysFromPocket({
+          name: values.name,
+          series: values.series,
+          distribution: values.distribution,
+          gpg_keys: removedUploaderGPGKeys,
+        }),
+      );
+    }
+
+    return Promise.all(promises);
+  };
 
   const formik = useFormik<FormProps>({
     validationSchema: getValidationSchema(mode),
     initialValues: getInitialValues(distributionName, seriesName, pocket),
     onSubmit: async (values) => {
       try {
-        const promises: Promise<AxiosResponse<Pocket>>[] = [];
+        const editPocketPromise = editPocket(getEditPocketParams(values, mode));
 
-        promises.push(editPocket(getEditPocketParams(values, mode)));
-
-        if ("pull" === pocket.mode) {
-          if (pocket.filter_type) {
-            const deletedPackages = pocket.filters.filter(
-              (originalPackage) => !values.filters.includes(originalPackage),
-            );
-            const addedPackages = values.filters
-              .filter((x) => x)
-              .filter((newPackage) => !pocket.filters.includes(newPackage));
-
-            if (deletedPackages.length) {
-              promises.push(
-                removePackageFiltersFromPocket({
-                  name: values.name,
-                  distribution: values.distribution,
-                  series: values.series,
-                  packages: deletedPackages,
-                }),
-              );
-            }
-
-            if (addedPackages.length) {
-              promises.push(
-                addPackageFiltersToPocket({
-                  name: values.name,
-                  distribution: values.distribution,
-                  series: values.series,
-                  packages: addedPackages,
-                }),
-              );
-            }
-          }
+        if ("pull" === pocket.mode && pocket.filter_type) {
+          await handlePullMode(editPocketPromise, pocket, values);
         } else if ("upload" === pocket.mode && !values.upload_allow_unsigned) {
-          if (pocket.upload_allow_unsigned) {
-            await Promise.all(promises);
-
-            promises.splice(0);
-          }
-
-          const pocketUploadGPGKeyNames = pocket.upload_gpg_keys.map(
-            ({ name }) => name,
-          );
-
-          const addedUploaderGPGKeys = values.upload_gpg_keys.filter(
-            (gpgKey) => !pocketUploadGPGKeyNames.includes(gpgKey),
-          );
-
-          const removedUploaderGPGKeys = pocketUploadGPGKeyNames.filter(
-            (gpgKey) => !values.upload_gpg_keys.includes(gpgKey),
-          );
-
-          if (addedUploaderGPGKeys.length) {
-            promises.push(
-              addUploaderGPGKeysToPocket({
-                name: values.name,
-                series: values.series,
-                distribution: values.distribution,
-                gpg_keys: addedUploaderGPGKeys,
-              }),
-            );
-          }
-
-          if (removedUploaderGPGKeys.length) {
-            promises.push(
-              removeUploaderGPGKeysFromPocket({
-                name: values.name,
-                series: values.series,
-                distribution: values.distribution,
-                gpg_keys: removedUploaderGPGKeys,
-              }),
-            );
-          }
+          await handleUploadMode(editPocketPromise, pocket, values);
+        } else {
+          await editPocketPromise;
         }
-
-        await Promise.all(promises);
 
         closeSidePanel();
       } catch (error) {
@@ -180,11 +185,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         onChange={(newOptions) => {
           formik.setFieldValue("components", newOptions);
         }}
-        error={
-          formik.touched.components && formik.errors.components
-            ? formik.errors.components
-            : undefined
-        }
+        error={getFormikError(formik, "components")}
       />
 
       <CheckboxGroup
@@ -195,22 +196,14 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         onChange={(newOptions) => {
           formik.setFieldValue("architectures", newOptions);
         }}
-        error={
-          formik.touched.architectures && formik.errors.architectures
-            ? formik.errors.architectures
-            : undefined
-        }
+        error={getFormikError(formik, "architectures")}
       />
 
       <Select
         label="GPG Key"
         options={privateGPGKeysOptions}
         {...formik.getFieldProps("gpg_key")}
-        error={
-          formik.touched.gpg_key && formik.errors.gpg_key
-            ? formik.errors.gpg_key
-            : undefined
-        }
+        error={getFormikError(formik, "gpg_key")}
       />
 
       {"mirror" === pocket.mode &&
@@ -220,11 +213,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
               type="text"
               label="Mirror URI"
               {...formik.getFieldProps("mirror_uri")}
-              error={
-                formik.touched.mirror_uri && formik.errors.mirror_uri
-                  ? formik.errors.mirror_uri
-                  : undefined
-              }
+              error={getFormikError(formik, "mirror_uri")}
             />
 
             <Input
@@ -258,11 +247,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                 />
               }
               {...formik.getFieldProps("mirror_suite")}
-              error={
-                formik.touched.mirror_suite && formik.errors.mirror_suite
-                  ? formik.errors.mirror_suite
-                  : undefined
-              }
+              error={getFormikError(formik, "mirror_suite")}
             />
 
             <Select
@@ -272,11 +257,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
                 ...publicGPGKeysOptions,
               ]}
               {...formik.getFieldProps("mirror_gpg_key")}
-              error={
-                formik.touched.mirror_gpg_key && formik.errors.mirror_gpg_key
-                  ? formik.errors.mirror_gpg_key
-                  : undefined
-              }
+              error={getFormikError(formik, "mirror_gpg_key")}
               help="If none is given, the stock Ubuntu archive one will be used."
             />
           </>
@@ -328,11 +309,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
             );
           }}
           value={formik.values.filters.join(",")}
-          error={
-            formik.touched.filters && formik.errors.filters
-              ? formik.errors.filters
-              : undefined
-          }
+          error={getFormikError(formik, "filters")}
         />
       )}
 
