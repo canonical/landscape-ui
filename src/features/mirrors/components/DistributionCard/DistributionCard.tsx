@@ -18,7 +18,7 @@ import EmptyDistribution from "../EmptyDistribution/EmptyDistribution";
 import SeriesCard from "../SeriesCard";
 import classes from "./DistributionCard.module.scss";
 
-const NewSeriesForm = lazy(() => import("../NewSeriesForm"));
+const NewSeriesForm = lazy(async () => import("../NewSeriesForm"));
 
 interface DistributionCardProps {
   readonly distribution: Distribution;
@@ -41,17 +41,7 @@ const DistributionCard: FC<DistributionCardProps> = ({
   const { mutateAsync: removeDistribution, isPending: isRemoving } =
     removeDistributionQuery;
 
-  const handleRemoveDistribution = async () => {
-    try {
-      await removeDistribution({ name: distribution.name });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
-
-  const handleAddSeries = () => {
+  const handleAddSeries = (): void => {
     setSidePanelContent(
       `Add series to ${distribution.name}`,
       <Suspense fallback={<LoadingState />}>
@@ -60,12 +50,22 @@ const DistributionCard: FC<DistributionCardProps> = ({
     );
   };
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (): void => {
     setModalOpen(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (): void => {
     setModalOpen(false);
+  };
+
+  const handleRemoveDistribution = async (): Promise<void> => {
+    try {
+      await removeDistribution({ name: distribution.name });
+    } catch (error) {
+      debug(error);
+    } finally {
+      handleCloseModal();
+    }
   };
 
   const addSeriesButton = {
@@ -154,10 +154,9 @@ const DistributionCard: FC<DistributionCardProps> = ({
             />
           )}
         </div>
-        {0 === distribution.series.length && (
+        {!distribution.series.length ? (
           <EmptyDistribution distribution={distribution} />
-        )}
-        {distribution.series.length > 0 &&
+        ) : (
           distribution.series.map((series) => (
             <SeriesCard
               key={series.name}
@@ -166,7 +165,8 @@ const DistributionCard: FC<DistributionCardProps> = ({
               syncPocketRefAdd={syncPocketRefAdd}
               syncPocketRefs={syncPocketRefs}
             />
-          ))}
+          ))
+        )}
       </div>
       {modalOpen && (
         <ConfirmationModal

@@ -1,15 +1,18 @@
+import { assertNever } from "@/utils/debug";
 import * as Yup from "yup";
-import type { FormProps } from "./types";
+import { MIN_SELECTION_COUNT } from "../../constants";
 import type {
-  Pocket,
   EditMirrorPocketParams,
   EditPullPocketParams,
   EditUploadPocketParams,
+  Pocket,
 } from "../../types";
-import { assertNever } from "@/utils/debug";
 import { INITIAL_VALUES } from "./constants";
+import type { FormProps } from "./types";
 
-export const getValidationSchema = (mode: "mirror" | "pull" | "upload") => {
+export const getValidationSchema = (
+  mode: "mirror" | "pull" | "upload",
+): Yup.Schema => {
   return Yup.object().shape({
     name: Yup.string().required("This field is required"),
     distribution: Yup.string().required("This field is required"),
@@ -17,7 +20,7 @@ export const getValidationSchema = (mode: "mirror" | "pull" | "upload") => {
     components: Yup.array()
       .defined()
       .of(Yup.string().defined())
-      .min(1, "Please choose at least one component")
+      .min(MIN_SELECTION_COUNT, "Please choose at least one component")
       .test({
         name: "flat-mirror-sub-directory",
         message: "A single component must be passed",
@@ -25,8 +28,8 @@ export const getValidationSchema = (mode: "mirror" | "pull" | "upload") => {
         test: (value, context) => {
           const { mirror_suite } = context.parent;
 
-          if ("mirror" === mode && /\/$/.test(mirror_suite)) {
-            return 1 === value.length;
+          if ("mirror" === mode && mirror_suite.endsWith("/")) {
+            return MIN_SELECTION_COUNT === value.length;
           }
 
           return true;
@@ -35,7 +38,7 @@ export const getValidationSchema = (mode: "mirror" | "pull" | "upload") => {
     architectures: Yup.array()
       .defined()
       .of(Yup.string().defined())
-      .min(1, "Please choose at least one architecture"),
+      .min(MIN_SELECTION_COUNT, "Please choose at least one architecture"),
     gpg_key: Yup.string(),
     include_udeb: Yup.boolean(),
     mirror_uri: Yup.string(),
