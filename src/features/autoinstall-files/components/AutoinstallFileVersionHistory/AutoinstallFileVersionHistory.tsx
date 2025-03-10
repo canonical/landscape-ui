@@ -30,7 +30,9 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
     },
   );
 
-  const versions = autoinstallFile?.versions.toReversed() ?? [];
+  const versions = isAutoinstallFileLoading
+    ? []
+    : autoinstallFile.versions.toReversed();
 
   const columns = useMemo<Column<AutoinstallFileVersionInfo>[]>(
     () => [
