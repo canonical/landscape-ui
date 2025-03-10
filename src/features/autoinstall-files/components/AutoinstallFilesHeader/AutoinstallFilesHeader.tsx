@@ -1,40 +1,37 @@
+import type { GroupedOption } from "@/components/filter";
 import { TableFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./AutoinstallFilesHeader.module.scss";
-import {
-  ADD_BUTTON_TEXT,
-  AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS,
-} from "./constants";
+import { ADD_BUTTON_TEXT } from "./constants";
 
 interface AutoinstallFilesHeaderProps {
+  readonly employeeGroupOptions: GroupedOption[];
+  readonly handleEmployeeGroupSelect: (employeeGroup: string) => void;
   readonly openAddForm: () => void;
+  readonly selectedEmployeeGroup: string;
 }
 
 const AutoinstallFilesHeader: FC<AutoinstallFilesHeaderProps> = ({
+  employeeGroupOptions,
+  handleEmployeeGroupSelect,
   openAddForm,
+  selectedEmployeeGroup,
 }) => {
-  const { setPageParams, employeeGroups } = usePageParams();
-
-  const handleGroupsSelect = (employeeGroups: string[]): void => {
-    setPageParams({ employeeGroups });
-  };
-
   return (
     <>
       <HeaderWithSearch
         actions={
           <div className={classes.container}>
             <TableFilter
-              multiple
-              label="Employee group"
-              hasToggleIcon
               hasBadge
-              options={AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS}
-              onItemsSelect={handleGroupsSelect}
-              selectedItems={employeeGroups}
+              hasToggleIcon
+              label="Employee group"
+              multiple={false}
+              onItemSelect={handleEmployeeGroupSelect}
+              options={employeeGroupOptions}
+              selectedItem={selectedEmployeeGroup}
             />
 
             <Button
@@ -50,8 +47,8 @@ const AutoinstallFilesHeader: FC<AutoinstallFilesHeaderProps> = ({
       />
 
       <TableFilterChips
-        filtersToDisplay={["query", "employeeGroups"]}
-        employeeGroupOptions={AUTOINSTALL_FILE_EMPLOYEE_GROUP_OPTIONS}
+        filtersToDisplay={["search", "employeeGroups"]}
+        employeeGroupOptions={employeeGroupOptions}
       />
     </>
   );

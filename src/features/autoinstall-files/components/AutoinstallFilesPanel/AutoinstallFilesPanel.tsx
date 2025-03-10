@@ -1,6 +1,10 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
+import {
+  getEmployeeGroupOptions,
+  useGetEmployeeGroups,
+} from "@/features/employee-groups";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
@@ -12,17 +16,29 @@ import AutoinstallFilesList from "../AutoinstallFilesList";
 import { ADD_AUTOINSTALL_FILE_NOTIFICATION } from "./constants";
 
 const AutoinstallFilesPanel: FC = () => {
-  const { currentPage, pageSize } = usePageParams();
+  const {
+    currentPage,
+    employeeGroups: [employeeGroup],
+    pageSize,
+    search,
+    setPageParams,
+  } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
+  const { addAutoinstallFile } = useAddAutoinstallFile();
   const { autoinstallFiles, autoinstallFilesCount, isAutoinstallFilesLoading } =
     useGetAutoinstallFiles({
+      employee_group_id: employeeGroup ? parseInt(employeeGroup) : undefined,
       limit: pageSize,
       offset: currentPage * pageSize - pageSize,
       with_groups: true,
+      search,
     });
+  const { employeeGroups, isEmployeeGroupsLoading } = useGetEmployeeGroups();
 
-  const { addAutoinstallFile } = useAddAutoinstallFile();
+  if (isAutoinstallFilesLoading || isEmployeeGroupsLoading) {
+    return <LoadingState />;
+  }
 
   const openAddForm = (): void => {
     setSidePanelContent(
@@ -35,10 +51,6 @@ const AutoinstallFilesPanel: FC = () => {
       />,
     );
   };
-
-  if (isAutoinstallFilesLoading) {
-    return <LoadingState />;
-  }
 
   if (!autoinstallFiles.length) {
     return (
@@ -64,10 +76,24 @@ const AutoinstallFilesPanel: FC = () => {
     );
   }
 
+  const handleEmployeeGroupSelect = (employeeGroup: string): void => {
+    setPageParams({ employeeGroups: [employeeGroup] });
+  };
+
   return (
     <>
-      <AutoinstallFilesHeader openAddForm={openAddForm} />
+      <AutoinstallFilesHeader
+        employeeGroupOptions={[
+          { label: "All", value: "" },
+          ...getEmployeeGroupOptions(employeeGroups),
+        ]}
+        handleEmployeeGroupSelect={handleEmployeeGroupSelect}
+        openAddForm={openAddForm}
+        selectedEmployeeGroup={employeeGroup ?? ""}
+      />
+
       <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />
+
       <TablePagination
         currentItemCount={autoinstallFiles.length}
         totalItems={autoinstallFilesCount}

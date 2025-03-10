@@ -25,6 +25,8 @@ interface GetAutoinstallFilesParams {
   limit: number;
   offset: number;
   with_groups: boolean;
+  employee_group_id?: number;
+  search?: string;
 }
 
 interface UpdateAutoinstallFileParams {

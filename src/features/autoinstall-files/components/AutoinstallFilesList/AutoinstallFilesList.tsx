@@ -1,6 +1,5 @@
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
@@ -37,7 +36,6 @@ interface AutoinstallFilesListProps {
 const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   autoinstallFiles,
 }) => {
-  const { employeeGroups, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { updateAutoinstallFile } = useUpdateAutoinstallFile();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -135,20 +133,6 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       setModalFile(file);
     }
   };
-
-  const files = useMemo(() => {
-    return autoinstallFiles.filter((file) => {
-      return (
-        file.filename.toLowerCase().includes(search.toLowerCase()) &&
-        file.groups.some((group) => {
-          return (
-            !employeeGroups.length || employeeGroups.includes(group.group_id)
-          );
-        })
-      );
-    });
-  }, [autoinstallFiles, employeeGroups, search]);
-
   const columns = useMemo<Column<AutoinstallFileWithGroups>[]>(
     () => [
       {
@@ -242,7 +226,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         ),
       },
     ],
-    [expandedRowIndex, files, openDetails, openEditForm],
+    [expandedRowIndex, autoinstallFiles, openDetails, openEditForm],
   );
 
   return (
@@ -250,7 +234,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       <div ref={getTableRowsRef(tableRowsRef)}>
         <ModularTable
           columns={columns}
-          data={files}
+          data={autoinstallFiles}
           getCellProps={getCellProps(expandedRowIndex)}
           getRowProps={getRowProps(expandedRowIndex)}
         />

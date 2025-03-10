@@ -6,8 +6,10 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { AutoinstallFile, AutoinstallFileWithGroups } from "../types";
 
 interface GetAutoinstallFilesParams {
+  employee_group_id?: number;
   limit: number;
   offset: number;
+  search?: string;
   with_groups?: boolean;
 }
 
@@ -18,14 +20,18 @@ interface GetAutoinstallFilesResult<T extends AutoinstallFile> {
 }
 
 export default function useGetAutoinstallFiles(params: {
+  employee_group_id?: number;
   limit: number;
   offset: number;
+  search?: string;
   with_groups: false;
 }): GetAutoinstallFilesResult<AutoinstallFile>;
 
 export default function useGetAutoinstallFiles(params: {
+  employee_group_id?: number;
   limit: number;
   offset: number;
+  search?: string;
   with_groups: true;
 }): GetAutoinstallFilesResult<AutoinstallFileWithGroups>;
 
