@@ -28,13 +28,12 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
             <span>Edit</span>
           </Button>
 
-          <Button
-            className="p-segmented-control__button"
-            disabled={file.is_default}
-          >
-            <Icon name="delete" />
-            <span>Remove</span>
-          </Button>
+          {!file.is_default && (
+            <Button className="p-segmented-control__button">
+              <Icon name="delete" />
+              <span>Remove</span>
+            </Button>
+          )}
         </div>
       </div>
 
