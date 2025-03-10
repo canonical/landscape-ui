@@ -1,5 +1,8 @@
-import { AUTOINSTALL_FILE_EXTENSION } from "./constants";
+import { AUTOINSTALL_FILE_LANGUAGES } from "./constants";
 
 export const removeAutoinstallFileExtension = (filename: string): string => {
-  return filename.replace(new RegExp(`${AUTOINSTALL_FILE_EXTENSION}$`), "");
+  return filename.replace(
+    new RegExp(`\\.(${AUTOINSTALL_FILE_LANGUAGES.join("|")})$`),
+    "",
+  );
 };

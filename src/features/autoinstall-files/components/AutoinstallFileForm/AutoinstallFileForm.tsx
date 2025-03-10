@@ -12,6 +12,7 @@ import { useRef } from "react";
 import {
   AUTOINSTALL_FILE_EXTENSION,
   AUTOINSTALL_FILE_LANGUAGE,
+  AUTOINSTALL_FILE_LANGUAGES,
 } from "../../constants";
 import { removeAutoinstallFileExtension } from "../../helpers";
 import classes from "./AutoinstallFileForm.module.scss";
@@ -123,7 +124,9 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
         ref={inputRef}
         className="u-hide"
         type="file"
-        accept={AUTOINSTALL_FILE_EXTENSION}
+        accept={AUTOINSTALL_FILE_LANGUAGES.map(
+          (language) => `.${language}`,
+        ).join(",")}
         onChange={handleInputChange}
       />
 
