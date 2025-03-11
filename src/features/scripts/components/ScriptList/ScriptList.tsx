@@ -3,11 +3,11 @@ import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { ModularTable } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import ScriptListActions from "../ScriptListActions";
 import type { Script } from "../../types";
 import { LOADING_SCRIPT } from "./constants";
 import { getCellProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
+import ScriptListContextualMenu from "../ScriptListContextualMenu";
 
 interface ScriptListProps {
   readonly isScriptsLoading: boolean;
@@ -46,7 +46,7 @@ const ScriptList: FC<ScriptListProps> = ({ isScriptsLoading, scripts }) => {
         accessor: "id",
         className: classes.actions,
         Cell: ({ row }: CellProps<Script>) => (
-          <ScriptListActions script={row.original} />
+          <ScriptListContextualMenu script={row.original} />
         ),
       },
     ],
