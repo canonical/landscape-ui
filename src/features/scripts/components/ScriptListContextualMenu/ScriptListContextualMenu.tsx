@@ -1,5 +1,7 @@
-import type { ComponentProps, FC, MouseEvent as ReactMouseEvent } from "react";
-import { lazy, Suspense, useState } from "react";
+import LoadingState from "@/components/layout/LoadingState";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
 import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
@@ -7,10 +9,8 @@ import {
   Icon,
   ICONS,
 } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import type { ComponentProps, FC, MouseEvent as ReactMouseEvent } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useScripts } from "../../hooks";
 import type { Script } from "../../types";
 import classes from "./ScriptListContextualMenu.module.scss";
@@ -72,7 +72,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
     );
   };
 
-  const handleScriptRemove = async () => {
+  const handleScriptRemove = async (): Promise<void> => {
     try {
       await removeScript({ script_id: script.id });
 
