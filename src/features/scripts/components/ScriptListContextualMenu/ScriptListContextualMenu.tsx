@@ -26,7 +26,6 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
   script,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [confirmDeleteScriptText] = useState("");
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -38,14 +37,14 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
 
   const handleScriptRun = (
     event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
-    script: Script,
-  ) => {
+    scriptToRun: Script,
+  ): void => {
     event.currentTarget.blur();
 
     setSidePanelContent(
-      `Run "${script.title}" script`,
+      `Run "${scriptToRun.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={script} />
+        <RunScriptForm script={scriptToRun} />
       </Suspense>,
     );
   };
@@ -53,7 +52,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
   const handleScript = (
     event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
     scriptProps: ComponentProps<typeof SingleScript>,
-  ) => {
+  ): void => {
     if (scriptProps.action === "add") {
       return;
     }
@@ -85,10 +84,10 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
       debug(error);
     }
   };
-  const handleOpenModal = () => {
+  const handleOpenModal = (): void => {
     setModalOpen(true);
   };
-  const handleCloseModal = () => {
+  const handleCloseModal = (): void => {
     setModalOpen(false);
   };
 
@@ -102,7 +101,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
       ),
       "aria-label": `Copy ${script.title} script`,
       hasIcon: true,
-      onClick: (event) => {
+      onClick: (event): void => {
         handleScriptRun(event, script);
       },
     },
@@ -115,7 +114,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
       ),
       "aria-label": `Copy ${script.title} script`,
       hasIcon: true,
-      onClick: (event) => {
+      onClick: (event): void => {
         handleScript(event, { action: "copy", script });
       },
     },
@@ -128,7 +127,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
       ),
       "aria-label": `Edit ${script.title} script`,
       hasIcon: true,
-      onClick: (event) => {
+      onClick: (event): void => {
         handleScript(event, { action: "edit", script });
       },
     },
@@ -139,7 +138,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
           <span>Remove</span>
         </>
       ),
-      "aria-label": `Remove ${script.title} profile`,
+      "aria-label": `Remove ${script.title} script`,
       hasIcon: true,
       onClick: handleOpenModal,
     },
@@ -161,9 +160,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
           title="Remove script"
           confirmButtonLabel="Remove"
           confirmButtonAppearance="negative"
-          confirmButtonDisabled={
-            isRemoving || confirmDeleteScriptText !== `remove ${script.title}`
-          }
+          confirmButtonDisabled={isRemoving}
           confirmButtonLoading={isRemoving}
           onConfirm={handleScriptRemove}
           close={handleCloseModal}
