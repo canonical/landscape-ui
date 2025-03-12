@@ -7,14 +7,16 @@
 }
 
 .inputContainer {
-  display: flex;
-  gap: $sph--x-small;
+  position: relative;
 }
 
-.inputWrapper {
-  flex: 1;
+.input {
+  min-width: initial;
+  width: 90%;
 }
 
 .inputDescription {
-  margin-top: 2.875rem;
+  position: absolute;
+  right: 0;
+  top: $sp-xxx-large;
 }

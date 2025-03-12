@@ -13,29 +13,25 @@ interface GetAutoinstallFilesParams {
   with_groups?: boolean;
 }
 
-interface GetAutoinstallFilesResult<T extends AutoinstallFile> {
-  autoinstallFiles: T[];
-  autoinstallFilesCount: number;
+interface GetAutoinstallFilesResult<T extends GetAutoinstallFilesParams> {
+  autoinstallFiles: (T extends { with_groups: true }
+    ? WithGroups<AutoinstallFile>
+    : AutoinstallFile)[];
+  autoinstallFilesCount: number | undefined;
   isAutoinstallFilesLoading: boolean;
 }
 
-export default function useGetAutoinstallFiles(
-  params: {
-    with_groups: true;
-  } & GetAutoinstallFilesParams,
-): GetAutoinstallFilesResult<WithGroups<AutoinstallFile>>;
-
-export default function useGetAutoinstallFiles(
-  params: GetAutoinstallFilesParams,
-): GetAutoinstallFilesResult<AutoinstallFile>;
-
-export default function useGetAutoinstallFiles(
-  params: GetAutoinstallFilesParams,
-): GetAutoinstallFilesResult<AutoinstallFile> {
+const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
+  params: T,
+): GetAutoinstallFilesResult<T> => {
   const authFetch = useFetch();
 
   const { data: response, isLoading } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<AutoinstallFile>>,
+    AxiosResponse<
+      ApiPaginatedResponse<
+        GetAutoinstallFilesResult<T>["autoinstallFiles"][number]
+      >
+    >,
     AxiosError<ApiError>
   >({
     queryKey: ["autoinstallFile", params],
@@ -45,15 +41,11 @@ export default function useGetAutoinstallFiles(
       }),
   });
 
-  return response
-    ? {
-        autoinstallFiles: response.data.results,
-        autoinstallFilesCount: response.data.count,
-        isAutoinstallFilesLoading: isLoading,
-      }
-    : {
-        autoinstallFiles: [],
-        autoinstallFilesCount: 0,
-        isAutoinstallFilesLoading: isLoading,
-      };
-}
+  return {
+    autoinstallFiles: response?.data.results ?? [],
+    autoinstallFilesCount: response?.data.count,
+    isAutoinstallFilesLoading: isLoading,
+  };
+};
+
+export default useGetAutoinstallFiles;

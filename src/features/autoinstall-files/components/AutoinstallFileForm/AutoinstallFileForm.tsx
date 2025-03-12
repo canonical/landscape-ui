@@ -106,7 +106,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
 
       <div className={classes.inputContainer}>
         <Input
-          wrapperClassName={classes.inputWrapper}
+          wrapperClassName={classes.input}
           type="text"
           label="File name"
           {...formik.getFieldProps("filename")}
