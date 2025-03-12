@@ -61,7 +61,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
 
     const title =
       "copy" === scriptProps.action
-        ? `Copy "${scriptProps.script.title}" script`
+        ? `Duplicate "${scriptProps.script.title}" script`
         : `Edit "${scriptProps.script.title}" script`;
 
     setSidePanelContent(
@@ -99,7 +99,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
           <span>Run script</span>
         </>
       ),
-      "aria-label": `Copy ${script.title} script`,
+      "aria-label": `Run ${script.title} script`,
       hasIcon: true,
       onClick: (event): void => {
         handleScriptRun(event, script);
