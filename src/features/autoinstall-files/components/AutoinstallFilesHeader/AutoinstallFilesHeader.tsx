@@ -34,8 +34,9 @@ const AutoinstallFilesHeader: FC<AutoinstallFilesHeaderProps> = ({
             />
 
             <Button
+              type="button"
               className="u-no-margin"
-              hasIcon={true}
+              hasIcon
               onClick={openAddForm}
             >
               <Icon name="plus" />

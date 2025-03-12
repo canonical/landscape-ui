@@ -5,13 +5,13 @@ import type { AxiosError } from "axios";
 import type { AutoinstallFile } from "../types";
 
 interface UpdateAutoinstallFileParams {
+  id: number;
   contents?: string;
   is_default?: boolean;
 }
 
 const useUpdateAutoinstallFile = (): {
   updateAutoinstallFile: (
-    id: number,
     params: UpdateAutoinstallFileParams,
   ) => Promise<AutoinstallFile>;
   isAutoinstallFileUpdating: boolean;
@@ -22,7 +22,7 @@ const useUpdateAutoinstallFile = (): {
   const { isPending, mutateAsync } = useMutation<
     AutoinstallFile,
     AxiosError<ApiError>,
-    { id: number } & UpdateAutoinstallFileParams
+    UpdateAutoinstallFileParams
   >({
     mutationFn: async ({ id, ...params }) =>
       authFetch.patch(`autoinstall/${id}`, params),
@@ -32,12 +32,7 @@ const useUpdateAutoinstallFile = (): {
 
   return {
     isAutoinstallFileUpdating: isPending,
-    updateAutoinstallFile: async (
-      id: number,
-      params: UpdateAutoinstallFileParams,
-    ): Promise<AutoinstallFile> => {
-      return mutateAsync({ id, ...params });
-    },
+    updateAutoinstallFile: mutateAsync,
   };
 };
 

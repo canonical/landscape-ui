@@ -3,8 +3,12 @@ import type { ApiError } from "@/types/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
+interface DeleteAutoinstallFileParams {
+  id: number;
+}
+
 const useDeleteAutoinstallFile = (): {
-  deleteAutoinstallFile: (id: number) => Promise<null>;
+  deleteAutoinstallFile: (params: DeleteAutoinstallFileParams) => Promise<null>;
   isAutoinstallFileUpdating: boolean;
 } => {
   const authFetch = useFetch();
@@ -13,7 +17,7 @@ const useDeleteAutoinstallFile = (): {
   const { isPending, mutateAsync } = useMutation<
     null,
     AxiosError<ApiError>,
-    { id: number }
+    DeleteAutoinstallFileParams
   >({
     mutationFn: async ({ id }) => authFetch.delete(`autoinstall/${id}`),
     onSuccess: async () =>
@@ -21,9 +25,7 @@ const useDeleteAutoinstallFile = (): {
   });
 
   return {
-    deleteAutoinstallFile: async (id: number): Promise<null> => {
-      return mutateAsync({ id });
-    },
+    deleteAutoinstallFile: mutateAsync,
     isAutoinstallFileUpdating: isPending,
   };
 };

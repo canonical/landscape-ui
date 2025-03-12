@@ -28,11 +28,15 @@ const TruncatedCell: FC<TruncatedCellProps> = ({
       return;
     }
 
-    const overflownChildCount = [...instance.children].filter(
-      (child) =>
-        child.getBoundingClientRect().right >
-        instance.getBoundingClientRect().right,
-    ).length;
+    const overflownChildCount = [...instance.childNodes].filter((child) => {
+      const range = document.createRange();
+      range.selectNodeContents(child);
+
+      return (
+        range.getBoundingClientRect().right >
+        instance.getBoundingClientRect().right
+      );
+    }).length;
 
     setOverflownChildCount(overflownChildCount);
   };

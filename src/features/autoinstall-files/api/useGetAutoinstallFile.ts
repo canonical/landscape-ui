@@ -5,6 +5,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { AutoinstallFile, WithGroups, WithVersions } from "../types";
 
 interface GetAutoinstallFileParams {
+  id: number;
   version?: number;
   with_groups?: boolean;
   with_versions?: boolean;
@@ -18,7 +19,6 @@ type GetAutoinstallFileResult<T extends AutoinstallFile> =
   | { autoinstallFile: null; isAutoinstallFileLoading: true };
 
 export default function useGetAutoinstallFile(
-  id: number,
   params: {
     with_groups: true;
     with_versions: true;
@@ -26,28 +26,25 @@ export default function useGetAutoinstallFile(
 ): GetAutoinstallFileResult<WithVersions<WithGroups<AutoinstallFile>>>;
 
 export default function useGetAutoinstallFile(
-  id: number,
   params: {
     with_groups: true;
   } & GetAutoinstallFileParams,
 ): GetAutoinstallFileResult<WithGroups<AutoinstallFile>>;
 
 export default function useGetAutoinstallFile(
-  id: number,
   params: {
     with_versions: true;
   } & GetAutoinstallFileParams,
 ): GetAutoinstallFileResult<WithVersions<AutoinstallFile>>;
 
 export default function useGetAutoinstallFile(
-  id: number,
-  params?: GetAutoinstallFileParams,
+  params: GetAutoinstallFileParams,
 ): GetAutoinstallFileResult<AutoinstallFile>;
 
-export default function useGetAutoinstallFile(
-  id: number,
-  params?: GetAutoinstallFileParams,
-):
+export default function useGetAutoinstallFile({
+  id,
+  ...params
+}: GetAutoinstallFileParams):
   | {
       autoinstallFile: AutoinstallFile;
       isAutoinstallFileLoading: false;
@@ -59,7 +56,7 @@ export default function useGetAutoinstallFile(
     AxiosResponse<AutoinstallFile>,
     AxiosError<ApiError>
   >({
-    queryKey: ["autoinstallFile", { id, ...params }],
+    queryKey: ["autoinstallFile", { ...params }],
     queryFn: async () =>
       authFetch.get(`autoinstall/${id}`, {
         params,

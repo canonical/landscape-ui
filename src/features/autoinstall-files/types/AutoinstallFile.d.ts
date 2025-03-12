@@ -1,4 +1,4 @@
-import type { EmployeeGroup } from "./EmployeeGroup";
+import type { EmployeeGroup } from "@/features/employee-groups";
 
 export interface AutoinstallFile extends Record<string, unknown> {
   contents: string;

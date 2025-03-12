@@ -39,21 +39,19 @@ interface AutoinstallFilesListProps {
 const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   autoinstallFiles,
 }) => {
-  const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
-
-  const { deleteAutoinstallFile } = useDeleteAutoinstallFile();
-  const { updateAutoinstallFile } = useUpdateAutoinstallFile();
-
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isRemoveModalVisible, setIsRemoveModalVisible] = useState(false);
   const [isEditModalIgnored, setIsEditModalIgnored] = useState(
     !!localStorage.getItem(LOCAL_STORAGE_ITEM),
   );
   const [modalFile, setModalFile] = useState<AutoinstallFile | null>(null);
-
   const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
+
+  const { notify } = useNotify();
+  const { setSidePanelContent } = useSidePanel();
+  const { deleteAutoinstallFile } = useDeleteAutoinstallFile();
+  const { updateAutoinstallFile } = useUpdateAutoinstallFile();
 
   useOnClickOutside(
     {
@@ -89,7 +87,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         initialFile={file}
         notification={EDIT_AUTOINSTALL_FILE_NOTIFICATION}
         onSubmit={async ({ contents }) => {
-          await updateAutoinstallFile(file.id, { contents });
+          await updateAutoinstallFile({ id: file.id, contents });
         }}
       />,
     );
@@ -113,7 +111,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   };
 
   const setAsDefault = async (file: AutoinstallFile): Promise<void> => {
-    await updateAutoinstallFile(file.id, { is_default: true });
+    await updateAutoinstallFile({ id: file.id, is_default: true });
 
     notify.success({
       message:
@@ -139,7 +137,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     setIsRemoveModalVisible(false);
 
     if (modalFile) {
-      await deleteAutoinstallFile(modalFile.id);
+      await deleteAutoinstallFile({ id: modalFile.id });
 
       notify.success({
         message: `The ${modalFile.filename} Autoinstall file has been permanently removed. All Employee groups associated with this file are now using the default Autoinstall file.`,

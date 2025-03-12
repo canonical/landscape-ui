@@ -1,5 +1,5 @@
 import type { MenuLink } from "@canonical/react-components";
-import { ContextualMenu, Icon } from "@canonical/react-components";
+import { ContextualMenu, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import type { AutoinstallFile, WithGroups } from "../../types";
 
@@ -58,7 +58,7 @@ const AutoinstallFilesListContextualMenu: FC<
     {
       children: (
         <>
-          <Icon name="delete" />
+          <Icon name={ICONS.delete} />
           <span>Remove</span>
         </>
       ),

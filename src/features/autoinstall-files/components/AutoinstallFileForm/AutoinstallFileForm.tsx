@@ -34,6 +34,8 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   notification,
   onSubmit,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
@@ -64,8 +66,6 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
       }
     },
   });
-
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = async ({
     target: { files },

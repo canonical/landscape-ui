@@ -23,12 +23,10 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile(
-    file.id,
-    {
-      with_versions: true,
-    },
-  );
+  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
+    id: file.id,
+    with_versions: true,
+  });
 
   const versions = isAutoinstallFileLoading
     ? []
@@ -57,6 +55,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
 
           return (
             <Button
+              type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top"
               onClick={openVersionPanel}

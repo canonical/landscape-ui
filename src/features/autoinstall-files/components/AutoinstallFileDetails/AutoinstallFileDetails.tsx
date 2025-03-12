@@ -1,4 +1,4 @@
-import { Button, Icon } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import type {
   AutoinstallFile,
@@ -28,7 +28,12 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
     <>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
-          <Button className="p-segmented-control__button" onClick={edit}>
+          <Button
+            type="button"
+            className="p-segmented-control__button"
+            onClick={edit}
+            hasIcon
+          >
             <Icon name="edit" />
             <span>Edit</span>
           </Button>
@@ -36,15 +41,22 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
           {!file.is_default && (
             <>
               <Button
+                type="button"
                 className="p-segmented-control__button"
                 onClick={setAsDefault}
+                hasIcon
               >
                 <Icon name="starred" />
                 <span>Set as default</span>
               </Button>
 
-              <Button className="p-segmented-control__button" onClick={remove}>
-                <Icon name="delete" />
+              <Button
+                type="button"
+                className="p-segmented-control__button"
+                onClick={remove}
+                hasIcon
+              >
+                <Icon name={ICONS.delete} />
                 <span>Remove</span>
               </Button>
             </>

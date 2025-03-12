@@ -25,10 +25,10 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
   goBack,
   version,
 }) => {
-  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile(
-    fileId,
-    { version },
-  );
+  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
+    id: fileId,
+    version,
+  });
 
   if (isAutoinstallFileLoading) {
     return <LoadingState />;
