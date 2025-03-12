@@ -81,7 +81,7 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,md,html}": [
-      "eslint --cache",
+      "eslint --cache --max-warnings 0",
       "prettier --check"
     ],
     "src/**/*.scss": "stylelint"
