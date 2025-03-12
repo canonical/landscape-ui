@@ -25,11 +25,11 @@ const ScriptList: FC<ScriptListProps> = ({ isScriptsLoading, scripts }) => {
       {
         Header: "Title",
         accessor: "title",
-        Cell: ({ row }: CellProps<Script>) =>
+        Cell: ({ row }: CellProps<Script>): JSX.Element =>
           row.original.title === LOADING_SCRIPT.title ? (
             <LoadingState />
           ) : (
-            row.original.title
+            <span>{row.original.title}</span>
           ),
       },
       {
@@ -43,9 +43,10 @@ const ScriptList: FC<ScriptListProps> = ({ isScriptsLoading, scripts }) => {
         className: classes.creator,
       },
       {
+        Header: "Actions",
         accessor: "id",
         className: classes.actions,
-        Cell: ({ row }: CellProps<Script>) => (
+        Cell: ({ row }: CellProps<Script>): JSX.Element => (
           <ScriptListContextualMenu script={row.original} />
         ),
       },

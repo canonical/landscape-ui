@@ -39,8 +39,6 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
     event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
     scriptToRun: Script,
   ): void => {
-    event.currentTarget.blur();
-
     setSidePanelContent(
       `Run "${scriptToRun.title}" script`,
       <Suspense fallback={<LoadingState />}>
