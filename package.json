@@ -23,7 +23,7 @@
     "@monaco-editor/react": "4.7.0",
     "@sentry/react": "8.55.0",
     "@tanstack/react-query": "5.66.9",
-    "axios": "1.7.9",
+    "axios": "1.8.2",
     "buffer": "6.0.3",
     "chart.js": "4.4.8",
     "classnames": "2.5.1",
