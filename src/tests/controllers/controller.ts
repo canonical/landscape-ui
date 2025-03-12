@@ -1,8 +1,15 @@
 type EndpointStatus = "empty" | "error" | "default";
 
-let endpointStatus: EndpointStatus = "default";
+class EndpointStatusManager {
+  private status: EndpointStatus = "default";
 
-export const getEndpointStatus = () => endpointStatus;
-export const setEndpointStatus = (value: EndpointStatus) => {
-  endpointStatus = value;
-};
+  getStatus(): EndpointStatus {
+    return this.status;
+  }
+
+  setStatus(value: EndpointStatus): void {
+    this.status = value;
+  }
+}
+
+export const endpointStatusManager = new EndpointStatusManager();
