@@ -45,6 +45,8 @@ const TruncatedCell: FC<TruncatedCellProps> = ({
   };
 
   useEffect(() => {
+    expandabilityCheck();
+
     window.addEventListener("resize", expandabilityCheck);
 
     return (): void => {

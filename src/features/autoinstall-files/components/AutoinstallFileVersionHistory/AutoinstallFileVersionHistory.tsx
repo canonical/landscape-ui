@@ -28,9 +28,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
     with_versions: true,
   });
 
-  const versions = isAutoinstallFileLoading
-    ? []
-    : autoinstallFile.versions.toReversed();
+  const versions = autoinstallFile?.versions.toReversed() ?? [];
 
   const columns = useMemo<Column<AutoinstallFileVersionInfo>[]>(
     () => [
@@ -38,17 +36,18 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
         accessor: "version",
         Header: "Version",
         Cell: ({
-          row: {
-            original: { version },
-          },
+          row: { original: versionInfo },
         }: CellProps<AutoinstallFileVersionInfo>): ReactNode => {
           const openVersionPanel = (): void => {
             setSidePanelContent(
-              <AutoinstallFileSidePanelTitle file={file} version={version} />,
+              <AutoinstallFileSidePanelTitle
+                file={file}
+                version={versionInfo.version}
+              />,
               <AutoinstallFileVersion
-                fileId={file.id}
+                file={file}
                 goBack={viewVersionHistory}
-                version={version}
+                versionInfo={versionInfo}
               />,
             );
           };
@@ -60,7 +59,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
               className="u-no-margin--bottom u-no-padding--top"
               onClick={openVersionPanel}
             >
-              {version}
+              {versionInfo.version}
             </Button>
           );
         },

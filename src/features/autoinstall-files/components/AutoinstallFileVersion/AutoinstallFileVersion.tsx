@@ -1,7 +1,6 @@
 import CodeEditor from "@/components/form/CodeEditor";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
-import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import { Input } from "@canonical/react-components";
 import moment from "moment";
@@ -12,27 +11,25 @@ import {
   AUTOINSTALL_FILE_LANGUAGE,
 } from "../../constants";
 import { removeAutoinstallFileExtension } from "../../helpers";
+import type { AutoinstallFile } from "../../types";
+import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
 import classes from "./AutoinstallFileVersion.module.scss";
 
 interface AutoinstallFileVersionProps {
-  readonly fileId: number;
+  readonly file: AutoinstallFile;
   readonly goBack: () => void;
-  readonly version: number;
+  readonly versionInfo: AutoinstallFileVersionInfo;
 }
 
 const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
-  fileId,
+  file,
   goBack,
-  version,
+  versionInfo,
 }) => {
-  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
-    id: fileId,
-    version,
+  const { autoinstallFile } = useGetAutoinstallFile({
+    id: file.id,
+    version: versionInfo.version,
   });
-
-  if (isAutoinstallFileLoading) {
-    return <LoadingState />;
-  }
 
   return (
     <>
@@ -41,7 +38,7 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
           wrapperClassName={classes.inputWrapper}
           type="text"
           label="File name"
-          value={removeAutoinstallFileExtension(autoinstallFile.filename)}
+          value={removeAutoinstallFileExtension(file.filename)}
           disabled
         />
 
@@ -52,12 +49,12 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
 
       <InfoItem
         label="Date created"
-        value={moment(autoinstallFile.created_at).format(DISPLAY_DATE_FORMAT)}
+        value={moment(versionInfo.created_at).format(DISPLAY_DATE_FORMAT)}
       />
 
       <CodeEditor
         label="Code"
-        value={autoinstallFile.contents}
+        value={autoinstallFile?.contents}
         options={{ readOnly: true }}
         language={AUTOINSTALL_FILE_LANGUAGE}
       />

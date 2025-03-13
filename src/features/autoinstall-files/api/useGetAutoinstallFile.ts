@@ -11,49 +11,24 @@ interface GetAutoinstallFileParams {
   with_versions?: boolean;
 }
 
-type GetAutoinstallFileResult<T extends AutoinstallFile> =
-  | {
-      autoinstallFile: WithVersions<WithGroups<T>>;
-      isAutoinstallFileLoading: false;
-    }
-  | { autoinstallFile: null; isAutoinstallFileLoading: true };
+type GetAutoinstallFileResult<T extends GetAutoinstallFileParams> =
+  AutoinstallFile &
+    (T extends { with_groups: true } ? WithGroups<AutoinstallFile> : object) &
+    (T extends { with_versions: true }
+      ? WithVersions<AutoinstallFile>
+      : object);
 
-export default function useGetAutoinstallFile(
-  params: {
-    with_groups: true;
-    with_versions: true;
-  } & GetAutoinstallFileParams,
-): GetAutoinstallFileResult<WithVersions<WithGroups<AutoinstallFile>>>;
-
-export default function useGetAutoinstallFile(
-  params: {
-    with_groups: true;
-  } & GetAutoinstallFileParams,
-): GetAutoinstallFileResult<WithGroups<AutoinstallFile>>;
-
-export default function useGetAutoinstallFile(
-  params: {
-    with_versions: true;
-  } & GetAutoinstallFileParams,
-): GetAutoinstallFileResult<WithVersions<AutoinstallFile>>;
-
-export default function useGetAutoinstallFile(
-  params: GetAutoinstallFileParams,
-): GetAutoinstallFileResult<AutoinstallFile>;
-
-export default function useGetAutoinstallFile({
+const useGetAutoinstallFile = <T extends GetAutoinstallFileParams>({
   id,
   ...params
-}: GetAutoinstallFileParams):
-  | {
-      autoinstallFile: AutoinstallFile;
-      isAutoinstallFileLoading: false;
-    }
-  | { autoinstallFile: null; isAutoinstallFileLoading: true } {
+}: T): {
+  autoinstallFile: GetAutoinstallFileResult<T> | null;
+  isAutoinstallFileLoading: boolean;
+} => {
   const authFetch = useFetch();
 
-  const { data: response } = useQuery<
-    AxiosResponse<AutoinstallFile>,
+  const { data: response, isLoading } = useQuery<
+    AxiosResponse<GetAutoinstallFileResult<T>>,
     AxiosError<ApiError>
   >({
     queryKey: ["autoinstallFile", { ...params }],
@@ -63,13 +38,10 @@ export default function useGetAutoinstallFile({
       }),
   });
 
-  return response
-    ? {
-        autoinstallFile: response.data,
-        isAutoinstallFileLoading: false,
-      }
-    : {
-        autoinstallFile: null,
-        isAutoinstallFileLoading: true,
-      };
-}
+  return {
+    autoinstallFile: response?.data ?? null,
+    isAutoinstallFileLoading: isLoading,
+  };
+};
+
+export default useGetAutoinstallFile;

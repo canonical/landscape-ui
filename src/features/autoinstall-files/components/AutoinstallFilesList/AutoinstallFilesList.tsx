@@ -49,7 +49,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
 
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const { closeSidePanel, setSidePanelContent } = useSidePanel();
   const { deleteAutoinstallFile } = useDeleteAutoinstallFile();
   const { updateAutoinstallFile } = useUpdateAutoinstallFile();
 
@@ -138,6 +138,8 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
     if (modalFile) {
       await deleteAutoinstallFile({ id: modalFile.id });
+
+      closeSidePanel();
 
       notify.success({
         message: `The ${modalFile.filename} Autoinstall file has been permanently removed. All Employee groups associated with this file are now using the default Autoinstall file.`,
