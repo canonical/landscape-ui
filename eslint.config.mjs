@@ -74,8 +74,6 @@ export default tseslint.config(
 
       /* These rules are set to warning to meet TICS rules. They will be changed to errors in the future. */
       complexity: ["warn", 20],
-      "no-magic-numbers": "warn",
-      "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/promise-function-async": "warn",
       "no-use-before-define": "warn",
       "prefer-destructuring": "warn",

@@ -13,7 +13,6 @@ import {
   generateFilteredResponse,
   generatePaginatedResponse,
 } from "./_helpers";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 
 export default [
   http.get(
@@ -90,7 +89,7 @@ export default [
       const search = url.searchParams.get("search") ?? "";
       const offset =
         Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
-      const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
+      const limit = Number(url.searchParams.get("limit")) || 20;
 
       if (endpointStatus.status === "error") {
         throw new HttpResponse(null, { status: 500 });
