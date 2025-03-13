@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { API_URL, API_URL_OLD } from "@/constants";
+import { API_URL, API_URL_OLD, COMMON_NUMBERS } from "@/constants";
 import { userGroups } from "@/tests/mocks/userGroup";
 import type { GroupsResponse } from "@/types/User";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
@@ -17,13 +17,14 @@ export default [
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus === "error") {
+      if (endpointStatus.status === "error") {
         throw new HttpResponse(null, { status: 500 });
       }
 
       const url = new URL(request.url);
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const limit = Number(url.searchParams.get("limit")) || 1;
+      const offset =
+        Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
+      const limit = Number(url.searchParams.get("limit")) || COMMON_NUMBERS.ONE;
 
       return HttpResponse.json(
         generatePaginatedResponse<Instance>({
@@ -63,6 +64,6 @@ export default [
       return;
     }
 
-    return HttpResponse.json(activities[0]);
+    return HttpResponse.json(activities[COMMON_NUMBERS.ZERO]);
   }),
 ];

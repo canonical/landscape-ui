@@ -37,7 +37,7 @@ export default [
   http.get(`${API_URL}login/methods`, () => {
     const endpointStatus = getEndpointStatus();
 
-    if (endpointStatus === "error") {
+    if (endpointStatus.status === "error") {
       return HttpResponse.json(
         {
           error: "InternalServerError",

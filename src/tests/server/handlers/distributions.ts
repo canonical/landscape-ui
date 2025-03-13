@@ -15,11 +15,11 @@ export default [
 
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus === "error") {
+      if (endpointStatus.status === "error") {
         throw new HttpResponse(null, { status: 500 });
       }
 
-      if (endpointStatus === "empty") {
+      if (endpointStatus.status === "empty") {
         return HttpResponse.json([]);
       }
 

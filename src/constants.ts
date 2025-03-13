@@ -21,4 +21,5 @@ export const DETAILED_UPGRADES_VIEW_ENABLED =
 export const COMMON_NUMBERS = {
   ZERO: 0,
   ONE: 1,
+  TWO: 2,
 };

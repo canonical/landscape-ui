@@ -16,7 +16,7 @@ export default [
     () => {
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus === "empty") {
+      if (endpointStatus.status === "empty") {
         return HttpResponse.json({
           alerts_summary: [],
         });
