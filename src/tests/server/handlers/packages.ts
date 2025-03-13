@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { API_URL } from "@/constants";
+import { API_URL, COMMON_NUMBERS } from "@/constants";
 import type { GetPackagesParams, Package } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { getInstancePackages, packages } from "@/tests/mocks/packages";
@@ -12,13 +12,14 @@ export default [
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus === "error") {
+      if (endpointStatus.status === "error") {
         throw new HttpResponse(null, { status: 500 });
       }
 
       const url = new URL(request.url);
       const limit = Number(url.searchParams.get("limit"));
-      const offset = Number(url.searchParams.get("offset")) || 0;
+      const offset =
+        Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
 
       return HttpResponse.json(
         generatePaginatedResponse<Package>({
@@ -33,7 +34,8 @@ export default [
   http.get(`${API_URL}computers/:id/packages`, ({ params, request }) => {
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit"));
-    const offset = Number(url.searchParams.get("offset")) || 0;
+    const offset =
+      Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
     const instanceId = Number(params.id);
 
     const instancePackages = getInstancePackages(instanceId);

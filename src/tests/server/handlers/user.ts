@@ -13,7 +13,7 @@ export default [
 
     return HttpResponse.json(
       generatePaginatedResponse<User>({
-        data: endpointStatus === "default" ? users : [],
+        data: endpointStatus.status === "default" ? users : [],
         limit: MAX_USERS_LIMIT,
         offset,
       }),

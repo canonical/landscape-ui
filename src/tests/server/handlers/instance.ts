@@ -1,10 +1,10 @@
-import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
   GetInstancesParams,
   RemoveInstances,
   SanitizeInstancesParams,
 } from "@/hooks/useInstances";
+import { API_URL, API_URL_OLD, COMMON_NUMBERS } from "@/constants";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
@@ -22,13 +22,14 @@ export default [
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus === "error") {
+      if (endpointStatus.status === "error") {
         throw new HttpResponse(null, { status: 500 });
       }
 
       const url = new URL(request.url);
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const limit = Number(url.searchParams.get("limit")) || 1;
+      const offset =
+        Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
+      const limit = Number(url.searchParams.get("limit")) || COMMON_NUMBERS.ONE;
 
       return HttpResponse.json(
         generatePaginatedResponse<Instance>({
@@ -68,13 +69,13 @@ export default [
       return;
     }
 
-    return HttpResponse.json(activities[0]);
+    return HttpResponse.json(activities[COMMON_NUMBERS.ZERO]);
   }),
 
   http.post<never, SanitizeInstancesParams, Activity>(
     `${API_URL}computers/:computerId/sanitize`,
     async () => {
-      return HttpResponse.json(activities[0]);
+      return HttpResponse.json(activities[COMMON_NUMBERS.ZERO]);
     },
   ),
 

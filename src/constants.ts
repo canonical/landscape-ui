@@ -19,3 +19,8 @@ export const CONTACT_SUPPORT_TEAM_MESSAGE =
 export const DETAILED_UPGRADES_VIEW_ENABLED =
   import.meta.env.VITE_DETAILED_UPGRADES_VIEW_ENABLED === "true";
 export const IS_MSW_ENABLED = import.meta.env.VITE_MSW_ENABLED === "true";
+export const COMMON_NUMBERS = {
+  ZERO: 0,
+  ONE: 1,
+  TWO: 2,
+};

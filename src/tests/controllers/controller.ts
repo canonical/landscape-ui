@@ -1,8 +1,24 @@
-type EndpointStatus = "empty" | "error" | "default";
+type EndpointStatusType = "empty" | "error" | "default";
 
-let endpointStatus: EndpointStatus = "default";
+interface EndpointStatus {
+  status: EndpointStatusType;
+  path?: string;
+}
 
-export const getEndpointStatus = () => endpointStatus;
-export const setEndpointStatus = (value: EndpointStatus) => {
-  endpointStatus = value;
+let endpointStatus: EndpointStatus = {
+  status: "default",
+  path: "",
+};
+
+export const getEndpointStatus = (): EndpointStatus => endpointStatus;
+export const setEndpointStatus = (
+  value: EndpointStatus | EndpointStatusType,
+): void => {
+  if (typeof value === "string") {
+    endpointStatus = {
+      status: value,
+    };
+  } else {
+    endpointStatus = value;
+  }
 };

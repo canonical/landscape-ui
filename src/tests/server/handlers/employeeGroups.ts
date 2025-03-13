@@ -11,10 +11,11 @@ import type {
   StagedOidcGroup,
 } from "@/features/employee-groups";
 import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { API_URL } from "@/constants";
+import { API_URL, COMMON_NUMBERS } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import type { Employee } from "@/features/employees";
 import { oidcGroupImportSession } from "@/tests/mocks/oidcIssuers";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 
 export default [
   http.get<never, GetEmployeeGroupsParams, ApiPaginatedResponse<EmployeeGroup>>(
@@ -23,13 +24,14 @@ export default [
       const endpointStatus = getEndpointStatus();
 
       const url = new URL(request.url);
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const limit = Number(url.searchParams.get("limit")) || 20;
+      const offset =
+        Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
+      const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
       const search = url.searchParams.get("search") ?? "";
 
       return HttpResponse.json(
         generatePaginatedResponse<EmployeeGroup>({
-          data: endpointStatus === "empty" ? [] : employeeGroups,
+          data: endpointStatus.status === "empty" ? [] : employeeGroups,
           limit,
           offset,
           search,
@@ -47,7 +49,7 @@ export default [
       await delay();
 
       const employeeGroup = employeeGroups.find(
-        (employeeGroup) => employeeGroup.id === Number(employeeGroupId),
+        ({ id }) => id === Number(employeeGroupId),
       );
 
       if (!employeeGroup) {
