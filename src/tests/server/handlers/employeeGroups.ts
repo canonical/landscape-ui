@@ -15,7 +15,6 @@ import { API_URL, COMMON_NUMBERS } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import type { Employee } from "@/features/employees";
 import { oidcGroupImportSession } from "@/tests/mocks/oidcIssuers";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 
 export default [
   http.get<never, GetEmployeeGroupsParams, ApiPaginatedResponse<EmployeeGroup>>(
@@ -26,7 +25,7 @@ export default [
       const url = new URL(request.url);
       const offset =
         Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
-      const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
+      const limit = Number(url.searchParams.get("limit")) || 20;
       const search = url.searchParams.get("search") ?? "";
 
       return HttpResponse.json(
