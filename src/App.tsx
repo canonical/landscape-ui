@@ -123,7 +123,7 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
 };
 
 const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
-  const { authorized, authLoading } = useAuth();
+  const { authorized, authLoading, redirectToExternalUrl } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -134,7 +134,16 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
 
     const redirectTo = searchParams.get("redirect-to");
 
-    navigate(redirectTo ?? "/overview", { replace: true });
+    if (!redirectTo) {
+      navigate("/overview", { replace: true });
+      return;
+    }
+
+    if (searchParams.has("external")) {
+      redirectToExternalUrl(redirectTo, { replace: true });
+    } else {
+      navigate(redirectTo, { replace: true });
+    }
   }, [authorized, authLoading]);
 
   if (authLoading) {
