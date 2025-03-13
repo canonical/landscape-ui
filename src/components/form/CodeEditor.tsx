@@ -33,13 +33,9 @@ const CodeEditor: FC<CodeEditorProps> = ({
 }) => {
   return (
     <div
-      className={classNames(
-        "p-form__group p-form-validation",
-        {
-          "is-error": error,
-        },
-        classes.container,
-      )}
+      className={classNames("p-form__group p-form-validation", {
+        "is-error": error,
+      })}
     >
       <div className={classes.header}>
         <label
@@ -56,11 +52,10 @@ const CodeEditor: FC<CodeEditorProps> = ({
         {headerContent}
       </div>
 
-      <div
-        className={classNames("p-form__control u-clearfix", classes.container)}
-      >
+      <div className="p-form__control u-clearfix">
         <Editor
           language={language}
+          height="16rem"
           loading={<LoadingState />}
           defaultValue={defaultValue}
           className={classNames(
