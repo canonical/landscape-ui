@@ -59,7 +59,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
               className="u-no-margin--bottom u-no-padding--top"
               onClick={openVersionPanel}
             >
-              {versionInfo.version}
+              Version {versionInfo.version}
             </Button>
           );
         },
