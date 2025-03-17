@@ -1,10 +1,6 @@
 import { expect } from "vitest";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
-import type { HttpHandler } from "msw";
-import { http, HttpResponse } from "msw";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import { API_URL, COMMON_NUMBERS } from "@/constants";
-import { getEndpointStatus } from "@/tests/controllers/controller";
+import { COMMON_NUMBERS } from "@/constants";
 
 export const expectLoadingState = async (): Promise<void> => {
   const loadingSpinner = await screen.findByRole("status");
@@ -50,46 +46,4 @@ export const setScreenSize = (size: "small" | "large"): void => {
 
 export function resetScreenSize(): void {
   window.matchMedia = originalMatchMedia;
-}
-
-interface GenerateGetListEndpointParams<T> {
-  readonly path: string;
-  readonly response: T[];
-}
-
-export function generateGetListEndpoint<T>({
-  path,
-  response,
-}: GenerateGetListEndpointParams<T>): HttpHandler {
-  return http.get<never, never, ApiPaginatedResponse<T>>(
-    `${API_URL}${path}`,
-    () => {
-      const endpointStatus = getEndpointStatus();
-
-      if (
-        !endpointStatus.path ||
-        (endpointStatus.path && endpointStatus.path !== path)
-      ) {
-        if (endpointStatus.status === "error") {
-          throw new HttpResponse(null, { status: 500 });
-        }
-
-        if (endpointStatus.status === "empty") {
-          return HttpResponse.json({
-            results: [],
-            count: 0,
-            next: null,
-            previous: null,
-          });
-        }
-      }
-
-      return HttpResponse.json({
-        results: response,
-        count: response.length,
-        next: null,
-        previous: null,
-      });
-    },
-  );
 }
