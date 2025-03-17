@@ -3,6 +3,8 @@ export { default as EmployeeGroupsList } from "./components/EmployeeGroupsList";
 export { default as EmployeeGroupsFilter } from "./components/EmployeeGroupsFilter";
 export { default as EmployeeGroupsTable } from "./components/EmployeeGroupsTable";
 export { default as EmployeeGroupIdentityIssuerListContainer } from "./components/EmployeeGroupIdentityIssuerListContainer";
+export { default as EmptyStateNoGroups } from "./components/EmptyStateNoGroups";
+export { default as EmptyStateNoIssuers } from "./components/EmptyStateNoIssuers";
 export type {
   EmployeeGroup,
   StagedOidcGroup,

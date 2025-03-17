@@ -1,14 +1,10 @@
-import { http, HttpResponse } from "msw";
-import { API_URL } from "@/constants";
 import type { OidcIssuer } from "@/features/oidc";
 import { oidcIssuers } from "@/tests/mocks/oidcIssuers";
-import type { ApiListResponse } from "@/types/ApiListResponse";
+import { generateGetListEndpoint } from "@/tests/server/handlers/_helpers";
 
 export default [
-  http.get<never, never, ApiListResponse<OidcIssuer>>(
-    `${API_URL}auth/oidc-issuers`,
-    () => {
-      return HttpResponse.json({ results: oidcIssuers });
-    },
-  ),
+  generateGetListEndpoint<OidcIssuer>({
+    path: "auth/oidc-issuers",
+    response: oidcIssuers,
+  }),
 ];
