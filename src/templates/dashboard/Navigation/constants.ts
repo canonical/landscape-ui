@@ -52,6 +52,11 @@ export const MENU_ITEMS: MenuItem[] = [
         path: "/profiles/wsl",
         env: "selfHosted",
       },
+      {
+        label: "Security profiles",
+        path: "/profiles/security",
+        env: "selfHosted",
+      },
     ],
   },
   {
