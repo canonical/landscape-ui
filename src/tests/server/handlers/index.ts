@@ -1,9 +1,11 @@
+import savedSearches from "@/tests/server/handlers/savedSearches";
+import script from "@/tests/server/handlers/script";
 import accessGroup from "./accessGroup";
 import activity from "./activity";
 import alerts from "./alerts";
 import aptSource from "./aptSource";
 import auth from "./auth";
-import availabilityZones from "@/tests/server/handlers/availabilityZones";
+import availabilityZones from "./availabilityZones";
 import distributions from "./distributions";
 import eventsLog from "./eventsLog";
 import gpgKey from "./gpgKey";
@@ -21,8 +23,6 @@ import user from "./user";
 import userSettings from "./userSettings";
 import usn from "./usn";
 import wsl from "./wsl";
-import savedSearches from "@/tests/server/handlers/savedSearches";
-import script from "@/tests/server/handlers/script";
 
 export default [
   ...accessGroup,
