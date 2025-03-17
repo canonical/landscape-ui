@@ -18,7 +18,7 @@ const PackageProfilesContainer: FC = () => {
     <>
       {getPackageProfilesQueryLoading && <LoadingState />}
       {!getPackageProfilesQueryLoading &&
-        (!getPackageProfilesQueryResult ||
+        (getPackageProfilesQueryResult ||
           getPackageProfilesQueryResult.data.result.length === 0) && (
           <PackageProfilesEmptyState />
         )}
