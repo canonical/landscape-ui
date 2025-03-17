@@ -14,7 +14,7 @@ interface GeneratePaginatedResponseProps<D> {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getNestedProperty(obj: any, path: string) {
-  return path.split(".").reduce((acc, key) => acc && acc[key], acc);
+  return path.split(".").reduce((acc, key) => acc && acc[key], obj);
 }
 
 export function generateFilteredResponse<D>(
