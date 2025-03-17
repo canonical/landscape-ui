@@ -3,11 +3,11 @@ import type { ApiError } from "@/types/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
-interface DeleteAutoinstallFileParams {
+export interface DeleteAutoinstallFileParams {
   id: number;
 }
 
-const useDeleteAutoinstallFile = (): {
+export const useDeleteAutoinstallFile = (): {
   deleteAutoinstallFile: (params: DeleteAutoinstallFileParams) => Promise<null>;
   isAutoinstallFileUpdating: boolean;
 } => {
@@ -29,5 +29,3 @@ const useDeleteAutoinstallFile = (): {
     isAutoinstallFileUpdating: isPending,
   };
 };
-
-export default useDeleteAutoinstallFile;

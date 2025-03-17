@@ -11,7 +11,7 @@ import {
 import classNames from "classnames";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
 import { useDeleteAutoinstallFile, useUpdateAutoinstallFile } from "../../api";
@@ -20,8 +20,6 @@ import type {
   AutoinstallFileTabId,
   WithGroups,
 } from "../../types";
-import AutoinstallFileDetails from "../AutoinstallFileDetails";
-import AutoinstallFileForm from "../AutoinstallFileForm";
 import AutoinstallFileSidePanelTitle from "../AutoinstallFileSidePanelTitle";
 import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
 import classes from "./AutoinstallFilesList.module.scss";
@@ -31,6 +29,11 @@ import {
   MAX_AUTOINSTALL_FILE_VERSION_COUNT,
 } from "./constants";
 import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
+
+const AutoinstallFileDetails = lazy(
+  async () => import("../AutoinstallFileDetails"),
+);
+const AutoinstallFileForm = lazy(async () => import("../AutoinstallFileForm"));
 
 interface AutoinstallFilesListProps {
   readonly autoinstallFiles: WithGroups<AutoinstallFile>[];
@@ -81,15 +84,17 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const openEditForm = (file: AutoinstallFile): void => {
     setSidePanelContent(
       <AutoinstallFileSidePanelTitle file={file} title="Edit" />,
-      <AutoinstallFileForm
-        buttonText="Save changes"
-        description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
-        initialFile={file}
-        notification={EDIT_AUTOINSTALL_FILE_NOTIFICATION}
-        onSubmit={async ({ contents }) => {
-          await updateAutoinstallFile({ id: file.id, contents });
-        }}
-      />,
+      <Suspense>
+        <AutoinstallFileForm
+          buttonText="Save changes"
+          description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
+          initialFile={file}
+          notification={EDIT_AUTOINSTALL_FILE_NOTIFICATION}
+          onSubmit={async ({ contents }) => {
+            await updateAutoinstallFile({ id: file.id, contents });
+          }}
+        />
+      </Suspense>,
     );
   };
 
@@ -166,16 +171,18 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
     setSidePanelContent(
       <AutoinstallFileSidePanelTitle file={file} />,
-      <AutoinstallFileDetails
-        initialTabId={initialTabId}
-        file={file}
-        edit={handleEdit}
-        remove={handleRemove}
-        setAsDefault={handleSetAsDefault}
-        viewVersionHistory={() => {
-          openDetails(file, "version-history");
-        }}
-      />,
+      <Suspense>
+        <AutoinstallFileDetails
+          initialTabId={initialTabId}
+          file={file}
+          edit={handleEdit}
+          remove={handleRemove}
+          setAsDefault={handleSetAsDefault}
+          viewVersionHistory={() => {
+            openDetails(file, "version-history");
+          }}
+        />
+      </Suspense>,
     );
   };
 

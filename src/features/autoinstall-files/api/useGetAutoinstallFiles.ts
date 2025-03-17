@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { AutoinstallFile, WithGroups } from "../types";
 
-interface GetAutoinstallFilesParams {
+export interface GetAutoinstallFilesParams {
   employee_group_id?: number;
   limit: number;
   offset: number;
@@ -13,7 +13,9 @@ interface GetAutoinstallFilesParams {
   with_groups?: boolean;
 }
 
-interface GetAutoinstallFilesResult<T extends GetAutoinstallFilesParams> {
+export interface GetAutoinstallFilesResult<
+  T extends GetAutoinstallFilesParams,
+> {
   autoinstallFiles: (T extends { with_groups: true }
     ? WithGroups<AutoinstallFile>
     : AutoinstallFile)[];
@@ -21,7 +23,7 @@ interface GetAutoinstallFilesResult<T extends GetAutoinstallFilesParams> {
   isAutoinstallFilesLoading: boolean;
 }
 
-const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
+export const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
   params: T,
 ): GetAutoinstallFilesResult<T> => {
   const authFetch = useFetch();
@@ -47,5 +49,3 @@ const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
     isAutoinstallFilesLoading: isLoading,
   };
 };
-
-export default useGetAutoinstallFiles;

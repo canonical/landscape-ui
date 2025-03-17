@@ -4,13 +4,16 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
 import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
 import AutoinstallFileSidePanelTitle from "../AutoinstallFileSidePanelTitle";
-import AutoinstallFileVersion from "../AutoinstallFileVersion";
+
+const AutoinstallFileVersion = lazy(
+  async () => import("../AutoinstallFileVersion"),
+);
 
 interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
@@ -44,11 +47,13 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
                 file={file}
                 version={versionInfo.version}
               />,
-              <AutoinstallFileVersion
-                file={file}
-                goBack={viewVersionHistory}
-                versionInfo={versionInfo}
-              />,
+              <Suspense>
+                <AutoinstallFileVersion
+                  file={file}
+                  goBack={viewVersionHistory}
+                  versionInfo={versionInfo}
+                />
+              </Suspense>,
             );
           };
 

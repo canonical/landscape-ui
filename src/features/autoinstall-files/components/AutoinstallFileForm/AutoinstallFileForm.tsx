@@ -101,7 +101,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   };
 
   return (
-    <Form noValidate onSubmit={formik.handleSubmit}>
+    <Form className={classes.form} noValidate onSubmit={formik.handleSubmit}>
       <span>{description}</span>
 
       <div className={classes.inputContainer}>

@@ -4,25 +4,25 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { AutoinstallFile, WithGroups, WithVersions } from "../types";
 
-interface GetAutoinstallFileParams {
+export interface GetAutoinstallFileParams {
   id: number;
   version?: number;
   with_groups?: boolean;
   with_versions?: boolean;
 }
 
-type GetAutoinstallFileResult<T extends GetAutoinstallFileParams> =
+export type GetAutoinstallFileResult<T extends GetAutoinstallFileParams> =
   AutoinstallFile &
     (T extends { with_groups: true } ? WithGroups<AutoinstallFile> : object) &
     (T extends { with_versions: true }
       ? WithVersions<AutoinstallFile>
       : object);
 
-const useGetAutoinstallFile = <T extends GetAutoinstallFileParams>({
+export const useGetAutoinstallFile = <T extends GetAutoinstallFileParams>({
   id,
   ...params
 }: T): {
-  autoinstallFile: GetAutoinstallFileResult<T> | null;
+  autoinstallFile: GetAutoinstallFileResult<T> | undefined;
   isAutoinstallFileLoading: boolean;
 } => {
   const authFetch = useFetch();
@@ -39,9 +39,7 @@ const useGetAutoinstallFile = <T extends GetAutoinstallFileParams>({
   });
 
   return {
-    autoinstallFile: response?.data ?? null,
+    autoinstallFile: response?.data,
     isAutoinstallFileLoading: isLoading,
   };
 };
-
-export default useGetAutoinstallFile;

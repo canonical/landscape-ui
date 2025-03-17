@@ -4,13 +4,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type { AutoinstallFile } from "../types";
 
-interface UpdateAutoinstallFileParams {
+export interface UpdateAutoinstallFileParams {
   id: number;
   contents?: string;
   is_default?: boolean;
 }
 
-const useUpdateAutoinstallFile = (): {
+export const useUpdateAutoinstallFile = (): {
   updateAutoinstallFile: (
     params: UpdateAutoinstallFileParams,
   ) => Promise<AutoinstallFile>;
@@ -35,5 +35,3 @@ const useUpdateAutoinstallFile = (): {
     updateAutoinstallFile: mutateAsync,
   };
 };
-
-export default useUpdateAutoinstallFile;

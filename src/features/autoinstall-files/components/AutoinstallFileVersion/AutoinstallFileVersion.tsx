@@ -1,6 +1,7 @@
 import CodeEditor from "@/components/form/CodeEditor";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
+import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import { Input } from "@canonical/react-components";
 import moment from "moment";
@@ -26,7 +27,7 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
   goBack,
   versionInfo,
 }) => {
-  const { autoinstallFile } = useGetAutoinstallFile({
+  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
     id: file.id,
     version: versionInfo.version,
   });
@@ -52,12 +53,16 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
         value={moment(versionInfo.created_at).format(DISPLAY_DATE_FORMAT)}
       />
 
-      <CodeEditor
-        label="Code"
-        value={autoinstallFile?.contents}
-        options={{ readOnly: true }}
-        language={AUTOINSTALL_FILE_LANGUAGE}
-      />
+      {isAutoinstallFileLoading ? (
+        <LoadingState />
+      ) : (
+        <CodeEditor
+          label="Code"
+          value={autoinstallFile?.contents}
+          options={{ readOnly: true }}
+          language={AUTOINSTALL_FILE_LANGUAGE}
+        />
+      )}
 
       <SidePanelFormButtons
         hasActionButtons={false}
