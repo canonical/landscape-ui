@@ -10,7 +10,7 @@ const SecurityProfilesEmptyState: FC = () => {
 
   const handleCreateSecurityProfile = () => {
     setSidePanelContent(
-      "Add security profile",
+      "Add a security profile",
       <Suspense fallback={<LoadingState />} />,
       "medium",
     );

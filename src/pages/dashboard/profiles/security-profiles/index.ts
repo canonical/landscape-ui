@@ -1,1 +1,1 @@
-export { default } from "./components/SecurityProfilesPage";
+export { default } from "./SecurityProfilesPage";
