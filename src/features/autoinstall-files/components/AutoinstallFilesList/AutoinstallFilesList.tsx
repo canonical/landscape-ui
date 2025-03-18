@@ -1,3 +1,4 @@
+import LoadingState from "@/components/layout/LoadingState";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
@@ -84,7 +85,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const openEditForm = (file: AutoinstallFile): void => {
     setSidePanelContent(
       <AutoinstallFileSidePanelTitle file={file} title="Edit" />,
-      <Suspense>
+      <Suspense fallback={<LoadingState />}>
         <AutoinstallFileForm
           buttonText="Save changes"
           description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
@@ -171,7 +172,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
     setSidePanelContent(
       <AutoinstallFileSidePanelTitle file={file} />,
-      <Suspense>
+      <Suspense fallback={<LoadingState />}>
         <AutoinstallFileDetails
           initialTabId={initialTabId}
           file={file}

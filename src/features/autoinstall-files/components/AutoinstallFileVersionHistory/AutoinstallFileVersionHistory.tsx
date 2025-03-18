@@ -47,7 +47,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
                 file={file}
                 version={versionInfo.version}
               />,
-              <Suspense>
+              <Suspense fallback={<LoadingState />}>
                 <AutoinstallFileVersion
                   file={file}
                   goBack={viewVersionHistory}
