@@ -8,7 +8,10 @@ describe("AutoinstallFileVersionHistory", () => {
     const [file] = autoinstallFiles;
 
     renderWithProviders(
-      <AutoinstallFileVersionHistory file={file} goBack={vi.fn()} />,
+      <AutoinstallFileVersionHistory
+        file={file}
+        viewVersionHistory={vi.fn()}
+      />,
     );
   });
 });

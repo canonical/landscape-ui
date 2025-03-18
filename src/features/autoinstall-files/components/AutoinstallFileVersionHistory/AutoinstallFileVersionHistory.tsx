@@ -1,75 +1,73 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Chip, ModularTable } from "@canonical/react-components";
+import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
-import AutoinstallFileVersion from "../AutoinstallFileVersion/AutoinstallFileVersion";
-import classes from "./AutoinstallFileVersionHistory.module.scss";
+import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
+import AutoinstallFileSidePanelTitle from "../AutoinstallFileSidePanelTitle";
+
+const AutoinstallFileVersion = lazy(
+  async () => import("../AutoinstallFileVersion"),
+);
 
 interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
-  readonly goBack: () => void;
+  readonly viewVersionHistory: () => void;
 }
 
 const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
   file,
-  goBack,
+  viewVersionHistory,
 }) => {
-  const { getAutoinstallFileQuery } = useAutoinstallFiles();
   const { setSidePanelContent } = useSidePanel();
 
-  const filesQuery = [...Array(file.version)].map((_, i) => {
-    const {
-      data: { data: pastFile } = { data: {} as AutoinstallFile },
-      isLoading,
-    } = getAutoinstallFileQuery({ id: file.id, version: i + 1 });
-
-    return [pastFile, isLoading] as [AutoinstallFile, boolean];
+  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
+    id: file.id,
+    with_versions: true,
   });
 
-  const files = filesQuery.map(([file]) => file);
+  const versions = autoinstallFile?.versions.toReversed() ?? [];
 
-  const columns = useMemo<Column<AutoinstallFile>[]>(
+  const columns = useMemo<Column<AutoinstallFileVersionInfo>[]>(
     () => [
       {
         accessor: "version",
         Header: "Version",
         Cell: ({
-          row: {
-            original: { version },
-          },
-        }: CellProps<AutoinstallFile>): ReactNode => (
-          <Button
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top"
-            onClick={() => {
-              setSidePanelContent(
-                <div className={classes.container}>
-                  {file.filename}, v{version}
-                  {file.is_default && (
-                    <Chip
-                      value="default"
-                      className="u-no-margin--bottom"
-                      readOnly
-                    />
-                  )}
-                </div>,
+          row: { original: versionInfo },
+        }: CellProps<AutoinstallFileVersionInfo>): ReactNode => {
+          const openVersionPanel = (): void => {
+            setSidePanelContent(
+              <AutoinstallFileSidePanelTitle
+                file={file}
+                version={versionInfo.version}
+              />,
+              <Suspense fallback={<LoadingState />}>
                 <AutoinstallFileVersion
-                  goBack={goBack}
-                  id={file.id}
-                  version={version}
-                />,
-              );
-            }}
-          >
-            {version}
-          </Button>
-        ),
+                  file={file}
+                  goBack={viewVersionHistory}
+                  versionInfo={versionInfo}
+                />
+              </Suspense>,
+            );
+          };
+
+          return (
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top"
+              onClick={openVersionPanel}
+            >
+              Version {versionInfo.version}
+            </Button>
+          );
+        },
       },
       {
         accessor: "created_at",
@@ -78,19 +76,19 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
           row: {
             original: { created_at },
           },
-        }: CellProps<AutoinstallFile>): ReactNode => (
+        }: CellProps<AutoinstallFileVersionInfo>): ReactNode => (
           <div>{moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
         ),
       },
     ],
-    [files],
+    [versions],
   );
 
-  if (filesQuery.some(([_, isLoading]) => isLoading)) {
+  if (isAutoinstallFileLoading) {
     return <LoadingState />;
   }
 
-  return <ModularTable columns={columns} data={files} />;
+  return <ModularTable columns={columns} data={versions} />;
 };
 
 export default AutoinstallFileVersionHistory;

@@ -1,18 +1,45 @@
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 import { renderWithProviders } from "@/tests/render";
-import { describe } from "vitest";
+import { screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
+import { describe, expect } from "vitest";
 import AutoinstallFileDetails from "./AutoinstallFileDetails";
 
 describe("AutoinstallFileDetails", () => {
-  it("should render", async () => {
-    const [file] = autoinstallFiles;
+  const [file] = autoinstallFiles;
 
+  const props: ComponentProps<typeof AutoinstallFileDetails> = {
+    edit: vi.fn(),
+    file,
+    remove: vi.fn(),
+    setAsDefault: vi.fn(),
+    viewVersionHistory: vi.fn(),
+  };
+
+  it("should not render buttons for default file", async () => {
+    renderWithProviders(<AutoinstallFileDetails {...props} />);
+
+    expect(
+      screen.queryByRole("button", { name: "Set as default" }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: "Remove" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should render buttons for other files", async () => {
     renderWithProviders(
       <AutoinstallFileDetails
-        file={file}
-        openEditPanel={vi.fn()}
-        openVersionHistory={vi.fn()}
+        {...props}
+        file={{ ...file, is_default: false }}
       />,
     );
+
+    expect(
+      screen.getByRole("button", { name: "Set as default" }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByRole("button", { name: "Remove" })).toBeInTheDocument();
   });
 });

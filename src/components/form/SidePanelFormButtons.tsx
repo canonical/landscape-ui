@@ -4,8 +4,8 @@ import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./SidePanelFormButtons.module.scss";
 
 interface SidePanelFormButtonsProps {
-  readonly submitButtonDisabled: boolean;
-  readonly submitButtonText: string;
+  readonly submitButtonDisabled?: boolean;
+  readonly submitButtonText?: string;
   readonly submitButtonAppearance?: "positive" | "negative";
   readonly submitButtonAriaLabel?: string;
   readonly secondaryActionButtonTitle?: ReactNode;
@@ -13,12 +13,14 @@ interface SidePanelFormButtonsProps {
     event: SyntheticEvent,
   ) => Promise<void> | void;
   readonly cancelButtonDisabled?: boolean;
+  readonly hasActionButtons?: boolean;
   readonly hasBackButton?: boolean;
   readonly onBackButtonPress?: () => void;
   readonly onSubmit?: (event: SyntheticEvent) => Promise<void> | void;
 }
 
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
+  hasActionButtons = true,
   hasBackButton,
   submitButtonDisabled,
   submitButtonText,
@@ -45,36 +47,38 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
           <span>Back</span>
         </Button>
       )}
-      <div className={classes.actionButtons}>
-        <Button
-          className="u-no-margin--bottom"
-          type="button"
-          appearance="base"
-          onClick={closeSidePanel}
-          disabled={cancelButtonDisabled}
-        >
-          Cancel
-        </Button>
-        {secondaryActionButtonTitle && secondaryActionButtonSubmit && (
+      {hasActionButtons && (
+        <div className={classes.actionButtons}>
           <Button
-            type="button"
             className="u-no-margin--bottom"
-            onClick={secondaryActionButtonSubmit}
+            type="button"
+            appearance="base"
+            onClick={closeSidePanel}
+            disabled={cancelButtonDisabled}
           >
-            {secondaryActionButtonTitle}
+            Cancel
           </Button>
-        )}
-        <Button
-          className="u-no-margin--bottom"
-          type={onSubmit ? "button" : "submit"}
-          onClick={onSubmit}
-          appearance={submitButtonAppearance}
-          disabled={submitButtonDisabled}
-          aria-label={submitButtonAriaLabel}
-        >
-          {submitButtonText}
-        </Button>
-      </div>
+          {secondaryActionButtonTitle && secondaryActionButtonSubmit && (
+            <Button
+              type="button"
+              className="u-no-margin--bottom"
+              onClick={secondaryActionButtonSubmit}
+            >
+              {secondaryActionButtonTitle}
+            </Button>
+          )}
+          <Button
+            className="u-no-margin--bottom"
+            type={onSubmit ? "button" : "submit"}
+            onClick={onSubmit}
+            appearance={submitButtonAppearance}
+            disabled={submitButtonDisabled}
+            aria-label={submitButtonAriaLabel}
+          >
+            {submitButtonText}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

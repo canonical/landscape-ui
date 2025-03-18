@@ -6,13 +6,13 @@ import { lazy, Suspense } from "react";
 import classes from "./EmployeesTabs.module.scss";
 
 const EmployeeGroupsPanel = lazy(
-  () => import("../tabs/employee-groups/EmployeeGroupsPanel"),
+  async () => import("../tabs/employee-groups/EmployeeGroupsPanel"),
 );
-const EmployeesPanel = lazy(() => import("../tabs/employees/EmployeesPanel"));
-const AutoinstallFilesPanel = lazy(() =>
-  import("@/features/autoinstall-files").then((module) => ({
-    default: module.AutoinstallFilesPanel,
-  })),
+const EmployeesPanel = lazy(
+  async () => import("../tabs/employees/EmployeesPanel"),
+);
+const AutoinstallFilesPanel = lazy(
+  async () => import("../tabs/autoinstall-files/AutoinstallFilesPanel"),
 );
 
 const tabLinks = [
@@ -48,7 +48,9 @@ const EmployeesTabs: FC = () => {
           id,
           role: "tab",
           active: id === currentTabLinkId,
-          onClick: () => onActiveTabChange(id),
+          onClick: () => {
+            onActiveTabChange(id);
+          },
         }))}
       />
       <div

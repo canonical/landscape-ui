@@ -6,6 +6,10 @@
   width: 6rem;
 }
 
+.chip {
+  border: 0;
+}
+
 .container {
   align-items: center;
   display: flex;
@@ -20,8 +24,4 @@
 .expandedRow {
   background-color: $color-x-light;
   filter: drop-shadow(0 4px 8px $color-mid-light);
-}
-
-.chip {
-  border: 0;
 }

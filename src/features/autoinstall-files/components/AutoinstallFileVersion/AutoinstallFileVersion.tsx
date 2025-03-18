@@ -1,101 +1,74 @@
 import CodeEditor from "@/components/form/CodeEditor";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
-import { Button, Icon, Input } from "@canonical/react-components";
+import { Input } from "@canonical/react-components";
 import moment from "moment";
-import type { ComponentProps } from "react";
-import { useState, type FC } from "react";
-import useAutoinstallFiles from "../../hooks/useAutoinstallFiles";
+import { type FC } from "react";
+import { useGetAutoinstallFile } from "../../api";
+import {
+  AUTOINSTALL_FILE_EXTENSION,
+  AUTOINSTALL_FILE_LANGUAGE,
+} from "../../constants";
+import { removeAutoinstallFileExtension } from "../../helpers";
 import type { AutoinstallFile } from "../../types";
+import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
 import classes from "./AutoinstallFileVersion.module.scss";
-import { BUTTON_TIMEOUT } from "./constants";
 
 interface AutoinstallFileVersionProps {
-  readonly id: number;
+  readonly file: AutoinstallFile;
   readonly goBack: () => void;
-  readonly version: number;
+  readonly versionInfo: AutoinstallFileVersionInfo;
 }
 
 const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
-  id,
+  file,
   goBack,
-  version,
+  versionInfo,
 }) => {
-  const { getAutoinstallFileQuery } = useAutoinstallFiles();
-
-  const { data: { data: file } = { data: {} as AutoinstallFile }, isLoading } =
-    getAutoinstallFileQuery({ id, version });
-
-  const copyButtonProps = {
-    children: (
-      <>
-        <Icon name="copy" />
-        <span>Copy</span>
-      </>
-    ),
-    onClick: (): void => {
-      navigator.clipboard.writeText(file.contents);
-      setButtonProps(copiedButtonProps);
-
-      setTimeout(() => {
-        setButtonProps(copyButtonProps);
-      }, BUTTON_TIMEOUT);
-    },
-  };
-
-  const copiedButtonProps = {
-    children: (
-      <>
-        <Icon name="success-grey" />
-        <span>Copied</span>
-      </>
-    ),
-  };
-
-  const [buttonProps, setButtonProps] =
-    useState<ComponentProps<typeof Button>>(copyButtonProps);
-
-  if (isLoading) {
-    return <LoadingState />;
-  }
+  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
+    id: file.id,
+    version: versionInfo.version,
+  });
 
   return (
     <>
-      <Input type="text" label="File name" value={file.filename} disabled />
+      <div className={classes.inputContainer}>
+        <Input
+          wrapperClassName={classes.inputWrapper}
+          type="text"
+          label="File name"
+          value={removeAutoinstallFileExtension(file.filename)}
+          disabled
+        />
+
+        <span className={classes.inputDescription}>
+          {AUTOINSTALL_FILE_EXTENSION}
+        </span>
+      </div>
 
       <InfoItem
         label="Date created"
-        value={moment(file.created_at).format(DISPLAY_DATE_FORMAT)}
+        value={moment(versionInfo.created_at).format(DISPLAY_DATE_FORMAT)}
       />
 
-      <CodeEditor
-        label="Code"
-        value={file.contents}
-        options={{ readOnly: true }}
-        language="yaml"
-        headerContent={
-          <Button
-            className="u-no-margin--bottom"
-            appearance="base"
-            hasIcon
-            {...buttonProps}
-          />
-        }
-      />
+      {isAutoinstallFileLoading ? (
+        <LoadingState />
+      ) : (
+        <CodeEditor
+          label="Code"
+          value={autoinstallFile?.contents}
+          options={{ readOnly: true }}
+          language={AUTOINSTALL_FILE_LANGUAGE}
+        />
+      )}
 
-      <div className={classes.buttons}>
-        <Button
-          hasIcon
-          className="u-no-margin--bottom"
-          type="button"
-          appearance="base"
-          onClick={goBack}
-        >
-          <Icon name="chevron-left" />
-          <span>Back</span>
-        </Button>
-      </div>
+      <SidePanelFormButtons
+        hasActionButtons={false}
+        hasBackButton
+        onBackButtonPress={goBack}
+      />
     </>
   );
 };

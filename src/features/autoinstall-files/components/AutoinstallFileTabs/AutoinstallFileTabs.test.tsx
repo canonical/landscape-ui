@@ -10,7 +10,7 @@ describe("AutoinstallFileTabs", () => {
     const [file] = autoinstallFiles;
 
     renderWithProviders(
-      <AutoinstallFileTabs file={file} openVersionHistory={vi.fn()} />,
+      <AutoinstallFileTabs file={file} viewVersionHistory={vi.fn()} />,
     );
 
     await userEvent.click(screen.getByRole("tab", { name: "Version history" }));

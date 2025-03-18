@@ -1,47 +1,73 @@
-import { Button, Icon } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
-import type { AutoinstallFileWithGroups, TabId } from "../../types";
+import type {
+  AutoinstallFile,
+  AutoinstallFileTabId,
+  WithGroups,
+} from "../../types";
 import AutoinstallFileTabs from "../AutoinstallFileTabs";
 
 interface AutoinstallFileDetailsProps {
-  readonly file: AutoinstallFileWithGroups;
-  readonly openEditPanel: () => void;
-  readonly openVersionHistory: () => void;
-  readonly defaultTabId?: TabId;
+  readonly edit: () => void;
+  readonly file: WithGroups<AutoinstallFile>;
+  readonly remove: () => void;
+  readonly setAsDefault: () => void;
+  readonly viewVersionHistory: () => void;
+  readonly initialTabId?: AutoinstallFileTabId;
 }
 
 const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
-  defaultTabId,
+  edit,
   file,
-  openEditPanel,
-  openVersionHistory,
+  remove,
+  setAsDefault,
+  viewVersionHistory,
+  initialTabId,
 }) => {
   return (
     <>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
           <Button
+            type="button"
             className="p-segmented-control__button"
-            onClick={openEditPanel}
+            onClick={edit}
+            hasIcon
           >
             <Icon name="edit" />
             <span>Edit</span>
           </Button>
 
-          <Button
-            className="p-segmented-control__button"
-            disabled={file.is_default}
-          >
-            <Icon name="delete" />
-            <span>Remove</span>
-          </Button>
+          {!file.is_default && (
+            <>
+              <Button
+                type="button"
+                className="p-segmented-control__button"
+                onClick={setAsDefault}
+                hasIcon
+              >
+                <Icon name="starred" />
+                <span>Set as default</span>
+              </Button>
+
+              <Button
+                type="button"
+                className="p-segmented-control__button"
+                onClick={remove}
+                hasIcon
+              >
+                <Icon name={ICONS.delete} />
+                <span>Remove</span>
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
       <AutoinstallFileTabs
-        defaultTabId={defaultTabId}
+        initialTabId={initialTabId}
         file={file}
-        openVersionHistory={openVersionHistory}
+        viewVersionHistory={viewVersionHistory}
       />
     </>
   );

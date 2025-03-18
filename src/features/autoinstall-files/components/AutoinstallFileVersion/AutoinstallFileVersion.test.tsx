@@ -9,7 +9,7 @@ describe("AutoinstallFileVersion", () => {
 
     renderWithProviders(
       <AutoinstallFileVersion
-        id={file.id}
+        fileId={file.id}
         goBack={vi.fn()}
         version={file.version}
       />,

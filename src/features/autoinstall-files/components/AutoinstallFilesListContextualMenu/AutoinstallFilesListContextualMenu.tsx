@@ -1,17 +1,19 @@
 import type { MenuLink } from "@canonical/react-components";
-import { ContextualMenu, Icon } from "@canonical/react-components";
+import { ContextualMenu, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
-import type { AutoinstallFileWithGroups } from "../../types";
+import type { AutoinstallFile, WithGroups } from "../../types";
 
 interface AutoinstallFilesListContextualMenuProps {
-  readonly file: AutoinstallFileWithGroups;
-  readonly openDetailsPanel: (file: AutoinstallFileWithGroups) => void;
-  readonly openEditPanel: (file: AutoinstallFileWithGroups) => void;
+  readonly edit: (file: AutoinstallFile) => void;
+  readonly file: WithGroups<AutoinstallFile>;
+  readonly remove: (file: AutoinstallFile) => void;
+  readonly setAsDefault: (file: AutoinstallFile) => void;
+  readonly viewDetails: (file: WithGroups<AutoinstallFile>) => void;
 }
 
 const AutoinstallFilesListContextualMenu: FC<
   AutoinstallFilesListContextualMenuProps
-> = ({ file, openDetailsPanel, openEditPanel }) => {
+> = ({ edit, file, remove, setAsDefault, viewDetails }) => {
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
@@ -20,9 +22,11 @@ const AutoinstallFilesListContextualMenu: FC<
           <span>View details</span>
         </>
       ),
-      "aria-label": `View ${file.title} details`,
+      "aria-label": `View ${file.filename} details`,
       hasIcon: true,
-      onClick: () => openDetailsPanel(file),
+      onClick: (): void => {
+        viewDetails(file);
+      },
     },
     {
       children: (
@@ -31,9 +35,11 @@ const AutoinstallFilesListContextualMenu: FC<
           <span>Edit</span>
         </>
       ),
-      "aria-label": `Edit ${file.title}`,
+      "aria-label": `Edit ${file.filename}`,
       hasIcon: true,
-      onClick: () => openEditPanel(file),
+      onClick: (): void => {
+        edit(file);
+      },
     },
     {
       children: (
@@ -42,21 +48,25 @@ const AutoinstallFilesListContextualMenu: FC<
           <span>Set as default</span>
         </>
       ),
-      "aria-label": `Set ${file.title} as default`,
+      "aria-label": `Set ${file.filename} as default`,
       hasIcon: true,
-      onClick: undefined,
+      onClick: (): void => {
+        setAsDefault(file);
+      },
       disabled: file.is_default,
     },
     {
       children: (
         <>
-          <Icon name="delete" />
+          <Icon name={ICONS.delete} />
           <span>Remove</span>
         </>
       ),
-      "aria-label": `Remove ${file.title}`,
+      "aria-label": `Remove ${file.filename}`,
       hasIcon: true,
-      onClick: undefined,
+      onClick: (): void => {
+        remove(file);
+      },
       disabled: file.is_default,
     },
   ];
@@ -68,7 +78,7 @@ const AutoinstallFilesListContextualMenu: FC<
         toggleClassName="u-no-margin u-no-padding"
         toggleAppearance="base"
         toggleLabel={<Icon name="contextual-menu" />}
-        toggleProps={{ "aria-label": `${file.title} profile actions` }}
+        toggleProps={{ "aria-label": `${file.filename} actions` }}
         links={contextualMenuButtons}
       />
     </>

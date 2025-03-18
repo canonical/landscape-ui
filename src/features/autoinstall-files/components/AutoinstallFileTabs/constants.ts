@@ -1,9 +1,6 @@
-import type { AutoinstallFileTabId } from "../../types/AutoinstallFileTabId";
+import type { AutoinstallFileTab } from "../../types/AutoinstallFileTab";
 
-export const TABS: {
-  id: AutoinstallFileTabId;
-  label: string;
-}[] = [
+export const AUTOINSTALL_FILE_TABS: AutoinstallFileTab[] = [
   {
     id: "info",
     label: "Info",

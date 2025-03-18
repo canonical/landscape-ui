@@ -8,6 +8,7 @@
   border-top-color: $colors--light-theme--border-default;
   border-width: 1px;
   margin-bottom: $input-margin-bottom;
+  min-height: 16rem;
 
   &.error {
     border-bottom-color: map-get($states, "error");

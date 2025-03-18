@@ -50,14 +50,8 @@ export const getEmployeeGroupOptions = (
   includeTooltip = false,
 ): GroupedOption[] => {
   return employeeGroups.map((employeeGroup) => {
-    const suffix = getSuffix(employeeGroup.group_id);
-
-    const value = !isNotUnique(employeeGroups, employeeGroup.name)
-      ? employeeGroup.name
-      : `${employeeGroup.name} ${suffix}`;
-
     return {
-      value,
+      value: employeeGroup.id.toString(),
       label: getEmployeeGroupLabel(
         employeeGroup,
         employeeGroups,
