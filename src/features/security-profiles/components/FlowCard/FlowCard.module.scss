@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.body {
+  margin-left: $sph--x-large;
+}
+
+.header {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
+}

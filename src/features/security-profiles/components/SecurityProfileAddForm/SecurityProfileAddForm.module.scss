@@ -1,0 +1,39 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.description {
+  color: $colors--light-theme--text-muted;
+  white-space: normal;
+
+  a {
+    padding-left: $sph--small;
+  }
+}
+
+.step {
+  color: $colors--light-theme--text-muted;
+  font-style: italic;
+}
+
+.indent {
+  border-left: 1px solid $colors--light-theme--border-default;
+  padding-left: $sph--large;
+}
+
+.radioGroup {
+  align-items: baseline;
+  column-gap: $sph--x-large;
+  display: flex;
+}
+
+.line {
+  border-left: 1.5px solid $colors--light-theme--border-default;
+  height: 1.5rem;
+  margin: 0 auto;
+}
+
+.smallCard {
+  border: 1.5px solid $colors--light-theme--border-default;
+  margin: 0 auto;
+  padding: 0 $sph--small;
+}
