@@ -1,7 +1,7 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.step {
-  color: $colors--light-theme--text-muted;
-  font-style: italic;
+.indent {
+  border-left: 1px solid $colors--light-theme--border-default;
+  padding-left: $sph--large;
 }

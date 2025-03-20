@@ -1,18 +1,14 @@
-export interface SecurityProfileAddFormValues {
-  accessGroup: string;
-  all_computers: boolean;
-  baseProfile: "cis" | "disa-stig" | "";
-  cronSchedule: string;
-  deliveryTime: "asap" | "scheduled";
-  ends: "never" | "onADate";
-  mode: "auditOnly" | "fixAndAudit" | "fixRestartAudit" | "";
+import type { AssociationBlockFormProps } from "@/components/form/AssociationBlock";
+import type { ScheduleBlockFormProps } from "@/components/form/ScheduleBlock/types";
+
+export interface SecurityProfileAddFormValues
+  extends AssociationBlockFormProps,
+    ScheduleBlockFormProps {
+  access_group: string;
+  base_profile: "cis" | "disa-stig" | "";
+  delivery_time: "asap" | "scheduled";
+  mode: "audit-only" | "fix-and-audit" | "fix-restart-audit" | "";
   name: string;
-  on: string[];
-  randomizeDelivery: boolean;
-  repeatEvery: number;
-  repeatEveryType: "days" | "weeks" | "months" | "years";
-  schedule: "onADate" | "recurring" | "";
-  startDate: string;
-  tags: string[];
-  useCronJobFormat: boolean;
+  randomize_delivery: "no" | "yes";
+  schedule: string;
 }

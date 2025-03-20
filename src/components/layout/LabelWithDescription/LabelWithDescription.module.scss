@@ -1,7 +1,11 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.step {
+.description {
   color: $colors--light-theme--text-muted;
-  font-style: italic;
+  white-space: normal;
+}
+
+.link {
+  padding-left: $sph--small;
 }

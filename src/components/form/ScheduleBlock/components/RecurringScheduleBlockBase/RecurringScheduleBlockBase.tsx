@@ -1,23 +1,23 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import { Col, Input, Row, Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
-import type { FC } from "react";
-import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
-import {
-  DAY_OPTIONS,
-  MONTH_OPTIONS,
-} from "../SecurityProfileScheduleBlock/constants";
-import { getOnOptions } from "../SecurityProfileScheduleBlock/helpers";
-import { toCronPhrase } from "./helpers";
+import type { ScheduleBlockFormProps } from "../../types";
+import { DAY_OPTIONS, MONTH_OPTIONS } from "./constants";
+import { getOnOptions, toCronPhrase } from "./helpers";
 
-const SecurityProfileRecurringScheduleBlock: FC<{
+interface RecurringScheduleBlockBaseProps<T extends ScheduleBlockFormProps> {
   readonly currentDate: string;
-  readonly formik: FormikContextType<SecurityProfileAddFormValues>;
-}> = ({ currentDate, formik }) => {
-  if (formik.values.useCronJobFormat) {
+  readonly formik: FormikContextType<T>;
+}
+
+const RecurringScheduleBlockBase = <T extends ScheduleBlockFormProps>({
+  currentDate,
+  formik,
+}: RecurringScheduleBlockBaseProps<T>) => {
+  if (formik.values.is_cron) {
     try {
       const [minute, hour, daysOfMonth, months, daysOfWeek] =
-        formik.values.cronSchedule.split(" ");
+        formik.values.cron_schedule.split(" ");
 
       const dayOfMonthPhrase = toCronPhrase(
         daysOfMonth ?? "",
@@ -80,8 +80,9 @@ const SecurityProfileRecurringScheduleBlock: FC<{
         <Input
           type="text"
           label="Schedule"
-          help={`“At ${hour}:${minute} on ${dayOfMonthPhrase} in ${monthPhrase} on ${dayOfWeekPhrase}.”`}
-          {...formik.getFieldProps("cronSchedule")}
+          success={`“At ${hour}:${minute} on ${dayOfMonthPhrase} in ${monthPhrase} on ${dayOfWeekPhrase}.”`}
+          {...formik.getFieldProps("cron_schedule")}
+          required
         />
       );
     } catch (error) {
@@ -90,7 +91,8 @@ const SecurityProfileRecurringScheduleBlock: FC<{
           type="text"
           label="Schedule"
           error={error instanceof Error ? error.message : "Invalid format."}
-          {...formik.getFieldProps("cronSchedule")}
+          {...formik.getFieldProps("cron_schedule")}
+          required
         />
       );
     }
@@ -102,7 +104,8 @@ const SecurityProfileRecurringScheduleBlock: FC<{
         type="datetime-local"
         label="Start date"
         min={currentDate}
-        {...formik.getFieldProps("startDate")}
+        {...formik.getFieldProps("start_date")}
+        required
       />
 
       <Row className="u-no-padding">
@@ -110,8 +113,9 @@ const SecurityProfileRecurringScheduleBlock: FC<{
           <Input
             type="number"
             label="Repeat every"
-            min={formik.values.repeatEveryType == "days" ? 7 : 1}
-            {...formik.getFieldProps("repeatEvery")}
+            min={formik.values.unit_of_time == "days" ? 7 : 1}
+            {...formik.getFieldProps("every")}
+            required
           />
         </Col>
 
@@ -136,16 +140,17 @@ const SecurityProfileRecurringScheduleBlock: FC<{
                 value: "years",
               },
             ].map((option) =>
-              formik.values.repeatEvery == 1
+              formik.values.every == 1
                 ? option
                 : { ...option, label: `${option.label}s` },
             )}
-            {...formik.getFieldProps("repeatEveryType")}
+            {...formik.getFieldProps("unit_of_time")}
+            required
           />
         </Col>
       </Row>
 
-      {formik.values.repeatEveryType == "weeks" && (
+      {formik.values.unit_of_time == "weeks" && (
         <MultiSelectField
           variant="condensed"
           label="On"
@@ -159,17 +164,19 @@ const SecurityProfileRecurringScheduleBlock: FC<{
               items.map(({ value }) => value),
             )
           }
+          required
         />
       )}
 
-      {formik.values.repeatEveryType == "months" && formik.values.startDate && (
+      {formik.values.unit_of_time == "months" && formik.values.start_date && (
         <Select
           label="On"
-          options={getOnOptions(new Date(formik.values.startDate))}
+          options={getOnOptions(new Date(formik.values.start_date))}
+          required
         />
       )}
 
-      {formik.values.repeatEveryType == "years" && (
+      {formik.values.unit_of_time == "years" && (
         <MultiSelectField
           variant="condensed"
           label="On"
@@ -183,6 +190,7 @@ const SecurityProfileRecurringScheduleBlock: FC<{
               items.map(({ value }) => value),
             )
           }
+          required
         />
       )}
 
@@ -190,21 +198,23 @@ const SecurityProfileRecurringScheduleBlock: FC<{
         label="Ends"
         options={[
           { label: "Never", value: "never" },
-          { label: "On a date", value: "onADate" },
+          { label: "On a date", value: "on-a-date" },
         ]}
-        {...formik.getFieldProps("ends")}
+        {...formik.getFieldProps("end_type")}
+        required
       />
 
-      {formik.values.ends == "onADate" && (
+      {formik.values.end_type == "on-a-date" && (
         <Input
           type="datetime-local"
           label="End date"
-          min={formik.values.startDate}
-          {...formik.getFieldProps("endDate")}
+          min={formik.values.start_date}
+          {...formik.getFieldProps("end_date")}
+          required
         />
       )}
     </>
   );
 };
 
-export default SecurityProfileRecurringScheduleBlock;
+export default RecurringScheduleBlockBase;

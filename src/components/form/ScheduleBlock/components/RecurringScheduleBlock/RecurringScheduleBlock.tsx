@@ -7,15 +7,20 @@ import {
   Switch,
 } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
-import { useState, type FC } from "react";
-import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
-import SecurityProfileRecurringScheduleBlock from "../SecurityProfileRecurringScheduleBlock";
-import classes from "./SecurityProfileRecurringSchedule.module.scss";
+import { useState } from "react";
+import type { ScheduleBlockFormProps } from "../../types";
+import RecurringScheduleBlockBase from "../RecurringScheduleBlockBase";
+import classes from "./RecurringScheduleBlock.module.scss";
 
-const SecurityProfileRecurringSchedule: FC<{
+interface RecurringScheduleBlock<T extends ScheduleBlockFormProps> {
   readonly currentDate: string;
-  readonly formik: FormikContextType<SecurityProfileAddFormValues>;
-}> = ({ currentDate, formik }) => {
+  readonly formik: FormikContextType<T>;
+}
+
+const RecurringScheduleBlock = <T extends ScheduleBlockFormProps>({
+  currentDate,
+  formik,
+}: RecurringScheduleBlock<T>) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -37,13 +42,11 @@ const SecurityProfileRecurringSchedule: FC<{
             </Button>
           </>
         }
-        {...formik.getFieldProps("useCronJobFormat")}
+        {...formik.getFieldProps("is_cron")}
+        required
       />
 
-      <SecurityProfileRecurringScheduleBlock
-        currentDate={currentDate}
-        formik={formik}
-      />
+      <RecurringScheduleBlockBase currentDate={currentDate} formik={formik} />
 
       {isModalOpen && (
         <Modal
@@ -231,4 +234,4 @@ const SecurityProfileRecurringSchedule: FC<{
   );
 };
 
-export default SecurityProfileRecurringSchedule;
+export default RecurringScheduleBlock;

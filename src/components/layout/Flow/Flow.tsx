@@ -1,0 +1,59 @@
+import { Card, Icon } from "@canonical/react-components";
+import type { FC, ReactNode } from "react";
+import classes from "./Flow.module.scss";
+
+interface FlowCardProps {
+  readonly description: ReactNode;
+  readonly header: string;
+  readonly iconName: string;
+  readonly children?: ReactNode;
+  readonly condition?: boolean;
+}
+
+interface FlowProps {
+  readonly cards: FlowCardProps[];
+}
+
+const Flow: FC<FlowProps> = ({ cards }) => {
+  return (
+    <>
+      <div className={classes.smallCard}>Start</div>
+      <div className={classes.line} />
+
+      {cards.map(({ condition = true, ...card }, key) =>
+        condition ? (
+          <>
+            <Card key={key} className={"u-no-margin--bottom"}>
+              <div className={classes.container}>
+                <div className={classes.header}>
+                  <Icon name={card.iconName} className={classes.cardIcon} />
+
+                  <p className="u-no-margin--bottom u-no-padding--top">
+                    <strong>{card.header}</strong>
+                  </p>
+                </div>
+
+                <div className={classes.body}>
+                  <p className="u-no-margin--bottom u-no-padding--top">
+                    <small className={classes.description}>
+                      {card.description}
+                    </small>
+                  </p>
+
+                  {card.children}
+                </div>
+              </div>
+            </Card>
+
+            <div className={classes.line} />
+          </>
+        ) : null,
+      )}
+
+      <div className={classes.line} />
+      <div className={classes.smallCard}>End</div>
+    </>
+  );
+};
+
+export default Flow;
