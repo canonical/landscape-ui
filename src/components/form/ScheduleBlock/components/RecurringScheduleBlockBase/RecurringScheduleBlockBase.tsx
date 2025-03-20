@@ -166,6 +166,7 @@ const RecurringScheduleBlockBase = <T extends ScheduleBlockFormProps>({
               items.map(({ value }) => value),
             )
           }
+          scrollOverflow={true}
           required
         />
       )}
@@ -192,6 +193,7 @@ const RecurringScheduleBlockBase = <T extends ScheduleBlockFormProps>({
               items.map(({ value }) => value),
             )
           }
+          scrollOverflow={true}
           required
         />
       )}

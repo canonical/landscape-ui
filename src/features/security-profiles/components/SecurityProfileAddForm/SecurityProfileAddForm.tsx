@@ -1,6 +1,5 @@
 import AccessGroupSelect from "@/components/form/AccessGroupSelect";
 import AssociationBlock from "@/components/form/AssociationBlock";
-import FileInput from "@/components/form/FileInput";
 import RadioGroup from "@/components/form/RadioGroup";
 import ScheduleBlock from "@/components/form/ScheduleBlock/components/ScheduleBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
@@ -132,14 +131,6 @@ const SecurityProfileAddForm = () => {
 
   const [step, setStep] = useState(0);
 
-  const handleFileRemove = async () => {
-    await formik.setFieldValue("tailoringFile", null);
-  };
-
-  const handleFileUpload = async (files: File[]) => {
-    await formik.setFieldValue("tailoringFile", files[0]);
-  };
-
   const steps = [
     {
       isValid:
@@ -169,10 +160,9 @@ const SecurityProfileAddForm = () => {
         "Select a security profile benchmark, choose the profile mode, and optionally upload a tailoring file to customize the security profile.",
       content: (
         <>
-          <Notification severity="caution">
-            <strong>Changes Restricted:</strong> After profile creation, the
-            security profile benchmark and mode cannot be changed. Please review
-            before proceeding.
+          <Notification severity="caution" title="Changes restricted:" inline>
+            After profile creation, the security profile benchmark and mode
+            cannot be changed. Please review before proceeding.
           </Notification>
 
           <CustomSelect
@@ -251,15 +241,6 @@ const SecurityProfileAddForm = () => {
             value={formik.values.mode}
             onChange={async (value) => formik.setFieldValue("mode", value)}
             required
-          />
-
-          <FileInput
-            label="Upload tailoring file"
-            accept=".xml"
-            {...formik.getFieldProps("tailoring_file")}
-            help="Customize your security profile by adjusting or disabling rules to fit your system while staying compliant. Max file size: 5mb. Supported format: .xml."
-            onFileRemove={handleFileRemove}
-            onFileUpload={handleFileUpload}
           />
         </>
       ),
@@ -404,7 +385,6 @@ const SecurityProfileAddForm = () => {
   return (
     <>
       <p>{steps[step].description}</p>
-
       {steps[step].content}
 
       <SidePanelFormButtons
@@ -432,6 +412,7 @@ const SecurityProfileAddForm = () => {
                   "generate an audit",
                 ].filter((string) => string != null),
               )}.`,
+              actions: [{ label: "View details", onClick: () => undefined }],
             });
           }
         }}
