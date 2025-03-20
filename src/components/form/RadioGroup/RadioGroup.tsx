@@ -28,9 +28,7 @@ const RadioGroup = <
 }: RadioGroupProps<TField, TFormik>) => {
   return (
     <>
-      <p className="u-no-margin--bottom">
-        <strong>{label}</strong>
-      </p>
+      <p className="u-no-margin--bottom">{label}</p>
 
       <div className={classes.radioGroup}>
         {inputs.map((input) => (

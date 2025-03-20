@@ -10,5 +10,4 @@ export interface SecurityProfileAddFormValues
   mode: "audit-only" | "fix-and-audit" | "fix-restart-audit" | "";
   name: string;
   randomize_delivery: "no" | "yes";
-  schedule: string;
 }

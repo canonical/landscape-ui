@@ -50,7 +50,6 @@ const Flow: FC<FlowProps> = ({ cards }) => {
         ) : null,
       )}
 
-      <div className={classes.line} />
       <div className={classes.smallCard}>End</div>
     </>
   );

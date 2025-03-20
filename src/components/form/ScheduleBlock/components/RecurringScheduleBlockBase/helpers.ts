@@ -1,3 +1,5 @@
+import { phrase } from "@/utils/_helpers";
+
 interface LabelInfo {
   keys: string[];
   labels: string[];
@@ -42,10 +44,6 @@ export const getOnOptions = (date: Date) => {
   ];
 };
 
-const toPhrase = (strings: string[]) => {
-  return `${strings.slice(0, -1).join(", ")}${strings.length > 2 ? "," : ""}${strings.length > 1 ? " and " : ""}${strings.slice(-1)}`;
-};
-
 const getLabel = (index: number, offset: number, info?: LabelInfo) => {
   if (!info) {
     return index.toString();
@@ -80,7 +78,7 @@ export const toCronPhrase = (
   offset = 0,
   labelInfo?: LabelInfo,
 ) => {
-  return toPhrase(
+  return phrase(
     values
       .replace(new RegExp("[A-Z]+", "g"), (match) => {
         if (!labelInfo) {

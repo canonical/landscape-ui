@@ -1,4 +1,5 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
+import { getFormikError } from "@/utils/formikErrors";
 import { Col, Input, Row, Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { ScheduleBlockFormProps } from "../../types";
@@ -115,6 +116,7 @@ const RecurringScheduleBlockBase = <T extends ScheduleBlockFormProps>({
             label="Repeat every"
             min={formik.values.unit_of_time == "days" ? 7 : 1}
             {...formik.getFieldProps("every")}
+            error={getFormikError(formik, "every")}
             required
           />
         </Col>
@@ -210,6 +212,7 @@ const RecurringScheduleBlockBase = <T extends ScheduleBlockFormProps>({
           label="End date"
           min={formik.values.start_date}
           {...formik.getFieldProps("end_date")}
+          error={getFormikError(formik, "end_date")}
           required
         />
       )}

@@ -1,3 +1,4 @@
+import { getFormikError } from "@/utils/formikErrors";
 import { Input } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { ScheduleBlockFormProps } from "../../types";
@@ -20,9 +21,11 @@ const ScheduleBlockBase = <T extends ScheduleBlockFormProps>({
           label="Date"
           min={currentDate}
           {...formik.getFieldProps("start_date")}
+          error={getFormikError(formik, "start_date")}
           required
         />
       );
+
     case "recurring":
       return (
         <RecurringScheduleBlock currentDate={currentDate} formik={formik} />
