@@ -16,6 +16,7 @@ import packages from "./packages";
 import pockets from "./pockets";
 import process from "./process";
 import repo from "./repo";
+import securityProfiles from "./securityProfiles";
 import snap from "./snap";
 import tag from "./tag";
 import upgradeProfile from "./upgradeProfile";
@@ -42,6 +43,7 @@ export default [
   ...process,
   ...repo,
   ...savedSearches,
+  ...securityProfiles,
   ...script,
   ...snap,
   ...tag,
