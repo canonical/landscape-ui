@@ -1,6 +1,6 @@
 import type { SecurityProfileStatus } from "./SecurityProfileStatus";
 
-export interface SecurityProfile {
+export interface SecurityProfile extends Record<string, unknown> {
   name: string;
   status: SecurityProfileStatus;
   associatedInstances: number;

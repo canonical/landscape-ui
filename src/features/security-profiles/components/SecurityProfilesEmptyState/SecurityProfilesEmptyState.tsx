@@ -20,7 +20,12 @@ const SecurityProfilesEmptyState: FC = () => {
     <EmptyState
       body={
         <>
-          <p>You haven’t added any security profiles yet.</p>
+          <p>
+            Add a security profile to ensure security and complaince across your
+            instances. Security profile audits aggregate audit results over time
+            and in bulk, helping you align with tailored security benchmarks,
+            run scheduled audits, and generate detailed audits for your estate.
+          </p>
         </>
       }
       cta={[

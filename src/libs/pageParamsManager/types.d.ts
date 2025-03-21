@@ -14,6 +14,7 @@ export interface PageParams {
   days: string;
   disabledColumns: string[];
   fromDate: string;
+  fromValue: number;
   groupBy: string;
   os: string;
   pageSize: number;
@@ -24,6 +25,7 @@ export interface PageParams {
   tab: string;
   tags: string[];
   toDate: string;
+  toValue: number;
   type: string;
   query: string;
 }
