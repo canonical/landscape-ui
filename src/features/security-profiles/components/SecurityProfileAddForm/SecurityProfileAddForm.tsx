@@ -1,5 +1,6 @@
 import AccessGroupSelect from "@/components/form/AccessGroupSelect";
 import AssociationBlock from "@/components/form/AssociationBlock";
+import FileInput from "@/components/form/FileInput";
 import RadioGroup from "@/components/form/RadioGroup";
 import ScheduleBlock from "@/components/form/ScheduleBlock/components/ScheduleBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
@@ -7,7 +8,7 @@ import Flow from "@/components/layout/Flow";
 import Indent from "@/components/layout/Indent";
 import InfoItem from "@/components/layout/InfoItem";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
-import { INPUT_DATE_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { phrase } from "@/utils/_helpers";
@@ -46,6 +47,7 @@ const SecurityProfileAddForm = () => {
       start_date: currentDate,
       start_type: "",
       tags: [],
+      tailoring_file: null,
       unit_of_time: "days",
     },
 
@@ -130,6 +132,14 @@ const SecurityProfileAddForm = () => {
   const { closeSidePanel, setSidePanelTitle } = useSidePanel();
 
   const [step, setStep] = useState(0);
+
+  const handleFileUpload = async (files: File[]) => {
+    await formik.setFieldValue("tailoring_file", files[0]);
+  };
+
+  const handleFileRemove = async () => {
+    await formik.setFieldValue("tailoring_file", null);
+  };
 
   const steps = [
     {
@@ -242,6 +252,15 @@ const SecurityProfileAddForm = () => {
             onChange={async (value) => formik.setFieldValue("mode", value)}
             required
           />
+
+          <FileInput
+            label="Upload tailoring file"
+            accept=".xml"
+            {...formik.getFieldProps("tailoring_file")}
+            help="Customize your security profile by adjusting or disabling rules to fit your system while staying compliant. Max file size: 5mb. Supported format: .xml."
+            onFileRemove={handleFileRemove}
+            onFileUpload={handleFileUpload}
+          />
         </>
       ),
     },
@@ -250,6 +269,7 @@ const SecurityProfileAddForm = () => {
       isValid:
         !formik.errors.start_type &&
         !formik.errors.start_date &&
+        !formik.errors.every &&
         !formik.errors.end_date &&
         !formik.errors.cron_schedule,
       description:
@@ -319,7 +339,9 @@ const SecurityProfileAddForm = () => {
                 <>
                   Security profile&apos;s next run date arrives
                   <br />
-                  12 Mar 2025, 12:00
+                  {moment(formik.values.start_date).format(
+                    `${DISPLAY_DATE_TIME_FORMAT}`,
+                  )}
                 </>
               ),
               iconName: "revisions",

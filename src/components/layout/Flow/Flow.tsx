@@ -22,9 +22,9 @@ const Flow: FC<FlowProps> = ({ cards }) => {
 
       {cards.map(({ condition = true, ...card }, key) =>
         condition ? (
-          <>
-            <Card key={key} className={"u-no-margin--bottom"}>
-              <div className={classes.container}>
+          <div className={classes.container} key={key}>
+            <Card className={"u-no-margin--bottom"}>
+              <div>
                 <div className={classes.header}>
                   <Icon name={card.iconName} className={classes.cardIcon} />
 
@@ -46,7 +46,7 @@ const Flow: FC<FlowProps> = ({ cards }) => {
             </Card>
 
             <div className={classes.line} />
-          </>
+          </div>
         ) : null,
       )}
 
