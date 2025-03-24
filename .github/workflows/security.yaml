@@ -5,6 +5,7 @@ on:
     - cron: "0 0 * * 0" # Run weekly at midnight on Sunday
 
 permissions:
+  actions: read
   contents: read
   security-events: write # for uploading SARIF results to the security tab
 
