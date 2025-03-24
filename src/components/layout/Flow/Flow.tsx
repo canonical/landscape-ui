@@ -7,7 +7,6 @@ interface FlowCardProps {
   readonly header: string;
   readonly iconName: string;
   readonly children?: ReactNode;
-  readonly condition?: boolean;
 }
 
 interface FlowProps {
@@ -20,35 +19,33 @@ const Flow: FC<FlowProps> = ({ cards }) => {
       <div className={classes.smallCard}>Start</div>
       <div className={classes.line} />
 
-      {cards.map(({ condition = true, ...card }, key) =>
-        condition ? (
-          <div className={classes.container} key={key}>
-            <Card className={"u-no-margin--bottom"}>
-              <div>
-                <div className={classes.header}>
-                  <Icon name={card.iconName} className={classes.cardIcon} />
+      {cards.map((card, key) => (
+        <div className={classes.container} key={key}>
+          <Card className={"u-no-margin--bottom"}>
+            <div>
+              <div className={classes.header}>
+                <Icon name={card.iconName} className={classes.cardIcon} />
 
-                  <p className="u-no-margin--bottom u-no-padding--top">
-                    <strong>{card.header}</strong>
-                  </p>
-                </div>
-
-                <div className={classes.body}>
-                  <p className="u-no-margin--bottom u-no-padding--top">
-                    <small className={classes.description}>
-                      {card.description}
-                    </small>
-                  </p>
-
-                  {card.children}
-                </div>
+                <p className="u-no-margin--bottom u-no-padding--top">
+                  <strong>{card.header}</strong>
+                </p>
               </div>
-            </Card>
 
-            <div className={classes.line} />
-          </div>
-        ) : null,
-      )}
+              <div className={classes.body}>
+                <p className="u-no-margin--bottom u-no-padding--top">
+                  <small className={classes.description}>
+                    {card.description}
+                  </small>
+                </p>
+
+                {card.children}
+              </div>
+            </div>
+          </Card>
+
+          <div className={classes.line} />
+        </div>
+      ))}
 
       <div className={classes.smallCard}>End</div>
     </>

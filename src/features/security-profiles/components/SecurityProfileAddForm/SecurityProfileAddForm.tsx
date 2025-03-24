@@ -302,48 +302,52 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
               ),
               iconName: "revisions",
             },
-            {
-              header: "Apply fixes",
-              description:
-                "Security profile will attempt to apply remediations before the next audit, helping maintain instances' compliance with the security profile.",
-              iconName: "open-terminal",
-              condition: formik.values.mode != "audit-only",
-            },
-            {
-              header: "Restart instances",
-              description:
-                "To complete the fixes, instances must be restarted.",
-              iconName: "restart",
-              children: (
-                <>
-                  <Row className="u-no-padding">
-                    <InfoItem
-                      label="Delivery time"
-                      value={
-                        formik.values.delivery_time == "asap"
-                          ? "As soon as possible"
-                          : "Scheduled"
-                      }
-                    />
-                  </Row>
+            formik.values.mode != "audit-only"
+              ? {
+                  header: "Apply fixes",
+                  description:
+                    "Security profile will attempt to apply remediations before the next audit, helping maintain instances' compliance with the security profile.",
+                  iconName: "open-terminal",
+                }
+              : null,
+            formik.values.mode == "fix-restart-audit"
+              ? {
+                  header: "Restart instances",
+                  description:
+                    "To complete the fixes, instances must be restarted.",
+                  iconName: "restart",
+                  children: (
+                    <>
+                      <Row className="u-no-padding">
+                        <InfoItem
+                          label="Delivery time"
+                          value={
+                            formik.values.delivery_time == "asap"
+                              ? "As soon as possible"
+                              : "Scheduled"
+                          }
+                        />
+                      </Row>
 
-                  <Row className="u-no-padding">
-                    <InfoItem
-                      label="Randomize delivery over a time window"
-                      value={formik.values.randomize_delivery ? "Yes" : "No"}
-                    />
-                  </Row>
-                </>
-              ),
-              condition: formik.values.mode == "fix-restart-audit",
-            },
+                      <Row className="u-no-padding">
+                        <InfoItem
+                          label="Randomize delivery over a time window"
+                          value={
+                            formik.values.randomize_delivery ? "Yes" : "No"
+                          }
+                        />
+                      </Row>
+                    </>
+                  ),
+                }
+              : null,
             {
               header: "Generate an audit",
               description:
                 "Security profile will generate an audit for all instances associated, aggregated in the audit view to show pass/fail results and allow detailed inspection.",
               iconName: "file-blank",
             },
-          ]}
+          ].filter((card) => card != null)}
         />
       ),
     },
