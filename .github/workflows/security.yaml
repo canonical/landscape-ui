@@ -1,0 +1,52 @@
+name: Vulnerability Scanning with Trivy
+on:
+  workflow_dispatch: # Allow manual triggering
+  schedule:
+    - cron: "0 0 * * 0" # Run weekly at midnight on Sunday
+
+permissions:
+  contents: read
+  security-events: write # for uploading SARIF results to the security tab
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  trivy-scan:
+    name: Trivy vulnerability scanner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Create Trivy cache directory
+        run: mkdir -p /home/ubuntu/landscape-dashboard/.vuln-cache
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          format: "sarif"
+          output: "trivy-landscape-scan-results.sarif"
+          cache-dir: "/home/ubuntu/landscape-dashboard/.vuln-cache"
+          severity: "HIGH,CRITICAL"
+
+      - name: Cache trivy and vulnerability database
+        uses: actions/cache/save@v4
+        with:
+          path: /home/ubuntu/landscape-dashboard/.vuln-cache
+          key: trivy-cache
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-landscape-scan-results.sarif"
+          sha: ${{ github.sha }}
+          ref: refs/heads/main
