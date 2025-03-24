@@ -42,20 +42,7 @@ const RecurringScheduleBlockBase = <T extends ScheduleBlockFormProps>({
           "NOV",
           "DEC",
         ],
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ],
+        labels: MONTH_OPTIONS.map((option) => option.label),
       });
 
       const dayOfWeekPhrase = toCronPhrase(

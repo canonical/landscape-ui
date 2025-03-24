@@ -23,6 +23,14 @@ const RecurringScheduleBlock = <T extends ScheduleBlockFormProps>({
 }: RecurringScheduleBlock<T>) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <>
       <Switch
@@ -34,9 +42,7 @@ const RecurringScheduleBlock = <T extends ScheduleBlockFormProps>({
               appearance="base"
               className="u-no-margin--bottom"
               hasIcon
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
+              onClick={openModal}
             >
               <Icon name={ICONS.help} />
             </Button>
@@ -49,12 +55,7 @@ const RecurringScheduleBlock = <T extends ScheduleBlockFormProps>({
       <RecurringScheduleBlockBase currentDate={currentDate} formik={formik} />
 
       {isModalOpen && (
-        <Modal
-          title="Cron job format"
-          close={() => {
-            setIsModalOpen(false);
-          }}
-        >
+        <Modal title="Cron job format" close={closeModal}>
           <p className="p-text--small-caps">Example</p>
 
           <div className={classes.example}>

@@ -1,5 +1,5 @@
 import type { AssociationBlockFormProps } from "@/components/form/AssociationBlock";
-import type { ScheduleBlockFormProps } from "@/components/form/ScheduleBlock/types";
+import type { ScheduleBlockFormProps } from "@/components/form/ScheduleBlock";
 
 export interface SecurityProfileAddFormValues
   extends AssociationBlockFormProps,

@@ -19,25 +19,28 @@ const AccessGroupSelect = <T extends AccessGroupSelectFormProps>({
     isLoading: isLoadingAccessGroups,
   } = getAccessGroupQuery();
 
+  const options = isLoadingAccessGroups
+    ? [
+        {
+          label: <LoadingState />,
+          value: "loading",
+          disabled: true,
+        },
+      ]
+    : (getAccessGroupQueryResponse?.data ?? []).map((group) => ({
+        label: group.title,
+        value: group.name,
+      }));
+
+  const handleChange = async (value: string) =>
+    formik.setFieldValue("access_group", value);
+
   return (
     <CustomSelect
       label="Access group"
-      options={
-        isLoadingAccessGroups
-          ? [
-              {
-                label: <LoadingState />,
-                value: "loading",
-                disabled: true,
-              },
-            ]
-          : (getAccessGroupQueryResponse?.data ?? []).map((group) => ({
-              label: group.title,
-              value: group.name,
-            }))
-      }
+      options={options}
       value={formik.values.access_group}
-      onChange={async (value) => formik.setFieldValue("access_group", value)}
+      onChange={handleChange}
       searchable="always"
       error={getFormikError(formik, "access_group")}
       required
