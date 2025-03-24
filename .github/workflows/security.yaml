@@ -27,7 +27,7 @@ jobs:
           ref: main
 
       - name: Create Trivy cache directory
-        run: mkdir -p /home/ubuntu/landscape-dashboard/.vuln-cache
+        run: mkdir -p $HOME/landscape-dashboard/.vuln-cache
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -35,13 +35,13 @@ jobs:
           scan-type: "fs"
           format: "sarif"
           output: "trivy-landscape-scan-results.sarif"
-          cache-dir: "/home/ubuntu/landscape-dashboard/.vuln-cache"
+          cache-dir: "$HOME/landscape-dashboard/.vuln-cache"
           severity: "HIGH,CRITICAL"
 
       - name: Cache trivy and vulnerability database
         uses: actions/cache/save@v4
         with:
-          path: /home/ubuntu/landscape-dashboard/.vuln-cache
+          path: $HOME/landscape-dashboard/.vuln-cache
           key: trivy-cache
 
       - name: Upload Trivy scan results to GitHub Security tab
