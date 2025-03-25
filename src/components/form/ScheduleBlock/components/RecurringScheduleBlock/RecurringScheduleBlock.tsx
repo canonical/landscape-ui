@@ -115,8 +115,8 @@ const RecurringScheduleBlock = <T extends ScheduleBlockFormProps>({
           </div>
 
           <p>
-            “At minute 1 on day-of-month 2 in every month from January through
-            March”
+            At minute 1 on day-of-month 2 in every month from January through
+            March.
           </p>
 
           <p className="p-text--small-caps">Accepted values</p>

@@ -45,7 +45,7 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
                 .when("unit_of_time", ([unit_of_time]) =>
                   unit_of_time === "days"
                     ? schema.min(7, "Minimum interval of 7 days.")
-                    : schema,
+                    : schema.min(1, "Minimum interval of 1."),
                 )
             : schema,
         )

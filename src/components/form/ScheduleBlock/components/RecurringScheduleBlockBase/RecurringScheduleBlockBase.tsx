@@ -68,7 +68,7 @@ const RecurringScheduleBlockBase = <T extends ScheduleBlockFormProps>({
         <Input
           type="text"
           label="Schedule"
-          success={`“At ${hour}:${minute} on ${dayOfMonthPhrase} in ${monthPhrase} on ${dayOfWeekPhrase}.”`}
+          help={`At ${hour}:${minute} on ${dayOfMonthPhrase} in ${monthPhrase} on ${dayOfWeekPhrase}.`}
           {...formik.getFieldProps("cron_schedule")}
           required
         />
