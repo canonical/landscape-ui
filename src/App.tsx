@@ -10,7 +10,14 @@ import DashboardPage from "@/pages/dashboard";
 import { useQueryClient } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { lazy, Suspense, useEffect } from "react";
-import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
+import {
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router";
 
 const OidcAuthPage = lazy(async () => import("@/pages/auth/handle/oidc"));
 const UbuntuOneAuthPage = lazy(
@@ -119,15 +126,27 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
 };
 
 const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
-  const { authorized, authLoading } = useAuth();
+  const { authorized, authLoading, redirectToExternalUrl } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (!authorized || authLoading) {
       return;
     }
 
-    navigate("/", { replace: true });
+    const redirectTo = searchParams.get("redirect-to");
+
+    if (!redirectTo) {
+      navigate("/overview", { replace: true });
+      return;
+    }
+
+    if (searchParams.has("external")) {
+      redirectToExternalUrl(redirectTo, { replace: true });
+    } else {
+      navigate(redirectTo, { replace: true });
+    }
   }, [authorized, authLoading]);
 
   if (authLoading) {
