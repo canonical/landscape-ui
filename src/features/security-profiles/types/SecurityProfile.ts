@@ -1,6 +1,6 @@
 import type { SecurityProfileStatus } from "./SecurityProfileStatus";
 
-export interface SecurityProfile {
+interface SecurityProfileBase {
   name: string;
   status: SecurityProfileStatus;
   associatedInstances: number;
@@ -16,4 +16,20 @@ export interface SecurityProfile {
     next: string;
   };
   schedule: string;
+  tailoringFile: File | null;
+  benchmark: string;
+  accessGroup: string;
 }
+
+interface SecurityProfileWithRestart extends SecurityProfileBase {
+  mode: "restartFixAudit";
+  restartSchedule: string;
+}
+
+interface SecurityProfileWithoutRestart extends SecurityProfileBase {
+  mode: "audit" | "fixAudit";
+}
+
+export type SecurityProfile =
+  | SecurityProfileWithRestart
+  | SecurityProfileWithoutRestart;

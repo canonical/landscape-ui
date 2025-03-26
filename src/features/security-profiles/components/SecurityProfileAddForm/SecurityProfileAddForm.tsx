@@ -25,6 +25,7 @@ import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
+import SecurityProfileDetails from "../SecurityProfileDetails";
 import classes from "./SecurityProfileAddForm.module.scss";
 import { VALIDATION_SCHEMA } from "./constants";
 
@@ -36,7 +37,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   currentDate,
 }) => {
   const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelTitle } = useSidePanel();
+  const { closeSidePanel, setSidePanelContent, setSidePanelTitle } =
+    useSidePanel();
 
   const formik = useFormik<SecurityProfileAddFormValues>({
     initialValues: {
@@ -60,11 +62,11 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       unit_of_time: "days",
     },
     validationSchema: VALIDATION_SCHEMA,
-    onSubmit: () => {
+    onSubmit: (values) => {
       closeSidePanel();
 
       notify.success({
-        title: `You have successfully created ${formik.values.name} security profile`,
+        title: `You have successfully created ${values.name} security profile`,
         message: `This profile will ${phrase(
           [
             "perform an initial run",
@@ -75,7 +77,45 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
             "generate an audit",
           ].filter((string) => string != null),
         )}.`,
-        actions: [{ label: "View details", onClick: () => undefined }],
+        actions: [
+          {
+            label: "View details",
+            onClick: () => {
+              setSidePanelContent(
+                values.name,
+                <SecurityProfileDetails
+                  profile={{
+                    allInstances: values.all_computers,
+                    associatedInstances: 15,
+                    lastAuditPassrate: {
+                      failed: 0,
+                      passed: 0,
+                    },
+                    mode:
+                      values.mode == "fix-and-audit"
+                        ? "fixAudit"
+                        : values.mode == "fix-restart-audit"
+                          ? "restartFixAudit"
+                          : "audit",
+                    name: values.name,
+                    runs: {
+                      last: "Nov 23, 2024, 10:16",
+                      next: "Nov 29, 2024, 16:00",
+                    },
+                    schedule: "Every year in May and September",
+                    status: "active",
+                    tags: values.tags,
+                    tailoringFile: values.tailoring_file,
+                    benchmark: values.base_profile,
+                    accessGroup: values.access_group,
+                    restartSchedule: values.delivery_time,
+                  }}
+                />,
+                "medium",
+              );
+            },
+          },
+        ],
       });
     },
   });
