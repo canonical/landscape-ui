@@ -31,10 +31,12 @@ import { VALIDATION_SCHEMA } from "./constants";
 
 interface SecurityProfileAddFormProps {
   readonly currentDate: string;
+  readonly showNotification: () => void;
 }
 
 const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   currentDate,
+  showNotification,
 }) => {
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent, setSidePanelTitle } =
@@ -117,6 +119,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
           },
         ],
       });
+
+      showNotification();
     },
   });
 
