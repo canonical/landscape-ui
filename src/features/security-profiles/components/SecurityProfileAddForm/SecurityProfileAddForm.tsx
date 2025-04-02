@@ -23,6 +23,7 @@ import { useFormik } from "formik";
 import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
+import { useAddSecurityProfile } from "../../api/useAddSecurityProfile";
 import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileAddForm.module.scss";
 import { VALIDATION_SCHEMA } from "./constants";
@@ -40,35 +41,51 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelTitle } = useSidePanel();
 
+  const { addSecurityProfile } = useAddSecurityProfile();
+
   const formik = useFormik<SecurityProfileAddFormValues>({
     initialValues: {
       all_computers: false,
       access_group: "",
-      base_profile: "",
       delivery_time: "asap",
       end_date: "",
       end_type: "never",
       every: 7,
-      mode: "",
-      name: "",
       on: [],
       randomize_delivery: "no",
       start_date: currentDate,
       start_type: "",
       tags: [],
       tailoring_file: null,
+      title: "",
       unit_of_time: "days",
     },
     validationSchema: VALIDATION_SCHEMA,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
+      if (!values.benchmark || !values.mode) {
+        return;
+      }
+
+      await addSecurityProfile({
+        benchmark: values.benchmark,
+        mode: values.mode,
+        schedule: "",
+        start_date: values.start_date,
+        title: values.title,
+        access_group: values.access_group,
+        all_computers: values.all_computers,
+        tags: values.tags,
+        tailoring_file: await values.tailoring_file?.text(),
+      });
+
       closeSidePanel();
 
       notify.success({
-        title: `You have successfully created ${values.name} security profile`,
+        title: `You have successfully created ${values.title} security profile`,
         message: `This profile will ${phrase(
           [
             "perform an initial run",
-            formik.values.mode != "audit-only"
+            formik.values.mode != "audit"
               ? "apply remediation fixes on associated instances"
               : null,
             formik.values.mode == "fix-restart-audit" ? "restart them" : null,
@@ -100,8 +117,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   const steps = [
     {
       isValid:
-        !formik.errors.name &&
-        formik.touched.name &&
+        !formik.errors.title &&
+        formik.touched.title &&
         !formik.errors.access_group,
       description:
         "Choose a descriptive profile name and the right access group for your security profile.",
@@ -110,8 +127,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
           <Input
             type="text"
             label="Profile name"
-            {...formik.getFieldProps("name")}
-            error={getFormikError(formik, "name")}
+            {...formik.getFieldProps("title")}
+            error={getFormikError(formik, "title")}
             required
           />
 
@@ -121,7 +138,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     },
 
     {
-      isValid: !formik.errors.base_profile && !formik.errors.mode,
+      isValid: !formik.errors.benchmark && !formik.errors.mode,
       description:
         "Select a security profile benchmark, choose the profile mode, and optionally upload a tailoring file to customize the security profile.",
       content: (
@@ -138,13 +155,49 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
                 label: (
                   <LabelWithDescription
                     className="u-no-padding--top"
-                    label="CIS"
+                    label="CIS Level 1 Workstation"
                     description="Center for Internet Security"
                     link="https://ubuntu.com/security/cis"
                   />
                 ),
-                value: "cis",
-                text: "CIS",
+                value: "cis_level1_workstation",
+                text: "CIS Level 1 Workstation",
+              },
+              {
+                label: (
+                  <LabelWithDescription
+                    className="u-no-padding--top"
+                    label="CIS Level 1 Server"
+                    description="Center for Internet Security"
+                    link="https://ubuntu.com/security/cis"
+                  />
+                ),
+                value: "cis_level1_server",
+                text: "CIS Level 1 Server",
+              },
+              {
+                label: (
+                  <LabelWithDescription
+                    className="u-no-padding--top"
+                    label="CIS Level 2 Workstation"
+                    description="Center for Internet Security"
+                    link="https://ubuntu.com/security/cis"
+                  />
+                ),
+                value: "cis_level2_workstation",
+                text: "CIS Level 2 Workstation",
+              },
+              {
+                label: (
+                  <LabelWithDescription
+                    className="u-no-padding--top"
+                    label="CIS Level 2 Server"
+                    description="Center for Internet Security"
+                    link="https://ubuntu.com/security/cis"
+                  />
+                ),
+                value: "cis_level2_server",
+                text: "CIS Level 2 Server",
               },
               {
                 label: (
@@ -155,14 +208,12 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
                     link="https://ubuntu.com/security/disa-stig"
                   />
                 ),
-                value: "disa-stig",
+                value: "disa_stig",
                 text: "DISA-STIG",
               },
             ]}
-            value={formik.values.base_profile}
-            onChange={async (value) =>
-              formik.setFieldValue("base_profile", value)
-            }
+            value={formik.values.benchmark ?? ""}
+            onChange={async (value) => formik.setFieldValue("benchmark", value)}
             required
           />
 
@@ -177,7 +228,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
                     description="Generates an audit without applying any fixes or remediation."
                   />
                 ),
-                value: "audit-only",
+                value: "audit",
                 text: "Audit only",
               },
               {
@@ -188,7 +239,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
                     description="Applies fixes and generates an audit after remediation."
                   />
                 ),
-                value: "fix-and-audit",
+                value: "fix-audit",
                 text: "Fix and audit",
               },
               {
@@ -204,7 +255,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
                 text: "Fix, restart, audit",
               },
             ]}
-            value={formik.values.mode}
+            value={formik.values.mode ?? ""}
             onChange={async (value) => formik.setFieldValue("mode", value)}
             required
           />
@@ -285,7 +336,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       isValid: true,
       description: `To apply your changes, you need to run the profile. This will ${phrase(
         [
-          formik.values.mode != "audit-only" ? "apply fixes" : null,
+          formik.values.mode != "audit" ? "apply fixes" : null,
           formik.values.mode == "fix-restart-audit"
             ? "restart instances"
             : null,
@@ -308,7 +359,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
               ),
               iconName: "revisions",
             },
-            formik.values.mode != "audit-only"
+            formik.values.mode != "audit"
               ? {
                   header: "Apply fixes",
                   description:

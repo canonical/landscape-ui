@@ -59,8 +59,8 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   start_date: Yup.string()
     .required("This field is required.")
     .test({
-      test: (start_date) => moment(start_date).isAfter(moment()),
-      message: `The date must be in the future.`,
+      test: (start_date) => moment(start_date).isSameOrAfter(moment()),
+      message: `The date must not be in the past.`,
     }),
   start_type: Yup.string().required("This field is required."),
   tags: Yup.array()
