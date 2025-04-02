@@ -3,7 +3,7 @@ import { securityProfiles } from "@/tests/mocks/securityProfiles";
 import { http, HttpResponse } from "msw";
 
 export default [
-  http.get(`${API_URL}security_profiles`, ({ request }) => {
+  http.get(`${API_URL}security-profiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
 
     const search = searchParams.get("search") || "";
