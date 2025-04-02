@@ -71,7 +71,9 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
       <div className={classes.top}>
         <div className={classes.searchContainer}>
           <SearchBoxWithSavedSearches
-            onHelpButtonClick={() => setShowSearchHelp(true)}
+            onHelpButtonClick={() => {
+              setShowSearchHelp(true);
+            }}
           />
         </div>
         <div className={classes.filters}>
@@ -92,7 +94,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           "accessGroups",
           "os",
           "availabilityZones",
-          "status",
+          "statuses",
           "tags",
           "query",
         ]}
@@ -106,7 +108,9 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
       <SearchHelpPopup
         open={showSearchHelp}
         data={INSTANCE_SEARCH_HELP_TERMS}
-        onClose={() => setShowSearchHelp(false)}
+        onClose={() => {
+          setShowSearchHelp(false);
+        }}
       />
       <PendingInstancesNotification />
     </>

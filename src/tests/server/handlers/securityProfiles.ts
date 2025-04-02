@@ -7,7 +7,7 @@ export default [
     const { searchParams } = new URL(request.url);
 
     const search = searchParams.get("search") || "";
-    const status = searchParams.get("status") || "active";
+    const statuses = searchParams.get("statuses") || ["active", "archived"];
     const passRateFrom = parseFloat(searchParams.get("passRateFrom") || "0");
     const passRateTo = parseFloat(searchParams.get("passRateTo") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
@@ -19,7 +19,7 @@ export default [
         securityProfile.associatedInstances;
       return (
         securityProfile.name.startsWith(search) &&
-        securityProfile.status === status &&
+        statuses.includes(securityProfile.status) &&
         passRate >= passRateFrom &&
         passRate <= passRateTo
       );

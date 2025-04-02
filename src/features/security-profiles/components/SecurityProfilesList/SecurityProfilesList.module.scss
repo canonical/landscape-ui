@@ -1,0 +1,62 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.textContainer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  margin-right: 20%;
+}
+
+.lineContainer {
+  background-color: #ccc;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  margin-bottom: 8px;
+  overflow: hidden;
+  width: 80%;
+}
+
+.linePassed {
+  background-color: $color-positive;
+  display: inline-block;
+  height: $spv--small;
+}
+
+.lineFailed {
+  background-color: $color-negative;
+  border-bottom-right-radius: 5px;
+  border-left: 1px solid #ccc;
+  border-top-right-radius: 5px;
+  display: inline-block;
+  height: $spv--small;
+}
+
+.linePassed + .lineFailed {
+  border-left: 1px solid #ccc;
+}
+
+.nameCell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actions {
+  width: 4.5rem;
+}
+
+.status {
+  width: 8rem;
+}
+
+.elipsis {
+  color: rgb(0 0 0 / 60%);
+  display: inline-block;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

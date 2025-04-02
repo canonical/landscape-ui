@@ -73,7 +73,9 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
             setSearchText(inputValue);
           }}
           onSearchClick={handleSearch}
-          onDescriptionClick={() => setShowSearchHelp(true)}
+          onDescriptionClick={() => {
+            setShowSearchHelp(true);
+          }}
           onClear={handleClear}
         />
 
@@ -86,10 +88,12 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
       <SearchHelpPopup
         open={showSearchHelp}
         data={ACTIVITY_SEARCH_HELP_TERMS}
-        onClose={() => setShowSearchHelp(false)}
+        onClose={() => {
+          setShowSearchHelp(false);
+        }}
       />
       <TableFilterChips
-        filtersToDisplay={["status", "type", "fromDate", "toDate", "query"]}
+        filtersToDisplay={["statuses", "type", "fromDate", "toDate", "query"]}
         statusOptions={ACTIVITY_STATUS_OPTIONS}
         typeOptions={ACTIVITY_TYPE_OPTIONS}
       />

@@ -14,29 +14,29 @@ import * as Yup from "yup";
 import { useState } from "react";
 
 interface FormProps {
-  fromValue: number;
-  toValue: number;
+  passRateFrom: number;
+  passRateTo: number;
 }
 
 const PassRateFilter = () => {
   const [visible, setVisible] = useState(false);
 
-  const { setPageParams, fromValue, toValue } = usePageParams();
+  const { setPageParams, passRateFrom, passRateTo } = usePageParams();
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      fromValue: fromValue || 0,
-      toValue: toValue || 100,
+      passRateFrom: passRateFrom || 0,
+      passRateTo: passRateTo || 100,
     },
     enableReinitialize: true,
     validationSchema: Yup.object().shape({
-      fromValue: Yup.number().min(0).max(100),
-      toValue: Yup.number().min(0).max(100),
+      passRateFrom: Yup.number().min(0).max(100),
+      passRateTo: Yup.number().min(0).max(100),
     }),
     onSubmit: (values) => {
       setPageParams({
-        fromValue: values.fromValue,
-        toValue: values.toValue,
+        passRateFrom: values.passRateFrom,
+        passRateTo: values.passRateTo,
       });
       setVisible(false);
     },
@@ -51,9 +51,9 @@ const PassRateFilter = () => {
         <>
           <span>Pass rate</span>
           <span className={classNames(tableFilterClasses.badgeContainer)}>
-            {fromValue || toValue ? (
+            {passRateFrom || passRateTo ? (
               <Badge
-                value={fromValue && toValue ? 2 : 1}
+                value={passRateFrom && passRateTo ? 2 : 1}
                 className={tableFilterClasses.badge}
               />
             ) : null}
@@ -79,14 +79,14 @@ const PassRateFilter = () => {
           type="number"
           label="From"
           min={0}
-          max={formik.values.toValue}
+          max={formik.values.passRateTo}
           {...formik.getFieldProps("fromValue")}
         />
 
         <Input
           type="number"
           label="To"
-          min={formik.values.fromValue}
+          min={formik.values.passRateFrom}
           max={100}
           {...formik.getFieldProps("toValue")}
         />

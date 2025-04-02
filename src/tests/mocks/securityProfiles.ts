@@ -10,7 +10,7 @@ export const securityProfiles: SecurityProfile[] = [
       failed: 0,
     },
     allInstances: false,
-    tags: ["tag name 1", "tag name 2", "tag name 3"],
+    tags: ["natty", "asd", "empty"],
     mode: "audit",
     runs: {
       last: "2024-12-28T12:34:00Z",
@@ -62,7 +62,7 @@ export const securityProfiles: SecurityProfile[] = [
     },
     allInstances: false,
     tags: ["tag name 1", "tag name 2", "tag name 3"],
-    mode: "restartFixAudit",
+    mode: "fixAudit",
     runs: {
       last: "2024-12-28T12:34:00Z",
       next: "",

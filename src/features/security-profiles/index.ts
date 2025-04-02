@@ -4,3 +4,4 @@ export { default as SecurityProfilesEmptyState } from "./components/SecurityProf
 export { default as SecurityProfilesHeader } from "./components/SecurityProfilesHeader";
 export { useGetSecurityProfiles } from "./api";
 export { default as SecurityProfilesList } from "./components/SecurityProfilesList";
+export { default as SecurityProfilesContainer } from "./components/SecurityProfilesContainer";

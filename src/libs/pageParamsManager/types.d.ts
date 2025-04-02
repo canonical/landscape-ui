@@ -14,18 +14,18 @@ export interface PageParams {
   days: string;
   disabledColumns: string[];
   fromDate: string;
-  fromValue: number;
   groupBy: string;
   os: string;
   pageSize: number;
   search: string;
   sort: SortDirection;
   sortBy: string;
-  status: string;
+  statuses: string[];
   tab: string;
   tags: string[];
   toDate: string;
-  toValue: number;
+  passRateTo: number;
+  passRateFrom: number;
   type: string;
   query: string;
 }

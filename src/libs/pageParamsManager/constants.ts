@@ -12,6 +12,8 @@ export const DEFAULT_EMPTY_STRING = "";
 export const DEFAULT_PAGE_SIZE =
   PAGE_SIZE_OPTIONS[DEFAULT_PAGE_SIZE_INDEX].value;
 export const DEFAULT_DAYS = DAYS_FILTER_OPTIONS[DEFAULT_DAY_INDEX].value;
+export const DEFAULT_RATE_FROM = 0;
+export const DEFAULT_RATE_TO = 100;
 
 export const PARAMS_CONFIG: ParamsConfig = [
   {
@@ -77,9 +79,9 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_STRING,
   },
   {
-    urlParam: "status",
+    urlParam: "statuses",
     shouldResetPage: true,
-    defaultValue: DEFAULT_EMPTY_STRING,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
   },
   {
     urlParam: "tab",
@@ -106,5 +108,15 @@ export const PARAMS_CONFIG: ParamsConfig = [
     urlParam: "query",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,
+  },
+  {
+    urlParam: "passRateFrom",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_RATE_FROM,
+  },
+  {
+    urlParam: "passRateTo",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_RATE_TO,
   },
 ];
