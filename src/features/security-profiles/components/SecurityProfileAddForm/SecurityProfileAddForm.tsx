@@ -11,7 +11,6 @@ import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { phrase } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   CustomSelect,
@@ -25,9 +24,9 @@ import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
-import SecurityProfileDetails from "../SecurityProfileDetails";
 import classes from "./SecurityProfileAddForm.module.scss";
 import { VALIDATION_SCHEMA } from "./constants";
+import { phrase } from "./helpers";
 
 interface SecurityProfileAddFormProps {
   readonly currentDate: string;
@@ -39,20 +38,17 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   showNotification,
 }) => {
   const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelContent, setSidePanelTitle } =
-    useSidePanel();
+  const { closeSidePanel, setSidePanelTitle } = useSidePanel();
 
   const formik = useFormik<SecurityProfileAddFormValues>({
     initialValues: {
       all_computers: false,
       access_group: "",
       base_profile: "",
-      cron_schedule: "",
       delivery_time: "asap",
       end_date: "",
       end_type: "never",
       every: 7,
-      is_cron: false,
       mode: "",
       name: "",
       on: [],
@@ -82,40 +78,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         actions: [
           {
             label: "View details",
-            onClick: () => {
-              setSidePanelContent(
-                values.name,
-                <SecurityProfileDetails
-                  profile={{
-                    allInstances: values.all_computers,
-                    associatedInstances: 15,
-                    lastAuditPassrate: {
-                      failed: 0,
-                      passed: 0,
-                    },
-                    mode:
-                      values.mode == "fix-and-audit"
-                        ? "fixAudit"
-                        : values.mode == "fix-restart-audit"
-                          ? "restartFixAudit"
-                          : "audit",
-                    name: values.name,
-                    runs: {
-                      last: "Nov 23, 2024, 10:16",
-                      next: "Nov 29, 2024, 16:00",
-                    },
-                    schedule: "Every year in May and September",
-                    status: "active",
-                    tags: values.tags,
-                    tailoringFile: values.tailoring_file,
-                    benchmark: values.base_profile,
-                    accessGroup: values.access_group,
-                    restartSchedule: values.delivery_time,
-                  }}
-                />,
-                "medium",
-              );
-            },
+            onClick: () => undefined,
           },
         ],
       });
@@ -270,8 +233,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         !formik.errors.start_type &&
         !formik.errors.start_date &&
         !formik.errors.every &&
-        !formik.errors.end_date &&
-        !formik.errors.cron_schedule,
+        !formik.errors.end_date,
       description:
         "Add a schedule for the security profile. Select a specific date or a recurring schedule for continuous audit generation.",
       content: (
