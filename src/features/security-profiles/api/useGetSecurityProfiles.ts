@@ -3,13 +3,13 @@ import type { ApiError } from "@/types/ApiError";
 import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { SecurityProfile, SecurityProfileStatus } from "../types";
+import type { SecurityProfile } from "../types";
 
-interface GetSecurityProfilesParams {
+interface GetSecurityProfilesParams
+  extends Partial<Pick<SecurityProfile, "status">> {
   limit: number;
   offset: number;
   search?: string;
-  status?: SecurityProfileStatus;
   passRateFrom?: number;
   passRateTo?: number;
 }
