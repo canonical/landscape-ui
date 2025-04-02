@@ -21,8 +21,8 @@ export const useGetSecurityProfiles = (params: GetSecurityProfilesParams) => {
     AxiosResponse<ApiPaginatedResponse<SecurityProfile>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["security_profiles", params],
-    queryFn: async () => authFetch.get("security_profiles", { params }),
+    queryKey: ["securityProfiles", params],
+    queryFn: async () => authFetch.get("security-profiles", { params }),
   });
 
   return {
