@@ -9,6 +9,7 @@ import Indent from "@/components/layout/Indent";
 import InfoItem from "@/components/layout/InfoItem";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
@@ -38,10 +39,12 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   currentDate,
   showNotification,
 }) => {
+  const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelTitle } = useSidePanel();
 
-  const { addSecurityProfile } = useAddSecurityProfile();
+  const { addSecurityProfile, isSecurityProfileAdding } =
+    useAddSecurityProfile();
 
   const formik = useFormik<SecurityProfileAddFormValues>({
     initialValues: {
@@ -66,41 +69,45 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         return;
       }
 
-      await addSecurityProfile({
-        benchmark: values.benchmark,
-        mode: values.mode,
-        schedule: "",
-        start_date: values.start_date,
-        title: values.title,
-        access_group: values.access_group,
-        all_computers: values.all_computers,
-        tags: values.tags,
-        tailoring_file: await values.tailoring_file?.text(),
-      });
+      try {
+        await addSecurityProfile({
+          benchmark: values.benchmark,
+          mode: values.mode,
+          schedule: "",
+          start_date: values.start_date,
+          title: values.title,
+          access_group: values.access_group,
+          all_computers: values.all_computers,
+          tags: values.tags,
+          tailoring_file: await values.tailoring_file?.text(),
+        });
 
-      closeSidePanel();
+        closeSidePanel();
 
-      notify.success({
-        title: `You have successfully created ${values.title} security profile`,
-        message: `This profile will ${phrase(
-          [
-            "perform an initial run",
-            formik.values.mode != "audit"
-              ? "apply remediation fixes on associated instances"
-              : null,
-            formik.values.mode == "fix-restart-audit" ? "restart them" : null,
-            "generate an audit",
-          ].filter((string) => string != null),
-        )}.`,
-        actions: [
-          {
-            label: "View details",
-            onClick: () => undefined,
-          },
-        ],
-      });
+        notify.success({
+          title: `You have successfully created ${values.title} security profile`,
+          message: `This profile will ${phrase(
+            [
+              "perform an initial run",
+              formik.values.mode != "audit"
+                ? "apply remediation fixes on associated instances"
+                : null,
+              formik.values.mode == "fix-restart-audit" ? "restart them" : null,
+              "generate an audit",
+            ].filter((string) => string != null),
+          )}.`,
+          actions: [
+            {
+              label: "View details",
+              onClick: () => undefined,
+            },
+          ],
+        });
 
-      showNotification();
+        showNotification();
+      } catch (error) {
+        debug(error);
+      }
     },
   });
 
@@ -438,7 +445,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
             formik.handleSubmit();
           }
         }}
-        submitButtonDisabled={!steps[step].isValid}
+        submitButtonDisabled={!steps[step].isValid || isSecurityProfileAdding}
         submitButtonText={step < steps.length - 1 ? "Next" : "Add"}
       />
     </>

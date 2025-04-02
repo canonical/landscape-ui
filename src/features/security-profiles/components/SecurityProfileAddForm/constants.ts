@@ -4,7 +4,7 @@ import * as Yup from "yup";
 export const VALIDATION_SCHEMA = Yup.object().shape({
   all_computers: Yup.boolean(),
   access_group: Yup.string().required("This field is required."),
-  base_profile: Yup.string().required("This field is required."),
+  benchmark: Yup.string().required("This field is required."),
   cron_schedule: Yup.string().when("start_type", ([start_type], schema) =>
     start_type == "recurring"
       ? schema.when("is_cron", ([is_cron]) =>
@@ -53,7 +53,6 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   ),
   is_cron: Yup.boolean(),
   mode: Yup.string().required("This field is required."),
-  name: Yup.string().required("This field is required."),
   on: Yup.array().of(Yup.string()),
   randomize_delivery: Yup.string(),
   start_date: Yup.string()
@@ -68,5 +67,6 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
     .when("all_computers", ([all_computers], schema) =>
       !all_computers ? schema.min(1, "At least one tag is required") : schema,
     ),
+  title: Yup.string().required("This field is required."),
   unit_of_time: Yup.string(),
 });

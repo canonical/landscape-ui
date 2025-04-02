@@ -1,5 +1,5 @@
-import { API_VERSION } from "@/constants";
 import type { InternalAxiosRequestConfig } from "axios";
+import { API_VERSION } from "@/constants";
 
 const figureRequestParams = (config: InternalAxiosRequestConfig) =>
   ["get", "delete"].includes(config.method ?? "get")
