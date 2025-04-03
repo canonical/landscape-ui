@@ -31,7 +31,7 @@ const SecurityProfilesPage: FC = () => {
       "Add security profile",
       <SecurityProfileAddForm
         currentDate={moment().format(`${INPUT_DATE_FORMAT}THH:mm`)}
-        showNotification={showNotification}
+        onSubmit={showNotification}
       />,
     );
   };

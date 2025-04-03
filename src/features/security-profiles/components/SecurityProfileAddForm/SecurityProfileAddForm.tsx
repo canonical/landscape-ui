@@ -25,20 +25,21 @@ import { useFormik } from "formik";
 import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
+import * as Yup from "yup";
 import { useAddSecurityProfile } from "../../api";
 import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileAddForm.module.scss";
-import { ASSOCIATED_INSTANCE_LIMIT, VALIDATION_SCHEMA } from "./constants";
+import { ASSOCIATED_INSTANCES_LIMIT } from "./constants";
 import { phrase } from "./helpers";
 
 interface SecurityProfileAddFormProps {
   readonly currentDate: string;
-  readonly showNotification: () => void;
+  readonly onSubmit: () => void;
 }
 
 const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   currentDate,
-  showNotification,
+  onSubmit,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -65,7 +66,62 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       title: "",
       unit_of_time: "days",
     },
-    validationSchema: VALIDATION_SCHEMA,
+
+    validationSchema: Yup.object().shape({
+      access_group: Yup.string().required("This field is required."),
+
+      all_computers: Yup.boolean(),
+
+      benchmark: Yup.string().required("This field is required."),
+
+      end_date: Yup.string().when(
+        ["start_date", "start_type", "end_type"],
+        ([start_date, start_type, end_type], schema) =>
+          start_type == "recurring" && end_type == "on-a-date"
+            ? schema.required("This field is required.").test({
+                test: (end_date) => {
+                  return moment(end_date).isAfter(moment(start_date));
+                },
+                message: `The end date must be after the start date.`,
+              })
+            : schema,
+      ),
+
+      every: Yup.number().when(
+        ["start_type", "unit_of_time"],
+        ([start_type, unit_of_time], schema) =>
+          start_type == "recurring"
+            ? schema
+                .required("This field is required.")
+                .min(
+                  ...((unit_of_time == "days"
+                    ? [7, "Minimum interval of 7 days."]
+                    : [1, ""]) as [number, string]),
+                )
+                .integer("Enter an integer.")
+            : schema,
+      ),
+
+      mode: Yup.string().required("This field is required."),
+
+      start_date: Yup.string()
+        .required("This field is required.")
+        .test({
+          test: (start_date) => moment(start_date).isSameOrAfter(moment()),
+          message: `The date must not be in the past.`,
+        }),
+
+      start_type: Yup.string().required("This field is required."),
+
+      tags: Yup.array().when("all_computers", ([all_computers], schema) =>
+        !all_computers
+          ? schema.min(1, "At least one tag is required.")
+          : schema,
+      ),
+
+      title: Yup.string().required("This field is required."),
+    }),
+
     onSubmit: async (values) => {
       if (!values.benchmark || !values.mode) {
         return;
@@ -73,15 +129,15 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
 
       try {
         await addSecurityProfile({
+          access_group: values.access_group,
+          all_computers: values.all_computers,
           benchmark: values.benchmark,
           mode: values.mode,
           schedule: "placeholder",
           start_date: values.start_date,
-          title: values.title,
-          access_group: values.access_group,
-          all_computers: values.all_computers,
           tags: values.tags,
           tailoring_file: await values.tailoring_file?.text(),
+          title: values.title,
         });
 
         closeSidePanel();
@@ -106,7 +162,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
           ],
         });
 
-        showNotification();
+        onSubmit();
       } catch (error) {
         debug(error);
       }
@@ -122,21 +178,23 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
 
   const [isAssociationLimitReached, setIsAssociationLimitReached] =
     useState(false);
-  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    if (
-      (!formik.values.tags.length && !formik.values.all_computers) ||
-      !getInstancesQueryResult
-    ) {
+    if (!getInstancesQueryResult) {
+      return;
+    }
+
+    if (!formik.values.tags.length && !formik.values.all_computers) {
       setIsAssociationLimitReached(false);
       return;
     }
 
     setIsAssociationLimitReached(
-      getInstancesQueryResult.data.count >= ASSOCIATED_INSTANCE_LIMIT,
+      getInstancesQueryResult.data.count >= ASSOCIATED_INSTANCES_LIMIT,
     );
   }, [getInstancesQueryResult]);
+
+  const [step, setStep] = useState(0);
 
   const handleFileUpload = async (files: File[]) => {
     await formik.setFieldValue("tailoring_file", files[0]);
@@ -374,8 +432,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
               title="Associated instances limit reached:"
             >
               You&apos;ve reached the limit of{" "}
-              <strong>{ASSOCIATED_INSTANCE_LIMIT} associated instances</strong>.
-              Decrease the number of associated instances.
+              <strong>{ASSOCIATED_INSTANCES_LIMIT} associated instances</strong>
+              . Decrease the number of associated instances.
             </Notification>
           )}
 
@@ -491,6 +549,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   return (
     <>
       <p>{steps[step].description}</p>
+
       {steps[step].content}
 
       <SidePanelFormButtons

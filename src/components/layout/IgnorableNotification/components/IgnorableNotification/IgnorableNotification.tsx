@@ -32,7 +32,7 @@ const IgnorableNotifcation: FC<
 
   return (
     <>
-      {!!localStorage.getItem(storageKey) && (
+      {!localStorage.getItem(storageKey) && (
         <Notification {...props} onDismiss={showModal} />
       )}
 
