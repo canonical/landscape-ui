@@ -1,5 +1,4 @@
 import AccessGroupSelect from "@/components/form/AccessGroupSelect";
-import AssociationBlock from "@/components/form/AssociationBlock";
 import FileInput from "@/components/form/FileInput";
 import RadioGroup from "@/components/form/RadioGroup";
 import ScheduleBlock from "@/components/form/ScheduleBlock/components/ScheduleBlock";
@@ -10,7 +9,6 @@ import InfoItem from "@/components/layout/InfoItem";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
@@ -23,13 +21,13 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useAddSecurityProfile } from "../../api";
+import useAssociationStep from "../../hooks/useAssociationStep";
 import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileAddForm.module.scss";
-import { ASSOCIATED_INSTANCES_LIMIT } from "./constants";
 import { phrase } from "./helpers";
 
 interface SecurityProfileAddFormProps {
@@ -47,7 +45,6 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
 
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
-  const { getInstancesQuery } = useInstances();
 
   const formik = useFormik<SecurityProfileAddFormValues>({
     initialValues: {
@@ -169,30 +166,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     },
   });
 
-  const { data: getInstancesQueryResult, isLoading: isInstancesPending } =
-    getInstancesQuery({
-      query: formik.values.all_computers
-        ? undefined
-        : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR "),
-    });
-
-  const [isAssociationLimitReached, setIsAssociationLimitReached] =
-    useState(false);
-
-  useEffect(() => {
-    if (!getInstancesQueryResult) {
-      return;
-    }
-
-    if (!formik.values.tags.length && !formik.values.all_computers) {
-      setIsAssociationLimitReached(false);
-      return;
-    }
-
-    setIsAssociationLimitReached(
-      getInstancesQueryResult.data.count >= ASSOCIATED_INSTANCES_LIMIT,
-    );
-  }, [getInstancesQueryResult]);
+  const associationStep = useAssociationStep(formik);
 
   const [step, setStep] = useState(0);
 
@@ -204,7 +178,13 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     await formik.setFieldValue("tailoring_file", null);
   };
 
-  const steps = [
+  const steps: {
+    isLoading?: boolean;
+    isValid?: boolean;
+    description: string;
+    content: ReactNode;
+    submitButtonText: string;
+  }[] = [
     {
       isValid:
         !formik.errors.title &&
@@ -418,30 +398,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       submitButtonText: "Next",
     },
 
-    {
-      isLoading: isInstancesPending,
-      isValid: !formik.errors.tags && !isAssociationLimitReached,
-      description:
-        "Associate the security profile. Apply it to all instances or limit it to specific instances using a tag.",
-      content: (
-        <>
-          {isAssociationLimitReached && (
-            <Notification
-              severity="negative"
-              inline
-              title="Associated instances limit reached:"
-            >
-              You&apos;ve reached the limit of{" "}
-              <strong>{ASSOCIATED_INSTANCES_LIMIT} associated instances</strong>
-              . Decrease the number of associated instances.
-            </Notification>
-          )}
-
-          <AssociationBlock formik={formik} />
-        </>
-      ),
-      submitButtonText: "Next",
-    },
+    associationStep,
 
     {
       isLoading: isSecurityProfileAdding,
