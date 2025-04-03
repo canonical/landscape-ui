@@ -28,11 +28,11 @@ export const getOnOptions = (date: Date) => {
   return [
     {
       label: `${withNumberSuffix(dayOfMonth)} of every month`,
-      value: "dateNumber",
+      value: "day-of-month",
     },
     {
       label: `${["First", "Second", "Third", "Fourth", "Last"][Math.floor((dayOfMonth - 1) / 7)]} ${new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(date)} of every month`,
-      value: "weekDay",
+      value: "day-of-week",
     },
   ];
 };

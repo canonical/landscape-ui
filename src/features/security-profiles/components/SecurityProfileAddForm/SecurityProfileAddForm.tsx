@@ -7,7 +7,7 @@ import Flow from "@/components/layout/Flow";
 import Indent from "@/components/layout/Indent";
 import InfoItem from "@/components/layout/InfoItem";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -54,7 +54,6 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       end_date: "",
       end_type: "never",
       every: 7,
-      on: [],
       randomize_delivery: "no",
       start_date: currentDate,
       start_type: "",
@@ -84,19 +83,13 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
             : schema,
       ),
 
-      every: Yup.number().when(
-        ["start_type", "unit_of_time"],
-        ([start_type, unit_of_time], schema) =>
-          start_type == "recurring"
-            ? schema
-                .required("This field is required.")
-                .min(
-                  ...((unit_of_time == "days"
-                    ? [7, "Minimum interval of 7 days."]
-                    : [1, ""]) as [number, string]),
-                )
-                .integer("Enter an integer.")
-            : schema,
+      every: Yup.number().when("start_type", ([start_type], schema) =>
+        start_type == "recurring"
+          ? schema
+              .required("This field is required.")
+              .positive("Enter a positive number.")
+              .integer("Enter an integer.")
+          : schema,
       ),
 
       mode: Yup.string().required("This field is required."),
@@ -125,13 +118,38 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       }
 
       try {
+        const scheduleRules = [
+          `FREQ=${
+            {
+              days: "DAILY",
+              weeks: "WEEKLY",
+              months: "MONTHLY",
+              years: "YEARLY",
+            }[values.unit_of_time]
+          }`,
+        ];
+
+        if (values.start_type == "recurring") {
+          scheduleRules.push(`INTERVAL=${values.every}`);
+
+          if (values.end_type == "on-a-date") {
+            scheduleRules.push(
+              `UNTIL=${moment(values.end_date).utc().format("YYYYMMDDTHHmmss")}Z`,
+            );
+          }
+        } else {
+          scheduleRules.push("COUNT=1");
+        }
+
         await addSecurityProfile({
           access_group: values.access_group,
           all_computers: values.all_computers,
           benchmark: values.benchmark,
           mode: values.mode,
-          schedule: "placeholder",
-          start_date: values.start_date,
+          schedule: scheduleRules.join(";"),
+          start_date: `${moment(values.start_date)
+            .utc()
+            .format(INPUT_DATE_TIME_FORMAT)}Z`,
           tags: values.tags,
           tailoring_file: await values.tailoring_file?.text(),
           title: values.title,

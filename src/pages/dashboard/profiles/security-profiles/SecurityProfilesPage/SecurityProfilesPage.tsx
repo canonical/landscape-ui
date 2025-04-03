@@ -2,7 +2,7 @@ import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { INPUT_DATE_FORMAT } from "@/constants";
+import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import {
   SecurityProfileAddForm,
   SecurityProfilesList,
@@ -30,7 +30,7 @@ const SecurityProfilesPage: FC = () => {
     setSidePanelContent(
       "Add security profile",
       <SecurityProfileAddForm
-        currentDate={moment().format(`${INPUT_DATE_FORMAT}THH:mm`)}
+        currentDate={moment().format(INPUT_DATE_TIME_FORMAT)}
         onSubmit={showNotification}
       />,
     );
