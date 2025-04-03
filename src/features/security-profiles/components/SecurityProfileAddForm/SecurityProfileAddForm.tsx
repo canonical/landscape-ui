@@ -10,6 +10,7 @@ import InfoItem from "@/components/layout/InfoItem";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
@@ -24,10 +25,10 @@ import { useFormik } from "formik";
 import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
-import { useAddSecurityProfile } from "../../api/useAddSecurityProfile";
+import { useAddSecurityProfile } from "../../api";
 import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileAddForm.module.scss";
-import { VALIDATION_SCHEMA } from "./constants";
+import { ASSOCIATED_INSTANCE_LIMIT, VALIDATION_SCHEMA } from "./constants";
 import { phrase } from "./helpers";
 
 interface SecurityProfileAddFormProps {
@@ -45,6 +46,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
 
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
+
+  const { getInstancesQuery } = useInstances();
 
   const formik = useFormik<SecurityProfileAddFormValues>({
     initialValues: {
@@ -73,7 +76,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         await addSecurityProfile({
           benchmark: values.benchmark,
           mode: values.mode,
-          schedule: "",
+          schedule: "placeholder",
           start_date: values.start_date,
           title: values.title,
           access_group: values.access_group,
@@ -111,7 +114,30 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     },
   });
 
+  const { data: getInstancesQueryResult, isLoading: isInstancesPending } =
+    getInstancesQuery({
+      query: formik.values.all_computers
+        ? undefined
+        : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR "),
+    });
+
+  const [isAssociationLimitReached, setIsAssociationLimitReached] =
+    useState(false);
   const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    if (
+      (!formik.values.tags.length && !formik.values.all_computers) ||
+      !getInstancesQueryResult
+    ) {
+      setIsAssociationLimitReached(false);
+      return;
+    }
+
+    setIsAssociationLimitReached(
+      getInstancesQueryResult.data.count >= ASSOCIATED_INSTANCE_LIMIT,
+    );
+  }, [getInstancesQueryResult]);
 
   const handleFileUpload = async (files: File[]) => {
     await formik.setFieldValue("tailoring_file", files[0]);
@@ -142,6 +168,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
           <AccessGroupSelect formik={formik} />
         </>
       ),
+      submitButtonText: "Next",
     },
 
     {
@@ -284,6 +311,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
           />
         </>
       ),
+      submitButtonText: "Next",
     },
 
     {
@@ -330,16 +358,36 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
           )}
         </>
       ),
+      submitButtonText: "Next",
     },
 
     {
-      isValid: !formik.errors.tags,
+      isLoading: isInstancesPending,
+      isValid: !formik.errors.tags && !isAssociationLimitReached,
       description:
         "Associate the security profile. Apply it to all instances or limit it to specific instances using a tag.",
-      content: <AssociationBlock formik={formik} />,
+      content: (
+        <>
+          {isAssociationLimitReached && (
+            <Notification
+              severity="negative"
+              inline
+              title="Associated instances limit reached:"
+            >
+              You&apos;ve reached the limit of{" "}
+              <strong>{ASSOCIATED_INSTANCE_LIMIT} associated instances</strong>.
+              Decrease the number of associated instances.
+            </Notification>
+          )}
+
+          <AssociationBlock formik={formik} />
+        </>
+      ),
+      submitButtonText: "Next",
     },
 
     {
+      isLoading: isSecurityProfileAdding,
       isValid: true,
       description: `To apply your changes, you need to run the profile. This will ${phrase(
         [
@@ -414,6 +462,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
           ].filter((card) => card != null)}
         />
       ),
+      submitButtonText: "Add",
     },
   ];
 
@@ -445,8 +494,9 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
             formik.handleSubmit();
           }
         }}
-        submitButtonDisabled={!steps[step].isValid || isSecurityProfileAdding}
-        submitButtonText={step < steps.length - 1 ? "Next" : "Add"}
+        submitButtonDisabled={steps[step].isLoading || !steps[step].isValid}
+        submitButtonLoading={steps[step].isLoading}
+        submitButtonText={steps[step].submitButtonText}
       />
     </>
   );

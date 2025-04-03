@@ -1,6 +1,8 @@
 import moment from "moment";
 import * as Yup from "yup";
 
+export const ASSOCIATED_INSTANCE_LIMIT = 5000;
+
 export const VALIDATION_SCHEMA = Yup.object().shape({
   all_computers: Yup.boolean(),
   access_group: Yup.string().required("This field is required."),

@@ -1,4 +1,4 @@
-import { Button, Icon } from "@canonical/react-components";
+import { ActionButton, Button, Icon } from "@canonical/react-components";
 import type { FC, ReactElement, ReactNode, SyntheticEvent } from "react";
 import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./SidePanelFormButtons.module.scss";
@@ -8,6 +8,7 @@ interface SidePanelFormButtonsProps {
   readonly submitButtonText: string;
   readonly submitButtonAppearance?: "positive" | "negative";
   readonly submitButtonAriaLabel?: string;
+  readonly submitButtonLoading?: boolean;
   readonly secondaryActionButtonTitle?: ReactNode;
   readonly secondaryActionButtonSubmit?: (
     event: SyntheticEvent,
@@ -21,6 +22,7 @@ interface SidePanelFormButtonsProps {
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   hasBackButton,
   submitButtonDisabled,
+  submitButtonLoading = false,
   submitButtonText,
   submitButtonAriaLabel,
   secondaryActionButtonTitle,
@@ -64,16 +66,17 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
             {secondaryActionButtonTitle}
           </Button>
         )}
-        <Button
+        <ActionButton
           className="u-no-margin--bottom"
           type={onSubmit ? "button" : "submit"}
           onClick={onSubmit}
           appearance={submitButtonAppearance}
           disabled={submitButtonDisabled}
           aria-label={submitButtonAriaLabel}
+          loading={submitButtonLoading}
         >
           {submitButtonText}
-        </Button>
+        </ActionButton>
       </div>
     </div>
   );
