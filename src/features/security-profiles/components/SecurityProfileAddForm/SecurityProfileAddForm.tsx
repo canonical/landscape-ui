@@ -46,7 +46,6 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
 
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
-
   const { getInstancesQuery } = useInstances();
 
   const formik = useFormik<SecurityProfileAddFormValues>({
@@ -143,7 +142,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     await formik.setFieldValue("tailoring_file", files[0]);
   };
 
-  const handleFileRemove = async () => {
+  const removeFile = async () => {
     await formik.setFieldValue("tailoring_file", null);
   };
 
@@ -306,7 +305,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
                 Max file size: 5mb. Supported format: .xml.
               </>
             }
-            onFileRemove={handleFileRemove}
+            onFileRemove={removeFile}
             onFileUpload={handleFileUpload}
           />
         </>
@@ -477,6 +476,18 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     );
   }, [step]);
 
+  const goBack = () => {
+    setStep(step - 1);
+  };
+
+  const submit = () => {
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    } else {
+      formik.handleSubmit();
+    }
+  };
+
   return (
     <>
       <p>{steps[step].description}</p>
@@ -484,16 +495,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
 
       <SidePanelFormButtons
         hasBackButton={step > 0}
-        onBackButtonPress={() => {
-          setStep(step - 1);
-        }}
-        onSubmit={() => {
-          if (step < steps.length - 1) {
-            setStep(step + 1);
-          } else {
-            formik.handleSubmit();
-          }
-        }}
+        onBackButtonPress={goBack}
+        onSubmit={submit}
         submitButtonDisabled={steps[step].isLoading || !steps[step].isValid}
         submitButtonLoading={steps[step].isLoading}
         submitButtonText={steps[step].submitButtonText}
