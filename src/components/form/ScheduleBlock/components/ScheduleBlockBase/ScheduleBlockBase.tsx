@@ -55,19 +55,19 @@ const ScheduleBlockBase = <T extends ScheduleBlockFormProps>({
                 options={[
                   {
                     label: "Day",
-                    value: "days",
+                    value: "DAILY",
                   },
                   {
                     label: "Week",
-                    value: "weeks",
+                    value: "WEEKLY",
                   },
                   {
                     label: "Month",
-                    value: "months",
+                    value: "MONTHLY",
                   },
                   {
                     label: "Year",
-                    value: "years",
+                    value: "YEARLY",
                   },
                 ].map((option) =>
                   formik.values.every == 1

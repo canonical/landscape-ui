@@ -1,24 +1,32 @@
-export const DAY_OPTIONS = [
-  { label: "Sundays", value: "sundays" },
-  { label: "Mondays", value: "mondays" },
-  { label: "Tuesdays", value: "tuesdays" },
-  { label: "Wednesdays", value: "wednesdays" },
-  { label: "Thursdays", value: "thursdays" },
-  { label: "Fridays", value: "fridays" },
-  { label: "Saturdays", value: "saturdays" },
+import type { ScheduleBlockFormProps } from "../../types";
+
+export const DAY_OPTIONS: readonly {
+  label: string;
+  value: ScheduleBlockFormProps["days"][number];
+}[] = [
+  { label: "Sundays", value: "SU" },
+  { label: "Mondays", value: "MO" },
+  { label: "Tuesdays", value: "TU" },
+  { label: "Wednesdays", value: "WE" },
+  { label: "Thursdays", value: "TH" },
+  { label: "Fridays", value: "FR" },
+  { label: "Saturdays", value: "SA" },
 ];
 
-export const MONTH_OPTIONS = [
-  { label: "January", value: "january" },
-  { label: "February", value: "february" },
-  { label: "March", value: "march" },
-  { label: "April", value: "april" },
-  { label: "May", value: "may" },
-  { label: "June", value: "june" },
-  { label: "July", value: "july" },
-  { label: "August", value: "august" },
-  { label: "September", value: "september" },
-  { label: "October", value: "october" },
-  { label: "November", value: "november" },
-  { label: "December", value: "december" },
+export const MONTH_OPTIONS: readonly {
+  label: string;
+  value: ScheduleBlockFormProps["months"][number];
+}[] = [
+  { label: "January", value: 1 },
+  { label: "February", value: 2 },
+  { label: "March", value: 3 },
+  { label: "April", value: 4 },
+  { label: "May", value: 5 },
+  { label: "June", value: 6 },
+  { label: "July", value: 7 },
+  { label: "August", value: 8 },
+  { label: "September", value: 9 },
+  { label: "October", value: 10 },
+  { label: "November", value: 11 },
+  { label: "December", value: 12 },
 ];

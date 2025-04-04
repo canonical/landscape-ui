@@ -2,6 +2,7 @@ import AccessGroupSelect from "@/components/form/AccessGroupSelect";
 import FileInput from "@/components/form/FileInput";
 import RadioGroup from "@/components/form/RadioGroup";
 import ScheduleBlock from "@/components/form/ScheduleBlock/components/ScheduleBlock";
+import { DAY_OPTIONS } from "@/components/form/ScheduleBlock/components/ScheduleBlockBase/constants";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import Flow from "@/components/layout/Flow";
 import Indent from "@/components/layout/Indent";
@@ -50,23 +51,24 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     initialValues: {
       all_computers: false,
       access_group: "",
+      day_of_month_type: "day-of-month",
+      days: [],
       delivery_time: "asap",
       end_date: "",
       end_type: "never",
       every: 7,
+      months: [],
       randomize_delivery: "no",
       start_date: currentDate,
       start_type: "",
       tags: [],
       tailoring_file: null,
       title: "",
-      unit_of_time: "days",
+      unit_of_time: "DAILY",
     },
 
     validationSchema: Yup.object().shape({
       access_group: Yup.string().required("This field is required."),
-
-      all_computers: Yup.boolean(),
 
       benchmark: Yup.string().required("This field is required."),
 
@@ -117,70 +119,101 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         return;
       }
 
-      try {
-        const scheduleRules = [
-          `FREQ=${
-            {
-              days: "DAILY",
-              weeks: "WEEKLY",
-              months: "MONTHLY",
-              years: "YEARLY",
-            }[values.unit_of_time]
-          }`,
-        ];
+      const scheduleRuleParts = [`FREQ=${values.unit_of_time}`];
 
-        if (values.start_type == "recurring") {
-          scheduleRules.push(`INTERVAL=${values.every}`);
+      if (values.start_type == "recurring") {
+        scheduleRuleParts.push(`INTERVAL=${values.every}`);
 
-          if (values.end_type == "on-a-date") {
-            scheduleRules.push(
-              `UNTIL=${moment(values.end_date).utc().format("YYYYMMDDTHHmmss")}Z`,
-            );
+        switch (values.unit_of_time) {
+          case "WEEKLY": {
+            scheduleRuleParts.push(`BYDAY=${values.days.join(",")}`);
+            break;
           }
-        } else {
-          scheduleRules.push("COUNT=1");
+
+          case "MONTHLY": {
+            const date = new Date(values.start_date);
+            const dayOfMonth = date.getDate();
+
+            switch (values.day_of_month_type) {
+              case "day-of-month": {
+                scheduleRuleParts.push(`BYMONTHDAY=${dayOfMonth}`);
+                break;
+              }
+
+              case "day-of-week": {
+                const ordinalWeek = Math.ceil(dayOfMonth / 7);
+                scheduleRuleParts.push(
+                  `BYDAY=${ordinalWeek > 4 ? -1 : ordinalWeek}${DAY_OPTIONS[date.getDay()].value}`,
+                );
+                break;
+              }
+            }
+
+            break;
+          }
+
+          case "YEARLY": {
+            scheduleRuleParts.push(`BYMONTH=${values.months.join(",")}`);
+            break;
+          }
         }
 
+        if (values.end_type == "on-a-date") {
+          scheduleRuleParts.push(
+            `UNTIL=${moment(values.end_date).utc().format("YYYYMMDDTHHmmss")}Z`,
+          );
+        }
+      } else {
+        scheduleRuleParts.push("COUNT=1");
+      }
+
+      try {
         await addSecurityProfile({
           access_group: values.access_group,
           all_computers: values.all_computers,
           benchmark: values.benchmark,
           mode: values.mode,
-          schedule: scheduleRules.join(";"),
+          schedule: scheduleRuleParts.join(";"),
           start_date: `${moment(values.start_date)
             .utc()
             .format(INPUT_DATE_TIME_FORMAT)}Z`,
-          tags: values.tags,
+          tags: values.all_computers ? undefined : values.tags,
           tailoring_file: await values.tailoring_file?.text(),
           title: values.title,
         });
-
-        closeSidePanel();
-
-        notify.success({
-          title: `You have successfully created ${values.title} security profile`,
-          message: `This profile will ${phrase(
-            [
-              "perform an initial run",
-              formik.values.mode != "audit"
-                ? "apply remediation fixes on associated instances"
-                : null,
-              formik.values.mode == "fix-restart-audit" ? "restart them" : null,
-              "generate an audit",
-            ].filter((string) => string != null),
-          )}.`,
-          actions: [
-            {
-              label: "View details",
-              onClick: () => undefined,
-            },
-          ],
-        });
-
-        onSubmit();
       } catch (error) {
         debug(error);
+        return;
       }
+
+      closeSidePanel();
+
+      const notificationMessageParts = ["perform an initial run"];
+
+      if (formik.values.mode != "audit") {
+        notificationMessageParts.push(
+          "apply remediation fixes on associated instances",
+        );
+      }
+
+      if (formik.values.mode == "fix-restart-audit") {
+        notificationMessageParts.push("restart them");
+      }
+
+      notificationMessageParts.push("generate an audit");
+
+      notify.success({
+        title: `You have successfully created ${values.title} security profile`,
+        message: `This profile will ${phrase(notificationMessageParts)}.`,
+        actions: [
+          {
+            label: "View details",
+            onClick: () => undefined,
+          },
+        ],
+      });
+
+      onSubmit();
     },
   });
 

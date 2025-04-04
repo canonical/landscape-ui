@@ -10,21 +10,21 @@ interface OnSelectProps<T extends ScheduleBlockFormProps> {
 }
 
 const OnSelect = <T extends ScheduleBlockFormProps>({
-  formik,
+  formik: { values, ...formik },
 }: OnSelectProps<T>) => {
-  switch (formik.values.unit_of_time) {
-    case "weeks":
+  switch (values.unit_of_time) {
+    case "WEEKLY": {
       return (
         <MultiSelectField
           variant="condensed"
           label="On"
-          items={DAY_OPTIONS}
+          items={[...DAY_OPTIONS]}
           selectedItems={DAY_OPTIONS.filter(({ value }) =>
-            formik.values.on.includes(value),
+            values.days.includes(value),
           )}
           onItemsUpdate={async (items) =>
             formik.setFieldValue(
-              "on",
+              "days",
               items.map(({ value }) => value),
             )
           }
@@ -32,30 +32,33 @@ const OnSelect = <T extends ScheduleBlockFormProps>({
           required
         />
       );
+    }
 
-    case "months":
+    case "MONTHLY": {
       return (
-        !!formik.values.start_date && (
+        !!values.start_date && (
           <Select
             label="On"
-            options={getOnOptions(new Date(formik.values.start_date))}
+            options={getOnOptions(new Date(values.start_date))}
+            {...formik.getFieldProps("day_of_month_type")}
             required
           />
         )
       );
+    }
 
-    case "years":
+    case "YEARLY": {
       return (
         <MultiSelectField
           variant="condensed"
           label="On"
-          items={MONTH_OPTIONS}
+          items={[...MONTH_OPTIONS]}
           selectedItems={MONTH_OPTIONS.filter(({ value }) =>
-            formik.values.on.includes(value),
+            values.months.includes(value),
           )}
           onItemsUpdate={async (items) =>
             formik.setFieldValue(
-              "on",
+              "months",
               items.map(({ value }) => value),
             )
           }
@@ -63,6 +66,7 @@ const OnSelect = <T extends ScheduleBlockFormProps>({
           required
         />
       );
+    }
   }
 };
 
