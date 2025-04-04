@@ -1,45 +1,29 @@
-import type { SecurityProfileStatus } from "./SecurityProfileStatus";
-
 export interface SecurityProfile extends Record<string, unknown> {
-  name: string;
-  status: SecurityProfileStatus;
-  associatedInstances: number;
-  lastAuditPassrate: {
-    passed: number;
-    failed: number;
-  };
-  allInstances: boolean;
-  tags: string[];
-  mode: "audit" | "fixAudit" | "restartFixAudit";
-  runs: {
-    last: string;
-    next: string;
-  };
-  schedule: string;
-}
-
-/*
-export interface SecurityProfile extends Record<string, unknown> {
-  acess_group: string;
-  acount_id: number;
+  access_group: string;
+  account_id: number;
   all_computers: boolean;
-  benchmark: string;
+  benchmark:
+    | "disa_stig"
+    | "cis_level1_workstation"
+    | "cis_level1_server"
+    | "cis_level2_workstation"
+    | "cis_level2_server";
   creation_time: string;
   id: number;
-  associatedInstances: number;
-  lastAuditPassrate: {
-    passed: number;
-    failed: number;
+  last_run_results: {
+    passing: number;
+    failing: number;
+    in_progress: number;
+    report_uri: string | null;
   };
-  allInstances: boolean;
-  mode: "audit" | "fixAudit" | "restartFixAudit";
+  mode: "audit" | "fix-audit" | "fix-restart-audit";
   modification_time: string;
   name: string;
   next_run_time: string;
+  retention_period: number;
   schedule: string;
-  status: SecurityProfileStatus;
+  status: "active" | "archived";
   tags: string[];
-  tailoring_file_uri: string;
+  tailoring_file_uri: string | null;
   title: string;
 }
-*/

@@ -5,11 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { SecurityProfile } from "../types";
 
-interface GetSecurityProfilesParams {
+interface GetSecurityProfilesParams
+  extends Partial<Pick<SecurityProfile, "status">> {
   limit: number;
   offset: number;
   search?: string;
-  statuses?: string[];
   passRateFrom?: number;
   passRateTo?: number;
 }
@@ -21,8 +21,8 @@ export const useGetSecurityProfiles = (params: GetSecurityProfilesParams) => {
     AxiosResponse<ApiPaginatedResponse<SecurityProfile>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["security_profiles", params],
-    queryFn: async () => authFetch.get("security_profiles", { params }),
+    queryKey: ["securityProfiles", params],
+    queryFn: async () => authFetch.get("security-profiles", { params }),
   });
 
   return {
