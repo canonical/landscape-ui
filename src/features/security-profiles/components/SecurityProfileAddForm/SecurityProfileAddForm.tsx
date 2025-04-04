@@ -10,6 +10,7 @@ import InfoItem from "@/components/layout/InfoItem";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
+import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
@@ -41,6 +42,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   onSubmit,
 }) => {
   const debug = useDebug();
+  const { isSelfHosted } = useEnv();
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelTitle } = useSidePanel();
 
@@ -104,12 +106,6 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         }),
 
       start_type: Yup.string().required("This field is required."),
-
-      tags: Yup.array().when("all_computers", ([all_computers], schema) =>
-        !all_computers
-          ? schema.min(1, "At least one tag is required.")
-          : schema,
-      ),
 
       title: Yup.string().required("This field is required."),
     }),
@@ -208,7 +204,9 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         actions: [
           {
             label: "View details",
-            onClick: () => undefined,
+            onClick: () => {
+              console.warn("PLACEHOLDER");
+            },
           },
         ],
       });
@@ -254,6 +252,26 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
           />
 
           <AccessGroupSelect formik={formik} />
+
+          {isSelfHosted && (
+            <Input
+              type="text"
+              label="Audit retention"
+              required
+              disabled
+              value="PLACEHOLDER"
+              help={
+                <>
+                  You can change this limit in the Landscape server
+                  configuration file.
+                  <br />
+                  <a href="PLACEHOLDER" target="_blank" rel="noreferrer">
+                    learn more
+                  </a>
+                </>
+              }
+            />
+          )}
         </>
       ),
       submitButtonText: "Next",

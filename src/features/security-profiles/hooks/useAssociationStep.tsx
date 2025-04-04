@@ -38,7 +38,7 @@ export default function useAssociationStep<T extends AssociationBlockFormProps>(
 
   return {
     isLoading: isInstancesPending,
-    isValid: !formik.errors.tags && !isAssociationLimitReached,
+    isValid: !isAssociationLimitReached,
     description:
       "Associate the security profile. Apply it to all instances or limit it to specific instances using a tag.",
     content: (
