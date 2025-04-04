@@ -37,7 +37,7 @@ jobs:
           format: "sarif"
           output: "trivy-landscape-scan-results.sarif"
           cache-dir: "$HOME/landscape-dashboard/.vuln-cache"
-          severity: "HIGH,CRITICAL"
+          severity: "HIGH,CRITICAL,MEDIUM"
 
       - name: Cache trivy and vulnerability database
         uses: actions/cache/save@v4

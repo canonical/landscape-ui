@@ -5,7 +5,6 @@ import eslint from "vite-plugin-eslint";
 import * as path from "path";
 import packageJson from "./package.json";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
-import basicSsl from "@vitejs/plugin-basic-ssl";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,11 +14,6 @@ export default defineConfig({
     sentryVitePlugin({
       org: "canonical",
       project: "landscape-dashboard",
-    }),
-    basicSsl({
-      name: "landscape-dashboard-local",
-      domains: ["*.yuriy.works", "localhost"],
-      certDir: "./.cert",
     }),
   ],
   resolve: {
