@@ -1,11 +1,11 @@
 import classNames from "classnames";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import classes from "./LabelWithDescription.module.scss";
 
 interface LabelWithDescriptionProps {
-  readonly description: string;
-  readonly label: string;
   readonly className?: string;
+  readonly description?: ReactNode;
+  readonly label?: ReactNode;
   readonly link?: string;
 }
 

@@ -1,11 +1,11 @@
 import { Card, Icon } from "@canonical/react-components";
-import type { FC, ReactNode } from "react";
+import type { ComponentProps, FC, ReactNode } from "react";
 import classes from "./Flow.module.scss";
 
 interface FlowCardProps {
-  readonly description: ReactNode;
-  readonly header: string;
-  readonly iconName: string;
+  readonly iconName: ComponentProps<typeof Icon>["name"];
+  readonly description?: ReactNode;
+  readonly header?: ReactNode;
   readonly children?: ReactNode;
 }
 
@@ -20,7 +20,7 @@ const Flow: FC<FlowProps> = ({ cards }) => {
       <div className={classes.line} />
 
       {cards.map((card, key) => (
-        <div className={classes.container} key={key}>
+        <div key={key}>
           <Card className={"u-no-margin--bottom"}>
             <div>
               <div className={classes.header}>

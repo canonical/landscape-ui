@@ -1,5 +1,5 @@
-const getNumberSuffix = (number: number) => {
-  switch (number) {
+const ordinalSuffix = (number: number) => {
+  switch (number % 100) {
     case 11:
     case 12:
     case 13:
@@ -18,8 +18,8 @@ const getNumberSuffix = (number: number) => {
   }
 };
 
-const withNumberSuffix = (number: number) => {
-  return `${number}${getNumberSuffix(number)}`;
+const ordinal = (number: number) => {
+  return `${number}${ordinalSuffix(number)}`;
 };
 
 export const getOnOptions = (date: Date) => {
@@ -27,11 +27,11 @@ export const getOnOptions = (date: Date) => {
 
   return [
     {
-      label: `${withNumberSuffix(dayOfMonth)} of every month`,
+      label: `${ordinal(dayOfMonth)} of every month`,
       value: "day-of-month",
     },
     {
-      label: `${["First", "Second", "Third", "Fourth", "Last"][Math.floor((dayOfMonth - 1) / 7)]} ${new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(date)} of every month`,
+      label: `${["First", "Second", "Third", "Fourth", "Last"][Math.ceil(dayOfMonth / 7) - 1]} ${new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(date)} of every month`,
       value: "day-of-week",
     },
   ];

@@ -34,8 +34,8 @@ import classes from "./SecurityProfileAddForm.module.scss";
 import { phrase } from "./helpers";
 
 interface SecurityProfileAddFormProps {
-  readonly currentDate: string;
-  readonly onSubmit: () => void;
+  readonly currentDate: SecurityProfileAddFormValues["start_date"];
+  readonly onSubmit: (values: SecurityProfileAddFormValues) => void;
 }
 
 const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
@@ -72,8 +72,6 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     },
 
     validationSchema: Yup.object().shape({
-      access_group: Yup.string().required("This field is required."),
-
       benchmark: Yup.string().required("This field is required."),
 
       end_date: Yup.string().when(
@@ -213,7 +211,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         ],
       });
 
-      onSubmit();
+      onSubmit(values);
     },
   });
 
@@ -242,10 +240,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     submitButtonText: string;
   }[] = [
     {
-      isValid:
-        !formik.errors.title &&
-        formik.touched.title &&
-        !formik.errors.access_group,
+      isValid: !formik.errors.title && formik.touched.title,
       description:
         "Choose a descriptive profile name and the right access group for your security profile.",
       content: (
@@ -372,6 +367,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
             value={formik.values.benchmark ?? ""}
             onChange={async (value) => formik.setFieldValue("benchmark", value)}
             required
+            searchable="never"
           />
 
           <CustomSelect
@@ -596,8 +592,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       {steps[step].content}
 
       <SidePanelFormButtons
-        hasBackButton={step > 0}
-        onBackButtonPress={goBack}
+        onBackButtonPress={step > 0 ? goBack : undefined}
         onSubmit={submit}
         submitButtonDisabled={steps[step].isLoading || !steps[step].isValid}
         submitButtonLoading={steps[step].isLoading}

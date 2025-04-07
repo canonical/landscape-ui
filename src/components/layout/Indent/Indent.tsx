@@ -2,7 +2,7 @@ import type { FC, ReactNode } from "react";
 import classes from "./Indent.module.scss";
 
 interface IndentProps {
-  readonly children: ReactNode;
+  readonly children?: ReactNode;
 }
 
 const Indent: FC<IndentProps> = ({ children }) => {

@@ -14,13 +14,11 @@ interface SidePanelFormButtonsProps {
     event: SyntheticEvent,
   ) => Promise<void> | void;
   readonly cancelButtonDisabled?: boolean;
-  readonly hasBackButton?: boolean;
   readonly onBackButtonPress?: () => void;
   readonly onSubmit?: (event: SyntheticEvent) => Promise<void> | void;
 }
 
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
-  hasBackButton,
   submitButtonDisabled,
   submitButtonLoading = false,
   submitButtonText,
@@ -35,19 +33,22 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   const { closeSidePanel } = useSidePanel();
   return (
     <div className={classes.buttons}>
-      {hasBackButton && (
-        <Button
-          hasIcon
-          className="u-no-margin--bottom"
-          appearance="base"
-          type="button"
-          onClick={onBackButtonPress}
-        >
-          <Icon name="chevron-left" />
-          <span>Back</span>
-        </Button>
-      )}
-      <div className={classes.actionButtons}>
+      <div>
+        {onBackButtonPress && (
+          <Button
+            hasIcon
+            className="u-no-margin--bottom"
+            appearance="base"
+            type="button"
+            onClick={onBackButtonPress}
+          >
+            <Icon name="chevron-left" />
+            <span>Back</span>
+          </Button>
+        )}
+      </div>
+
+      <div>
         <Button
           className="u-no-margin--bottom"
           type="button"

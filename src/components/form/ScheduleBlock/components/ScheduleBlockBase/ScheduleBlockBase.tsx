@@ -1,12 +1,13 @@
 import { getFormikError } from "@/utils/formikErrors";
 import { Col, Input, Row, Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
+import type { ComponentProps } from "react";
 import type { ScheduleBlockFormProps } from "../../types";
 import OnSelect from "../OnSelect";
 
 interface ScheduleBlockProps<T extends ScheduleBlockFormProps> {
-  readonly currentDate: string;
   readonly formik: FormikContextType<T>;
+  readonly currentDate?: ComponentProps<typeof Input>["min"];
 }
 
 const ScheduleBlockBase = <T extends ScheduleBlockFormProps>({

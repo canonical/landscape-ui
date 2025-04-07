@@ -5,17 +5,23 @@ import IgnorableModal from "../IgnorableModal";
 
 interface SecurityProfileAuditRetentionNotificationProps
   extends Omit<ComponentProps<typeof Notification>, "onDismiss"> {
-  readonly hide: () => void;
-  readonly modalProps: Omit<
+  readonly hide: ComponentProps<typeof IgnorableModal>["hideNotification"];
+  readonly storageKey: Partial<Parameters<Storage["setItem"]>[0]> &
+    Parameters<Storage["getItem"]>[0];
+  readonly modalProps?: Omit<
     ComponentProps<typeof IgnorableModal>,
     "hideModal" | "hideNotification" | "ignore"
   >;
-  readonly storageKey: string;
 }
 
 const IgnorableNotifcation: FC<
   SecurityProfileAuditRetentionNotificationProps
-> = ({ hide, modalProps, storageKey, ...props }) => {
+> = ({
+  hide,
+  modalProps = { confirmButtonLabel: undefined },
+  storageKey,
+  ...props
+}) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const showModal = () => {
@@ -32,7 +38,7 @@ const IgnorableNotifcation: FC<
 
   return (
     <>
-      {!localStorage.getItem(storageKey) && (
+      {localStorage.getItem(storageKey) != "true" && (
         <Notification {...props} onDismiss={showModal} />
       )}
 

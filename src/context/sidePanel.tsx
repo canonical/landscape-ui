@@ -39,7 +39,7 @@ interface SidePanelProviderProps {
 const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState<"small" | "medium" | "large">("small");
-  const [title, setTitle] = useState<ReactNode>("");
+  const [title, setTitle] = useState<ReactNode>(undefined);
   const [titleLabel, setTitleLabel] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
 

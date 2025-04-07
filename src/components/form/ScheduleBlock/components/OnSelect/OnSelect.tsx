@@ -1,6 +1,7 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import { Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
+import type { ReactNode } from "react";
 import type { ScheduleBlockFormProps } from "../../types";
 import { DAY_OPTIONS, MONTH_OPTIONS } from "../ScheduleBlockBase/constants";
 import { getOnOptions } from "../ScheduleBlockBase/helpers";
@@ -11,7 +12,7 @@ interface OnSelectProps<T extends ScheduleBlockFormProps> {
 
 const OnSelect = <T extends ScheduleBlockFormProps>({
   formik: { values, ...formik },
-}: OnSelectProps<T>) => {
+}: OnSelectProps<T>): ReactNode => {
   switch (values.unit_of_time) {
     case "WEEKLY": {
       return (
