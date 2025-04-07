@@ -1,4 +1,3 @@
-import AccessGroupSelect from "@/components/form/AccessGroupSelect";
 import FileInput from "@/components/form/FileInput";
 import RadioGroup from "@/components/form/RadioGroup";
 import ScheduleBlock from "@/components/form/ScheduleBlock/components/ScheduleBlock";
@@ -12,6 +11,7 @@ import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
+import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
 import {
@@ -19,6 +19,7 @@ import {
   Input,
   Notification,
   Row,
+  Select,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
@@ -48,11 +49,12 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
 
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
+  const { getAccessGroupQuery } = useRoles();
 
   const formik = useFormik<SecurityProfileAddFormValues>({
     initialValues: {
       all_computers: false,
-      access_group: "",
+      access_group: "global",
       day_of_month_type: "day-of-month",
       days: [],
       delivery_time: "asap",
@@ -215,6 +217,11 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     },
   });
 
+  const {
+    data: getAccessGroupQueryResponse,
+    isLoading: isLoadingAccessGroups,
+  } = getAccessGroupQuery();
+
   const associationStep = useAssociationStep(formik);
 
   const [step, setStep] = useState(0);
@@ -251,7 +258,17 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
             required
           />
 
-          <AccessGroupSelect formik={formik} />
+          <Select
+            label="Access group"
+            options={(getAccessGroupQueryResponse?.data ?? []).map((group) => ({
+              label: group.title,
+              value: group.name,
+            }))}
+            {...formik.getFieldProps("access_group")}
+            error={getFormikError(formik, "access_group")}
+            required
+            disabled={isLoadingAccessGroups}
+          />
 
           {isSelfHosted && (
             <Input
