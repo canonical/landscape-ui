@@ -1,4 +1,4 @@
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type {
   PackageProfile,
   PackageProfileConstraint,
@@ -7,11 +7,11 @@ import type {
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 
 interface GetPackageProfilesParams {
   names?: string[];
@@ -90,7 +90,8 @@ export default function usePackageProfiles() {
       AxiosError<ApiError>
     >({
       queryKey: ["packageProfiles", queryParams],
-      queryFn: () => authFetch.get("packageprofiles", { params: queryParams }),
+      queryFn: async () =>
+        authFetch.get("packageprofiles", { params: queryParams }),
       ...config,
     });
   };
@@ -100,8 +101,8 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     CopyPackageProfileParams
   >({
-    mutationFn: (params) => authFetch.post("packageprofiles", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.post("packageprofiles", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
 
@@ -110,8 +111,8 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     CreatePackageProfileParams
   >({
-    mutationFn: (params) => authFetch.post("packageprofiles", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.post("packageprofiles", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
 
@@ -120,9 +121,9 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     RemovePackageProfileParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("RemovePackageProfile", { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
 
@@ -131,9 +132,9 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     EditPackageProfileParams
   >({
-    mutationFn: ({ name, ...params }) =>
+    mutationFn: async ({ name, ...params }) =>
       authFetch.put(`packageprofiles/${name}`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
 
@@ -146,7 +147,7 @@ export default function usePackageProfiles() {
   ) =>
     useQuery<AxiosResponse<PackageProfile[]>, AxiosError<ApiError>>({
       queryKey: ["instancePackageProfiles", { instanceId, ...queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(`computers/${instanceId}/packages/profile`, {
           params: queryParams,
         }),
@@ -168,7 +169,7 @@ export default function usePackageProfiles() {
       AxiosError<ApiError>
     >({
       queryKey: ["packageProfileConstraints", { name, ...queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(`packageprofiles/${name}/constraints`, {
           params: queryParams,
         }),
@@ -180,9 +181,9 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     AddPackageProfileConstraintsParams
   >({
-    mutationFn: ({ name, ...params }) =>
+    mutationFn: async ({ name, ...params }) =>
       authFetch.post(`packageprofiles/${name}/constraints`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
         queryClient.invalidateQueries({
@@ -196,9 +197,9 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     EditPackageProfileConstraintParams
   >({
-    mutationFn: ({ id, name, ...params }) =>
+    mutationFn: async ({ id, name, ...params }) =>
       authFetch.put(`packageprofiles/${name}/constraints/${id}`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
         queryClient.invalidateQueries({
@@ -212,9 +213,9 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     RemovePackageProfileConstraintsParams
   >({
-    mutationFn: ({ name, ...params }) =>
+    mutationFn: async ({ name, ...params }) =>
       authFetch.delete(`packageprofiles/${name}/constraints`, { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
         queryClient.invalidateQueries({

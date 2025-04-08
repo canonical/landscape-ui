@@ -1,9 +1,14 @@
 import EmptyState from "@/components/layout/EmptyState";
 import { Button } from "@canonical/react-components";
 import type { FallbackRender } from "@sentry/react";
+import { IS_DEV_ENV } from "@/constants";
 
 const FallbackComponent: FallbackRender = (errorData) => {
   const { resetError } = errorData;
+
+  if (IS_DEV_ENV) {
+    console.error(errorData.error);
+  }
 
   return (
     <EmptyState

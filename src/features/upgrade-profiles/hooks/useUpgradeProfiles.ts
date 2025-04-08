@@ -8,8 +8,8 @@ import type {
 } from "../types";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { Activity } from "@/features/activities";
-import type { ApiError } from "@/types/ApiError";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/api/ApiError";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 
 export interface CreateUpgradeProfileParams {
   every: UpgradeProfileFrequency;
@@ -49,10 +49,10 @@ export default function useUpgradeProfiles() {
     AxiosError<ApiError>,
     CreateUpgradeProfileParams
   >({
-    mutationFn: (params) => {
+    mutationFn: async (params) => {
       return authFetchOld.get("CreateUpgradeProfile", { params });
     },
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
   });
 
@@ -61,10 +61,10 @@ export default function useUpgradeProfiles() {
     AxiosError<ApiError>,
     EditUpgradeProfileParams
   >({
-    mutationFn: (params) => {
+    mutationFn: async (params) => {
       return authFetchOld.get("EditUpgradeProfile", { params });
     },
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
   });
 
@@ -73,10 +73,10 @@ export default function useUpgradeProfiles() {
     AxiosError<ApiError>,
     RemoveUpgradeProfileParams
   >({
-    mutationFn: (params) => {
+    mutationFn: async (params) => {
       return authFetchOld.get("RemoveUpgradeProfile", { params });
     },
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
   });
 
@@ -86,7 +86,7 @@ export default function useUpgradeProfiles() {
   > = (params = {}, config = {}) =>
     useQuery<AxiosResponse<UpgradeProfile[]>, AxiosError<ApiError>>({
       queryKey: ["upgradeProfiles", params],
-      queryFn: () => authFetchOld.get("GetUpgradeProfiles", { params }),
+      queryFn: async () => authFetchOld.get("GetUpgradeProfiles", { params }),
       ...config,
     });
 

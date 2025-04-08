@@ -1,6 +1,6 @@
 import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/ApiError";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/api/ApiError";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
@@ -13,13 +13,14 @@ export default function getUserApiCredentials() {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
-  const getUserApiCredentials: QueryFnType<
+  const fetchUserApiCredentials: QueryFnType<
     AxiosResponse<UserCredentials>,
     Record<never, unknown>
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<UserCredentials>, AxiosError<ApiError>>({
       queryKey: ["userDetails", "getCredentials"],
-      queryFn: () => authFetch.get("credentials", { params: queryParams }),
+      queryFn: async () =>
+        authFetch.get("credentials", { params: queryParams }),
       ...config,
     });
 
@@ -29,12 +30,12 @@ export default function getUserApiCredentials() {
     GenerateApiCredentialsParams
   >({
     mutationKey: ["userDetails", "generate"],
-    mutationFn: (params) => authFetch.post("credentials", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.post("credentials", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({
         queryKey: ["userDetails", "getCredentials"],
       }),
   });
 
-  return { getUserApiCredentials, generateApiCredentials };
+  return { fetchUserApiCredentials, generateApiCredentials };
 }

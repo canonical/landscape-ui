@@ -4,7 +4,7 @@ import { userGroups } from "@/tests/mocks/userGroup";
 import type { GroupsResponse } from "@/types/User";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
 import type { GetInstancesParams } from "@/hooks/useInstances";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance, PendingInstance } from "@/types/Instance";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 import { instances, pendingInstances } from "@/tests/mocks/instance";

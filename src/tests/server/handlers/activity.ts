@@ -1,6 +1,6 @@
 import { API_URL, API_URL_OLD, COMMON_NUMBERS } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 import type { Activity, GetActivitiesParams } from "@/features/activities";

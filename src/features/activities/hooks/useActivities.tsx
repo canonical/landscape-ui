@@ -12,14 +12,16 @@ import type {
 } from "../types";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import useSidePanel from "@/hooks/useSidePanel";
 import { lazy, Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 
-const ActivityDetails = lazy(() => import("../components/ActivityDetails"));
+const ActivityDetails = lazy(
+  async () => import("../components/ActivityDetails"),
+);
 
 export default function useActivities() {
   const authFetchOld = useFetchOld();
@@ -36,7 +38,7 @@ export default function useActivities() {
       AxiosError<ApiError>
     >({
       queryKey: ["activities", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get("activities", {
           params: queryParams,
         }),
@@ -53,7 +55,7 @@ export default function useActivities() {
   ) => {
     return useQuery<AxiosResponse<Activity>, AxiosError<ApiError>>({
       queryKey: ["activities", { activityId, ...queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(`activities/${activityId}`, { params: queryParams }),
       ...config,
     });
@@ -65,7 +67,7 @@ export default function useActivities() {
   > = (queryParams = {}, config = {}) => {
     return useQuery<AxiosResponse<string[]>, AxiosError<ApiError>>({
       queryKey: ["activityTypes"],
-      queryFn: () =>
+      queryFn: async () =>
         authFetchOld.get("GetActivityTypes", { params: queryParams }),
       ...config,
     });
@@ -77,8 +79,9 @@ export default function useActivities() {
     CancelActivitiesParams
   >({
     mutationKey: ["activities", "cancel"],
-    mutationFn: (params) => authFetchOld.get("CancelActivities", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetchOld.get("CancelActivities", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
 
@@ -88,8 +91,9 @@ export default function useActivities() {
     ApproveActivitiesParams
   >({
     mutationKey: ["activities", "approve"],
-    mutationFn: (params) => authFetchOld.get("ApproveActivities", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetchOld.get("ApproveActivities", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
 
@@ -98,8 +102,8 @@ export default function useActivities() {
     AxiosError<ApiError>,
     RedoUndoActivitiesParams
   >({
-    mutationFn: (params) => authFetch.post("activities/reapply", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.post("activities/reapply", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
 
@@ -108,8 +112,8 @@ export default function useActivities() {
     AxiosError<ApiError>,
     RedoUndoActivitiesParams
   >({
-    mutationFn: (params) => authFetch.post("activities/revert", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.post("activities/revert", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
 

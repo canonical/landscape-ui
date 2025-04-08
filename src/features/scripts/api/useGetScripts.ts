@@ -1,0 +1,48 @@
+import type { AxiosError, AxiosResponse } from "axios";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { Script } from "@/features/scripts";
+import { useQuery } from "@tanstack/react-query";
+import type { ApiError } from "@/types/api/ApiError";
+import useFetch from "@/hooks/useFetch";
+import usePageParams from "@/hooks/usePageParams";
+import type { PaginatedGetHookParams } from "@/types/api/PaginatedGetHookParams";
+
+const DEFAULT_CONFIG: PaginatedGetHookParams = {
+  listenToUrlParams: true,
+};
+
+export const useGetScripts = (config?: PaginatedGetHookParams) => {
+  const authFetch = useFetch();
+  const { currentPage, pageSize, status, search } = usePageParams();
+
+  config = {
+    ...DEFAULT_CONFIG,
+    ...config,
+  };
+
+  const params = config.listenToUrlParams
+    ? {
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize,
+        search: search ?? undefined,
+        status: status ?? undefined,
+      }
+    : {};
+
+  const { data, isLoading } = useQuery<
+    AxiosResponse<ApiPaginatedResponse<Script>>,
+    AxiosError<ApiError>
+  >({
+    queryKey: ["scripts", params],
+    queryFn: async () =>
+      authFetch.get("scripts", {
+        params,
+      }),
+  });
+
+  return {
+    scripts: data?.data.results ?? [],
+    scriptsCount: data?.data.count ?? 0,
+    isScriptsLoading: isLoading,
+  };
+};

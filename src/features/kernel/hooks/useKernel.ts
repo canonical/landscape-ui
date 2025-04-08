@@ -1,5 +1,5 @@
 import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -38,7 +38,7 @@ export default function useKernel() {
   ) => {
     return useQuery<AxiosResponse<KernelManagementInfo>, AxiosError<ApiError>>({
       queryKey: ["kernel", id],
-      queryFn: () => authFetch.get(`computers/${id}/livepatch/kernel`),
+      queryFn: async () => authFetch.get(`computers/${id}/livepatch/kernel`),
       ...config,
     });
   };
@@ -55,7 +55,7 @@ export default function useKernel() {
   ) => {
     return useQuery<AxiosResponse<LivepatchInformation>, AxiosError<ApiError>>({
       queryKey: ["kernel", { id, ...queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(`computers/${id}/livepatch/info`, {
           params: queryParams,
         }),
@@ -69,9 +69,10 @@ export default function useKernel() {
     KernelActionParams
   >({
     mutationKey: ["kernel", "downgrade"],
-    mutationFn: ({ id, ...queryParams }) =>
+    mutationFn: async ({ id, ...queryParams }) =>
       authFetch.post(`computers/${id}/kernel/downgrade`, queryParams),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kernel"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["kernel"] }),
   });
 
   const upgradeKernelQuery = useMutation<
@@ -80,9 +81,10 @@ export default function useKernel() {
     KernelActionParams
   >({
     mutationKey: ["kernel", "upgrade"],
-    mutationFn: ({ id, ...queryParams }) =>
+    mutationFn: async ({ id, ...queryParams }) =>
       authFetch.post(`computers/${id}/kernel/upgrade`, queryParams),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kernel"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["kernel"] }),
   });
 
   return {

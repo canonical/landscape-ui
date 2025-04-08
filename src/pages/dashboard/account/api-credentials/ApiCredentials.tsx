@@ -11,11 +11,11 @@ import type { FC } from "react";
 
 const ApiCredentials: FC = () => {
   const { getUserDetails } = useUserGeneralSettings();
-  const { getUserApiCredentials } = useApiCredentials();
+  const { fetchUserApiCredentials } = useApiCredentials();
 
   const { data: userData, isLoading: isLoadingUserData } = getUserDetails();
   const { data: credentialsData, isLoading: isLoadingCredentialsData } =
-    getUserApiCredentials();
+    fetchUserApiCredentials();
 
   const user = userData?.data;
   const credentials = credentialsData?.data?.credentials;

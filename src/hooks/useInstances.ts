@@ -2,10 +2,10 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Activity } from "@/features/activities";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance, PendingInstance } from "@/types/Instance";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
 
@@ -113,7 +113,7 @@ export default function useInstances() {
       AxiosError<ApiError>
     >({
       queryKey: ["instances", queryParams],
-      queryFn: () => authFetch.get("computers", { params: queryParams }),
+      queryFn: async () => authFetch.get("computers", { params: queryParams }),
       ...config,
     });
 
@@ -126,7 +126,7 @@ export default function useInstances() {
   ) =>
     useQuery<AxiosResponse<Instance>, AxiosError<ApiError>>({
       queryKey: ["instances", { instanceId, ...queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(`computers/${instanceId}`, { params: queryParams }),
       ...config,
     });
@@ -136,9 +136,9 @@ export default function useInstances() {
     AxiosError<ApiError>,
     EditInstanceParams
   >({
-    mutationFn: ({ instanceId, ...params }) =>
+    mutationFn: async ({ instanceId, ...params }) =>
       authFetch.put(`computers/${instanceId}`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
         queryClient.invalidateQueries({ queryKey: ["instanceTags"] }),
@@ -150,9 +150,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     AddAnnotationToInstancesParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("AddAnnotationToComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const removeAnnotationFromInstancesQuery = useMutation<
@@ -160,9 +161,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     RemoveAnnotationFromInstancesParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("RemoveAnnotationFromComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const addTagsToInstancesQuery = useMutation<
@@ -170,8 +172,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     AddTagsToInstancesParams
   >({
-    mutationFn: (params) => authFetchOld.get("AddTagsToComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("AddTagsToComputers", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const removeTagsFromInstancesQuery = useMutation<
@@ -179,9 +183,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     RemoveTagsFromInstancesParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("RemoveTagsFromComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const changeInstancesAccessGroupQuery = useMutation<
@@ -189,9 +194,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     ChangeInstancesAccessGroupParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("ChangeComputersAccessGroup", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const removeInstancesQuery = useMutation<
@@ -199,8 +205,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     RemoveInstances
   >({
-    mutationFn: (params) => authFetchOld.get("RemoveComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("RemoveComputers", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const getPendingInstancesQuery: QueryFnType<
@@ -209,7 +217,7 @@ export default function useInstances() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<PendingInstance[]>, AxiosError<ApiError>>({
       queryKey: ["pendingInstances"],
-      queryFn: () =>
+      queryFn: async () =>
         authFetchOld.get("GetPendingComputers", { params: queryParams }),
       ...config,
     });
@@ -219,9 +227,9 @@ export default function useInstances() {
     AxiosError<ApiError>,
     AcceptPendingInstancesParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("AcceptPendingComputers", { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["pendingInstances"] }),
   });
 
@@ -230,9 +238,9 @@ export default function useInstances() {
     AxiosError<ApiError>,
     RejectPendingInstancesParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("RejectPendingComputers", { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["pendingInstances"] }),
   });
 
@@ -241,8 +249,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     CreateCloudOtpsParams
   >({
-    mutationFn: (params) => authFetchOld.get("CreateCloudOtps", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("CreateCloudOtps", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const rebootInstancesQuery = useMutation<
@@ -250,8 +260,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     InstancesPowerManageParams
   >({
-    mutationFn: (params) => authFetchOld.get("RebootComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("RebootComputers", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const restartInstanceQuery = useMutation<
@@ -259,9 +271,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     RestartInstanceParams
   >({
-    mutationFn: ({ id, ...queryParams }) =>
+    mutationFn: async ({ id, ...queryParams }) =>
       authFetch.post(`computers/${id}/restart`, queryParams),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const shutdownInstancesQuery = useMutation<
@@ -269,8 +282,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     InstancesPowerManageParams
   >({
-    mutationFn: (params) => authFetchOld.get("ShutdownComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("ShutdownComputers", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const renameInstancesQuery = useMutation<
@@ -278,8 +293,10 @@ export default function useInstances() {
     AxiosError<ApiError>,
     RenameInstancesParams
   >({
-    mutationFn: (params) => authFetchOld.get("RenameComputers", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("RenameComputers", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 
   const getAllInstanceTagsQuery: QueryFnType<
@@ -289,7 +306,7 @@ export default function useInstances() {
     useQuery<AxiosResponse<ApiPaginatedResponse<string>>, AxiosError<ApiError>>(
       {
         queryKey: ["instanceTags"],
-        queryFn: () => authFetch.get("tags", { params: queryParams }),
+        queryFn: async () => authFetch.get("tags", { params: queryParams }),
         ...config,
       },
     );
@@ -300,7 +317,7 @@ export default function useInstances() {
   > = (queryParams = {}, config = {}) =>
     useQuery({
       queryKey: ["availabilityZones"],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get<{ values: string[] }>("computers/availability-zones", {
           params: queryParams,
         }),

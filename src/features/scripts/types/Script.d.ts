@@ -1,13 +1,14 @@
-import type { Creator } from "./Creator";
+import type { Creator } from "@/types/Creator";
 import type { AccessGroup } from "./accessGroup";
+import type { ScriptStatus } from "./ScriptStatus";
 
 export interface Script extends Record<string, unknown> {
-  access_group: AccessGroup["name"];
-  attachments: string[];
-  creator: Creator;
   id: number;
-  interpreter?: string;
-  time_limit: number;
+  access_group: AccessGroup["name"];
+  creator: Creator;
   title: string;
+  time_limit: number;
   username: string;
+  attachments: string[];
+  status: ScriptStatus;
 }

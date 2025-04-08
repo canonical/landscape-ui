@@ -7,7 +7,7 @@ import {
   installedSnaps,
   successfulSnapInstallResponse,
 } from "@/tests/mocks/snap";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import {
   generateFilteredResponse,

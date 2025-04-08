@@ -11,7 +11,7 @@ import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
 import {
@@ -482,7 +482,7 @@ const InfoTablesContainer: FC = () => {
                   plural: `${getUpgradesTableFooterName()}s`,
                 }}
                 itemCount={MAX_UPGRADE_COUNT}
-                onLimitChange={() => navigate("/instances")}
+                onLimitChange={async () => navigate("/instances")}
                 totalCount={getTotalTableItemsCount("upgrades")}
                 className={classes.footer}
               />
@@ -575,7 +575,7 @@ const InfoTablesContainer: FC = () => {
                   plural: "activities",
                 }}
                 itemCount={MAX_ACTIVITY_COUNT}
-                onLimitChange={() => navigate("/activities")}
+                onLimitChange={async () => navigate("/activities")}
                 totalCount={getTotalTableItemsCount("activities")}
                 className={classes.footer}
               />

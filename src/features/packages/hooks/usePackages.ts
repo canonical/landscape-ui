@@ -4,9 +4,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type {
   DowngradePackageVersion,
   InstancePackage,
@@ -89,7 +89,7 @@ export default function usePackages() {
       AxiosError<ApiError>
     >({
       queryKey: ["packages", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get("packages", {
           params: queryParams,
         }),
@@ -112,7 +112,7 @@ export default function usePackages() {
       AxiosError<ApiError>
     >({
       queryKey: ["packages", { instance_id, ...queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(`computers/${instance_id}/packages`, {
           params: queryParams,
         }),
@@ -125,8 +125,10 @@ export default function usePackages() {
     AxiosError<ApiError>,
     UpgradePackagesParams
   >({
-    mutationFn: (params) => authFetchOld.get("UpgradePackages", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["packages"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("UpgradePackages", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["packages"] }),
   });
 
   const upgradeInstancesPackagesQuery = useMutation<
@@ -134,9 +136,9 @@ export default function usePackages() {
     AxiosError<ApiError>,
     UpgradeInstancePackagesParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetch.post("/computers/upgrade-packages", params),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["packages"] }),
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
@@ -158,7 +160,7 @@ export default function usePackages() {
       AxiosError<ApiError>
     >({
       queryKey: ["packageDowngradeVersion", { instanceId, packageName }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(
           `computers/${instanceId}/packages/installed/${packageName}/downgrades`,
         ),
@@ -170,9 +172,10 @@ export default function usePackages() {
     AxiosError<ApiError>,
     DowngradePackageVersionParams
   >({
-    mutationFn: ({ instanceId, ...params }) =>
+    mutationFn: async ({ instanceId, ...params }) =>
       authFetch.post(`computers/${instanceId}/packages/installed`, params),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["packages"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["packages"] }),
   });
 
   const packagesActionQuery = useMutation<
@@ -180,8 +183,9 @@ export default function usePackages() {
     AxiosError<ApiError>,
     PackagesActionParams
   >({
-    mutationFn: (params) => authFetch.post("packages", params),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["packages"] }),
+    mutationFn: async (params) => authFetch.post("packages", params),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["packages"] }),
   });
 
   return {
