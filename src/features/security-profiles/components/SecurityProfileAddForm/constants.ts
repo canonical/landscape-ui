@@ -1,0 +1,1 @@
+export const ASSOCIATED_INSTANCES_LIMIT = 5000;
