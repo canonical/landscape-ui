@@ -15,6 +15,7 @@ export interface SecurityProfile extends Record<string, unknown> {
     failing: number;
     in_progress: number;
     report_uri: string | null;
+    timestamp: string;
   };
   mode: "audit" | "fix-audit" | "fix-restart-audit";
   modification_time: string;
@@ -26,4 +27,5 @@ export interface SecurityProfile extends Record<string, unknown> {
   tags: string[];
   tailoring_file_uri: string | null;
   title: string;
+  associated_instances: number;
 }

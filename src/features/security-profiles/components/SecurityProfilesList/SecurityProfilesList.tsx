@@ -39,36 +39,35 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             return row.original.status;
           }
         },
-        getCellIcon: ({ row: { original } }: CellProps<SecurityProfile>) => {
-          if (original.status === "active") {
+        getCellIcon: ({ row }: CellProps<SecurityProfile>) => {
+          if (row.original.status === "active") {
             return "status-succeeded-small";
           }
-          if (original.status === "archived") {
+          if (row.original.status === "archived") {
             return "status-queued-small";
           }
         },
       },
-
       {
         accessor: "lastAuditPassrate",
         Header: "Last audit's passrate",
         Cell: ({ row }: CellProps<SecurityProfile>) => (
           <div>
             <div className={classes.textContainer}>
-              <span>{row.original.lastAuditPassrate.passed} passed</span>
-              <span>{row.original.lastAuditPassrate.failed} failed</span>
+              <span>{row.original.last_run_results.passing} passed</span>
+              <span>{row.original.last_run_results.failing} failed</span>
             </div>
             <div className={classes.lineContainer}>
               <div
                 className={classes.linePassed}
                 style={{
-                  width: `${(row.original.lastAuditPassrate.passed / row.original.associatedInstances) * 100}%`,
+                  width: `${(row.original.last_run_results.passing / row.original.associated_instances) * 100}%`,
                 }}
               />
               <div
                 className={classes.lineFailed}
                 style={{
-                  width: `${(row.original.lastAuditPassrate.failed / row.original.associatedInstances) * 100}%`,
+                  width: `${(row.original.last_run_results.failing / row.original.associated_instances) * 100}%`,
                 }}
               />
             </div>
@@ -92,7 +91,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 search: `?tags=${row.original.tags.join("%2C")}`,
               }}
             >
-              {row.original.associatedInstances} instances
+              {row.original.associated_instances} instances
             </Link>
 
             <br />
@@ -110,9 +109,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         Cell: ({ row }: CellProps<SecurityProfile>) => {
           if (row.original.mode === "audit") {
             return "audit only";
-          } else if (row.original.mode === "restartFixAudit") {
+          } else if (row.original.mode === "fix-restart-audit") {
             return "fix, restart, audit";
-          } else if (row.original.mode === "fixAudit") {
+          } else if (row.original.mode === "fix-audit") {
             return "fix and audit";
           } else {
             return row.original.mode;
@@ -131,7 +130,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         Cell: ({ row }: CellProps<SecurityProfile>) => (
           <>
             <>
-              {moment(row.original.runs.last).format(DISPLAY_DATE_TIME_FORMAT)}
+              {moment(row.original.last_run_results.timestamp).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )}
             </>
             <br />
             <span className={classes.elipsis}>{row.original.schedule}</span>

@@ -5,11 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { SecurityProfile } from "../types";
 
-interface GetSecurityProfilesParams
-  extends Partial<Pick<SecurityProfile, "status">> {
+interface GetSecurityProfilesParams {
   limit: number;
   offset: number;
   search?: string;
+  statuses?: string[];
   passRateFrom?: number;
   passRateTo?: number;
 }

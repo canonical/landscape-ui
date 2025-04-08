@@ -7,14 +7,22 @@ export default [
     const { searchParams } = new URL(request.url);
 
     const search = searchParams.get("search") || "";
-    const status = searchParams.get("status") || "active";
     const limit = parseInt(searchParams.get("limit") || "20");
     const offset = parseInt(searchParams.get("offset") || "0");
+    const statuses = searchParams.get("statuses") || ["active", "archived"];
+    const passRateFrom = parseFloat(searchParams.get("passRateFrom") || "0");
+    const passRateTo = parseFloat(searchParams.get("passRateTo") || "1");
 
     const filteredProfiles = securityProfiles.filter((securityProfile) => {
+      const passRate =
+        securityProfile.last_run_results.passing /
+        securityProfile.associated_instances;
+
       return (
         securityProfile.name.startsWith(search) &&
-        securityProfile.status === status
+        statuses.includes(securityProfile.status) &&
+        passRate >= passRateFrom &&
+        passRate <= passRateTo
       );
     });
 

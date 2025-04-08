@@ -13,7 +13,7 @@ const SecurityProfilesContainer: FC = () => {
   const { securityProfiles, isSecurityProfilesLoading } =
     useGetSecurityProfiles({
       search,
-      statuses: statuses.length === 0 ? undefined : statuses,
+      statuses: statuses.length === 0 ? [] : statuses,
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
     });
