@@ -1,18 +1,9 @@
 import type { MenuLink } from "@canonical/react-components";
-import {
-  //ConfirmationModal,
-  ContextualMenu,
-  Icon,
-} from "@canonical/react-components";
+import { ContextualMenu, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 import classes from "./SecurityProfileListContextualMenu.module.scss";
-//import LoadingState from "@/components/layout/LoadingState";
-//import useSidePanel from "@/hooks/useSidePanel";
-//import { useRepositoryProfiles } from "../../hooks";
-//import useDebug from "@/hooks/useDebug";
-//import { lazy, Suspense, useState } from "react";
 
 interface SecurityProfileListContextualMenuProps {
   readonly actions: SecurityProfileActions;
