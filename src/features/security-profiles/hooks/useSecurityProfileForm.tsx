@@ -24,19 +24,21 @@ import moment from "moment";
 import type { ReactNode } from "react";
 import * as Yup from "yup";
 import { useAddSecurityProfile } from "../api";
-import { phrase } from "../components/SecurityProfileAddForm/helpers";
+import { phrase } from "../helpers";
 import type { SecurityProfileAddFormValues } from "../types/SecurityProfileAddFormValues";
 import useSecurityProfileFormAssociationStep from "./useSecurityProfileFormAssociationStep";
 
-interface useSecurityProfileFormProps {
+export interface UseSecurityProfileFormProps {
   initialValues: SecurityProfileAddFormValues;
+  benchmarkDisabled?: boolean;
   onSuccess?: (values: SecurityProfileAddFormValues) => void;
 }
 
 const useSecurityProfileForm = ({
   initialValues,
+  benchmarkDisabled,
   onSuccess = () => undefined,
-}: useSecurityProfileFormProps) => {
+}: UseSecurityProfileFormProps) => {
   const debug = useDebug();
   const { isSelfHosted } = useEnv();
   const { closeSidePanel } = useSidePanel();
@@ -243,7 +245,7 @@ const useSecurityProfileForm = ({
         "Select a security profile benchmark, choose the profile mode, and optionally upload a tailoring file to customize the security profile.",
       content: (
         <>
-          {!initialValues.benchmark && (
+          {!benchmarkDisabled && (
             <Notification severity="caution" title="Changes restricted:" inline>
               After profile creation, the security profile benchmark and mode
               cannot be changed. Please review before proceeding.
@@ -252,7 +254,7 @@ const useSecurityProfileForm = ({
 
           <CustomSelect
             label="Base profile"
-            disabled={!!initialValues.benchmark}
+            disabled={benchmarkDisabled}
             options={[
               {
                 label: (

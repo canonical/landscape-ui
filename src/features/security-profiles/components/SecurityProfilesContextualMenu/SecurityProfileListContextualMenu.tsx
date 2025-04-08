@@ -1,4 +1,3 @@
-import useSidePanel from "@/hooks/useSidePanel";
 import type { MenuLink } from "@canonical/react-components";
 import {
   //ConfirmationModal,
@@ -7,7 +6,7 @@ import {
 } from "@canonical/react-components";
 import type { FC } from "react";
 import type { SecurityProfile } from "../../types";
-import SecurityProfileEditForm from "../SecurityProfileEditForm";
+import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 import classes from "./SecurityProfileListContextualMenu.module.scss";
 //import LoadingState from "@/components/layout/LoadingState";
 //import useSidePanel from "@/hooks/useSidePanel";
@@ -16,14 +15,13 @@ import classes from "./SecurityProfileListContextualMenu.module.scss";
 //import { lazy, Suspense, useState } from "react";
 
 interface SecurityProfileListContextualMenuProps {
+  readonly actions: SecurityProfileActions;
   readonly profile: SecurityProfile;
 }
 
 const SecurityProfileListContextualMenu: FC<
   SecurityProfileListContextualMenuProps
-> = ({ profile }) => {
-  const { setSidePanelContent } = useSidePanel();
-
+> = ({ actions, profile }) => {
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
@@ -55,10 +53,7 @@ const SecurityProfileListContextualMenu: FC<
       "aria-label": `Edit "${profile.title}" security profile`,
       hasIcon: true,
       onClick: () => {
-        setSidePanelContent(
-          `Edit ${profile.title}`,
-          <SecurityProfileEditForm profile={profile} />,
-        );
+        actions.edit(profile);
       },
     },
     {
@@ -80,6 +75,9 @@ const SecurityProfileListContextualMenu: FC<
       ),
       "aria-label": `Duplicate "${profile.title}" security profile`,
       hasIcon: true,
+      onClick: () => {
+        actions.duplicate(profile);
+      },
     },
     {
       children: (

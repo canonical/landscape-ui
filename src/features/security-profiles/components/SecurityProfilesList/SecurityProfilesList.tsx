@@ -1,4 +1,5 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
@@ -6,8 +7,10 @@ import type { FC } from "react";
 import { useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
+import { notifyCreation } from "../../helpers";
 import type { SecurityProfile } from "../../types";
 import SecurityProfileDetails from "../SecurityProfileDetails/SecurityProfileDetails";
+import SecurityProfileForm from "../SecurityProfileForm";
 import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
 import classes from "./SecurityProfilesList.module.scss";
 
@@ -18,7 +21,46 @@ interface SecurityProfilesListProps {
 const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   securityProfiles,
 }) => {
+  const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
+
+  const actions = {
+    duplicate: (profile: SecurityProfile) => {
+      setSidePanelContent(
+        `Duplicate ${profile.title}`,
+        <SecurityProfileForm
+          endDescription="To duplicate the profile, you need to run it."
+          onSuccess={(values) => {
+            notifyCreation(values, notify);
+          }}
+          profile={profile}
+        />,
+      );
+    },
+
+    edit: (profile: SecurityProfile) => {
+      setSidePanelContent(
+        `Edit ${profile.title}`,
+        <SecurityProfileForm
+          benchmarkDisabled
+          earlySubmit={(values) => values.mode == "audit"}
+          endDescription="To save your changes, you need to run the profile."
+          onSuccess={(values) => {
+            notify.success({
+              title: `You have successfully saved changes for ${values.title} security profile.`,
+              message:
+                values.mode == "audit"
+                  ? "The changes applied will affect instances associated with this profile."
+                  : values.mode == "fix-audit"
+                    ? "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances and generate an audit."
+                    : "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances, restart them, and generate an audit.",
+            });
+          }}
+          profile={profile}
+        />,
+      );
+    },
+  };
 
   const columns = useMemo<Column<SecurityProfile>[]>(
     () => [
@@ -26,20 +68,20 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "name",
         Header: "Name",
         className: classes.nameCell,
-        Cell: ({ row }: CellProps<SecurityProfile>) => (
+        Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <Button
             appearance="link"
             type="button"
             className="u-no-margin--bottom u-no-padding--top"
             onClick={() => {
               setSidePanelContent(
-                row.original.name,
-                <SecurityProfileDetails profile={row.original} />,
+                profile.name,
+                <SecurityProfileDetails actions={actions} profile={profile} />,
                 "medium",
               );
             }}
           >
-            {row.original.name}
+            {profile.name}
           </Button>
         ),
       },
@@ -47,20 +89,28 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "status",
         Header: "Status",
         className: classes.status,
-        Cell: ({ row }: CellProps<SecurityProfile>) => {
-          if (row.original.status === "active") {
+        Cell: ({
+          row: {
+            original: { status },
+          },
+        }: CellProps<SecurityProfile>) => {
+          if (status === "active") {
             return "Active";
-          } else if (row.original.status === "archived") {
+          } else if (status === "archived") {
             return "Archived";
           } else {
-            return row.original.status;
+            return status;
           }
         },
-        getCellIcon: ({ row }: CellProps<SecurityProfile>) => {
-          if (row.original.status === "active") {
+        getCellIcon: ({
+          row: {
+            original: { status },
+          },
+        }: CellProps<SecurityProfile>) => {
+          if (status === "active") {
             return "status-succeeded-small";
           }
-          if (row.original.status === "archived") {
+          if (status === "archived") {
             return "status-queued-small";
           }
         },
@@ -68,23 +118,23 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "lastAuditPassrate",
         Header: "Last audit's passrate",
-        Cell: ({ row }: CellProps<SecurityProfile>) => (
+        Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <div>
             <div className={classes.textContainer}>
-              <span>{row.original.last_run_results.passing} passed</span>
-              <span>{row.original.last_run_results.failing} failed</span>
+              <span>{profile.last_run_results.passing} passed</span>
+              <span>{profile.last_run_results.failing} failed</span>
             </div>
             <div className={classes.lineContainer}>
               <div
                 className={classes.linePassed}
                 style={{
-                  width: `${(row.original.last_run_results.passing / row.original.associated_instances) * 100}%`,
+                  width: `${(profile.last_run_results.passing / profile.associated_instances) * 100}%`,
                 }}
               />
               <div
                 className={classes.lineFailed}
                 style={{
-                  width: `${(row.original.last_run_results.failing / row.original.associated_instances) * 100}%`,
+                  width: `${(profile.last_run_results.failing / profile.associated_instances) * 100}%`,
                 }}
               />
             </div>
@@ -100,22 +150,20 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             Tags
           </span>
         ),
-        Cell: ({ row }: CellProps<SecurityProfile>) => (
+        Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <>
             <Link
               to={{
                 pathname: "/instances",
-                search: `?tags=${row.original.tags.join("%2C")}`,
+                search: `?tags=${profile.tags.join("%2C")}`,
               }}
             >
-              {row.original.associated_instances} instances
+              {profile.associated_instances} instances
             </Link>
 
             <br />
             <span className={classes.elipsis}>
-              {row.original.tags
-                ? row.original.tags.join(", ")
-                : row.original.tags}
+              {profile.tags ? profile.tags.join(", ") : profile.tags}
             </span>
           </>
         ),
@@ -123,15 +171,19 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "mode",
         Header: "Profile Mode",
-        Cell: ({ row }: CellProps<SecurityProfile>) => {
-          if (row.original.mode === "audit") {
+        Cell: ({
+          row: {
+            original: { mode },
+          },
+        }: CellProps<SecurityProfile>) => {
+          if (mode === "audit") {
             return "audit only";
-          } else if (row.original.mode === "fix-restart-audit") {
+          } else if (mode === "fix-restart-audit") {
             return "fix, restart, audit";
-          } else if (row.original.mode === "fix-audit") {
+          } else if (mode === "fix-audit") {
             return "fix and audit";
           } else {
-            return row.original.mode;
+            return mode;
           }
         },
       },
@@ -144,15 +196,15 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             Schedule
           </span>
         ),
-        Cell: ({ row }: CellProps<SecurityProfile>) => (
+        Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <>
             <>
-              {moment(row.original.last_run_results.timestamp).format(
+              {moment(profile.last_run_results.timestamp).format(
                 DISPLAY_DATE_TIME_FORMAT,
               )}
             </>
             <br />
-            <span className={classes.elipsis}>{row.original.schedule}</span>
+            <span className={classes.elipsis}>{profile.schedule}</span>
           </>
         ),
       },
@@ -160,8 +212,11 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "id",
         className: classes.actions,
         Header: "Actions",
-        Cell: ({ row }: CellProps<SecurityProfile>) => (
-          <SecurityProfileListContextualMenu profile={row.original} />
+        Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
+          <SecurityProfileListContextualMenu
+            actions={actions}
+            profile={profile}
+          />
         ),
       },
     ],

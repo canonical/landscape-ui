@@ -1,21 +1,28 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
-import useNotify from "@/hooks/useNotify";
 import moment from "moment";
 import { useState, type FC } from "react";
+import { phrase } from "../../helpers";
+import type { UseSecurityProfileFormProps } from "../../hooks/useSecurityProfileForm";
 import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
 import type { SecurityProfile } from "../../types";
-import classes from "./SecurityProfileEditForm.module.scss";
+import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
+import classes from "./SecurityProfileForm.module.scss";
 
-interface SecurityProfileEditFormProps {
+interface SecurityProfileFormProps
+  extends Omit<UseSecurityProfileFormProps, "initialValues"> {
+  readonly endDescription: string;
   readonly profile: SecurityProfile;
+  readonly earlySubmit?: (values: SecurityProfileAddFormValues) => boolean;
 }
 
-const SecurityProfileEditForm: FC<SecurityProfileEditFormProps> = ({
+const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
+  benchmarkDisabled,
+  earlySubmit = () => false,
+  endDescription,
+  onSuccess,
   profile,
 }) => {
-  const { notify } = useNotify();
-
   const { formik, steps } = useSecurityProfileForm({
     initialValues: {
       day_of_month_type: "day-of-month",
@@ -32,17 +39,8 @@ const SecurityProfileEditForm: FC<SecurityProfileEditFormProps> = ({
       unit_of_time: "DAILY",
       ...profile,
     },
-    onSuccess: (values) => {
-      notify.success({
-        title: `You have successfully saved changes for ${values.title} security profile.`,
-        message:
-          values.mode == "audit"
-            ? "The changes applied will affect instances associated with this profile."
-            : values.mode == "fix-audit"
-              ? "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances and generate an audit."
-              : "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances, restart them, and generate an audit.",
-      });
-    },
+    benchmarkDisabled,
+    onSuccess,
   });
 
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
@@ -52,7 +50,7 @@ const SecurityProfileEditForm: FC<SecurityProfileEditFormProps> = ({
   };
 
   const startSubmit = () => {
-    if (formik.values.mode == "audit") {
+    if (earlySubmit(formik.values)) {
       finishSubmit();
       return;
     }
@@ -69,7 +67,19 @@ const SecurityProfileEditForm: FC<SecurityProfileEditFormProps> = ({
 
     return (
       <>
-        <p>{step.description}</p>
+        <p>
+          {endDescription} This will{" "}
+          {phrase(
+            [
+              formik.values.mode != "audit" ? "apply fixes" : null,
+              formik.values.mode == "fix-restart-audit"
+                ? "restart instances"
+                : null,
+              "generate an audit",
+            ].filter((string) => string != null),
+          )}{" "}
+          on the selected next run date.
+        </p>
 
         {step.content}
 
@@ -106,4 +116,4 @@ const SecurityProfileEditForm: FC<SecurityProfileEditFormProps> = ({
   );
 };
 
-export default SecurityProfileEditForm;
+export default SecurityProfileForm;

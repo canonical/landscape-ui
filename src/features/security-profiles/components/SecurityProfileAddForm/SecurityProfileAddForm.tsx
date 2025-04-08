@@ -6,9 +6,9 @@ import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
+import { notifyCreation } from "../../helpers";
 import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
 import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
-import { phrase } from "./helpers";
 import classes from "./SecurityProfileAddForm.module.scss";
 
 interface SecurityProfileAddFormProps {
@@ -43,33 +43,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       unit_of_time: "DAILY",
     },
     onSuccess: (values) => {
-      const notificationMessageParts = ["perform an initial run"];
-
-      if (values.mode != "audit") {
-        notificationMessageParts.push(
-          "apply remediation fixes on associated instances",
-        );
-      }
-
-      if (values.mode == "fix-restart-audit") {
-        notificationMessageParts.push("restart them");
-      }
-
-      notificationMessageParts.push("generate an audit");
-
-      notify.success({
-        title: `You have successfully created ${values.title} security profile.`,
-        message: `This profile will ${phrase(notificationMessageParts)}.`,
-        actions: [
-          {
-            label: "View details",
-            onClick: () => {
-              console.warn("PLACEHOLDER");
-            },
-          },
-        ],
-      });
-
+      notifyCreation(values, notify);
       onSuccess(values);
     },
   });
