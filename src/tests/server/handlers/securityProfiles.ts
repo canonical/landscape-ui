@@ -9,7 +9,6 @@ export default [
     const search = searchParams.get("search") || "";
     const limit = parseInt(searchParams.get("limit") || "20");
     const offset = parseInt(searchParams.get("offset") || "0");
-    const statuses = searchParams.get("statuses") || ["active", "archived"];
     const passRateFrom = parseFloat(searchParams.get("passRateFrom") || "0");
     const passRateTo = parseFloat(searchParams.get("passRateTo") || "1");
 
@@ -18,9 +17,10 @@ export default [
         securityProfile.last_run_results.passing /
         securityProfile.associated_instances;
 
+      console.log(securityProfile.status);
+
       return (
         securityProfile.name.startsWith(search) &&
-        statuses.includes(securityProfile.status) &&
         passRate >= passRateFrom &&
         passRate <= passRateTo
       );

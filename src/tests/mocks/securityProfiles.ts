@@ -2,7 +2,7 @@ import type { SecurityProfile } from "@/features/security-profiles";
 
 export const securityProfiles: SecurityProfile[] = [
   {
-    access_group: "",
+    access_group: "global",
     account_id: 0,
     benchmark: "disa_stig",
     creation_time: "",
@@ -28,7 +28,7 @@ export const securityProfiles: SecurityProfile[] = [
     associated_instances: 10000,
   },
   {
-    access_group: "",
+    access_group: "global",
     account_id: 0,
     benchmark: "disa_stig",
     creation_time: "",
@@ -54,7 +54,7 @@ export const securityProfiles: SecurityProfile[] = [
     associated_instances: 1550,
   },
   {
-    access_group: "",
+    access_group: "global",
     account_id: 0,
     benchmark: "disa_stig",
     creation_time: "",
@@ -80,7 +80,7 @@ export const securityProfiles: SecurityProfile[] = [
     associated_instances: 648,
   },
   {
-    access_group: "",
+    access_group: "global",
     account_id: 0,
     benchmark: "disa_stig",
     creation_time: "",
@@ -106,7 +106,7 @@ export const securityProfiles: SecurityProfile[] = [
     associated_instances: 500,
   },
   {
-    access_group: "",
+    access_group: "global",
     account_id: 0,
     benchmark: "disa_stig",
     creation_time: "",
@@ -132,7 +132,7 @@ export const securityProfiles: SecurityProfile[] = [
     associated_instances: 252,
   },
   {
-    access_group: "",
+    access_group: "global",
     account_id: 0,
     benchmark: "disa_stig",
     creation_time: "",
@@ -158,7 +158,7 @@ export const securityProfiles: SecurityProfile[] = [
     associated_instances: 252,
   },
   {
-    access_group: "",
+    access_group: "global",
     account_id: 0,
     benchmark: "disa_stig",
     creation_time: "",

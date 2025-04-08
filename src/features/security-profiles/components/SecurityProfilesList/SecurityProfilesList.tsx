@@ -1,13 +1,15 @@
-import { ModularTable } from "@canonical/react-components";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Button, ModularTable } from "@canonical/react-components";
+import moment from "moment";
 import type { FC } from "react";
 import { useMemo } from "react";
-import type { Column, CellProps } from "react-table";
-import type { SecurityProfile } from "../../types";
-import classes from "./SecurityProfilesList.module.scss";
-import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
 import { Link } from "react-router";
+import type { CellProps, Column } from "react-table";
+import type { SecurityProfile } from "../../types";
+import SecurityProfileDetails from "../SecurityProfileDetails/SecurityProfileDetails";
+import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
+import classes from "./SecurityProfilesList.module.scss";
 
 interface SecurityProfilesListProps {
   readonly securityProfiles: SecurityProfile[];
@@ -16,6 +18,8 @@ interface SecurityProfilesListProps {
 const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   securityProfiles,
 }) => {
+  const { setSidePanelContent } = useSidePanel();
+
   const columns = useMemo<Column<SecurityProfile>[]>(
     () => [
       {
@@ -23,7 +27,20 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         Header: "Name",
         className: classes.nameCell,
         Cell: ({ row }: CellProps<SecurityProfile>) => (
-          <span>{row.original.name}</span>
+          <Button
+            appearance="link"
+            type="button"
+            className="u-no-margin--bottom u-no-padding--top"
+            onClick={() => {
+              setSidePanelContent(
+                row.original.name,
+                <SecurityProfileDetails profile={row.original} />,
+                "medium",
+              );
+            }}
+          >
+            {row.original.name}
+          </Button>
         ),
       },
       {
