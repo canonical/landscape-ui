@@ -1,26 +1,27 @@
 import { RadioInput } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
-import type { ComponentProps, ReactNode } from "react";
+import type { ComponentProps, Key, ReactNode } from "react";
 import classes from "./RadioGroup.module.scss";
 
 interface RadioGroupProps<
   TField extends string,
-  TFormik extends Record<TField, ComponentProps<typeof RadioInput>["key"]>,
+  TFormik extends Record<TField, Key>,
 > {
   readonly field: TField;
   readonly formik: FormikContextType<TFormik>;
   readonly inputs?: (Omit<
     ComponentProps<typeof RadioInput>,
     | "checked"
+    | "key"
     | "onChange"
     | keyof ReturnType<FormikContextType<TFormik>["getFieldProps"]>
-  > & { value: ComponentProps<typeof RadioInput>["key"] })[];
+  > & { key: Key })[];
   readonly label?: ReactNode;
 }
 
 const RadioGroup = <
   TField extends string,
-  TFormik extends Record<TField, ComponentProps<typeof RadioInput>["key"]>,
+  TFormik extends Record<TField, Key>,
 >({
   field,
   formik,
@@ -32,13 +33,13 @@ const RadioGroup = <
       <p className="u-no-margin--bottom">{label}</p>
 
       <div className={classes.radioGroup}>
-        {inputs.map(({ value, ...input }) => (
+        {inputs.map(({ key, ...input }) => (
           <RadioInput
             {...input}
-            key={value}
+            key={key}
             {...formik.getFieldProps(field)}
-            checked={formik.values[field] == value}
-            onChange={async () => formik.setFieldValue(field, value)}
+            checked={formik.values[field] == key}
+            onChange={async () => formik.setFieldValue(field, key)}
           />
         ))}
       </div>

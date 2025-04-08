@@ -1,9 +1,9 @@
 import { Card, Icon } from "@canonical/react-components";
-import type { ComponentProps, FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import classes from "./Flow.module.scss";
 
 interface FlowCardProps {
-  readonly iconName: ComponentProps<typeof Icon>["name"];
+  readonly iconName: string;
   readonly description?: ReactNode;
   readonly header?: ReactNode;
   readonly children?: ReactNode;

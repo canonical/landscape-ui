@@ -34,7 +34,7 @@ import classes from "./SecurityProfileAddForm.module.scss";
 import { phrase } from "./helpers";
 
 interface SecurityProfileAddFormProps {
-  readonly currentDate: SecurityProfileAddFormValues["start_date"];
+  readonly currentDate: string;
   readonly onSubmit: (values: SecurityProfileAddFormValues) => void;
 }
 
@@ -458,8 +458,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
                   formik={formik}
                   label="Delivery time"
                   inputs={[
-                    { label: "As soon as possible", value: "asap" },
-                    { label: "Scheduled", value: "scheduled" },
+                    { label: "As soon as possible", key: "asap" },
+                    { label: "Scheduled", key: "scheduled" },
                   ]}
                 />
 
@@ -468,8 +468,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
                   formik={formik}
                   label="Randomize delivery over a time window"
                   inputs={[
-                    { label: "No", value: "no" },
-                    { label: "Yes", value: "yes" },
+                    { label: "No", key: "no" },
+                    { label: "Yes", key: "yes" },
                   ]}
                 />
               </Indent>
