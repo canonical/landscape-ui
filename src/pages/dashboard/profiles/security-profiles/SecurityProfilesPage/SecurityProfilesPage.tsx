@@ -2,14 +2,12 @@ import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import {
   SecurityProfileAddForm,
   SecurityProfilesContainer,
 } from "@/features/security-profiles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-import moment from "moment";
 import type { FC } from "react";
 import { useState } from "react";
 
@@ -29,10 +27,7 @@ const SecurityProfilesPage: FC = () => {
   const addSecurityProfile = () => {
     setSidePanelContent(
       "Add security profile",
-      <SecurityProfileAddForm
-        currentDate={moment().format(INPUT_DATE_TIME_FORMAT)}
-        onSubmit={showNotification}
-      />,
+      <SecurityProfileAddForm onSuccess={showNotification} />,
     );
   };
 

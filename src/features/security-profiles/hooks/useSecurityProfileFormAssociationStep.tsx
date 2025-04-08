@@ -6,9 +6,9 @@ import type { FormikContextType } from "formik";
 import { useEffect, useState } from "react";
 import { ASSOCIATED_INSTANCES_LIMIT } from "../components/SecurityProfileAddForm/constants";
 
-export default function useAssociationStep<T extends AssociationBlockFormProps>(
-  formik: FormikContextType<T>,
-) {
+export default function useSecurityProfileFormAssociationStep<
+  T extends AssociationBlockFormProps,
+>(formik: FormikContextType<T>) {
   const { getInstancesQuery } = useInstances();
 
   const { data: getInstancesQueryResult, isLoading: isInstancesPending } =

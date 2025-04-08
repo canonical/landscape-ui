@@ -1,7 +1,9 @@
 import InfoItem from "@/components/layout/InfoItem";
+import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import type { FC } from "react";
 import type { SecurityProfile } from "../../types";
+import SecurityProfileEditForm from "../SecurityProfileEditForm";
 
 interface SecurityProfileDetailsProps {
   readonly profile: SecurityProfile;
@@ -10,6 +12,8 @@ interface SecurityProfileDetailsProps {
 const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
   profile,
 }) => {
+  const { setSidePanelContent } = useSidePanel();
+
   return (
     <>
       <div className="p-segmented-control">
@@ -19,7 +23,17 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             <span>Download audit</span>
           </Button>
 
-          <Button className="p-segmented-control__button" type="button" hasIcon>
+          <Button
+            className="p-segmented-control__button"
+            type="button"
+            hasIcon
+            onClick={() => {
+              setSidePanelContent(
+                `Edit ${profile.title}`,
+                <SecurityProfileEditForm profile={profile} />,
+              );
+            }}
+          >
             <Icon name="edit" />
             <span>Edit</span>
           </Button>

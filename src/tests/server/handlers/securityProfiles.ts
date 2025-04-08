@@ -21,8 +21,6 @@ export default [
         securityProfile.last_run_results.passing /
         securityProfile.associated_instances;
 
-      console.log(securityProfile.status);
-
       return (
         securityProfile.name.startsWith(search) &&
         passRate >= passRateFrom &&
