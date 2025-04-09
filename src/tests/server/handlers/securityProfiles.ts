@@ -10,7 +10,11 @@ export default [
   http.get(`${API_URL}security-profiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
 
+    const statusesParam = searchParams.get("statuses") ?? "[]";
+
     const search = searchParams.get("search") || "";
+    const statuses =
+      statusesParam == "[]" ? ["active", "archived"] : statusesParam.split(",");
     const limit = parseInt(searchParams.get("limit") || "20");
     const offset = parseInt(searchParams.get("offset") || "0");
     const passRateFrom = parseFloat(searchParams.get("passRateFrom") || "0");
@@ -23,6 +27,7 @@ export default [
 
       return (
         securityProfile.name.startsWith(search) &&
+        statuses.includes(securityProfile.status) &&
         passRate >= passRateFrom &&
         passRate <= passRateTo
       );
