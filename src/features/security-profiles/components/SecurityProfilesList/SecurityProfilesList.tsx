@@ -34,6 +34,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             notifyCreation(values, notify);
           }}
           profile={profile}
+          submitButtonText="Duplicate"
         />,
       );
     },
@@ -57,6 +58,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             });
           }}
           profile={profile}
+          submitButtonText="Save changes"
         />,
       );
     },

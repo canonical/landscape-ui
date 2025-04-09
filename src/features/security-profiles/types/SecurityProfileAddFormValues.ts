@@ -7,7 +7,9 @@ export interface SecurityProfileAddFormValues
     ScheduleBlockFormProps,
     Required<Pick<AddSecurityProfileParams, "access_group" | "title">>,
     Partial<Pick<AddSecurityProfileParams, "benchmark" | "mode">> {
-  delivery_time: "asap" | "scheduled";
+  delivery_time: "asap" | "delayed";
   randomize_delivery: "no" | "yes";
+  restart_deliver_delay_window: number;
+  restart_deliver_within: number;
   tailoring_file: File | null;
 }

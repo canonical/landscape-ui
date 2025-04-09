@@ -13,6 +13,7 @@ interface SecurityProfileFormProps
   extends Omit<UseSecurityProfileFormProps, "initialValues"> {
   readonly endDescription: string;
   readonly profile: SecurityProfile;
+  readonly submitButtonText: string;
   readonly earlySubmit?: (values: SecurityProfileAddFormValues) => boolean;
 }
 
@@ -22,8 +23,9 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
   endDescription,
   onSuccess,
   profile,
+  submitButtonText,
 }) => {
-  const { formik, steps } = useSecurityProfileForm({
+  const { formik, isSubmitting, steps } = useSecurityProfileForm({
     initialValues: {
       day_of_month_type: "day-of-month",
       days: [],
@@ -33,6 +35,8 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
       every: 1,
       months: [],
       randomize_delivery: "no",
+      restart_deliver_delay_window: 1,
+      restart_deliver_within: 1,
       start_date: moment().format(INPUT_DATE_TIME_FORMAT),
       start_type: "on-a-date",
       tailoring_file: null,
@@ -86,9 +90,9 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
         <SidePanelFormButtons
           onBackButtonPress={goBack}
           onSubmit={finishSubmit}
-          submitButtonDisabled={!!step.isLoading}
-          submitButtonLoading={step.isLoading}
-          submitButtonText="Save changes"
+          submitButtonDisabled={!!step.isLoading || isSubmitting}
+          submitButtonLoading={step.isLoading || isSubmitting}
+          submitButtonText={submitButtonText}
         />
       </>
     );
@@ -108,9 +112,11 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
 
       <SidePanelFormButtons
         onSubmit={startSubmit}
-        submitButtonDisabled={!formik.isValid}
-        submitButtonLoading={steps.some((step) => step.isLoading)}
-        submitButtonText="Save changes"
+        submitButtonDisabled={!formik.isValid || isSubmitting}
+        submitButtonLoading={
+          steps.some((step) => step.isLoading) || isSubmitting
+        }
+        submitButtonText={submitButtonText}
       />
     </>
   );

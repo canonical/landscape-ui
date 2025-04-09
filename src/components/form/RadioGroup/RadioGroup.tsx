@@ -1,7 +1,6 @@
 import { RadioInput } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { ComponentProps, Key, ReactNode } from "react";
-import classes from "./RadioGroup.module.scss";
 
 interface RadioGroupProps<
   TField extends string,
@@ -32,7 +31,7 @@ const RadioGroup = <
     <>
       <p className="u-no-margin--bottom">{label}</p>
 
-      <div className={classes.radioGroup}>
+      <div>
         {inputs.map(({ key, ...input }) => (
           <RadioInput
             {...input}

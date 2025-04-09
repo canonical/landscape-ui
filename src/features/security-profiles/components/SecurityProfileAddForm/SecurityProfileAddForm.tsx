@@ -23,7 +23,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
 
   const [step, setStep] = useState(0);
 
-  const { formik, steps } = useSecurityProfileForm({
+  const { formik, isSubmitting, steps } = useSecurityProfileForm({
     initialValues: {
       all_computers: false,
       access_group: "global",
@@ -35,6 +35,8 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       every: 7,
       months: [],
       randomize_delivery: "no",
+      restart_deliver_delay_window: 1,
+      restart_deliver_within: 1,
       start_date: moment().format(INPUT_DATE_TIME_FORMAT),
       start_type: "",
       tags: [],
@@ -80,8 +82,10 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       <SidePanelFormButtons
         onBackButtonPress={step > 0 ? goBack : undefined}
         onSubmit={submit}
-        submitButtonDisabled={steps[step].isLoading || !steps[step].isValid}
-        submitButtonLoading={steps[step].isLoading}
+        submitButtonDisabled={
+          steps[step].isLoading || !steps[step].isValid || isSubmitting
+        }
+        submitButtonLoading={steps[step].isLoading || isSubmitting}
         submitButtonText={steps[step].submitButtonText}
       />
     </>
