@@ -1,16 +1,18 @@
-import type { FC } from "react";
-import type { SecurityProfile } from "../../types";
 import type { MenuLink } from "@canonical/react-components";
 import { ContextualMenu, Icon } from "@canonical/react-components";
+import type { FC } from "react";
+import type { SecurityProfile } from "../../types";
+import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 import classes from "./SecurityProfileListContextualMenu.module.scss";
 
 interface SecurityProfileListContextualMenuProps {
+  readonly actions: SecurityProfileActions;
   readonly profile: SecurityProfile;
 }
 
 const SecurityProfileListContextualMenu: FC<
   SecurityProfileListContextualMenuProps
-> = ({ profile }) => {
+> = ({ actions, profile }) => {
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
@@ -19,8 +21,9 @@ const SecurityProfileListContextualMenu: FC<
           <span>View details</span>
         </>
       ),
-      "aria-label": `Edit "${profile.title}" profile`,
+      "aria-label": `View "${profile.title}" security profile details`,
       hasIcon: true,
+      onClick: actions.viewDetails,
     },
     {
       children: (
@@ -29,8 +32,9 @@ const SecurityProfileListContextualMenu: FC<
           <span>Download audit</span>
         </>
       ),
-      "aria-label": `Remove "${profile.title}" repository profile`,
+      "aria-label": `Download "${profile.title}" security profile audit`,
       hasIcon: true,
+      onClick: actions.downloadAudit,
     },
     {
       children: (
@@ -39,8 +43,9 @@ const SecurityProfileListContextualMenu: FC<
           <span>Edit</span>
         </>
       ),
-      "aria-label": `Remove "${profile.title}" repository profile`,
+      "aria-label": `Edit "${profile.title}" security profile`,
       hasIcon: true,
+      onClick: actions.edit,
     },
     {
       children: (
@@ -49,7 +54,7 @@ const SecurityProfileListContextualMenu: FC<
           <span>Run</span>
         </>
       ),
-      "aria-label": `Remove "${profile.title}" repository profile`,
+      "aria-label": `Run "${profile.title}" security profile`,
       hasIcon: true,
     },
     {
@@ -59,8 +64,9 @@ const SecurityProfileListContextualMenu: FC<
           <span>Duplicate profile</span>
         </>
       ),
-      "aria-label": `Remove "${profile.title}" repository profile`,
+      "aria-label": `Duplicate "${profile.title}" security profile`,
       hasIcon: true,
+      onClick: actions.duplicate,
     },
     {
       children: (
@@ -69,7 +75,7 @@ const SecurityProfileListContextualMenu: FC<
           <span className={classes.colorNegative}>Archive</span>
         </>
       ),
-      "aria-label": `Remove "${profile.title}" repository profile`,
+      "aria-label": `Archive "${profile.title}" security profile`,
       hasIcon: true,
     },
   ];

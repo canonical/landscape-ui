@@ -1,18 +1,20 @@
+import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { getFormikError } from "@/utils/formikErrors";
 import { Col, Input, Row, Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
+import moment from "moment";
 import type { ScheduleBlockFormProps } from "../../types";
 import OnSelect from "../OnSelect";
 
 interface ScheduleBlockProps<T extends ScheduleBlockFormProps> {
   readonly formik: FormikContextType<T>;
-  readonly currentDate?: string;
 }
 
 const ScheduleBlockBase = <T extends ScheduleBlockFormProps>({
-  currentDate,
   formik,
 }: ScheduleBlockProps<T>) => {
+  const currentDate = moment().format(INPUT_DATE_TIME_FORMAT);
+
   switch (formik.values.start_type) {
     case "on-a-date":
       return (

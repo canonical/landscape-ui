@@ -1,7 +1,10 @@
-@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
 
-.radioGroup {
-  align-items: baseline;
-  column-gap: $sph--x-large;
-  display: flex;
+.help {
+  color: $colors--light-theme--text-muted;
+  white-space: normal;
+}
+
+.noMargin > label {
+  margin-bottom: 0;
 }

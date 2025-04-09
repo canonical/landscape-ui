@@ -9,13 +9,14 @@ interface SecurityProfileAuditRetentionNotificationProps
   readonly storageKey: string;
   readonly modalProps?: Omit<
     ComponentProps<typeof IgnorableModal>,
-    "hideModal" | "hideNotification" | "ignore"
+    "children" | "hideModal" | "hideNotification" | "ignore"
   >;
 }
 
 const IgnorableNotifcation: FC<
   SecurityProfileAuditRetentionNotificationProps
 > = ({
+  children,
   hide,
   modalProps = { confirmButtonLabel: undefined },
   storageKey,
@@ -38,7 +39,9 @@ const IgnorableNotifcation: FC<
   return (
     <>
       {localStorage.getItem(storageKey) != "true" && (
-        <Notification {...props} onDismiss={showModal} />
+        <Notification {...props} onDismiss={showModal}>
+          {children}
+        </Notification>
       )}
 
       {isModalVisible && (
@@ -47,7 +50,9 @@ const IgnorableNotifcation: FC<
           hideNotification={hide}
           ignore={ignore}
           {...modalProps}
-        />
+        >
+          <p>{children}</p>
+        </IgnorableModal>
       )}
     </>
   );

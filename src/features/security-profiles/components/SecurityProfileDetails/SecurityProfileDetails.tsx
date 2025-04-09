@@ -2,24 +2,37 @@ import InfoItem from "@/components/layout/InfoItem";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import type { FC } from "react";
 import type { SecurityProfile } from "../../types";
+import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 
 interface SecurityProfileDetailsProps {
+  readonly actions: SecurityProfileActions;
   readonly profile: SecurityProfile;
 }
 
 const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
+  actions,
   profile,
 }) => {
   return (
     <>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
-          <Button className="p-segmented-control__button" type="button" hasIcon>
+          <Button
+            className="p-segmented-control__button"
+            type="button"
+            hasIcon
+            onClick={actions.downloadAudit}
+          >
             <Icon name="file-blank" />
             <span>Download audit</span>
           </Button>
 
-          <Button className="p-segmented-control__button" type="button" hasIcon>
+          <Button
+            className="p-segmented-control__button"
+            type="button"
+            hasIcon
+            onClick={actions.edit}
+          >
             <Icon name="edit" />
             <span>Edit</span>
           </Button>
@@ -29,7 +42,12 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             <span>Run</span>
           </Button>
 
-          <Button className="p-segmented-control__button" type="button" hasIcon>
+          <Button
+            className="p-segmented-control__button"
+            type="button"
+            hasIcon
+            onClick={actions.duplicate}
+          >
             <Icon name="canvas" />
             <span>Duplicate</span>
           </Button>

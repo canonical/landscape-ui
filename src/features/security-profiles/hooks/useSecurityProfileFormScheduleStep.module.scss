@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.inputContainer {
+  position: relative;
+}
+
+.input {
+  min-width: initial;
+  width: 7rem;
+}
+
+.inputDescription {
+  left: 7.5rem;
+  position: absolute;
+  top: $spv--small;
+}

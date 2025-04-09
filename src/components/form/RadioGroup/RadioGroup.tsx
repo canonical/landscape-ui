@@ -1,3 +1,4 @@
+import Indent from "@/components/layout/Indent";
 import { RadioInput } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { ComponentProps, Key, ReactNode } from "react";
@@ -15,7 +16,7 @@ interface RadioGroupProps<
     | "key"
     | "onChange"
     | keyof ReturnType<FormikContextType<TFormik>["getFieldProps"]>
-  > & { key: Key })[];
+  > & { key: Key; expansion?: ReactNode; help?: ReactNode })[];
   readonly label?: ReactNode;
 }
 
@@ -32,16 +33,28 @@ const RadioGroup = <
     <>
       <p className="u-no-margin--bottom">{label}</p>
 
-      <div className={classes.radioGroup}>
-        {inputs.map(({ key, ...input }) => (
-          <RadioInput
-            {...input}
-            key={key}
-            {...formik.getFieldProps(field)}
-            checked={formik.values[field] == key}
-            onChange={async () => formik.setFieldValue(field, key)}
-          />
-        ))}
+      <div>
+        {inputs.map(({ expansion, help, key, ...input }) => {
+          const checked = formik.values[field] == key;
+
+          return (
+            <>
+              <div className={help ? classes.noMargin : undefined}>
+                <RadioInput
+                  {...input}
+                  key={key}
+                  {...formik.getFieldProps(field)}
+                  checked={checked}
+                  onChange={async () => formik.setFieldValue(field, key)}
+                />
+              </div>
+
+              {help && <small className={classes.help}>{help}</small>}
+
+              {checked && <Indent>{expansion}</Indent>}
+            </>
+          );
+        })}
       </div>
     </>
   );

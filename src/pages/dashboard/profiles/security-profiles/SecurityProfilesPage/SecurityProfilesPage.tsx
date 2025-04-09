@@ -2,14 +2,12 @@ import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import {
   SecurityProfileAddForm,
   SecurityProfilesContainer,
 } from "@/features/security-profiles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-import moment from "moment";
 import type { FC } from "react";
 import { useState } from "react";
 
@@ -29,10 +27,7 @@ const SecurityProfilesPage: FC = () => {
   const addSecurityProfile = () => {
     setSidePanelContent(
       "Add security profile",
-      <SecurityProfileAddForm
-        currentDate={moment().format(INPUT_DATE_TIME_FORMAT)}
-        onSubmit={showNotification}
-      />,
+      <SecurityProfileAddForm onSuccess={showNotification} />,
     );
   };
 
@@ -67,23 +62,13 @@ const SecurityProfilesPage: FC = () => {
                 label:
                   "I understand and acknowledge this policy. Don't show this message again.",
               },
-              children: (
-                <p>
-                  Audits are stored for a maximum of <strong>4 weeks</strong>{" "}
-                  and will be automatically removed after{" "}
-                  <strong>1 month</strong>. Ensure you download and store
-                  necessary records externally to maintain access and
-                  compliance.
-                </p>
-              ),
             }}
           >
             <>
-              Audits are stored for a maximum of <strong>4 weeks</strong>. Any
-              audit older than 1 month will be automatically removed. We advise
-              downloading and storing audits externally before they expire to
-              ensure continued access and compliance with your records
-              management policies.
+              Any audit older than the specified retention period for a given
+              profile will be automatically removed. We recommend downloading
+              and storing audit data externally before it expires. You can view
+              the exact retention period for each profile in its details.
             </>
           </IgnorableNotifcation>
         )}

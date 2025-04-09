@@ -1,2 +1,2 @@
-export { default } from "./components/ScheduleBlockBase";
+export { default } from "./components/ScheduleBlock";
 export type { ScheduleBlockFormProps } from "./types";
