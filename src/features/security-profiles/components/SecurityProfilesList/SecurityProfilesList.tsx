@@ -137,7 +137,6 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
 
           const notRun = total - (passing + failing + in_progress);
 
-          // Calculate raw percentages without casting to number
           const passingPercent = ((passing / total) * 100).toFixed(0);
           const failingPercent = ((failing / total) * 100).toFixed(0);
           const inProgressPercent = ((in_progress / total) * 100).toFixed(0);
@@ -180,6 +179,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 <span>{failing} failed</span>
               </div>
               <Tooltip
+                position="btm-center"
                 positionElementClassName={classes.tooltip}
                 message={tooltipMessage}
               >
@@ -283,6 +283,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
 
           return (
             <Tooltip
+              position="btm-center"
               positionElementClassName={classes.tooltip}
               message={tooltipMessage}
             >
