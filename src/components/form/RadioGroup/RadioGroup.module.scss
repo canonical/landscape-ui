@@ -1,8 +1,9 @@
 @import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
 
 .help {
   color: $colors--light-theme--text-muted;
-  white-space: normal;
+  margin-left: $sp-x-large;
 }
 
 .noMargin > label {

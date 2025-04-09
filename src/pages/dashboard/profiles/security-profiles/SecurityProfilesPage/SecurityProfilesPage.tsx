@@ -7,21 +7,22 @@ import {
   SecurityProfilesContainer,
 } from "@/features/security-profiles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button } from "@canonical/react-components";
+import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
 
 const SecurityProfilesPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
 
-  const [isNotificationVisible, setIsNotificationVisible] = useState(false);
+  const [isRetentionNotificationVisible, setIsRetentionNotificationVisible] =
+    useState(false);
 
   const showNotification = () => {
-    setIsNotificationVisible(true);
+    setIsRetentionNotificationVisible(true);
   };
 
   const hideNotification = () => {
-    setIsNotificationVisible(false);
+    setIsRetentionNotificationVisible(false);
   };
 
   const addSecurityProfile = () => {
@@ -48,7 +49,7 @@ const SecurityProfilesPage: FC = () => {
       />
 
       <PageContent>
-        {isNotificationVisible && (
+        {isRetentionNotificationVisible && (
           <IgnorableNotifcation
             inline
             title="Audit retention policy:"
@@ -72,6 +73,14 @@ const SecurityProfilesPage: FC = () => {
             </>
           </IgnorableNotifcation>
         )}
+
+        <Notification inline title="Your audit is ready for download:">
+          Your audit has been successfully generated and is now ready for
+          download.{" "}
+          <Button type="button" appearance="link" onClick={() => undefined}>
+            Download audit
+          </Button>
+        </Notification>
 
         <SecurityProfilesContainer />
       </PageContent>

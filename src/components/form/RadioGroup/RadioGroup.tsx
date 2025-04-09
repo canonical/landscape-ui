@@ -1,5 +1,6 @@
 import Indent from "@/components/layout/Indent";
 import { RadioInput } from "@canonical/react-components";
+import classNames from "classnames";
 import type { FormikContextType } from "formik";
 import type { ComponentProps, Key, ReactNode } from "react";
 import classes from "./RadioGroup.module.scss";
@@ -49,7 +50,16 @@ const RadioGroup = <
                 />
               </div>
 
-              {help && <small className={classes.help}>{help}</small>}
+              {help && (
+                <p
+                  className={classNames(
+                    classes.help,
+                    "u-no-padding--top u-no-margin--bottom",
+                  )}
+                >
+                  <small>{help}</small>
+                </p>
+              )}
 
               {checked && <Indent>{expansion}</Indent>}
             </>
