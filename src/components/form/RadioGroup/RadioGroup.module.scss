@@ -1,0 +1,10 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.help {
+  color: $colors--light-theme--text-muted;
+  white-space: normal;
+}
+
+.noMargin > label {
+  margin-bottom: 0;
+}

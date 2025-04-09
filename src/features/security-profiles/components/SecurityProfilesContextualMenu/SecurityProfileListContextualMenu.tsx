@@ -23,6 +23,7 @@ const SecurityProfileListContextualMenu: FC<
       ),
       "aria-label": `View "${profile.title}" security profile details`,
       hasIcon: true,
+      onClick: actions.viewDetails,
     },
     {
       children: (
@@ -33,6 +34,7 @@ const SecurityProfileListContextualMenu: FC<
       ),
       "aria-label": `Download "${profile.title}" security profile audit`,
       hasIcon: true,
+      onClick: actions.downloadAudit,
     },
     {
       children: (
@@ -43,9 +45,7 @@ const SecurityProfileListContextualMenu: FC<
       ),
       "aria-label": `Edit "${profile.title}" security profile`,
       hasIcon: true,
-      onClick: () => {
-        actions.edit(profile);
-      },
+      onClick: actions.edit,
     },
     {
       children: (
@@ -66,9 +66,7 @@ const SecurityProfileListContextualMenu: FC<
       ),
       "aria-label": `Duplicate "${profile.title}" security profile`,
       hasIcon: true,
-      onClick: () => {
-        actions.duplicate(profile);
-      },
+      onClick: actions.duplicate,
     },
     {
       children: (

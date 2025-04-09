@@ -10,6 +10,7 @@ import type { CellProps, Column } from "react-table";
 import { notifyCreation } from "../../helpers";
 import type { SecurityProfile } from "../../types";
 import SecurityProfileDetails from "../SecurityProfileDetails/SecurityProfileDetails";
+import SecurityProfileDownloadAuditForm from "../SecurityProfileDownloadAuditForm";
 import SecurityProfileForm from "../SecurityProfileForm";
 import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
 import classes from "./SecurityProfilesList.module.scss";
@@ -24,8 +25,15 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
-  const actions = {
-    duplicate: (profile: SecurityProfile) => {
+  const actions = (profile: SecurityProfile) => ({
+    downloadAudit: () => {
+      setSidePanelContent(
+        `Download audit for ${profile.title} security profile`,
+        <SecurityProfileDownloadAuditForm />,
+      );
+    },
+
+    duplicate: () => {
       setSidePanelContent(
         `Duplicate ${profile.title}`,
         <SecurityProfileForm
@@ -39,7 +47,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       );
     },
 
-    edit: (profile: SecurityProfile) => {
+    edit: () => {
       setSidePanelContent(
         `Edit ${profile.title}`,
         <SecurityProfileForm
@@ -62,7 +70,15 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         />,
       );
     },
-  };
+
+    viewDetails: () => {
+      setSidePanelContent(
+        profile.name,
+        <SecurityProfileDetails actions={actions(profile)} profile={profile} />,
+        "medium",
+      );
+    },
+  });
 
   const columns = useMemo<Column<SecurityProfile>[]>(
     () => [
@@ -75,13 +91,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             appearance="link"
             type="button"
             className="u-no-margin--bottom u-no-padding--top"
-            onClick={() => {
-              setSidePanelContent(
-                profile.name,
-                <SecurityProfileDetails actions={actions} profile={profile} />,
-                "medium",
-              );
-            }}
+            onClick={actions(profile).viewDetails}
           >
             {profile.name}
           </Button>
@@ -216,7 +226,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         Header: "Actions",
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <SecurityProfileListContextualMenu
-            actions={actions}
+            actions={actions(profile)}
             profile={profile}
           />
         ),

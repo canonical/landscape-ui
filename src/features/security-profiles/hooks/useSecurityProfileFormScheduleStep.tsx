@@ -1,6 +1,5 @@
 import RadioGroup from "@/components/form/RadioGroup";
 import ScheduleBlock from "@/components/form/ScheduleBlock";
-import Indent from "@/components/layout/Indent";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { getFormikError } from "@/utils/formikErrors";
 import { Input } from "@canonical/react-components";
@@ -38,26 +37,26 @@ export default function useSecurityProfileFormScheduleStep<
               label="Delivery time"
               inputs={[
                 { label: "As soon as possible", key: "asap" },
-                { label: "Delayed", key: "delayed" },
+                {
+                  label: "Delayed",
+                  key: "delayed",
+                  expansion: (
+                    <div className={classes.inputContainer}>
+                      <Input
+                        type="number"
+                        required
+                        className={classes.input}
+                        wrapperClassName={classes.inputWrapper}
+                        {...formik.getFieldProps("restart_deliver_within")}
+                        error={getFormikError(formik, "restart_deliver_within")}
+                      />
+
+                      <span className={classes.inputDescription}>hours</span>
+                    </div>
+                  ),
+                },
               ]}
             />
-
-            {formik.values.delivery_time == "delayed" && (
-              <Indent>
-                <div className={classes.inputContainer}>
-                  <Input
-                    type="number"
-                    required
-                    className={classes.input}
-                    wrapperClassName={classes.inputWrapper}
-                    {...formik.getFieldProps("restart_deliver_within")}
-                    error={getFormikError(formik, "restart_deliver_within")}
-                  />
-
-                  <span className={classes.inputDescription}>hours</span>
-                </div>
-              </Indent>
-            )}
 
             <RadioGroup
               field={"randomize_delivery"}
@@ -65,29 +64,31 @@ export default function useSecurityProfileFormScheduleStep<
               label="Randomize delivery over a time window"
               inputs={[
                 { label: "No", key: "no" },
-                { label: "Yes", key: "yes" },
+                {
+                  label: "Yes",
+                  key: "yes",
+                  expansion: (
+                    <div className={classes.inputContainer}>
+                      <Input
+                        type="number"
+                        required
+                        className={classes.input}
+                        wrapperClassName={classes.inputWrapper}
+                        {...formik.getFieldProps(
+                          "restart_deliver_delay_window",
+                        )}
+                        error={getFormikError(
+                          formik,
+                          "restart_deliver_delay_window",
+                        )}
+                      />
+
+                      <span className={classes.inputDescription}>minutes</span>
+                    </div>
+                  ),
+                },
               ]}
             />
-
-            {formik.values.randomize_delivery == "yes" && (
-              <Indent>
-                <div className={classes.inputContainer}>
-                  <Input
-                    type="number"
-                    required
-                    className={classes.input}
-                    wrapperClassName={classes.inputWrapper}
-                    {...formik.getFieldProps("restart_deliver_delay_window")}
-                    error={getFormikError(
-                      formik,
-                      "restart_deliver_delay_window",
-                    )}
-                  />
-
-                  <span className={classes.inputDescription}>minutes</span>
-                </div>
-              </Indent>
-            )}
           </>
         )}
       </>

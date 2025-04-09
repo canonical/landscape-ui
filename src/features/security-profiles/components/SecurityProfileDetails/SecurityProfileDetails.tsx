@@ -17,7 +17,12 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
     <>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
-          <Button className="p-segmented-control__button" type="button" hasIcon>
+          <Button
+            className="p-segmented-control__button"
+            type="button"
+            hasIcon
+            onClick={actions.downloadAudit}
+          >
             <Icon name="file-blank" />
             <span>Download audit</span>
           </Button>
@@ -26,9 +31,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             className="p-segmented-control__button"
             type="button"
             hasIcon
-            onClick={() => {
-              actions.edit(profile);
-            }}
+            onClick={actions.edit}
           >
             <Icon name="edit" />
             <span>Edit</span>
@@ -43,9 +46,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             className="p-segmented-control__button"
             type="button"
             hasIcon
-            onClick={() => {
-              actions.duplicate(profile);
-            }}
+            onClick={actions.duplicate}
           >
             <Icon name="canvas" />
             <span>Duplicate</span>
