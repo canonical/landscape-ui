@@ -354,6 +354,11 @@ a[target="_blank"] {
   @include vf-icon-private-key($color-mid-dark);
 }
 
+.p-icon--archive-red {
+  @extend %icon;
+  @include vf-icon-archive($color-negative);
+}
+
 thead {
   th {
     vertical-align: middle;

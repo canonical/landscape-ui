@@ -65,8 +65,8 @@ const SecurityProfileListContextualMenu: FC<
     {
       children: (
         <>
-          <Icon name="archive" />
-          <span className={classes.red}>Archive</span>
+          <Icon name="archive-red" />
+          <span className={classes.colorNegative}>Archive</span>
         </>
       ),
       "aria-label": `Remove "${profile.title}" repository profile`,
@@ -77,7 +77,7 @@ const SecurityProfileListContextualMenu: FC<
   return (
     <>
       <ContextualMenu
-        position="left"
+        position="right"
         className={classes.menu}
         toggleClassName={classes.toggleButton}
         toggleAppearance="base"

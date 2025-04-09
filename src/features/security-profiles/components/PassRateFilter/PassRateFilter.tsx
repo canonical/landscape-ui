@@ -75,21 +75,27 @@ const PassRateFilter = () => {
         noValidate
         className={classes.container}
       >
-        <Input
-          type="number"
-          label="From"
-          min={0}
-          max={formik.values.passRateTo}
-          {...formik.getFieldProps("fromValue")}
-        />
+        <div>
+          <Input
+            type="number"
+            label="From"
+            min={0}
+            max={formik.values.passRateTo}
+            {...formik.getFieldProps("passRateFrom")}
+          />
+          <span>%</span>
+        </div>
 
-        <Input
-          type="number"
-          label="To"
-          min={formik.values.passRateFrom}
-          max={100}
-          {...formik.getFieldProps("toValue")}
-        />
+        <div>
+          <Input
+            type="number"
+            label="To"
+            min={formik.values.passRateFrom}
+            max={100}
+            {...formik.getFieldProps("passRateTo")}
+          />
+          <span>%</span>
+        </div>
 
         <div className={classes.buttons}>
           <Button
