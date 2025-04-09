@@ -1,18 +1,13 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
 import { useState, type FC } from "react";
 import { phrase } from "../../helpers";
 import type { UseSecurityProfileFormProps } from "../../hooks/useSecurityProfileForm";
 import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
-import type { SecurityProfile } from "../../types";
 import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileForm.module.scss";
 
-interface SecurityProfileFormProps
-  extends Omit<UseSecurityProfileFormProps, "initialValues"> {
+interface SecurityProfileFormProps extends UseSecurityProfileFormProps {
   readonly endDescription: string;
-  readonly profile: SecurityProfile;
   readonly submitButtonText: string;
   readonly earlySubmit?: (values: SecurityProfileAddFormValues) => boolean;
 }
@@ -21,28 +16,12 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
   benchmarkDisabled,
   earlySubmit = () => false,
   endDescription,
+  initialValues,
   onSuccess,
-  profile,
   submitButtonText,
 }) => {
   const { formik, isSubmitting, steps } = useSecurityProfileForm({
-    initialValues: {
-      day_of_month_type: "day-of-month",
-      days: [],
-      delivery_time: "asap",
-      end_date: "",
-      end_type: "never",
-      every: 1,
-      months: [],
-      randomize_delivery: "no",
-      restart_deliver_delay_window: 1,
-      restart_deliver_within: 1,
-      start_date: moment().format(INPUT_DATE_TIME_FORMAT),
-      start_type: "on-a-date",
-      tailoring_file: null,
-      unit_of_time: "DAILY",
-      ...profile,
-    },
+    initialValues: initialValues,
     benchmarkDisabled,
     onSuccess,
   });

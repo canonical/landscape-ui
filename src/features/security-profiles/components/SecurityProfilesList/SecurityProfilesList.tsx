@@ -1,4 +1,4 @@
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable, Tooltip } from "@canonical/react-components";
@@ -38,10 +38,27 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         `Duplicate ${profile.title}`,
         <SecurityProfileForm
           endDescription="To duplicate the profile, you need to run it."
+          initialValues={{
+            day_of_month_type: "day-of-month",
+            days: [],
+            delivery_time: "asap",
+            end_date: "",
+            end_type: "never",
+            every: 1,
+            months: [],
+            randomize_delivery: "no",
+            restart_deliver_delay_window: 1,
+            restart_deliver_within: 1,
+            start_date: moment().format(INPUT_DATE_TIME_FORMAT),
+            start_type: "on-a-date",
+            tailoring_file: null,
+            unit_of_time: "DAILY",
+            ...profile,
+            title: `${profile.title} copy`,
+          }}
           onSuccess={(values) => {
             notifyCreation(values, notify);
           }}
-          profile={profile}
           submitButtonText="Duplicate"
         />,
       );
@@ -54,6 +71,23 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           benchmarkDisabled
           earlySubmit={(values) => values.mode == "audit"}
           endDescription="To save your changes, you need to run the profile."
+          initialValues={{
+            day_of_month_type: "day-of-month",
+            days: [],
+            delivery_time: "asap",
+            end_date: "",
+            end_type: "never",
+            every: 1,
+            months: [],
+            randomize_delivery: "no",
+            restart_deliver_delay_window: 1,
+            restart_deliver_within: 1,
+            start_date: moment().format(INPUT_DATE_TIME_FORMAT),
+            start_type: "on-a-date",
+            tailoring_file: null,
+            unit_of_time: "DAILY",
+            ...profile,
+          }}
           onSuccess={(values) => {
             notify.success({
               title: `You have successfully saved changes for ${values.title} security profile.`,
@@ -65,7 +99,6 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                     : "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances, restart them, and generate an audit.",
             });
           }}
-          profile={profile}
           submitButtonText="Save changes"
         />,
       );
