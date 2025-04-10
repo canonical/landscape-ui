@@ -1,3 +1,5 @@
+import savedSearches from "@/tests/server/handlers/savedSearches";
+import script from "@/tests/server/handlers/script";
 import accessGroup from "./accessGroup";
 import activity from "./activity";
 import alerts from "./alerts";
@@ -23,8 +25,6 @@ import user from "./user";
 import userSettings from "./userSettings";
 import usn from "./usn";
 import wsl from "./wsl";
-import savedSearches from "@/tests/server/handlers/savedSearches";
-import script from "@/tests/server/handlers/script";
 import employees from "./employees";
 
 export default [
