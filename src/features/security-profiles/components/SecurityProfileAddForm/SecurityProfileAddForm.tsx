@@ -40,7 +40,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       months: [],
       randomize_delivery: "no",
       restart_deliver_delay_window: 1,
-      restart_deliver_within: 1,
+      restart_deliver_delay: 1,
       start_date: moment().format(INPUT_DATE_TIME_FORMAT),
       start_type: "",
       tags: [],

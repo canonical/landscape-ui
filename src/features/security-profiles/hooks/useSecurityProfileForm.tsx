@@ -80,7 +80,7 @@ const useSecurityProfileForm = ({
             : schema,
       ),
 
-      restart_deliver_within: Yup.number().when(
+      restart_deliver_delay: Yup.number().when(
         ["mode", "delivery_time"],
         ([mode, delivery_time], schema) =>
           mode == "fix-restart-audit" && delivery_time == "delayed"
@@ -148,7 +148,7 @@ const useSecurityProfileForm = ({
 
         if (values.end_type == "on-a-date") {
           scheduleRuleParts.push(
-            `UNTIL=${moment(values.end_date).utc().format("YYYYMMDDTHHmmss")}Z`,
+            `UNTIL=${moment(values.end_date).format("YYYYMMDDTHHmmss")}Z`,
           );
         }
       } else {
@@ -168,12 +168,12 @@ const useSecurityProfileForm = ({
               : undefined,
           restart_delivery_within:
             values.mode == "fix-restart-audit"
-              ? values.restart_deliver_within
+              ? values.restart_deliver_delay
               : undefined,
           schedule: scheduleRuleParts.join(";"),
-          start_date: `${moment(values.start_date)
-            .utc()
-            .format(INPUT_DATE_TIME_FORMAT)}Z`,
+          start_date: `${moment(values.start_date).format(
+            INPUT_DATE_TIME_FORMAT,
+          )}Z`,
           tags: values.all_computers ? undefined : values.tags,
           tailoring_file: await values.tailoring_file?.text(),
           title: values.title,

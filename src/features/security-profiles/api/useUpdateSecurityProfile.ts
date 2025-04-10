@@ -13,7 +13,7 @@ export interface UpdateSecurityProfileParams
   > {
   id: number;
   restart_deliver_delay_window?: number;
-  restart_deliver_within?: number;
+  restart_deliver_delay?: number;
 }
 
 export const useUpdateSecurityProfile = () => {
