@@ -40,7 +40,7 @@ export const useGetEmployeeGroups = (
 
   return {
     employeeGroups: data?.data.results ?? [],
-    employeeGroupsCount: data?.data.count,
+    employeeGroupsCount: data?.data.count ?? 0,
     isEmployeeGroupsLoading: isLoading,
   };
 };
