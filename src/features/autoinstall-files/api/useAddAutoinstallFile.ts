@@ -1,7 +1,7 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 import type { AutoinstallFile } from "../types";
 
 export interface AddAutoinstallFileParams {
@@ -13,13 +13,13 @@ export const useAddAutoinstallFile = (): {
   isAutoinstallFileAdding: boolean;
   addAutoinstallFile: (
     params: AddAutoinstallFileParams,
-  ) => Promise<AutoinstallFile>;
+  ) => Promise<AxiosResponse<AutoinstallFile>>;
 } => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
   const { isPending, mutateAsync } = useMutation<
-    AutoinstallFile,
+    AxiosResponse<AutoinstallFile>,
     AxiosError<ApiError>,
     AddAutoinstallFileParams
   >({

@@ -14,20 +14,31 @@ export const useUpdateEmployeeGroups = () => {
     Pick<EmployeeGroup, "id" | "priority" | "autoinstall_file">[]
   >({
     mutationKey: ["employee_groups", "update"],
-    mutationFn: (groups) => {
+    mutationFn: async (groups) => {
       const isSinglePatch = groups.length === 1;
 
       if (isSinglePatch) {
-        const { id, ...rest } = groups[0];
+        const [{ id, autoinstall_file, priority }] = groups;
 
-        return authFetch.patch(`employee_groups/${id}`, rest);
+        return authFetch.patch(`employee_groups/${id}`, {
+          autoinstall_file_id: autoinstall_file?.id,
+          priority,
+        });
       }
 
+      const paramBody = groups.map((group) => {
+        return {
+          id: group.id,
+          autoinstall_file_id: group.autoinstall_file?.id,
+          priority: group.priority,
+        };
+      });
+
       return authFetch.post(`employee_groups/bulk/update`, {
-        requests: groups,
+        requests: paramBody,
       });
     },
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["employee_groups"] }),
   });
 

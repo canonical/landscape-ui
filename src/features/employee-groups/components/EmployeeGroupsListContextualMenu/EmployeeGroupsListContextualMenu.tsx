@@ -54,9 +54,9 @@ const EmployeeGroupsListContextualMenu: FC<
 
   const handleAssignAutoinstallFile = () => {
     setSidePanelContent(
-      "Assign autoinstall file",
+      `Reassign autoinstall file to ${employeeGroup.name}`,
       <Suspense fallback={<LoadingState />}>
-        <AssignAutoInstallFileForm />
+        <AssignAutoInstallFileForm employeeGroups={[employeeGroup]} />
       </Suspense>,
     );
   };
@@ -97,7 +97,7 @@ const EmployeeGroupsListContextualMenu: FC<
       children: (
         <>
           <Icon name="file" />
-          <span>Assign autoinstall file</span>
+          <span>Reassign autoinstall file</span>
         </>
       ),
       "aria-label": `Assign an autoinstall file to ${employeeGroup.name} employee group`,
