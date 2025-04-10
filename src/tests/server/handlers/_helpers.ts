@@ -109,3 +109,17 @@ export function generateGetListEndpoint<T>({
     },
   );
 }
+
+export const parseArray = (paramValue: string | null): string[] => {
+  if (!paramValue) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(paramValue);
+    return Array.isArray(parsed) ? parsed : [paramValue];
+  } catch {
+    const ids = paramValue.split(",").filter((id) => id.trim() !== "");
+    return ids.length > 0 ? ids : [];
+  }
+};

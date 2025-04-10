@@ -1,3 +1,4 @@
+import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import type { EmployeeGroup } from "@/features/employee-groups";
 import {
@@ -9,10 +10,14 @@ import { useState } from "react";
 
 interface EmployeeGroupsTableProps {
   readonly employeeGroups: EmployeeGroup[];
+  readonly totalCount: number | undefined;
+  readonly isLoading: boolean;
 }
 
 const EmployeeGroupsTable: FC<EmployeeGroupsTableProps> = ({
   employeeGroups,
+  totalCount,
+  isLoading,
 }) => {
   const [selectedEmployeeGroups, setSelectedEmployeeGroups] = useState<
     number[]
@@ -23,25 +28,25 @@ const EmployeeGroupsTable: FC<EmployeeGroupsTableProps> = ({
       <EmployeeGroupsHeader
         selectedEmployeeGroups={selectedEmployeeGroups}
         employeeGroups={employeeGroups}
-        setSelectedEmployeeGroups={(ids) => setSelectedEmployeeGroups(ids)}
+        setSelectedEmployeeGroups={(ids: number[]) =>
+          setSelectedEmployeeGroups(ids)
+        }
       />
-      <EmployeeGroupsList
-        employeeGroups={employeeGroups}
-        isEmployeeGroupsLoading={false}
-        onSelectedEmployeeGroupsChange={(groups: number[]) => {
-          setSelectedEmployeeGroups(groups);
-        }}
-        selectedEmployeeGroups={selectedEmployeeGroups}
-      />
-      {employeeGroups.length > 0 && (
-        <TablePagination
-          handleClearSelection={() => {
-            //test
+      {isLoading ? (
+        <LoadingState />
+      ) : (
+        <EmployeeGroupsList
+          employeeGroups={employeeGroups}
+          onSelectedEmployeeGroupsChange={(groups: number[]) => {
+            setSelectedEmployeeGroups(groups);
           }}
-          totalItems={employeeGroups.length}
-          currentItemCount={employeeGroups.length}
+          selectedEmployeeGroups={selectedEmployeeGroups}
         />
       )}
+      <TablePagination
+        totalItems={totalCount}
+        currentItemCount={employeeGroups.length}
+      />
     </>
   );
 };

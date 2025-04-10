@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { TableFilterChips } from "@/components/filter";
+import { AutoinstallFilesFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
+import {
+  getAutoinstallFileOptions,
+  useGetAutoinstallFiles,
+} from "@/features/autoinstall-files";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
@@ -13,17 +17,16 @@ import classNames from "classnames";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { getEmployeeGroupOptions } from "../../helpers";
-import type { EmployeeGroup } from "../../types";
-import EmployeeGroupsFilter from "../EmployeeGroupsFilter";
-import classes from "./EmployeeGroupsHeader.module.scss";
 import { useRemoveEmployeeGroupsModal } from "../../hooks";
+import type { EmployeeGroup } from "../../types";
+import classes from "./EmployeeGroupsHeader.module.scss";
 
 const EmployeeGroupIdentityIssuerListContainer = lazy(
-  () => import("../EmployeeGroupIdentityIssuerListContainer"),
+  async () => import("../EmployeeGroupIdentityIssuerListContainer"),
 );
 
 const EmployeeGroupsOrganiserForm = lazy(
-  () => import("../EmployeeGroupsOrganiserForm"),
+  async () => import("../EmployeeGroupsOrganiserForm"),
 );
 
 interface EmployeeGroupsHeaderProps {
@@ -38,6 +41,24 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
   setSelectedEmployeeGroups,
 }) => {
   const { setSidePanelContent } = useSidePanel();
+  const { autoinstallFiles } = useGetAutoinstallFiles();
+
+  const selectedGroups = employeeGroups.filter((employeeGroup) =>
+    selectedEmployeeGroups.includes(employeeGroup.id),
+  );
+
+  const employeeGroupOptions = getEmployeeGroupOptions(employeeGroups);
+
+  const autoinstallFileOptions = getAutoinstallFileOptions(autoinstallFiles);
+
+  const handleEditPriority = () => {
+    setSidePanelContent(
+      "Organize Employee groups priority",
+      <Suspense fallback={<LoadingState />}>
+        <EmployeeGroupsOrganiserForm groups={selectedGroups} />
+      </Suspense>,
+    );
+  };
 
   const handleImportEmployeeGroups = () => {
     setSidePanelContent(
@@ -48,9 +69,9 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
     );
   };
 
-  const selectedGroups = employeeGroups.filter((employeeGroup) =>
-    selectedEmployeeGroups.includes(employeeGroup.id),
-  );
+  const handleAssignAutoinstallFile = () => {
+    //
+  };
 
   const handleClearSelection = () => {
     setSelectedEmployeeGroups([]);
@@ -68,32 +89,12 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
     onSuccess: handleClearSelection,
   });
 
-  const handleEditPriority = () => {
-    setSidePanelContent(
-      "Organize Employee groups priority",
-      <Suspense fallback={<LoadingState />}>
-        <EmployeeGroupsOrganiserForm groups={selectedGroups} />
-      </Suspense>,
-    );
-  };
-
-  const handleAssignAutoinstallFile = () => {
-    //
-  };
-
-  const employeeGroupOptions = getEmployeeGroupOptions(employeeGroups, false);
-
   return (
     <>
       <HeaderWithSearch
         actions={
           <div className={classes.container}>
-            <div>
-              <EmployeeGroupsFilter
-                employeeGroupsData={employeeGroups}
-                searchLabel="Showing employee groups from the current table page. Search to filter from all available groups."
-              />
-            </div>
+            <AutoinstallFilesFilter options={autoinstallFileOptions} />
             <div className={classes.buttons}>
               <Button
                 className="p-segmented-control__button u-no-margin--bottom"
@@ -150,8 +151,9 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
         }
       />
       <TableFilterChips
-        filtersToDisplay={["employeeGroups", "search"]}
+        filtersToDisplay={["employeeGroups", "search", "autoinstallFiles"]}
         employeeGroupOptions={employeeGroupOptions}
+        autoinstallFileOptions={autoinstallFileOptions}
       />
     </>
   );

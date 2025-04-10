@@ -4,41 +4,39 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import { useState, type FC } from "react";
 
-interface EmployeeGroupsFilterProps {
+interface AutoinstallFilesFilterProps {
   readonly options: GroupedOption[];
 }
 
-const EmployeeGroupsFilter: FC<EmployeeGroupsFilterProps> = ({ options }) => {
+const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
+  options,
+}) => {
   const [searchText, setSearchText] = useState("");
 
-  const { employeeGroups, setPageParams } = usePageParams();
+  const { autoinstallFiles, setPageParams } = usePageParams();
 
   const filteredOptions = options.filter(({ label }) =>
     label.includes(searchText),
   );
 
   useSetDynamicFilterValidation(
-    "employeeGroups",
+    "autoinstallFiles",
     filteredOptions.map((opt) => opt.value),
   );
-
-  const handleOnItemsSelect = (items: string[]) => {
-    setPageParams({ employeeGroups: items });
-  };
 
   return (
     <TableFilter
       multiple
       hasBadge
-      label="Employee group"
+      label="Autoinstall file"
       hasToggleIcon
       options={filteredOptions}
-      onItemsSelect={handleOnItemsSelect}
-      onSearch={(search: string) => setSearchText(search)}
-      selectedItems={employeeGroups}
+      onItemsSelect={(items) => setPageParams({ autoinstallFiles: items })}
+      onSearch={(search) => setSearchText(search)}
+      selectedItems={autoinstallFiles}
       hideSelectAllButton
     />
   );
 };
 
-export default EmployeeGroupsFilter;
+export default AutoinstallFilesFilter;

@@ -16,6 +16,7 @@ import type { FilterKey } from "./types";
 
 interface TableFilterChipsProps {
   readonly accessGroupOptions?: SelectOption[];
+  readonly autoinstallFileOptions?: SelectOption[];
   readonly availabilityZonesOptions?: SelectOption[];
   readonly employeeGroupOptions?: SelectOption[];
   readonly filtersToDisplay?: FilterKey[];
@@ -28,6 +29,7 @@ interface TableFilterChipsProps {
 const TableFilterChips: FC<TableFilterChipsProps> = ({
   accessGroupOptions,
   availabilityZonesOptions,
+  autoinstallFileOptions,
   employeeGroupOptions,
   filtersToDisplay,
   osOptions,
@@ -45,6 +47,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   const {
     setPageParams,
     accessGroups,
+    autoinstallFiles,
     availabilityZones,
     employeeGroups,
     fromDate,
@@ -60,6 +63,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   const handleClearAllFilters = () => {
     setPageParams({
       accessGroups: [],
+      autoinstallFiles: [],
       availabilityZones: [],
       employeeGroups: [],
       fromDate: "",
@@ -114,6 +118,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   }, [
     accessGroups.length,
     availabilityZones.length,
+    autoinstallFiles.length,
     employeeGroups.length,
     fromDate,
     hiddenChipCount,
@@ -127,6 +132,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
 
   const renderResults = checkRenderConditions({
     accessGroups,
+    autoinstallFiles,
     availabilityZones,
     employeeGroups,
     filtersToMonitor,
@@ -219,6 +225,21 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               onDismiss={() =>
                 setPageParams({
                   accessGroups: array.filter((item) => item !== accessGroup),
+                })
+              }
+              className="u-no-margin--bottom u-no-margin--right"
+            />
+          ))}
+        {renderResults.areAutoinstallFilesChipsRender &&
+          autoinstallFiles.map((autoinstallFile, _, array) => (
+            <Chip
+              key={autoinstallFile}
+              value={`Autoinstall file: ${getChipLabel(autoinstallFileOptions, autoinstallFile)}`}
+              onDismiss={() =>
+                setPageParams({
+                  autoinstallFiles: array.filter(
+                    (item) => item !== autoinstallFile,
+                  ),
                 })
               }
               className="u-no-margin--bottom u-no-margin--right"

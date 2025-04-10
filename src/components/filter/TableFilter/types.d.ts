@@ -17,6 +17,7 @@ export interface MultipleSelectProps {
   onItemsSelect: (items: string[]) => void;
   selectedItems: string[];
   showSelectedItemCount?: boolean;
+  hideSelectAllButton?: boolean;
 }
 
 export type TableFilterProps = {
@@ -26,6 +27,5 @@ export type TableFilterProps = {
   hasBadge?: boolean;
   hasToggleIcon?: boolean;
   onSearch?: (search: string) => void;
-  searchLabel?: string;
   position?: Position;
 } & (SingleSelectProps | MultipleSelectProps);
