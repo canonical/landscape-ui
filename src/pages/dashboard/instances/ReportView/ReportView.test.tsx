@@ -1,18 +1,19 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
+import type { Mock } from "vitest";
 import { describe, expect, it, vi } from "vitest";
 import ReportView from "./ReportView";
 import useReports from "@/hooks/useReports";
 import useSidePanel from "@/hooks/useSidePanel";
 
-vi.mock("@/api/useReports");
-vi.mock("@/api/useSidePanel");
+vi.mock("@/hooks/useReports");
+vi.mock("@/hooks/useSidePanel");
 
 describe("ReportView", () => {
   const instanceIds = [1, 2, 3];
 
   beforeEach(() => {
-    (useReports as jest.Mock).mockReturnValue({
+    (useReports as Mock).mockReturnValue({
       getNotPingingInstances: vi.fn().mockReturnValue({
         data: { data: [] },
         isLoading: false,
@@ -27,7 +28,7 @@ describe("ReportView", () => {
       }),
     });
 
-    (useSidePanel as jest.Mock).mockReturnValue({
+    (useSidePanel as Mock).mockReturnValue({
       setSidePanelContent: vi.fn(),
     });
   });

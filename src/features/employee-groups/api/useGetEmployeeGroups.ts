@@ -11,12 +11,22 @@ export const useGetEmployeeGroups = (
 ) => {
   const authFetch = useFetch();
 
-  const { currentPage, search, pageSize } = usePageParams();
+  const {
+    search,
+    pageSize,
+    currentPage,
+    employeeGroups: employeeGroupIds,
+    autoinstallFiles: autoinstallFileIds,
+  } = usePageParams();
 
   const params = {
     search,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
+    employee_group_ids:
+      employeeGroupIds.length > 0 ? employeeGroupIds : undefined,
+    autoinstall_file_ids:
+      autoinstallFileIds.length > 0 ? autoinstallFileIds : undefined,
     ...queryParams,
   };
 
@@ -30,7 +40,7 @@ export const useGetEmployeeGroups = (
 
   return {
     employeeGroups: data?.data.results ?? [],
-    employeeGroupsCount: data?.data.count ?? 0,
+    employeeGroupsCount: data?.data.count,
     isEmployeeGroupsLoading: isLoading,
   };
 };

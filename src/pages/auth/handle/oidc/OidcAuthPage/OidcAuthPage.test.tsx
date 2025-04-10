@@ -31,7 +31,7 @@ const mockTestParams = (response: AuthStateResponse | Error) => {
     }),
   }));
 
-  vi.doMock("@/api/useAuth", async () => ({
+  vi.doMock("@/hooks/useAuth", async () => ({
     default: () => ({
       setAuthLoading: vi.fn(),
       setUser: vi.fn(),
@@ -87,7 +87,7 @@ describe("OidcAuthPage", () => {
     beforeEach(async ({ task: { id } }) => {
       vi.doUnmock("react-router");
       vi.doUnmock("@/features/auth");
-      vi.doUnmock("@/api/useAuth");
+      vi.doUnmock("@/hooks/useAuth");
       vi.resetModules();
 
       const taskId = Number(id.substring(id.length - 1));

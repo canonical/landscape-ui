@@ -16,6 +16,7 @@ import type { FilterKey } from "./types";
 
 interface TableFilterChipsProps {
   readonly accessGroupOptions?: SelectOption[];
+  readonly autoinstallFileOptions?: SelectOption[];
   readonly availabilityZonesOptions?: SelectOption[];
   readonly employeeGroupOptions?: SelectOption[];
   readonly filtersToDisplay?: FilterKey[];
@@ -28,6 +29,7 @@ interface TableFilterChipsProps {
 const TableFilterChips: FC<TableFilterChipsProps> = ({
   accessGroupOptions,
   availabilityZonesOptions,
+  autoinstallFileOptions,
   employeeGroupOptions,
   filtersToDisplay,
   osOptions,
@@ -45,6 +47,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   const {
     setPageParams,
     accessGroups,
+    autoinstallFiles,
     availabilityZones,
     employeeGroups,
     fromDate,
@@ -60,6 +63,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   const handleClearAllFilters = () => {
     setPageParams({
       accessGroups: [],
+      autoinstallFiles: [],
       availabilityZones: [],
       employeeGroups: [],
       fromDate: "",
@@ -84,7 +88,8 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     ];
 
     if (!chips.length) {
-      return setHiddenChipCount(0);
+      setHiddenChipCount(0);
+      return;
     }
 
     const top = chips[0].offsetTop;
@@ -114,6 +119,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   }, [
     accessGroups.length,
     availabilityZones.length,
+    autoinstallFiles.length,
     employeeGroups.length,
     fromDate,
     hiddenChipCount,
@@ -127,6 +133,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
 
   const renderResults = checkRenderConditions({
     accessGroups,
+    autoinstallFiles,
     availabilityZones,
     employeeGroups,
     filtersToMonitor,
@@ -169,30 +176,36 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             <Chip
               key={value + idx}
               value={`Query: ${value}`}
-              onDismiss={() =>
-                setPageParams({ query: filterSearchQuery(query, value) })
-              }
+              onDismiss={() => {
+                setPageParams({ query: filterSearchQuery(query, value) });
+              }}
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
         {renderResults.isSearchChipRender && (
           <Chip
             value={`Search: ${search}`}
-            onDismiss={() => setPageParams({ search: "" })}
+            onDismiss={() => {
+              setPageParams({ search: "" });
+            }}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
         {renderResults.isStatusChipRender && (
           <Chip
             value={`Status: ${getChipLabel(statusOptions, status)}`}
-            onDismiss={() => setPageParams({ status: "" })}
+            onDismiss={() => {
+              setPageParams({ status: "" });
+            }}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
         {renderResults.isOsChipRender && (
           <Chip
             value={`OS: ${getChipLabel(osOptions, os)}`}
-            onDismiss={() => setPageParams({ os: "" })}
+            onDismiss={() => {
+              setPageParams({ os: "" });
+            }}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
@@ -201,13 +214,13 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             <Chip
               key={availabilityZone}
               value={`Availability z.: ${getChipLabel(availabilityZonesOptions, availabilityZone)}`}
-              onDismiss={() =>
+              onDismiss={() => {
                 setPageParams({
                   availabilityZones: array.filter(
                     (item) => item !== availabilityZone,
                   ),
-                })
-              }
+                });
+              }}
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
@@ -216,11 +229,26 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             <Chip
               key={accessGroup}
               value={`Access group: ${getChipLabel(accessGroupOptions, accessGroup)}`}
-              onDismiss={() =>
+              onDismiss={() => {
                 setPageParams({
                   accessGroups: array.filter((item) => item !== accessGroup),
-                })
-              }
+                });
+              }}
+              className="u-no-margin--bottom u-no-margin--right"
+            />
+          ))}
+        {renderResults.areAutoinstallFilesChipsRender &&
+          autoinstallFiles.map((autoinstallFile, _, array) => (
+            <Chip
+              key={autoinstallFile}
+              value={`Autoinstall file: ${getChipLabel(autoinstallFileOptions, autoinstallFile)}`}
+              onDismiss={() => {
+                setPageParams({
+                  autoinstallFiles: array.filter(
+                    (item) => item !== autoinstallFile,
+                  ),
+                });
+              }}
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
@@ -229,13 +257,13 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             <Chip
               key={employeeGroup}
               value={`Employee group: ${getChipLabel(employeeGroupOptions, employeeGroup)}`}
-              onDismiss={() =>
+              onDismiss={() => {
                 setPageParams({
                   employeeGroups: array.filter(
                     (item) => item !== employeeGroup,
                   ),
-                })
-              }
+                });
+              }}
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
@@ -244,30 +272,36 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             <Chip
               key={tag}
               value={`Tag: ${getChipLabel(tagOptions, tag)}`}
-              onDismiss={() =>
-                setPageParams({ tags: array.filter((item) => item !== tag) })
-              }
+              onDismiss={() => {
+                setPageParams({ tags: array.filter((item) => item !== tag) });
+              }}
               className="u-no-margin--bottom u-no-margin--right"
             />
           ))}
         {renderResults.isFromDateChipRender && (
           <Chip
             value={`From: ${fromDate}`}
-            onDismiss={() => setPageParams({ fromDate: "" })}
+            onDismiss={() => {
+              setPageParams({ fromDate: "" });
+            }}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
         {renderResults.isToDateChipRender && (
           <Chip
             value={`To: ${toDate}`}
-            onDismiss={() => setPageParams({ toDate: "" })}
+            onDismiss={() => {
+              setPageParams({ toDate: "" });
+            }}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
         {renderResults.isTypeChipRender && (
           <Chip
             value={`Type: ${getChipLabel(typeOptions, type)}`}
-            onDismiss={() => setPageParams({ type: "" })}
+            onDismiss={() => {
+              setPageParams({ type: "" });
+            }}
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
@@ -276,7 +310,9 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             type="button"
             appearance="link"
             className={classes.showLessButton}
-            onClick={() => setIsExpanded(false)}
+            onClick={() => {
+              setIsExpanded(false);
+            }}
           >
             <span className="u-text--muted">Show less</span>
           </Button>
@@ -287,7 +323,9 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           type="button"
           appearance="link"
           className={classes.showMoreButton}
-          onClick={() => setIsExpanded(true)}
+          onClick={() => {
+            setIsExpanded(true);
+          }}
         >
           <span className="u-text--muted">{`+${hiddenChipCount}`}</span>
         </Button>

@@ -11,7 +11,6 @@ const onSelectedEmployeeGroupsChangeMock = vi.fn();
 
 const props: ComponentProps<typeof EmployeeGroupsList> = {
   employeeGroups,
-  isEmployeeGroupsLoading: false,
   onSelectedEmployeeGroupsChange: onSelectedEmployeeGroupsChangeMock,
   selectedEmployeeGroups: [],
 };
@@ -57,7 +56,7 @@ describe("EmployeeGroupsList", () => {
 
         expect(employeeCountLink).toHaveAttribute(
           "href",
-          `/settings/employees?tab=employees&employeeGroups=${group.name}`,
+          `/settings/employees?tab=employees&employeeGroups=${group.id}`,
         );
       }
 
@@ -87,7 +86,7 @@ describe("EmployeeGroupsList", () => {
 
   it("toggles individual row checkbox to select a single employee group", async () => {
     renderWithProviders(<EmployeeGroupsList {...props} />);
-    const group = employeeGroups[0];
+    const [group] = employeeGroups;
     const groupLabel = group.name;
 
     const row = screen.getByRole("row", {

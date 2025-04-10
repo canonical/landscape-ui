@@ -8,23 +8,18 @@ import AutoinstallFileTableCell from "../AutoinstallFileTableCell";
 import EmployeeGroupsListContextualMenu from "../EmployeeGroupsListContextualMenu";
 import classes from "./EmployeeGroupsList.module.scss";
 import { handleCellProps } from "./helpers";
-import usePageParams from "@/hooks/usePageParams";
 
 interface EmployeeGroupsListProps {
-  readonly isEmployeeGroupsLoading: boolean;
   readonly onSelectedEmployeeGroupsChange: (employeeGroups: number[]) => void;
   readonly selectedEmployeeGroups: number[];
   readonly employeeGroups: EmployeeGroup[];
 }
 
 const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
-  isEmployeeGroupsLoading,
   onSelectedEmployeeGroupsChange,
   selectedEmployeeGroups,
   employeeGroups,
 }) => {
-  const { search } = usePageParams();
-
   const tableEmployeeGroups = useMemo<EmployeeGroup[]>(
     (): EmployeeGroup[] => employeeGroups,
     [employeeGroups],
@@ -49,9 +44,7 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
             label={
               <span className="u-off-screen">Toggle all employee groups</span>
             }
-            disabled={
-              tableEmployeeGroups.length === 0 || isEmployeeGroupsLoading
-            }
+            disabled={tableEmployeeGroups.length === 0}
             indeterminate={
               selectedEmployeeGroups.length > 0 &&
               selectedEmployeeGroups.length < employeeGroups.length
@@ -75,7 +68,6 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
             label={
               <span className="u-off-screen">{`Toggle ${original.name}`}</span>
             }
-            disabled={isEmployeeGroupsLoading}
             name="employee-group-checkbox"
             checked={selectedEmployeeGroups.includes(original.id)}
             onChange={() => {
@@ -97,7 +89,7 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) =>
           original.employee_count ? (
             <Link
-              to={`/settings/employees?tab=employees&employeeGroups=${original.name}`}
+              to={`/settings/employees?tab=employees&employeeGroups=${original.id}`}
               className={classes.link}
             >
               {original.employee_count}
@@ -133,7 +125,7 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
         ),
       },
     ],
-    [tableEmployeeGroups, isEmployeeGroupsLoading, selectedEmployeeGroups],
+    [tableEmployeeGroups, selectedEmployeeGroups],
   );
 
   return (
@@ -141,7 +133,7 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       columns={employeeGroupsColumns}
       data={tableEmployeeGroups}
       getCellProps={handleCellProps()}
-      emptyMsg={`No employee groups found with the search: "${search}"`}
+      emptyMsg="No employee groups found"
     />
   );
 };

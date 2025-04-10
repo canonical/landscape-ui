@@ -89,7 +89,7 @@ export function generateGetListEndpoint<T>({
 
       if (
         !endpointStatus.path ||
-        (endpointStatus.path && endpointStatus.path !== path)
+        (endpointStatus.path && endpointStatus.path === path)
       ) {
         if (endpointStatus.status === "error") {
           throw new HttpResponse(null, { status: 500 });
@@ -114,3 +114,17 @@ export function generateGetListEndpoint<T>({
     },
   );
 }
+
+export const parseArray = (paramValue: string | null): string[] => {
+  if (!paramValue) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(paramValue);
+    return Array.isArray(parsed) ? parsed : [paramValue];
+  } catch {
+    const ids = paramValue.split(",").filter((id) => id.trim() !== "");
+    return ids.length > 0 ? ids : [];
+  }
+};

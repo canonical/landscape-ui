@@ -19,7 +19,7 @@ import EmployeeListContextualMenu from "../EmployeeListContextualMenu";
 import classes from "./EmployeeList.module.scss";
 import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
 
-const EmployeeDetails = lazy(() => import("../EmployeeDetails"));
+const EmployeeDetails = lazy(async () => import("../EmployeeDetails"));
 
 interface EmployeeListProps {
   readonly employees: Employee[];
@@ -84,7 +84,9 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top"
-            onClick={() => handleShowEmployeeDetails(original)}
+            onClick={() => {
+              handleShowEmployeeDetails(original);
+            }}
             aria-label={`Show details of user ${original.name}`}
           >
             {original.name}
@@ -105,7 +107,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
             <TruncatedCell
               content={employeeGroups.map((group) => (
                 <Link
-                  to={`/settings/employees?tab=employee-groups&employeeGroups=${group.name}`}
+                  to={`/settings/employees?tab=employee-groups&search=${group.name}`}
                   key={group.group_id}
                   className={classes.truncatedItem}
                 >
@@ -115,7 +117,9 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
               isExpanded={
                 expandedCell?.column === "groups" && expandedCell.row === index
               }
-              onExpand={() => handleExpandCellClick("groups", index)}
+              onExpand={() => {
+                handleExpandCellClick("groups", index);
+              }}
             />
           ) : (
             <NoData />
@@ -173,9 +177,9 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
                 expandedCell?.column === "associated_instances" &&
                 expandedCell.row === index
               }
-              onExpand={() =>
-                handleExpandCellClick("associated_instances", index)
-              }
+              onExpand={() => {
+                handleExpandCellClick("associated_instances", index);
+              }}
             />
           ) : (
             <NoData />
@@ -200,6 +204,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
         data={employees}
         getCellProps={handleCellProps(expandedCell)}
         getRowProps={handleRowProps(expandedCell)}
+        emptyMsg="No employees found according to your search parameters."
       />
     </div>
   );

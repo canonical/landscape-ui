@@ -15,7 +15,7 @@ import usePageParams from "@/hooks/usePageParams";
 import { TablePagination } from "@/components/layout/TablePagination";
 
 const EmployeeGroupsPanel: FC = () => {
-  const { search } = usePageParams();
+  const { search, autoinstallFiles } = usePageParams();
   const [selectedEmployeeGroups, setSelectedEmployeeGroups] = useState<
     number[]
   >([]);
@@ -25,8 +25,8 @@ const EmployeeGroupsPanel: FC = () => {
       with_autoinstall_file: true,
       with_employee_count: true,
     });
-  const { oidcDirectoryIssuers, isOidcIssuersLoading } = useOidcIssuers();
 
+  const { oidcDirectoryIssuers, isOidcIssuersLoading } = useOidcIssuers();
   const { setSidePanelContent } = useSidePanel();
 
   const handleImportEmployeeGroups = () => {
@@ -42,7 +42,7 @@ const EmployeeGroupsPanel: FC = () => {
   const issuersMissing = !isLoading && oidcDirectoryIssuers.length === 0;
   const groupsMissing = !isLoading && employeeGroups.length === 0;
 
-  if (isLoading && !search) {
+  if (isLoading && !search && !autoinstallFiles.length) {
     return <LoadingState />;
   }
 
@@ -73,7 +73,6 @@ const EmployeeGroupsPanel: FC = () => {
         <>
           <EmployeeGroupsList
             employeeGroups={employeeGroups}
-            isEmployeeGroupsLoading={false}
             onSelectedEmployeeGroupsChange={(groups: number[]) => {
               setSelectedEmployeeGroups(groups);
             }}

@@ -17,7 +17,8 @@ const getSuffix = (word: string): string => {
 /**
  * This function is currently NOT used. The backend does not provide the uniqueness of a group in its paginated response.
  */
-export const getEmployeeGroupLabel = <T extends boolean>(
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getEmployeeGroupLabel = <T extends boolean>(
   employeeGroup: EmployeeGroup,
   employeeGroups: EmployeeGroup[],
   includeTooltip?: T,
@@ -47,16 +48,11 @@ export const getEmployeeGroupLabel = <T extends boolean>(
 
 export const getEmployeeGroupOptions = (
   employeeGroups: EmployeeGroup[],
-  includeTooltip = false,
 ): GroupedOption[] => {
   return employeeGroups.map((employeeGroup) => {
     return {
       value: employeeGroup.id.toString(),
-      label: getEmployeeGroupLabel(
-        employeeGroup,
-        employeeGroups,
-        includeTooltip,
-      ),
+      label: employeeGroup.name,
     };
   });
 };

@@ -1,12 +1,12 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import DeactivateEmployeeModal from "./DeactivateEmployeeModal";
 import { employees } from "@/tests/mocks/employees";
 
 const handleClose = vi.fn();
-const employee = employees.find((employee) => employee.is_active);
+const employee = employees.find((item) => item.is_active);
 
 describe("DeactivateEmployeeModal", () => {
   const user = userEvent.setup();
@@ -143,6 +143,8 @@ describe("DeactivateEmployeeModal", () => {
 
     await user.click(confirmButton);
 
-    expect(handleClose).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(handleClose).toHaveBeenCalled();
+    });
   });
 });

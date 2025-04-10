@@ -30,6 +30,10 @@ export default [
     },
   ),
 
+  http.patch(`${API_URL}employees/:id`, async () => {
+    return HttpResponse.json();
+  }),
+
   http.delete(`${API_URL}employees/:id`, async () => {
     return HttpResponse.json();
   }),
