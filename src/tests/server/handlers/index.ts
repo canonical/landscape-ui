@@ -26,9 +26,11 @@ import userSettings from "./userSettings";
 import usn from "./usn";
 import wsl from "./wsl";
 import employees from "./employees";
+import autoinstallFiles from "./autoinstallFiles";
 
 export default [
   ...accessGroup,
+  ...autoinstallFiles,
   ...activity,
   ...alerts,
   ...aptSource,

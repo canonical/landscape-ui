@@ -21,7 +21,6 @@ describe("EmployeeGroupsHeader", () => {
     );
 
     expect(container).toHaveTexts([
-      "Employee group",
       "Search",
       "Import employee groups",
       "Remove",

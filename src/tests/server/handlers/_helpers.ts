@@ -84,7 +84,7 @@ export function generateGetListEndpoint<T>({
 
       if (
         !endpointStatus.path ||
-        (endpointStatus.path && endpointStatus.path !== path)
+        (endpointStatus.path && endpointStatus.path === path)
       ) {
         if (endpointStatus.status === "error") {
           throw new HttpResponse(null, { status: 500 });

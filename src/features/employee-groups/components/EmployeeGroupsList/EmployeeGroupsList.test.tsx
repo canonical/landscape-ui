@@ -11,7 +11,6 @@ const onSelectedEmployeeGroupsChangeMock = vi.fn();
 
 const props: ComponentProps<typeof EmployeeGroupsList> = {
   employeeGroups,
-  isEmployeeGroupsLoading: false,
   onSelectedEmployeeGroupsChange: onSelectedEmployeeGroupsChangeMock,
   selectedEmployeeGroups: [],
 };
@@ -57,7 +56,7 @@ describe("EmployeeGroupsList", () => {
 
         expect(employeeCountLink).toHaveAttribute(
           "href",
-          `/settings/employees?tab=employees&employeeGroups=${group.name}`,
+          `/settings/employees?tab=employees&employeeGroups=${group.id}`,
         );
       }
 

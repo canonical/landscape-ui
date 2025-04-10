@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import DeactivateEmployeeModal from "./DeactivateEmployeeModal";
@@ -143,6 +143,8 @@ describe("DeactivateEmployeeModal", () => {
 
     await user.click(confirmButton);
 
-    expect(handleClose).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(handleClose).toHaveBeenCalled();
+    });
   });
 });

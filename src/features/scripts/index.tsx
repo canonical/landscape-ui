@@ -18,4 +18,4 @@ export { default as RunInstanceScriptForm } from "./components/RunInstanceScript
 export { default as ScriptList } from "./components/ScriptList";
 export { default as ScriptsEmptyState } from "./components/ScriptsEmptyState";
 export { useScripts } from "./hooks";
-export type { GetScriptCodeParams } from "./hooks";
+export type { GetScriptCodeParams, CopyScriptParams } from "./hooks";

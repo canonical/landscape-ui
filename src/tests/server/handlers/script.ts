@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { API_URL_OLD } from "@/constants";
 import { isAction } from "@/tests/server/handlers/_helpers";
-import type { GetScriptCodeParams } from "@/features/scripts";
+import type { CopyScriptParams, GetScriptCodeParams } from "@/features/scripts";
 import { scriptCodes } from "@/tests/mocks/script";
 import { getTestErrorParams } from "@/tests/mocks/error";
 
@@ -26,6 +26,17 @@ export default [
       }
 
       return HttpResponse.json(script.code);
+    },
+  ),
+
+  http.options<never, CopyScriptParams, string>(
+    API_URL_OLD,
+    async ({ request }) => {
+      if (!isAction(request, "CopyScript")) {
+        return;
+      }
+
+      return HttpResponse.json();
     },
   ),
 ];
