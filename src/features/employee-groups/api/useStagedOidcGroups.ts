@@ -11,18 +11,37 @@ export interface ImportOidcSessionParams {
   readonly issuer_id: number;
 }
 
-export const useStagedOidcGroups = (issuerId: number) => {
+interface UseStagedOidcGroups {
+  readonly issuerId: number;
+  readonly pageSize: number;
+  readonly currentPage: number;
+  readonly search: string;
+}
+
+export const useStagedOidcGroups = ({
+  issuerId,
+  pageSize,
+  currentPage,
+  search,
+}: UseStagedOidcGroups) => {
   const [session, setSession] = useState<OidcGroupImportSession | null>(null);
 
   const authFetch = useFetch();
   const debug = useDebug();
+
+  const params = {
+    import_session_id: session?.id,
+    offset: (currentPage - 1) * pageSize,
+    limit: pageSize,
+    search,
+  };
 
   const { mutateAsync: getSession, isPending } = useMutation<
     AxiosResponse<OidcGroupImportSession>,
     AxiosError<ApiError>,
     ImportOidcSessionParams
   >({
-    mutationFn: ({ issuer_id }) =>
+    mutationFn: async ({ issuer_id }) =>
       authFetch.post("/oidc/groups/import_session", {
         issuer_id,
       }),
@@ -40,16 +59,17 @@ export const useStagedOidcGroups = (issuerId: number) => {
     AxiosResponse<ApiPaginatedResponse<StagedOidcGroup>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["stagedOidcGroups", { import_session_id: session?.id }],
-    queryFn: () =>
+    queryKey: ["stagedOidcGroups", params],
+    queryFn: async () =>
       authFetch.get("/oidc/groups/staged", {
-        params: { import_session_id: session?.id },
+        params,
       }),
     enabled: session !== null,
   });
 
   return {
     stagedOidcGroups: data?.data.results ?? [],
+    stagedOidcGroupsCount: data?.data.count ?? 0,
     isStagedOidcGroupsLoading: isPending || isLoading,
   };
 };

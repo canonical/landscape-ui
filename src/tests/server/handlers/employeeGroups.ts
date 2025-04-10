@@ -106,8 +106,10 @@ export default [
     return HttpResponse.json(
       generatePaginatedResponse({
         data,
-        limit: undefined,
-        offset: undefined,
+        limit: Number(searchParams.get("limit")),
+        offset: Number(searchParams.get("offset")),
+        search: searchParams.get("search") ?? "",
+        searchFields: ["name"],
       }),
     );
   }),

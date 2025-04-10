@@ -8,6 +8,7 @@ import AutoinstallFileTableCell from "../AutoinstallFileTableCell";
 import EmployeeGroupsListContextualMenu from "../EmployeeGroupsListContextualMenu";
 import classes from "./EmployeeGroupsList.module.scss";
 import { handleCellProps } from "./helpers";
+import usePageParams from "@/hooks/usePageParams";
 
 interface EmployeeGroupsListProps {
   readonly isEmployeeGroupsLoading: boolean;
@@ -22,6 +23,8 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
   selectedEmployeeGroups,
   employeeGroups,
 }) => {
+  const { search } = usePageParams();
+
   const tableEmployeeGroups = useMemo<EmployeeGroup[]>(
     (): EmployeeGroup[] => employeeGroups,
     [employeeGroups],
@@ -57,13 +60,13 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
               selectedEmployeeGroups.length > 0 &&
               selectedEmployeeGroups.length === employeeGroups.length
             }
-            onChange={() =>
+            onChange={() => {
               onSelectedEmployeeGroupsChange(
                 selectedEmployeeGroups.length > 0
                   ? []
                   : employeeGroups.map(({ id }) => id),
-              )
-            }
+              );
+            }}
           />
         ),
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
@@ -75,7 +78,9 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
             disabled={isEmployeeGroupsLoading}
             name="employee-group-checkbox"
             checked={selectedEmployeeGroups.includes(original.id)}
-            onChange={() => handleToggleSingleEmployeeGroup(original.id)}
+            onChange={() => {
+              handleToggleSingleEmployeeGroup(original.id);
+            }}
           />
         ),
       },
@@ -136,7 +141,7 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       columns={employeeGroupsColumns}
       data={tableEmployeeGroups}
       getCellProps={handleCellProps()}
-      emptyMsg="No employee groups found according to your search parameters."
+      emptyMsg={`No employee groups found with the search: "${search}"`}
     />
   );
 };

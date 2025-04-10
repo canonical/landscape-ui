@@ -25,7 +25,10 @@ export function generateFilteredResponse<D>(
   return data.filter((item) => {
     for (const field of searchFields) {
       const value = getNestedProperty(item, field);
-      if (value && value.toString().includes(search)) {
+      if (
+        value &&
+        value.toString().toLowerCase().includes(search.toLowerCase())
+      ) {
         return true;
       }
     }
@@ -42,9 +45,11 @@ export function generatePaginatedResponse<D>({
   searchFields,
 }: GeneratePaginatedResponseProps<D>): ApiPaginatedResponse<D> {
   let results = data;
+  let count = data.length;
 
   if (search && searchFields) {
     results = generateFilteredResponse(results, search, searchFields);
+    count = results.length;
   }
 
   if (undefined !== offset && limit) {
@@ -53,7 +58,7 @@ export function generatePaginatedResponse<D>({
 
   return {
     results,
-    count: data.length,
+    count,
     next: null,
     previous: null,
   };

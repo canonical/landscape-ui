@@ -14,9 +14,11 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import classes from "./ImportEmployeeGroupsForm.module.scss";
 import SidePanelDescription from "../SidePanelDescription";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import { PAGE_SIZE_OPTIONS } from "@/components/layout/TablePagination/components/TablePaginationBase/constants";
 
 const EmployeeGroupIdentityIssuerListContainer = lazy(
-  () => import("../EmployeeGroupIdentityIssuerListContainer"),
+  async () => import("../EmployeeGroupIdentityIssuerListContainer"),
 );
 
 interface ImportEmployeeGroupsFormProps {
@@ -26,20 +28,31 @@ interface ImportEmployeeGroupsFormProps {
 const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
   issuer,
 }) => {
-  const [searchText, setSearchText] = useState("");
+  const [search, setSearch] = useState("");
   const [selectedGroupIds, setSelectedGroupIds] = useState<number[]>([]);
   const [importAll, setImportAll] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0].value);
 
   const { setSidePanelContent, closeSidePanel } = useSidePanel();
-  const { stagedOidcGroups, isStagedOidcGroupsLoading } = useStagedOidcGroups(
-    issuer.id,
-  );
+  const { stagedOidcGroups, stagedOidcGroupsCount, isStagedOidcGroupsLoading } =
+    useStagedOidcGroups({ issuerId: issuer.id, pageSize, currentPage, search });
 
   const debug = useDebug();
   const { notify } = useNotify();
 
   const { importEmployeeGroups, isEmployeeGroupsImporting } =
     useImportEmployeeGroups();
+
+  const handlePageChange = (page: number) => {
+    setSelectedGroupIds([]);
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setSelectedGroupIds([]);
+    setPageSize(newPageSize);
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -63,10 +76,6 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
       debug(error);
     }
   };
-
-  const filteredEmployeeGroups = stagedOidcGroups.filter((employeeGroup) =>
-    employeeGroup.name.toLowerCase().includes(searchText.toLowerCase()),
-  );
 
   const handleToggleSingleEmployeeGroup = (id: number) => {
     setSelectedGroupIds(
@@ -116,7 +125,7 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
                 <span className="u-off-screen">Toggle all employee groups</span>
               }
               disabled={
-                filteredEmployeeGroups.length === 0 || isStagedOidcGroupsLoading
+                stagedOidcGroups.length === 0 || isStagedOidcGroupsLoading
               }
               indeterminate={
                 selectedGroupIds.length > 0 &&
@@ -126,13 +135,13 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
                 selectedGroupIds.length > 0 &&
                 selectedGroupIds.length === stagedOidcGroups.length
               }
-              onChange={() =>
+              onChange={() => {
                 setSelectedGroupIds(
                   selectedGroupIds.length > 0
                     ? []
                     : stagedOidcGroups.map(({ id }) => id),
-                )
-              }
+                );
+              }}
             />
           ),
           Cell: ({ row: { original } }: CellProps<StagedOidcGroup>) => (
@@ -144,7 +153,9 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
               disabled={isStagedOidcGroupsLoading}
               name="employee-group-checkbox"
               checked={selectedGroupIds.includes(original.id)}
-              onChange={() => handleToggleSingleEmployeeGroup(original.id)}
+              onChange={() => {
+                handleToggleSingleEmployeeGroup(original.id);
+              }}
             />
           ),
         },
@@ -158,7 +169,7 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
     importAll,
   ]);
 
-  if (isStagedOidcGroupsLoading) {
+  if (isStagedOidcGroupsLoading && !search) {
     return <LoadingState />;
   }
 
@@ -173,23 +184,45 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
       <div className={classes.checkbox}>
         <CheckboxInput
           label="Import all groups"
-          onChange={() => setImportAll((prev) => !prev)}
+          onChange={() => {
+            setImportAll((prev) => !prev);
+          }}
           checked={importAll}
         />
       </div>
-      <SearchBoxWithForm onSearch={(input) => setSearchText(input)} />
-      <Form noValidate onSubmit={handleSubmit}>
-        <ModularTable data={filteredEmployeeGroups} columns={columns} />
-        <SidePanelFormButtons
-          hasBackButton
-          onBackButtonPress={handleBackButtonPress}
-          submitButtonText="Import"
-          submitButtonDisabled={
-            (!importAll && selectedGroupIds.length === 0) ||
-            isEmployeeGroupsImporting
-          }
-        />
-      </Form>
+      <SearchBoxWithForm
+        onSearch={(input) => {
+          setSearch(input);
+        }}
+      />
+      {isStagedOidcGroupsLoading ? (
+        <LoadingState />
+      ) : (
+        <Form noValidate onSubmit={handleSubmit}>
+          <ModularTable
+            data={stagedOidcGroups}
+            columns={columns}
+            emptyMsg={`No employee groups found with the search: "${search}"`}
+          />
+          <SidePanelTablePagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            paginate={handlePageChange}
+            setPageSize={handlePageSizeChange}
+            totalItems={stagedOidcGroupsCount}
+            className={classes.pagination}
+          />
+          <SidePanelFormButtons
+            hasBackButton
+            onBackButtonPress={handleBackButtonPress}
+            submitButtonText="Import"
+            submitButtonDisabled={
+              (!importAll && selectedGroupIds.length === 0) ||
+              isEmployeeGroupsImporting
+            }
+          />
+        </Form>
+      )}
     </>
   );
 };

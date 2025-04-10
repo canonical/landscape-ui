@@ -9,10 +9,12 @@ import { useState } from "react";
 
 interface EmployeeGroupsTableProps {
   readonly employeeGroups: EmployeeGroup[];
+  readonly employeeGroupsCount: number;
 }
 
 const EmployeeGroupsTable: FC<EmployeeGroupsTableProps> = ({
   employeeGroups,
+  employeeGroupsCount,
 }) => {
   const [selectedEmployeeGroups, setSelectedEmployeeGroups] = useState<
     number[]
@@ -23,7 +25,9 @@ const EmployeeGroupsTable: FC<EmployeeGroupsTableProps> = ({
       <EmployeeGroupsHeader
         selectedEmployeeGroups={selectedEmployeeGroups}
         employeeGroups={employeeGroups}
-        setSelectedEmployeeGroups={(ids) => setSelectedEmployeeGroups(ids)}
+        setSelectedEmployeeGroups={(ids) => {
+          setSelectedEmployeeGroups(ids);
+        }}
       />
       <EmployeeGroupsList
         employeeGroups={employeeGroups}
@@ -33,15 +37,13 @@ const EmployeeGroupsTable: FC<EmployeeGroupsTableProps> = ({
         }}
         selectedEmployeeGroups={selectedEmployeeGroups}
       />
-      {employeeGroups.length > 0 && (
-        <TablePagination
-          handleClearSelection={() => {
-            //test
-          }}
-          totalItems={employeeGroups.length}
-          currentItemCount={employeeGroups.length}
-        />
-      )}
+      <TablePagination
+        handleClearSelection={() => {
+          //test
+        }}
+        totalItems={employeeGroupsCount}
+        currentItemCount={employeeGroups.length}
+      />
     </>
   );
 };
