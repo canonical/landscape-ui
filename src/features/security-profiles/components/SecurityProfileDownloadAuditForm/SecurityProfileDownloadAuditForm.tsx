@@ -63,7 +63,9 @@ const SecurityProfileDownloadAuditForm: FC<
       return;
     }
 
-    console.log(getSingleActivityQueryResponse.data.activity_status);
+    if (getSingleActivityQueryResponse.data.activity_status == "complete") {
+      setReportURI(getSingleActivityQueryResponse.data.result_text);
+    }
   }, [getSingleActivityQueryResponse]);
 
   const formik = useFormik<SecurityProfileDownloadAuditFormValues>({

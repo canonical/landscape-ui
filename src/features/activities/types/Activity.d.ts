@@ -9,7 +9,8 @@ export type ActivityStatus =
   | "blocked"
   | "unapproved"
   | "canceled"
-  | "failed";
+  | "failed"
+  | "complete";
 
 interface ActivityActions {
   approvable: boolean;
