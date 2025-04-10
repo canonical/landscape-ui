@@ -17,6 +17,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Managers",
         priority: 2,
         autoinstall_file: null,
+        employee_count: 20,
       },
       {
         id: 43,
@@ -25,6 +26,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Super Admins",
         priority: 1,
         autoinstall_file: null,
+        employee_count: 20,
       },
       {
         id: 44,
@@ -33,6 +35,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Regular Employees",
         priority: 3,
         autoinstall_file: null,
+        employee_count: 20,
       },
       {
         id: 1,
@@ -41,6 +44,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Curb Group",
         priority: 4,
         autoinstall_file: null,
+        employee_count: 20,
       },
     ],
   },
@@ -60,6 +64,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Managers",
         priority: 2,
         autoinstall_file: null,
+        employee_count: 20,
       },
       {
         id: 43,
@@ -68,6 +73,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Super Admins",
         priority: 1,
         autoinstall_file: null,
+        employee_count: 20,
       },
       {
         id: 44,
@@ -76,6 +82,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Regular Employees",
         priority: 3,
         autoinstall_file: null,
+        employee_count: 20,
       },
       {
         id: 1,
@@ -84,6 +91,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Curb Group",
         priority: 4,
         autoinstall_file: null,
+        employee_count: 20,
       },
     ],
   },
@@ -103,6 +111,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Managers",
         priority: 2,
         autoinstall_file: null,
+        employee_count: 20,
       },
       {
         id: 43,
@@ -111,6 +120,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Super Admins",
         priority: 1,
         autoinstall_file: null,
+        employee_count: 20,
       },
       {
         id: 44,
@@ -119,6 +129,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Regular Employees",
         priority: 3,
         autoinstall_file: null,
+        employee_count: 20,
       },
       {
         id: 1,
@@ -127,6 +138,7 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
         name: "Curb Group",
         priority: 4,
         autoinstall_file: null,
+        employee_count: 20,
       },
     ],
   },

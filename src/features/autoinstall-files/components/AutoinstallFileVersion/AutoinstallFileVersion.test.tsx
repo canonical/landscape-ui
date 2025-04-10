@@ -7,11 +7,16 @@ describe("AutoinstallFileVersion", () => {
   it("should render", async () => {
     const [file] = autoinstallFiles;
 
+    const versionInfo = {
+      version: 1,
+      created_at: "2025-02-07T17:55:23.806269",
+    };
+
     renderWithProviders(
       <AutoinstallFileVersion
-        fileId={file.id}
+        file={file}
         goBack={vi.fn()}
-        version={file.version}
+        versionInfo={versionInfo}
       />,
     );
   });

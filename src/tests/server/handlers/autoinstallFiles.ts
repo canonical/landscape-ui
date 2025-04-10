@@ -28,7 +28,7 @@ export default [
 
     return HttpResponse.json(
       generatePaginatedResponse<AutoinstallFile>({
-        data: endpointStatus === "empty" ? [] : autoinstallFiles,
+        data: endpointStatus.status === "empty" ? [] : autoinstallFiles,
         limit,
         offset,
         search,
