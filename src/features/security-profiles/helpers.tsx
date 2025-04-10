@@ -1,12 +1,12 @@
 import type { NotificationHelper } from "@/types/Notification";
-import type { SecurityProfileAddFormValues } from "./types/SecurityProfileAddFormValues";
+import type { SecurityProfileFormValues } from "./types/SecurityProfileAddFormValues";
 
 export const phrase = (strings: string[] = []) => {
   return `${strings.slice(0, -1).join(", ")}${strings.length > 2 ? "," : ""}${strings.length > 1 ? " and " : ""}${strings.slice(-1)}`;
 };
 
 export const notifyCreation = (
-  values: SecurityProfileAddFormValues,
+  values: SecurityProfileFormValues,
   notify: NotificationHelper,
 ) => {
   const notificationMessageParts = ["perform an initial run"];

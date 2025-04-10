@@ -2,7 +2,7 @@ import type { AssociationBlockFormProps } from "@/components/form/AssociationBlo
 import type { ScheduleBlockFormProps } from "@/components/form/ScheduleBlock";
 import type { AddSecurityProfileParams } from "../api/useAddSecurityProfile";
 
-export interface SecurityProfileAddFormValues
+export interface SecurityProfileFormValues
   extends AssociationBlockFormProps,
     ScheduleBlockFormProps,
     Required<Pick<AddSecurityProfileParams, "access_group" | "title">>,

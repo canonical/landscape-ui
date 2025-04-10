@@ -7,6 +7,8 @@ import type { FC } from "react";
 import { useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
+import { useAddSecurityProfile } from "../../api";
+import { useUpdateSecurityProfile } from "../../api/useUpdateSecurityProfile";
 import { notifyCreation } from "../../helpers";
 import type { SecurityProfile } from "../../types";
 import SecurityProfileDetails from "../SecurityProfileDetails/SecurityProfileDetails";
@@ -25,11 +27,16 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
+  const { addSecurityProfile, isSecurityProfileAdding } =
+    useAddSecurityProfile();
+  const { updateSecurityProfile, isSecurityProfileUpdating } =
+    useUpdateSecurityProfile();
+
   const actions = (profile: SecurityProfile) => ({
     downloadAudit: () => {
       setSidePanelContent(
         `Download audit for ${profile.title} security profile`,
-        <SecurityProfileDownloadAuditForm />,
+        <SecurityProfileDownloadAuditForm profileId={profile.id} />,
       );
     },
 
@@ -37,7 +44,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       setSidePanelContent(
         `Duplicate ${profile.title}`,
         <SecurityProfileForm
-          endDescription="To duplicate the profile, you need to run it."
+          confirmationStepDescription="To duplicate the profile, you need to run it."
           initialValues={{
             day_of_month_type: "day-of-month",
             days: [],
@@ -50,16 +57,18 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             restart_deliver_delay_window: 1,
             restart_deliver_within: 1,
             start_date: moment().format(INPUT_DATE_TIME_FORMAT),
-            start_type: "on-a-date",
+            start_type: "",
             tailoring_file: null,
             unit_of_time: "DAILY",
             ...profile,
             title: `${profile.title} copy`,
           }}
+          mutate={addSecurityProfile}
           onSuccess={(values) => {
             notifyCreation(values, notify);
           }}
           submitButtonText="Duplicate"
+          submitting={isSecurityProfileAdding}
         />,
       );
     },
@@ -68,9 +77,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       setSidePanelContent(
         `Edit ${profile.title}`,
         <SecurityProfileForm
-          benchmarkDisabled
-          earlySubmit={(values) => values.mode == "audit"}
-          endDescription="To save your changes, you need to run the profile."
+          benchmarkStepDisabled
+          confirmationStepDescription="To save your changes, you need to run the profile."
+          getConfirmationStepDisabled={(values) => values.mode == "audit"}
           initialValues={{
             day_of_month_type: "day-of-month",
             days: [],
@@ -83,10 +92,13 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             restart_deliver_delay_window: 1,
             restart_deliver_within: 1,
             start_date: moment().format(INPUT_DATE_TIME_FORMAT),
-            start_type: "on-a-date",
+            start_type: "",
             tailoring_file: null,
             unit_of_time: "DAILY",
             ...profile,
+          }}
+          mutate={async (params) => {
+            updateSecurityProfile({ id: profile.id, ...params });
           }}
           onSuccess={(values) => {
             notify.success({
@@ -100,6 +112,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             });
           }}
           submitButtonText="Save changes"
+          submitting={isSecurityProfileUpdating}
         />,
       );
     },

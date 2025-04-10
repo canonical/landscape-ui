@@ -5,10 +5,10 @@ import { Row } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import moment from "moment";
 import { phrase } from "../helpers";
-import type { SecurityProfileAddFormValues } from "../types/SecurityProfileAddFormValues";
+import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 
 export default function useSecurityProfileFormConfirmationStep<
-  T extends SecurityProfileAddFormValues,
+  T extends SecurityProfileFormValues,
 >(formik: FormikContextType<T>) {
   return {
     isValid: true,

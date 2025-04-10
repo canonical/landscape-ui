@@ -4,11 +4,11 @@ import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { getFormikError } from "@/utils/formikErrors";
 import { Input } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
-import type { SecurityProfileAddFormValues } from "../types/SecurityProfileAddFormValues";
+import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 import classes from "./useSecurityProfileFormScheduleStep.module.scss";
 
 export default function useSecurityProfileFormScheduleStep<
-  T extends SecurityProfileAddFormValues,
+  T extends SecurityProfileFormValues,
 >(formik: FormikContextType<T>) {
   return {
     isValid:

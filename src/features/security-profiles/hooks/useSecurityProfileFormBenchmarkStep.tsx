@@ -2,10 +2,10 @@ import FileInput from "@/components/form/FileInput";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { CustomSelect, Notification } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
-import type { SecurityProfileAddFormValues } from "../types/SecurityProfileAddFormValues";
+import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 
 export default function useSecurityProfileFormBenchmarkStep<
-  T extends SecurityProfileAddFormValues,
+  T extends SecurityProfileFormValues,
 >(formik: FormikContextType<T>, disabled?: boolean) {
   const handleFileUpload = async (files: File[]) => {
     await formik.setFieldValue("tailoring_file", files[0]);

@@ -6,13 +6,14 @@ import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
+import { useAddSecurityProfile } from "../../api";
 import { notifyCreation } from "../../helpers";
 import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
-import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
+import type { SecurityProfileFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileAddForm.module.scss";
 
 interface SecurityProfileAddFormProps {
-  readonly onSuccess: (values: SecurityProfileAddFormValues) => void;
+  readonly onSuccess: (values: SecurityProfileFormValues) => void;
 }
 
 const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
@@ -21,9 +22,12 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   const { notify } = useNotify();
   const { setSidePanelTitle } = useSidePanel();
 
+  const { addSecurityProfile, isSecurityProfileAdding } =
+    useAddSecurityProfile();
+
   const [step, setStep] = useState(0);
 
-  const { formik, isSubmitting, steps } = useSecurityProfileForm({
+  const { formik, steps } = useSecurityProfileForm({
     initialValues: {
       all_computers: false,
       access_group: "global",
@@ -44,6 +48,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       title: "",
       unit_of_time: "DAILY",
     },
+    mutate: addSecurityProfile,
     onSuccess: (values) => {
       notifyCreation(values, notify);
       onSuccess(values);
@@ -83,9 +88,11 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         onBackButtonPress={step > 0 ? goBack : undefined}
         onSubmit={submit}
         submitButtonDisabled={
-          steps[step].isLoading || !steps[step].isValid || isSubmitting
+          steps[step].isLoading ||
+          !steps[step].isValid ||
+          isSecurityProfileAdding
         }
-        submitButtonLoading={steps[step].isLoading || isSubmitting}
+        submitButtonLoading={steps[step].isLoading || isSecurityProfileAdding}
         submitButtonText={steps[step].submitButtonText}
       />
     </>
