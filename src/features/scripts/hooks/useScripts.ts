@@ -45,7 +45,7 @@ interface EditScriptParams {
   username: string;
 }
 
-interface CopyScriptParams {
+export interface CopyScriptParams {
   access_group: string;
   destination_title: string;
   script_id: number;

@@ -6,6 +6,10 @@ export interface GetEmployeesParams {
   with_groups?: boolean;
   with_autoinstall_file?: boolean;
   with_computers?: boolean;
+  search?: string;
+  employee_group_ids?: string[];
+  autoinstall_file_ids?: string[];
+  is_active?: boolean;
 }
 
 export interface GetRecoveryKeyParams {

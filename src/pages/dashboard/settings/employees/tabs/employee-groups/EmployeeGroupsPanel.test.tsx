@@ -14,10 +14,10 @@ describe("EmployeeGroupsPanel", () => {
 
   it("renders list of employees", async () => {
     renderWithProviders(<EmployeeGroupsPanel />);
-
     await expectLoadingState();
 
-    for (const group of employeeGroups) {
+    const firstPageGroups = employeeGroups.slice(0, 20);
+    for (const group of firstPageGroups) {
       const elements = screen.getAllByText(group.name);
       expect(elements.length).toBeGreaterThan(0);
     }
@@ -25,10 +25,8 @@ describe("EmployeeGroupsPanel", () => {
 
   it("renders empty state when no issuers found", async () => {
     setEndpointStatus({ status: "empty", path: "auth/oidc-issuers" });
-    setEndpointStatus({ status: "empty", path: "employee_groups" });
 
     renderWithProviders(<EmployeeGroupsPanel />);
-
     await expectLoadingState();
 
     expect(screen.getByText(EMPTY_STATE_NO_ISSUERS.title)).toBeInTheDocument();

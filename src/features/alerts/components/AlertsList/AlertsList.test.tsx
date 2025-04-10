@@ -8,7 +8,7 @@ import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
-vi.mock("@/api/useAuth");
+vi.mock("@/hooks/useAuth");
 
 const mockAvailableTagOptions = [
   { value: "All", label: "All instances" },

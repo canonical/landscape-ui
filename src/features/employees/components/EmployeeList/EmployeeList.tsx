@@ -105,7 +105,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
             <TruncatedCell
               content={employeeGroups.map((group) => (
                 <Link
-                  to={`/settings/employees?tab=employee-groups&employeeGroups=${group.name}`}
+                  to={`/settings/employees?tab=employee-groups&search=${group.name}`}
                   key={group.group_id}
                   className={classes.truncatedItem}
                 >
@@ -200,6 +200,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
         data={employees}
         getCellProps={handleCellProps(expandedCell)}
         getRowProps={handleRowProps(expandedCell)}
+        emptyMsg="No employees found according to your search parameters."
       />
     </div>
   );

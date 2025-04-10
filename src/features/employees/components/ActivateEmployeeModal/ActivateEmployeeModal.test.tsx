@@ -1,6 +1,6 @@
 import { employees } from "@/tests/mocks/employees";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import ActivateEmployeeModal from "./ActivateEmployeeModal";
@@ -31,7 +31,8 @@ describe("ActivateEmployeeModal", () => {
 
     const confirmButton = screen.getByRole("button", { name: "Activate" });
     await user.click(confirmButton);
-
-    expect(handleClose).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(handleClose).toHaveBeenCalled();
+    });
   });
 });

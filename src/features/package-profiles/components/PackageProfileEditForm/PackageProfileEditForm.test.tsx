@@ -13,7 +13,7 @@ import PackageProfileEditForm from "./PackageProfileEditForm";
 import { getTestErrorParams } from "@/tests/mocks/error";
 
 describe("PackageProfileEditForm", () => {
-  vi.mock("../../api");
+  vi.mock("../../hooks");
 
   const { testError, testErrorMessage } = getTestErrorParams();
 

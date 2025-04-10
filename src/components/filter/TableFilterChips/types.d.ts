@@ -4,6 +4,7 @@ import type { SearchAndFilterChip } from "@canonical/react-components/dist/compo
 export type FilterType = Pick<
   ReturnType<typeof usePageParams>,
   | "accessGroups"
+  | "autoinstallFiles"
   | "availabilityZones"
   | "employeeGroups"
   | "fromDate"

@@ -1,7 +1,10 @@
 import { delay, http, HttpResponse } from "msw";
 import { employees } from "@/tests/mocks/employees";
 import { employeeGroups, stagedOidcGroups } from "@/tests/mocks/employeeGroups";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import {
+  generatePaginatedResponse,
+  parseArray,
+} from "@/tests/server/handlers/_helpers";
 import type {
   EmployeeGroup,
   GetEmployeeGroupsParams,
@@ -21,16 +24,40 @@ export default [
     `${API_URL}employee_groups`,
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
-
       const url = new URL(request.url);
       const offset =
         Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
       const limit = Number(url.searchParams.get("limit")) || 20;
-      const search = url.searchParams.get("search") ?? "";
+      const search = url.searchParams.get("name") ?? "";
+
+      const employeeGroupIds = parseArray(
+        url.searchParams.get("employee_group_ids"),
+      );
+
+      const autoinstallFileIds = parseArray(
+        url.searchParams.get("autoinstall_file_ids"),
+      );
+
+      const groupIdFilteredEmployeeGroups =
+        employeeGroupIds && employeeGroupIds.length > 0
+          ? employeeGroups.filter(
+              ({ id }) =>
+                !employeeGroupIds || employeeGroupIds.includes(String(id)),
+            )
+          : employeeGroups;
+
+      const filteredEmployeeGroups =
+        autoinstallFileIds && autoinstallFileIds.length > 0
+          ? groupIdFilteredEmployeeGroups.filter(
+              ({ autoinstall_file }) =>
+                !autoinstallFileIds ||
+                autoinstallFileIds.includes(String(autoinstall_file?.id)),
+            )
+          : groupIdFilteredEmployeeGroups;
 
       return HttpResponse.json(
         generatePaginatedResponse<EmployeeGroup>({
-          data: endpointStatus.status === "empty" ? [] : employeeGroups,
+          data: endpointStatus.status === "empty" ? [] : filteredEmployeeGroups,
           limit,
           offset,
           search,

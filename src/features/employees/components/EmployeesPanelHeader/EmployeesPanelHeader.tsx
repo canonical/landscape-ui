@@ -1,5 +1,13 @@
-import { StatusFilter, TableFilterChips } from "@/components/filter";
+import {
+  AutoinstallFilesFilter,
+  StatusFilter,
+  TableFilterChips,
+} from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import {
+  getAutoinstallFileOptions,
+  useGetAutoinstallFiles,
+} from "@/features/autoinstall-files";
 import {
   EmployeeGroupsFilter,
   getEmployeeGroupOptions,
@@ -7,28 +15,36 @@ import {
 } from "@/features/employee-groups";
 import type { FC } from "react";
 import { STATUS_OPTIONS } from "./constants";
+import classes from "./EmployeesPanelHeader.module.scss";
 
 const EmployeesPanelHeader: FC = () => {
   const { employeeGroups } = useGetEmployeeGroups();
 
-  const employeeGroupOptions = getEmployeeGroupOptions(employeeGroups, false);
+  const { autoinstallFiles } = useGetAutoinstallFiles();
+  const employeeGroupOptions = getEmployeeGroupOptions(employeeGroups);
+
+  const autoinstallFileOptions = getAutoinstallFileOptions(autoinstallFiles);
 
   return (
     <>
       <HeaderWithSearch
         actions={
-          <>
-            <EmployeeGroupsFilter
-              employeeGroupsData={employeeGroups}
-              searchLabel="Showing employee groups for listed employees. Search to filter from all available groups."
-            />
+          <div className={classes.filters}>
+            <EmployeeGroupsFilter options={employeeGroupOptions} />
+            <AutoinstallFilesFilter options={autoinstallFileOptions} />
             <StatusFilter options={STATUS_OPTIONS} />
-          </>
+          </div>
         }
       />
       <TableFilterChips
-        filtersToDisplay={["employeeGroups", "status", "search"]}
+        filtersToDisplay={[
+          "autoinstallFiles",
+          "employeeGroups",
+          "search",
+          "status",
+        ]}
         employeeGroupOptions={employeeGroupOptions}
+        autoinstallFileOptions={autoinstallFileOptions}
       />
     </>
   );

@@ -2,60 +2,59 @@ import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import {
-  AutoinstallFileForm,
   AutoinstallFilesHeader,
   AutoinstallFilesList,
   useAddAutoinstallFile,
   useGetAutoinstallFiles,
 } from "@/features/autoinstall-files";
-import {
-  getEmployeeGroupOptions,
-  useGetEmployeeGroups,
-} from "@/features/employee-groups";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
-import type { FC } from "react";
+import { lazy, Suspense, type FC } from "react";
 import { ADD_AUTOINSTALL_FILE_NOTIFICATION } from "./constants";
 
+const AutoinstallFileForm = lazy(async () =>
+  import("@/features/autoinstall-files").then((module) => ({
+    default: module.AutoinstallFileForm,
+  })),
+);
+
 const AutoinstallFilesPanel: FC = () => {
-  const {
-    currentPage,
-    employeeGroups: [employeeGroup],
-    pageSize,
-    search,
-    setPageParams,
-  } = usePageParams();
+  const { currentPage, employeeGroups, pageSize, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const { addAutoinstallFile } = useAddAutoinstallFile();
   const { autoinstallFiles, autoinstallFilesCount, isAutoinstallFilesLoading } =
     useGetAutoinstallFiles({
-      employee_group_id: employeeGroup ? parseInt(employeeGroup) : undefined,
       limit: pageSize,
-      offset: currentPage * pageSize - pageSize,
+      offset: (currentPage - 1) * pageSize,
       with_groups: true,
+      employee_group_ids:
+        employeeGroups.length > 0 ? employeeGroups.map(Number) : undefined,
       search,
     });
-  const { employeeGroups, isEmployeeGroupsLoading } = useGetEmployeeGroups();
-
-  if (isAutoinstallFilesLoading || isEmployeeGroupsLoading) {
-    return <LoadingState />;
-  }
 
   const openAddForm = (): void => {
     setSidePanelContent(
       "Add new autoinstall file",
-      <AutoinstallFileForm
-        buttonText="Add"
-        description="Add autoinstall file. It can be applied during the initial setup of associated instances."
-        notification={ADD_AUTOINSTALL_FILE_NOTIFICATION}
-        onSubmit={addAutoinstallFile}
-      />,
+      <Suspense fallback={<LoadingState />}>
+        <AutoinstallFileForm
+          buttonText="Add"
+          description="Add autoinstall file. It can be applied during the initial setup of associated instances."
+          notification={ADD_AUTOINSTALL_FILE_NOTIFICATION}
+          onSubmit={addAutoinstallFile}
+        />
+        ,
+      </Suspense>,
     );
   };
 
-  if (!autoinstallFiles.length && !search && !employeeGroup) {
+  if (
+    !autoinstallFiles.length &&
+    !search &&
+    employeeGroups.length === 0 &&
+    !isAutoinstallFilesLoading
+  ) {
     return (
       <EmptyState
         icon="file"
@@ -79,24 +78,14 @@ const AutoinstallFilesPanel: FC = () => {
     );
   }
 
-  const handleEmployeeGroupSelect = (group: string): void => {
-    setPageParams({ employeeGroups: [group] });
-  };
-
   return (
     <>
-      <AutoinstallFilesHeader
-        employeeGroupOptions={[
-          { label: "All", value: "" },
-          ...getEmployeeGroupOptions(employeeGroups),
-        ]}
-        handleEmployeeGroupSelect={handleEmployeeGroupSelect}
-        openAddForm={openAddForm}
-        selectedEmployeeGroup={employeeGroup ?? ""}
-      />
-
-      <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />
-
+      <AutoinstallFilesHeader openAddForm={openAddForm} />
+      {isAutoinstallFilesLoading ? (
+        <LoadingState />
+      ) : (
+        <AutoinstallFilesList autoinstallFiles={autoinstallFiles} />
+      )}
       <TablePagination
         currentItemCount={autoinstallFiles.length}
         totalItems={autoinstallFilesCount}

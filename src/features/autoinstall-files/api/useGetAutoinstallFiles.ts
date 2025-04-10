@@ -1,14 +1,15 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/ApiError";
 import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { AutoinstallFile, WithGroups } from "../types";
 
 export interface GetAutoinstallFilesParams {
-  employee_group_id?: number;
-  limit: number;
-  offset: number;
+  employee_group_ids?: number[];
+  limit?: number;
+  offset?: number;
   search?: string;
   with_groups?: boolean;
 }
@@ -24,7 +25,18 @@ export interface GetAutoinstallFilesResult<
 }
 
 export const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
-  params: T,
+  params?: T,
+  config: Omit<
+    UseQueryOptions<
+      AxiosResponse<
+        ApiPaginatedResponse<
+          GetAutoinstallFilesResult<T>["autoinstallFiles"][number]
+        >,
+        AxiosError<ApiError>
+      >
+    >,
+    "queryKey" | "queryFn"
+  > = {},
 ): GetAutoinstallFilesResult<T> => {
   const authFetch = useFetch();
 
@@ -41,6 +53,7 @@ export const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
       authFetch.get(`autoinstall`, {
         params,
       }),
+    ...config,
   });
 
   return {

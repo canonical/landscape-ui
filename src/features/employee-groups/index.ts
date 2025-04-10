@@ -12,5 +12,5 @@ export type {
   ConfigurationLimit,
   GetEmployeeGroupsParams,
 } from "./types";
-export { getEmployeeGroupOptions, getEmployeeGroupLabel } from "./helpers";
+export { getEmployeeGroupOptions } from "./helpers";
 export * from "./api";
