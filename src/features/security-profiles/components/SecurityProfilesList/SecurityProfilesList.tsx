@@ -1,21 +1,36 @@
+import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import { useAddSecurityProfile } from "../../api";
+import { useAddSecurityProfile, useRunSecurityProfile } from "../../api";
 import { useUpdateSecurityProfile } from "../../api/useUpdateSecurityProfile";
 import { notifyCreation } from "../../helpers";
-import type { SecurityProfile } from "../../types";
-import SecurityProfileDetails from "../SecurityProfileDetails/SecurityProfileDetails";
-import SecurityProfileDownloadAuditForm from "../SecurityProfileDownloadAuditForm";
-import SecurityProfileForm from "../SecurityProfileForm";
+import type { SecurityProfile, SecurityProfileActions } from "../../types";
 import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
 import classes from "./SecurityProfilesList.module.scss";
+import { useActivities } from "@/features/activities";
+import { getNotificationMessage } from "./helpers";
+import useDebug from "@/hooks/useDebug";
+
+const SecurityProfileRunFixForm = lazy(
+  async () => import("../SecurityProfileRunFixForm"),
+);
+
+const SecurityProfileDetails = lazy(
+  async () => import("../SecurityProfileDetails"),
+);
+
+const SecurityProfileDownloadAuditForm = lazy(
+  async () => import("../SecurityProfileDownloadAuditForm"),
+);
+
+const SecurityProfileForm = lazy(async () => import("../SecurityProfileForm"));
 
 interface SecurityProfilesListProps {
   readonly securityProfiles: SecurityProfile[];
@@ -25,102 +40,154 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   securityProfiles,
 }) => {
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const debug = useDebug();
+  const { setSidePanelContent, closeSidePanel } = useSidePanel();
+  const { openActivityDetails } = useActivities();
 
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
   const { updateSecurityProfile, isSecurityProfileUpdating } =
     useUpdateSecurityProfile();
+  const { runSecurityProfile } = useRunSecurityProfile();
 
-  const actions = (profile: SecurityProfile) => ({
+  const handleRunSecurityProfile = async (profile: SecurityProfile) => {
+    try {
+      const { data: activity } = await runSecurityProfile({ id: profile.id });
+
+      if (profile.mode.includes("fix")) {
+        closeSidePanel();
+      }
+
+      const message = getNotificationMessage(profile.mode);
+
+      notify.success({
+        title: `You have successfully initiated Run of the ${profile.name} Security profile`,
+        message,
+        actions: [
+          {
+            label: "View details",
+            onClick: () => openActivityDetails(activity),
+          },
+        ],
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const actions = (profile: SecurityProfile): SecurityProfileActions => ({
     downloadAudit: () => {
       setSidePanelContent(
         `Download audit for ${profile.title} security profile`,
-        <SecurityProfileDownloadAuditForm profileId={profile.id} />,
+        <Suspense fallback={<LoadingState />}>
+          <SecurityProfileDownloadAuditForm profileId={profile.id} />
+        </Suspense>,
       );
     },
 
     duplicate: () => {
       setSidePanelContent(
         `Duplicate ${profile.title}`,
-        <SecurityProfileForm
-          confirmationStepDescription="To duplicate the profile, you need to run it."
-          initialValues={{
-            day_of_month_type: "day-of-month",
-            days: [],
-            delivery_time: "asap",
-            end_date: "",
-            end_type: "never",
-            every: 1,
-            months: [],
-            randomize_delivery: "no",
-            restart_deliver_delay_window: 1,
-            restart_deliver_delay: 1,
-            start_date: moment().format(INPUT_DATE_TIME_FORMAT),
-            start_type: "",
-            tailoring_file: null,
-            unit_of_time: "DAILY",
-            ...profile,
-            title: `${profile.title} copy`,
-          }}
-          mutate={addSecurityProfile}
-          onSuccess={(values) => {
-            notifyCreation(values, notify);
-          }}
-          submitButtonText="Duplicate"
-          submitting={isSecurityProfileAdding}
-        />,
+        <Suspense fallback={<LoadingState />}>
+          <SecurityProfileForm
+            confirmationStepDescription="To duplicate the profile, you need to run it."
+            initialValues={{
+              day_of_month_type: "day-of-month",
+              days: [],
+              delivery_time: "asap",
+              end_date: "",
+              end_type: "never",
+              every: 1,
+              months: [],
+              randomize_delivery: "no",
+              start_date: moment().format(INPUT_DATE_TIME_FORMAT),
+              start_type: "",
+              tailoring_file: null,
+              unit_of_time: "DAILY",
+              ...profile,
+              title: `${profile.title} copy`,
+            }}
+            mutate={addSecurityProfile}
+            onSuccess={(values) => {
+              notifyCreation(values, notify);
+            }}
+            submitButtonText="Duplicate"
+            submitting={isSecurityProfileAdding}
+          />
+        </Suspense>,
       );
     },
 
     edit: () => {
       setSidePanelContent(
         `Edit ${profile.title}`,
-        <SecurityProfileForm
-          benchmarkStepDisabled
-          confirmationStepDescription="To save your changes, you need to run the profile."
-          getConfirmationStepDisabled={(values) => values.mode == "audit"}
-          initialValues={{
-            day_of_month_type: "day-of-month",
-            days: [],
-            delivery_time: "asap",
-            end_date: "",
-            end_type: "never",
-            every: 1,
-            months: [],
-            randomize_delivery: "no",
-            restart_deliver_delay_window: 1,
-            restart_deliver_delay: 1,
-            start_date: moment().format(INPUT_DATE_TIME_FORMAT),
-            start_type: "",
-            tailoring_file: null,
-            unit_of_time: "DAILY",
-            ...profile,
-          }}
-          mutate={async (params) => {
-            updateSecurityProfile({ id: profile.id, ...params });
-          }}
-          onSuccess={(values) => {
-            notify.success({
-              title: `You have successfully saved changes for ${values.title} security profile.`,
-              message:
-                values.mode == "audit"
-                  ? "The changes applied will affect instances associated with this profile."
-                  : values.mode == "fix-audit"
-                    ? "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances and generate an audit."
-                    : "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances, restart them, and generate an audit.",
-            });
-          }}
-          submitButtonText="Save changes"
-          submitting={isSecurityProfileUpdating}
-        />,
+        <Suspense fallback={<LoadingState />}>
+          <SecurityProfileForm
+            benchmarkStepDisabled
+            confirmationStepDescription="To save your changes, you need to run the profile."
+            getConfirmationStepDisabled={(values) => values.mode == "audit"}
+            initialValues={{
+              day_of_month_type: "day-of-month",
+              days: [],
+              delivery_time: "asap",
+              end_date: "",
+              end_type: "never",
+              every: 1,
+              months: [],
+              randomize_delivery: "no",
+              start_date: moment().format(INPUT_DATE_TIME_FORMAT),
+              start_type: "",
+              tailoring_file: null,
+              unit_of_time: "DAILY",
+              ...profile,
+            }}
+            mutate={async (params) => {
+              updateSecurityProfile({ id: profile.id, ...params });
+            }}
+            onSuccess={(values) => {
+              notify.success({
+                title: `You have successfully saved changes for ${values.title} security profile.`,
+                message:
+                  values.mode == "audit"
+                    ? "The changes applied will affect instances associated with this profile."
+                    : values.mode == "fix-audit"
+                      ? "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances and generate an audit."
+                      : "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances, restart them, and generate an audit.",
+              });
+            }}
+            submitButtonText="Save changes"
+            submitting={isSecurityProfileUpdating}
+          />
+        </Suspense>,
+      );
+    },
+
+    run: async () => {
+      if (!profile.mode.includes("fix")) {
+        await handleRunSecurityProfile(profile);
+        return;
+      }
+
+      setSidePanelContent(
+        `Run "${profile.name}" profile`,
+        <Suspense fallback={<LoadingState />}>
+          <SecurityProfileRunFixForm
+            profile={profile}
+            onSubmit={async () => await handleRunSecurityProfile(profile)}
+          />
+        </Suspense>,
       );
     },
 
     viewDetails: () => {
       setSidePanelContent(
         profile.name,
-        <SecurityProfileDetails actions={actions(profile)} profile={profile} />,
+        <Suspense fallback={<LoadingState />}>
+          <SecurityProfileDetails
+            actions={actions(profile)}
+            profile={profile}
+          />
+        </Suspense>,
         "medium",
       );
     },

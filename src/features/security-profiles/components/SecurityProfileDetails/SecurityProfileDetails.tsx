@@ -1,12 +1,17 @@
 import InfoItem from "@/components/layout/InfoItem";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
-import type { FC } from "react";
-import type { SecurityProfile } from "../../types";
-import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
-import { ConfirmationButton } from "@canonical/react-components";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import {
+  Button,
+  Col,
+  ConfirmationButton,
+  Icon,
+  Row,
+} from "@canonical/react-components";
+import { type FC } from "react";
 import { useArchiveSecurityProfile } from "../../api";
+import type { SecurityProfile } from "../../types";
+import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 
 interface SecurityProfileDetailsProps {
   readonly actions: SecurityProfileActions;

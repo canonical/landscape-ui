@@ -89,6 +89,7 @@ const SecurityProfileListContextualMenu: FC<
       ),
       "aria-label": `Run "${profile.title}" security profile`,
       hasIcon: true,
+      onClick: actions.run,
     },
     {
       children: (

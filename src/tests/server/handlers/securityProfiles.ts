@@ -6,6 +6,7 @@ import type {
 import { securityProfiles } from "@/tests/mocks/securityProfiles";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse } from "./_helpers";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
   http.get(`${API_URL}security-profiles`, ({ request }) => {
@@ -83,7 +84,25 @@ export default [
         tailoring_file_uri: null,
         title,
         associated_instances: 0,
+        restart_deliver_delay_window: 0,
+        restart_deliver_delay: 0,
       });
     },
   ),
+
+  http.post(`${API_URL}security-profiles/:id\\:execute`, async () => {
+    const endpointStatus = getEndpointStatus();
+    if (endpointStatus.status === "error") {
+      return HttpResponse.json(
+        {
+          error: "InternalServerError",
+          message: "Error response",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+    return HttpResponse.json();
+  }),
 ];
