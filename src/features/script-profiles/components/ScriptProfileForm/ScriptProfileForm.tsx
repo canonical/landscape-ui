@@ -1,16 +1,17 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { useGetScripts } from "@/features/scripts";
 import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
 import { Col, Input, Row, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { FC } from "react";
+import type { ComponentProps, FC } from "react";
 import * as Yup from "yup";
-import type { AddScriptProfileParams } from "../../api";
+import type { ScriptProfile } from "../../types";
 
-type ScriptProfileAddFormValues = Pick<
-  AddScriptProfileParams,
+type ScriptProfileFormValues = Pick<
+  ScriptProfile,
   | "access_group"
   | "all_computers"
   | "title"
@@ -18,10 +19,27 @@ type ScriptProfileAddFormValues = Pick<
   | "time_limit"
   | "username"
 > &
-  Partial<Pick<AddScriptProfileParams, "script_id">> &
-  Partial<Pick<AddScriptProfileParams["trigger"], "trigger_type">>;
+  Partial<Pick<ScriptProfile, "script_id">> &
+  Partial<Pick<ScriptProfile["trigger"], "trigger_type">>;
 
-const ScriptProfileAddForm: FC = () => {
+interface ScriptProfileFormProps
+  extends Pick<
+    ComponentProps<typeof SidePanelFormButtons>,
+    "submitButtonText"
+  > {
+  readonly initialValues: ScriptProfileFormValues;
+  readonly disabledFields?: {
+    access_group?: boolean;
+    script_id?: boolean;
+    trigger_type?: boolean;
+  };
+}
+
+const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
+  initialValues,
+  disabledFields = {},
+  submitButtonText,
+}) => {
   const { isScriptsLoading, scripts } = useGetScripts({
     listenToUrlParams: false,
   });
@@ -31,15 +49,8 @@ const ScriptProfileAddForm: FC = () => {
     isLoading: isAccessGroupsLoading,
   } = getAccessGroupQuery();
 
-  const formik = useFormik<ScriptProfileAddFormValues>({
-    initialValues: {
-      access_group: "global",
-      all_computers: false,
-      tags: [],
-      time_limit: 300,
-      title: "",
-      username: "Root",
-    },
+  const formik = useFormik<ScriptProfileFormValues>({
+    initialValues,
 
     validationSchema: Yup.object().shape({
       script_id: Yup.number().required("This field is required"),
@@ -78,6 +89,11 @@ const ScriptProfileAddForm: FC = () => {
         ]}
         {...formik.getFieldProps("script_id")}
         error={getFormikError(formik, "script_id")}
+        disabled={disabledFields.script_id}
+        help={
+          disabledFields.script_id &&
+          "Scripts can't be replaced after the profile has been created."
+        }
       />
 
       <Select
@@ -89,6 +105,11 @@ const ScriptProfileAddForm: FC = () => {
         }))}
         {...formik.getFieldProps("access_group")}
         error={getFormikError(formik, "access_group")}
+        disabled={disabledFields.access_group}
+        help={
+          disabledFields.access_group &&
+          "Access group can't be edited after the profile has been created."
+        }
       />
 
       <Row className="u-no-padding">
@@ -113,11 +134,24 @@ const ScriptProfileAddForm: FC = () => {
         </Col>
       </Row>
 
-      <Select label="Trigger" required />
+      <Select
+        label="Trigger"
+        required
+        disabled={disabledFields.trigger_type}
+        help={
+          disabledFields.trigger_type &&
+          "Trigger type can't be changed after the script is created."
+        }
+      />
 
       <AssociationBlock formik={formik} />
+
+      <SidePanelFormButtons
+        submitButtonDisabled={!formik.isValid}
+        submitButtonText={submitButtonText}
+      />
     </>
   );
 };
 
-export default ScriptProfileAddForm;
+export default ScriptProfileForm;

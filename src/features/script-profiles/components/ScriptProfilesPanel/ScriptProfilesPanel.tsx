@@ -2,19 +2,20 @@ import { StatusFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
+import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon } from "@canonical/react-components";
+import { Button, Icon, Notification } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
-import { useGetScriptProfiles } from "../../api/useGetScriptProfiles";
+import { useGetScriptProfileLimits, useGetScriptProfiles } from "../../api";
 import ScriptProfilesList from "../ScriptProfilesList";
 import classes from "./ScriptProfilesPanel.module.scss";
+
 const SingleScript = lazy(
-  async () => import("../../../scripts/components/SingleScript"),
+  async () => import("@/features/scripts/components/SingleScript"),
 );
-const ScriptProfileAddForm = lazy(
-  async () => import("../ScriptProfileAddForm"),
-);
+
+const ScriptProfileAddForm = lazy(async () => import("../ScriptProfileForm"));
 
 interface ScriptProfilesPanelProps {
   readonly hasScripts?: boolean;
@@ -28,7 +29,20 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
   const { search, status } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
-  const { scriptProfiles, isGettingScriptProfiles } = useGetScriptProfiles();
+  const { scriptProfiles, scriptProfilesCount, isGettingScriptProfiles } =
+    useGetScriptProfiles();
+
+  const {
+    scriptProfilesCount: activeScriptProfilesCount,
+    isGettingScriptProfiles: isGettingActiveScriptProfiles,
+  } = useGetScriptProfiles({
+    archived: "active",
+    names: undefined,
+    search: undefined,
+  });
+
+  const { scriptProfileLimits, isGettingScriptProfileLimits } =
+    useGetScriptProfileLimits();
 
   if (isGettingScriptProfiles) {
     return <LoadingState />;
@@ -38,7 +52,17 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
     setSidePanelContent(
       "Add script profile",
       <Suspense fallback={<LoadingState />}>
-        <ScriptProfileAddForm />
+        <ScriptProfileAddForm
+          initialValues={{
+            access_group: "global",
+            all_computers: false,
+            tags: [],
+            time_limit: 300,
+            title: "",
+            username: "root",
+          }}
+          submitButtonText="Add profile"
+        />
       </Suspense>,
     );
   };
@@ -57,6 +81,17 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
   );
 
   if (scriptProfiles.length || search || status) {
+    if (isGettingActiveScriptProfiles || isGettingScriptProfileLimits) {
+      return <LoadingState />;
+    }
+
+    if (
+      activeScriptProfilesCount == undefined ||
+      scriptProfileLimits == undefined
+    ) {
+      throw new Error();
+    }
+
     return (
       <>
         <HeaderWithSearch
@@ -77,7 +112,24 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
 
         <TableFilterChips filtersToDisplay={["search", "status"]} />
 
+        {activeScriptProfilesCount >= scriptProfileLimits.max_num_profiles && (
+          <Notification
+            inline
+            title="Profile limit reached:"
+            severity="caution"
+          >
+            You&apos;ve reached the limit of{" "}
+            {scriptProfileLimits.max_num_profiles} active script profiles. To be
+            able to add new profiles you must archive an active one.
+          </Notification>
+        )}
+
         <ScriptProfilesList profiles={scriptProfiles} />
+
+        <TablePagination
+          totalItems={scriptProfilesCount}
+          currentItemCount={scriptProfiles.length}
+        />
       </>
     );
   }
