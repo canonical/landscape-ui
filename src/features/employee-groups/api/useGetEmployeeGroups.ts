@@ -1,13 +1,19 @@
 import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { EmployeeGroup, GetEmployeeGroupsParams } from "../types";
 import usePageParams from "@/hooks/usePageParams";
+import type { PaginatedGetHookParams } from "@/types/api/PaginatedGetHookParams";
+
+const DEFAULT_CONFIG: PaginatedGetHookParams = {
+  listenToUrlParams: true,
+};
 
 export const useGetEmployeeGroups = (
-  queryParams: GetEmployeeGroupsParams = {},
+  params: GetEmployeeGroupsParams = {},
+  config?: PaginatedGetHookParams,
 ) => {
   const authFetch = useFetch();
 
@@ -19,18 +25,25 @@ export const useGetEmployeeGroups = (
     autoinstallFiles: autoinstallFileIds,
   } = usePageParams();
 
-  const params = {
-    search,
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-    employee_group_ids:
-      employeeGroupIds.length > 0 ? employeeGroupIds : undefined,
-    autoinstall_file_ids:
-      autoinstallFileIds.length > 0 ? autoinstallFileIds : undefined,
-    ...queryParams,
+  config = {
+    ...DEFAULT_CONFIG,
+    ...config,
   };
 
-  const { data, isLoading } = useQuery<
+  params = config.listenToUrlParams
+    ? {
+        search,
+        limit: pageSize,
+        offset: (currentPage - 1) * pageSize,
+        employee_group_ids:
+          employeeGroupIds.length > 0 ? employeeGroupIds : undefined,
+        autoinstall_file_ids:
+          autoinstallFileIds.length > 0 ? autoinstallFileIds : undefined,
+        ...params,
+      }
+    : ({} as GetEmployeeGroupsParams);
+
+  const { data, isPending } = useQuery<
     AxiosResponse<ApiPaginatedResponse<EmployeeGroup>>,
     AxiosError<ApiError>
   >({
@@ -40,7 +53,7 @@ export const useGetEmployeeGroups = (
 
   return {
     employeeGroups: data?.data.results ?? [],
-    employeeGroupsCount: data?.data.count ?? 0,
-    isEmployeeGroupsLoading: isLoading,
+    employeeGroupsCount: data?.data.count,
+    isEmployeeGroupsLoading: isPending,
   };
 };

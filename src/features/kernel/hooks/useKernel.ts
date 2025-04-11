@@ -1,5 +1,5 @@
 import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";

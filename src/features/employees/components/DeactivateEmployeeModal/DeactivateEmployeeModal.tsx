@@ -35,7 +35,7 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
 }) => {
   const { notify } = useNotify();
 
-  const { deactivateEmployee, isPending } = useDeactivateEmployee();
+  const { deactivateEmployee, isDeactivating } = useDeactivateEmployee();
 
   const formik = useFormik({
     initialValues: INITIAL_VALUES,
@@ -43,9 +43,8 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
     onSubmit: async () => {
       await deactivateEmployee({
         id: employee.id,
-        is_active: false,
-        removeFromLandscape: formik.values.removeFromLandscape,
-        sanitize: formik.values.sanitizeInstances,
+        remove_instances: formik.values.removeFromLandscape,
+        sanitize_instances: formik.values.sanitizeInstances,
       });
 
       formik.resetForm();
@@ -93,9 +92,9 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
       onConfirm={() => formik.handleSubmit()}
       close={handleClose}
       confirmButtonDisabled={
-        isDisabledConfirmationButton(formik.values) || isPending
+        isDisabledConfirmationButton(formik.values) || isDeactivating
       }
-      confirmButtonLoading={isPending}
+      confirmButtonLoading={isDeactivating}
     >
       <Form noValidate onSubmit={formik.handleSubmit}>
         <p>

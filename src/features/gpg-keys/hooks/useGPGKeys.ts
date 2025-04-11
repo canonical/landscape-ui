@@ -8,7 +8,7 @@ import type {
 } from "../types";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { QueryFnType } from "@/types/QueryFnType";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 
 export default function useGPGKeys() {
   const queryClient = useQueryClient();

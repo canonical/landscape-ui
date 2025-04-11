@@ -3,7 +3,7 @@ import type { EventLog, GetEventsLogParams } from "@/features/events-log";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { eventsLog } from "@/tests/mocks/eventsLog";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 
 export default [

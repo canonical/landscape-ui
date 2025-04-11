@@ -6,7 +6,7 @@ import { useGetEmployeeGroups } from "@/features/employee-groups";
 const MaybeExceededLimitNotification: FC = () => {
   const { employeeGroupsCount } = useGetEmployeeGroups();
 
-  if (employeeGroupsCount <= IMPORT_GROUPS_LIMIT) {
+  if (employeeGroupsCount && employeeGroupsCount <= IMPORT_GROUPS_LIMIT) {
     return null;
   }
 

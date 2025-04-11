@@ -2,6 +2,7 @@ import { Button, Icon } from "@canonical/react-components";
 import { useCallback, useState, type FC } from "react";
 import type { Employee } from "../../types";
 import EmployeeActivationStatusModal from "../EmployeeActivationStatusModal";
+import useSidePanel from "@/hooks/useSidePanel";
 
 interface EmployeeDetailsHeaderProps {
   readonly employee: Employee;
@@ -11,6 +12,7 @@ const EmployeeDetailsHeader: FC<EmployeeDetailsHeaderProps> = ({
   employee,
 }) => {
   const [open, setOpen] = useState(false);
+  const { closeSidePanel } = useSidePanel();
 
   const handleOpen = (): void => {
     setOpen(true);
@@ -18,6 +20,7 @@ const EmployeeDetailsHeader: FC<EmployeeDetailsHeaderProps> = ({
 
   const handleClose = useCallback((): void => {
     setOpen(false);
+    closeSidePanel();
   }, []);
 
   return (

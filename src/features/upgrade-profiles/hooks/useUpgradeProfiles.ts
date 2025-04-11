@@ -8,7 +8,7 @@ import type {
 } from "../types";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { Activity } from "@/features/activities";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/QueryFnType";
 
 export interface CreateUpgradeProfileParams {

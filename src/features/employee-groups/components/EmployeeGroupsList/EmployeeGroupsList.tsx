@@ -8,6 +8,7 @@ import AutoinstallFileTableCell from "../AutoinstallFileTableCell";
 import EmployeeGroupsListContextualMenu from "../EmployeeGroupsListContextualMenu";
 import classes from "./EmployeeGroupsList.module.scss";
 import { handleCellProps } from "./helpers";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface EmployeeGroupsListProps {
   readonly onSelectedEmployeeGroupsChange: (employeeGroups: number[]) => void;
@@ -32,6 +33,11 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
         : [...selectedEmployeeGroups, id],
     );
   };
+
+  useSetDynamicFilterValidation(
+    "employeeGroups",
+    employeeGroups.map(({ id }) => id.toString()),
+  );
 
   const employeeGroupsColumns = useMemo<Column<EmployeeGroup>[]>(
     () => [

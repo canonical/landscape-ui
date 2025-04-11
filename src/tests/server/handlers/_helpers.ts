@@ -1,4 +1,4 @@
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { HttpHandler } from "msw";
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";

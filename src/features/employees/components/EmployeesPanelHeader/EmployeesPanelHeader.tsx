@@ -13,17 +13,29 @@ import {
   getEmployeeGroupOptions,
   useGetEmployeeGroups,
 } from "@/features/employee-groups";
-import type { FC } from "react";
+import { useMemo, type FC } from "react";
 import { STATUS_OPTIONS } from "./constants";
 import classes from "./EmployeesPanelHeader.module.scss";
 
 const EmployeesPanelHeader: FC = () => {
-  const { employeeGroups } = useGetEmployeeGroups();
+  const { employeeGroups } = useGetEmployeeGroups(
+    {},
+    {
+      listenToUrlParams: false,
+    },
+  );
 
   const { autoinstallFiles } = useGetAutoinstallFiles();
-  const employeeGroupOptions = getEmployeeGroupOptions(employeeGroups);
 
-  const autoinstallFileOptions = getAutoinstallFileOptions(autoinstallFiles);
+  const employeeGroupOptions = useMemo(
+    () => getEmployeeGroupOptions(employeeGroups),
+    [employeeGroups],
+  );
+
+  const autoinstallFileOptions = useMemo(
+    () => getAutoinstallFileOptions(autoinstallFiles),
+    [autoinstallFiles],
+  );
 
   return (
     <>

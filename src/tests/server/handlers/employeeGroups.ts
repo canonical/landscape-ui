@@ -13,7 +13,7 @@ import type {
   OidcGroupImportSession,
   StagedOidcGroup,
 } from "@/features/employee-groups";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { API_URL, COMMON_NUMBERS } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import type { Employee } from "@/features/employees";

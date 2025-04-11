@@ -18,7 +18,10 @@ export interface GetRecoveryKeyParams {
 
 export type DeleteEmployeeParams = EmployeeActionParams;
 
-export type OffboardEmployeeParams = EmployeeActionParams;
+export interface OffboardEmployeeParams extends EmployeeActionParams {
+  sanitize_instances: boolean;
+  remove_instances: boolean;
+}
 
 export interface PatchEmployeeParams extends EmployeeActionParams {
   is_active: boolean;

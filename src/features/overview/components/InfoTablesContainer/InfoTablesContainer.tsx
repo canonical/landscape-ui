@@ -11,7 +11,7 @@ import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
 import {

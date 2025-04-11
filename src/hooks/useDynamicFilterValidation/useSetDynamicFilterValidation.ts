@@ -9,6 +9,10 @@ const useSetDynamicFilterValidation = (
   const allowedValuesString = JSON.stringify(allowedValues);
 
   useEffect(() => {
+    if (!allowedValues.length) {
+      return;
+    }
+
     pageParamsManager.setDynamicAllowedValues(urlParam, allowedValues);
   }, [urlParam, allowedValuesString]);
 };

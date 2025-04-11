@@ -4,8 +4,8 @@ import type { OidcGroupImportSession, StagedOidcGroup } from "../types";
 import { useEffect, useState } from "react";
 import useDebug from "@/hooks/useDebug";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { useGetEmployeeGroups } from "@/features/employee-groups";
 
 export interface ImportOidcSessionParams {
@@ -34,7 +34,7 @@ export const useStagedOidcGroups = ({
 
   const params = {
     import_session_id: session?.id,
-    exclude_imported: employeeGroupsCount > 0,
+    exclude_imported: employeeGroupsCount && employeeGroupsCount > 0,
     offset: (currentPage - 1) * pageSize,
     limit: pageSize,
     search,

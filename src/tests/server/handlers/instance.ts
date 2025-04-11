@@ -10,7 +10,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import { instances, pendingInstances } from "@/tests/mocks/instance";
 import { userGroups } from "@/tests/mocks/userGroup";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance, PendingInstance } from "@/types/Instance";
 import type { GroupsResponse } from "@/types/User";
 import { delay, http, HttpResponse } from "msw";

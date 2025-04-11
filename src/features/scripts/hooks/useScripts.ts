@@ -3,8 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { Activity } from "@/features/activities";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { QueryFnType } from "@/types/QueryFnType";
 import type { Script } from "../types";
 

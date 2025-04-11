@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useFetch from "@/hooks/useFetch";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 
 export interface ImportEmployeeGroupsParams {
   readonly staged_oidc_group_ids: number[];

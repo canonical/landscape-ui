@@ -128,9 +128,7 @@ const TableFilter: FC<TableFilterProps> = ({
                   type="button"
                   appearance="base"
                   className={classes.button}
-                  onClick={() => {
-                    otherProps.onItemSelect(value);
-                  }}
+                  onClick={() => otherProps.onItemSelect(value)}
                   disabled={disabledOptions?.some(
                     (option) => option.value === value,
                   )}
@@ -139,7 +137,7 @@ const TableFilter: FC<TableFilterProps> = ({
                 </Button>
               )}
               {!otherProps.multiple && otherProps.selectedItem === value && (
-                <span className={classes.selected}>{label}</span>
+                <span className={classes.selected}>{optionLabel}</span>
               )}
             </li>
           ))}
@@ -170,9 +168,7 @@ const TableFilter: FC<TableFilterProps> = ({
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top"
-              onClick={() => {
-                otherProps.onItemsSelect([]);
-              }}
+              onClick={() => otherProps.onItemsSelect([])}
             >
               Clear
             </Button>

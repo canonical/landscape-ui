@@ -7,7 +7,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import axios from "axios";
 import { API_URL } from "@/constants";
 import type { AuthUser, IdentityProvider } from "../types";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { InvitationSummary } from "@/types/Invitation";
 import { useState } from "react";
 

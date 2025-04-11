@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { GroupedOption } from "@/components/filter";
 import { TableFilter } from "@/components/filter";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { type FC, useState } from "react";
+import { type FC, useMemo, useState } from "react";
 
 interface AutoinstallFilesFilterProps {
   readonly options: GroupedOption[];
@@ -15,9 +16,11 @@ const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
 
   const { autoinstallFiles, setPageParams } = usePageParams();
 
-  const filteredOptions = options.filter(({ label }) =>
-    label.includes(searchText),
-  );
+  const filteredOptions = useMemo(() => {
+    return options.filter(({ label }) =>
+      label.toLowerCase().includes(searchText.toLowerCase()),
+    );
+  }, [options, searchText]);
 
   useSetDynamicFilterValidation(
     "autoinstallFiles",

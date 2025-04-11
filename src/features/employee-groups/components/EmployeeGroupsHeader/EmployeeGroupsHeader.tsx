@@ -15,11 +15,11 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import { getEmployeeGroupOptions } from "../../helpers";
+import { lazy, Suspense, useMemo } from "react";
 import { useRemoveEmployeeGroupsModal } from "../../hooks";
 import type { EmployeeGroup } from "../../types";
 import classes from "./EmployeeGroupsHeader.module.scss";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 const EmployeeGroupIdentityIssuerListContainer = lazy(
   async () => import("../EmployeeGroupIdentityIssuerListContainer"),
@@ -47,9 +47,10 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
     selectedEmployeeGroups.includes(employeeGroup.id),
   );
 
-  const employeeGroupOptions = getEmployeeGroupOptions(employeeGroups);
-
-  const autoinstallFileOptions = getAutoinstallFileOptions(autoinstallFiles);
+  const autoinstallFileOptions = useMemo(
+    () => getAutoinstallFileOptions(autoinstallFiles),
+    [autoinstallFiles],
+  );
 
   const handleEditPriority = () => {
     setSidePanelContent(
@@ -151,8 +152,7 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
         }
       />
       <TableFilterChips
-        filtersToDisplay={["employeeGroups", "search", "autoinstallFiles"]}
-        employeeGroupOptions={employeeGroupOptions}
+        filtersToDisplay={["search", "autoinstallFiles"]}
         autoinstallFileOptions={autoinstallFileOptions}
       />
     </>

@@ -10,7 +10,7 @@ import type {
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { delay, http, HttpResponse } from "msw";
 
 export default [

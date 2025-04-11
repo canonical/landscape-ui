@@ -69,7 +69,7 @@ const EmployeeInstancesTable: FC<EmployeeInstancesTableProps> = ({
     <div className={classes.container}>
       <h4 className="p-heading--5">Instances associated</h4>
 
-      {instances ? (
+      {instances && instances.length > 0 ? (
         <ModularTable
           data={instances}
           columns={columns}

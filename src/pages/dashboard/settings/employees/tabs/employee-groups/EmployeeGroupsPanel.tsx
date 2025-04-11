@@ -40,7 +40,11 @@ const EmployeeGroupsPanel: FC = () => {
 
   const isLoading = isEmployeeGroupsLoading || isOidcIssuersLoading;
   const issuersMissing = !isLoading && oidcDirectoryIssuers.length === 0;
-  const groupsMissing = !isLoading && employeeGroups.length === 0;
+  const groupsMissing =
+    !isLoading &&
+    employeeGroupsCount === 0 &&
+    !search &&
+    !autoinstallFiles.length;
 
   if (isLoading && !search && !autoinstallFiles.length) {
     return <LoadingState />;

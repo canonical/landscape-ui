@@ -121,7 +121,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
     >
       {!sidePanel && (
         <Button
-          className="u-no-margin--right"
+          className={classNames("u-no-margin--right", {
+            "u-no-margin--bottom": !sidePanel,
+          })}
           type="button"
           hasIcon
           onClick={handleAddUser}
@@ -134,7 +136,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
         <div className="p-segmented-control__list">
           {(user?.enabled || !sidePanel) && (
             <ConfirmationButton
-              className="p-segmented-control__button has-icon"
+              className={classNames("p-segmented-control__button has-icon", {
+                "u-no-margin--bottom": !sidePanel,
+              })}
               type="button"
               disabled={unlockedUsersCount === 0}
               aria-disabled={unlockedUsersCount === 0}
@@ -162,7 +166,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           )}
           {(!user?.enabled || !sidePanel) && (
             <ConfirmationButton
-              className="p-segmented-control__button has-icon"
+              className={classNames("p-segmented-control__button has-icon", {
+                "u-no-margin--bottom": !sidePanel,
+              })}
               type="button"
               disabled={lockedUsersCount === 0}
               aria-disabled={lockedUsersCount === 0}
@@ -190,7 +196,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           )}
           {sidePanel && user && (
             <Button
-              className="p-segmented-control__button"
+              className={classNames("p-segmented-control__button has-icon", {
+                "u-no-margin--bottom": !sidePanel,
+              })}
               type="button"
               onClick={() => handleEditUser(user)}
             >
@@ -200,7 +208,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           )}
 
           <ConfirmationButton
-            className="p-segmented-control__button has-icon"
+            className={classNames("p-segmented-control__button has-icon", {
+              "u-no-margin--bottom": !sidePanel,
+            })}
             type="button"
             disabled={0 === selectedUsers.length}
             aria-disabled={0 === selectedUsers.length}

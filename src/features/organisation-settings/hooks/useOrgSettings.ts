@@ -1,4 +1,4 @@
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";

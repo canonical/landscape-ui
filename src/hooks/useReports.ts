@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { QueryFnType } from "@/types/QueryFnType";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 
 interface CommonGetParams {
   query?: string;

@@ -1,9 +1,9 @@
 import useFetch from "@/hooks/useFetch";
 import type { QueryFnType } from "@/types/QueryFnType";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { Activity } from "@/features/activities";
 import type {
   GetProcessesParams,

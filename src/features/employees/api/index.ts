@@ -1,5 +1,4 @@
 export { default as usePatchEmployee } from "./usePatchEmployee";
-export { default as useOffboardEmployee } from "./useOffboardEmployee";
 export { default as useAssociateEmployeeWithInstance } from "./useAssociateEmployeeWithInstance";
 export { default as useDisassociateEmployeeFromInstance } from "./useDisassociateEmployeeFromInstance";
 export { default as useGetEmployees } from "./useGetEmployees";

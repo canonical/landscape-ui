@@ -6,7 +6,7 @@ import {
   useGetEmployeeGroups,
 } from "@/features/employee-groups";
 import { Button, Icon } from "@canonical/react-components";
-import type { FC } from "react";
+import { useMemo, type FC } from "react";
 import classes from "./AutoinstallFilesHeader.module.scss";
 
 interface AutoinstallFilesHeaderProps {
@@ -16,9 +16,17 @@ interface AutoinstallFilesHeaderProps {
 const AutoinstallFilesHeader: FC<AutoinstallFilesHeaderProps> = ({
   openAddForm,
 }) => {
-  const { employeeGroups } = useGetEmployeeGroups();
+  const { employeeGroups } = useGetEmployeeGroups(
+    {},
+    {
+      listenToUrlParams: false,
+    },
+  );
 
-  const employeeGroupOptions = getEmployeeGroupOptions(employeeGroups);
+  const employeeGroupOptions = useMemo(
+    () => getEmployeeGroupOptions(employeeGroups),
+    [employeeGroups],
+  );
 
   return (
     <>

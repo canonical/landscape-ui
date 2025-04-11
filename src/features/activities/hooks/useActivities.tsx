@@ -12,8 +12,8 @@ import type {
 } from "../types";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { QueryFnType } from "@/types/QueryFnType";
 import useSidePanel from "@/hooks/useSidePanel";
 import { lazy, Suspense } from "react";

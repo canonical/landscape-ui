@@ -3,7 +3,7 @@ import type { Employee, GetEmployeesParams } from "@/features/employees";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { employees } from "@/tests/mocks/employees";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 
 export default [
@@ -31,6 +31,10 @@ export default [
   ),
 
   http.patch(`${API_URL}employees/:id`, async () => {
+    return HttpResponse.json();
+  }),
+
+  http.post(`${API_URL}employees/:id/offboard`, async () => {
     return HttpResponse.json();
   }),
 
