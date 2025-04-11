@@ -16,6 +16,7 @@ import classes from "./ImportEmployeeGroupsForm.module.scss";
 import SidePanelDescription from "../SidePanelDescription";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import { PAGE_SIZE_OPTIONS } from "@/components/layout/TablePagination/components/TablePaginationBase/constants";
+import EmptyState from "@/components/layout/EmptyState";
 
 const EmployeeGroupIdentityIssuerListContainer = lazy(
   async () => import("../EmployeeGroupIdentityIssuerListContainer"),
@@ -171,6 +172,19 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
 
   if (isStagedOidcGroupsLoading && !search) {
     return <LoadingState />;
+  }
+
+  if (!stagedOidcGroupsCount && !search) {
+    return (
+      <EmptyState
+        title="No employee groups found"
+        body={
+          <p className="u-no-margin--bottom">
+            {`Seems like there are no employee groups to import from ${issuer.provider.provider_label}.`}
+          </p>
+        }
+      />
+    );
   }
 
   return (
