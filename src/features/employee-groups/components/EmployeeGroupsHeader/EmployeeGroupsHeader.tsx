@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AutoinstallFilesFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
@@ -19,7 +18,6 @@ import { lazy, Suspense, useMemo } from "react";
 import { useRemoveEmployeeGroupsModal } from "../../hooks";
 import type { EmployeeGroup } from "../../types";
 import classes from "./EmployeeGroupsHeader.module.scss";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 const EmployeeGroupIdentityIssuerListContainer = lazy(
   async () => import("../EmployeeGroupIdentityIssuerListContainer"),
@@ -27,6 +25,10 @@ const EmployeeGroupIdentityIssuerListContainer = lazy(
 
 const EmployeeGroupsOrganiserForm = lazy(
   async () => import("../EmployeeGroupsOrganiserForm"),
+);
+
+const AssignAutoInstallFileForm = lazy(
+  async () => import("../AssignAutoInstallFileForm"),
 );
 
 interface EmployeeGroupsHeaderProps {
@@ -71,7 +73,22 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
   };
 
   const handleAssignAutoinstallFile = () => {
-    //
+    const formTitle =
+      selectedGroups.length === 1
+        ? `Reassign autoinstall file to ${selectedGroups[0].name}`
+        : `Reassign autoinstall files to ${selectedGroups.length} employee groups`;
+
+    setSidePanelContent(
+      formTitle,
+      <Suspense fallback={<LoadingState />}>
+        <AssignAutoInstallFileForm
+          employeeGroups={selectedGroups}
+          clearSelectedGroups={() => {
+            setSelectedEmployeeGroups([]);
+          }}
+        />
+      </Suspense>,
+    );
   };
 
   const handleClearSelection = () => {
@@ -141,9 +158,10 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
                     className="p-segmented-control__button u-no-margin--bottom"
                     hasIcon
                     disabled={selectedEmployeeGroups.length === 0}
+                    onClick={handleAssignAutoinstallFile}
                   >
                     <Icon name="file" />
-                    <span>Assign autoinstall file</span>
+                    <span>Reassign autoinstall file</span>
                   </Button>
                 </div>
               </div>

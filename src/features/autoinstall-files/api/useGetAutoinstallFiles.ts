@@ -8,6 +8,7 @@ import type { AutoinstallFile, WithGroups } from "../types";
 
 export interface GetAutoinstallFilesParams {
   employee_group_ids?: number[];
+  is_default?: boolean;
   limit?: number;
   offset?: number;
   search?: string;
@@ -22,6 +23,7 @@ export interface GetAutoinstallFilesResult<
     : AutoinstallFile)[];
   autoinstallFilesCount: number | undefined;
   isAutoinstallFilesLoading: boolean;
+  isFetching: boolean;
 }
 
 export const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
@@ -40,7 +42,11 @@ export const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
 ): GetAutoinstallFilesResult<T> => {
   const authFetch = useFetch();
 
-  const { data: response, isLoading } = useQuery<
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+  } = useQuery<
     AxiosResponse<
       ApiPaginatedResponse<
         GetAutoinstallFilesResult<T>["autoinstallFiles"][number]
@@ -48,11 +54,8 @@ export const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
     >,
     AxiosError<ApiError>
   >({
-    queryKey: ["autoinstallFile", params],
-    queryFn: async () =>
-      authFetch.get(`autoinstall`, {
-        params,
-      }),
+    queryKey: ["autoinstallFiles", params],
+    queryFn: async () => authFetch.get(`autoinstall`, { params }),
     ...config,
   });
 
@@ -60,5 +63,6 @@ export const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
     autoinstallFiles: response?.data.results ?? [],
     autoinstallFilesCount: response?.data.count,
     isAutoinstallFilesLoading: isLoading,
+    isFetching,
   };
 };

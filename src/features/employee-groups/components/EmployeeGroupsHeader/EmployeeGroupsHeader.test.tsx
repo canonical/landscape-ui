@@ -24,7 +24,7 @@ describe("EmployeeGroupsHeader", () => {
       "Search",
       "Import employee groups",
       "Remove",
-      "Assign autoinstall file",
+      "Reassign autoinstall file",
     ]);
   });
 
@@ -50,7 +50,7 @@ describe("EmployeeGroupsHeader", () => {
     expect(removeButton).toBeDisabled();
 
     const assignButton = screen.getByRole("button", {
-      name: /assign autoinstall file/i,
+      name: /reassign autoinstall file/i,
     });
     expect(assignButton).toBeInTheDocument();
     expect(assignButton).toHaveAttribute("aria-disabled", "true");
@@ -63,7 +63,7 @@ describe("EmployeeGroupsHeader", () => {
     expect(removeButton).not.toBeDisabled();
 
     const assignButton = screen.getByRole("button", {
-      name: /Assign autoinstall file/i,
+      name: /reassign autoinstall file/i,
     });
     expect(assignButton).not.toHaveAttribute("aria-disabled", "true");
   });

@@ -117,7 +117,11 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   };
 
   const setAsDefault = async (file: AutoinstallFile): Promise<void> => {
-    await updateAutoinstallFile({ id: file.id, is_default: true });
+    await updateAutoinstallFile({
+      id: file.id,
+      is_default: true,
+      contents: file.contents,
+    });
 
     notify.success({
       message:
