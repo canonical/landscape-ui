@@ -4,7 +4,6 @@ import SecurityProfilesEmptyState from "../SecurityProfilesEmptyState";
 import SecurityProfilesHeader from "../SecurityProfilesHeader";
 import SecurityProfilesList from "../SecurityProfilesList";
 import LoadingState from "@/components/layout/LoadingState";
-import PageContent from "@/components/layout/PageContent";
 import { useGetSecurityProfiles } from "../../api/useGetSecurityProfiles";
 
 const SecurityProfilesContainer: FC = () => {
@@ -27,10 +26,10 @@ const SecurityProfilesContainer: FC = () => {
   }
 
   return (
-    <PageContent>
+    <>
       <SecurityProfilesHeader />
       <SecurityProfilesList securityProfiles={securityProfiles} />
-    </PageContent>
+    </>
   );
 };
 

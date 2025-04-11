@@ -358,13 +358,11 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   );
 
   return (
-    <>
-      <ModularTable
-        emptyMsg="No security profiles found according to your search parameters."
-        columns={columns}
-        data={securityProfiles}
-      />
-    </>
+    <ModularTable
+      emptyMsg="No security profiles found according to your search parameters."
+      columns={columns}
+      data={securityProfiles}
+    />
   );
 };
 
