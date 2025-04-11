@@ -5,6 +5,7 @@ import type {
 } from "@/features/security-profiles";
 import { securityProfiles } from "@/tests/mocks/securityProfiles";
 import { http, HttpResponse } from "msw";
+import { generatePaginatedResponse } from "./_helpers";
 
 export default [
   http.get(`${API_URL}security-profiles`, ({ request }) => {
@@ -33,10 +34,15 @@ export default [
       );
     });
 
-    return HttpResponse.json({
-      results: filteredProfiles.slice(offset, offset + limit),
-      count: filteredProfiles.length,
-    });
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: filteredProfiles,
+        offset,
+        limit,
+        search,
+        searchFields: ["name"],
+      }),
+    );
   }),
 
   http.post<never, AddSecurityProfileParams, SecurityProfile>(
@@ -64,6 +70,7 @@ export default [
           in_progress: 0,
           passing: 0,
           report_uri: null,
+          timestamp: "",
         },
         mode,
         modification_time: "",
@@ -75,6 +82,7 @@ export default [
         tags,
         tailoring_file_uri: null,
         title,
+        associated_instances: 0,
       });
     },
   ),
