@@ -316,7 +316,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
 
           return (
             <Tooltip
-              position="btm-center"
+              position="top-center"
               positionElementClassName={classes.tooltip}
               message={tooltipMessage}
             >
