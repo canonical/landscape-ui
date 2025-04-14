@@ -16,7 +16,7 @@ export const securityProfiles: SecurityProfile[] = [
     last_run_results: {
       passing: 3000,
       failing: 0,
-      in_progress: 1000,
+      in_progress: 0,
       report_uri: null,
       timestamp: "2024-05-15T15:47:07Z",
     },
@@ -70,8 +70,8 @@ export const securityProfiles: SecurityProfile[] = [
     title: "Ubuntu 20.04 Security Hardening Checklist Audit",
     status: "active",
     last_run_results: {
-      passing: 324,
-      failing: 324,
+      passing: 300,
+      failing: 300,
       in_progress: 0,
       report_uri: null,
       timestamp: "2024-05-15T15:47:07Z",

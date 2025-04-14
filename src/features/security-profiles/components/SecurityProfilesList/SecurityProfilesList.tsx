@@ -301,18 +301,24 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 message={tooltipMessage}
               >
                 <div className={classes.lineContainer}>
-                  <div
-                    className={classes.linePassed}
-                    style={{ width: `${(passing / total) * 100}%` }}
-                  />
-                  <div
-                    className={classes.lineFailed}
-                    style={{ width: `${(failing / total) * 100}%` }}
-                  />
-                  <div
-                    className={classes.lineInProgress}
-                    style={{ width: `${(in_progress / total) * 100}%` }}
-                  />
+                  {passing > 0 && (
+                    <div
+                      className={classes.linePassed}
+                      style={{ width: `${(passing / total) * 100}%` }}
+                    />
+                  )}
+                  {failing > 0 && (
+                    <div
+                      className={classes.lineFailed}
+                      style={{ width: `${(failing / total) * 100}%` }}
+                    />
+                  )}
+                  {in_progress > 0 && (
+                    <div
+                      className={classes.lineInProgress}
+                      style={{ width: `${(in_progress / total) * 100}%` }}
+                    />
+                  )}
                 </div>
               </Tooltip>
             </div>
