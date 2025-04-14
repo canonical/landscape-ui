@@ -1,25 +1,32 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import { CronSchedule } from "@/components/form/CronSchedule";
+import { getCronPhrase } from "@/components/form/CronSchedule/components/CronSchedule/helpers";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
+import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useGetScripts } from "@/features/scripts";
+import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Col,
   CustomSelect,
   Input,
+  Notification,
   Row,
   Select,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
+import moment from "moment";
 import type { ComponentProps, FC } from "react";
 import * as Yup from "yup";
+import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
 import classes from "./ScriptProfileForm.module.scss";
 
-interface ScriptProfileFormValues
+export interface ScriptProfileFormValues
   extends Pick<
       ScriptProfile,
       | "access_group"
@@ -36,27 +43,52 @@ interface ScriptProfileFormValues
   trigger_type: ScriptProfile["trigger"]["trigger_type"] | "";
 }
 
+export type ScriptProfileFormSubmitValues = Pick<
+  ScriptProfile,
+  | "access_group"
+  | "all_computers"
+  | "script_id"
+  | "title"
+  | "tags"
+  | "time_limit"
+  | "trigger"
+  | "username"
+>;
+
 interface ScriptProfileFormProps
   extends Pick<
     ComponentProps<typeof SidePanelFormButtons>,
     "submitButtonText"
   > {
+  readonly onSubmit: (
+    values: ScriptProfileFormSubmitValues,
+  ) => Promise<unknown>;
+  readonly onSuccess: (values: ScriptProfileFormValues) => void;
   readonly initialValues: ScriptProfileFormValues;
   readonly disabledFields?: {
     access_group?: boolean;
     script_id?: boolean;
     trigger_type?: boolean;
   };
+  readonly submitting?: boolean;
 }
 
 const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
+  onSubmit,
+  onSuccess,
   initialValues,
   disabledFields = {},
   submitButtonText,
+  submitting = false,
 }) => {
+  const debug = useDebug();
+  const { closeSidePanel } = useSidePanel();
+
   const { isScriptsLoading, scripts } = useGetScripts({
     listenToUrlParams: false,
   });
+  const { scriptProfileLimits, isGettingScriptProfileLimits } =
+    useGetScriptProfileLimits();
   const { getAccessGroupQuery } = useRoles();
   const {
     data: getAccessGroupQueryResponse,
@@ -69,17 +101,120 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     validateOnMount: true,
 
     validationSchema: Yup.object().shape({
+      interval: Yup.string().when("trigger_type", ([trigger_type], schema) =>
+        trigger_type == "recurring"
+          ? schema.required("This field is required").test({
+              test: (value) => {
+                try {
+                  getCronPhrase(value);
+                  return true;
+                } catch {
+                  return false;
+                }
+              },
+            })
+          : schema,
+      ),
       script_id: Yup.number().required("This field is required"),
+      start_after: Yup.string().when(
+        "trigger_type",
+        ([trigger_type], schema) =>
+          trigger_type == "recurring"
+            ? schema.required("This field is required").test({
+                test: (value) => {
+                  return moment(value).utc(true).isSameOrAfter(moment());
+                },
+                message: "The start date must not be in the past.",
+              })
+            : schema,
+      ),
       time_limit: Yup.number().required("This field is required"),
+      timestamp: Yup.string().when("trigger_type", ([trigger_type], schema) =>
+        trigger_type == "one_time"
+          ? schema.required("This field is required").test({
+              test: (value) => {
+                return moment(value).utc(true).isSameOrAfter(moment());
+              },
+              message: "The date must not be in the past.",
+            })
+          : schema,
+      ),
       title: Yup.string().required("This field is required"),
       trigger_type: Yup.string().required("This field is required"),
       username: Yup.string().required("This field is required"),
     }),
 
-    onSubmit: () => undefined,
+    onSubmit: async (values) => {
+      if (!values.trigger_type || values.script_id == undefined) {
+        return;
+      }
+
+      try {
+        switch (values.trigger_type) {
+          case "event": {
+            await onSubmit({
+              ...values,
+              script_id: values.script_id,
+              trigger: {
+                trigger_type: "event",
+                event_type: "post_enrollment",
+              },
+            });
+
+            break;
+          }
+
+          case "one_time": {
+            if (!values.timestamp) {
+              return;
+            }
+
+            await onSubmit({
+              ...values,
+              script_id: values.script_id,
+              trigger: {
+                trigger_type: "one_time",
+                timestamp: values.timestamp,
+              },
+            });
+
+            break;
+          }
+
+          case "recurring": {
+            if (!values.interval || !values.start_after) {
+              return;
+            }
+
+            await onSubmit({
+              ...values,
+              script_id: values.script_id,
+              trigger: {
+                trigger_type: "recurring",
+                interval: values.interval,
+                start_after: values.start_after,
+              },
+            });
+
+            break;
+          }
+        }
+      } catch (error) {
+        debug(error);
+        return;
+      }
+
+      closeSidePanel();
+
+      onSuccess(values);
+    },
   });
 
-  if (isScriptsLoading || isAccessGroupsLoading) {
+  if (
+    isScriptsLoading ||
+    isAccessGroupsLoading ||
+    isGettingScriptProfileLimits
+  ) {
     return <LoadingState />;
   }
 
@@ -226,34 +361,48 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         }
       />
 
-      {formik.values.trigger_type == "one_time" && (
-        <Input
-          type="datetime-local"
-          label="Date"
-          required
-          {...formik.getFieldProps("timestamp")}
-          error={getFormikError(formik, "timestamp")}
-        />
-      )}
-
-      {formik.values.trigger_type == "recurring" && (
-        <>
+      <div className={classes.indent}>
+        {formik.values.trigger_type == "one_time" && (
           <Input
             type="datetime-local"
-            label="Start date"
+            label="Date"
             required
-            {...formik.getFieldProps("start_after")}
-            error={getFormikError(formik, "start_after")}
+            min={moment().utc(true).format(INPUT_DATE_TIME_FORMAT)}
+            {...formik.getFieldProps("timestamp")}
+            error={getFormikError(formik, "timestamp")}
           />
+        )}
 
-          <CronSchedule required {...formik.getFieldProps("interval")} />
-        </>
-      )}
+        {formik.values.trigger_type == "recurring" && (
+          <>
+            <Input
+              type="datetime-local"
+              label="Start date"
+              required
+              min={moment().utc(true).format(INPUT_DATE_TIME_FORMAT)}
+              {...formik.getFieldProps("start_after")}
+              error={getFormikError(formik, "start_after")}
+            />
+
+            <Notification severity="caution">
+              There is a minimum interval of{" "}
+              <strong>{scriptProfileLimits?.min_interval} minutes</strong>{" "}
+              between runs. Depending on the schedule, run times may be
+              adjusted.
+            </Notification>
+
+            <CronSchedule required {...formik.getFieldProps("interval")} />
+          </>
+        )}
+      </div>
 
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
-        submitButtonDisabled={!formik.isValid}
+        onSubmit={() => {
+          formik.handleSubmit();
+        }}
+        submitButtonDisabled={!formik.isValid || submitting}
         submitButtonText={submitButtonText}
       />
     </>

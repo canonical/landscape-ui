@@ -1,5 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
@@ -11,9 +12,11 @@ import moment from "moment";
 import { lazy, Suspense, useMemo, useState, type FC } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
+import { useEditScriptProfile } from "../../api";
 import { getStatusText, getTriggerText } from "../../helpers";
 import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
+import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
 
 const ActivityDetails = lazy(
@@ -31,9 +34,10 @@ interface ScriptProfilesListProps {
 }
 
 const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
+  const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
-  // const { editScriptProfile, isEditingScriptProfile } = useEditScriptProfile();
+  const { editScriptProfile, isEditingScriptProfile } = useEditScriptProfile();
 
   const [modalProfile, setModalProfile] = useState<ScriptProfile | null>(null);
 
@@ -43,6 +47,13 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
     },
 
     edit: () => {
+      const handleSubmit = async (values: ScriptProfileFormSubmitValues) => {
+        editScriptProfile({
+          id: profile.id,
+          ...values,
+        });
+      };
+
       setSidePanelContent(
         `Edit ${profile.title}`,
         <Suspense fallback={<LoadingState />}>
@@ -59,7 +70,15 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
               timestamp: "",
               ...profile.trigger,
             }}
+            onSubmit={handleSubmit}
+            onSuccess={(values) => {
+              notify.success({
+                title: `You have successfully saved changes for ${values.title}`,
+                message: "The changes will be applied to this profile.",
+              });
+            }}
             submitButtonText="Save changes"
+            submitting={isEditingScriptProfile}
           />
         </Suspense>,
       );

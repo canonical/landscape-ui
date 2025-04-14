@@ -3,11 +3,16 @@ import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
+import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, Notification } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
-import { useGetScriptProfileLimits, useGetScriptProfiles } from "../../api";
+import {
+  useAddScriptProfile,
+  useGetScriptProfileLimits,
+  useGetScriptProfiles,
+} from "../../api";
 import ScriptProfilesList from "../ScriptProfilesList";
 import classes from "./ScriptProfilesPanel.module.scss";
 
@@ -26,11 +31,13 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
   hasScripts,
   isGettingScripts,
 }) => {
+  const { notify } = useNotify();
   const { search, status } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const { scriptProfiles, scriptProfilesCount, isGettingScriptProfiles } =
     useGetScriptProfiles();
+  const { addScriptProfile, isAddingScriptProfile } = useAddScriptProfile();
 
   const {
     scriptProfilesCount: activeScriptProfilesCount,
@@ -65,7 +72,16 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
             trigger_type: "",
             username: "root",
           }}
+          onSubmit={addScriptProfile}
+          onSuccess={(values) => {
+            notify.success({
+              title: `You have successfully created ${values.title}`,
+              message:
+                "The profile has been created and associated to the defined instances.",
+            });
+          }}
           submitButtonText="Add profile"
+          submitting={isAddingScriptProfile}
         />
       </Suspense>,
     );

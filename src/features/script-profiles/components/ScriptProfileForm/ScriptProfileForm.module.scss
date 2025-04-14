@@ -1,6 +1,12 @@
 @import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
 
 .description {
   color: $colors--light-theme--text-muted;
   white-space: normal;
+}
+
+.indent {
+  border-left: 1px solid $colors--light-theme--border-default;
+  padding-left: $sph--large;
 }

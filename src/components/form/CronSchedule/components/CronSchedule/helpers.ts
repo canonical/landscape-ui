@@ -89,6 +89,35 @@ const getCronPhrasePart = (
 };
 
 export const getCronPhrase = (interval: string) => {
+  for (const [i, key] of [
+    "SUN",
+    "MON",
+    "TUE",
+    "WED",
+    "THU",
+    "FRI",
+    "SAT",
+  ].entries()) {
+    interval = interval.replace(key, i.toString());
+  }
+
+  for (const [i, key] of [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+  ].entries()) {
+    interval = interval.replace(key, (i + 1).toString());
+  }
+
   const parts = interval.split(" ");
 
   if (parts.length != 5) {
@@ -107,7 +136,7 @@ export const getCronPhrase = (interval: string) => {
         if (rangeString.includes("/")) {
           const [firstValue, stepValue] = rangeString.split("/");
 
-          const step = parseInt(stepValue);
+          const step = parseFloat(stepValue);
 
           if (Number.isNaN(step)) {
             throw new Error("Invalid step.");
@@ -121,9 +150,9 @@ export const getCronPhrase = (interval: string) => {
           } else {
             const [start, end] = firstValue
               .split("-")
-              .map((value) => parseInt(value));
+              .map((value) => parseFloat(value));
 
-            if (Number.isNaN(start) || Number.isNaN(end) || end == undefined) {
+            if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end)) {
               throw new Error("Invalid step value.");
             }
 
@@ -137,9 +166,9 @@ export const getCronPhrase = (interval: string) => {
         if (rangeString.includes("-")) {
           const [start, end] = rangeString
             .split("-")
-            .map((value) => parseInt(value));
+            .map((value) => parseFloat(value));
 
-          if (Number.isNaN(start) || Number.isNaN(end)) {
+          if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end)) {
             throw new Error("Invalid value.");
           }
 
@@ -149,8 +178,14 @@ export const getCronPhrase = (interval: string) => {
           range.start = UNITS_OF_TIME[i].min;
           range.end = UNITS_OF_TIME[i].max;
         } else {
-          range.start = parseInt(rangeString);
-          range.end = parseInt(rangeString);
+          const value = parseFloat(rangeString);
+
+          if (!Number.isSafeInteger(value)) {
+            throw new Error("Invalid value.");
+          }
+
+          range.start = value;
+          range.end = value;
         }
 
         return range;
