@@ -28,4 +28,6 @@ export interface SecurityProfile extends Record<string, unknown> {
   tailoring_file_uri: string | null;
   title: string;
   associated_instances: number;
+  restart_deliver_delay_window: number;
+  restart_deliver_delay: number;
 }

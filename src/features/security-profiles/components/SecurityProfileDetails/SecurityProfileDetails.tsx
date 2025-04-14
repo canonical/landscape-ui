@@ -1,6 +1,15 @@
 import InfoItem from "@/components/layout/InfoItem";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
-import type { FC } from "react";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import {
+  Button,
+  Col,
+  ConfirmationButton,
+  Icon,
+  Row,
+} from "@canonical/react-components";
+import { type FC } from "react";
+import { useArchiveSecurityProfile } from "../../api";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 
@@ -13,6 +22,25 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
   actions,
   profile,
 }) => {
+  const { notify } = useNotify();
+  const { closeSidePanel } = useSidePanel();
+
+  const { archiveSecurityProfile, isArchivingSecurityProfile } =
+    useArchiveSecurityProfile();
+
+  const handleArchiveProfile = async () => {
+    await archiveSecurityProfile({
+      id: profile.id,
+    });
+
+    closeSidePanel();
+    notify.success({
+      title: `You have archived "${profile.name}" profile`,
+      message:
+        "It will no longer run, but past audit data and profile details will remain accessible for selected duration of the retention period. You can activate it anytime.",
+    });
+  };
+
   return (
     <>
       <div className="p-segmented-control">
@@ -52,10 +80,30 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             <span>Duplicate</span>
           </Button>
 
-          <Button className="p-segmented-control__button" type="button" hasIcon>
+          <ConfirmationButton
+            className="has-icon p-segmented-control__button"
+            type="button"
+            confirmationModalProps={{
+              title: `Archive "${profile.name}" profile`,
+              children: (
+                <p>
+                  You are about to archive the &quot;{profile.name}&quot;
+                  profile. Archiving this Security profile will prevent it from
+                  running. However, it will NOT delete past audit data or remove
+                  the profile details. You can reactivate the profile later to
+                  allow it to run again.
+                </p>
+              ),
+              confirmButtonLabel: "Archive",
+              confirmButtonAppearance: "negative",
+              confirmButtonDisabled: isArchivingSecurityProfile,
+              confirmButtonLoading: isArchivingSecurityProfile,
+              onConfirm: handleArchiveProfile,
+            }}
+          >
             <Icon name="archive" />
             <span>Archive</span>
-          </Button>
+          </ConfirmationButton>
         </div>
       </div>
 

@@ -39,11 +39,10 @@ const RadioGroup = <
           const checked = formik.values[field] == key;
 
           return (
-            <>
+            <div key={key}>
               <div className={help ? classes.noMargin : undefined}>
                 <RadioInput
                   {...input}
-                  key={key}
                   {...formik.getFieldProps(field)}
                   checked={checked}
                   onChange={async () => formik.setFieldValue(field, key)}
@@ -62,7 +61,7 @@ const RadioGroup = <
               )}
 
               {checked && <Indent>{expansion}</Indent>}
-            </>
+            </div>
           );
         })}
       </div>

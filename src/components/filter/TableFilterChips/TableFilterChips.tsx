@@ -114,7 +114,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     fromDate,
     hiddenChipCount,
     os,
-    statuses,
+    statuses.length,
     tags.length,
     toDate,
     type,

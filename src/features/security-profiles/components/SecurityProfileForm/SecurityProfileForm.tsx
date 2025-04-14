@@ -1,30 +1,29 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import type { ReactNode } from "react";
 import { useState, type FC } from "react";
 import { phrase } from "../../helpers";
 import type { UseSecurityProfileFormProps } from "../../hooks/useSecurityProfileForm";
 import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
-import type { SecurityProfileAddFormValues } from "../../types/SecurityProfileAddFormValues";
+import type { SecurityProfileFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileForm.module.scss";
 
 interface SecurityProfileFormProps extends UseSecurityProfileFormProps {
-  readonly endDescription: string;
-  readonly submitButtonText: string;
-  readonly earlySubmit?: (values: SecurityProfileAddFormValues) => boolean;
+  readonly getConfirmationStepDisabled?: (
+    values: SecurityProfileFormValues,
+  ) => boolean;
+  readonly confirmationStepDescription?: ReactNode;
+  readonly submitButtonText?: string;
+  readonly submitting?: boolean;
 }
 
 const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
-  benchmarkDisabled,
-  earlySubmit = () => false,
-  endDescription,
-  initialValues,
-  onSuccess,
-  submitButtonText,
+  getConfirmationStepDisabled = () => false,
+  confirmationStepDescription,
+  submitButtonText = "",
+  submitting = false,
+  ...props
 }) => {
-  const { formik, isSubmitting, steps } = useSecurityProfileForm({
-    initialValues: initialValues,
-    benchmarkDisabled,
-    onSuccess,
-  });
+  const { formik, steps } = useSecurityProfileForm(props);
 
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
 
@@ -33,7 +32,7 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
   };
 
   const startSubmit = () => {
-    if (earlySubmit(formik.values)) {
+    if (getConfirmationStepDisabled(formik.values)) {
       finishSubmit();
       return;
     }
@@ -51,7 +50,7 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
     return (
       <>
         <p>
-          {endDescription} This will{" "}
+          {confirmationStepDescription} This will{" "}
           {phrase(
             [
               formik.values.mode != "audit" ? "apply fixes" : null,
@@ -69,8 +68,8 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
         <SidePanelFormButtons
           onBackButtonPress={goBack}
           onSubmit={finishSubmit}
-          submitButtonDisabled={!!step.isLoading || isSubmitting}
-          submitButtonLoading={step.isLoading || isSubmitting}
+          submitButtonDisabled={!!step.isLoading || submitting}
+          submitButtonLoading={step.isLoading || submitting}
           submitButtonText={submitButtonText}
         />
       </>
@@ -91,10 +90,10 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
 
       <SidePanelFormButtons
         onSubmit={startSubmit}
-        submitButtonDisabled={!formik.isValid || isSubmitting}
-        submitButtonLoading={
-          steps.some((step) => step.isLoading) || isSubmitting
+        submitButtonDisabled={
+          !formik.isValid || submitting || !formik.touched.start_type
         }
+        submitButtonLoading={steps.some((step) => step.isLoading) || submitting}
         submitButtonText={submitButtonText}
       />
     </>

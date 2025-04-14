@@ -3,10 +3,10 @@ import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
 import { Input, Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
-import type { SecurityProfileAddFormValues } from "../types/SecurityProfileAddFormValues";
+import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 
 export default function useSecurityProfileFormNameStep<
-  T extends SecurityProfileAddFormValues,
+  T extends SecurityProfileFormValues,
 >(formik: FormikContextType<T>) {
   const { isSelfHosted } = useEnv();
 

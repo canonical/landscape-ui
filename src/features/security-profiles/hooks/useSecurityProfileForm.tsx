@@ -6,8 +6,8 @@ import { useFormik } from "formik";
 import moment from "moment";
 import type { ReactNode } from "react";
 import * as Yup from "yup";
-import { useAddSecurityProfile } from "../api";
-import type { SecurityProfileAddFormValues } from "../types/SecurityProfileAddFormValues";
+import type { SecurityProfile } from "../types";
+import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 import useSecurityProfileFormAssociationStep from "./useSecurityProfileFormAssociationStep";
 import useSecurityProfileFormBenchmarkStep from "./useSecurityProfileFormBenchmarkStep";
 import useSecurityProfileFormConfirmationStep from "./useSecurityProfileFormConfirmationStep";
@@ -15,23 +15,32 @@ import useSecurityProfileFormNameStep from "./useSecurityProfileFormNameStep";
 import useSecurityProfileFormScheduleStep from "./useSecurityProfileFormScheduleStep";
 
 export interface UseSecurityProfileFormProps {
-  initialValues: SecurityProfileAddFormValues;
-  benchmarkDisabled?: boolean;
-  onSuccess?: (values: SecurityProfileAddFormValues) => void;
+  initialValues: SecurityProfileFormValues;
+  mutate: (
+    params: Pick<SecurityProfile, "benchmark" | "mode" | "schedule" | "title"> &
+      Partial<
+        Pick<SecurityProfile, "access_group" | "all_computers" | "tags">
+      > & {
+        start_date: string;
+        restart_deliver_delay_window?: number;
+        restart_delivery_within?: number;
+        tailoring_file?: string;
+      },
+  ) => Promise<unknown>;
+  benchmarkStepDisabled?: boolean;
+  onSuccess?: (values: SecurityProfileFormValues) => void;
 }
 
 const useSecurityProfileForm = ({
   initialValues,
-  benchmarkDisabled,
+  mutate,
+  benchmarkStepDisabled,
   onSuccess = () => undefined,
 }: UseSecurityProfileFormProps) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
 
-  const { addSecurityProfile, isSecurityProfileAdding } =
-    useAddSecurityProfile();
-
-  const formik = useFormik<SecurityProfileAddFormValues>({
+  const formik = useFormik<SecurityProfileFormValues>({
     initialValues,
 
     validationSchema: Yup.object().shape({
@@ -71,7 +80,7 @@ const useSecurityProfileForm = ({
             : schema,
       ),
 
-      restart_deliver_within: Yup.number().when(
+      restart_deliver_delay: Yup.number().when(
         ["mode", "delivery_time"],
         ([mode, delivery_time], schema) =>
           mode == "fix-restart-audit" && delivery_time == "delayed"
@@ -139,7 +148,7 @@ const useSecurityProfileForm = ({
 
         if (values.end_type == "on-a-date") {
           scheduleRuleParts.push(
-            `UNTIL=${moment(values.end_date).utc().format("YYYYMMDDTHHmmss")}Z`,
+            `UNTIL=${moment(values.end_date).format("YYYYMMDDTHHmmss")}Z`,
           );
         }
       } else {
@@ -147,7 +156,7 @@ const useSecurityProfileForm = ({
       }
 
       try {
-        await addSecurityProfile({
+        await mutate({
           access_group:
             values.access_group == "global" ? values.access_group : undefined,
           all_computers: values.all_computers || undefined,
@@ -159,12 +168,12 @@ const useSecurityProfileForm = ({
               : undefined,
           restart_delivery_within:
             values.mode == "fix-restart-audit"
-              ? values.restart_deliver_within
+              ? values.restart_deliver_delay
               : undefined,
           schedule: scheduleRuleParts.join(";"),
-          start_date: `${moment(values.start_date)
-            .utc()
-            .format(INPUT_DATE_TIME_FORMAT)}Z`,
+          start_date: `${moment(values.start_date).format(
+            INPUT_DATE_TIME_FORMAT,
+          )}Z`,
           tags: values.all_computers ? undefined : values.tags,
           tailoring_file: await values.tailoring_file?.text(),
           title: values.title,
@@ -183,7 +192,7 @@ const useSecurityProfileForm = ({
   const nameStep = useSecurityProfileFormNameStep(formik);
   const benchmarkStep = useSecurityProfileFormBenchmarkStep(
     formik,
-    benchmarkDisabled,
+    benchmarkStepDisabled,
   );
   const scheduleStep = useSecurityProfileFormScheduleStep(formik);
   const associationStep = useSecurityProfileFormAssociationStep(formik);
@@ -203,7 +212,7 @@ const useSecurityProfileForm = ({
     confirmationStep,
   ];
 
-  return { formik, isSubmitting: isSecurityProfileAdding, steps };
+  return { formik, steps };
 };
 
 export default useSecurityProfileForm;

@@ -4,11 +4,11 @@ import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { getFormikError } from "@/utils/formikErrors";
 import { Input } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
-import type { SecurityProfileAddFormValues } from "../types/SecurityProfileAddFormValues";
+import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 import classes from "./useSecurityProfileFormScheduleStep.module.scss";
 
 export default function useSecurityProfileFormScheduleStep<
-  T extends SecurityProfileAddFormValues,
+  T extends SecurityProfileFormValues,
 >(formik: FormikContextType<T>) {
   return {
     isValid:
@@ -17,7 +17,7 @@ export default function useSecurityProfileFormScheduleStep<
       !formik.errors.every &&
       !formik.errors.end_date &&
       !formik.errors.restart_deliver_delay_window &&
-      !formik.errors.restart_deliver_within,
+      !formik.errors.restart_deliver_delay,
     description:
       "Add a schedule for the security profile. Select a specific date or a recurring schedule for continuous audit generation.",
     content: (
@@ -47,8 +47,8 @@ export default function useSecurityProfileFormScheduleStep<
                         required
                         className={classes.input}
                         wrapperClassName={classes.inputWrapper}
-                        {...formik.getFieldProps("restart_deliver_within")}
-                        error={getFormikError(formik, "restart_deliver_within")}
+                        {...formik.getFieldProps("restart_deliver_delay")}
+                        error={getFormikError(formik, "restart_deliver_delay")}
                       />
 
                       <span className={classes.inputDescription}>hours</span>

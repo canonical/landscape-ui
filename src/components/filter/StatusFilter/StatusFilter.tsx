@@ -17,32 +17,29 @@ const StatusFilter: FC<StatusFilterProps> = ({ options, multiple = false }) => {
     options.map((opt) => opt.value),
   );
 
-  if (!multiple) {
-    return (
-      <TableFilter
-        multiple={false}
-        label="Status"
-        hasToggleIcon
-        hasBadge
-        options={options}
-        onItemSelect={(item) => {
+  const props = multiple
+    ? {
+        multiple,
+        onItemsSelect: (item: string[]) => {
+          setPageParams({ statuses: item });
+        },
+        selectedItems: statuses,
+      }
+    : {
+        multiple,
+        onItemSelect: (item: string) => {
           setPageParams({ statuses: [item] });
-        }}
-        selectedItem={statuses[0]}
-      />
-    );
-  }
+        },
+        selectedItem: statuses[0],
+      };
+
   return (
     <TableFilter
-      multiple={multiple}
       label="Status"
       hasToggleIcon
       hasBadge
       options={options}
-      onItemsSelect={(item) => {
-        setPageParams({ statuses: item });
-      }}
-      selectedItems={statuses}
+      {...props}
     />
   );
 };
