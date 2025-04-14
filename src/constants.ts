@@ -20,8 +20,9 @@ export const DETAILED_UPGRADES_VIEW_ENABLED =
   import.meta.env.VITE_DETAILED_UPGRADES_VIEW_ENABLED === "true";
 export const IS_MSW_ENABLED = import.meta.env.VITE_MSW_ENABLED === "true";
 export const MSW_ENDPOINTS_TO_INTERCEPT =
-  import.meta.env.VITE_MSW_ENDPOINTS_TO_INTERCEPT.split(",").filter(Boolean) ??
-  [];
+  (import.meta.env.VITE_MSW_ENDPOINTS_TO_INTERCEPT ?? "")
+    .split(",")
+    .filter(Boolean) ?? [];
 export const COMMON_NUMBERS = {
   ZERO: 0,
   ONE: 1,
