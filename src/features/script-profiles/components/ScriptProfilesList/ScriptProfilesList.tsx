@@ -84,6 +84,19 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
       );
     },
 
+    viewActivityDetails: () => {
+      if (!profile.activities.last_activity) {
+        return;
+      }
+
+      setSidePanelContent(
+        profile.activities.last_activity.summary,
+        <Suspense fallback={<LoadingState />}>
+          <ActivityDetails activityId={profile.activities.last_activity.id} />
+        </Suspense>,
+      );
+    },
+
     viewDetails: () => {
       setSidePanelContent(
         profile.title,
@@ -156,34 +169,19 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
       {
         Header: "Last run",
-        Cell: ({
-          row: {
-            original: {
-              activities: { last_activity: activity },
-            },
-          },
-        }: CellProps<ScriptProfile>) => {
-          if (!activity) {
+        Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => {
+          if (!profile.activities.last_activity) {
             return;
           }
-
-          const viewDetails = () => {
-            setSidePanelContent(
-              activity.summary,
-              <Suspense fallback={<LoadingState />}>
-                <ActivityDetails activityId={activity.id} />
-              </Suspense>,
-            );
-          };
 
           return (
             <Button
               type="button"
               appearance="link"
               className="u-no-margin u-no-padding--top"
-              onClick={viewDetails}
+              onClick={actions(profile).viewActivityDetails}
             >
-              {moment(activity.creation_time)
+              {moment(profile.activities.last_activity.creation_time)
                 .utc()
                 .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
               GMT

@@ -6,6 +6,7 @@ interface ScriptProfileControlProps {
   readonly actions: {
     archive: () => void;
     edit: () => void;
+    viewActivityDetails: () => void;
   };
   readonly profile: ScriptProfile;
 }

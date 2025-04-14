@@ -41,7 +41,12 @@ const ScriptProfileDetails: FC<ScriptProfileDetailsProps> = ({
       <ScriptProfileControl actions={actions} profile={profile} />
       <Tabs listClassName="u-no-margin--bottom" links={links} />
 
-      {tabId == "info" && <ScriptProfileInfo profile={profile} />}
+      {tabId == "info" && (
+        <ScriptProfileInfo
+          profile={profile}
+          viewActivityDetails={actions.viewActivityDetails}
+        />
+      )}
 
       {tabId == "activity-history" && (
         <ScriptProfileActivityHistory profileId={profile.id} />

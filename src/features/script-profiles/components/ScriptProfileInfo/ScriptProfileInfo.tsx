@@ -17,9 +17,13 @@ const ScriptDetails = lazy(
 
 interface ScriptProfileInfoProps {
   readonly profile: ScriptProfile;
+  readonly viewActivityDetails: () => void;
 }
 
-const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
+const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({
+  profile,
+  viewActivityDetails,
+}) => {
   const { setSidePanelContent } = useSidePanel();
 
   const { script, isScriptLoading } = useGetSingleScript(profile.script_id);
@@ -107,12 +111,21 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
           <InfoItem
             label="Last run"
             value={
-              profile.activities.last_activity
-                ? `${moment(profile.activities.last_activity.creation_time)
+              profile.activities.last_activity ? (
+                <Button
+                  type="button"
+                  appearance="link"
+                  className="u-no-margin u-no-padding--top"
+                  onClick={viewActivityDetails}
+                >
+                  {moment(profile.activities.last_activity.creation_time)
                     .utc()
-                    .format(DISPLAY_DATE_TIME_FORMAT)}
-                        GMT`
-                : "N/A"
+                    .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
+                  GMT
+                </Button>
+              ) : (
+                "N/A"
+              )
             }
           />
         </Col>
