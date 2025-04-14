@@ -87,6 +87,17 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
     );
   };
 
+  if (isGettingActiveScriptProfiles || isGettingScriptProfileLimits) {
+    return <LoadingState />;
+  }
+
+  if (
+    activeScriptProfilesCount == undefined ||
+    scriptProfileLimits == undefined
+  ) {
+    throw new Error();
+  }
+
   const addProfileButton = (
     <Button
       type="button"
@@ -94,6 +105,9 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
       onClick={addProfile}
       className="u-no-margin--bottom"
       hasIcon
+      disabled={
+        activeScriptProfilesCount >= scriptProfileLimits.max_num_profiles
+      }
     >
       <Icon name="plus" light />
       <span>Add profile</span>
@@ -101,17 +115,6 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
   );
 
   if (scriptProfiles.length || search || status) {
-    if (isGettingActiveScriptProfiles || isGettingScriptProfileLimits) {
-      return <LoadingState />;
-    }
-
-    if (
-      activeScriptProfilesCount == undefined ||
-      scriptProfileLimits == undefined
-    ) {
-      throw new Error();
-    }
-
     return (
       <>
         <HeaderWithSearch

@@ -169,12 +169,8 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
       {
         Header: "Last run",
-        Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => {
-          if (!profile.activities.last_activity) {
-            return;
-          }
-
-          return (
+        Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
+          profile.activities.last_activity ? (
             <Button
               type="button"
               appearance="link"
@@ -186,8 +182,9 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
                 .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
               GMT
             </Button>
-          );
-        },
+          ) : (
+            "N/A"
+          ),
       },
 
       {

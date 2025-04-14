@@ -10,15 +10,15 @@ export type Trigger =
 
 export interface ScriptProfile extends Record<string, unknown> {
   access_group: string;
+  activities: {
+    last_activity: Activity | null;
+  };
   all_computers: boolean;
   archived: boolean;
   computers: { num_associated_computers: number };
   created_at: string;
   created_by: { name: string; id: number } | null;
   id: number;
-  activities: {
-    last_activity: Activity | null;
-  };
   modified_at: string;
   script_id: number;
   tags: string[];
