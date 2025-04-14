@@ -16,12 +16,16 @@ const useDisassociateEmployeeFromInstance = () => {
     mutationKey: ["employee", "disassociate"],
     mutationFn: ({ employee_id, computer_id }) =>
       authFetch.delete(`employees/${employee_id}/computers/${computer_id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["employee"] }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["instances", variables.computer_id],
+      });
+    },
   });
 
   return {
     disassociateEmployeeFromInstance: mutateAsync,
-    isPending,
+    isDisassociating: isPending,
   };
 };
 

@@ -2,7 +2,7 @@ interface EmployeeActionParams {
   id: number;
 }
 
-export interface GetEmployeesParams {
+interface CommonEmployeeParams {
   with_groups?: boolean;
   with_autoinstall_file?: boolean;
   with_computers?: boolean;
@@ -12,8 +12,12 @@ export interface GetEmployeesParams {
   is_active?: boolean;
 }
 
-export interface GetRecoveryKeyParams {
-  fde_recovery_key: string;
+export interface GetEmployeeParams extends CommonEmployeeParams {
+  id: number;
+}
+
+export interface GetEmployeesParams extends CommonEmployeeParams {
+  search?: string;
 }
 
 export type DeleteEmployeeParams = EmployeeActionParams;

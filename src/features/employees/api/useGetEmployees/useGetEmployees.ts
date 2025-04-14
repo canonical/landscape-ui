@@ -17,11 +17,11 @@ const useGetEmployees = (
 ) => {
   const authFetch = useFetch();
 
-  const { data, isPending } = useQuery<
+  const { data, isPending, isFetching } = useQuery<
     AxiosResponse<ApiPaginatedResponse<Employee>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["employee", queryParams],
+    queryKey: ["employees", queryParams],
     queryFn: () => authFetch.get("employees", { params: queryParams }),
     ...config,
   });
@@ -29,6 +29,7 @@ const useGetEmployees = (
   return {
     employees: data?.data?.results || [],
     isPending,
+    isFetching,
     count: data?.data?.count,
   };
 };

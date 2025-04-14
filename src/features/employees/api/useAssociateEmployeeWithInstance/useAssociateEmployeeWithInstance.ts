@@ -17,12 +17,16 @@ const useAssociateEmployeeWithInstance = () => {
     mutationKey: ["employee", "associate"],
     mutationFn: ({ employee_id, ...params }) =>
       authFetch.post(`employees/${employee_id}/computers`, params),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["employee"] }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["instances", variables.computer_id],
+      });
+    },
   });
 
   return {
     associateEmployeeWithInstance: mutateAsync,
-    isPending,
+    isAssociating: isPending,
   };
 };
 

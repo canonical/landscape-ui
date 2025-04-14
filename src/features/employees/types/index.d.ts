@@ -1,7 +1,7 @@
 export type { Employee, RecoveryKey } from "./Employee";
 export type {
   GetEmployeesParams,
-  GetRecoveryKeyParams,
+  GetEmployeeParams,
   DeleteEmployeeParams,
   PatchEmployeeParams,
   OffboardEmployeeParams,

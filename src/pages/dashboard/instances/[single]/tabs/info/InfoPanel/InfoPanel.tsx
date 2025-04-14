@@ -41,6 +41,9 @@ const RunInstanceScriptForm = lazy(() =>
     default: module.RunInstanceScriptForm,
   })),
 );
+const AssignEmployeeToInstanceForm = lazy(
+  () => import("../AssignEmployeeToInstanceForm"),
+);
 
 interface InfoPanelProps {
   readonly instance: Instance;
@@ -207,6 +210,18 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       "Run script",
       <Suspense fallback={<LoadingState />}>
         <RunInstanceScriptForm query={`id:${instance.id}`} />
+      </Suspense>,
+    );
+  };
+
+  const handleAssociateEmployee = () => {
+    setSidePanelContent(
+      `Associate Employee with ${instance.title}`,
+      <Suspense fallback={<LoadingState />}>
+        <AssignEmployeeToInstanceForm
+          instanceTitle={instance.title}
+          employeeId={instance.employee_id}
+        />
       </Suspense>,
     );
   };
@@ -408,6 +423,14 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 <Icon name="restart" />
                 <span>Restart</span>
               </ConfirmationButton>
+              <Button
+                className="p-segmented-control__button u-no-margin--bottom"
+                type="button"
+                onClick={handleAssociateEmployee}
+              >
+                <Icon name={ICONS.user} />
+                <span>Associate employee</span>
+              </Button>
               <ConfirmationButton
                 className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"
