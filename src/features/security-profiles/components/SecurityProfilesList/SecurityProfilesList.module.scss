@@ -39,12 +39,12 @@
   border-left: 1px solid #ccc;
 }
 
-.lineContainer > * :last-child {
+.lineContainer>*:last-child {
   border-bottom-right-radius: 5px;
   border-top-right-radius: 5px;
 }
 
-.lineContainer > * :not(:last-child) {
+.lineContainer>*:not(:last-child) {
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
 }
