@@ -15,7 +15,7 @@ const SingleScript = lazy(
   async () => import("@/features/scripts/components/SingleScript"),
 );
 
-const ScriptProfileAddForm = lazy(async () => import("../ScriptProfileForm"));
+const ScriptProfileForm = lazy(async () => import("../ScriptProfileForm"));
 
 interface ScriptProfilesPanelProps {
   readonly hasScripts?: boolean;
@@ -52,13 +52,17 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
     setSidePanelContent(
       "Add script profile",
       <Suspense fallback={<LoadingState />}>
-        <ScriptProfileAddForm
+        <ScriptProfileForm
           initialValues={{
             access_group: "global",
             all_computers: false,
+            interval: "",
+            start_after: "",
             tags: [],
             time_limit: 300,
+            timestamp: "",
             title: "",
+            trigger_type: "",
             username: "root",
           }}
           submitButtonText="Add profile"
@@ -138,12 +142,6 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
     return <LoadingState />;
   }
 
-  const learnMoreLink = (
-    <a href="PLACEHOLDER" target="_blank" rel="nofollow noopener noreferrer">
-      Learn more about script profiles
-    </a>
-  );
-
   const addScript = () => {
     setSidePanelContent(
       "Add script",
@@ -174,8 +172,6 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
               <Icon name="plus" light />
               <span>Add script</span>
             </Button>
-
-            {learnMoreLink}
           </>
         }
       />
@@ -194,8 +190,6 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
           </p>
 
           {addProfileButton}
-
-          {learnMoreLink}
         </>
       }
     />

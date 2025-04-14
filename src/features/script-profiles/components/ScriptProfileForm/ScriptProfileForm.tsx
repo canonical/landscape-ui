@@ -1,26 +1,40 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
+import { CronSchedule } from "@/components/form/CronSchedule";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { useGetScripts } from "@/features/scripts";
 import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
-import { Col, Input, Row, Select } from "@canonical/react-components";
+import {
+  Col,
+  CustomSelect,
+  Input,
+  Row,
+  Select,
+} from "@canonical/react-components";
+import classNames from "classnames";
 import { useFormik } from "formik";
 import type { ComponentProps, FC } from "react";
 import * as Yup from "yup";
 import type { ScriptProfile } from "../../types";
+import classes from "./ScriptProfileForm.module.scss";
 
-type ScriptProfileFormValues = Pick<
-  ScriptProfile,
-  | "access_group"
-  | "all_computers"
-  | "title"
-  | "tags"
-  | "time_limit"
-  | "username"
-> &
-  Partial<Pick<ScriptProfile, "script_id">> &
-  Partial<Pick<ScriptProfile["trigger"], "trigger_type">>;
+interface ScriptProfileFormValues
+  extends Pick<
+      ScriptProfile,
+      | "access_group"
+      | "all_computers"
+      | "title"
+      | "tags"
+      | "time_limit"
+      | "username"
+    >,
+    Partial<Pick<ScriptProfile, "script_id">> {
+  interval: string;
+  start_after: string;
+  timestamp: string;
+  trigger_type: ScriptProfile["trigger"]["trigger_type"] | "";
+}
 
 interface ScriptProfileFormProps
   extends Pick<
@@ -51,6 +65,8 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,
+
+    validateOnMount: true,
 
     validationSchema: Yup.object().shape({
       script_id: Yup.number().required("This field is required"),
@@ -134,15 +150,105 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         </Col>
       </Row>
 
-      <Select
+      <CustomSelect
         label="Trigger"
         required
+        onChange={async (value) => {
+          await formik.setFieldValue("trigger_type", value);
+        }}
+        value={formik.values.trigger_type}
         disabled={disabledFields.trigger_type}
+        options={[
+          {
+            label: (
+              <>
+                <p className="u-no-padding--top u-no-margin--bottom">
+                  Post enrollment
+                </p>
+
+                <p
+                  className={classNames(
+                    classes.description,
+                    "u-no-margin--bottom",
+                  )}
+                >
+                  <small>Run the script after a new instance is enrolled</small>
+                </p>
+              </>
+            ),
+            value: "event",
+            text: "Post enrollment",
+          },
+          {
+            label: (
+              <>
+                <p className="u-no-padding--top u-no-margin--bottom">
+                  On a date
+                </p>
+
+                <p
+                  className={classNames(
+                    classes.description,
+                    "u-no-margin--bottom",
+                  )}
+                >
+                  <small>Run the script on a selected date</small>
+                </p>
+              </>
+            ),
+            value: "one_time",
+            text: "On a date",
+          },
+          {
+            label: (
+              <>
+                <p className="u-no-padding--top u-no-margin--bottom">
+                  Recurring
+                </p>
+
+                <p
+                  className={classNames(
+                    classes.description,
+                    "u-no-margin--bottom",
+                  )}
+                >
+                  <small>Run the script on a recurring schedule</small>
+                </p>
+              </>
+            ),
+            value: "recurring",
+            text: "Recurring",
+          },
+        ]}
         help={
           disabledFields.trigger_type &&
           "Trigger type can't be changed after the script is created."
         }
       />
+
+      {formik.values.trigger_type == "one_time" && (
+        <Input
+          type="datetime-local"
+          label="Date"
+          required
+          {...formik.getFieldProps("timestamp")}
+          error={getFormikError(formik, "timestamp")}
+        />
+      )}
+
+      {formik.values.trigger_type == "recurring" && (
+        <>
+          <Input
+            type="datetime-local"
+            label="Start date"
+            required
+            {...formik.getFieldProps("start_after")}
+            error={getFormikError(formik, "start_after")}
+          />
+
+          <CronSchedule required {...formik.getFieldProps("interval")} />
+        </>
+      )}
 
       <AssociationBlock formik={formik} />
 

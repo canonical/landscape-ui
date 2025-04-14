@@ -52,7 +52,13 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
               script_id: true,
               trigger_type: true,
             }}
-            initialValues={{ ...profile, ...profile.trigger }}
+            initialValues={{
+              ...profile,
+              interval: "",
+              start_after: "",
+              timestamp: "",
+              ...profile.trigger,
+            }}
             submitButtonText="Save changes"
           />
         </Suspense>,
@@ -138,6 +144,10 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             },
           },
         }: CellProps<ScriptProfile>) => {
+          if (!activity) {
+            return;
+          }
+
           const viewDetails = () => {
             setSidePanelContent(
               activity.summary,

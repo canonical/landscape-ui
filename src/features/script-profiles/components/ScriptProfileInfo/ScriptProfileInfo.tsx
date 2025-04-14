@@ -106,10 +106,14 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
         <Col size={6}>
           <InfoItem
             label="Last run"
-            value={`${moment(profile.activities.last_activity.creation_time)
-              .utc()
-              .format(DISPLAY_DATE_TIME_FORMAT)}
-                        GMT`}
+            value={
+              profile.activities.last_activity
+                ? `${moment(profile.activities.last_activity.creation_time)
+                    .utc()
+                    .format(DISPLAY_DATE_TIME_FORMAT)}
+                        GMT`
+                : "N/A"
+            }
           />
         </Col>
       </Row>
