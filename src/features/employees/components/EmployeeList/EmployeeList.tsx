@@ -33,8 +33,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
 
   useOnClickOutside(
-    expandedCell?.column === "associated_instances" ||
-      expandedCell?.column === "groups"
+    expandedCell?.column === "computers" || expandedCell?.column === "groups"
       ? { current: tableRowsRef.current[expandedCell.row] }
       : [],
     (event) => {
@@ -56,7 +55,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
         column: columnId,
         row:
           prevState &&
-          ["associated_instances", "groups"].includes(prevState.column) &&
+          ["computers", "groups"].includes(prevState.column) &&
           prevState.row < rowIndex
             ? rowIndex - 1
             : rowIndex,
@@ -174,11 +173,11 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
                 </Link>
               ))}
               isExpanded={
-                expandedCell?.column === "associated_instances" &&
+                expandedCell?.column === "computers" &&
                 expandedCell.row === index
               }
               onExpand={() => {
-                handleExpandCellClick("associated_instances", index);
+                handleExpandCellClick("computers", index);
               }}
             />
           ) : (

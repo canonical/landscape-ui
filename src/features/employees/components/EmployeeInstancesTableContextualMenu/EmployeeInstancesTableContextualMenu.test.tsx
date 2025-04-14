@@ -2,6 +2,7 @@ import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import {
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
@@ -74,7 +75,9 @@ describe("EmployeeInstancesTableContextualMenu", () => {
 
     await user.click(confirmButton);
 
-    await waitForElementToBeRemoved(() => screen.queryByRole("dialog"));
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 
   it("opens and confirms the remove modal", async () => {

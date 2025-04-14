@@ -37,54 +37,50 @@ const EmployeeInstancesTableContextualMenu: FC<
   const { mutateAsync: sanitizeInstanceMutation, isPending: isSanitizing } =
     sanitizeInstanceQuery;
 
-  const handleSanitizeInstance = async () => {
-    try {
-      const { data: sanitizeActivity } = await sanitizeInstanceMutation({
-        computer_id: instance.id,
-      });
-
-      notify.success({
-        title: `You have successfully initiated Sanitization for ${instance.title}`,
-        message: `Sanitizing for ${instance.title} has been queued in Activities. The data will be permanently irrecoverable once complete.`,
-        actions: [
-          {
-            label: "View details",
-            onClick: () => openActivityDetails(sanitizeActivity),
-          },
-        ],
-      });
-      handleCloseModal();
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleRemoveInstance = async () => {
-    try {
-      await removeInstances({
-        computer_ids: [instance.id],
-      });
-
-      notify.success({
-        title: `You have successfully removed ${instance.title}`,
-        message: `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
-      });
-      handleCloseModal();
-    } catch (error) {
-      debug(error);
-    }
-  };
-
   const formik = useFormik({
     initialValues: {
       confirmationText: "",
       selectedAction: "",
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       if (values.selectedAction === "sanitize") {
-        handleSanitizeInstance();
+        try {
+          const { data: sanitizeActivity } = await sanitizeInstanceMutation({
+            computer_id: instance.id,
+          });
+
+          notify.success({
+            title: `You have successfully initiated Sanitization for ${instance.title}`,
+            message: `Sanitizing for ${instance.title} has been queued in Activities. The data will be permanently irrecoverable once complete.`,
+            actions: [
+              {
+                label: "View details",
+                onClick: () => {
+                  openActivityDetails(sanitizeActivity);
+                },
+              },
+            ],
+          });
+
+          formik.resetForm();
+        } catch (error) {
+          debug(error);
+        }
       } else if (values.selectedAction === "remove") {
-        handleRemoveInstance();
+        try {
+          await removeInstances({
+            computer_ids: [instance.id],
+          });
+
+          notify.success({
+            title: `You have successfully removed ${instance.title}`,
+            message: `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
+          });
+
+          formik.resetForm();
+        } catch (error) {
+          debug(error);
+        }
       }
     },
   });
@@ -103,7 +99,7 @@ const EmployeeInstancesTableContextualMenu: FC<
       ),
       "aria-label": `View ${instance.title} instance details`,
       hasIcon: true,
-      onClick: () => navigate(`${ROOT_PATH}instances/${instance.id}`),
+      onClick: async () => navigate(`${ROOT_PATH}instances/${instance.id}`),
     },
     {
       children: (
@@ -114,7 +110,7 @@ const EmployeeInstancesTableContextualMenu: FC<
       ),
       "aria-label": `Sanitize ${instance.title} instance`,
       hasIcon: true,
-      onClick: () => formik.setFieldValue("selectedAction", "sanitize"),
+      onClick: async () => formik.setFieldValue("selectedAction", "sanitize"),
     },
     {
       children: (
@@ -125,7 +121,7 @@ const EmployeeInstancesTableContextualMenu: FC<
       ),
       "aria-label": `Remove from Landscape`,
       hasIcon: true,
-      onClick: () => formik.setFieldValue("selectedAction", "remove"),
+      onClick: async () => formik.setFieldValue("selectedAction", "remove"),
     },
   ];
 
@@ -149,7 +145,9 @@ const EmployeeInstancesTableContextualMenu: FC<
             isRemoving ||
             formik.values.confirmationText !== `remove ${instance.title}`
           }
-          onConfirm={() => formik.handleSubmit()}
+          onConfirm={() => {
+            formik.handleSubmit();
+          }}
           close={handleCloseModal}
         >
           <Form onSubmit={formik.handleSubmit} noValidate>
@@ -173,7 +171,9 @@ const EmployeeInstancesTableContextualMenu: FC<
             isSanitizing ||
             formik.values.confirmationText !== `sanitize ${instance.title}`
           }
-          onConfirm={handleSanitizeInstance}
+          onConfirm={() => {
+            formik.handleSubmit();
+          }}
           close={handleCloseModal}
         >
           <Form onSubmit={formik.handleSubmit} noValidate>
