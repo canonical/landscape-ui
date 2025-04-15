@@ -20,6 +20,11 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_ARRAY,
   },
   {
+    urlParam: "autoinstallFiles",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
+  },
+  {
     urlParam: "availabilityZones",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_ARRAY,
@@ -106,5 +111,15 @@ export const PARAMS_CONFIG: ParamsConfig = [
     urlParam: "query",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,
+  },
+  {
+    urlParam: "employeeGroups",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
+  },
+  {
+    urlParam: "autoinstallFiles",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
   },
 ];

@@ -36,17 +36,17 @@ describe("UserList", () => {
   describe("Table Interactions", () => {
     it("shows locked and unlocked user icon in the user table", async () => {
       renderWithProviders(<UserList {...props} />);
-      expect(lockedUser).toBeDefined();
 
-      const unlockedStatusesLength = screen.getAllByRole("gridcell", {
-        name: /unlocked/i,
-      }).length;
+      const unlockedStatuses = screen.getAllByRole("gridcell", {
+        name: "Unlocked",
+      });
 
-      const lockedStatusesLength = screen.getAllByRole("gridcell", {
-        name: /locked/i,
-      }).length;
-      expect(unlockedStatusesLength).toBeGreaterThanOrEqual(1);
-      expect(lockedStatusesLength).toBeGreaterThanOrEqual(1);
+      const lockedStatuses = screen.getAllByRole("gridcell", {
+        name: "Locked",
+      });
+
+      expect(lockedStatuses[0]).toHaveIcon("lock-locked-active");
+      expect(unlockedStatuses[0]).toHaveIcon("lock-unlock");
     });
 
     it("should select all users when clicking ToggleAll checkbox", async () => {
@@ -69,7 +69,7 @@ describe("UserList", () => {
     it("should select user when clicking on its row checkbox", async () => {
       renderWithProviders(<UserList {...props} />);
 
-      const selectedUser = users[0];
+      const [selectedUser] = users;
 
       const userCheckbox = await screen.findByRole("checkbox", {
         name: `Select user ${selectedUser.username}`,
@@ -149,16 +149,16 @@ describe("UserList", () => {
       const groupsData = userGroups.map((group) => group.name).join(", ");
       const loaded = await screen.findByText(primaryGroup);
       expect(loaded).toBeInTheDocument();
-      const getFieldsToCheck = (user: User) => {
+      const getFieldsToCheck = (item: User) => {
         return [
-          { label: "username", value: user.username },
-          { label: "name", value: user?.name ?? <NoData /> },
+          { label: "username", value: item.username },
+          { label: "name", value: item?.name ?? <NoData /> },
           { label: "passphrase", value: "****************" },
           { label: "primary group", value: primaryGroup ?? <NoData /> },
           { label: "additional groups", value: groupsData },
-          { label: "location", value: user?.location ?? <NoData /> },
-          { label: "home phone", value: user?.home_phone ?? <NoData /> },
-          { label: "work phone", value: user?.work_phone ?? <NoData /> },
+          { label: "location", value: item?.location ?? <NoData /> },
+          { label: "home phone", value: item?.home_phone ?? <NoData /> },
+          { label: "work phone", value: item?.work_phone ?? <NoData /> },
         ];
       };
       const fieldsToCheck = getFieldsToCheck(user);

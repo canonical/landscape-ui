@@ -11,7 +11,7 @@ env:
 
 jobs:
   unit-tests:
-    runs-on: [ self-hosted, Linux, large ]
+    runs-on: [self-hosted, Linux, large]
     permissions:
       contents: read
       pull-requests: write
@@ -37,7 +37,7 @@ jobs:
           retention-days: 30
 
   tics-report:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, amd64, tiobe, jammy]
     needs: unit-tests
     steps:
       - uses: actions/checkout@v4
@@ -49,11 +49,9 @@ jobs:
           name: vitest-report
           path: ${{ github.workspace }}/coverage
       - name: TICS report
-        uses: tiobe/tics-github-action@v3
-        with:
-          mode: qserver
-          project: landscape-dashboard
-          viewerUrl: https://canonical.tiobe.com/tiobeweb/TICS/api/cfg?name=default
-          branchdir: ${{ github.workspace }}
-          ticsAuthToken: ${{ secrets.TICS_AUTH_TOKEN }}
-          installTics: true
+        env:
+          TICSAUTHTOKEN: ${{ secrets.TICS_AUTH_TOKEN }}
+        run: |
+          set -x
+          . ui/.venv-gh/bin/activate
+          TICSQServer -project landscape-dashboard -tmpdir /tmp/tics

@@ -16,27 +16,6 @@ interface NetworkDevice {
   speed: number | null;
 }
 
-export interface GroupedHardware {
-  cpu: Cpu[];
-  display: Display;
-  memory: Memory;
-  multimedia: Multimedia;
-  network: GroupedHardwareNetwork[] | string;
-  pci: Pci[];
-  scsi: Scsi[];
-  storage: Storage[] | string;
-  system: System;
-  usb: Usb[];
-}
-
-interface Storage {
-  description: string;
-  partitions: Partition[];
-  product: string;
-  size: string;
-  vendor: string;
-}
-
 interface Partition {
   description: string;
   filesystem: string;
@@ -48,14 +27,6 @@ interface GroupedHardwareNetwork {
   ip: string;
   mac: string;
   product: string;
-  vendor: string;
-}
-interface Cpu {
-  architecture: string;
-  cache: Cache;
-  clock_speed: string;
-  flags: Flag[];
-  model: string;
   vendor: string;
 }
 
@@ -71,8 +42,25 @@ interface Flag {
   title: string;
 }
 
+interface Cpu {
+  architecture: string;
+  cache: Cache;
+  clock_speed: string;
+  flags: Flag[];
+  model: string;
+  vendor: string;
+}
+
 interface Display {
   model: string;
+  vendor: string;
+}
+
+interface Storage {
+  description: string;
+  partitions: Partition[];
+  product: string;
+  size: string;
   vendor: string;
 }
 
@@ -85,14 +73,14 @@ interface Multimedia {
   vendor: string;
 }
 
-interface Pci {
-  attached_devices: AttachedDevice[];
+interface AttachedDevice {
   description: string;
   model: string;
   vendor: string;
 }
 
-interface AttachedDevice {
+interface Pci {
+  attached_devices: AttachedDevice[];
   description: string;
   model: string;
   vendor: string;
@@ -102,6 +90,11 @@ interface Scsi {
   description: string;
   model: string;
   vendor: string;
+}
+
+interface BiosCapability {
+  code: string;
+  title: string;
 }
 
 interface System {
@@ -115,15 +108,23 @@ interface System {
   vendor: string;
 }
 
-interface BiosCapability {
-  code: string;
-  title: string;
-}
-
 interface Usb {
   description: string;
   model: string;
   vendor: string;
+}
+
+export interface GroupedHardware {
+  cpu: Cpu[];
+  display: Display;
+  memory: Memory;
+  multimedia: Multimedia;
+  network: GroupedHardwareNetwork[] | string;
+  pci: Pci[];
+  scsi: Scsi[];
+  storage: Storage[] | string;
+  system: System;
+  usb: Usb[];
 }
 
 type HardwareDescription = [
@@ -192,6 +193,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   comment: string;
   distribution: string | null;
   distribution_info: DistributionInfo | null;
+  employee_id: number | null;
   hostname: string;
   id: number;
   is_default_child: boolean | null;
@@ -237,16 +239,16 @@ export interface WslInstanceWithoutRelation
   is_wsl_instance: true;
 }
 
-export interface WslInstance
-  extends WithRelation<WslInstanceWithoutRelation>,
-    UbuntuInstance {
-  parent: WindowsInstanceWithoutRelation;
-}
-
 export interface WindowsInstanceWithoutRelation
   extends WithDistribution<InstanceWithoutRelation> {
   is_default_child: null;
   is_wsl_instance: false;
+}
+
+export interface WslInstance
+  extends WithRelation<WslInstanceWithoutRelation>,
+    UbuntuInstance {
+  parent: WindowsInstanceWithoutRelation;
 }
 
 export interface WindowsInstance

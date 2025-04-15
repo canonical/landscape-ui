@@ -34,11 +34,11 @@ describe("LoginMethodsLayout", () => {
 
     renderWithProviders(<LoginMethods methods={methods} />);
 
-    expect(screen.getAllByRole("button").length).toBe(1);
+    const octaButton = screen.getByRole("button", {
+      name: "Sign in with Okta Enabled",
+    });
 
-    expect(screen.getByRole("button")).toHaveTextContent(
-      "Sign in with Okta Enabled",
-    );
+    expect(octaButton).toBeInTheDocument();
 
     emptyMessageNotBeInTheDocument();
   });

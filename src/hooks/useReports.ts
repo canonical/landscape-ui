@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { QueryFnType } from "@/types/QueryFnType";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 
 interface CommonGetParams {
   query?: string;
@@ -28,7 +28,7 @@ export default function useReports() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<string>, AxiosError<ApiError>>({
       queryKey: ["csvComplianceData", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         authFetchOld.get("GetCSVComplianceData", {
           params: queryParams,
         }),
@@ -41,7 +41,7 @@ export default function useReports() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<number[]>, AxiosError<ApiError>>({
       queryKey: ["instancesNotUpgraded", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         authFetchOld.get("GetComputersNotUpgraded", {
           params: queryParams,
         }),
@@ -57,7 +57,7 @@ export default function useReports() {
   ) =>
     useQuery<AxiosResponse<number[]>, AxiosError<ApiError>>({
       queryKey: ["notPingingInstances", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         authFetchOld.get("GetNotPingingComputers", {
           params: queryParams,
         }),
@@ -73,7 +73,7 @@ export default function useReports() {
       AxiosError<ApiError>
     >({
       queryKey: ["usnTimeToFix", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         authFetchOld.get("GetUSNTimeToFix", {
           params: queryParams,
         }),
@@ -89,7 +89,7 @@ export default function useReports() {
       AxiosError<ApiError>
     >({
       queryKey: ["upgradedInstancesByFrequency", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         authFetchOld.get("GetUpgradedComputersByFrequency", {
           params: queryParams,
         }),

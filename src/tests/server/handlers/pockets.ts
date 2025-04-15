@@ -5,7 +5,7 @@ import type {
 } from "@/features/mirrors";
 import type { PackageDiff, PackageObject } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 import { diffPocket, listPockets } from "@/tests/mocks/pockets";

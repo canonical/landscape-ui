@@ -5,8 +5,10 @@ import activity from "./activity";
 import alerts from "./alerts";
 import aptSource from "./aptSource";
 import auth from "./auth";
+import oidcIssuers from "./oidcIssuers";
 import availabilityZones from "./availabilityZones";
 import distributions from "./distributions";
+import employeeGroups from "./employeeGroups";
 import eventsLog from "./eventsLog";
 import gpgKey from "./gpgKey";
 import instance from "./instance";
@@ -23,15 +25,21 @@ import user from "./user";
 import userSettings from "./userSettings";
 import usn from "./usn";
 import wsl from "./wsl";
+import employees from "./employees";
+import autoinstallFiles from "./autoinstallFiles";
 
 export default [
   ...accessGroup,
+  ...autoinstallFiles,
   ...activity,
   ...alerts,
   ...aptSource,
   ...auth,
+  ...oidcIssuers,
   ...availabilityZones,
   ...distributions,
+  ...employees,
+  ...employeeGroups,
   ...eventsLog,
   ...gpgKey,
   ...instance,

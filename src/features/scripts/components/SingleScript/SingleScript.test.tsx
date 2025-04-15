@@ -109,7 +109,7 @@ describe("SingleScript", () => {
 
   describe("edit script form", () => {
     it("should render edit script form", async () => {
-      const script = scripts[0];
+      const [script] = scripts;
 
       renderWithProviders(<SingleScript action="edit" script={script} />);
 

@@ -1,5 +1,5 @@
 import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -19,7 +19,7 @@ export default function useUserGeneralSettings() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<UserDetails>, AxiosError<ApiError>>({
       queryKey: ["userDetails", "get"],
-      queryFn: () => authFetch.get("person", { params: queryParams }),
+      queryFn: async () => authFetch.get("person", { params: queryParams }),
       ...config,
     });
 
@@ -29,8 +29,8 @@ export default function useUserGeneralSettings() {
     EditUserDetailsParams
   >({
     mutationKey: ["userDetails", "edit"],
-    mutationFn: (params) => authFetch.post("person", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.post("person", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["userDetails", "get"] }),
   });
 
@@ -40,7 +40,7 @@ export default function useUserGeneralSettings() {
     ChangePasswordParams
   >({
     mutationKey: ["userDetails", "changePassword"],
-    mutationFn: (params) => authFetch.put("password", params),
+    mutationFn: async (params) => authFetch.put("password", params),
   });
 
   return {

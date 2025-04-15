@@ -1,12 +1,12 @@
 import type { QueryFnType } from "@/types/QueryFnType";
 import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import useFetchOld from "./useFetchOld";
 import type { Administrator } from "@/types/Administrator";
 import type { Activity } from "@/features/activities";
 import useFetch from "./useFetch";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Invitation } from "@/types/Invitation";
 
 interface InviteAdministratorParams {
@@ -43,7 +43,7 @@ export default function useAdministrators() {
   > = (_, config = {}) =>
     useQuery<AxiosResponse<Administrator[]>, AxiosError<ApiError>>({
       queryKey: ["administrators"],
-      queryFn: () => authFetchOld.get("GetAdministrators"),
+      queryFn: async () => authFetchOld.get("GetAdministrators"),
       ...config,
     });
 
@@ -52,8 +52,9 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     InviteAdministratorParams
   >({
-    mutationFn: (params) => authFetchOld.get("InviteAdministrator", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetchOld.get("InviteAdministrator", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["invitations"] }),
   });
 
@@ -62,9 +63,9 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     DisableAdministratorParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("DisableAdministrator", { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["administrators"] }),
   });
 
@@ -73,9 +74,9 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     EditAdministratorParams
   >({
-    mutationFn: ({ id, ...params }) =>
+    mutationFn: async ({ id, ...params }) =>
       authFetch.put(`administrators/${id}`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["administrators"] }),
         queryClient.invalidateQueries({ queryKey: ["roles"] }),
@@ -91,7 +92,8 @@ export default function useAdministrators() {
       AxiosError<ApiError>
     >({
       queryKey: ["invitations", queryParams],
-      queryFn: () => authFetch.get("/invitations", { params: queryParams }),
+      queryFn: async () =>
+        authFetch.get("/invitations", { params: queryParams }),
       ...config,
     });
 
@@ -100,8 +102,8 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     InvitationActionParams
   >({
-    mutationFn: (params) => authFetch.delete(`/invitations/${params.id}`),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.delete(`/invitations/${params.id}`),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["invitations"] }),
   });
 
@@ -110,8 +112,8 @@ export default function useAdministrators() {
     AxiosError<ApiError>,
     InvitationActionParams
   >({
-    mutationFn: (params) => authFetch.post(`/invitations/${params.id}`),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.post(`/invitations/${params.id}`),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["invitations"] }),
   });
 

@@ -2,7 +2,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { RemovalProfile } from "../types";
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/QueryFnType";
 
 export interface CreateRemovalProfileParams {
@@ -30,9 +30,9 @@ export default function useRemovalProfiles() {
     AxiosError<ApiError>,
     CreateRemovalProfileParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("CreateRemovalProfile", { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
 
@@ -41,8 +41,9 @@ export default function useRemovalProfiles() {
     AxiosError<ApiError>,
     EditRemovalProfileParams
   >({
-    mutationFn: (params) => authFetchOld.get(`EditRemovalProfile`, { params }),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetchOld.get(`EditRemovalProfile`, { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
 
@@ -51,9 +52,9 @@ export default function useRemovalProfiles() {
     AxiosError<ApiError>,
     RemoveRemovalProfileParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get(`RemoveRemovalProfile`, { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
 
@@ -63,7 +64,7 @@ export default function useRemovalProfiles() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<RemovalProfile[]>, AxiosError<ApiError>>({
       queryKey: ["removalProfiles"],
-      queryFn: () =>
+      queryFn: async () =>
         authFetchOld.get("GetRemovalProfiles", { params: queryParams }),
       ...config,
     });

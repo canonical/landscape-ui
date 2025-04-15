@@ -2,7 +2,9 @@ import type { ComponentProps, FC } from "react";
 import { lazy, Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 
-const SingleScriptComponent = lazy(() => import("./components/SingleScript"));
+const SingleScriptComponent = lazy(
+  async () => import("./components/SingleScript"),
+);
 
 export const SingleScript: FC<ComponentProps<typeof SingleScriptComponent>> = (
   props,
@@ -18,4 +20,4 @@ export { default as RunInstanceScriptForm } from "./components/RunInstanceScript
 export { default as ScriptList } from "./components/ScriptList";
 export { default as ScriptsEmptyState } from "./components/ScriptsEmptyState";
 export { useScripts } from "./hooks";
-export type { GetScriptCodeParams } from "./hooks";
+export type { GetScriptCodeParams, CopyScriptParams } from "./hooks";

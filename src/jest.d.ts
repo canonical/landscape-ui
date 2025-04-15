@@ -8,5 +8,6 @@ declare namespace jest {
     toHaveTexts: (texts: string[]) => R;
     toHaveInputValues: (values: string[]) => R;
     toHaveInfoItem: (label: string, value: string | object) => R;
+    toHaveIcon: (icon: string) => R;
   }
 }

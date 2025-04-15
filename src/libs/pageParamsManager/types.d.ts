@@ -9,6 +9,7 @@ export type SortDirection = "asc" | "desc" | null;
  */
 export interface PageParams {
   accessGroups: string[];
+  autoinstallFiles: string[];
   availabilityZones: string[];
   currentPage: number;
   days: string;
@@ -26,6 +27,7 @@ export interface PageParams {
   toDate: string;
   type: string;
   query: string;
+  employeeGroups: string[];
 }
 
 /**

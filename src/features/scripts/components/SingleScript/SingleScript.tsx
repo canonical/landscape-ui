@@ -20,6 +20,7 @@ import {
 } from "./helpers";
 import ScriptFormAttachments from "../ScriptFormAttachments";
 import { getFormikError } from "@/utils/formikErrors";
+import { DEFAULT_SCRIPT } from "../../constants";
 
 type SingleScriptProps =
   | {
@@ -196,6 +197,7 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
                 ? formik.errors.code
                 : undefined
             }
+            defaultValue={DEFAULT_SCRIPT}
           />
 
           <Input
