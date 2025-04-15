@@ -1,5 +1,6 @@
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
+import useEnv from "@/hooks/useEnv";
 import usePageParams from "@/hooks/usePageParams";
 import classes from "@/pages/dashboard/instances/[single]/SingleInstanceTabs/SingleInstanceTabs.module.scss";
 import { Tabs } from "@canonical/react-components";
@@ -27,9 +28,22 @@ const tabs = [
 ];
 
 const ScriptsTabs: FC = () => {
+  const { isSelfHosted } = useEnv();
   const { tab, setPageParams } = usePageParams();
 
   const { scripts, scriptsCount, isScriptsLoading } = useGetScripts();
+
+  const scriptsPanel = (
+    <ScriptsPanel
+      scripts={scripts}
+      scriptsCount={scriptsCount}
+      isScriptsLoading={isScriptsLoading}
+    />
+  );
+
+  if (!isSelfHosted) {
+    return scriptsPanel;
+  }
 
   const currentTab = tab ? `tab-link-${tab}` : tabs[0].id;
 
@@ -53,13 +67,7 @@ const ScriptsTabs: FC = () => {
       >
         <AppErrorBoundary>
           <Suspense fallback={<LoadingState />}>
-            {"tab-link-scripts" === currentTab && (
-              <ScriptsPanel
-                scripts={scripts}
-                scriptsCount={scriptsCount}
-                isScriptsLoading={isScriptsLoading}
-              />
-            )}
+            {"tab-link-scripts" === currentTab && scriptsPanel}
             {"tab-link-profiles" === currentTab && (
               <ScriptProfilesPanel
                 hasScripts={!!scriptsCount}

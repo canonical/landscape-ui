@@ -1,4 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -84,19 +85,6 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
       );
     },
 
-    viewActivityDetails: () => {
-      if (!profile.activities.last_activity) {
-        return;
-      }
-
-      setSidePanelContent(
-        profile.activities.last_activity.summary,
-        <Suspense fallback={<LoadingState />}>
-          <ActivityDetails activityId={profile.activities.last_activity.id} />
-        </Suspense>,
-      );
-    },
-
     viewDetails: () => {
       setSidePanelContent(
         profile.title,
@@ -148,17 +136,16 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
               {profile.computers.num_associated_computers} instances
             </Link>
           ) : (
-            "N/A"
+            "0 instances"
           ),
       },
 
       {
         Header: "Tags",
-        Cell: ({
-          row: {
-            original: { tags },
-          },
-        }: CellProps<ScriptProfile>) => tags.join(", ") || "N/A",
+        Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
+          profile.all_computers
+            ? "All instances"
+            : profile.tags.join(", ") || <NoData />,
       },
 
       {
@@ -169,21 +156,35 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
       {
         Header: "Last run",
-        Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
-          profile.activities.last_activity ? (
+        Cell: ({
+          row: {
+            original: {
+              activities: { last_activity: activity },
+              ...profile
+            },
+          },
+        }: CellProps<ScriptProfile>) =>
+          activity ? (
             <Button
               type="button"
               appearance="link"
               className="u-no-margin u-no-padding--top"
-              onClick={actions(profile).viewActivityDetails}
+              onClick={() => {
+                setSidePanelContent(
+                  `${profile.title} - ${moment(activity.creation_time).format(DISPLAY_DATE_TIME_FORMAT)}`,
+                  <Suspense fallback={<LoadingState />}>
+                    <ActivityDetails activityId={activity.id} />
+                  </Suspense>,
+                );
+              }}
             >
-              {moment(profile.activities.last_activity.creation_time)
+              {moment(activity.creation_time)
                 .utc()
                 .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
               GMT
             </Button>
           ) : (
-            "N/A"
+            <NoData />
           ),
       },
 

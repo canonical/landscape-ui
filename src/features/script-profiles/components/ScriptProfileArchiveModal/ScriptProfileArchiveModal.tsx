@@ -3,6 +3,7 @@ import { ConfirmationModal, Input } from "@canonical/react-components";
 import { useState, type FC } from "react";
 import { useArchiveScriptProfile } from "../../api";
 import type { ScriptProfile } from "../../types";
+import classes from "./ScriptProfileArchiveModal.module.scss";
 
 interface ScriptProfileArchiveModalProps {
   readonly profile: ScriptProfile | null;
@@ -63,7 +64,11 @@ const ScriptProfileArchiveModal: FC<ScriptProfileArchiveModalProps> = ({
       </p>
 
       <p>
-        Type <strong>archive {profile.title}</strong> to confirm.
+        Type{" "}
+        <strong className={classes.confirmation}>
+          archive {profile.title}
+        </strong>{" "}
+        to confirm.
       </p>
 
       <Input

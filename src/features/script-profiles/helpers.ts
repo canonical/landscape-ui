@@ -1,3 +1,4 @@
+import { getCronPhrase } from "@/components/form/CronSchedule/components/CronSchedule/helpers";
 import type { ScriptProfile } from "./types";
 
 export const getStatusText = (profile: ScriptProfile) =>
@@ -22,7 +23,18 @@ export const getTriggerText = (profile: ScriptProfile) => {
     }
 
     case "recurring": {
-      return "Recurring";
+      return `Recurring`;
     }
+  }
+};
+
+export const getTriggerLongText = (profile: ScriptProfile) => {
+  switch (profile.trigger.trigger_type) {
+    case "recurring": {
+      return `Recurring, ${getCronPhrase(profile.trigger.interval)}`;
+    }
+
+    default:
+      return getTriggerText(profile);
   }
 };

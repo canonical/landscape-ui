@@ -84,9 +84,14 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
 
-  const { isScriptsLoading, scripts } = useGetScripts({
-    listenToUrlParams: false,
-  });
+  const { isScriptsLoading, scripts } = useGetScripts(
+    {
+      listenToUrlParams: false,
+    },
+    {
+      script_type: "active",
+    },
+  );
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
   const { getAccessGroupQuery } = useRoles();
@@ -391,7 +396,11 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
               adjusted.
             </Notification>
 
-            <CronSchedule required {...formik.getFieldProps("interval")} />
+            <CronSchedule
+              required
+              touched={formik.touched.interval}
+              {...formik.getFieldProps("interval")}
+            />
           </>
         )}
       </div>

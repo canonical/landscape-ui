@@ -118,7 +118,7 @@ export const getCronPhrase = (interval: string) => {
     interval = interval.replace(key, (i + 1).toString());
   }
 
-  const parts = interval.split(" ");
+  const parts = interval.trim().split(/ +/);
 
   if (parts.length != 5) {
     throw new Error("Enter 5 values.");
@@ -192,7 +192,7 @@ export const getCronPhrase = (interval: string) => {
       }),
   );
 
-  let response = '"At ';
+  let response = "at ";
 
   if (
     minutes.some(
@@ -260,5 +260,5 @@ export const getCronPhrase = (interval: string) => {
     ],
   });
 
-  return response + '"';
+  return response;
 };
