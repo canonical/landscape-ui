@@ -20,6 +20,8 @@ interface KernelActionParams {
   id: number;
   kernel_package_id: number;
   reboot_after: boolean;
+  deliver_after?: string;
+  deliver_delay_window?: number;
 }
 
 export default function useKernel() {
@@ -38,7 +40,7 @@ export default function useKernel() {
   ) => {
     return useQuery<AxiosResponse<KernelManagementInfo>, AxiosError<ApiError>>({
       queryKey: ["kernel", id],
-      queryFn: () => authFetch.get(`computers/${id}/livepatch/kernel`),
+      queryFn: async () => authFetch.get(`computers/${id}/livepatch/kernel`),
       ...config,
     });
   };
@@ -55,7 +57,7 @@ export default function useKernel() {
   ) => {
     return useQuery<AxiosResponse<LivepatchInformation>, AxiosError<ApiError>>({
       queryKey: ["kernel", { id, ...queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(`computers/${id}/livepatch/info`, {
           params: queryParams,
         }),
@@ -69,9 +71,10 @@ export default function useKernel() {
     KernelActionParams
   >({
     mutationKey: ["kernel", "downgrade"],
-    mutationFn: ({ id, ...queryParams }) =>
+    mutationFn: async ({ id, ...queryParams }) =>
       authFetch.post(`computers/${id}/kernel/downgrade`, queryParams),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kernel"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["kernel"] }),
   });
 
   const upgradeKernelQuery = useMutation<
@@ -80,9 +83,10 @@ export default function useKernel() {
     KernelActionParams
   >({
     mutationKey: ["kernel", "upgrade"],
-    mutationFn: ({ id, ...queryParams }) =>
+    mutationFn: async ({ id, ...queryParams }) =>
       authFetch.post(`computers/${id}/kernel/upgrade`, queryParams),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kernel"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["kernel"] }),
   });
 
   return {
