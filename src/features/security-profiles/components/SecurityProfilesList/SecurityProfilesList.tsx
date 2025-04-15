@@ -1,5 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
+import { useActivities } from "@/features/activities";
+import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable, Tooltip } from "@canonical/react-components";
@@ -13,10 +15,8 @@ import { useUpdateSecurityProfile } from "../../api/useUpdateSecurityProfile";
 import { notifyCreation } from "../../helpers";
 import type { SecurityProfile, SecurityProfileActions } from "../../types";
 import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
-import classes from "./SecurityProfilesList.module.scss";
-import { useActivities } from "@/features/activities";
 import { getNotificationMessage } from "./helpers";
-import useDebug from "@/hooks/useDebug";
+import classes from "./SecurityProfilesList.module.scss";
 
 const SecurityProfileRunFixForm = lazy(
   async () => import("../SecurityProfileRunFixForm"),
@@ -61,12 +61,14 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       const message = getNotificationMessage(profile.mode);
 
       notify.success({
-        title: `You have successfully initiated Run of the ${profile.name} Security profile`,
+        title: `You have successfully initiated run of the ${profile.title} security profile`,
         message,
         actions: [
           {
             label: "View details",
-            onClick: () => openActivityDetails(activity),
+            onClick: () => {
+              openActivityDetails(activity);
+            },
           },
         ],
       });
@@ -169,11 +171,13 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       }
 
       setSidePanelContent(
-        `Run "${profile.name}" profile`,
+        `Run "${profile.title}" profile`,
         <Suspense fallback={<LoadingState />}>
           <SecurityProfileRunFixForm
             profile={profile}
-            onSubmit={async () => await handleRunSecurityProfile(profile)}
+            onSubmit={async () => {
+              await handleRunSecurityProfile(profile);
+            }}
           />
         </Suspense>,
       );
@@ -181,7 +185,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
 
     viewDetails: () => {
       setSidePanelContent(
-        profile.name,
+        profile.title,
         <Suspense fallback={<LoadingState />}>
           <SecurityProfileDetails
             actions={actions(profile)}
@@ -206,7 +210,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             className={`${classes.ellipsisButton} u-no-margin--bottom u-no-padding--top`}
             onClick={actions(profile).viewDetails}
           >
-            {profile.name}
+            {profile.title}
           </Button>
         ),
       },
