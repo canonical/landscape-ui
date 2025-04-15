@@ -217,13 +217,14 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             {
               children: (
                 <>
-                  <Icon name="archive" />
+                  <Icon name="archive--negative" />
                   <span>Archive</span>
                 </>
               ),
               hasIcon: true,
               onClick: actions(profile).archive,
               disabled: profile.archived,
+              className: classes.negative,
             },
           ];
 

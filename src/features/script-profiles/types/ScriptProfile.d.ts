@@ -19,7 +19,7 @@ export interface ScriptProfile extends Record<string, unknown> {
   created_at: string;
   created_by: { name: string; id: number } | null;
   id: number;
-  modified_at: string;
+  last_edited_at: string;
   script_id: number;
   tags: string[];
   time_limit: number;

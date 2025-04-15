@@ -1,3 +1,4 @@
+@import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
 .actions {
@@ -12,4 +13,8 @@
 .toggleButton {
   margin-bottom: 0;
   padding: 0 $sph--x-small;
+}
+
+.negative {
+  color: $color-negative;
 }

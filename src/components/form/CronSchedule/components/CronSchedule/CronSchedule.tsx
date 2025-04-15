@@ -5,51 +5,42 @@ import { getCronPhrase } from "./helpers";
 
 type CronScheduleProps = ComponentProps<typeof Input> &
   Required<Pick<ComponentProps<typeof Input>, "value">> & {
-    touched?: boolean;
+    readonly touched?: boolean;
   };
 
 const CronSchedule: FC<CronScheduleProps> = ({ touched, value, ...props }) => {
   const id = useId();
 
+  let help = "";
+  let errorMessage = "";
+
   try {
     const phrase = getCronPhrase(value.toString());
-    const help = `"${phrase.charAt(0).toUpperCase()}${phrase.slice(1)}"`;
-
-    return (
-      <>
-        <label htmlFor={id}>* Schedule</label>
-        <CronHelp />
-
-        <Input
-          id={id}
-          type="text"
-          {...props}
-          help={help}
-          value={value}
-          required
-        />
-      </>
-    );
+    help = `"${phrase.charAt(0).toUpperCase()}${phrase.slice(1)}"`;
   } catch (error) {
     if (!(error instanceof Error)) {
       return;
     }
 
-    return (
-      <Input
-        type="text"
-        label={
-          <>
-            Schedule
-            <CronHelp />
-          </>
-        }
-        {...props}
-        error={touched && error.message}
-        value={value}
-      />
-    );
+    errorMessage = error.message;
   }
+
+  return (
+    <>
+      <label htmlFor={id}>* Schedule</label>
+      <CronHelp />
+
+      <Input
+        id={id}
+        type="text"
+        {...props}
+        help={help}
+        value={value}
+        error={touched && errorMessage}
+        required
+      />
+    </>
+  );
 };
 
 export default CronSchedule;

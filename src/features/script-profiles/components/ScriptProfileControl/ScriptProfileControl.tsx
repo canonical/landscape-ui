@@ -1,4 +1,6 @@
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { Button, Icon, Notification } from "@canonical/react-components";
+import moment from "moment";
 import type { FC } from "react";
 import type { ScriptProfile } from "../../types";
 
@@ -17,7 +19,8 @@ const ScriptProfileControl: FC<ScriptProfileControlProps> = ({
   if (profile.archived) {
     return (
       <Notification inline title="Profile archived:" severity="caution">
-        The profile was archived on {profile.modified_at} GMT.
+        The profile was archived on{" "}
+        {moment(profile.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)} GMT.
       </Notification>
     );
   }
