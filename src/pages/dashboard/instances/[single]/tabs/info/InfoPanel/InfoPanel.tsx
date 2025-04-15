@@ -179,6 +179,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     try {
       const { data: sanitizeActivity } = await sanitizeInstance({
         computer_id: instance.id,
+        computer_title: instance.title,
       });
 
       notify.success({

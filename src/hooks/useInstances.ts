@@ -101,6 +101,7 @@ interface RenameInstancesParams {
 
 export interface SanitizeInstancesParams {
   computer_id: number;
+  computer_title: string;
 }
 
 export default function useInstances() {
@@ -317,8 +318,8 @@ export default function useInstances() {
     SanitizeInstancesParams
   >({
     mutationKey: ["instance", "sanitize"],
-    mutationFn: ({ computer_id }) =>
-      authFetch.post(`computers/${computer_id}/sanitize`),
+    mutationFn: ({ computer_id, ...params }) =>
+      authFetch.post(`computers/${computer_id}/sanitize`, params),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
 

@@ -47,6 +47,7 @@ const EmployeeInstancesTableContextualMenu: FC<
         try {
           const { data: sanitizeActivity } = await sanitizeInstanceMutation({
             computer_id: instance.id,
+            computer_title: instance.title,
           });
 
           notify.success({
