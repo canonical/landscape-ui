@@ -1,8 +1,7 @@
-import { API_URL, API_URL_OLD } from "@/constants";
+import { API_URL, API_URL_OLD, MSW_ENDPOINTS_TO_INTERCEPT } from "@/constants";
 import type { RequestHandler } from "msw";
 import { http, HttpResponse, passthrough } from "msw";
 import { setupWorker } from "msw/browser";
-import endpointsToIntercept from "./endpointsToIntercept.json";
 import fallbackHandlers from "./server/handlers";
 
 const handlers: RequestHandler[] = [
@@ -12,8 +11,9 @@ const handlers: RequestHandler[] = [
     }
 
     if (
-      endpointsToIntercept.some((url) => request.url.includes(url)) &&
-      request.method === "GET"
+      MSW_ENDPOINTS_TO_INTERCEPT.some((url: string) =>
+        request.url.includes(url),
+      )
     ) {
       return;
     }

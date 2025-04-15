@@ -99,7 +99,7 @@ const TableFilter: FC<TableFilterProps> = ({
       >
         {onSearch && <SearchBoxWithForm onSearch={onSearch} />}
         <ul className={classes.list}>
-          {options.map(({ label, value, group }, index) => (
+          {options.map(({ label: optionLabel, value, group }, index) => (
             <li
               key={value}
               className={classNames({
@@ -113,7 +113,7 @@ const TableFilter: FC<TableFilterProps> = ({
               {otherProps.multiple && (
                 <Input
                   type="checkbox"
-                  label={label}
+                  label={optionLabel}
                   labelClassName="u-no-padding--top u-no-margin--bottom"
                   value={value}
                   onChange={handleToggle(otherProps)}
@@ -128,33 +128,41 @@ const TableFilter: FC<TableFilterProps> = ({
                   type="button"
                   appearance="base"
                   className={classes.button}
-                  onClick={() => otherProps.onItemSelect(value)}
+                  onClick={() => {
+                    otherProps.onItemSelect(value);
+                  }}
                   disabled={disabledOptions?.some(
                     (option) => option.value === value,
                   )}
                 >
-                  {label}
+                  {optionLabel}
                 </Button>
               )}
               {!otherProps.multiple && otherProps.selectedItem === value && (
-                <span className={classes.selected}>{label}</span>
+                <span className={classes.selected}>{optionLabel}</span>
               )}
             </li>
           ))}
         </ul>
       </span>
       {otherProps.multiple && (
-        <span className={classes.footer}>
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top"
-            onClick={() =>
-              otherProps.onItemsSelect(options.map(({ value }) => value))
-            }
-          >
-            Select all
-          </Button>
+        <span
+          className={classNames(classes.footer, {
+            [classes.hideSelectAllButton]: otherProps.hideSelectAllButton,
+          })}
+        >
+          {otherProps.hideSelectAllButton ? null : (
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top"
+              onClick={() => {
+                otherProps.onItemsSelect(options.map(({ value }) => value));
+              }}
+            >
+              Select all
+            </Button>
+          )}
           {otherProps.showSelectedItemCount ? (
             <span className="u-text--muted">{`${otherProps.selectedItems.length} of ${options.length} selected`}</span>
           ) : (
@@ -162,7 +170,9 @@ const TableFilter: FC<TableFilterProps> = ({
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top"
-              onClick={() => otherProps.onItemsSelect([])}
+              onClick={() => {
+                otherProps.onItemsSelect([]);
+              }}
             >
               Clear
             </Button>

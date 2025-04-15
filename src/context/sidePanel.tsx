@@ -84,11 +84,11 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   return (
     <SidePanelContext.Provider
       value={{
-        changeSidePanelSize: (s) => {
-          setSize(s);
+        changeSidePanelSize: (newSize) => {
+          setSize(newSize);
         },
-        changeSidePanelTitleLabel: (t) => {
-          setTitleLabel(t);
+        changeSidePanelTitleLabel: (newTitle) => {
+          setTitleLabel(newTitle);
         },
         closeSidePanel: handleSidePanelClose,
         setSidePanelContent: handleContentChange,
@@ -105,7 +105,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
         })}
       >
         {open && (
-          <AppErrorBoundary>
+          <>
             <div className={classNames("p-panel__header", classes.header)}>
               <h3 className="p-panel__title">{title}</h3>
               <p className="u-text--muted">
@@ -127,10 +127,10 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
                 {notify.notification?.type === "negative" && (
                   <AppNotification notify={notify} isSidePanelOpen={true} />
                 )}
-                {body}
+                <AppErrorBoundary>{body}</AppErrorBoundary>
               </div>
             </div>
-          </AppErrorBoundary>
+          </>
         )}
       </aside>
     </SidePanelContext.Provider>

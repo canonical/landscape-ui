@@ -8,6 +8,7 @@
   border-top-color: $colors--light-theme--border-default;
   border-width: 1px;
   margin-bottom: $input-margin-bottom;
+  min-height: 16rem;
 
   &.error {
     border-bottom-color: map-get($states, "error");
@@ -16,4 +17,16 @@
   &:not(.error) {
     border-bottom-color: $colors--light-theme--border-high-contrast;
   }
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }

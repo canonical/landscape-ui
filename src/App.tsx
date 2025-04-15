@@ -72,6 +72,9 @@ const AccessGroupsPage = lazy(
 const AdministratorsPage = lazy(
   async () => import("@/pages/dashboard/settings/administrators"),
 );
+const EmployeesPage = lazy(
+  async () => import("@/pages/dashboard/settings/employees"),
+);
 const RolesPage = lazy(async () => import("@/pages/dashboard/settings/roles"));
 const EventsLogPage = lazy(async () => import("@/pages/dashboard/events-log"));
 const AlertNotificationsPage = lazy(
@@ -243,6 +246,7 @@ const App: FC = () => {
                   path="settings/administrators"
                   element={<AdministratorsPage />}
                 />
+                <Route path="settings/employees" element={<EmployeesPage />} />
                 <Route
                   path="settings/access-groups"
                   element={<AccessGroupsPage />}

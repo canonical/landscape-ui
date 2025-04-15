@@ -11,7 +11,7 @@ import { GPGKeysList, useGPGKeys } from "@/features/gpg-keys";
 import { useLocation, useNavigate } from "react-router";
 import useEnv from "@/hooks/useEnv";
 
-const NewGPGKeyForm = lazy(() =>
+const NewGPGKeyForm = lazy(async () =>
   import("@/features/gpg-keys").then((module) => ({
     default: module.NewGPGKeyForm,
   })),

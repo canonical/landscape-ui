@@ -4,8 +4,8 @@ import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./SidePanelFormButtons.module.scss";
 
 interface SidePanelFormButtonsProps {
-  readonly submitButtonDisabled: boolean;
-  readonly submitButtonText: string;
+  readonly submitButtonDisabled?: boolean;
+  readonly submitButtonText?: string;
   readonly submitButtonAppearance?: "positive" | "negative";
   readonly submitButtonAriaLabel?: string;
   readonly submitButtonLoading?: boolean;
@@ -14,11 +14,15 @@ interface SidePanelFormButtonsProps {
     event: SyntheticEvent,
   ) => Promise<void> | void;
   readonly cancelButtonDisabled?: boolean;
+  readonly hasActionButtons?: boolean;
+  readonly hasBackButton?: boolean;
   readonly onBackButtonPress?: () => void;
   readonly onSubmit?: (event: SyntheticEvent) => Promise<void> | void;
 }
 
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
+  hasActionButtons = true,
+  hasBackButton,
   submitButtonDisabled,
   submitButtonLoading = false,
   submitButtonText,
@@ -33,52 +37,51 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   const { closeSidePanel } = useSidePanel();
   return (
     <div className={classes.buttons}>
-      <div>
-        {onBackButtonPress && (
-          <Button
-            hasIcon
-            className="u-no-margin--bottom"
-            appearance="base"
-            type="button"
-            onClick={onBackButtonPress}
-          >
-            <Icon name="chevron-left" />
-            <span>Back</span>
-          </Button>
-        )}
-      </div>
-
-      <div>
+      {hasBackButton && (
         <Button
+          hasIcon
           className="u-no-margin--bottom"
-          type="button"
           appearance="base"
-          onClick={closeSidePanel}
-          disabled={cancelButtonDisabled}
+          type="button"
+          onClick={onBackButtonPress}
         >
-          Cancel
+          <Icon name="chevron-left" />
+          <span>Back</span>
         </Button>
-        {secondaryActionButtonTitle && secondaryActionButtonSubmit && (
+      )}
+      {hasActionButtons && (
+        <div className={classes.actionButtons}>
           <Button
-            type="button"
             className="u-no-margin--bottom"
-            onClick={secondaryActionButtonSubmit}
+            type="button"
+            appearance="base"
+            onClick={closeSidePanel}
+            disabled={cancelButtonDisabled}
           >
-            {secondaryActionButtonTitle}
+            Cancel
           </Button>
-        )}
-        <ActionButton
-          className="u-no-margin--bottom"
-          type={onSubmit ? "button" : "submit"}
-          onClick={onSubmit}
-          appearance={submitButtonAppearance}
-          disabled={submitButtonDisabled}
-          aria-label={submitButtonAriaLabel}
-          loading={submitButtonLoading}
-        >
-          {submitButtonText}
-        </ActionButton>
-      </div>
+          {secondaryActionButtonTitle && secondaryActionButtonSubmit && (
+            <Button
+              type="button"
+              className="u-no-margin--bottom"
+              onClick={secondaryActionButtonSubmit}
+            >
+              {secondaryActionButtonTitle}
+            </Button>
+          )}
+          <ActionButton
+            className="u-no-margin--bottom"
+            type={onSubmit ? "button" : "submit"}
+            onClick={onSubmit}
+            appearance={submitButtonAppearance}
+            disabled={submitButtonDisabled}
+            aria-label={submitButtonAriaLabel}
+            loading={submitButtonLoading}
+          >
+            {submitButtonText}
+          </ActionButton>
+        </div>
+      )}
     </div>
   );
 };

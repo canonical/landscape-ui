@@ -1,4 +1,4 @@
-import type { CommonPackagesActionParams } from "../hooks";
+import type { CommonPackagesActionParams } from "../api";
 
 export interface FormProps
   extends Pick<

@@ -2,7 +2,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type {
   QueryFnType,
   QueryFnTypeWithRequiredParam,
@@ -47,7 +47,7 @@ export default function useAuthHandle() {
       AxiosError<ApiError>
     >({
       queryKey: ["supportedOidcProviders"],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get("/auth/supported-providers", { params: queryParams }),
       ...config,
     });
@@ -58,7 +58,7 @@ export default function useAuthHandle() {
   > = ({ providerId, ...queryParams }, config = {}) =>
     useQuery<AxiosResponse<SingleIdentityProvider>, AxiosError<ApiError>>({
       queryKey: ["loginMethods", { loginType: "oidcProviders", providerId }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(`/auth/oidc-providers/${providerId}`, {
           params: queryParams,
         }),
@@ -70,8 +70,9 @@ export default function useAuthHandle() {
     AxiosError<ApiError>,
     AddProviderParams
   >({
-    mutationFn: (params) => authFetch.post(`/auth/oidc-providers`, params),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetch.post(`/auth/oidc-providers`, params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["loginMethods"] }),
   });
 
@@ -80,9 +81,9 @@ export default function useAuthHandle() {
     AxiosError<ApiError>,
     UpdateProviderParams
   >({
-    mutationFn: ({ providerId, ...params }) =>
+    mutationFn: async ({ providerId, ...params }) =>
       authFetch.patch(`/auth/oidc-providers/${providerId}`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["loginMethods"] }),
   });
 
@@ -91,9 +92,9 @@ export default function useAuthHandle() {
     AxiosError<ApiError>,
     SingleProviderParams
   >({
-    mutationFn: ({ providerId }) =>
+    mutationFn: async ({ providerId }) =>
       authFetch.delete(`/auth/oidc-providers/${providerId}`),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["loginMethods"] }),
   });
 
@@ -102,8 +103,8 @@ export default function useAuthHandle() {
     AxiosError<ApiError>,
     { ubuntu_one: boolean }
   >({
-    mutationFn: (params) => authFetch.patch("preferences", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.patch("preferences", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["loginMethods"] }),
   });
 
@@ -113,7 +114,7 @@ export default function useAuthHandle() {
   > = (queryParams = {}, config = {}) =>
     useQuery({
       queryKey: ["classicDashboardUrl"],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get<{ url: string }>("classic_dashboard_url", {
           params: queryParams,
         }),
@@ -125,15 +126,15 @@ export default function useAuthHandle() {
     AxiosError<ApiError>,
     SwitchAccountParams
   >({
-    mutationFn: (params) => authFetch.post("switch-account", params),
-    onSuccess: () => {
+    mutationFn: async (params) => authFetch.post("switch-account", params),
+    onSuccess: async () => {
       queryClient.removeQueries();
       return queryClient.refetchQueries();
     },
   });
 
   const handleLogoutQuery = useMutation({
-    mutationFn: () => authFetch.post("logout"),
+    mutationFn: async () => authFetch.post("logout"),
   });
 
   return {

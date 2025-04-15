@@ -93,7 +93,6 @@ const SecurityProfilesPage: FC = () => {
           cta={[addButton]}
           title="You don't have any security profiles yet"
         />
-        );
       </PageMain>
     );
   }

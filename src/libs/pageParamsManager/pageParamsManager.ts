@@ -159,7 +159,7 @@ class PageParamsManager {
   public getParamDefinition(
     paramKey: keyof PageParams,
   ): ParamDefinition<keyof PageParams> {
-    const def = this.config.find((def) => def.urlParam === paramKey);
+    const def = this.config.find((item) => item.urlParam === paramKey);
 
     if (!def) {
       throw new Error(`No definition found for param key: ${paramKey}`);

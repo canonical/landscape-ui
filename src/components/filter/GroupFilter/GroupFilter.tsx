@@ -23,7 +23,9 @@ const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
       hasToggleIcon
       hasBadge
       options={options}
-      onItemSelect={(item) => setPageParams({ groupBy: item })}
+      onItemSelect={(item) => {
+        setPageParams({ groupBy: item });
+      }}
       selectedItem={groupBy}
     />
   );

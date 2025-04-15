@@ -50,7 +50,7 @@ describe("PendingInstanceList", () => {
         selectedIds={[]}
       />,
     );
-    const checkbox = screen.getAllByRole("checkbox")[1]; // Get the first instance checkbox (if index 0 is "select all")
+    const [, checkbox] = screen.getAllByRole("checkbox"); // Get the first instance checkbox (if index 0 is "select all")
     await user.click(checkbox);
     expect(mockOnSelectedIdsChange).toHaveBeenCalledWith([
       pendingInstances[0].id,

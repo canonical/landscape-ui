@@ -1,3 +1,4 @@
+import useNotify from "@/hooks/useNotify";
 import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
@@ -5,11 +6,10 @@ import {
   Icon,
 } from "@canonical/react-components";
 import { useState, type FC } from "react";
+import { useArchiveSecurityProfile } from "../../api";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 import classes from "./SecurityProfileListContextualMenu.module.scss";
-import useNotify from "@/hooks/useNotify";
-import { useArchiveSecurityProfile } from "../../api";
 
 interface SecurityProfileListContextualMenuProps {
   readonly actions: SecurityProfileActions;
@@ -105,7 +105,7 @@ const SecurityProfileListContextualMenu: FC<
     {
       children: (
         <>
-          <Icon name="archive-red" />
+          <Icon name="archive--negative" />
           <span className={classes.colorNegative}>Archive</span>
         </>
       ),

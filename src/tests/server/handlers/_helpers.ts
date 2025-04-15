@@ -1,4 +1,4 @@
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { HttpHandler } from "msw";
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
@@ -25,7 +25,10 @@ export function generateFilteredResponse<D>(
   return data.filter((item) => {
     for (const field of searchFields) {
       const value = getNestedProperty(item, field);
-      if (value && value.toString().includes(search)) {
+      if (
+        value &&
+        value.toString().toLowerCase().includes(search.toLowerCase())
+      ) {
         return true;
       }
     }
@@ -42,9 +45,11 @@ export function generatePaginatedResponse<D>({
   searchFields,
 }: GeneratePaginatedResponseProps<D>): ApiPaginatedResponse<D> {
   let results = data;
+  let count = data.length;
 
   if (search && searchFields) {
     results = generateFilteredResponse(results, search, searchFields);
+    count = results.length;
   }
 
   if (undefined !== offset && limit) {
@@ -53,7 +58,7 @@ export function generatePaginatedResponse<D>({
 
   return {
     results,
-    count: data.length,
+    count,
     next: null,
     previous: null,
   };
@@ -84,7 +89,7 @@ export function generateGetListEndpoint<T>({
 
       if (
         !endpointStatus.path ||
-        (endpointStatus.path && endpointStatus.path !== path)
+        (endpointStatus.path && endpointStatus.path === path)
       ) {
         if (endpointStatus.status === "error") {
           throw new HttpResponse(null, { status: 500 });
@@ -109,3 +114,17 @@ export function generateGetListEndpoint<T>({
     },
   );
 }
+
+export const parseArray = (paramValue: string | null): string[] => {
+  if (!paramValue) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(paramValue);
+    return Array.isArray(parsed) ? parsed : [paramValue];
+  } catch {
+    const ids = paramValue.split(",").filter((id) => id.trim() !== "");
+    return ids.length > 0 ? ids : [];
+  }
+};

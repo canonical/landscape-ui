@@ -3,8 +3,8 @@ import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Usn, UsnPackage } from "@/types/Usn";
 
 export interface GetUsnsParams {
@@ -58,7 +58,7 @@ export default function useUsns() {
       AxiosError<ApiError>
     >({
       queryKey: ["usns", queryParams],
-      queryFn: () => authFetch.get("usns", { params: queryParams }),
+      queryFn: async () => authFetch.get("usns", { params: queryParams }),
       ...config,
     });
   };
@@ -72,7 +72,8 @@ export default function useUsns() {
   ) => {
     return useQuery<AxiosResponse<UsnPackage[]>, AxiosError<ApiError>>({
       queryKey: ["usnPackages", { usn, ...queryParams }],
-      queryFn: () => authFetch.get(`usns/${usn}`, { params: queryParams }),
+      queryFn: async () =>
+        authFetch.get(`usns/${usn}`, { params: queryParams }),
       ...config,
     });
   };
@@ -82,9 +83,9 @@ export default function useUsns() {
     AxiosError<ApiError>,
     UpgradeInstanceUsnsParams
   >({
-    mutationFn: ({ instanceId, ...params }) =>
+    mutationFn: async ({ instanceId, ...params }) =>
       authFetch.post(`/computers/${instanceId}/usns/upgrade-packages`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["usns"] }),
         queryClient.invalidateQueries({ queryKey: ["activities"] }),
@@ -96,9 +97,9 @@ export default function useUsns() {
     AxiosError<ApiError>,
     RemoveUsnPackagesParams
   >({
-    mutationFn: ({ instanceId, ...params }) =>
+    mutationFn: async ({ instanceId, ...params }) =>
       authFetch.post(`/computers/${instanceId}/usns/remove-packages`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["usns"] }),
         queryClient.invalidateQueries({ queryKey: ["activities"] }),
@@ -110,9 +111,9 @@ export default function useUsns() {
     AxiosError<ApiError>,
     UpgradeUsnsParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetch.post("/computers/usns/upgrade-packages", params),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["usns"] }),
         queryClient.invalidateQueries({ queryKey: ["activities"] }),

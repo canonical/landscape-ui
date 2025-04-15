@@ -1,11 +1,11 @@
 import type { QueryFnType } from "@/types/QueryFnType";
 import type { AxiosError, AxiosResponse } from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import useFetch from "./useFetch";
 import type { GroupsResponse, User } from "@/types/User";
 import type { Activity } from "@/features/activities";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 
 interface GetUsersParams {
   computer_id: number;
@@ -79,7 +79,7 @@ export default function useUsers() {
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<ApiPaginatedResponse<User>>, AxiosError<ApiError>>({
       queryKey: ["users", { ...queryParams }],
-      queryFn: () => authFetch.get("users", { params: queryParams }),
+      queryFn: async () => authFetch.get("users", { params: queryParams }),
       ...config,
     });
 
@@ -89,8 +89,9 @@ export default function useUsers() {
     CreateUserParams
   >({
     mutationKey: ["users", "new"],
-    mutationFn: (params) => authFetch.post("users", params),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+    mutationFn: async (params) => authFetch.post("users", params),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const editUserQuery = useMutation<
@@ -99,8 +100,9 @@ export default function useUsers() {
     EditUserParams
   >({
     mutationKey: ["users", "edit"],
-    mutationFn: (params) => authFetch.put("users", params),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+    mutationFn: async (params) => authFetch.put("users", params),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const removeUserQuery = useMutation<
@@ -109,8 +111,9 @@ export default function useUsers() {
     RemoveUserParams
   >({
     mutationKey: ["users", "remove"],
-    mutationFn: (params) => authFetch.delete("users", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+    mutationFn: async (params) => authFetch.delete("users", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const lockUserQuery = useMutation<
@@ -119,8 +122,9 @@ export default function useUsers() {
     LockUserParams
   >({
     mutationKey: ["users", "lock"],
-    mutationFn: (params) => authFetch.post("users/lock", params),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+    mutationFn: async (params) => authFetch.post("users/lock", params),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const unlockUserQuery = useMutation<
@@ -129,8 +133,9 @@ export default function useUsers() {
     UnlockUserParams
   >({
     mutationKey: ["users", "unlock"],
-    mutationFn: (params) => authFetch.post("users/unlock", params),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+    mutationFn: async (params) => authFetch.post("users/unlock", params),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const getGroupsQuery: QueryFnType<
@@ -139,7 +144,7 @@ export default function useUsers() {
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<GroupsResponse>, AxiosError<ApiError>>({
       queryKey: ["groups", queryParams?.computer_id ?? ""],
-      queryFn: () => {
+      queryFn: async () => {
         if (!queryParams) {
           throw new Error("Missing required parameters");
         }
@@ -159,7 +164,7 @@ export default function useUsers() {
         queryParams?.computer_id ?? "",
         queryParams?.username ?? "",
       ],
-      queryFn: () => {
+      queryFn: async () => {
         if (!queryParams) {
           throw new Error("Missing required parameters");
         }
@@ -177,13 +182,14 @@ export default function useUsers() {
     GroupMutationQueryParams
   >({
     mutationKey: ["groups", "add"],
-    mutationFn: (params) => {
+    mutationFn: async (params) => {
       return authFetch.post(
         `computers/${params.computer_id}/usergroups/update_bulk`,
         params,
       );
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   const removeUserFromGroupQuery = useMutation<
@@ -192,13 +198,14 @@ export default function useUsers() {
     GroupMutationQueryParams
   >({
     mutationKey: ["groups", "remove"],
-    mutationFn: (params) => {
+    mutationFn: async (params) => {
       return authFetch.post(
         `computers/${params.computer_id}/usergroups/update_bulk`,
         params,
       );
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["users"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["users"] }),
   });
 
   return {

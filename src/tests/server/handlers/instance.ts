@@ -1,15 +1,20 @@
-import { http, HttpResponse } from "msw";
+import type { Activity } from "@/features/activities";
+import type {
+  GetInstancesParams,
+  RemoveInstances,
+  SanitizeInstancesParams,
+} from "@/hooks/useInstances";
 import { API_URL, API_URL_OLD, COMMON_NUMBERS } from "@/constants";
-import { userGroups } from "@/tests/mocks/userGroup";
-import type { GroupsResponse } from "@/types/User";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
-import type { GetInstancesParams } from "@/hooks/useInstances";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import type { Instance, PendingInstance } from "@/types/Instance";
-import { generatePaginatedResponse, isAction } from "./_helpers";
-import { instances, pendingInstances } from "@/tests/mocks/instance";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
+import { instances, pendingInstances } from "@/tests/mocks/instance";
+import { userGroups } from "@/tests/mocks/userGroup";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { Instance, PendingInstance } from "@/types/Instance";
+import type { GroupsResponse } from "@/types/User";
+import { delay, http, HttpResponse } from "msw";
+import { generatePaginatedResponse, isAction } from "./_helpers";
 
 export default [
   http.get<never, GetInstancesParams, ApiPaginatedResponse<Instance>>(
@@ -66,4 +71,23 @@ export default [
 
     return HttpResponse.json(activities[COMMON_NUMBERS.ZERO]);
   }),
+
+  http.post<never, SanitizeInstancesParams, Activity>(
+    `${API_URL}computers/:computerId/sanitize`,
+    async () => {
+      return HttpResponse.json(activities[COMMON_NUMBERS.ZERO]);
+    },
+  ),
+
+  http.get<never, RemoveInstances, Instance[]>(
+    API_URL_OLD,
+    async ({ request }) => {
+      if (!isAction(request, ["RemoveComputers"])) {
+        return;
+      }
+      await delay();
+
+      return HttpResponse.json(instances);
+    },
+  ),
 ];

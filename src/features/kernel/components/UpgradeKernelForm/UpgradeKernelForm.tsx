@@ -83,6 +83,12 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
           id: Number(instanceId),
           kernel_package_id: Number(values.new_kernel_version_id),
           reboot_after: values.reboot_after,
+          deliver_after: values.deliver_immediately
+            ? undefined
+            : values.deliver_after,
+          deliver_delay_window: values.randomize_delivery
+            ? values.deliver_delay_window
+            : undefined,
         });
 
         closeSidePanel();
@@ -97,7 +103,9 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
           actions: [
             {
               label: "View details",
-              onClick: () => openActivityDetails(activity),
+              onClick: () => {
+                openActivityDetails(activity);
+              },
             },
           ],
         });
@@ -257,7 +265,9 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
             confirmButtonLoading: isUpgradingKernel,
             confirmButtonDisabled: isUpgradingKernel,
             type: "submit",
-            onConfirm: () => formik.handleSubmit(),
+            onConfirm: () => {
+              formik.handleSubmit();
+            },
           }}
         >
           Upgrade kernel
