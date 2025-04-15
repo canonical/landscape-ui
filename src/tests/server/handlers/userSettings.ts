@@ -5,7 +5,7 @@ import { http, HttpResponse } from "msw";
 export default [
   http.post(`${API_URL}person`, async () => {
     const endpointStatus = getEndpointStatus();
-    if (endpointStatus === "error") {
+    if (endpointStatus.status === "error") {
       return HttpResponse.json(
         {
           error: "InternalServerError",

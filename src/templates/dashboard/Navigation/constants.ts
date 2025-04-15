@@ -58,11 +58,11 @@ export const MENU_ITEMS: MenuItem[] = [
     label: "Repositories",
     path: "/repositories",
     icon: "fork",
+    env: "selfHosted",
     items: [
       {
         label: "Mirrors",
         path: "/repositories/mirrors",
-        env: "selfHosted",
       },
       {
         label: "GPG Keys",
@@ -88,6 +88,10 @@ export const MENU_ITEMS: MenuItem[] = [
         path: "/settings/administrators",
       },
       {
+        label: "Employees",
+        path: "/settings/employees",
+      },
+      {
         label: "Roles",
         path: "/settings/roles",
       },
@@ -98,6 +102,11 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "Identity providers",
         path: "/settings/identity-providers",
+      },
+      {
+        label: "GPG Keys",
+        path: "/repositories/gpg-keys",
+        env: "saas",
       },
     ],
   },

@@ -4,7 +4,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { EditPackageProfileParams } from "../../hooks";
 import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";

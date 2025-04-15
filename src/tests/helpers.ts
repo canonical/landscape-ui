@@ -1,20 +1,23 @@
 import { expect } from "vitest";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
+import { COMMON_NUMBERS } from "@/constants";
 
-export const expectLoadingState = async () => {
+export const expectLoadingState = async (): Promise<void> => {
   const loadingSpinner = await screen.findByRole("status");
   expect(loadingSpinner).toHaveTextContent("Loading...");
   await waitForElementToBeRemoved(loadingSpinner);
 };
 
-export const expectErrorNotification = async () => {
+export const expectErrorNotification = async (): Promise<void> => {
   const errorNotificationCount = (await screen.findAllByText(/error/i)).length;
-  expect(errorNotificationCount).toBeGreaterThanOrEqual(1);
+  expect(errorNotificationCount).toBeGreaterThanOrEqual(COMMON_NUMBERS.ONE);
 };
 
 const originalMatchMedia = window.matchMedia;
 
-const mockMatchMedia = (queries: { query: string; matches: boolean }[]) => {
+const mockMatchMedia = (
+  queries: { query: string; matches: boolean }[],
+): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: (q: string) => {
@@ -33,7 +36,37 @@ const mockMatchMedia = (queries: { query: string; matches: boolean }[]) => {
   });
 };
 
-export const setScreenSize = (size: "small" | "large") => {
+const originalGetBoundingClientRect = Range.prototype.getBoundingClientRect;
+
+export const mockRangeBoundingClientRect = (
+  mockFn: () => DOMRect = () => ({
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    bottom: 10,
+    right: 100,
+    width: 100,
+    height: 10,
+    toJSON: () => null,
+  }),
+): void => {
+  Object.defineProperty(Range.prototype, "getBoundingClientRect", {
+    configurable: true,
+    writable: true,
+    value: mockFn,
+  });
+};
+
+export const restoreRangeBoundingClientRect = (): void => {
+  if (originalGetBoundingClientRect) {
+    Range.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  } else {
+    delete (Range.prototype as Partial<Range>).getBoundingClientRect;
+  }
+};
+
+export const setScreenSize = (size: "small" | "large"): void => {
   if (size === "small") {
     mockMatchMedia([{ query: "(min-width: 620px)", matches: false }]);
   } else {
@@ -41,6 +74,6 @@ export const setScreenSize = (size: "small" | "large") => {
   }
 };
 
-export function resetScreenSize() {
+export function resetScreenSize(): void {
   window.matchMedia = originalMatchMedia;
 }

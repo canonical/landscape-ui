@@ -42,18 +42,26 @@ const PackagesInstallForm: FC = () => {
         title: `You queued ${selected.length === 1 ? `package ${selected[0].name}` : `${selected.length} packages`} to be installed.`,
         message: `${selected.length === 1 ? `${selected[0].name} package` : `${selected.length} selected packages`} will be installed and are queued in Activities.`,
         actions: [
-          { label: "Details", onClick: () => openActivityDetails(activity) },
+          {
+            label: "Details",
+            onClick: () => {
+              openActivityDetails(activity);
+            },
+          },
         ],
       });
     } catch (error) {
       debug(error);
     }
   };
+
   return (
     <>
       <PackageDropdownSearch
         selectedItems={selected}
-        setSelectedItems={(items) => setSelected(items)}
+        setSelectedItems={(items) => {
+          setSelected(items);
+        }}
       />
       <SidePanelFormButtons
         submitButtonDisabled={

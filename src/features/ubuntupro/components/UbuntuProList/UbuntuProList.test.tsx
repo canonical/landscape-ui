@@ -54,9 +54,7 @@ describe("Ubuntu Pro List", () => {
       name: /status/i,
     });
 
-    const iconElement = enabledServiceCellIcon.querySelector("i");
-    expect(iconElement).toBeInTheDocument();
-    expect(iconElement).toHaveClass("p-icon--status-succeeded-small");
+    expect(enabledServiceCellIcon).toHaveIcon("status-succeeded-small");
   });
 
   it("shows disabled icon status for a disabled service", () => {
@@ -74,8 +72,6 @@ describe("Ubuntu Pro List", () => {
       name: /status/i,
     });
 
-    const iconElement = disabledServiceCellIcon.querySelector("i");
-    expect(iconElement).toBeInTheDocument();
-    expect(iconElement).toHaveClass("p-icon--status-failed-small");
+    expect(disabledServiceCellIcon).toHaveIcon("status-failed-small");
   });
 });

@@ -25,6 +25,7 @@ import {
   VALIDATION_SCHEMA,
 } from "./constants";
 import { getNotification, getScriptOptions } from "./helpers";
+import { DEFAULT_SCRIPT } from "../../constants";
 
 interface RunInstanceScriptFormProps {
   readonly query: string;
@@ -47,6 +48,9 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {
   const { mutateAsync: createScript } = createScriptQuery;
   const { mutateAsync: executeScript } = executeScriptQuery;
   const { mutateAsync: removeScript } = removeScriptQuery;
+
+  const { data: getScriptsQueryResult } = getScriptsQuery();
+  const scriptOptions = getScriptOptions(getScriptsQueryResult?.data.results);
 
   const handleSubmit = async (values: RunInstanceScriptFormValues) => {
     try {
@@ -74,10 +78,10 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {
 
         if (attachments.length > 0) {
           const buffers = await Promise.all(
-            attachments.map((file) => file.arrayBuffer()),
+            attachments.map(async (file) => file.arrayBuffer()),
           );
 
-          const promises = attachments.map(({ name }, index) =>
+          const promises = attachments.map(async ({ name }, index) =>
             createScriptAttachment({
               script_id: data.id,
               file: `${name}$$${Buffer.from(buffers[index]).toString("base64")}`,
@@ -114,10 +118,6 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: handleSubmit,
   });
-
-  const { data: getScriptsQueryResult } = getScriptsQuery();
-
-  const scriptOptions = getScriptOptions(getScriptsQueryResult?.data.results);
 
   const handleScriptChange = async (event: ChangeEvent<HTMLSelectElement>) => {
     const scriptId = parseInt(event.target.value);
@@ -212,6 +212,7 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {
                 ? formik.errors.code
                 : undefined
             }
+            defaultValue={DEFAULT_SCRIPT}
           />
 
           <Select

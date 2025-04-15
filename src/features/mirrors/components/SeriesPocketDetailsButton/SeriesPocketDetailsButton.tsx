@@ -5,7 +5,7 @@ import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import type { Distribution, Pocket, Series } from "../../types";
 
-const PackageList = lazy(() => import("../PackageList"));
+const PackageList = lazy(async () => import("../PackageList"));
 
 interface SeriesPocketDetailsButtonProps {
   readonly distributionName: Distribution["name"];
@@ -20,7 +20,7 @@ const SeriesPocketDetailsButton: FC<SeriesPocketDetailsButtonProps> = ({
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleListPocket = () => {
+  const handleListPocket = (): void => {
     setSidePanelContent(
       `${seriesName} ${pocket.name}`,
       <Suspense fallback={<LoadingState />}>

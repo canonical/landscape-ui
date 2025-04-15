@@ -17,6 +17,7 @@ export interface MultipleSelectProps {
   onItemsSelect: (items: string[]) => void;
   selectedItems: string[];
   showSelectedItemCount?: boolean;
+  hideSelectAllButton?: boolean;
 }
 
 export type TableFilterProps = {

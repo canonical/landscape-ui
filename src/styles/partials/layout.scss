@@ -1,0 +1,43 @@
+.p-panel {
+  &__inner {
+    @extend %vf-grid-container-padding;
+  }
+
+  &__controls {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+  }
+}
+
+.l-aside {
+  background-color: $color-x-light;
+}
+
+.divided-blocks {
+  display: flex;
+  justify-content: end;
+
+  &__item {
+    &:not(:last-child) {
+      padding-right: $sph--small;
+    }
+
+    &:not(:first-child) {
+      &::before {
+        color: $color-mid-light;
+        content: "\007c";
+        margin-right: $sph--small;
+      }
+    }
+  }
+}
+
+.is-detached {
+  .p-tooltip__message {
+    max-width: 20rem;
+    white-space: normal;
+    width: max-content;
+    z-index: 1000;
+  }
+}

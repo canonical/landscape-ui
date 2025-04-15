@@ -3,6 +3,8 @@ export {
   OktaProviderConfiguration,
   ProviderConfiguration,
   SingleIdentityProvider,
+  IdentityProviderFeature,
+  SupportedIdentityProviderBase,
   SupportedIdentityProvider,
 } from "./IdentityProvider";
 

@@ -1,9 +1,9 @@
-import { API_URL } from "@/constants";
+import { API_URL, COMMON_NUMBERS } from "@/constants";
 import type { EventLog, GetEventsLogParams } from "@/features/events-log";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { eventsLog } from "@/tests/mocks/eventsLog";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 
 export default [
@@ -12,18 +12,19 @@ export default [
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus === "error") {
+      if (endpointStatus.status === "error") {
         throw new HttpResponse(null, { status: 500 });
       }
 
       const url = new URL(request.url);
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const limit = Number(url.searchParams.get("limit")) || 1;
+      const offset =
+        Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
+      const limit = Number(url.searchParams.get("limit")) || COMMON_NUMBERS.ONE;
       const search = url.searchParams.get("search") ?? "";
 
       return HttpResponse.json(
         generatePaginatedResponse<EventLog>({
-          data: endpointStatus === "default" ? eventsLog : [],
+          data: endpointStatus.status === "default" ? eventsLog : [],
           limit,
           offset,
           search,

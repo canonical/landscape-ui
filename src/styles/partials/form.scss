@@ -1,0 +1,25 @@
+.form-buttons {
+  margin-top: 1.5rem;
+  text-align: right;
+}
+
+.checkbox-group {
+  border: 0;
+  padding: 0;
+
+  &__inner {
+    column-count: 2;
+  }
+
+  legend {
+    margin-bottom: 0.25rem;
+  }
+
+  .p-form-validation__message {
+    margin-top: 0;
+  }
+}
+
+.checkbox-column {
+  width: $sp-x-large;
+}

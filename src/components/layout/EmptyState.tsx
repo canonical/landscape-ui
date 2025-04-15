@@ -1,12 +1,14 @@
 import type { FC, ReactNode } from "react";
 import classNames from "classnames";
 import classes from "./EmptyState.module.scss";
+import { COMMON_NUMBERS } from "@/constants";
 
 interface EmptyStateProps {
   readonly title?: string;
   readonly body?: ReactNode;
   readonly icon?: string;
   readonly cta?: ReactNode[];
+  readonly size?: "medium" | "large";
 }
 
 const EmptyState: FC<EmptyStateProps> = ({
@@ -14,11 +16,12 @@ const EmptyState: FC<EmptyStateProps> = ({
   body = "",
   icon = "",
   cta = [],
+  size = "medium",
 }) => {
   return (
     <div className="p-strip">
       <div className="u-fixed-width">
-        <div className={classes.inner}>
+        <div className={`${classes.inner} size-${size}`}>
           {icon && (
             <div>
               <span
@@ -38,7 +41,9 @@ const EmptyState: FC<EmptyStateProps> = ({
             </p>
           )}
           {body && <div>{body}</div>}
-          {cta.length > 0 && <div className={classes.cta}>{cta}</div>}
+          {cta.length > COMMON_NUMBERS.ZERO && (
+            <div className={classes.cta}>{cta}</div>
+          )}
         </div>
       </div>
     </div>

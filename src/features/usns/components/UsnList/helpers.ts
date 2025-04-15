@@ -42,6 +42,7 @@ export const handleCellProps =
     lastUsnIndex?: number;
     showSelectAllButton?: boolean;
   }) =>
+  // eslint-disable-next-line complexity
   ({ column, row: { index } }: Cell<Usn>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
@@ -110,7 +111,6 @@ export const getTableRows =
     if (!instance) {
       return;
     }
-
     ref.current = [
       ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
     ];

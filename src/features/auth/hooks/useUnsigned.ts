@@ -7,7 +7,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import axios from "axios";
 import { API_URL } from "@/constants";
 import type { AuthUser, IdentityProvider } from "../types";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { InvitationSummary } from "@/types/Invitation";
 import { useState } from "react";
 
@@ -85,7 +85,7 @@ export default function useUnsignedHooks() {
   > = (_, config = {}) =>
     useQuery({
       queryKey: ["loginMethods"],
-      queryFn: () => axiosInstance.get<LoginMethods>("login/methods"),
+      queryFn: async () => axiosInstance.get<LoginMethods>("login/methods"),
       ...config,
     });
 
@@ -94,7 +94,7 @@ export default function useUnsignedHooks() {
     AxiosError<ApiError>,
     LoginRequestParams
   >({
-    mutationFn: (params) => axiosInstance.post("login", params),
+    mutationFn: async (params) => axiosInstance.post("login", params),
   });
 
   const getOidcUrlQuery: QueryFnTypeWithRequiredParam<
@@ -103,7 +103,7 @@ export default function useUnsignedHooks() {
   > = (queryParams, config = {}) =>
     useQuery({
       queryKey: ["oidcUrl", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         axiosInstance.get<{ location: string }>("auth/start", {
           params: queryParams,
         }),
@@ -117,7 +117,7 @@ export default function useUnsignedHooks() {
   > = (queryParams, config = {}) =>
     useQuery({
       queryKey: ["authUser"],
-      queryFn: () =>
+      queryFn: async () =>
         axiosInstance.get<AuthStateResponse>("auth/handle-code", {
           params: queryParams,
         }),
@@ -131,7 +131,7 @@ export default function useUnsignedHooks() {
   > = (queryParams = {}, config = {}) =>
     useQuery({
       queryKey: ["ubuntuOneUrl", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         axiosInstance.get<{ location: string }>("auth/ubuntu-one/start", {
           params: queryParams,
         }),
@@ -144,7 +144,7 @@ export default function useUnsignedHooks() {
   > = (queryParams, config = {}) =>
     useQuery({
       queryKey: ["authUser"],
-      queryFn: () =>
+      queryFn: async () =>
         axiosInstance.get<AuthStateResponse>("auth/ubuntu-one/complete", {
           params: queryParams,
         }),
@@ -158,7 +158,7 @@ export default function useUnsignedHooks() {
   > = ({ invitationId }, config = {}) =>
     useQuery({
       queryKey: ["invitationSummary", { invitationId }],
-      queryFn: () =>
+      queryFn: async () =>
         axiosInstance.get<InvitationSummary>(
           `/invitations/${invitationId}/summary`,
         ),
@@ -171,7 +171,7 @@ export default function useUnsignedHooks() {
   > = (_, config = {}) =>
     useQuery({
       queryKey: ["authUser"],
-      queryFn: () => axiosInstance.get<AuthStateResponse>("me"),
+      queryFn: async () => axiosInstance.get<AuthStateResponse>("me"),
       ...config,
       gcTime: 0,
     });

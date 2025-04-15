@@ -1,5 +1,5 @@
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -11,8 +11,9 @@ import type {
   RepoInfo,
   Series,
 } from "../types";
+import type { UseSeriesResult } from "../types/UseSeriesResult";
 
-export default function useSeries() {
+export default function useSeries(): UseSeriesResult {
   const queryClient = useQueryClient();
   const authFetch = useFetchOld();
 
@@ -22,8 +23,8 @@ export default function useSeries() {
     CreateSeriesParams
   >({
     mutationKey: ["series", "new"],
-    mutationFn: (params) => authFetch.get("CreateSeries", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.get("CreateSeries", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
@@ -33,8 +34,8 @@ export default function useSeries() {
     DeriveSeriesParams
   >({
     mutationKey: ["series", "derive"],
-    mutationFn: (params) => authFetch.get("DeriveSeries", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.get("DeriveSeries", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
@@ -44,8 +45,8 @@ export default function useSeries() {
     RemoveSeriesParams
   >({
     mutationKey: ["series", "remove"],
-    mutationFn: (params) => authFetch.get("RemoveSeries", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.get("RemoveSeries", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
@@ -55,7 +56,7 @@ export default function useSeries() {
   ) =>
     useQuery<AxiosResponse<RepoInfo>, AxiosError<ApiError>>({
       queryKey: ["repoInfo", { queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get("GetRepoInfo", {
           params: queryParams,
         }),

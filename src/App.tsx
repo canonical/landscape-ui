@@ -1,80 +1,96 @@
-import type { FC, ReactNode } from "react";
-import { lazy, Suspense, useEffect } from "react";
-import { Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import AppNotification from "@/components/layout/AppNotification";
 import LoadingState from "@/components/layout/LoadingState";
+import Redirecting from "@/components/layout/Redirecting";
 import FetchProvider from "@/context/fetch";
 import FetchOldProvider from "@/context/fetchOld";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
 import DashboardPage from "@/pages/dashboard";
-import Redirecting from "@/components/layout/Redirecting";
+import { useQueryClient } from "@tanstack/react-query";
+import type { FC, ReactNode } from "react";
+import { lazy, Suspense, useEffect } from "react";
+import {
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router";
 
-const OidcAuthPage = lazy(() => import("@/pages/auth/handle/oidc"));
-const UbuntuOneAuthPage = lazy(() => import("@/pages/auth/handle/ubuntu-one"));
-const EnvError = lazy(() => import("@/pages/EnvError"));
-const PageNotFound = lazy(() => import("@/pages/PageNotFound"));
-const LoginPage = lazy(() => import("@/pages/auth/login"));
-const DistributionsPage = lazy(
-  () => import("@/pages/dashboard/repositories/mirrors"),
+const OidcAuthPage = lazy(async () => import("@/pages/auth/handle/oidc"));
+const UbuntuOneAuthPage = lazy(
+  async () => import("@/pages/auth/handle/ubuntu-one"),
 );
-const RepositoryPage = lazy(() => import("@/pages/dashboard/repositories"));
+const EnvError = lazy(async () => import("@/pages/EnvError"));
+const PageNotFound = lazy(async () => import("@/pages/PageNotFound"));
+const LoginPage = lazy(async () => import("@/pages/auth/login"));
+const DistributionsPage = lazy(
+  async () => import("@/pages/dashboard/repositories/mirrors"),
+);
+const RepositoryPage = lazy(
+  async () => import("@/pages/dashboard/repositories"),
+);
 const RepositoryProfilesPage = lazy(
-  () => import("@/pages/dashboard/profiles/repository-profiles"),
+  async () => import("@/pages/dashboard/profiles/repository-profiles"),
 );
 const GPGKeysPage = lazy(
-  () => import("@/pages/dashboard/repositories/gpg-keys"),
+  async () => import("@/pages/dashboard/repositories/gpg-keys"),
 );
 const APTSourcesPage = lazy(
-  () => import("@/pages/dashboard/repositories/apt-sources"),
+  async () => import("@/pages/dashboard/repositories/apt-sources"),
 );
 const InstancesPage = lazy(
-  () => import("@/pages/dashboard/instances/InstancesPage"),
+  async () => import("@/pages/dashboard/instances/InstancesPage"),
 );
 const SingleInstance = lazy(
-  () => import("@/pages/dashboard/instances/[single]"),
+  async () => import("@/pages/dashboard/instances/[single]"),
 );
-const ActivitiesPage = lazy(() => import("@/pages/dashboard/activities"));
-const ScriptsPage = lazy(() => import("@/pages/dashboard/scripts"));
-const ProfilesPage = lazy(() => import("@/pages/dashboard/profiles"));
+const ActivitiesPage = lazy(async () => import("@/pages/dashboard/activities"));
+const ScriptsPage = lazy(async () => import("@/pages/dashboard/scripts"));
+const ProfilesPage = lazy(async () => import("@/pages/dashboard/profiles"));
 const PackageProfilesPage = lazy(
-  () => import("@/pages/dashboard/profiles/package-profiles"),
+  async () => import("@/pages/dashboard/profiles/package-profiles"),
 );
 const RemovalProfilesPage = lazy(
-  () => import("@/pages/dashboard/profiles/removal-profiles"),
+  async () => import("@/pages/dashboard/profiles/removal-profiles"),
 );
 const UpgradeProfilesPage = lazy(
-  () => import("@/pages/dashboard/profiles/upgrade-profiles"),
+  async () => import("@/pages/dashboard/profiles/upgrade-profiles"),
 );
 const WslProfilesPage = lazy(
-  () => import("@/pages/dashboard/profiles/wsl-profiles"),
+  async () => import("@/pages/dashboard/profiles/wsl-profiles"),
 );
-const SettingsPage = lazy(() => import("@/pages/dashboard/settings"));
+const SettingsPage = lazy(async () => import("@/pages/dashboard/settings"));
 const AccessGroupsPage = lazy(
-  () => import("@/pages/dashboard/settings/access-group"),
+  async () => import("@/pages/dashboard/settings/access-group"),
 );
 const AdministratorsPage = lazy(
-  () => import("@/pages/dashboard/settings/administrators"),
+  async () => import("@/pages/dashboard/settings/administrators"),
 );
-const RolesPage = lazy(() => import("@/pages/dashboard/settings/roles"));
-const EventsLogPage = lazy(() => import("@/pages/dashboard/events-log"));
+const EmployeesPage = lazy(
+  async () => import("@/pages/dashboard/settings/employees"),
+);
+const RolesPage = lazy(async () => import("@/pages/dashboard/settings/roles"));
+const EventsLogPage = lazy(async () => import("@/pages/dashboard/events-log"));
 const AlertNotificationsPage = lazy(
-  () => import("@/pages/dashboard/alert-notifications"),
+  async () => import("@/pages/dashboard/alert-notifications"),
 );
-const OverviewPage = lazy(() => import("@/pages/dashboard/overview"));
+const OverviewPage = lazy(async () => import("@/pages/dashboard/overview"));
 const GeneralOrganisationSettings = lazy(
-  () => import("@/pages/dashboard/settings/general"),
+  async () => import("@/pages/dashboard/settings/general"),
 );
-const AccountPage = lazy(() => import("@/pages/dashboard/account"));
-const GeneralSettings = lazy(() => import("@/pages/dashboard/account/general"));
-const Alerts = lazy(() => import("@/pages/dashboard/account/alerts"));
+const AccountPage = lazy(async () => import("@/pages/dashboard/account"));
+const GeneralSettings = lazy(
+  async () => import("@/pages/dashboard/account/general"),
+);
+const Alerts = lazy(async () => import("@/pages/dashboard/account/alerts"));
 const ApiCredentials = lazy(
-  () => import("@/pages/dashboard/account/api-credentials"),
+  async () => import("@/pages/dashboard/account/api-credentials"),
 );
 const IdentityProvidersPage = lazy(
-  () => import("@/pages/dashboard/settings/identity-providers"),
+  async () => import("@/pages/dashboard/settings/identity-providers"),
 );
 
 interface AuthRouteProps {
@@ -110,15 +126,27 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
 };
 
 const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
-  const { authorized, authLoading } = useAuth();
+  const { authorized, authLoading, redirectToExternalUrl } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (!authorized || authLoading) {
       return;
     }
 
-    navigate("/", { replace: true });
+    const redirectTo = searchParams.get("redirect-to");
+
+    if (!redirectTo) {
+      navigate("/overview", { replace: true });
+      return;
+    }
+
+    if (searchParams.has("external")) {
+      redirectToExternalUrl(redirectTo, { replace: true });
+    } else {
+      navigate(redirectTo, { replace: true });
+    }
   }, [authorized, authLoading]);
 
   if (authLoading) {
@@ -179,6 +207,10 @@ const App: FC = () => {
                   path="repositories/mirrors"
                   element={<DistributionsPage />}
                 />
+                <Route
+                  path="repositories/apt-sources"
+                  element={<APTSourcesPage />}
+                />
                 <Route path="profiles/wsl" element={<WslProfilesPage />} />
               </Route>
               <Route
@@ -194,10 +226,6 @@ const App: FC = () => {
                   element={<RepositoryProfilesPage />}
                 />
                 <Route path="repositories/gpg-keys" element={<GPGKeysPage />} />
-                <Route
-                  path="repositories/apt-sources"
-                  element={<APTSourcesPage />}
-                />
                 <Route path="instances" element={<InstancesPage />} />
                 <Route
                   path="instances/:instanceId"
@@ -215,6 +243,7 @@ const App: FC = () => {
                   path="settings/administrators"
                   element={<AdministratorsPage />}
                 />
+                <Route path="settings/employees" element={<EmployeesPage />} />
                 <Route
                   path="settings/access-groups"
                   element={<AccessGroupsPage />}
@@ -230,6 +259,7 @@ const App: FC = () => {
                     element={<IdentityProvidersPage />}
                   />
                 )}
+                <Route path="settings/gpg-keys" element={<GPGKeysPage />} />
                 <Route path="profiles" element={<ProfilesPage />} />
                 <Route
                   path="profiles/package"

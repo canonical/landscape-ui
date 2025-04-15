@@ -1,5 +1,5 @@
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -9,8 +9,9 @@ import type {
   GetDistributionsParams,
   RemoveDistributionParams,
 } from "../types";
+import type { UseDistributionsResult } from "../types/UseDistributionsResult";
 
-export default function useDistributions() {
+export default function useDistributions(): UseDistributionsResult {
   const queryClient = useQueryClient();
   const authFetch = useFetchOld();
 
@@ -20,7 +21,7 @@ export default function useDistributions() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<Distribution[]>, AxiosError<ApiError>>({
       queryKey: ["distributions"],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get("GetDistributions", {
           params: queryParams,
         }),
@@ -33,8 +34,9 @@ export default function useDistributions() {
     CreateDistributionParams
   >({
     mutationKey: ["distributions", "new"],
-    mutationFn: (params) => authFetch.get("CreateDistribution", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetch.get("CreateDistribution", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 
@@ -44,8 +46,9 @@ export default function useDistributions() {
     RemoveDistributionParams
   >({
     mutationKey: ["distributions", "remove"],
-    mutationFn: (params) => authFetch.get("RemoveDistribution", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetch.get("RemoveDistribution", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["distributions"] }),
   });
 

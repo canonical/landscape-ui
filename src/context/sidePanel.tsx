@@ -1,19 +1,19 @@
-import type { FC, ReactNode } from "react";
-import React, { createContext, useEffect, useState } from "react";
-import classNames from "classnames";
-import { useLocation } from "react-router";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import AppNotification from "@/components/layout/AppNotification";
 import useNotify from "@/hooks/useNotify";
-import classes from "./SidePanelProvider.module.scss";
 import { Button, Icon, ICONS } from "@canonical/react-components";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
+import classNames from "classnames";
+import type { FC, ReactNode } from "react";
+import { createContext, useEffect, useState } from "react";
+import { useLocation } from "react-router";
+import classes from "./SidePanelProvider.module.scss";
 
 interface SidePanelContextProps {
   changeSidePanelSize: (size: "small" | "medium" | "large") => void;
   changeSidePanelTitleLabel: (title: string) => void;
   closeSidePanel: () => void;
   setSidePanelContent: (
-    title: string,
+    title: ReactNode,
     newState: ReactNode | null,
     size?: "small" | "medium" | "large",
     titleLabel?: string,
@@ -37,16 +37,12 @@ interface SidePanelProviderProps {
 const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState<"small" | "medium" | "large">("small");
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState<ReactNode>("");
   const [titleLabel, setTitleLabel] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
 
   const { pathname } = useLocation();
   const { notify, sidePanel } = useNotify();
-
-  useEffect(() => {
-    return handleClose;
-  }, [pathname]);
 
   const handleClose = () => {
     setOpen(false);
@@ -57,13 +53,17 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     sidePanel.setOpen(false);
   };
 
+  useEffect(() => {
+    return handleClose;
+  }, [pathname]);
+
   const handleSidePanelClose = () => {
     handleClose();
     notify.clear();
   };
 
   const handleContentChange = (
-    newTitle: string,
+    newTitle: ReactNode,
     newBody: ReactNode,
     newSize: "small" | "medium" | "large" = "small",
   ) => {
@@ -78,8 +78,12 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   return (
     <SidePanelContext.Provider
       value={{
-        changeSidePanelSize: (size) => setSize(size),
-        changeSidePanelTitleLabel: (title) => setTitleLabel(title),
+        changeSidePanelSize: (newSize) => {
+          setSize(newSize);
+        },
+        changeSidePanelTitleLabel: (newTitle) => {
+          setTitleLabel(newTitle);
+        },
         closeSidePanel: handleSidePanelClose,
         setSidePanelContent: handleContentChange,
       }}
@@ -94,7 +98,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
         })}
       >
         {open && (
-          <AppErrorBoundary>
+          <>
             <div className={classNames("p-panel__header", classes.header)}>
               <h3 className="p-panel__title">{title}</h3>
               <p className="u-text--muted">
@@ -116,10 +120,10 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
                 {notify.notification?.type === "negative" && (
                   <AppNotification notify={notify} isSidePanelOpen={true} />
                 )}
-                {body}
+                <AppErrorBoundary>{body}</AppErrorBoundary>
               </div>
             </div>
-          </AppErrorBoundary>
+          </>
         )}
       </aside>
     </SidePanelContext.Provider>

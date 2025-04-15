@@ -3,8 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
 import type { QueryFnType } from "@/types/QueryFnType";
 
@@ -52,7 +52,7 @@ export const useWsl = () => {
       AxiosError<ApiError>
     >({
       queryKey: ["wsl", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get("computers/wsl-hosts", {
           params: queryParams,
         }),
@@ -65,9 +65,9 @@ export const useWsl = () => {
     AxiosError<ApiError>,
     CreateChildInstanceParams
   >({
-    mutationFn: ({ parent_id, ...params }) =>
+    mutationFn: async ({ parent_id, ...params }) =>
       authFetch.post(`computers/${parent_id}/children`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
@@ -79,9 +79,9 @@ export const useWsl = () => {
     AxiosError<ApiError>,
     ChildInstancesActionsParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("DeleteChildComputers", { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
@@ -93,9 +93,9 @@ export const useWsl = () => {
     AxiosError<ApiError>,
     SetDefaultChildInstanceParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("SetDefaultChildComputer", { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
@@ -107,9 +107,9 @@ export const useWsl = () => {
     AxiosError<ApiError>,
     ShutdownHostInstanceParams
   >({
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("ShutdownHostComputer", { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
@@ -121,8 +121,9 @@ export const useWsl = () => {
     AxiosError<ApiError>,
     ChildInstancesActionsParams
   >({
-    mutationFn: (params) => authFetchOld.get("StartChildComputers", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetchOld.get("StartChildComputers", { params }),
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
@@ -134,8 +135,9 @@ export const useWsl = () => {
     AxiosError<ApiError>,
     ChildInstancesActionsParams
   >({
-    mutationFn: (params) => authFetchOld.get("StopChildComputers", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetchOld.get("StopChildComputers", { params }),
+    onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
@@ -148,7 +150,7 @@ export const useWsl = () => {
   > = (_, config = {}) => {
     return useQuery<AxiosResponse<WslInstanceName[]>, AxiosError<ApiError>>({
       queryKey: ["wsl-instance-names"],
-      queryFn: () => authFetch.get("wsl-instance-names"),
+      queryFn: async () => authFetch.get("wsl-instance-names"),
       ...config,
     });
   };

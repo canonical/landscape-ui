@@ -1,7 +1,7 @@
 import type { Locator, Page } from "@playwright/test";
-import { _basePage } from "../_basePage";
+import { basePage } from "../basePage";
 
-export class LoginPage extends _basePage {
+export class LoginPage extends basePage {
   readonly page: Page;
   readonly emailInput: Locator;
   readonly passwordInput: Locator;

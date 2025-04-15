@@ -6,15 +6,21 @@ import "./matcher";
 import "./global";
 import server from "./server";
 import { setEndpointStatus } from "./controllers/controller";
+import {
+  mockRangeBoundingClientRect,
+  restoreRangeBoundingClientRect,
+} from "./helpers";
 
 expect.extend(matchers);
 
 beforeAll(() => {
   server.listen({ onUnhandledRequest: "error" });
+  mockRangeBoundingClientRect();
 });
 
 afterAll(() => {
   server.close();
+  restoreRangeBoundingClientRect();
 });
 
 afterEach(() => {

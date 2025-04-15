@@ -2,10 +2,10 @@ import type { QueryFnType } from "@/types/QueryFnType";
 import type { WslProfile } from "../types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 
 export interface CreateWslProfileParams {
   description: string;
@@ -44,7 +44,7 @@ export default function useWslProfiles() {
       AxiosError<ApiError>
     >({
       queryKey: ["wslProfiles"],
-      queryFn: () => authFetch.get("child-instance-profiles"),
+      queryFn: async () => authFetch.get("child-instance-profiles"),
       ...config,
     });
   };
@@ -54,8 +54,9 @@ export default function useWslProfiles() {
     AxiosError<ApiError>,
     CreateWslProfileParams
   >({
-    mutationFn: (params) => authFetch.post("child-instance-profiles", params),
-    onSuccess: () =>
+    mutationFn: async (params) =>
+      authFetch.post("child-instance-profiles", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
   });
 
@@ -64,9 +65,9 @@ export default function useWslProfiles() {
     AxiosError<ApiError>,
     RemoveWslProfileParams
   >({
-    mutationFn: ({ name }) =>
+    mutationFn: async ({ name }) =>
       authFetch.delete(`child-instance-profiles/${name}`),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
   });
 
@@ -75,9 +76,9 @@ export default function useWslProfiles() {
     AxiosError<ApiError>,
     EditWslProfileParams
   >({
-    mutationFn: ({ name, ...params }) =>
+    mutationFn: async ({ name, ...params }) =>
       authFetch.patch(`child-instance-profiles/${name}`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
   });
 

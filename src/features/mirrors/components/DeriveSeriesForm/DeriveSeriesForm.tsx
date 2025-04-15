@@ -1,6 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import { getFormikError } from "@/utils/formikErrors";
 import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -64,11 +65,7 @@ const DeriveSeriesForm: FC<DeriveSeriesProps> = ({ distribution, origin }) => {
         label="Series name"
         required
         {...formik.getFieldProps("name")}
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFormikError(formik, "name")}
       />
 
       <p className="u-text--muted">

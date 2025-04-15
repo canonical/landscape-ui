@@ -1,3 +1,20 @@
+## [1.12.5](https://github.com/canonical/landscape-dashboard/compare/v1.12.4...v1.12.5) (2025-03-05)
+
+
+### Bug Fixes
+
+* diff pull pocket crash ([#199](https://github.com/canonical/landscape-dashboard/issues/199)) ([6bb4076](https://github.com/canonical/landscape-dashboard/commit/6bb4076ef46875e82b7fc374d43124111e9129e9))
+* make apt sources pages available for self-hosted env only ([27ac98f](https://github.com/canonical/landscape-dashboard/commit/27ac98f6ee783f4915cb10f3be10ee8f56fc2572))
+* make apt sources pages available for self-hosted env only ([#201](https://github.com/canonical/landscape-dashboard/issues/201)) ([bfb8b30](https://github.com/canonical/landscape-dashboard/commit/bfb8b3008e20bd3184d0af2ad9c4ee60712cd469))
+
+## [1.12.4](https://github.com/canonical/landscape-dashboard/compare/v1.12.3...v1.12.4) (2025-02-12)
+
+
+### Bug Fixes
+
+* enable instance upgrades button without upgrade count ([#188](https://github.com/canonical/landscape-dashboard/issues/188)) ([0f7a8b9](https://github.com/canonical/landscape-dashboard/commit/0f7a8b9ec13def86a261fc23f300812b9e7fbb21))
+* prevent page from crashing when subdomain account is default one ([b74b8a9](https://github.com/canonical/landscape-dashboard/commit/b74b8a90cd75ddde215bffe12b7d2afc515fd381))
+
 ## [1.12.3](https://github.com/canonical/landscape-dashboard/compare/v1.12.2...v1.12.3) (2025-02-06)
 
 

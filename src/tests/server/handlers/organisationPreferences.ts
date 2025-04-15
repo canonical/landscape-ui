@@ -8,7 +8,7 @@ export default [
   http.get<never, never, Preferences>(`${API_URL}preferences`, () => {
     const endpointStatus = getEndpointStatus();
 
-    if (endpointStatus === "error") {
+    if (endpointStatus.status === "error") {
       throw new HttpResponse(null, { status: 500 });
     }
 
