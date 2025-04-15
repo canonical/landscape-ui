@@ -6,7 +6,7 @@ import useEnv from "@/hooks/useEnv";
 import { getFilteredByEnvMenuItems, getPathToExpand } from "./helpers";
 import classes from "./Navigation.module.scss";
 import useAuth from "@/hooks/useAuth";
-import { Button } from "@canonical/react-components";
+import { Badge, Button } from "@canonical/react-components";
 
 const Navigation: FC = () => {
   const [expanded, setExpanded] = useState("");
@@ -14,6 +14,28 @@ const Navigation: FC = () => {
   const { pathname } = useLocation();
   const { isSaas, isSelfHosted } = useEnv();
   const { isOidcAvailable } = useAuth();
+
+  const [hasProfilesOverLimit, setHasProfilesOverLimit] = useState(
+    sessionStorage.getItem("hasProfileOverLimit") === "true",
+  );
+
+  useEffect(() => {
+    const handleBadgeUpdate = () => {
+      const flag = sessionStorage.getItem("hasProfileOverLimit") === "true";
+      setHasProfilesOverLimit(flag);
+    };
+
+    window.addEventListener("profile-limit-badge-update", handleBadgeUpdate);
+
+    handleBadgeUpdate();
+
+    return () => {
+      window.removeEventListener(
+        "profile-limit-badge-update",
+        handleBadgeUpdate,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     const shouldBeExpandedPath = getPathToExpand(pathname);
@@ -149,6 +171,13 @@ const Navigation: FC = () => {
                               )}
                             >
                               {subItem.label}
+
+                              {subItem.label === "Security profiles" &&
+                                hasProfilesOverLimit && (
+                                  <span className={classes.badge}>
+                                    <Badge value={1} isNegative />
+                                  </span>
+                                )}
                             </span>
                           </Link>
                         )}

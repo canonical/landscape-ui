@@ -23,7 +23,7 @@ export interface SecurityProfile extends Record<string, unknown> {
   next_run_time: string;
   retention_period: number;
   schedule: string;
-  status: "active" | "archived";
+  status: "active" | "archived" | "over-limit";
   tags: string[];
   tailoring_file_uri: string | null;
   title: string;

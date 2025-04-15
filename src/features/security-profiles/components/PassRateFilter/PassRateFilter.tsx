@@ -1,12 +1,10 @@
 import tableFilterClasses from "@/components/filter/TableFilter/TableFilter.module.scss";
 import {
-  Badge,
   Button,
   ContextualMenu,
   Form,
   Input,
 } from "@canonical/react-components";
-import classNames from "classnames";
 import classes from "./PassRateFilter.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 import { useFormik } from "formik";
@@ -25,8 +23,8 @@ const PassRateFilter = () => {
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      passRateFrom: passRateFrom || 0,
-      passRateTo: passRateTo || 100,
+      passRateFrom: passRateFrom,
+      passRateTo: passRateTo,
     },
     enableReinitialize: true,
     validationSchema: Yup.object().shape({
@@ -50,14 +48,6 @@ const PassRateFilter = () => {
       toggleLabel={
         <>
           <span>Pass rate</span>
-          <span className={classNames(tableFilterClasses.badgeContainer)}>
-            {passRateFrom || passRateTo ? (
-              <Badge
-                value={passRateFrom && passRateTo ? 2 : 1}
-                className={tableFilterClasses.badge}
-              />
-            ) : null}
-          </span>
         </>
       }
       toggleClassName={tableFilterClasses.toggle}

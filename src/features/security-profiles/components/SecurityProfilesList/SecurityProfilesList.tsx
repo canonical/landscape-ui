@@ -227,6 +227,24 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             return "Active";
           } else if (status === "archived") {
             return "Archived";
+          } else if (status === "over-limit") {
+            return (
+              <div className={classes.statusWithIcon}>
+                <span>Over Limit</span>
+                <span className={classes.iconWrapper}>
+                  <Tooltip
+                    position="top-center"
+                    message="Only the first 5,000 instances are covered. Instances beyond the limit are not covered."
+                  >
+                    <i
+                      className="p-icon--help"
+                      role="img"
+                      aria-label="Help icon"
+                    />
+                  </Tooltip>
+                </span>
+              </div>
+            );
           } else {
             return status;
           }
@@ -241,6 +259,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           }
           if (status === "archived") {
             return "status-queued-small";
+          }
+          if (status === "over-limit") {
+            return "status-failed-small";
           }
         },
       },
@@ -292,8 +313,22 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           return (
             <div>
               <div className={classes.textContainer}>
-                <span>{passing} passed</span>
-                <span>{failing} failed</span>
+                <Link
+                  to={{
+                    pathname: "/instances",
+                    search: `?query=security-profile%3A${row.original.id}%3Apass`,
+                  }}
+                >
+                  <span>{passing} passed</span>
+                </Link>
+                <Link
+                  to={{
+                    pathname: "/instances",
+                    search: `?query=security-profile%3A${row.original.id}%3Afail`,
+                  }}
+                >
+                  <span>{failing} failed</span>
+                </Link>
               </div>
               <Tooltip
                 position="btm-center"
@@ -301,18 +336,24 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 message={tooltipMessage}
               >
                 <div className={classes.lineContainer}>
-                  <div
-                    className={classes.linePassed}
-                    style={{ width: `${(passing / total) * 100}%` }}
-                  />
-                  <div
-                    className={classes.lineFailed}
-                    style={{ width: `${(failing / total) * 100}%` }}
-                  />
-                  <div
-                    className={classes.lineInProgress}
-                    style={{ width: `${(in_progress / total) * 100}%` }}
-                  />
+                  {passing > 0 && (
+                    <div
+                      className={classes.linePassed}
+                      style={{ width: `${(passing / total) * 100}%` }}
+                    />
+                  )}
+                  {failing > 0 && (
+                    <div
+                      className={classes.lineFailed}
+                      style={{ width: `${(failing / total) * 100}%` }}
+                    />
+                  )}
+                  {in_progress > 0 && (
+                    <div
+                      className={classes.lineInProgress}
+                      style={{ width: `${(in_progress / total) * 100}%` }}
+                    />
+                  )}
                 </div>
               </Tooltip>
             </div>
@@ -400,7 +441,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
 
           return (
             <Tooltip
-              position="btm-center"
+              position="top-center"
               positionElementClassName={classes.tooltip}
               message={tooltipMessage}
             >

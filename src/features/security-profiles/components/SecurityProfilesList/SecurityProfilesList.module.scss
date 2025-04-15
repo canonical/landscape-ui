@@ -18,25 +18,35 @@
   width: 100%;
 }
 
-.linePassed {
-  background-color: $color-positive;
+.linePassed,
+.lineFailed,
+.lineInProgress {
   display: inline-block;
   height: $spv--small;
+}
+
+.linePassed {
+  background-color: $color-positive;
 }
 
 .lineFailed {
   background-color: $color-negative;
   border-left: 1px solid #ccc;
-  display: inline-block;
-  height: $spv--small;
 }
 
 .lineInProgress {
   background-color: rgb(0 0 0 / 60%);
+  border-left: 1px solid #ccc;
+}
+
+.lineContainer *:last-child {
   border-bottom-right-radius: 5px;
   border-top-right-radius: 5px;
-  display: inline-block;
-  height: $spv--small;
+}
+
+.lineContainer *:not(:last-child) {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
 }
 
 .tooltip {
@@ -61,7 +71,17 @@
 }
 
 .status {
-  width: 8rem;
+  width: 10rem;
+}
+
+.statusWithIcon {
+  align-items: center;
+  display: inline-flex;
+  gap: 1.8rem;
+}
+
+.iconWrapper {
+  display: inline-block;
 }
 
 .ellipsis {
