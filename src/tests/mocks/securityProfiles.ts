@@ -12,7 +12,7 @@ export const securityProfiles: SecurityProfile[] = [
     tailoring_file_uri: null,
     title: "CIS 2 laptop compliance",
     name: "CIS 2 laptop compliance",
-    status: "active",
+    status: "over-limit",
     last_run_results: {
       passing: 3000,
       failing: 0,

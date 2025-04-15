@@ -227,6 +227,24 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             return "Active";
           } else if (status === "archived") {
             return "Archived";
+          } else if (status === "over-limit") {
+            return (
+              <div className={classes.statusWithIcon}>
+                <span>Over Limit</span>
+                <span className={classes.iconWrapper}>
+                  <Tooltip
+                    position="top-center"
+                    message="Only the first 5,000 instances are covered. Instances beyond the limit are not covered."
+                  >
+                    <i
+                      className="p-icon--help"
+                      role="img"
+                      aria-label="Help icon"
+                    />
+                  </Tooltip>
+                </span>
+              </div>
+            );
           } else {
             return status;
           }
@@ -241,6 +259,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           }
           if (status === "archived") {
             return "status-queued-small";
+          }
+          if (status === "over-limit") {
+            return "status-failed-small";
           }
         },
       },
@@ -292,8 +313,22 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           return (
             <div>
               <div className={classes.textContainer}>
-                <span>{passing} passed</span>
-                <span>{failing} failed</span>
+                <Link
+                  to={{
+                    pathname: "/instances",
+                    search: `?query=security-profile%3A${row.original.id}%3Apass`,
+                  }}
+                >
+                  <span>{passing} passed</span>
+                </Link>
+                <Link
+                  to={{
+                    pathname: "/instances",
+                    search: `?query=security-profile%3A${row.original.id}%3Afail`,
+                  }}
+                >
+                  <span>{failing} failed</span>
+                </Link>
               </div>
               <Tooltip
                 position="btm-center"

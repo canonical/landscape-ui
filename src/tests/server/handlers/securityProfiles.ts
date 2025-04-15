@@ -16,7 +16,9 @@ export default [
 
     const search = searchParams.get("search") || "";
     const statuses =
-      statusesParam == "[]" ? ["active", "archived"] : statusesParam.split(",");
+      statusesParam == "[]"
+        ? ["active", "archived", "over-limit"]
+        : statusesParam.split(",");
     const limit = parseInt(searchParams.get("limit") || "20");
     const offset = parseInt(searchParams.get("offset") || "0");
     const passRateFrom = parseFloat(searchParams.get("passRateFrom") || "0");
