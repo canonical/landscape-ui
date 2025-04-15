@@ -9,7 +9,7 @@ import type {
   UserCredentials,
 } from "../types";
 
-export default function getUserApiCredentials() {
+export default function useApiCredentials() {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 

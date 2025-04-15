@@ -18,7 +18,7 @@ import type { EditUserFormValues } from "./types";
 import { getFormikError } from "@/utils/formikErrors";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
 
-const ChangePasswordForm = lazy(() => import("../ChangePasswordForm"));
+const ChangePasswordForm = lazy(async () => import("../ChangePasswordForm"));
 
 interface EditUserFormProps {
   readonly userDetails: UserDetails;

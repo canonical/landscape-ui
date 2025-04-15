@@ -1,5 +1,4 @@
 import type { FC, ReactNode } from "react";
-import React from "react";
 import Sidebar from "./Sidebar";
 import SidePanelProvider from "../../context/sidePanel";
 import { matchPath, useLocation } from "react-router";

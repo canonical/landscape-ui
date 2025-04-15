@@ -20,6 +20,8 @@ interface KernelActionParams {
   id: number;
   kernel_package_id: number;
   reboot_after: boolean;
+  deliver_after?: string;
+  deliver_delay_window?: number;
 }
 
 export default function useKernel() {

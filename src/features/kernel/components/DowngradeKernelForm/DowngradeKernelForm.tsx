@@ -83,6 +83,12 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
           id: Number(instanceId),
           kernel_package_id: Number(values.new_kernel_version_id),
           reboot_after: values.reboot_after,
+          deliver_after: values.deliver_immediately
+            ? undefined
+            : values.deliver_after,
+          deliver_delay_window: values.randomize_delivery
+            ? values.deliver_delay_window
+            : undefined,
         });
 
         closeSidePanel();
@@ -97,7 +103,9 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
           actions: [
             {
               label: "View details",
-              onClick: () => openActivityDetails(activity),
+              onClick: () => {
+                openActivityDetails(activity);
+              },
             },
           ],
         });
@@ -259,7 +267,9 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
             confirmButtonAppearance: "negative",
             confirmButtonLoading: isDowngradingKernel,
             confirmButtonDisabled: isDowngradingKernel,
-            onConfirm: () => formik.handleSubmit(),
+            onConfirm: () => {
+              formik.handleSubmit();
+            },
           }}
         >
           Downgrade kernel

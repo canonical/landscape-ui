@@ -1,11 +1,11 @@
-import type { AxiosError, AxiosResponse } from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
-import type { Activity } from "@/features/activities";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { QueryFnType } from "@/types/api/QueryFnType";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
 import type { Script } from "../types";
 
 interface GetScriptsParams {
@@ -45,7 +45,7 @@ interface EditScriptParams {
   username: string;
 }
 
-interface CopyScriptParams {
+export interface CopyScriptParams {
   access_group: string;
   destination_title: string;
   script_id: number;

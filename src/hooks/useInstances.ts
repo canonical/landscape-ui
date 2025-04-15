@@ -1,11 +1,11 @@
-import type { AxiosError, AxiosResponse } from "axios";
-import type { UseQueryOptions } from "@tanstack/react-query";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Activity } from "@/features/activities";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import type { Instance, PendingInstance } from "@/types/Instance";
 import type { QueryFnType } from "@/types/api/QueryFnType";
+import type { Instance, PendingInstance } from "@/types/Instance";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
 import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
 
@@ -65,7 +65,7 @@ interface ChangeInstancesAccessGroupParams {
   access_group: string;
 }
 
-interface RemoveInstances {
+export interface RemoveInstances {
   computer_ids: number[];
 }
 
@@ -99,6 +99,11 @@ interface RenameInstancesParams {
   computer_titles: string[];
 }
 
+export interface SanitizeInstancesParams {
+  computer_id: number;
+  computer_title: string;
+}
+
 export default function useInstances() {
   const queryClient = useQueryClient();
   const authFetchOld = useFetchOld();
@@ -125,7 +130,7 @@ export default function useInstances() {
     > = {},
   ) =>
     useQuery<AxiosResponse<Instance>, AxiosError<ApiError>>({
-      queryKey: ["instances", { instanceId, ...queryParams }],
+      queryKey: ["instances", instanceId, queryParams],
       queryFn: async () =>
         authFetch.get(`computers/${instanceId}`, { params: queryParams }),
       ...config,
@@ -324,6 +329,18 @@ export default function useInstances() {
       ...config,
     });
 
+  const sanitizeInstanceQuery = useMutation<
+    AxiosResponse<Activity>,
+    AxiosError<ApiError>,
+    SanitizeInstancesParams
+  >({
+    mutationKey: ["instance", "sanitize"],
+    mutationFn: async ({ computer_id, ...params }) =>
+      authFetch.post(`computers/${computer_id}/sanitize`, params),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["instances"] }),
+  });
+
   return {
     getInstancesQuery,
     getSingleInstanceQuery,
@@ -344,5 +361,6 @@ export default function useInstances() {
     renameInstancesQuery,
     getAllInstanceTagsQuery,
     getAvailabilityZonesQuery,
+    sanitizeInstanceQuery,
   };
 }

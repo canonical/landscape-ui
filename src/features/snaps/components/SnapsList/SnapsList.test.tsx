@@ -58,9 +58,7 @@ describe("SnapsList", () => {
 
       assert(cellWithVersion);
 
-      const iconElement = cellWithVersion.querySelector("i");
-      expect(iconElement).toBeInTheDocument();
-      expect(iconElement).toHaveClass("p-icon--pause");
+      expect(cellWithVersion).toHaveIcon("pause");
     });
 
     it("shows version tooltip when hovering on held snap", async () => {
@@ -108,7 +106,7 @@ describe("SnapsList", () => {
     it("should select snap when clicking on its row checkbox", async () => {
       renderWithProviders(<SnapsList {...props} />);
 
-      const selectedSnap = installedSnaps[0];
+      const [selectedSnap] = installedSnaps;
       const snapCheckbox = await screen.findByRole("checkbox", {
         name: selectedSnap.snap.name,
       });
@@ -121,7 +119,7 @@ describe("SnapsList", () => {
   });
 
   describe("Sidepanel", () => {
-    const selectedSnap = installedSnaps[0];
+    const [selectedSnap] = installedSnaps;
 
     beforeEach(async () => {
       renderWithProviders(<SnapsList {...props} />);

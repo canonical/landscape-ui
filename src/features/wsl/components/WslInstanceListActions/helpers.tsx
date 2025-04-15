@@ -11,16 +11,11 @@ export const getModalBody = (
       label: "Remove",
       appearance: "negative",
       body: (
-        <>
-          <p>
-            This will remove the instance <b>{instance.title}</b> from
-            Landscape.
-            <br />
-            <br />
-            It will remain on the parent machine. You can re-register it to
-            Landscape at any time.
-          </p>
-        </>
+        <p>
+          This will remove the instance <b>{instance.title}</b> from Landscape.
+          It will remain on the parent machine. You can re-register it to
+          Landscape at any time.
+        </p>
       ),
     };
   } else if (action === "delete") {

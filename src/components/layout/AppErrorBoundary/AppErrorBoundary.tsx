@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
 import { FallbackComponent } from "./FallbackComponent";
-import * as Sentry from "@sentry/react";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface AppErrorBoundaryProps {
   readonly children: ReactNode;
@@ -8,9 +8,9 @@ interface AppErrorBoundaryProps {
 
 const AppErrorBoundary: FC<AppErrorBoundaryProps> = ({ children }) => {
   return (
-    <Sentry.ErrorBoundary fallback={FallbackComponent}>
+    <ErrorBoundary FallbackComponent={FallbackComponent}>
       {children}
-    </Sentry.ErrorBoundary>
+    </ErrorBoundary>
   );
 };
 
