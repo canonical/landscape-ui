@@ -8,7 +8,7 @@ import type { SupportedIdentityProvider } from "../../types";
 import classes from "./SupportedProviderList.module.scss";
 import { getProviderIcon } from "../../helpers";
 
-const ProviderForm = lazy(() => import("../ProviderForm"));
+const ProviderForm = lazy(async () => import("../ProviderForm"));
 
 const SupportedProviderList: FC = () => {
   const { setSidePanelContent } = useSidePanel();
@@ -37,13 +37,15 @@ const SupportedProviderList: FC = () => {
               .map((provider) => (
                 <li
                   key={provider.provider_slug}
-                  className="p-list__item u-no-padding--bottom u-no-padding--top"
+                  className="p-list__item u-no-padding--top"
                 >
                   <Button
                     type="button"
                     appearance="base"
                     hasIcon
-                    onClick={() => handleIdentityProviderAdd(provider)}
+                    onClick={() => {
+                      handleIdentityProviderAdd(provider);
+                    }}
                     className={classes.providerButton}
                   >
                     <span className={classes.iconContainer}>

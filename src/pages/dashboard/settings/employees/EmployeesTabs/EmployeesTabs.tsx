@@ -1,0 +1,76 @@
+import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
+import { Tabs } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import classes from "./EmployeesTabs.module.scss";
+
+const EmployeeGroupsPanel = lazy(
+  async () => import("../tabs/employee-groups/EmployeeGroupsPanel"),
+);
+const EmployeesPanel = lazy(
+  async () => import("../tabs/employees/EmployeesPanel"),
+);
+const AutoinstallFilesPanel = lazy(
+  async () => import("../tabs/autoinstall-files/AutoinstallFilesPanel"),
+);
+
+const tabLinks = [
+  {
+    label: "Employee groups",
+    id: "tab-link-employee-groups",
+  },
+  {
+    label: "Employees",
+    id: "tab-link-employees",
+  },
+  {
+    label: "Autoinstall files",
+    id: "tab-link-autoinstall-files",
+  },
+];
+
+const EmployeesTabs: FC = () => {
+  const { tab, setPageParams } = usePageParams();
+
+  const currentTabLinkId = tab ? `tab-link-${tab}` : "tab-link-employee-groups";
+
+  const onActiveTabChange = (tabId: string): void => {
+    setPageParams({ tab: tabId.replace("tab-link-", "") });
+  };
+
+  return (
+    <>
+      <Tabs
+        listClassName="u-no-margin--bottom"
+        links={tabLinks.map(({ label, id }) => ({
+          label,
+          id,
+          role: "tab",
+          active: id === currentTabLinkId,
+          onClick: () => {
+            onActiveTabChange(id);
+          },
+        }))}
+      />
+      <div
+        tabIndex={0}
+        role="tabpanel"
+        aria-labelledby={currentTabLinkId}
+        className={classes.tabPanel}
+      >
+        <Suspense fallback={<LoadingState />}>
+          {"tab-link-employee-groups" === currentTabLinkId && (
+            <EmployeeGroupsPanel />
+          )}
+          {"tab-link-employees" === currentTabLinkId && <EmployeesPanel />}
+          {"tab-link-autoinstall-files" === currentTabLinkId && (
+            <AutoinstallFilesPanel />
+          )}
+        </Suspense>
+      </div>
+    </>
+  );
+};
+
+export default EmployeesTabs;

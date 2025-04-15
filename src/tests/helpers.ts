@@ -36,6 +36,36 @@ const mockMatchMedia = (
   });
 };
 
+const originalGetBoundingClientRect = Range.prototype.getBoundingClientRect;
+
+export const mockRangeBoundingClientRect = (
+  mockFn: () => DOMRect = () => ({
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    bottom: 10,
+    right: 100,
+    width: 100,
+    height: 10,
+    toJSON: () => null,
+  }),
+): void => {
+  Object.defineProperty(Range.prototype, "getBoundingClientRect", {
+    configurable: true,
+    writable: true,
+    value: mockFn,
+  });
+};
+
+export const restoreRangeBoundingClientRect = (): void => {
+  if (originalGetBoundingClientRect) {
+    Range.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  } else {
+    delete (Range.prototype as Partial<Range>).getBoundingClientRect;
+  }
+};
+
 export const setScreenSize = (size: "small" | "large"): void => {
   if (size === "small") {
     mockMatchMedia([{ query: "(min-width: 620px)", matches: false }]);

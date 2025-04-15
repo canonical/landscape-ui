@@ -33,16 +33,15 @@ describe("AlertNotificationsList", () => {
     const listItems = screen.getAllByRole("listitem");
 
     listItems.forEach((item) => {
-      const alert = alertsWithoutPending.find((alert) =>
+      const match = alertsWithoutPending.find((alert) =>
         alert.alert_type !== "PendingComputersAlert"
           ? alert.summary === item.textContent
           : null,
       );
-      const icon = item.querySelector("i");
 
-      if (icon && alert) {
-        expect(icon.className).toContain(
-          `p-icon--${STATUSES[alert.alert_type].icon.color ?? STATUSES[alert.alert_type].icon.gray}`,
+      if (match) {
+        expect(item).toHaveIcon(
+          `p-icon--${STATUSES[match.alert_type].icon.color ?? STATUSES[match.alert_type].icon.gray}`,
         );
       }
     });
@@ -81,12 +80,13 @@ describe("AlertNotificationsList", () => {
     const links = screen.getAllByRole("link");
 
     links.forEach((link) => {
-      const alert = alertsWithoutPending.find(
-        (alert) => alert.summary === link.textContent,
+      const match = alertsWithoutPending.find(
+        (item) => item.summary === link.textContent,
       );
+
       expect(link).toHaveAttribute(
         "href",
-        `/instances?status=${STATUSES[alert?.alert_type ?? "Unknown"].filterValue}`,
+        `/instances?status=${STATUSES[match?.alert_type ?? "Unknown"].filterValue}`,
       );
     });
   });

@@ -1,9 +1,9 @@
+import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/api/QueryFnType";
+import type { Preferences } from "@/types/Preferences";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Preferences } from "@/types/Preferences";
-import useFetch from "@/hooks/useFetch";
 
 export interface ChangeOrganisationPreferencesParams {
   title?: string;

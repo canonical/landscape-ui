@@ -1,0 +1,16 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.actions {
+  width: 4.5rem;
+}
+
+th.actions {
+  text-align: right;
+}
+
+.link {
+  &:visited {
+    color: $color-link;
+  }
+}

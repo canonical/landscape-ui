@@ -7,7 +7,7 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { Suspense, lazy, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -15,17 +15,18 @@ import useUsers from "@/hooks/useUsers";
 import type { User } from "@/types/User";
 import NewUserForm from "../NewUserForm";
 import {
-  UserAction,
   getSelectedUsernames,
   getUserLockStatusCounts,
   renderModalBody,
+  UserAction,
 } from "./helpers";
 import LoadingState from "@/components/layout/LoadingState";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
 
 const EditUserForm = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
+  async () =>
+    import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
 );
 
 interface UserPanelActionButtonsProps {
@@ -100,11 +101,11 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
     setSidePanelContent("Add new user", <NewUserForm />);
   };
 
-  const handleEditUser = (user: User) => {
+  const handleEditUser = (currentUser: User) => {
     setSidePanelContent(
       "Edit user",
       <Suspense fallback={<LoadingState />}>
-        <EditUserForm user={user} />
+        <EditUserForm user={currentUser} />
       </Suspense>,
     );
   };
@@ -121,7 +122,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
     >
       {!sidePanel && (
         <Button
-          className="u-no-margin--right"
+          className={classNames("u-no-margin--right", {
+            "u-no-margin--bottom": !sidePanel,
+          })}
           type="button"
           hasIcon
           onClick={handleAddUser}
@@ -134,7 +137,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
         <div className="p-segmented-control__list">
           {(user?.enabled || !sidePanel) && (
             <ConfirmationButton
-              className="p-segmented-control__button has-icon"
+              className={classNames("p-segmented-control__button has-icon", {
+                "u-no-margin--bottom": !sidePanel,
+              })}
               type="button"
               disabled={unlockedUsersCount === 0}
               aria-disabled={unlockedUsersCount === 0}
@@ -162,7 +167,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           )}
           {(!user?.enabled || !sidePanel) && (
             <ConfirmationButton
-              className="p-segmented-control__button has-icon"
+              className={classNames("p-segmented-control__button has-icon", {
+                "u-no-margin--bottom": !sidePanel,
+              })}
               type="button"
               disabled={lockedUsersCount === 0}
               aria-disabled={lockedUsersCount === 0}
@@ -190,9 +197,13 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           )}
           {sidePanel && user && (
             <Button
-              className="p-segmented-control__button"
+              className={classNames("p-segmented-control__button has-icon", {
+                "u-no-margin--bottom": !sidePanel,
+              })}
               type="button"
-              onClick={() => handleEditUser(user)}
+              onClick={() => {
+                handleEditUser(user);
+              }}
             >
               <Icon name="edit" />
               <span>Edit</span>
@@ -200,7 +211,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           )}
 
           <ConfirmationButton
-            className="p-segmented-control__button has-icon"
+            className={classNames("p-segmented-control__button has-icon", {
+              "u-no-margin--bottom": !sidePanel,
+            })}
             type="button"
             disabled={0 === selectedUsers.length}
             aria-disabled={0 === selectedUsers.length}

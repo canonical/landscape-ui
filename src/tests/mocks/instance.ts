@@ -42,6 +42,7 @@ export const ubuntuInstance: Instance = {
     distributor: "Canonical",
     release: "10.04",
   },
+  employee_id: null,
 };
 
 export const ubuntuCoreInstance = {
@@ -70,6 +71,7 @@ export const ubuntuCoreInstance = {
   vm_info: "",
   container_info: "",
   default_child: null,
+  employee_id: null,
   ubuntu_pro_info: {
     _doc: "Content provided in json response is currently considered Experimental and may change",
     _schema_version: "0.1",
@@ -220,6 +222,7 @@ export const windowsInstance = {
         distributor: "Canonical",
         release: "18.04",
       },
+      employee_id: null,
     },
   ],
   parent: null,
@@ -229,6 +232,7 @@ export const windowsInstance = {
     distributor: "Microsoft",
     release: "10 / 11",
   },
+  employee_id: null,
 };
 
 export const instances: Instance[] = [
@@ -268,6 +272,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "12.04",
     },
+    employee_id: null,
   },
   {
     id: 11,
@@ -328,7 +333,9 @@ export const instances: Instance[] = [
         release: "10 / 11",
         code_name: "windows",
       },
+      employee_id: null,
     },
+    employee_id: null,
   },
   {
     id: 7,
@@ -361,6 +368,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "12.04",
     },
+    employee_id: null,
   },
   {
     id: 3,
@@ -397,6 +405,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "10.04",
     },
+    employee_id: null,
   },
   {
     id: 8,
@@ -429,6 +438,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "11.10",
     },
+    employee_id: null,
   },
   {
     id: 5,
@@ -465,6 +475,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "10.04",
     },
+    employee_id: null,
   },
   {
     id: 4,
@@ -501,6 +512,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "11.04",
     },
+    employee_id: null,
   },
   {
     id: 9,
@@ -537,6 +549,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "12.04",
     },
+    employee_id: null,
   },
   {
     id: 10,
@@ -569,6 +582,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "12.04",
     },
+    employee_id: null,
   },
   windowsInstance,
   {
@@ -710,6 +724,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "22.04",
     },
+    employee_id: null,
   },
   {
     id: 12,
@@ -741,6 +756,7 @@ export const instances: Instance[] = [
       security: 208,
     },
     distribution_info: null,
+    employee_id: null,
   },
   {
     id: 21,
@@ -813,6 +829,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "20.04",
     },
+    employee_id: null,
   },
   ubuntuCoreInstance,
 ];

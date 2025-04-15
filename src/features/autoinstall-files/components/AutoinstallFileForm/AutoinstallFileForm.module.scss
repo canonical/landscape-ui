@@ -1,0 +1,22 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.inputContainer {
+  position: relative;
+}
+
+.input {
+  min-width: initial;
+  width: 90%;
+}
+
+.inputDescription {
+  position: absolute;
+  right: 0;
+  top: $sp-xxx-large;
+}

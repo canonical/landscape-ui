@@ -96,6 +96,14 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     [notify.notification],
   );
 
+  const handleLogout = () => {
+    setUser(null);
+    navigate("/login", { replace: true });
+    queryClient.removeQueries({
+      predicate: (query) => query.queryKey[0] !== "authUser",
+    });
+  };
+
   useEffect(() => {
     if (!isAuthError) {
       return;
@@ -104,15 +112,8 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     handleLogout();
   }, [isAuthError]);
 
-  const handleSetUser = (user: AuthUser) => {
-    setUser(user);
-  };
-  const handleLogout = () => {
-    setUser(null);
-    navigate("/login", { replace: true });
-    queryClient.removeQueries({
-      predicate: (query) => query.queryKey[0] !== "authUser",
-    });
+  const handleSetUser = (newUser: AuthUser) => {
+    setUser(newUser);
   };
 
   const handleExternalRedirect = useCallback(
@@ -123,8 +124,8 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     [],
   );
 
-  const handleAuthLoading = useCallback((loading: boolean) => {
-    setLoading(loading);
+  const handleAuthLoading = useCallback((newState: boolean) => {
+    setLoading(newState);
   }, []);
 
   if (isRedirecting) {
