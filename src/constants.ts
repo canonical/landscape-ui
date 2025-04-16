@@ -28,3 +28,4 @@ export const COMMON_NUMBERS = {
   ONE: 1,
   TWO: 2,
 };
+export const HOMEPAGE_PATH = "/overview";

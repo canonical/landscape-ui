@@ -13,6 +13,7 @@ import useNotify from "@/hooks/useNotify";
 import type { AuthUser } from "@/features/auth";
 import { redirectToExternalUrl, useUnsigned } from "@/features/auth";
 import Redirecting from "@/components/layout/Redirecting";
+import type { FeatureKey } from "@/types/FeatureKey";
 
 export interface AuthContextProps {
   authLoading: boolean;
@@ -23,6 +24,7 @@ export interface AuthContextProps {
   setAuthLoading: (loading: boolean) => void;
   setUser: (user: AuthUser) => void;
   user: AuthUser | null;
+  isFeatureEnabled: (feature: FeatureKey) => boolean;
 }
 
 const initialState: AuthContextProps = {
@@ -33,6 +35,7 @@ const initialState: AuthContextProps = {
   redirectToExternalUrl: () => undefined,
   setAuthLoading: () => undefined,
   setUser: () => undefined,
+  isFeatureEnabled: () => false,
   user: null,
 };
 
@@ -132,9 +135,31 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     return <Redirecting />;
   }
 
+  const isFeatureEnabled = useCallback(
+    (featureKey: FeatureKey) => {
+      if (!user) {
+        return false;
+      }
+
+      const match = user.features.find((feature) => feature.key === featureKey);
+
+      if (!match) {
+        console.warn(
+          `Feature ${featureKey} not found in the features response.`,
+        );
+        return false;
+      }
+
+      return match.enabled;
+    },
+    [user],
+  );
+
   return (
     <AuthContext.Provider
       value={{
+        isFeatureEnabled,
+        user,
         authLoading: loading,
         authorized: null !== user,
         isOidcAvailable: !!getLoginMethodsQueryResult?.data.oidc.available,
@@ -142,7 +167,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         redirectToExternalUrl: handleExternalRedirect,
         setAuthLoading: handleAuthLoading,
         setUser: handleSetUser,
-        user,
       }}
     >
       {children}
