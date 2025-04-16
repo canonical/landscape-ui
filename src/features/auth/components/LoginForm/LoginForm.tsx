@@ -12,6 +12,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import * as Yup from "yup";
 import { useUnsigned } from "../../hooks";
 import classes from "./LoginForm.module.scss";
+import { HOMEPAGE_PATH } from "@/constants";
 
 interface FormProps {
   email: string;
@@ -64,7 +65,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
             setUser(data);
           }
 
-          navigate(redirectTo ?? "/overview", { replace: true });
+          navigate(redirectTo ?? HOMEPAGE_PATH, { replace: true });
         }
       } catch (error) {
         debug(error);

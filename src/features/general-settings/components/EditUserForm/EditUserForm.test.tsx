@@ -62,6 +62,7 @@ const authContextValues: AuthContextProps = {
   user: authUser,
   isOidcAvailable: true,
   redirectToExternalUrl: vi.fn(),
+  isFeatureEnabled: vi.fn(),
 };
 
 const mockSelfHosted = {

@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
+import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
 import { useUnsigned } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import classes from "./OidcAuthPage.module.scss";
@@ -39,7 +39,7 @@ const OidcAuthPage: FC = () => {
       setUser(getAuthStateQueryResult.data);
 
       const url = new URL(
-        getAuthStateQueryResult.data.return_to?.url ?? "/overview",
+        getAuthStateQueryResult.data.return_to?.url ?? HOMEPAGE_PATH,
         location.origin,
       );
 
