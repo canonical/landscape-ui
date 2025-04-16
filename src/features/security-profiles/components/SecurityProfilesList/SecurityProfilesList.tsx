@@ -17,6 +17,7 @@ import type { SecurityProfile, SecurityProfileActions } from "../../types";
 import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
 import { getNotificationMessage } from "./helpers";
 import classes from "./SecurityProfilesList.module.scss";
+import NoData from "@/components/layout/NoData";
 
 const SecurityProfileRunFixForm = lazy(
   async () => import("../SecurityProfileRunFixForm"),
@@ -203,16 +204,18 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "name",
         Header: "Name",
         className: classes.nameCell,
-        Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
-          <Button
-            appearance="link"
-            type="button"
-            className={`${classes.ellipsisButton} u-no-margin--bottom u-no-padding--top`}
-            onClick={actions(profile).viewDetails}
-          >
-            {profile.title}
-          </Button>
-        ),
+        Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => {
+          return (
+            <Button
+              appearance="link"
+              type="button"
+              className={`${classes.ellipsisButton} u-no-margin--bottom u-no-padding--top`}
+              onClick={actions(profile).viewDetails}
+            >
+              {profile.title}
+            </Button>
+          );
+        },
       },
       {
         accessor: "status",
@@ -245,8 +248,6 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 </span>
               </div>
             );
-          } else {
-            return status;
           }
         },
         getCellIcon: ({
@@ -272,6 +273,8 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           const { passing, failing, in_progress } =
             row.original.last_run_results;
           const total = row.original.associated_instances;
+
+          if (!row.original.last_run_results.timestamp) return <NoData />;
 
           const notRun = total - (passing + failing + in_progress);
 
@@ -372,19 +375,29 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         ),
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <>
-            <Link
-              to={{
-                pathname: "/instances",
-                search: `?tags=${profile.tags.join("%2C")}`,
-              }}
-            >
-              {profile.associated_instances} instances
-            </Link>
+            {profile.associated_instances > 0 ? (
+              <Link
+                to={{
+                  pathname: "/instances",
+                  search: `?tags=${profile.tags.join("%2C")}`,
+                }}
+              >
+                {profile.associated_instances}{" "}
+                {profile.associated_instances === 1 ? "instance" : "instances"}
+              </Link>
+            ) : (
+              <span>{profile.associated_instances} instances</span>
+            )}
 
             <br />
-            <span className={classes.ellipsis}>
-              {profile.tags ? profile.tags.join(", ") : profile.tags}
-            </span>
+
+            {!profile.tags?.length ? (
+              <NoData />
+            ) : (
+              <span className={classes.ellipsis}>
+                {profile.tags.join(", ")}
+              </span>
+            )}
           </>
         ),
       },
@@ -417,12 +430,24 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           </span>
         ),
         Cell: ({ row }: CellProps<SecurityProfile>) => {
-          const lastRun = moment(
-            row.original.last_run_results.timestamp,
-          ).format(DISPLAY_DATE_TIME_FORMAT);
-          const nextRun = moment(row.original.next_run_time).format(
-            DISPLAY_DATE_TIME_FORMAT,
-          );
+          const lastRun =
+            !row.original.last_run_results.timestamp ||
+            row.original.last_run_results.timestamp === "" ? (
+              <NoData />
+            ) : (
+              moment(row.original.last_run_results.timestamp).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )
+            );
+
+          const nextRun =
+            !row.original.next_run_time || row.original.next_run_time === "" ? (
+              <NoData />
+            ) : (
+              moment(row.original.next_run_time).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )
+            );
           const { schedule } = row.original;
 
           const tooltipMessage = (
