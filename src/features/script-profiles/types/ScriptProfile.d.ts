@@ -5,8 +5,19 @@ export type Trigger =
       trigger_type: "event";
       event_type: "post_enrollment";
     }
-  | { trigger_type: "one_time"; timestamp: string }
-  | { trigger_type: "recurring"; start_after: string; interval: string };
+  | {
+      trigger_type: "one_time";
+      next_run: string;
+      last_run: string;
+      timestamp: string;
+    }
+  | {
+      trigger_type: "recurring";
+      interval: string;
+      next_run: string;
+      last_run: string;
+      start_after: string;
+    };
 
 export interface ScriptProfile extends Record<string, unknown> {
   access_group: string;

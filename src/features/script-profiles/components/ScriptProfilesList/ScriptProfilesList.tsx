@@ -3,6 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { MenuLink } from "@canonical/react-components";
 import {
   Button,
   ContextualMenu,
@@ -192,7 +193,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         className: classes.actions,
         Header: "Actions",
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => {
-          const links = [
+          const links: MenuLink[] = [
             {
               children: (
                 <>
@@ -203,30 +204,33 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
               hasIcon: true,
               onClick: actions(profile).viewDetails,
             },
-            {
-              children: (
-                <>
-                  <Icon name="edit" />
-                  <span>Edit</span>
-                </>
-              ),
-              hasIcon: true,
-              onClick: actions(profile).edit,
-              disabled: profile.archived,
-            },
-            {
-              children: (
-                <>
-                  <Icon name="archive--negative" />
-                  <span>Archive</span>
-                </>
-              ),
-              hasIcon: true,
-              onClick: actions(profile).archive,
-              disabled: profile.archived,
-              className: classes.negative,
-            },
           ];
+
+          if (!profile.archived) {
+            links.push(
+              {
+                children: (
+                  <>
+                    <Icon name="edit" />
+                    <span>Edit</span>
+                  </>
+                ),
+                hasIcon: true,
+                onClick: actions(profile).edit,
+              },
+              {
+                children: (
+                  <>
+                    <Icon name="archive--negative" />
+                    <span>Archive</span>
+                  </>
+                ),
+                hasIcon: true,
+                onClick: actions(profile).archive,
+                className: classes.archive,
+              },
+            );
+          }
 
           return (
             <ContextualMenu

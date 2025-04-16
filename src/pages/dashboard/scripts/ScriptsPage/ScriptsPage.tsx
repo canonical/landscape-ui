@@ -2,17 +2,21 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { ScriptsContainer, ScriptsTabs } from "@/features/scripts";
-import useEnv from "@/hooks/useEnv";
+import useAuth from "@/hooks/useAuth";
 import type { FC } from "react";
 
 const ScriptsPage: FC = () => {
-  const { isSelfHosted } = useEnv();
+  const { isFeatureEnabled } = useAuth();
 
   return (
     <PageMain>
       <PageHeader title="Scripts" />
       <PageContent>
-        {!isSelfHosted ? <ScriptsContainer /> : <ScriptsTabs />}
+        {isFeatureEnabled("script-profiles") ? (
+          <ScriptsTabs />
+        ) : (
+          <ScriptsContainer />
+        )}
       </PageContent>
     </PageMain>
   );

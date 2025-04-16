@@ -1,11 +1,3 @@
-const UNITS_OF_TIME = [
-  { min: 0, max: 59 },
-  { min: 0, max: 23 },
-  { min: 1, max: 31 },
-  { min: 1, max: 12 },
-  { min: 0, max: 6 },
-];
-
 interface ScheduleRange {
   start: number;
   end: number;
@@ -17,8 +9,13 @@ interface LabelInfo {
   offset?: number;
 }
 
-const phrase = (...strings: string[]) =>
-  `${strings.slice(0, -1).join(", ")}${strings.length > 2 ? "," : ""}${strings.length > 1 ? " and " : ""}${strings.slice(-1)}`;
+const UNITS_OF_TIME = [
+  { min: 0, max: 59 },
+  { min: 0, max: 23 },
+  { min: 1, max: 31 },
+  { min: 1, max: 12 },
+  { min: 0, max: 6 },
+];
 
 const getCronLabel = (value: number, labelInfo?: LabelInfo) =>
   labelInfo
@@ -32,60 +29,71 @@ const getCronPhrasePart = (
   prefix?: string,
   labelInfo?: LabelInfo,
 ) => {
-  let response = "";
+  let phrasePart = "";
 
   if (
-    !ranges.some(
+    ranges.some(
       (range) =>
         range.start == UNITS_OF_TIME[index].min &&
         range.end == UNITS_OF_TIME[index].max &&
         range.step == 1,
     )
   ) {
-    if (prefix) {
-      response += ` ${prefix} `;
-    }
-
-    response += phrase(
-      ...ranges.map((range) => {
-        if (
-          range.start < UNITS_OF_TIME[index].min ||
-          range.end > UNITS_OF_TIME[index].max
-        ) {
-          throw new Error("Value out of range.");
-        }
-
-        let innerResponse = "";
-
-        if (range.step > 1 || range.start != range.end) {
-          innerResponse += "every ";
-        }
-
-        if (range.step > 1) {
-          innerResponse += `${range.step}th `;
-        }
-
-        if (range.start != range.end || range.step > 1) {
-          innerResponse += unitOfTime;
-
-          if (
-            range.start != UNITS_OF_TIME[index].min ||
-            range.end != UNITS_OF_TIME[index].max
-          ) {
-            innerResponse += ` from ${getCronLabel(range.start, labelInfo)} through ${getCronLabel(range.end, labelInfo)}`;
-          }
-        } else if (labelInfo) {
-          innerResponse += getCronLabel(range.start, labelInfo);
-        } else {
-          innerResponse += `${unitOfTime} ${range.start}`;
-        }
-
-        return innerResponse;
-      }),
-    );
+    return phrasePart;
   }
 
-  return response;
+  if (prefix) {
+    phrasePart += ` ${prefix} `;
+  }
+
+  const rangeStrings = ranges.map((range) => {
+    if (
+      range.start < UNITS_OF_TIME[index].min ||
+      range.end > UNITS_OF_TIME[index].max
+    ) {
+      throw new Error("Value out of range.");
+    }
+
+    let rangeString = "";
+
+    if (range.step > 1 || range.start != range.end) {
+      rangeString += "every ";
+    }
+
+    if (range.step > 1) {
+      rangeString += `${range.step}th `;
+    }
+
+    if (range.start != range.end || range.step > 1) {
+      rangeString += unitOfTime;
+
+      if (
+        range.start != UNITS_OF_TIME[index].min ||
+        range.end != UNITS_OF_TIME[index].max
+      ) {
+        rangeString += ` from ${getCronLabel(range.start, labelInfo)} through ${getCronLabel(range.end, labelInfo)}`;
+      }
+    } else if (labelInfo) {
+      rangeString += getCronLabel(range.start, labelInfo);
+    } else {
+      rangeString += `${unitOfTime} ${range.start}`;
+    }
+
+    return rangeString;
+  });
+
+  phrasePart += rangeStrings.slice(0, -1).join(", ");
+
+  if (rangeStrings.length > 2) {
+    phrasePart += ",";
+  }
+  if (rangeStrings.length > 1) {
+    phrasePart += " and ";
+  }
+
+  phrasePart += rangeStrings.slice(-1);
+
+  return phrasePart;
 };
 
 export const getCronPhrase = (interval: string) => {
@@ -118,7 +126,11 @@ export const getCronPhrase = (interval: string) => {
     interval = interval.replace(key, (i + 1).toString());
   }
 
-  const parts = interval.split(" ");
+  if (interval.match(/[^\d *\-,/]/)) {
+    throw new Error("Invalid character.");
+  }
+
+  const parts = interval.trim().split(/ +/);
 
   if (parts.length != 5) {
     throw new Error("Enter 5 values.");
@@ -192,7 +204,7 @@ export const getCronPhrase = (interval: string) => {
       }),
   );
 
-  let response = '"At ';
+  let phrase = "at ";
 
   if (
     minutes.some(
@@ -202,7 +214,7 @@ export const getCronPhrase = (interval: string) => {
         range.step == 1,
     )
   ) {
-    response += "every minute";
+    phrase += "every minute";
   }
 
   if (
@@ -222,15 +234,15 @@ export const getCronPhrase = (interval: string) => {
       throw new Error("Value out of range.");
     }
 
-    response += `${hours[0].start.toString().padStart(2, "0")}:${minutes[0].start.toString().padStart(2, "0")}`;
+    phrase += `${hours[0].start.toString().padStart(2, "0")}:${minutes[0].start.toString().padStart(2, "0")}`;
   } else {
-    response += getCronPhrasePart(minutes, 0, "minute");
-    response += getCronPhrasePart(hours, 1, "hour", "past");
+    phrase += getCronPhrasePart(minutes, 0, "minute");
+    phrase += getCronPhrasePart(hours, 1, "hour", "past");
   }
 
-  response += getCronPhrasePart(daysOfMonth, 2, "day-of-month", "on");
+  phrase += getCronPhrasePart(daysOfMonth, 2, "day-of-month", "on");
 
-  response += getCronPhrasePart(daysOfWeek, 4, "day-of-week", "on", {
+  phrase += getCronPhrasePart(daysOfWeek, 4, "day-of-week", "on", {
     labels: [
       "Sunday",
       "Monday",
@@ -242,7 +254,7 @@ export const getCronPhrase = (interval: string) => {
     ],
   });
 
-  response += getCronPhrasePart(months, 3, "month", "in", {
+  phrase += getCronPhrasePart(months, 3, "month", "in", {
     offset: 1,
     labels: [
       "January",
@@ -260,5 +272,5 @@ export const getCronPhrase = (interval: string) => {
     ],
   });
 
-  return response + '"';
+  return phrase;
 };

@@ -117,9 +117,20 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({
       <InfoItem label="Trigger" value={getTriggerLongText(profile)} />
 
       <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="Next run" value="PLACEHOLDER" />
-        </Col>
+        {profile.trigger.trigger_type != "event" && (
+          <Col size={6}>
+            <InfoItem
+              label="Next run"
+              value={
+                profile.trigger.next_run ? (
+                  `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                ) : (
+                  <NoData />
+                )
+              }
+            />
+          </Col>
+        )}
 
         <Col size={6}>
           <InfoItem

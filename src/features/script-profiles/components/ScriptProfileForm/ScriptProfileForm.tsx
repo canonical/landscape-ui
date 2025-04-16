@@ -6,6 +6,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useGetScripts } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
@@ -20,7 +21,7 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import type { ComponentProps, FC } from "react";
+import { useEffect, useState, type ComponentProps, type FC } from "react";
 import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
@@ -94,6 +95,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   );
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
+  const { getInstancesQuery } = useInstances();
   const { getAccessGroupQuery } = useRoles();
   const {
     data: getAccessGroupQueryResponse,
@@ -180,6 +182,8 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
               trigger: {
                 trigger_type: "one_time",
                 timestamp: values.timestamp,
+                last_run: "",
+                next_run: "",
               },
             });
 
@@ -198,6 +202,8 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
                 trigger_type: "recurring",
                 interval: values.interval,
                 start_after: values.start_after,
+                last_run: "",
+                next_run: "",
               },
             });
 
@@ -215,12 +221,42 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     },
   });
 
+  const { data: getInstancesQueryResult, isLoading: isInstancesPending } =
+    getInstancesQuery({
+      query: formik.values.all_computers
+        ? undefined
+        : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR "),
+    });
+
+  const [isAssociationLimitReached, setIsAssociationLimitReached] =
+    useState(false);
+
+  useEffect(() => {
+    if (!getInstancesQueryResult || !scriptProfileLimits) {
+      return;
+    }
+
+    if (!formik.values.tags.length && !formik.values.all_computers) {
+      setIsAssociationLimitReached(false);
+      return;
+    }
+
+    setIsAssociationLimitReached(
+      getInstancesQueryResult.data.count >=
+        scriptProfileLimits.max_num_computers,
+    );
+  }, [getInstancesQueryResult]);
+
   if (
     isScriptsLoading ||
     isAccessGroupsLoading ||
     isGettingScriptProfileLimits
   ) {
     return <LoadingState />;
+  }
+
+  if (!scriptProfileLimits) {
+    return;
   }
 
   return (
@@ -405,13 +441,32 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         )}
       </div>
 
+      {isAssociationLimitReached && (
+        <Notification
+          severity="negative"
+          inline
+          title="Associated instances limit reached:"
+        >
+          You&apos;ve reached the limit of{" "}
+          <strong>
+            {scriptProfileLimits.max_num_computers} associated instances
+          </strong>
+          . Decrease the number of associated instances.
+        </Notification>
+      )}
+
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
         onSubmit={() => {
           formik.handleSubmit();
         }}
-        submitButtonDisabled={!formik.isValid || submitting}
+        submitButtonDisabled={
+          !formik.isValid ||
+          submitting ||
+          isAssociationLimitReached ||
+          isInstancesPending
+        }
         submitButtonText={submitButtonText}
       />
     </>
