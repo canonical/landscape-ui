@@ -32,6 +32,7 @@ import type { ModalConfirmationFormProps } from "./types";
 import { useActivities } from "@/features/activities";
 import { currentInstanceCan } from "@/features/instances";
 import { getFormikError } from "@/utils/formikErrors";
+import useAuth from "@/hooks/useAuth";
 
 const EditInstance = lazy(
   async () =>
@@ -68,6 +69,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   } = useInstances();
   const { deleteChildInstancesQuery } = useWsl();
   const { editInstanceQuery } = useInstances();
+  const { isFeatureEnabled } = useAuth();
 
   useEffect(() => {
     setInstanceTags(instance.tags);
@@ -430,14 +432,16 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 <Icon name="restart" />
                 <span>Restart</span>
               </ConfirmationButton>
-              <Button
-                className="p-segmented-control__button u-no-margin--bottom"
-                type="button"
-                onClick={handleAssociateEmployee}
-              >
-                <Icon name={ICONS.user} />
-                <span>Associate employee</span>
-              </Button>
+              {isFeatureEnabled("employee-management") && (
+                <Button
+                  className="p-segmented-control__button u-no-margin--bottom"
+                  type="button"
+                  onClick={handleAssociateEmployee}
+                >
+                  <Icon name={ICONS.user} />
+                  <span>Associate employee</span>
+                </Button>
+              )}
               <ConfirmationButton
                 className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"

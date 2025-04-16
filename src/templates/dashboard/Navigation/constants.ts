@@ -95,6 +95,7 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "Employees",
         path: "/settings/employees",
+        requiresFeature: "employee-management",
       },
       {
         label: "Roles",
@@ -107,6 +108,7 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "Identity providers",
         path: "/settings/identity-providers",
+        requiresFeature: "oidc-configuration",
       },
       {
         label: "GPG Keys",

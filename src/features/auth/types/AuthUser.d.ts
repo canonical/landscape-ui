@@ -1,3 +1,5 @@
+import type { Feature } from "@/types/Feature";
+
 export interface Account {
   name: string;
   title: string;
@@ -8,6 +10,7 @@ export interface Account {
 
 export interface AuthUser {
   accounts: Account[];
+  features: Feature[];
   current_account: string;
   email: string;
   has_password: boolean;
