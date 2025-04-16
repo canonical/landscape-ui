@@ -39,6 +39,13 @@ const SecurityProfilesPage: FC = () => {
       offset: (currentPage - 1) * pageSize,
     });
 
+  const {
+    securityProfilesCount: activeSecurityProfilesCount,
+    isSecurityProfilesLoading: isActiveSecurityProfilesLoading,
+  } = useGetSecurityProfiles({
+    statuses: ["active"],
+  });
+
   const { updateSecurityProfile } = useUpdateSecurityProfile();
 
   const [isRetentionNotificationVisible, setIsRetentionNotificationVisible] =
@@ -61,9 +68,11 @@ const SecurityProfilesPage: FC = () => {
     );
   };
 
-  if (isSecurityProfilesLoading) {
+  if (isSecurityProfilesLoading || isActiveSecurityProfilesLoading) {
     return <LoadingState />;
   }
+
+  const profileLimitReached = activeSecurityProfilesCount >= 5;
 
   const addButton = (
     <Button
@@ -71,6 +80,7 @@ const SecurityProfilesPage: FC = () => {
       type="button"
       appearance="positive"
       onClick={addSecurityProfile}
+      disabled={profileLimitReached}
     >
       Add security profile
     </Button>
@@ -96,8 +106,6 @@ const SecurityProfilesPage: FC = () => {
       </PageMain>
     );
   }
-
-  const isFiveOrMoreProfiles = securityProfiles.length >= 5;
 
   const profilesExceedingLimit = securityProfiles.filter(
     (profile) => profile.associated_instances > 5000,
@@ -145,14 +153,6 @@ const SecurityProfilesPage: FC = () => {
           </IgnorableNotifcation>
         )}
 
-        <Notification inline title="Your audit is ready for download:">
-          Your audit has been successfully generated and is now ready for
-          download.{" "}
-          <Button type="button" appearance="link" onClick={() => undefined}>
-            Download audit
-          </Button>
-        </Notification>
-
         {profilesExceedingLimit.length > 1 && (
           <Notification
             severity="negative"
@@ -177,14 +177,14 @@ const SecurityProfilesPage: FC = () => {
           </Notification>
         )}
 
-        {isFiveOrMoreProfiles && (
+        {profileLimitReached && (
           <Notification
             severity="caution"
             inline
             title="Security profiles limit reached:"
           >
             You&apos;ve reached the maximum of{" "}
-            <strong>5 Security profiles</strong>. To add more, archive profiles
+            <strong>5 security profiles</strong>. To add more, archive profiles
             that are no longer in use to free up space for active ones.
           </Notification>
         )}
@@ -249,8 +249,19 @@ const SecurityProfilesPage: FC = () => {
           </Notification>
         )}
 
+        <Notification inline title="Your audit is ready for download:">
+          Your audit has been successfully generated and is now ready for
+          download.{" "}
+          <Button type="button" appearance="link" onClick={() => undefined}>
+            Download audit
+          </Button>
+        </Notification>
+
         <SecurityProfilesHeader />
-        <SecurityProfilesList securityProfiles={securityProfiles} />
+        <SecurityProfilesList
+          profileLimitReached={profileLimitReached}
+          securityProfiles={securityProfiles}
+        />
       </PageContent>
     </PageMain>
   );

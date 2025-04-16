@@ -3,15 +3,13 @@ import Flow from "@/components/layout/Flow";
 import InfoItem from "@/components/layout/InfoItem";
 import { Form, Row } from "@canonical/react-components";
 import type { ComponentProps, FC, SyntheticEvent } from "react";
-import type { UseSecurityProfileFormProps } from "../../hooks/useSecurityProfileForm";
 import type { SecurityProfile } from "../../types";
 
 interface SecurityProfileRunFixFormProps
-  extends UseSecurityProfileFormProps,
-    Pick<
-      ComponentProps<typeof SidePanelFormButtons>,
-      "hasBackButton" | "onBackButtonPress"
-    > {
+  extends Pick<
+    ComponentProps<typeof SidePanelFormButtons>,
+    "hasBackButton" | "onBackButtonPress"
+  > {
   readonly profile: SecurityProfile;
   readonly onSubmit: () => Promise<void>;
 }

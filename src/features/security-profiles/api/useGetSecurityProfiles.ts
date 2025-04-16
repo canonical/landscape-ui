@@ -1,13 +1,13 @@
 import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { SecurityProfile } from "../types";
 
 interface GetSecurityProfilesParams {
-  limit: number;
-  offset: number;
+  limit?: number;
+  offset?: number;
   search?: string;
   statuses?: string[];
   passRateFrom?: number;
@@ -27,7 +27,7 @@ export const useGetSecurityProfiles = (params: GetSecurityProfilesParams) => {
 
   return {
     securityProfiles: response?.data.results ?? [],
-    securityprofilesCount: response?.data.count,
+    securityProfilesCount: response?.data.count ?? 0,
     isSecurityProfilesLoading: isLoading,
   };
 };

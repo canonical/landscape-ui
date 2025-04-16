@@ -13,8 +13,15 @@ import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useAddSecurityProfile, useRunSecurityProfile } from "../../api";
 import { useUpdateSecurityProfile } from "../../api/useUpdateSecurityProfile";
-import { SECURITY_PROFILE_STATUSES } from "../../constants";
-import { notifyCreation } from "../../helpers";
+import {
+  SECURITY_PROFILE_MODE_LABELS,
+  SECURITY_PROFILE_STATUSES,
+} from "../../constants";
+import {
+  getAssociatedInstancesLink,
+  getTags,
+  notifyCreation,
+} from "../../helpers";
 import type { SecurityProfile, SecurityProfileActions } from "../../types";
 import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
 import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
@@ -37,9 +44,11 @@ const SecurityProfileForm = lazy(async () => import("../SecurityProfileForm"));
 
 interface SecurityProfilesListProps {
   readonly securityProfiles: SecurityProfile[];
+  readonly profileLimitReached?: boolean;
 }
 
 const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
+  profileLimitReached,
   securityProfiles,
 }) => {
   const { notify } = useNotify();
@@ -214,6 +223,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           <SecurityProfileDetails
             actions={actions(profile, true)}
             profile={profile}
+            profileLimitReached={profileLimitReached}
           />
         </Suspense>,
         "medium",
@@ -366,29 +376,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         ),
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <>
-            {profile.associated_instances > 0 ? (
-              <Link
-                to={{
-                  pathname: "/instances",
-                  search: `?tags=${profile.tags.join("%2C")}`,
-                }}
-              >
-                {profile.associated_instances}{" "}
-                {profile.associated_instances === 1 ? "instance" : "instances"}
-              </Link>
-            ) : (
-              <span>{profile.associated_instances} instances</span>
-            )}
-
+            {getAssociatedInstancesLink(profile)}
             <br />
-
-            {!profile.tags?.length ? (
-              <NoData />
-            ) : (
-              <span className={classes.ellipsis}>
-                {profile.tags.join(", ")}
-              </span>
-            )}
+            {getTags(profile)}
           </>
         ),
       },
@@ -399,17 +389,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           row: {
             original: { mode },
           },
-        }: CellProps<SecurityProfile>) => {
-          if (mode === "audit") {
-            return "audit only";
-          } else if (mode === "audit-fix-restart") {
-            return "fix, restart, audit";
-          } else if (mode === "audit-fix") {
-            return "fix and audit";
-          } else {
-            return mode;
-          }
-        },
+        }: CellProps<SecurityProfile>) => SECURITY_PROFILE_MODE_LABELS[mode],
       },
       {
         accessor: "schedule",
@@ -478,6 +458,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           <SecurityProfileListContextualMenu
             actions={actions(profile)}
             profile={profile}
+            profileLimitReached={profileLimitReached}
           />
         ),
       },

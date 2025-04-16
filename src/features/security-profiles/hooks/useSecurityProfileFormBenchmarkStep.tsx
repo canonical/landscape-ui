@@ -2,7 +2,10 @@ import FileInput from "@/components/form/FileInput";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { CustomSelect, Notification } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
-import { SECURITY_PROFILE_BENCHMARK_LABELS } from "../constants";
+import {
+  SECURITY_PROFILE_BENCHMARK_LABELS,
+  SECURITY_PROFILE_MODE_LABELS,
+} from "../constants";
 import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 
 export default function useSecurityProfileFormBenchmarkStep<
@@ -112,35 +115,35 @@ export default function useSecurityProfileFormBenchmarkStep<
               label: (
                 <LabelWithDescription
                   className="u-no-padding--top"
-                  label="Audit only"
+                  label={SECURITY_PROFILE_MODE_LABELS["audit"]}
                   description="Generates an audit without applying any fixes or remediation."
                 />
               ),
               value: "audit",
-              text: "Audit only",
+              text: SECURITY_PROFILE_MODE_LABELS["audit"],
             },
             {
               label: (
                 <LabelWithDescription
                   className="u-no-padding--top"
-                  label="Fix and audit"
+                  label={SECURITY_PROFILE_MODE_LABELS["audit-fix"]}
                   description="Applies fixes and generates an audit after remediation."
                 />
               ),
               value: "audit-fix",
-              text: "Fix and audit",
+              text: SECURITY_PROFILE_MODE_LABELS["audit-fix"],
             },
             {
               label: (
                 <LabelWithDescription
                   className="u-no-padding--top"
-                  label="Fix, restart, audit"
+                  label={SECURITY_PROFILE_MODE_LABELS["audit-fix-restart"]}
                   description="Applies fixes, requires a machine restart, and generates an
                   audit after remediation."
                 />
               ),
               value: "audit-fix-restart",
-              text: "Fix, restart, audit",
+              text: SECURITY_PROFILE_MODE_LABELS["audit-fix-restart"],
             },
           ]}
           value={formik.values.mode ?? ""}

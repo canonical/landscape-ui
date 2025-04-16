@@ -8,19 +8,27 @@ import moment from "moment";
 import { type FC } from "react";
 import {
   SECURITY_PROFILE_BENCHMARK_LABELS,
+  SECURITY_PROFILE_MODE_LABELS,
   SECURITY_PROFILE_STATUSES,
 } from "../../constants";
+import {
+  getAssociatedInstancesLink,
+  getTags,
+  getTailoringFile,
+} from "../../helpers";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 
 interface SecurityProfileDetailsProps {
   readonly actions: SecurityProfileActions;
   readonly profile: SecurityProfile;
+  readonly profileLimitReached?: boolean;
 }
 
 const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
   actions,
   profile,
+  profileLimitReached,
 }) => {
   const { getAccessGroupQuery } = useRoles();
   const {
@@ -37,7 +45,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
   );
 
   if (!accessGroup) {
-    throw new Error();
+    return;
   }
 
   return (
@@ -83,6 +91,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             type="button"
             hasIcon
             onClick={actions.duplicate}
+            disabled={profileLimitReached}
           >
             <Icon name="canvas" />
             <span>Duplicate</span>
@@ -131,31 +140,15 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
         </Col>
 
         <Col size={6}>
-          <InfoItem
-            label="Tailoring file"
-            value={
-              profile.tailoring_file_uri ? (
-                <>
-                  PLACEHOLDER
-                  <Button
-                    className="u-no-margin--bottom"
-                    type="button"
-                    hasIcon
-                    appearance="base"
-                  >
-                    <Icon name="begin-downloading" />
-                  </Button>
-                </>
-              ) : (
-                <NoData />
-              )
-            }
-          />
+          <InfoItem label="Tailoring file" value={getTailoringFile(profile)} />
         </Col>
       </Row>
 
       <Row className="u-no-padding">
-        <InfoItem label="Mode" value={profile.mode} />
+        <InfoItem
+          label="Mode"
+          value={SECURITY_PROFILE_MODE_LABELS[profile.mode]}
+        />
       </Row>
 
       <hr />
@@ -205,18 +198,12 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
       <Row className="u-no-padding">
         <InfoItem
           label="Associated instances"
-          value={
-            <>
-              <Button className="u-no-margin--bottom" appearance="link">
-                <span>{profile.associated_instances} instances</span>
-              </Button>
-            </>
-          }
+          value={getAssociatedInstancesLink(profile)}
         />
       </Row>
 
       <Row className="u-no-padding">
-        <InfoItem label="Tags" value={profile.tags.join(", ") || <NoData />} />
+        <InfoItem label="Tags" value={getTags(profile)} />
       </Row>
     </>
   );

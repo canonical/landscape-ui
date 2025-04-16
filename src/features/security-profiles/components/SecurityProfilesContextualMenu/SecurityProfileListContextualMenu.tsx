@@ -8,11 +8,12 @@ import classes from "./SecurityProfileListContextualMenu.module.scss";
 interface SecurityProfileListContextualMenuProps {
   readonly actions: SecurityProfileActions;
   readonly profile: SecurityProfile;
+  readonly profileLimitReached?: boolean;
 }
 
 const SecurityProfileListContextualMenu: FC<
   SecurityProfileListContextualMenuProps
-> = ({ actions, profile }) => {
+> = ({ actions, profile, profileLimitReached }) => {
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
@@ -68,6 +69,7 @@ const SecurityProfileListContextualMenu: FC<
       "aria-label": `Duplicate "${profile.title}" security profile`,
       hasIcon: true,
       onClick: actions.duplicate,
+      disabled: profileLimitReached,
     },
     {
       children: (
