@@ -36,7 +36,7 @@ export const useGetScriptProfiles = (params: GetScriptProfilesParams = {}) => {
 
   return {
     scriptProfiles: response?.data.results ?? [],
-    scriptProfilesCount: response?.data.count,
+    scriptProfilesCount: response?.data.count ?? 0,
     isGettingScriptProfiles: isLoading,
   };
 };

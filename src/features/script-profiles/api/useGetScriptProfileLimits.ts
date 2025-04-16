@@ -21,7 +21,7 @@ export const useGetScriptProfileLimits = () => {
   });
 
   return {
-    scriptProfileLimits: response?.data,
+    scriptProfileLimits: response?.data ?? null,
     isGettingScriptProfileLimits: isLoading,
   };
 };

@@ -3,6 +3,7 @@ import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
+import { useGetScripts } from "@/features/scripts";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -22,19 +23,12 @@ const SingleScript = lazy(
 
 const ScriptProfileForm = lazy(async () => import("../ScriptProfileForm"));
 
-interface ScriptProfilesPanelProps {
-  readonly hasScripts?: boolean;
-  readonly isGettingScripts?: boolean;
-}
-
-const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
-  hasScripts,
-  isGettingScripts,
-}) => {
+const ScriptProfilesPanel: FC = () => {
   const { notify } = useNotify();
   const { search, status } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
+  const { scriptsCount, isScriptsLoading } = useGetScripts();
   const { scriptProfiles, scriptProfilesCount, isGettingScriptProfiles } =
     useGetScriptProfiles();
   const { addScriptProfile, isAddingScriptProfile } = useAddScriptProfile();
@@ -91,11 +85,8 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
     return <LoadingState />;
   }
 
-  if (
-    activeScriptProfilesCount == undefined ||
-    scriptProfileLimits == undefined
-  ) {
-    throw new Error();
+  if (scriptProfileLimits == null) {
+    return;
   }
 
   const addProfileButton = (
@@ -157,7 +148,7 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
     );
   }
 
-  if (isGettingScripts) {
+  if (isScriptsLoading) {
     return <LoadingState />;
   }
 
@@ -170,7 +161,7 @@ const ScriptProfilesPanel: FC<ScriptProfilesPanelProps> = ({
     );
   };
 
-  if (!hasScripts) {
+  if (!scriptsCount) {
     return (
       <EmptyState
         title="You need at least one script to add a profile"

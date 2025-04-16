@@ -1,24 +1,19 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import type { Script } from "@/features/scripts";
-import { ScriptList, ScriptsEmptyState } from "@/features/scripts";
+import {
+  ScriptList,
+  ScriptsEmptyState,
+  useGetScripts,
+} from "@/features/scripts";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import ScriptsHeader from "./components/ScriptsHeader";
 import { isScriptsEmptyState, isScriptsLoadingState } from "./helpers";
 
-interface ScriptsContainerProps {
-  readonly scripts: Script[];
-  readonly scriptsCount: number;
-  readonly isScriptsLoading: boolean;
-}
-
-const ScriptsContainer: FC<ScriptsContainerProps> = ({
-  scripts,
-  scriptsCount,
-  isScriptsLoading,
-}) => {
+const ScriptsContainer: FC = () => {
   const { currentPage, pageSize } = usePageParams();
+
+  const { scripts, scriptsCount, isScriptsLoading } = useGetScripts();
 
   if (isScriptsLoadingState(currentPage, pageSize, isScriptsLoading)) {
     return <LoadingState />;
