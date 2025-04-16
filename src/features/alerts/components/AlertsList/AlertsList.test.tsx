@@ -25,6 +25,7 @@ const authProps: AuthContextProps = {
   user: authUser,
   isOidcAvailable: true,
   redirectToExternalUrl: vi.fn(),
+  isFeatureEnabled: vi.fn(),
 };
 
 describe("AlertsList", () => {

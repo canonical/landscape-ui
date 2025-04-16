@@ -6,4 +6,5 @@ export interface MenuItem {
   env?: Environment;
   icon?: string;
   items?: MenuItem[];
+  requiresFeature?: FeatureKey;
 }

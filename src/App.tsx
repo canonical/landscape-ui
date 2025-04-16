@@ -11,6 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { lazy, Suspense, useEffect } from "react";
 import {
+  Navigate,
   Outlet,
   Route,
   Routes,
@@ -18,6 +19,8 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router";
+import type { FeatureKey } from "@/types/FeatureKey";
+import { HOMEPAGE_PATH } from "@/constants";
 
 const OidcAuthPage = lazy(async () => import("@/pages/auth/handle/oidc"));
 const UbuntuOneAuthPage = lazy(
@@ -138,7 +141,7 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
     const redirectTo = searchParams.get("redirect-to");
 
     if (!redirectTo) {
-      navigate("/overview", { replace: true });
+      navigate(HOMEPAGE_PATH, { replace: true });
       return;
     }
 
@@ -173,6 +176,21 @@ const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
   }
 
   return isSelfHosted ? <>{children}</> : <Redirecting />;
+};
+
+interface FeatureRouteProps {
+  readonly feature: FeatureKey;
+  readonly children: ReactNode;
+}
+
+const FeatureRoute: FC<FeatureRouteProps> = ({ feature, children }) => {
+  const { isFeatureEnabled } = useAuth();
+
+  return isFeatureEnabled(feature) ? (
+    <>{children}</>
+  ) : (
+    <Navigate to={HOMEPAGE_PATH} replace />
+  );
 };
 
 const App: FC = () => {
@@ -243,7 +261,14 @@ const App: FC = () => {
                   path="settings/administrators"
                   element={<AdministratorsPage />}
                 />
-                <Route path="settings/employees" element={<EmployeesPage />} />
+                <Route
+                  path="settings/employees"
+                  element={
+                    <FeatureRoute feature="employee-management">
+                      <EmployeesPage />
+                    </FeatureRoute>
+                  }
+                />
                 <Route
                   path="settings/access-groups"
                   element={<AccessGroupsPage />}
@@ -253,10 +278,14 @@ const App: FC = () => {
                   path="settings/general"
                   element={<GeneralOrganisationSettings />}
                 />
-                {isOidcAvailable && (
+                {!isOidcAvailable && (
                   <Route
                     path="settings/identity-providers"
-                    element={<IdentityProvidersPage />}
+                    element={
+                      <FeatureRoute feature="oidc-configuration">
+                        <IdentityProvidersPage />
+                      </FeatureRoute>
+                    }
                   />
                 )}
                 <Route path="settings/gpg-keys" element={<GPGKeysPage />} />

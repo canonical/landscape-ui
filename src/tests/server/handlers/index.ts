@@ -27,6 +27,7 @@ import usn from "./usn";
 import wsl from "./wsl";
 import employees from "./employees";
 import autoinstallFiles from "./autoinstallFiles";
+import features from "./features";
 
 export default [
   ...accessGroup,
@@ -58,4 +59,5 @@ export default [
   ...userSettings,
   ...usn,
   ...wsl,
+  ...features,
 ];
