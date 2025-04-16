@@ -1,15 +1,18 @@
-import type { FC } from "react";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { ScriptsTabs } from "@/features/scripts";
+import { ScriptsContainer, ScriptsTabs } from "@/features/scripts";
+import useEnv from "@/hooks/useEnv";
+import type { FC } from "react";
 
 const ScriptsPage: FC = () => {
+  const { isSelfHosted } = useEnv();
+
   return (
     <PageMain>
       <PageHeader title="Scripts" />
       <PageContent>
-        <ScriptsTabs />
+        {!isSelfHosted ? <ScriptsContainer /> : <ScriptsTabs />}
       </PageContent>
     </PageMain>
   );

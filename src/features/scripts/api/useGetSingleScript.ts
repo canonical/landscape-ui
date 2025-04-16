@@ -1,13 +1,13 @@
-import type { AxiosError, AxiosResponse } from "axios";
 import type { Script } from "@/features/scripts";
-import { useQuery } from "@tanstack/react-query";
-import type { ApiError } from "@/types/api/ApiError";
 import useFetch from "@/hooks/useFetch";
+import type { ApiError } from "@/types/api/ApiError";
+import { useQuery } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
 
 export const useGetSingleScript = (scriptId: Script["id"]) => {
   const authFetch = useFetch();
 
-  const { data, isLoading } = useQuery<
+  const { data: response, isLoading } = useQuery<
     AxiosResponse<Script>,
     AxiosError<ApiError>
   >({
@@ -16,7 +16,7 @@ export const useGetSingleScript = (scriptId: Script["id"]) => {
   });
 
   return {
-    script: data ?? null,
+    script: response?.data ?? null,
     isScriptLoading: isLoading,
   };
 };

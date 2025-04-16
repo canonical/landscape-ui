@@ -1,17 +1,24 @@
-import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Script } from "@/features/scripts";
-import { useQuery } from "@tanstack/react-query";
-import type { ApiError } from "@/types/api/ApiError";
 import useFetch from "@/hooks/useFetch";
 import usePageParams from "@/hooks/usePageParams";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { PaginatedGetHookParams } from "@/types/api/PaginatedGetHookParams";
+import { useQuery } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+
+interface UseGetScriptsParams {
+  script_type?: "active" | "archived" | "redacted";
+}
 
 const DEFAULT_CONFIG: PaginatedGetHookParams = {
   listenToUrlParams: true,
 };
 
-export const useGetScripts = (config?: PaginatedGetHookParams) => {
+export const useGetScripts = (
+  config?: PaginatedGetHookParams,
+  params?: UseGetScriptsParams,
+) => {
   const authFetch = useFetch();
   const { currentPage, pageSize, status, search } = usePageParams();
 
@@ -20,23 +27,26 @@ export const useGetScripts = (config?: PaginatedGetHookParams) => {
     ...config,
   };
 
-  const params = config.listenToUrlParams
-    ? {
-        limit: pageSize,
-        offset: (currentPage - 1) * pageSize,
-        search: search ?? undefined,
-        status: status ?? undefined,
-      }
-    : {};
+  const paramsWithPagination = {
+    ...(config.listenToUrlParams
+      ? {
+          limit: pageSize,
+          offset: (currentPage - 1) * pageSize,
+          search: search ?? undefined,
+          status: status ?? undefined,
+        }
+      : {}),
+    ...params,
+  };
 
   const { data, isLoading } = useQuery<
     AxiosResponse<ApiPaginatedResponse<Script>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["scripts", params],
+    queryKey: ["scripts", paramsWithPagination],
     queryFn: async () =>
       authFetch.get("scripts", {
-        params,
+        params: paramsWithPagination,
       }),
   });
 

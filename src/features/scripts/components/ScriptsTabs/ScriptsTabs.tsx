@@ -1,14 +1,16 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import { Tabs } from "@canonical/react-components";
-import classes from "@/pages/dashboard/instances/[single]/SingleInstanceTabs/SingleInstanceTabs.module.scss";
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
+import classes from "@/pages/dashboard/instances/[single]/SingleInstanceTabs/SingleInstanceTabs.module.scss";
+import { Tabs } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 
 const ScriptsPanel = lazy(async () => import("../ScriptsContainer"));
-
-const ScriptProfilesPanel = lazy(async () => import("../ScriptProfilesPanel"));
+const ScriptProfilesPanel = lazy(
+  async () =>
+    import("@/features/script-profiles/components/ScriptProfilesPanel"),
+);
 
 const tabs = [
   {

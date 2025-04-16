@@ -1,4 +1,3 @@
-import type { FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import {
@@ -7,11 +6,13 @@ import {
   useGetScripts,
 } from "@/features/scripts";
 import usePageParams from "@/hooks/usePageParams";
-import { isScriptsEmptyState, isScriptsLoadingState } from "./helpers";
+import type { FC } from "react";
 import ScriptsHeader from "./components/ScriptsHeader";
+import { isScriptsEmptyState, isScriptsLoadingState } from "./helpers";
 
 const ScriptsContainer: FC = () => {
   const { currentPage, pageSize } = usePageParams();
+
   const { scripts, scriptsCount, isScriptsLoading } = useGetScripts();
 
   if (isScriptsLoadingState(currentPage, pageSize, isScriptsLoading)) {
@@ -27,7 +28,7 @@ const ScriptsContainer: FC = () => {
   return (
     <>
       <ScriptsHeader />
-      <ScriptList isScriptsLoading={isScriptsLoading} scripts={scripts} />
+      <ScriptList scripts={scripts} />
       <TablePagination
         totalItems={scriptsCount}
         currentItemCount={scripts.length}

@@ -19,6 +19,7 @@ export const SingleScript: FC<ComponentProps<typeof SingleScriptComponent>> = (
 export { useGetScripts, useGetSingleScript } from "./api";
 export { default as RunInstanceScriptForm } from "./components/RunInstanceScriptForm";
 export { default as ScriptList } from "./components/ScriptList";
+export { default as ScriptsContainer } from "./components/ScriptsContainer";
 export { default as ScriptsEmptyState } from "./components/ScriptsEmptyState";
 export { default as ScriptsTabs } from "./components/ScriptsTabs";
 export { useScripts } from "./hooks";
