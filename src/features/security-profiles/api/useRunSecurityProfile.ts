@@ -1,8 +1,8 @@
+import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Activity } from "@/features/activities";
 
 export interface RunSecurityProfileParams {
   id: number;

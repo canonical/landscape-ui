@@ -18,7 +18,7 @@ export default function useSecurityProfileFormNameStep<
   } = getAccessGroupQuery();
 
   return {
-    isValid: !formik.errors.title && formik.touched.title,
+    isValid: !formik.errors.title,
     description:
       "Choose a descriptive profile name and the right access group for your security profile.",
     content: (

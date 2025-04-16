@@ -1,9 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import classNames from "classnames";
-import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useAddSecurityProfile } from "../../api";
@@ -41,7 +39,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       randomize_delivery: "no",
       restart_deliver_delay_window: 1,
       restart_deliver_delay: 1,
-      start_date: moment().format(INPUT_DATE_TIME_FORMAT),
+      start_date: "",
       start_type: "",
       tags: [],
       tailoring_file: null,
@@ -85,6 +83,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       {steps[step].content}
 
       <SidePanelFormButtons
+        hasBackButton={step > 0}
         onBackButtonPress={step > 0 ? goBack : undefined}
         onSubmit={submit}
         submitButtonDisabled={

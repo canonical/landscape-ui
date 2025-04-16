@@ -1,5 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { useState, type FC } from "react";
 import { phrase } from "../../helpers";
 import type { UseSecurityProfileFormProps } from "../../hooks/useSecurityProfileForm";
@@ -7,7 +7,12 @@ import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
 import type { SecurityProfileFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileForm.module.scss";
 
-interface SecurityProfileFormProps extends UseSecurityProfileFormProps {
+interface SecurityProfileFormProps
+  extends UseSecurityProfileFormProps,
+    Pick<
+      ComponentProps<typeof SidePanelFormButtons>,
+      "hasBackButton" | "onBackButtonPress"
+    > {
   readonly getConfirmationStepDisabled?: (
     values: SecurityProfileFormValues,
   ) => boolean;
@@ -21,6 +26,8 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
   confirmationStepDescription,
   submitButtonText = "",
   submitting = false,
+  hasBackButton,
+  onBackButtonPress,
   ...props
 }) => {
   const { formik, steps } = useSecurityProfileForm(props);
@@ -54,7 +61,7 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
           {phrase(
             [
               formik.values.mode != "audit" ? "apply fixes" : null,
-              formik.values.mode == "fix-restart-audit"
+              formik.values.mode == "audit-fix-restart"
                 ? "restart instances"
                 : null,
               "generate an audit",
@@ -66,6 +73,7 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
         {step.content}
 
         <SidePanelFormButtons
+          hasBackButton
           onBackButtonPress={goBack}
           onSubmit={finishSubmit}
           submitButtonDisabled={!!step.isLoading || submitting}
@@ -95,6 +103,8 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
         }
         submitButtonLoading={steps.some((step) => step.isLoading) || submitting}
         submitButtonText={submitButtonText}
+        hasBackButton={hasBackButton}
+        onBackButtonPress={onBackButtonPress}
       />
     </>
   );

@@ -1,5 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
+import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -7,17 +8,18 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useAddSecurityProfile, useRunSecurityProfile } from "../../api";
 import { useUpdateSecurityProfile } from "../../api/useUpdateSecurityProfile";
+import { SECURITY_PROFILE_STATUSES } from "../../constants";
 import { notifyCreation } from "../../helpers";
 import type { SecurityProfile, SecurityProfileActions } from "../../types";
+import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
 import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
 import { getNotificationMessage } from "./helpers";
 import classes from "./SecurityProfilesList.module.scss";
-import NoData from "@/components/layout/NoData";
 
 const SecurityProfileRunFixForm = lazy(
   async () => import("../SecurityProfileRunFixForm"),
@@ -51,6 +53,10 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
     useUpdateSecurityProfile();
   const { runSecurityProfile } = useRunSecurityProfile();
 
+  const [modalProfile, setModalProfile] = useState<SecurityProfile | null>(
+    null,
+  );
+
   const handleRunSecurityProfile = async (profile: SecurityProfile) => {
     try {
       const { data: activity } = await runSecurityProfile({ id: profile.id });
@@ -78,12 +84,23 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
     }
   };
 
-  const actions = (profile: SecurityProfile): SecurityProfileActions => ({
+  const actions = (
+    profile: SecurityProfile,
+    hasBackButton?: boolean,
+  ): SecurityProfileActions => ({
+    archive: () => {
+      setModalProfile(profile);
+    },
+
     downloadAudit: () => {
       setSidePanelContent(
         `Download audit for ${profile.title} security profile`,
         <Suspense fallback={<LoadingState />}>
-          <SecurityProfileDownloadAuditForm profileId={profile.id} />
+          <SecurityProfileDownloadAuditForm
+            profileId={profile.id}
+            hasBackButton={hasBackButton}
+            onBackButtonPress={actions(profile).viewDetails}
+          />
         </Suspense>,
       );
     },
@@ -103,7 +120,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
               every: 1,
               months: [],
               randomize_delivery: "no",
-              start_date: moment().format(INPUT_DATE_TIME_FORMAT),
+              start_date: "",
               start_type: "",
               tailoring_file: null,
               unit_of_time: "DAILY",
@@ -116,6 +133,8 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             }}
             submitButtonText="Duplicate"
             submitting={isSecurityProfileAdding}
+            hasBackButton={hasBackButton}
+            onBackButtonPress={actions(profile).viewDetails}
           />
         </Suspense>,
       );
@@ -138,7 +157,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
               every: 1,
               months: [],
               randomize_delivery: "no",
-              start_date: moment().format(INPUT_DATE_TIME_FORMAT),
+              start_date: "",
               start_type: "",
               tailoring_file: null,
               unit_of_time: "DAILY",
@@ -153,13 +172,15 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 message:
                   values.mode == "audit"
                     ? "The changes applied will affect instances associated with this profile."
-                    : values.mode == "fix-audit"
+                    : values.mode == "audit-fix"
                       ? "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances and generate an audit."
                       : "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances, restart them, and generate an audit.",
               });
             }}
             submitButtonText="Save changes"
             submitting={isSecurityProfileUpdating}
+            hasBackButton={hasBackButton}
+            onBackButtonPress={actions(profile).viewDetails}
           />
         </Suspense>,
       );
@@ -179,6 +200,8 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             onSubmit={async () => {
               await handleRunSecurityProfile(profile);
             }}
+            hasBackButton={hasBackButton}
+            onBackButtonPress={actions(profile).viewDetails}
           />
         </Suspense>,
       );
@@ -189,7 +212,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         profile.title,
         <Suspense fallback={<LoadingState />}>
           <SecurityProfileDetails
-            actions={actions(profile)}
+            actions={actions(profile, true)}
             profile={profile}
           />
         </Suspense>,
@@ -225,46 +248,14 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           row: {
             original: { status },
           },
-        }: CellProps<SecurityProfile>) => {
-          if (status === "active") {
-            return "Active";
-          } else if (status === "archived") {
-            return "Archived";
-          } else if (status === "over-limit") {
-            return (
-              <div className={classes.statusWithIcon}>
-                <span>Over Limit</span>
-                <span className={classes.iconWrapper}>
-                  <Tooltip
-                    position="top-center"
-                    message="Only the first 5,000 instances are covered. Instances beyond the limit are not covered."
-                  >
-                    <i
-                      className="p-icon--help"
-                      role="img"
-                      aria-label="Help icon"
-                    />
-                  </Tooltip>
-                </span>
-              </div>
-            );
-          }
-        },
+        }: CellProps<SecurityProfile>) =>
+          SECURITY_PROFILE_STATUSES[status].label,
         getCellIcon: ({
           row: {
             original: { status },
           },
-        }: CellProps<SecurityProfile>) => {
-          if (status === "active") {
-            return "status-succeeded-small";
-          }
-          if (status === "archived") {
-            return "status-queued-small";
-          }
-          if (status === "over-limit") {
-            return "status-failed-small";
-          }
-        },
+        }: CellProps<SecurityProfile>) =>
+          SECURITY_PROFILE_STATUSES[status].icon,
       },
       {
         accessor: "lastAuditPassrate",
@@ -411,9 +402,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         }: CellProps<SecurityProfile>) => {
           if (mode === "audit") {
             return "audit only";
-          } else if (mode === "fix-restart-audit") {
+          } else if (mode === "audit-fix-restart") {
             return "fix, restart, audit";
-          } else if (mode === "fix-audit") {
+          } else if (mode === "audit-fix") {
             return "fix and audit";
           } else {
             return mode;
@@ -494,12 +485,20 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
     [securityProfiles],
   );
 
+  const closeModal = () => {
+    setModalProfile(null);
+  };
+
   return (
-    <ModularTable
-      emptyMsg="No security profiles found according to your search parameters."
-      columns={columns}
-      data={securityProfiles}
-    />
+    <>
+      <ModularTable
+        emptyMsg="No security profiles found according to your search parameters."
+        columns={columns}
+        data={securityProfiles}
+      />
+
+      <SecurityProfileArchiveModal close={closeModal} profile={modalProfile} />
+    </>
   );
 };
 

@@ -7,6 +7,7 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Button, Input, Notification } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
+import type { ComponentProps } from "react";
 import { useEffect, useRef, useState, type FC } from "react";
 import * as Yup from "yup";
 import { useGetSecurityProfileReport } from "../../api";
@@ -19,13 +20,17 @@ interface SecurityProfileDownloadAuditFormValues {
   end_date?: string;
 }
 
-interface SecurityProfileDownloadAuditFormProps {
+interface SecurityProfileDownloadAuditFormProps
+  extends Pick<
+    ComponentProps<typeof SidePanelFormButtons>,
+    "hasBackButton" | "onBackButtonPress"
+  > {
   readonly profileId: number;
 }
 
 const SecurityProfileDownloadAuditForm: FC<
   SecurityProfileDownloadAuditFormProps
-> = ({ profileId: id }) => {
+> = ({ profileId: id, hasBackButton, onBackButtonPress }) => {
   const debug = useDebug();
 
   const { getSingleActivityQuery } = useActivities();
@@ -89,7 +94,8 @@ const SecurityProfileDownloadAuditForm: FC<
                   message: "The end date must not be before the start date.",
                 })
                 .test({
-                  test: (end_date) => moment(end_date).isSameOrBefore(moment()),
+                  test: (end_date) =>
+                    moment(end_date).utc(true).isSameOrBefore(moment()),
                   message: "The end date must not be in the future.",
                 })
             : schema,
@@ -98,7 +104,8 @@ const SecurityProfileDownloadAuditForm: FC<
       start_date: Yup.string()
         .required("This field is required.")
         .test({
-          test: (start_date) => moment(start_date).isSameOrBefore(moment()),
+          test: (start_date) =>
+            moment(start_date).utc(true).isSameOrBefore(moment()),
           message: "The date must not be in the future.",
         }),
     }),
@@ -178,7 +185,7 @@ const SecurityProfileDownloadAuditForm: FC<
                 type="date"
                 {...formik.getFieldProps("start_date")}
                 error={getFormikError(formik, "start_date")}
-                max={moment().format(INPUT_DATE_FORMAT)}
+                max={moment().utc().format(INPUT_DATE_FORMAT)}
               />
             ),
           },
@@ -192,9 +199,9 @@ const SecurityProfileDownloadAuditForm: FC<
                     type="date"
                     {...formik.getFieldProps("start_date")}
                     error={getFormikError(formik, "start_date")}
-                    max={moment(formik.values.end_date).format(
-                      INPUT_DATE_FORMAT,
-                    )}
+                    max={moment(formik.values.end_date)
+                      .utc()
+                      .format(INPUT_DATE_FORMAT)}
                   />
                 </div>
 
@@ -205,7 +212,7 @@ const SecurityProfileDownloadAuditForm: FC<
                     type="date"
                     {...formik.getFieldProps("end_date")}
                     error={getFormikError(formik, "end_date")}
-                    max={moment().format(INPUT_DATE_FORMAT)}
+                    max={moment().utc().format(INPUT_DATE_FORMAT)}
                     min={moment(formik.values.start_date).format(
                       INPUT_DATE_FORMAT,
                     )}
@@ -246,6 +253,8 @@ const SecurityProfileDownloadAuditForm: FC<
         }
         submitButtonLoading={isSecurityProfileReportLoading}
         submitButtonText="Generate CSV"
+        hasBackButton={hasBackButton}
+        onBackButtonPress={onBackButtonPress}
       />
     </>
   );

@@ -17,7 +17,7 @@ export interface SecurityProfile extends Record<string, unknown> {
     report_uri: string | null;
     timestamp: string;
   };
-  mode: "audit" | "fix-audit" | "fix-restart-audit";
+  mode: "audit" | "audit-fix" | "audit-fix-restart";
   modification_time: string;
   name: string;
   next_run_time: string;

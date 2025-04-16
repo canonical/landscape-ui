@@ -2,6 +2,7 @@ import FileInput from "@/components/form/FileInput";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { CustomSelect, Notification } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
+import { SECURITY_PROFILE_BENCHMARK_LABELS } from "../constants";
 import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 
 export default function useSecurityProfileFormBenchmarkStep<
@@ -36,61 +37,65 @@ export default function useSecurityProfileFormBenchmarkStep<
               label: (
                 <LabelWithDescription
                   className="u-no-padding--top"
-                  label="CIS Level 1 Workstation"
+                  label={
+                    SECURITY_PROFILE_BENCHMARK_LABELS.cis_level1_workstation
+                  }
                   description="Center for Internet Security"
                   link="https://ubuntu.com/security/cis"
                 />
               ),
               value: "cis_level1_workstation",
-              text: "CIS Level 1 Workstation",
+              text: SECURITY_PROFILE_BENCHMARK_LABELS.cis_level1_workstation,
             },
             {
               label: (
                 <LabelWithDescription
                   className="u-no-padding--top"
-                  label="CIS Level 1 Server"
+                  label={SECURITY_PROFILE_BENCHMARK_LABELS.cis_level1_server}
                   description="Center for Internet Security"
                   link="https://ubuntu.com/security/cis"
                 />
               ),
               value: "cis_level1_server",
-              text: "CIS Level 1 Server",
+              text: SECURITY_PROFILE_BENCHMARK_LABELS.cis_level1_server,
             },
             {
               label: (
                 <LabelWithDescription
                   className="u-no-padding--top"
-                  label="CIS Level 2 Workstation"
+                  label={
+                    SECURITY_PROFILE_BENCHMARK_LABELS.cis_level2_workstation
+                  }
                   description="Center for Internet Security"
                   link="https://ubuntu.com/security/cis"
                 />
               ),
               value: "cis_level2_workstation",
-              text: "CIS Level 2 Workstation",
+              text: SECURITY_PROFILE_BENCHMARK_LABELS.cis_level2_workstation,
             },
             {
               label: (
                 <LabelWithDescription
                   className="u-no-padding--top"
-                  label="CIS Level 2 Server"
+                  label={SECURITY_PROFILE_BENCHMARK_LABELS.cis_level2_server}
                   description="Center for Internet Security"
                   link="https://ubuntu.com/security/cis"
                 />
               ),
               value: "cis_level2_server",
-              text: "CIS Level 2 Server",
+              text: SECURITY_PROFILE_BENCHMARK_LABELS.cis_level2_server,
             },
             {
               label: (
                 <LabelWithDescription
                   className="u-no-padding--top"
-                  label="DISA-STIG"
+                  label={SECURITY_PROFILE_BENCHMARK_LABELS.disa_stig}
                   description="Defense Information System Agency (DISA) for the U.S. Department of Defense (DoD)"
                   link="https://ubuntu.com/security/disa-stig"
                 />
               ),
               value: "disa_stig",
-              text: "DISA-STIG",
+              text: SECURITY_PROFILE_BENCHMARK_LABELS.disa_stig,
             },
           ]}
           value={formik.values.benchmark ?? ""}
@@ -122,7 +127,7 @@ export default function useSecurityProfileFormBenchmarkStep<
                   description="Applies fixes and generates an audit after remediation."
                 />
               ),
-              value: "fix-audit",
+              value: "audit-fix",
               text: "Fix and audit",
             },
             {
@@ -134,7 +139,7 @@ export default function useSecurityProfileFormBenchmarkStep<
                   audit after remediation."
                 />
               ),
-              value: "fix-restart-audit",
+              value: "audit-fix-restart",
               text: "Fix, restart, audit",
             },
           ]}

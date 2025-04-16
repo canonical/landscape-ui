@@ -17,7 +17,7 @@ export const notifyCreation = (
     );
   }
 
-  if (values.mode == "fix-restart-audit") {
+  if (values.mode == "audit-fix-restart") {
     notificationMessageParts.push("restart them");
   }
 

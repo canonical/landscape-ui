@@ -1,15 +1,15 @@
 import InfoItem from "@/components/layout/InfoItem";
-import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
-import {
-  Button,
-  Col,
-  ConfirmationButton,
-  Icon,
-  Row,
-} from "@canonical/react-components";
+import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useRoles from "@/hooks/useRoles";
+import { Button, Col, Icon, Row } from "@canonical/react-components";
+import moment from "moment";
 import { type FC } from "react";
-import { useArchiveSecurityProfile } from "../../api";
+import {
+  SECURITY_PROFILE_BENCHMARK_LABELS,
+  SECURITY_PROFILE_STATUSES,
+} from "../../constants";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 
@@ -22,24 +22,23 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
   actions,
   profile,
 }) => {
-  const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { getAccessGroupQuery } = useRoles();
+  const {
+    data: getAccessGroupQueryResponse,
+    isLoading: isAccessGroupsLoading,
+  } = getAccessGroupQuery();
 
-  const { archiveSecurityProfile, isArchivingSecurityProfile } =
-    useArchiveSecurityProfile();
+  if (isAccessGroupsLoading) {
+    return <LoadingState />;
+  }
 
-  const handleArchiveProfile = async () => {
-    await archiveSecurityProfile({
-      id: profile.id,
-    });
+  const accessGroup = getAccessGroupQueryResponse?.data.find(
+    (group) => group.name == profile.access_group,
+  );
 
-    closeSidePanel();
-    notify.success({
-      title: `You have archived "${profile.name}" profile`,
-      message:
-        "It will no longer run, but past audit data and profile details will remain accessible for selected duration of the retention period. You can activate it anytime.",
-    });
-  };
+  if (!accessGroup) {
+    throw new Error();
+  }
 
   return (
     <>
@@ -55,20 +54,29 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             <span>Download audit</span>
           </Button>
 
-          <Button
-            className="p-segmented-control__button"
-            type="button"
-            hasIcon
-            onClick={actions.edit}
-          >
-            <Icon name="edit" />
-            <span>Edit</span>
-          </Button>
+          {profile.status != "archived" && (
+            <Button
+              className="p-segmented-control__button"
+              type="button"
+              hasIcon
+              onClick={actions.edit}
+            >
+              <Icon name="edit" />
+              <span>Edit</span>
+            </Button>
+          )}
 
-          <Button className="p-segmented-control__button" type="button" hasIcon>
-            <Icon name="play" />
-            <span>Run</span>
-          </Button>
+          {profile.status != "archived" && (
+            <Button
+              className="p-segmented-control__button"
+              type="button"
+              hasIcon
+              onClick={actions.run}
+            >
+              <Icon name="play" />
+              <span>Run</span>
+            </Button>
+          )}
 
           <Button
             className="p-segmented-control__button"
@@ -80,30 +88,17 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             <span>Duplicate</span>
           </Button>
 
-          <ConfirmationButton
-            className="has-icon p-segmented-control__button"
-            type="button"
-            confirmationModalProps={{
-              title: `Archive "${profile.name}" profile`,
-              children: (
-                <p>
-                  You are about to archive the &quot;{profile.name}&quot;
-                  profile. Archiving this Security profile will prevent it from
-                  running. However, it will NOT delete past audit data or remove
-                  the profile details. You can reactivate the profile later to
-                  allow it to run again.
-                </p>
-              ),
-              confirmButtonLabel: "Archive",
-              confirmButtonAppearance: "negative",
-              confirmButtonDisabled: isArchivingSecurityProfile,
-              confirmButtonLoading: isArchivingSecurityProfile,
-              onConfirm: handleArchiveProfile,
-            }}
-          >
-            <Icon name="archive" />
-            <span>Archive</span>
-          </ConfirmationButton>
+          {profile.status != "archived" && (
+            <Button
+              className="p-segmented-control__button"
+              type="button"
+              hasIcon
+              onClick={actions.archive}
+            >
+              <Icon name="archive" />
+              <span>Archive</span>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -113,12 +108,15 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
         </Col>
 
         <Col size={6}>
-          <InfoItem label="Access group" value={profile.access_group} />
+          <InfoItem label="Access group" value={accessGroup.title} />
         </Col>
       </Row>
 
       <Row className="u-no-padding">
-        <InfoItem label="Status" value={profile.status} />
+        <InfoItem
+          label="Status"
+          value={SECURITY_PROFILE_STATUSES[profile.status].label}
+        />
       </Row>
 
       <hr />
@@ -126,7 +124,10 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
 
       <Row className="u-no-padding">
         <Col size={6}>
-          <InfoItem label="Benchmark" value={profile.benchmark} />
+          <InfoItem
+            label="Benchmark"
+            value={SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark]}
+          />
         </Col>
 
         <Col size={6}>
@@ -146,7 +147,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
                   </Button>
                 </>
               ) : (
-                "N/A"
+                <NoData />
               )
             }
           />
@@ -154,7 +155,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
       </Row>
 
       <Row className="u-no-padding">
-        <InfoItem label="Status" value={profile.mode} />
+        <InfoItem label="Mode" value={profile.mode} />
       </Row>
 
       <hr />
@@ -168,16 +169,31 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
         <Col size={6}>
           <InfoItem
             label="Last run"
-            value={profile.last_run_results.timestamp}
+            value={
+              profile.last_run_results.timestamp ? (
+                `${moment(profile.last_run_results.timestamp).utc().format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+              ) : (
+                <NoData />
+              )
+            }
           />
         </Col>
 
         <Col size={6}>
-          <InfoItem label="Next run" value={profile.next_run_time} />
+          <InfoItem
+            label="Next run"
+            value={
+              profile.next_run_time ? (
+                `${moment(profile.next_run_time).utc().format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+              ) : (
+                <NoData />
+              )
+            }
+          />
         </Col>
       </Row>
 
-      {profile.mode == "fix-restart-audit" && (
+      {profile.mode == "audit-fix-restart" && (
         <Row className="u-no-padding">
           <InfoItem label="Restart schedule" value="PLACEHOLDER" />
         </Row>
@@ -200,7 +216,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
       </Row>
 
       <Row className="u-no-padding">
-        <InfoItem label="Tags" value={profile.tags.join(", ") || "N/A"} />
+        <InfoItem label="Tags" value={profile.tags.join(", ") || <NoData />} />
       </Row>
     </>
   );

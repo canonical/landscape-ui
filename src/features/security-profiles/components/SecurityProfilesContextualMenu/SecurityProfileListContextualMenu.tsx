@@ -1,12 +1,6 @@
-import useNotify from "@/hooks/useNotify";
 import type { MenuLink } from "@canonical/react-components";
-import {
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-} from "@canonical/react-components";
-import { useState, type FC } from "react";
-import { useArchiveSecurityProfile } from "../../api";
+import { ContextualMenu, Icon } from "@canonical/react-components";
+import { type FC } from "react";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 import classes from "./SecurityProfileListContextualMenu.module.scss";
@@ -19,33 +13,6 @@ interface SecurityProfileListContextualMenuProps {
 const SecurityProfileListContextualMenu: FC<
   SecurityProfileListContextualMenuProps
 > = ({ actions, profile }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const { notify } = useNotify();
-  const { archiveSecurityProfile, isArchivingSecurityProfile } =
-    useArchiveSecurityProfile();
-
-  const handleArchiveButtonClick = () => {
-    setIsOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsOpen(false);
-  };
-
-  const handleArchiveProfile = async () => {
-    await archiveSecurityProfile({
-      id: profile.id,
-    });
-
-    handleModalClose();
-    notify.success({
-      title: `You have archived "${profile.name}" profile`,
-      message:
-        "It will no longer run, but past audit data and profile details will remain accessible for selected duration of the retention period. You can activate it anytime.",
-    });
-  };
-
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
@@ -61,7 +28,7 @@ const SecurityProfileListContextualMenu: FC<
     {
       children: (
         <>
-          <Icon name="begin-downloading" />
+          <Icon name="file-blank" />
           <span>Download audit</span>
         </>
       ),
@@ -111,7 +78,7 @@ const SecurityProfileListContextualMenu: FC<
       ),
       "aria-label": `Archive "${profile.title}" security profile`,
       hasIcon: true,
-      onClick: handleArchiveButtonClick,
+      onClick: actions.archive,
       className: classes.archive,
     },
   ];
@@ -127,25 +94,6 @@ const SecurityProfileListContextualMenu: FC<
         toggleProps={{ "aria-label": `${profile.title} profile actions` }}
         links={contextualMenuButtons}
       />
-      {isOpen && (
-        <ConfirmationModal
-          title={`Archive "${profile.name}" profile`}
-          confirmButtonLabel="Archive"
-          onConfirm={handleArchiveProfile}
-          confirmButtonAppearance="negative"
-          confirmButtonDisabled={isArchivingSecurityProfile}
-          confirmButtonLoading={isArchivingSecurityProfile}
-          close={handleModalClose}
-        >
-          <p>
-            You are about to archive the &quot;{profile.name}&quot; profile.
-            Archiving this Security profile will prevent it from running.
-            However, it will NOT delete past audit data or remove the profile
-            details. You can reactivate the profile later to allow it to run
-            again.
-          </p>
-        </ConfirmationModal>
-      )}
     </>
   );
 };

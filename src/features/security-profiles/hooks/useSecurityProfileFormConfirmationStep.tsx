@@ -15,7 +15,7 @@ export default function useSecurityProfileFormConfirmationStep<
     description: `To apply your changes, you need to run the profile. This will ${phrase(
       [
         formik.values.mode != "audit" ? "apply fixes" : null,
-        formik.values.mode == "fix-restart-audit" ? "restart instances" : null,
+        formik.values.mode == "audit-fix-restart" ? "restart instances" : null,
         "generate an audit",
       ].filter((string) => string != null),
     )} on the selected next run date.`,
@@ -43,7 +43,7 @@ export default function useSecurityProfileFormConfirmationStep<
                 iconName: "open-terminal",
               }
             : null,
-          formik.values.mode == "fix-restart-audit"
+          formik.values.mode == "audit-fix-restart"
             ? {
                 header: "Restart instances",
                 description:

@@ -23,7 +23,7 @@ export interface UseSecurityProfileFormProps {
       > & {
         start_date: string;
         restart_deliver_delay_window?: number;
-        restart_delivery_within?: number;
+        restart_deliver_delay?: number;
         tailoring_file?: string;
       },
   ) => Promise<unknown>;
@@ -42,6 +42,8 @@ const useSecurityProfileForm = ({
 
   const formik = useFormik<SecurityProfileFormValues>({
     initialValues,
+
+    validateOnMount: true,
 
     validationSchema: Yup.object().shape({
       benchmark: Yup.string().required("This field is required."),
@@ -73,27 +75,30 @@ const useSecurityProfileForm = ({
       restart_deliver_delay_window: Yup.number().when(
         ["mode", "randomize_delivery"],
         ([mode, randomize_delivery], schema) =>
-          mode == "fix-restart-audit" && randomize_delivery == "yes"
+          mode == "audit-fix-restart" && randomize_delivery == "yes"
             ? schema
                 .required("This field is required.")
                 .positive("Enter a positive number.")
+                .integer("Enter an integer.")
             : schema,
       ),
 
       restart_deliver_delay: Yup.number().when(
         ["mode", "delivery_time"],
         ([mode, delivery_time], schema) =>
-          mode == "fix-restart-audit" && delivery_time == "delayed"
+          mode == "audit-fix-restart" && delivery_time == "delayed"
             ? schema
                 .required("This field is required.")
                 .positive("Enter a positive number.")
+                .integer("Enter an integer.")
             : schema,
       ),
 
       start_date: Yup.string()
         .required("This field is required.")
         .test({
-          test: (start_date) => moment(start_date).isSameOrAfter(moment()),
+          test: (start_date) =>
+            moment(start_date).utc(true).isSameOrAfter(moment()),
           message: `The date must not be in the past.`,
         }),
 
@@ -158,16 +163,16 @@ const useSecurityProfileForm = ({
       try {
         await mutate({
           access_group:
-            values.access_group == "global" ? values.access_group : undefined,
+            values.access_group == "global" ? undefined : values.access_group,
           all_computers: values.all_computers || undefined,
           benchmark: values.benchmark,
           mode: values.mode,
           restart_deliver_delay_window:
-            values.mode == "fix-restart-audit"
+            values.mode == "audit-fix-restart"
               ? values.restart_deliver_delay_window
               : undefined,
-          restart_delivery_within:
-            values.mode == "fix-restart-audit"
+          restart_deliver_delay:
+            values.mode == "audit-fix-restart"
               ? values.restart_deliver_delay
               : undefined,
           schedule: scheduleRuleParts.join(";"),

@@ -1,8 +1,8 @@
 export const getNotificationMessage = (
-  mode: "audit" | "fix-audit" | "fix-restart-audit",
+  mode: "audit" | "audit-fix" | "audit-fix-restart",
 ) => {
   switch (mode) {
-    case "fix-restart-audit":
+    case "audit-fix-restart":
       return "Applying remediation fixes, restarting associated instances, and generating an audit have been queued in Activities.";
     case "audit":
       return "Applying remediation fixes, restarting associated instances, and generating an audit have been queued in Activities.";

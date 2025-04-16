@@ -24,7 +24,7 @@ export default function useSecurityProfileFormScheduleStep<
       <>
         <ScheduleBlock formik={formik} />
 
-        {formik.values.mode == "fix-restart-audit" && (
+        {formik.values.mode == "audit-fix-restart" && (
           <>
             <LabelWithDescription
               label="Restart schedule"
