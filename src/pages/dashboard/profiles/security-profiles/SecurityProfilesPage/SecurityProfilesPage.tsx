@@ -50,6 +50,14 @@ const SecurityProfilesPage: FC = () => {
 
   const [isRetentionNotificationVisible, setIsRetentionNotificationVisible] =
     useState(false);
+  const [
+    isProfileLimitNotificationIgnored,
+    setIsProfileLimitNotificationIgnored,
+  ] = useState(
+    localStorage.getItem(
+      "_landscape_isSecurityProfileLimitNotificationIgnored",
+    ) == "true",
+  );
 
   const showNotification = () => {
     setIsRetentionNotificationVisible(true);
@@ -177,18 +185,6 @@ const SecurityProfilesPage: FC = () => {
           </Notification>
         )}
 
-        {profileLimitReached && (
-          <Notification
-            severity="caution"
-            inline
-            title="Security profiles limit reached:"
-          >
-            You&apos;ve reached the maximum of{" "}
-            <strong>5 security profiles</strong>. To add more, archive profiles
-            that are no longer in use to free up space for active ones.
-          </Notification>
-        )}
-
         {profilesExceedingLimit.length === 1 && (
           <Notification
             severity="negative"
@@ -246,6 +242,26 @@ const SecurityProfilesPage: FC = () => {
             >
               Edit profile
             </Button>
+          </Notification>
+        )}
+
+        {profileLimitReached && !isProfileLimitNotificationIgnored && (
+          <Notification
+            severity="caution"
+            inline
+            title="Security profiles limit reached:"
+            onDismiss={() => {
+              localStorage.setItem(
+                "_landscape_isSecurityProfileLimitNotificationIgnored",
+                "true",
+              );
+
+              setIsProfileLimitNotificationIgnored(true);
+            }}
+          >
+            You&apos;ve reached the maximum of{" "}
+            <strong>5 security profiles</strong>. To add more, archive profiles
+            that are no longer in use to free up space for active ones.
           </Notification>
         )}
 

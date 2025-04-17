@@ -13,6 +13,7 @@ import {
 } from "../../constants";
 import {
   getAssociatedInstancesLink,
+  getSchedule,
   getTags,
   getTailoringFile,
 } from "../../helpers";
@@ -155,7 +156,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
       <h5>Schedule</h5>
 
       <Row className="u-no-padding">
-        <InfoItem label="Profile schedule" value={profile.schedule} />
+        <InfoItem label="Profile schedule" value={getSchedule(profile)} />
       </Row>
 
       <Row className="u-no-padding">
@@ -188,7 +189,14 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
 
       {profile.mode == "audit-fix-restart" && (
         <Row className="u-no-padding">
-          <InfoItem label="Restart schedule" value="PLACEHOLDER" />
+          <InfoItem
+            label="Restart schedule"
+            value={`${
+              profile.restart_deliver_delay
+                ? `Delayed by ${profile.restart_deliver_delay} hour${profile.restart_deliver_delay == 1 ? "" : "s"}`
+                : "As soon as possible"
+            }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} minute${profile.restart_deliver_delay_window == 1 ? "" : "s"}` : ""}`}
+          />
         </Row>
       )}
 

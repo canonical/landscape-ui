@@ -18,9 +18,7 @@ const ordinalSuffix = (number: number) => {
   }
 };
 
-const ordinal = (number: number) => {
-  return `${number}${ordinalSuffix(number)}`;
-};
+export const ordinal = (number: number) => `${number}${ordinalSuffix(number)}`;
 
 export const getOnOptions = (date: Date) => {
   const dayOfMonth = date.getDate();

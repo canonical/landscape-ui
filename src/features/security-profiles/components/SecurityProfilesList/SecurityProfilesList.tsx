@@ -19,6 +19,7 @@ import {
 } from "../../constants";
 import {
   getAssociatedInstancesLink,
+  getSchedule,
   getTags,
   notifyCreation,
 } from "../../helpers";
@@ -419,7 +420,6 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 DISPLAY_DATE_TIME_FORMAT,
               )
             );
-          const { schedule } = row.original;
 
           const tooltipMessage = (
             <>
@@ -430,7 +430,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 <strong>Next run:</strong> {nextRun} GMT
               </div>
               <div>
-                <strong>Schedule:</strong> {schedule}
+                <strong>Schedule:</strong> {getSchedule(row.original)}
               </div>
             </>
           );
@@ -441,10 +441,12 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
               positionElementClassName={classes.tooltip}
               message={tooltipMessage}
             >
-              <div>
+              <div className={classes.truncated}>
                 {lastRun}
                 <br />
-                <span className={classes.ellipsis}>{schedule}</span>
+                <span className={classes.ellipsis}>
+                  {getSchedule(row.original)}
+                </span>
               </div>
             </Tooltip>
           );

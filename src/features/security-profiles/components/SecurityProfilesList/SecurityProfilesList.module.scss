@@ -53,6 +53,11 @@
   display: flex !important;
 }
 
+.truncated {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .lineFailed + .lineInProgress {
   border-left: 1px solid #ccc;
 }
