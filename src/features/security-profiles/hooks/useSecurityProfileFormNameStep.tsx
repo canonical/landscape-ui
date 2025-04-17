@@ -1,3 +1,5 @@
+import LoadingState from "@/components/layout/LoadingState";
+import { useOrgSettings } from "@/features/organisation-settings";
 import useEnv from "@/hooks/useEnv";
 import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
@@ -10,12 +12,26 @@ export default function useSecurityProfileFormNameStep<
 >(formik: FormikContextType<T>) {
   const { isSelfHosted } = useEnv();
 
+  const { getOrganisationPreferences } = useOrgSettings();
   const { getAccessGroupQuery } = useRoles();
 
   const {
     data: getAccessGroupQueryResponse,
     isLoading: isLoadingAccessGroups,
   } = getAccessGroupQuery();
+
+  const {
+    data: getOrganisationPreferencesResponse,
+    isLoading: isLoadingOrganisationPreferences,
+  } = getOrganisationPreferences();
+
+  if (isLoadingAccessGroups || isLoadingOrganisationPreferences) {
+    return <LoadingState />;
+  }
+
+  if (!getAccessGroupQueryResponse || !getOrganisationPreferencesResponse) {
+    return;
+  }
 
   return {
     isValid: !formik.errors.title,
@@ -33,7 +49,7 @@ export default function useSecurityProfileFormNameStep<
 
         <Select
           label="Access group"
-          options={(getAccessGroupQueryResponse?.data ?? []).map((group) => ({
+          options={getAccessGroupQueryResponse.data.map((group) => ({
             label: group.title,
             value: group.name,
           }))}
@@ -49,17 +65,8 @@ export default function useSecurityProfileFormNameStep<
             label="Audit retention"
             required
             disabled
-            value="PLACEHOLDER"
-            help={
-              <>
-                You can change this limit in the Landscape server configuration
-                file.
-                <br />
-                <a href="PLACEHOLDER" target="_blank" rel="noreferrer">
-                  learn more
-                </a>
-              </>
-            }
+            value={`${getOrganisationPreferencesResponse.data.audit_retention_period} day${getOrganisationPreferencesResponse.data.audit_retention_period == 1 ? "" : "s"}`}
+            help="You can change this limit in the Landscape server configuration file."
           />
         )}
       </>

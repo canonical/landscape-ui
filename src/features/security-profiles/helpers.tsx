@@ -34,14 +34,6 @@ export const notifyCreation = (
   notify.success({
     title: `You have successfully created ${values.title} security profile.`,
     message: `This profile will ${phrase(notificationMessageParts)}.`,
-    actions: [
-      {
-        label: "View details",
-        onClick: () => {
-          console.warn("PLACEHOLDER");
-        },
-      },
-    ],
   });
 };
 
