@@ -18,14 +18,14 @@ export const SECURITY_PROFILE_STATUSES = {
     label: (
       <div className={classes.statusWithIcon}>
         <span>Over limit</span>
-        <span className={classes.iconWrapper}>
-          <Tooltip
-            position="top-center"
-            message="Only the first 5,000 instances are covered. Instances beyond the limit are not covered."
-          >
-            <i className="p-icon--help" role="img" aria-label="Help icon" />
-          </Tooltip>
-        </span>
+        <Tooltip
+          position="top-center"
+          message="Only the first 5,000 instances are covered. Instances beyond the limit are not covered."
+        >
+          <div className={classes.tooltipIcon}>
+            <i className="p-icon--help" />
+          </div>
+        </Tooltip>
       </div>
     ),
     icon: "status-failed-small",

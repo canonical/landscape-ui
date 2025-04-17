@@ -1,9 +1,9 @@
 .statusWithIcon {
   align-items: center;
   display: inline-flex;
-  gap: 1.8rem;
+  gap: 1rem;
 }
 
-.iconWrapper {
-  display: inline-block;
+.tooltipIcon {
+  transform: translateX(16px);
 }

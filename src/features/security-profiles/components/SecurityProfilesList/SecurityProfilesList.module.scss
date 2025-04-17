@@ -93,3 +93,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.breakableHeader {
+  white-space: pre-line;
+}
