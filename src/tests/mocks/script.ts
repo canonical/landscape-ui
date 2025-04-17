@@ -13,6 +13,7 @@ export const scripts: Script[] = [
     time_limit: 10,
     username: "nobody",
     attachments: [],
+    status: "active",
   },
   {
     id: 2,
@@ -26,6 +27,7 @@ export const scripts: Script[] = [
     time_limit: 20,
     username: "nobody",
     attachments: ["run.py"],
+    status: "active",
   },
   {
     id: 3,
@@ -39,6 +41,7 @@ export const scripts: Script[] = [
     time_limit: 20,
     username: "nobody",
     attachments: ["hello.txt"],
+    status: "active",
   },
   {
     id: 8,
@@ -52,6 +55,7 @@ export const scripts: Script[] = [
     time_limit: 300,
     username: "",
     attachments: [],
+    status: "active",
   },
   {
     id: 9,
@@ -65,6 +69,7 @@ export const scripts: Script[] = [
     time_limit: 300,
     username: "root",
     attachments: [],
+    status: "active",
   },
   {
     id: 11,
@@ -78,6 +83,7 @@ export const scripts: Script[] = [
     time_limit: 300,
     username: "",
     attachments: [],
+    status: "active",
   },
   {
     id: 14,
@@ -91,6 +97,7 @@ export const scripts: Script[] = [
     time_limit: 300,
     username: "",
     attachments: [],
+    status: "active",
   },
 ];
 

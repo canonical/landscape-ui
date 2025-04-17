@@ -10,14 +10,11 @@ export const getValidationSchema = (
 ) => {
   return Yup.object().shape({
     title: Yup.string().required("This field is required"),
-    time_limit: Yup.number().required("This field is required"),
     code: Yup.string().test({
       name: "required",
       message: "This field is required",
-      test: (value) => "copy" === action || "edit" === action || !!value,
+      test: (value) => "edit" === action || !!value,
     }),
-    username: Yup.string(),
-    access_group: Yup.string(),
     attachments: Yup.object().shape({
       first: Yup.mixed().nullable(),
       second: Yup.mixed().nullable(),
@@ -37,11 +34,8 @@ const getEncodedCode = (code: string) => {
 
 export const getCreateScriptParams = (values: ScriptFormValues) => {
   return {
-    access_group: values.access_group,
     code: getEncodedCode(values.code),
-    time_limit: values.time_limit,
     title: values.title,
-    username: values.username,
   };
 };
 
@@ -53,7 +47,6 @@ export const getCopyScriptParams = ({
   values: ScriptFormValues;
 }) => {
   return {
-    access_group: values.access_group,
     destination_title: values.title,
     script_id: props.script.id,
   };
@@ -69,9 +62,7 @@ export const getEditScriptParams = ({
   return {
     code: getEncodedCode(values.code),
     script_id: props.script.id,
-    time_limit: values.time_limit,
     title: values.title,
-    username: values.username,
   };
 };
 

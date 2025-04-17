@@ -30,19 +30,16 @@ interface RemoveScriptParams {
 }
 
 export interface CreateScriptParams {
-  access_group: string;
   code: string;
-  time_limit: number;
   title: string;
-  username: string;
 }
 
 interface EditScriptParams {
-  code: string;
   script_id: number;
-  time_limit: number;
-  title: string;
-  username: string;
+  code?: string;
+  time_limit?: number;
+  title?: string;
+  username?: string;
 }
 
 export interface CopyScriptParams {

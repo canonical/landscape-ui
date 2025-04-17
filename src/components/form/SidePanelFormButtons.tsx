@@ -6,7 +6,7 @@ import classes from "./SidePanelFormButtons.module.scss";
 interface SidePanelFormButtonsProps {
   readonly submitButtonDisabled?: boolean;
   readonly submitButtonText?: string;
-  readonly submitButtonAppearance?: "positive" | "negative";
+  readonly submitButtonAppearance?: "positive" | "negative" | "secondary";
   readonly submitButtonAriaLabel?: string;
   readonly secondaryActionButtonTitle?: ReactNode;
   readonly secondaryActionButtonSubmit?: (

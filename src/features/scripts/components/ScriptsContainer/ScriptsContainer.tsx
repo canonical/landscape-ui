@@ -11,16 +11,18 @@ import ScriptsHeader from "./components/ScriptsHeader";
 import { isScriptsEmptyState, isScriptsLoadingState } from "./helpers";
 
 const ScriptsContainer: FC = () => {
-  const { currentPage, pageSize } = usePageParams();
+  const { currentPage, pageSize, search } = usePageParams();
 
   const { scripts, scriptsCount, isScriptsLoading } = useGetScripts();
 
-  if (isScriptsLoadingState(currentPage, pageSize, isScriptsLoading)) {
-    return <LoadingState />;
-  }
-
   if (
-    isScriptsEmptyState(currentPage, pageSize, isScriptsLoading, scriptsCount)
+    isScriptsEmptyState(
+      currentPage,
+      pageSize,
+      isScriptsLoading,
+      scriptsCount,
+      search,
+    )
   ) {
     return <ScriptsEmptyState />;
   }
@@ -28,7 +30,16 @@ const ScriptsContainer: FC = () => {
   return (
     <>
       <ScriptsHeader />
-      <ScriptList scripts={scripts} />
+      {isScriptsLoadingState(
+        currentPage,
+        pageSize,
+        isScriptsLoading,
+        search,
+      ) ? (
+        <LoadingState />
+      ) : (
+        <ScriptList scripts={scripts} />
+      )}
       <TablePagination
         totalItems={scriptsCount}
         currentItemCount={scripts.length}

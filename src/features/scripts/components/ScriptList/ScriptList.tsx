@@ -1,5 +1,5 @@
 import type { FC, ReactElement } from "react";
-import { lazy, useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { Button, ModularTable } from "@canonical/react-components";
 import type { Script } from "../../types";
@@ -9,6 +9,7 @@ import ScriptListContextualMenu from "../ScriptListContextualMenu";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
+import LoadingState from "@/components/layout/LoadingState";
 
 const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
@@ -20,7 +21,12 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   const { setSidePanelContent } = useSidePanel();
 
   const openViewPanel = (script: Script) => {
-    setSidePanelContent(script.title, <ScriptDetails scriptId={script.id} />);
+    setSidePanelContent(
+      script.title,
+      <Suspense fallback={<LoadingState />}>
+        <ScriptDetails scriptId={script.id} />
+      </Suspense>,
+    );
   };
 
   const columns = useMemo<Column<Script>[]>(

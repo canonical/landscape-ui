@@ -33,7 +33,7 @@ const ScriptsHeader: FC = () => {
           </div>
         }
       />
-      <TableFilterChips filtersToDisplay={["search"]} />
+      <TableFilterChips filtersToDisplay={["search", "status"]} />
     </>
   );
 };

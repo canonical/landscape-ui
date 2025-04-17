@@ -1,59 +1,69 @@
+import CodeEditor from "@/components/form/CodeEditor";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import type { ScriptProfile } from "@/features/script-profiles";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import { getFormikError } from "@/utils/formikErrors";
+import {
+  ConfirmationModal,
+  Form,
+  Input,
+  ModularTable,
+} from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect, useMemo } from "react";
-import { Form, Input, Select } from "@canonical/react-components";
-import CodeEditor from "@/components/form/CodeEditor";
+import { useEffect, useState } from "react";
+import type { CellProps } from "react-table";
+import { useGetAssociatedScriptProfiles } from "../../api";
+import { DEFAULT_SCRIPT } from "../../constants";
 import { useScripts } from "../../hooks";
 import type { Script, ScriptFormValues } from "../../types";
-import useDebug from "@/hooks/useDebug";
-import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { SelectOption } from "@/types/SelectOption";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import ScriptFormAttachments from "../ScriptFormAttachments";
 import { CTA_LABELS, SCRIPT_FORM_INITIAL_VALUES } from "./constants";
 import {
-  getCopyScriptParams,
   getCreateAttachmentsPromises,
   getCreateScriptParams,
   getEditScriptParams,
   getValidationSchema,
 } from "./helpers";
-import ScriptFormAttachments from "../ScriptFormAttachments";
-import { getFormikError } from "@/utils/formikErrors";
-import { DEFAULT_SCRIPT } from "../../constants";
+import classes from "./SingleScript.module.scss";
+import useNotify from "@/hooks/useNotify";
 
 type SingleScriptProps =
   | {
       action: "add";
     }
   | {
-      action: "copy";
-      script: Script;
-    }
-  | {
       action: "edit";
       script: Script;
     };
 
+//TODO separate these in 2 different components, add and edit
 const SingleScript: FC<SingleScriptProps> = (props) => {
+  const [modalOpen, setModalOpen] = useState(false);
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
+  const { notify } = useNotify();
 
-  const { getAccessGroupQuery } = useRoles();
   const {
     createScriptQuery,
     editScriptQuery,
-    copyScriptQuery,
     getScriptCodeQuery,
     createScriptAttachmentQuery,
     removeScriptAttachmentQuery,
   } = useScripts();
 
   const { mutateAsync: createScript } = createScriptQuery;
-  const { mutateAsync: editScript } = editScriptQuery;
-  const { mutateAsync: copyScript } = copyScriptQuery;
+  const { mutateAsync: editScript, isPending: isEditing } = editScriptQuery;
   const { mutateAsync: createScriptAttachment } = createScriptAttachmentQuery;
   const { mutateAsync: removeScriptAttachment } = removeScriptAttachmentQuery;
+
+  const { associatedScriptProfiles } = useGetAssociatedScriptProfiles(
+    props.action === "edit" ? props.script.id : 0,
+    {
+      enabled: props.action === "edit" && modalOpen,
+    },
+  );
 
   const handleSubmit = async (values: ScriptFormValues) => {
     const newAttachments = Object.values(values.attachments).filter(
@@ -102,11 +112,18 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
         }
 
         await Promise.all(promises);
-      } else if ("copy" === props.action) {
-        await copyScript(getCopyScriptParams({ props, values }));
       }
 
       closeSidePanel();
+
+      if (props.action === "edit") {
+        setModalOpen(false);
+        notify.success({
+          title: `You have successfully submitted a new version of ${props.script.title}`,
+          message:
+            "All its associated profiles will now be run using this new version.",
+        });
+      }
     } catch (error) {
       debug(error);
     }
@@ -121,10 +138,6 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
   useEffect(() => {
     if ("add" === props.action) {
       return;
-    }
-
-    if ("copy" === props.action) {
-      formik.setFieldValue("access_group", props.script.access_group);
     } else if ("edit" === props.action) {
       formik.setFieldValue("title", props.script.title);
       formik.setFieldValue("time_limit", props.script.time_limit);
@@ -146,16 +159,17 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
     formik.setFieldValue("code", getScriptCodeResult.data);
   }, [getScriptCodeResult]);
 
-  const { data: getAccessGroupResult } = getAccessGroupQuery();
+  const handleOpenModal = () => {
+    if (props.action === "edit") {
+      setModalOpen(true);
+    } else {
+      formik.handleSubmit();
+    }
+  };
 
-  const accessGroupsOptions = useMemo<SelectOption[]>(
-    () =>
-      (getAccessGroupResult?.data ?? []).map(({ name, title }) => ({
-        label: title,
-        value: name,
-      })),
-    [getAccessGroupResult],
-  );
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -171,106 +185,104 @@ const SingleScript: FC<SingleScriptProps> = (props) => {
         }
       />
 
-      {("add" === props.action || "edit" === props.action) && (
-        <>
-          <Input
-            type="number"
-            label="Time limit (seconds)"
-            required
-            {...formik.getFieldProps("time_limit")}
-            error={
-              formik.touched.time_limit && formik.errors.time_limit
-                ? formik.errors.time_limit
-                : undefined
-            }
-          />
-
-          <CodeEditor
-            label="Code"
-            required
-            onChange={(value) => {
-              formik.setFieldValue("code", value ?? "");
-            }}
-            value={formik.values.code}
-            error={
-              formik.touched.code && formik.errors.code
-                ? formik.errors.code
-                : undefined
-            }
-            defaultValue={DEFAULT_SCRIPT}
-          />
-
-          <Input
-            type="text"
-            label="Run as user"
-            {...formik.getFieldProps("username")}
-            error={
-              formik.touched.username && formik.errors.username
-                ? formik.errors.username
-                : undefined
-            }
-          />
-        </>
-      )}
-
-      <Select
-        label="Access group"
-        options={[
-          { label: "Select access group", value: "" },
-          ...accessGroupsOptions,
-        ]}
-        {...formik.getFieldProps("access_group")}
+      <CodeEditor
+        label="Code"
+        required
+        onChange={(value) => {
+          formik.setFieldValue("code", value ?? "");
+        }}
+        value={formik.values.code}
         error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
+          formik.touched.code && formik.errors.code
+            ? formik.errors.code
             : undefined
         }
+        defaultValue={DEFAULT_SCRIPT}
       />
 
-      {("add" === props.action || "edit" === props.action) && (
-        <>
-          <h5>List of attachments</h5>
-          <p className="u-text--muted">
-            Attachments that will be sent along with the script. You can attach
-            up to 5 files, for a maximum of 1.00MB. Filenames must be unique. On
-            the client, the attachments will be placed in the directory whose
-            name is accessible through the environment variable
-            LANDSCAPE_ATTACHMENTS. They&apos;ll be deleted once the script has
-            been run.
-          </p>
-        </>
-      )}
+      <>
+        <h5>List of attachments</h5>
+        <p className="u-text--muted">
+          Attachments that will be sent along with the script. You can attach up
+          to 5 files, for a maximum of 1.00MB. Filenames must be unique. On the
+          client, the attachments will be placed in the directory whose name is
+          accessible through the environment variable LANDSCAPE_ATTACHMENTS.
+          They&apos;ll be deleted once the script has been run.
+        </p>
+      </>
 
-      {("add" === props.action || "edit" === props.action) && (
-        <ScriptFormAttachments
-          attachments={formik.values.attachments}
-          attachmentsToRemove={formik.values.attachmentsToRemove}
-          getFileInputError={(key: keyof ScriptFormValues["attachments"]) =>
-            getFormikError(formik, ["attachments", key])
-          }
-          initialAttachments={
-            props.action === "edit" ? props.script.attachments : []
-          }
-          onFileInputChange={(key: keyof ScriptFormValues["attachments"]) =>
-            (event) => {
-              formik.setFieldValue(
-                `attachments.${key}`,
-                event.target.files?.[0] ?? null,
-              );
-            }}
-          onInitialAttachmentDelete={(attachment: string) => {
-            formik.setFieldValue("attachmentsToRemove", [
-              ...formik.values.attachmentsToRemove,
-              attachment,
-            ]);
+      <ScriptFormAttachments
+        attachments={formik.values.attachments}
+        attachmentsToRemove={formik.values.attachmentsToRemove}
+        getFileInputError={(key: keyof ScriptFormValues["attachments"]) =>
+          getFormikError(formik, ["attachments", key])
+        }
+        initialAttachments={
+          props.action === "edit" ? props.script.attachments : []
+        }
+        onFileInputChange={(key: keyof ScriptFormValues["attachments"]) =>
+          (event) => {
+            formik.setFieldValue(
+              `attachments.${key}`,
+              event.target.files?.[0] ?? null,
+            );
           }}
-        />
-      )}
+        onInitialAttachmentDelete={(attachment: string) => {
+          formik.setFieldValue("attachmentsToRemove", [
+            ...formik.values.attachmentsToRemove,
+            attachment,
+          ]);
+        }}
+      />
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        onSubmit={handleOpenModal}
         submitButtonText={CTA_LABELS[props.action]}
       />
+
+      {modalOpen && props.action === "edit" && (
+        <ConfirmationModal
+          title={`Submit new version of "${props.script.title}"`}
+          confirmButtonLabel="Submit new version"
+          onConfirm={() => {
+            formik.handleSubmit();
+          }}
+          confirmButtonAppearance="positive"
+          confirmButtonDisabled={isEditing}
+          confirmButtonLoading={isEditing}
+          close={handleCloseModal}
+          className={classes.modal}
+        >
+          <p>
+            All future script runs will be done using the latest version of the
+            code. Submitting these changes will affect the following profiles:
+          </p>
+          {associatedScriptProfiles.length > 0 ? (
+            <ModularTable
+              columns={[
+                {
+                  Header: "active profiles",
+                  accessor: "title",
+                  Cell: ({ row }: CellProps<ScriptProfile>) => (
+                    <>{row.original.title}</>
+                  ),
+                },
+                {
+                  Header: "associated instances",
+                  accessor: "computers.num_associated_computers",
+                  Cell: ({ row }: CellProps<ScriptProfile>) => (
+                    <>
+                      {row.original.computers.num_associated_computers}{" "}
+                      instances
+                    </>
+                  ),
+                },
+              ]}
+              data={associatedScriptProfiles}
+            />
+          ) : null}
+        </ConfirmationModal>
+      )}
     </Form>
   );
 };

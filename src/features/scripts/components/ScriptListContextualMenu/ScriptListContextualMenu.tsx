@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -7,12 +8,18 @@ import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
-  ICONS,
+  Input,
 } from "@canonical/react-components";
-import type { ComponentProps, FC, MouseEvent as ReactMouseEvent } from "react";
+import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
-import { useScripts } from "../../hooks";
-import type { Script } from "../../types";
+import {
+  useArchiveScript,
+  useGetAssociatedScriptProfiles,
+  useRemoveScript,
+} from "../../api";
+import type { Script, SingleScript } from "../../types";
+import ScriptDetails from "../ScriptDetails";
+import { getArchiveModalBody, getDeleteModalBody } from "./helpers";
 import classes from "./ScriptListContextualMenu.module.scss";
 
 const SingleScript = lazy(async () => import("../SingleScript"));
@@ -25,54 +32,55 @@ interface ScriptListContextualMenuProps {
 const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
   script,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [archiveModalOpen, setArchiveModalOpen] = useState(false);
+
+  const [confirmDeleteProfileText, setConfirmDeleteProfileText] = useState("");
+  const [confirmArchiveProfileText, setConfirmArchiveProfileText] =
+    useState("");
 
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
-  const { removeScriptQuery } = useScripts();
 
-  const { mutateAsync: removeScript, isPending: isRemoving } =
-    removeScriptQuery;
+  const { removeScript, isRemoving } = useRemoveScript(script.id);
+  const { archiveScript, isArchiving } = useArchiveScript(script.id);
 
-  const handleScriptRun = (
-    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
-    scriptToRun: Script,
-  ): void => {
+  const { associatedScriptProfiles, isAssociatedScriptProfilesLoading } =
+    useGetAssociatedScriptProfiles(script.id, {
+      enabled: deleteModalOpen || archiveModalOpen,
+    });
+
+  const handleScriptRun = (): void => {
     setSidePanelContent(
-      `Run "${scriptToRun.title}" script`,
+      `Run "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={scriptToRun} />
+        <RunScriptForm script={script} />
       </Suspense>,
     );
   };
 
-  const handleScript = (
-    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
-    scriptProps: ComponentProps<typeof SingleScript>,
-  ): void => {
-    if (scriptProps.action === "add") {
-      return;
-    }
-
-    event.currentTarget.blur();
-
-    const title =
-      "copy" === scriptProps.action
-        ? `Duplicate "${scriptProps.script.title}" script`
-        : `Edit "${scriptProps.script.title}" script`;
-
+  const handleViewScriptDetails = () => {
     setSidePanelContent(
-      title,
+      script.title,
       <Suspense fallback={<LoadingState />}>
-        <SingleScript {...scriptProps} />
+        <ScriptDetails scriptId={script.id} />
+      </Suspense>,
+    );
+  };
+
+  const handleEditScript = (): void => {
+    setSidePanelContent(
+      `Edit "${script.title}" script`,
+      <Suspense fallback={<LoadingState />}>
+        <SingleScript action="edit" script={script} />
       </Suspense>,
     );
   };
 
   const handleScriptRemove = async (): Promise<void> => {
     try {
-      await removeScript({ script_id: script.id });
+      await removeScript();
 
       notify.success({
         message: `"${script.title}" script removed successfully`,
@@ -82,39 +90,64 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
       debug(error);
     }
   };
-  const handleOpenModal = (): void => {
-    setModalOpen(true);
+
+  const handleScriptArchive = async (): Promise<void> => {
+    try {
+      await archiveScript();
+
+      notify.success({
+        message: `"${script.title}" script archived successfully`,
+        title: "Script archived",
+      });
+    } catch (error) {
+      debug(error);
+    }
   };
-  const handleCloseModal = (): void => {
-    setModalOpen(false);
+
+  const handleOpenDeleteModal = (): void => {
+    setDeleteModalOpen(true);
+  };
+  const handleCloseDeleteModal = (): void => {
+    setDeleteModalOpen(false);
+  };
+  const handleChangeDeleteText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmDeleteProfileText(e.target.value);
+  };
+
+  const handleOpenArchiveModal = (): void => {
+    setArchiveModalOpen(true);
+  };
+  const handleCloseArchiveModal = (): void => {
+    setArchiveModalOpen(false);
+  };
+  const handleChangeArchiveText = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfirmArchiveProfileText(e.target.value);
   };
 
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
         <>
-          <Icon name="unit-running" />
+          <Icon name="play" />
           <span>Run script</span>
         </>
       ),
       "aria-label": `Run ${script.title} script`,
       hasIcon: true,
-      onClick: (event): void => {
-        handleScriptRun(event, script);
+      onClick: (): void => {
+        handleScriptRun();
       },
     },
     {
       children: (
         <>
-          <Icon name="canvas" />
-          <span>Duplicate</span>
+          <Icon name="topic" />
+          <span>View details</span>
         </>
       ),
-      "aria-label": `Copy ${script.title} script`,
+      "aria-label": `View ${script.title} details`,
       hasIcon: true,
-      onClick: (event): void => {
-        handleScript(event, { action: "copy", script });
-      },
+      onClick: handleViewScriptDetails,
     },
     {
       children: (
@@ -125,22 +158,40 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
       ),
       "aria-label": `Edit ${script.title} script`,
       hasIcon: true,
-      onClick: (event): void => {
-        handleScript(event, { action: "edit", script });
+      onClick: (): void => {
+        handleEditScript();
       },
     },
     {
       children: (
         <>
-          <Icon name={ICONS.delete} />
-          <span>Remove</span>
+          <Icon name="archive--negative" />
+          <span className={classes.negative}>Archive</span>
         </>
       ),
-      "aria-label": `Remove ${script.title} script`,
+      "aria-label": `Archive ${script.title} script`,
       hasIcon: true,
-      onClick: handleOpenModal,
+      onClick: handleOpenArchiveModal,
+      className: classes.separator,
+    },
+    {
+      children: (
+        <>
+          <Icon name="delete--negative" />
+          <span className={classes.negative}>Delete</span>
+        </>
+      ),
+      "aria-label": `Delete ${script.title} script`,
+      hasIcon: true,
+      onClick: handleOpenDeleteModal,
     },
   ];
+
+  const { body: deleteModalBody, buttonLabel: deleteModalButtonLabel } =
+    getDeleteModalBody(associatedScriptProfiles);
+  const { body: archiveModalBody, buttonLabel: archiveModalButtonLabel } =
+    getArchiveModalBody(associatedScriptProfiles);
+
   return (
     <>
       <ContextualMenu
@@ -153,17 +204,48 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
         links={contextualMenuButtons}
       />
 
-      {modalOpen && (
+      {deleteModalOpen && (
         <ConfirmationModal
           title="Remove script"
-          confirmButtonLabel="Remove"
+          confirmButtonLabel={deleteModalButtonLabel}
           confirmButtonAppearance="negative"
-          confirmButtonDisabled={isRemoving}
+          confirmButtonDisabled={
+            confirmDeleteProfileText !== `delete ${script.title}` || isRemoving
+          }
           confirmButtonLoading={isRemoving}
           onConfirm={handleScriptRemove}
-          close={handleCloseModal}
+          close={handleCloseDeleteModal}
         >
-          <p>This will remove &quot;{script.title}&quot; script.</p>
+          {deleteModalBody}
+          Type <b>delete {script.title}</b> to confirm.
+          <Input
+            type="text"
+            value={confirmDeleteProfileText}
+            onChange={handleChangeDeleteText}
+          />
+        </ConfirmationModal>
+      )}
+
+      {archiveModalOpen && (
+        <ConfirmationModal
+          title="Archive script"
+          confirmButtonLabel={archiveModalButtonLabel}
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={
+            confirmArchiveProfileText !== `archive ${script.title}` ||
+            isArchiving
+          }
+          confirmButtonLoading={isArchiving}
+          onConfirm={handleScriptArchive}
+          close={handleCloseArchiveModal}
+        >
+          {archiveModalBody}
+          Type <b>delete {script.title}</b> to confirm.
+          <Input
+            type="text"
+            value={confirmArchiveProfileText}
+            onChange={handleChangeArchiveText}
+          />
         </ConfirmationModal>
       )}
     </>
