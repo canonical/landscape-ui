@@ -1,28 +1,30 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button, ModularTable } from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
+import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
-import type { UpgradeProfile } from "../../types";
-import UpgradeProfileListContextualMenu from "../UpgradeProfileListContextualMenu";
-import classes from "./UpgradeProfileList.module.scss";
+import type { CellProps, Column } from "react-table";
+import type { RebootProfile } from "../../types";
+import RebootProfilesListContextualMenu from "../RebootProfilesListContextualMenu";
+import classes from "./RebootProfilesList.module.scss";
 import NoData from "@/components/layout/NoData";
 
-const UpgradeProfileDetails = lazy(
-  async () => import("../UpgradeProfileDetails"),
+const RebootProfileDetails = lazy(
+  async () => import("../RebootProfileDetails"),
 );
 
-interface UpgradeProfileListProps {
-  readonly profiles: UpgradeProfile[];
+interface RebootProfilesListProps {
+  readonly profiles: RebootProfile[];
 }
 
-const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
-  const { search } = usePageParams();
+const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
   const { setSidePanelContent } = useSidePanel();
+  const { search } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -43,11 +45,12 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
     });
   }, [profiles, search]);
 
-  const handleUpgradeProfileDetailsOpen = (profile: UpgradeProfile) => {
+  const handleRebootProfileDetailsOpen = (profile: RebootProfile) => {
     setSidePanelContent(
       profile.title,
       <Suspense fallback={<LoadingState />}>
-        <UpgradeProfileDetails
+        <RebootProfileDetails
+          key={profile.id}
           accessGroupOptions={accessGroupOptions}
           profile={profile}
         />
@@ -55,18 +58,18 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
     );
   };
 
-  const columns = useMemo<Column<UpgradeProfile>[]>(
+  const columns = useMemo<Column<RebootProfile>[]>(
     () => [
       {
         accessor: "name",
-        Header: "Name",
-        Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
+        Header: "name",
+        Cell: ({ row: { original } }: CellProps<RebootProfile>) => (
           <Button
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={() => {
-              handleUpgradeProfileDetailsOpen(original);
+              handleRebootProfileDetailsOpen(original);
             }}
           >
             {original.title}
@@ -75,8 +78,8 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
       },
       {
         accessor: "access_group",
-        Header: "Access group",
-        Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
+        Header: "access group",
+        Cell: ({ row: { original } }: CellProps<RebootProfile>) => (
           <>
             {accessGroupOptions.find(
               ({ value }) => value === original.access_group,
@@ -88,20 +91,34 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         accessor: "tags",
         className: classes.truncated,
         Header: "Tags",
-        Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
-          <>{original.tags ? original.tags.join(", ") : <NoData />}</>
+        Cell: ({ row: { original } }: CellProps<RebootProfile>) => (
+          <>{original.tags.join(", ") || <NoData />}</>
         ),
       },
       {
         accessor: "associated",
-        Header: "Associated",
+        Header: "associated instances",
+        Cell: ({ row }: CellProps<RebootProfile>) => (
+          <>{row.original.num_computers || <NoData />}</>
+        ),
+      },
+      {
+        accessor: "scheduled_reboot",
+        Header: "scheduled reboot",
+        Cell: ({ row }: CellProps<RebootProfile>) => {
+          return (
+            <>
+              {moment(row.original.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
+            </>
+          );
+        },
       },
       {
         accessor: "actions",
         className: classes.actions,
         Header: "Actions",
-        Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
-          <UpgradeProfileListContextualMenu profile={original} />
+        Cell: ({ row }: CellProps<RebootProfile>) => (
+          <RebootProfilesListContextualMenu profile={row.original} />
         ),
       },
     ],
@@ -112,9 +129,9 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
     <ModularTable
       columns={columns}
       data={filteredProfiles}
-      emptyMsg={`No upgrade profiles found with the search: "${search}"`}
+      emptyMsg={`No profiles found with the search: "${search}"`}
     />
   );
 };
 
-export default UpgradeProfileList;
+export default RebootProfilesList;

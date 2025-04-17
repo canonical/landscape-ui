@@ -66,6 +66,7 @@ const UpgradeProfileListContextualMenu: FC<
 
   const handleCloseModal = () => {
     setModalOpen(false);
+    setConfirmDeleteProfileText("");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

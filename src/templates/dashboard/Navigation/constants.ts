@@ -44,6 +44,10 @@ export const MENU_ITEMS: MenuItem[] = [
         path: "/profiles/upgrade",
       },
       {
+        label: "Reboot profiles",
+        path: `/profiles/reboot`,
+      },
+      {
         label: "Removal profiles",
         path: "/profiles/removal",
       },

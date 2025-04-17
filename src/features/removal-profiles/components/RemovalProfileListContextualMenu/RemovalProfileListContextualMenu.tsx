@@ -17,7 +17,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { useRemovalProfiles } from "../../hooks";
 
 const SingleRemovalProfileForm = lazy(
-  () => import("../SingleRemovalProfileForm"),
+  async () => import("../SingleRemovalProfileForm"),
 );
 
 interface RemovalProfileListContextualMenuProps {
@@ -38,6 +38,15 @@ const RemovalProfileListContextualMenu: FC<
   const { mutateAsync: removeRemovalProfile, isPending: isRemoving } =
     removeRemovalProfileQuery;
 
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setConfirmDeleteProfileText("");
+  };
+
   const handleRemovalProfileRemove = async () => {
     try {
       await removeRemovalProfile({ name: profile.name });
@@ -52,21 +61,13 @@ const RemovalProfileListContextualMenu: FC<
     }
   };
 
-  const handleRemovalProfileEdit = (profile: RemovalProfile) => {
+  const handleRemovalProfileEdit = (removalProfile: RemovalProfile) => {
     setSidePanelContent(
       `Edit ${profile.title} profile`,
       <Suspense fallback={<LoadingState />}>
-        <SingleRemovalProfileForm action="edit" profile={profile} />
+        <SingleRemovalProfileForm action="edit" profile={removalProfile} />
       </Suspense>,
     );
-  };
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +84,9 @@ const RemovalProfileListContextualMenu: FC<
       ),
       "aria-label": `Edit "${profile.title}" profile`,
       hasIcon: true,
-      onClick: () => handleRemovalProfileEdit(profile),
+      onClick: () => {
+        handleRemovalProfileEdit(profile);
+      },
     },
     {
       children: (
@@ -116,7 +119,7 @@ const RemovalProfileListContextualMenu: FC<
           confirmButtonLabel="Remove"
           confirmButtonAppearance="negative"
           confirmButtonDisabled={
-            confirmDeleteProfileText !== profile.name || isRemoving
+            confirmDeleteProfileText !== `remove ${profile.name}` || isRemoving
           }
           confirmButtonLoading={isRemoving}
           onConfirm={handleRemovalProfileRemove}
