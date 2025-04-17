@@ -4,7 +4,7 @@ import useInstances from "@/hooks/useInstances";
 import { Notification } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import { useEffect, useState } from "react";
-import { ASSOCIATED_INSTANCES_LIMIT } from "../components/SecurityProfileAddForm/constants";
+import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "../constants";
 
 export default function useSecurityProfileFormAssociationStep<
   T extends AssociationBlockFormProps,
@@ -32,7 +32,8 @@ export default function useSecurityProfileFormAssociationStep<
     }
 
     setIsAssociationLimitReached(
-      getInstancesQueryResult.data.count >= ASSOCIATED_INSTANCES_LIMIT,
+      getInstancesQueryResult.data.count >=
+        SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
     );
   }, [getInstancesQueryResult]);
 
@@ -50,8 +51,10 @@ export default function useSecurityProfileFormAssociationStep<
             title="Associated instances limit reached:"
           >
             You&apos;ve reached the limit of{" "}
-            <strong>{ASSOCIATED_INSTANCES_LIMIT} associated instances</strong>.
-            Decrease the number of associated instances.
+            <strong>
+              {SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT} associated instances
+            </strong>
+            . Decrease the number of associated instances.
           </Notification>
         )}
 

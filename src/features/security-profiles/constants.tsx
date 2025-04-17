@@ -1,6 +1,8 @@
 import { Tooltip } from "@canonical/react-components";
 import classes from "./constants.module.scss";
 
+export const SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT = 5000;
+
 export const SECURITY_PROFILE_BENCHMARK_LABELS = {
   cis_level1_workstation: "CIS Level 1 Workstation",
   cis_level1_server: "CIS Level 1 Server",
