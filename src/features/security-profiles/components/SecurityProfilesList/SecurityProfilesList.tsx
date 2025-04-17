@@ -42,6 +42,8 @@ const SecurityProfileDownloadAuditForm = lazy(
 );
 
 const SecurityProfileForm = lazy(async () => import("../SecurityProfileForm"));
+const ASSOCIATED_INSTANCES_HEADER = "Associated instances\nTags";
+const LAST_RUN_HEADER = "Last run\nSchedule";
 
 interface SecurityProfilesListProps {
   readonly securityProfiles: SecurityProfile[];
@@ -368,13 +370,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
 
       {
         accessor: "associatedInstances",
-        Header: () => (
-          <span>
-            Associated instances
-            <br />
-            Tags
-          </span>
-        ),
+        Header: ASSOCIATED_INSTANCES_HEADER,
+        className: classes.breakableHeader,
+
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <>
             {getAssociatedInstancesLink(profile)}
@@ -394,40 +392,32 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       },
       {
         accessor: "schedule",
-        Header: () => (
-          <span>
-            Last run
-            <br />
-            Schedule
-          </span>
-        ),
-        Cell: ({ row }: CellProps<SecurityProfile>) => {
-          const lastRun =
-            !row.original.last_run_results.timestamp ||
-            row.original.last_run_results.timestamp === "" ? (
-              <NoData />
-            ) : (
-              moment(row.original.last_run_results.timestamp).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )
-            );
+        Header: LAST_RUN_HEADER,
+        className: classes.breakableHeader,
 
-          const nextRun =
-            !row.original.next_run_time || row.original.next_run_time === "" ? (
-              <NoData />
-            ) : (
-              moment(row.original.next_run_time).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )
-            );
+        Cell: ({ row }: CellProps<SecurityProfile>) => {
+          const lastRun = !row.original.last_run_results.timestamp ? (
+            <NoData />
+          ) : (
+            moment(row.original.last_run_results.timestamp).format(
+              DISPLAY_DATE_TIME_FORMAT,
+            )
+          );
+          const nextRun = !row.original.next_run_time ? (
+            <NoData />
+          ) : (
+            moment(row.original.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)
+          );
 
           const tooltipMessage = (
             <>
               <div>
-                <strong>Last run:</strong> {lastRun} GMT
+                <strong>Last run:</strong> {lastRun}
+                {!lastRun ? " GMT" : ""}
               </div>
               <div>
-                <strong>Next run:</strong> {nextRun} GMT
+                <strong>Next run:</strong> {nextRun}
+                {!nextRun ? " GMT" : ""}
               </div>
               <div>
                 <strong>Schedule:</strong> {getSchedule(row.original)}

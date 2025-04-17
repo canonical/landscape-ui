@@ -119,18 +119,6 @@ const SecurityProfilesPage: FC = () => {
     (profile) => profile.associated_instances > 5000,
   );
 
-  const hasOverLimit = profilesExceedingLimit.length > 0;
-
-  if (sessionStorage.getItem("hasProfileOverLimit") !== String(hasOverLimit)) {
-    if (hasOverLimit) {
-      sessionStorage.setItem("hasProfileOverLimit", "true");
-    } else {
-      sessionStorage.removeItem("hasProfileOverLimit");
-    }
-
-    window.dispatchEvent(new CustomEvent("profile-limit-badge-update"));
-  }
-
   return (
     <PageMain>
       <PageHeader title="Security profiles" actions={[addButton]} />
