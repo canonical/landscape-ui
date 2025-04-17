@@ -17,12 +17,14 @@ import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./PackageProfileListContextualMenu.module.scss";
 
 const PackageProfileConstraintsEditForm = lazy(
-  () => import("../PackageProfileConstraintsEditForm"),
+  async () => import("../PackageProfileConstraintsEditForm"),
 );
 const PackageProfileDuplicateForm = lazy(
-  () => import("../PackageProfileDuplicateForm"),
+  async () => import("../PackageProfileDuplicateForm"),
 );
-const PackageProfileEditForm = lazy(() => import("../PackageProfileEditForm"));
+const PackageProfileEditForm = lazy(
+  async () => import("../PackageProfileEditForm"),
+);
 
 interface PackageProfileListContextualMenuProps {
   readonly profile: PackageProfile;
@@ -70,6 +72,15 @@ const PackageProfileListContextualMenu: FC<
     );
   };
 
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setConfirmDeleteProfileText("");
+  };
+
   const handleRemovePackageProfile = async () => {
     try {
       await removePackageProfile({ name: profile.name });
@@ -83,14 +94,6 @@ const PackageProfileListContextualMenu: FC<
     } finally {
       handleCloseModal();
     }
-  };
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -43,6 +43,15 @@ const RepositoryProfileListContextualMenu: FC<
     );
   };
 
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setConfirmDeleteProfileText("");
+  };
+
   const handleRemoveProfile = async () => {
     try {
       await removeRepositoryProfile({
@@ -53,14 +62,6 @@ const RepositoryProfileListContextualMenu: FC<
     } finally {
       handleCloseModal();
     }
-  };
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

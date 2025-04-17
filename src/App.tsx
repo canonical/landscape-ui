@@ -65,6 +65,9 @@ const UpgradeProfilesPage = lazy(
 const WslProfilesPage = lazy(
   async () => import("@/pages/dashboard/profiles/wsl-profiles"),
 );
+const RebootProfilesPage = lazy(
+  async () => import("@/pages/dashboard/profiles/reboot-profiles"),
+);
 const SettingsPage = lazy(async () => import("@/pages/dashboard/settings"));
 const AccessGroupsPage = lazy(
   async () => import("@/pages/dashboard/settings/access-group"),
@@ -301,6 +304,10 @@ const App: FC = () => {
                 <Route
                   path="profiles/upgrade"
                   element={<UpgradeProfilesPage />}
+                />
+                <Route
+                  path="profiles/reboot"
+                  element={<RebootProfilesPage />}
                 />
                 <Route path="account" element={<AccountPage />} />
                 <Route path="account/general" element={<GeneralSettings />} />
