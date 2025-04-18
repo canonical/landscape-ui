@@ -4,6 +4,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import { useActivities } from "@/features/activities";
 import {
   SecurityProfileForm,
   SecurityProfilesHeader,
@@ -38,6 +39,22 @@ const SecurityProfilesPage: FC = () => {
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
     });
+
+  const { getActivitiesQuery } = useActivities();
+
+  const pendingReports = JSON.parse(
+    localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",
+  ) as { activityId: number; profileId: number }[];
+
+  const { data: getActivitiesQueryResponse, isLoading: isGettingActivities } =
+    getActivitiesQuery(
+      {
+        query: pendingReports
+          .map((report) => `id:${report.activityId}`)
+          .join(" OR "),
+      },
+      { enabled: !!pendingReports.length },
+    );
 
   const {
     securityProfilesCount: activeSecurityProfilesCount,
@@ -115,9 +132,18 @@ const SecurityProfilesPage: FC = () => {
     );
   }
 
+  if (isGettingActivities) {
+    return <LoadingState />;
+  }
+
   const profilesExceedingLimit = securityProfiles.filter(
     (profile) => profile.associated_instances > 5000,
   );
+
+  const activities =
+    getActivitiesQueryResponse?.data.results.filter(
+      (activity) => activity.activity_status == "complete",
+    ) ?? [];
 
   return (
     <PageMain>
@@ -253,13 +279,49 @@ const SecurityProfilesPage: FC = () => {
           </Notification>
         )}
 
-        <Notification inline title="Your audit is ready for download:">
-          Your audit has been successfully generated and is now ready for
-          download.{" "}
-          <Button type="button" appearance="link" onClick={() => undefined}>
-            Download audit
-          </Button>
-        </Notification>
+        {activities.length > 1 && (
+          <Notification
+            inline
+            title="Your audits are ready for download:"
+            onDismiss={() => {
+              localStorage.removeItem(
+                "_landscape_pendingSecurityProfileReports",
+              );
+            }}
+          >
+            Several of your audits have been successfully generated and are now
+            ready for download.{" "}
+            <Button
+              appearance="link"
+              type="button"
+              onClick={() => {
+                for (const activity of activities) {
+                  window.open(activity.result_text ?? "");
+                }
+              }}
+            >
+              Download audits
+            </Button>
+          </Notification>
+        )}
+
+        {activities.length == 1 && (
+          <Notification
+            inline
+            title="Your audit is ready for download:"
+            onDismiss={() => {
+              localStorage.removeItem(
+                "_landscape_pendingSecurityProfileReports",
+              );
+            }}
+          >
+            Your audit has been successfully generated and is now ready for
+            download.{" "}
+            <a href={activities[0].result_text ?? ""} download>
+              Download audit
+            </a>
+          </Notification>
+        )}
 
         <SecurityProfilesHeader />
         <SecurityProfilesList

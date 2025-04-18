@@ -1,14 +1,15 @@
 import RadioGroup from "@/components/form/RadioGroup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import LoadingState from "@/components/layout/LoadingState";
 import { INPUT_DATE_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Input, Notification } from "@canonical/react-components";
+import { Input, Notification } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
 import type { ComponentProps } from "react";
-import { useEffect, useRef, useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import * as Yup from "yup";
 import { useGetSecurityProfileReport } from "../../api";
 import classes from "./SecurityProfileDownloadAuditForm.module.scss";
@@ -28,6 +29,11 @@ interface SecurityProfileDownloadAuditFormProps
   readonly profileId: number;
 }
 
+type Status =
+  | { type: "okay" }
+  | { type: "pending" }
+  | { type: "ready"; report_uri: string };
+
 const SecurityProfileDownloadAuditForm: FC<
   SecurityProfileDownloadAuditFormProps
 > = ({ profileId: id, hasBackButton, onBackButtonPress }) => {
@@ -37,31 +43,21 @@ const SecurityProfileDownloadAuditForm: FC<
   const { getSecurityProfileReport, isSecurityProfileReportLoading } =
     useGetSecurityProfileReport();
 
-  const [isPendingReport, setIsPendingReport] = useState(false);
-  const [reportURI, setReportURI] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status>({ type: "okay" });
 
-  const pendingReports = useRef<
-    { activityId: number; securityProfileId: number }[]
-  >(
-    JSON.parse(
-      localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",
-    ),
-  );
+  const pendingReports = JSON.parse(
+    localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",
+  ) as { activityId: number; profileId: number }[];
 
-  const pendingReport = useRef<
-    | {
-        activityId: number;
-        securityProfileId: number;
-      }
-    | undefined
-  >(pendingReports.current.find((report) => report.securityProfileId == id));
+  const pendingReport = pendingReports.find((report) => report.profileId == id);
 
-  const { data: getSingleActivityQueryResponse } = getSingleActivityQuery(
-    {
-      activityId: pendingReport.current?.activityId ?? 0,
-    },
-    { enabled: !!pendingReport.current },
-  );
+  const { data: getSingleActivityQueryResponse, isLoading: isGettingActivity } =
+    getSingleActivityQuery(
+      {
+        activityId: pendingReport?.activityId ?? 0,
+      },
+      { enabled: !!pendingReport, refetchInterval: 1000 },
+    );
 
   useEffect(() => {
     if (!getSingleActivityQueryResponse) {
@@ -69,7 +65,12 @@ const SecurityProfileDownloadAuditForm: FC<
     }
 
     if (getSingleActivityQueryResponse.data.activity_status == "complete") {
-      setReportURI(getSingleActivityQueryResponse.data.result_text);
+      setStatus({
+        type: "ready",
+        report_uri: getSingleActivityQueryResponse.data.result_text ?? "",
+      });
+    } else {
+      setStatus({ type: "pending" });
     }
   }, [getSingleActivityQueryResponse]);
 
@@ -80,6 +81,8 @@ const SecurityProfileDownloadAuditForm: FC<
       start_date: "",
       level_of_detail: "summary-only",
     },
+
+    validateOnMount: true,
 
     validationSchema: Yup.object().shape({
       end_date: Yup.string().when(
@@ -122,24 +125,20 @@ const SecurityProfileDownloadAuditForm: FC<
         ).data;
 
         if (response.report_uri != undefined) {
-          setReportURI(response.report_uri);
+          setStatus({ type: "ready", report_uri: response.report_uri });
           return;
         }
 
-        setIsPendingReport(true);
+        setStatus({ type: "pending" });
 
-        if (
-          pendingReports.current.some(
-            (report) => report.activityId == response.activity_id,
-          )
-        ) {
-          return;
+        if (pendingReport) {
+          pendingReport.activityId = response.activity_id;
+        } else {
+          pendingReports.push({
+            activityId: response.activity_id,
+            profileId: id,
+          });
         }
-
-        pendingReports.current.push({
-          activityId: response.activity_id,
-          securityProfileId: id,
-        });
 
         localStorage.setItem(
           "_landscape_pendingSecurityProfileReports",
@@ -152,21 +151,39 @@ const SecurityProfileDownloadAuditForm: FC<
     },
   });
 
+  if (isGettingActivity) {
+    return <LoadingState />;
+  }
+
   return (
     <>
-      {isPendingReport && (
+      {status.type == "pending" && (
         <Notification inline title="Your audit is being generated:">
           Depending on the size and complexity of the audit, this may take up to
           5 minutes.
         </Notification>
       )}
 
-      {reportURI && (
-        <Notification inline title="Your requested audit is ready:">
+      {status.type == "ready" && (
+        <Notification
+          inline
+          title="Your requested audit is ready:"
+          onDismiss={() => {
+            pendingReports.splice(
+              pendingReports.findIndex((report) => report.profileId == id),
+              1,
+            );
+
+            localStorage.setItem(
+              "_landscape_pendingSecurityProfileReports",
+              JSON.stringify(pendingReports),
+            );
+          }}
+        >
           It has been successfully generated and is now available for download.{" "}
-          <Button type="button" appearance="link" onClick={() => undefined}>
+          <a href={status.report_uri} download>
             Download audit
-          </Button>
+          </a>
         </Notification>
       )}
 
@@ -246,11 +263,7 @@ const SecurityProfileDownloadAuditForm: FC<
         onSubmit={() => {
           formik.handleSubmit();
         }}
-        submitButtonDisabled={
-          !formik.isValid ||
-          !formik.touched.start_date ||
-          isSecurityProfileReportLoading
-        }
+        submitButtonDisabled={!formik.isValid || isSecurityProfileReportLoading}
         submitButtonLoading={isSecurityProfileReportLoading}
         submitButtonText="Generate CSV"
         hasBackButton={hasBackButton}
