@@ -415,7 +415,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           <>
             {getAssociatedInstancesLink(profile)}
             <br />
-            {getTags(profile)}
+            <div className={classes.ellipsis}>{getTags(profile)}</div>
           </>
         ),
       },
