@@ -1,10 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
-import type { SecurityProfile } from "@/features/security-profiles";
-import {
-  SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
-  useGetSecurityProfiles,
-} from "@/features/security-profiles";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
@@ -12,17 +7,13 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import {
   CheckboxInput,
-  ConfirmationModal,
   ModularTable,
   SearchBox,
 } from "@canonical/react-components";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
-import {
-  finalAssociatedInstanceCount,
-  instancesToAssignCount,
-  willBeOverLimit,
-} from "./helpers";
+import { useTaggedSecurityProfiles } from "../../hooks";
+import TagsAddConfirmationModal from "../TagsAddConfirmationModal";
 
 interface TagsAddFormProps {
   readonly selected: Instance[];
@@ -42,18 +33,13 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
     addTagsToInstancesQuery;
   const { data: getAllInstanceTagsQueryResult, isLoading: isLoadingTags } =
     getAllInstanceTagsQuery();
-  const { securityProfiles, isSecurityProfilesLoading } =
-    useGetSecurityProfiles({ statuses: ["active"] });
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [search, setSearch] = useState("");
   const [tags, setTags] = useState<string[]>([]);
 
-  const filteredSecurityProfiles = securityProfiles.filter(
-    (profile) =>
-      profile.tags.some((tag) => tags.includes(tag)) &&
-      instancesToAssignCount(profile, selected),
-  );
+  const { securityProfiles, isSecurityProfilesLoading } =
+    useTaggedSecurityProfiles(tags, selected);
 
   const addTags = async () => {
     try {
@@ -78,7 +64,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
   };
 
   const submit = async () => {
-    if (filteredSecurityProfiles.length) {
+    if (securityProfiles.length) {
       setIsModalVisible(true);
     } else {
       await addTags();
@@ -180,31 +166,6 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
     [tags, filteredTags],
   );
 
-  const modalColumns = useMemo<Column<SecurityProfile>[]>(
-    () =>
-      [
-        {
-          Header: "Active profiles",
-          Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) =>
-            profile.title,
-        },
-        {
-          Header: "Profile type",
-          Cell: () => "Security",
-        },
-        {
-          Header: "Associated instances",
-          Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) =>
-            `${finalAssociatedInstanceCount(profile, selected)} ${finalAssociatedInstanceCount(profile, selected) === 1 ? "instance" : "instances"}`,
-          getCellIcon: ({
-            row: { original: profile },
-          }: CellProps<SecurityProfile>) =>
-            willBeOverLimit(profile, selected) ? "warning" : undefined,
-        },
-      ].filter((column) => column),
-    [],
-  );
-
   if (isLoadingTags) {
     return <LoadingState />;
   }
@@ -254,47 +215,14 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
       />
 
       {isModalVisible && (
-        <ConfirmationModal
-          title={`Add ${tags.length > 1 ? `${tags.length} tags` : `${tags[0]} tag`} to ${selected.length > 1 ? `${selected.length} instances` : `${selected[0].title} instance`}`}
-          confirmButtonLabel="Add tags"
+        <TagsAddConfirmationModal
+          instances={selected}
+          securityProfiles={securityProfiles}
+          tags={tags}
           onConfirm={addTags}
           confirmButtonDisabled={isAddingTags}
           close={closeModal}
-        >
-          <p>
-            Adding tags could trigger irreversible changes to your instances.
-          </p>
-
-          <p>
-            Adding{" "}
-            {tags.length > 1
-              ? `these ${tags.length} tags`
-              : `the ${tags[0]} tag`}{" "}
-            to{" "}
-            {selected.length > 1
-              ? `${selected.length} instances`
-              : `the ${selected[0].title} instance`}{" "}
-            will associate the instance{selected.length > 1 ? "s" : ""} with the
-            following profiles.
-            {filteredSecurityProfiles.some((profile) =>
-              willBeOverLimit(profile, selected),
-            ) && (
-              <>
-                {" "}
-                One or more of these profiles will exceed the{" "}
-                <strong>
-                  {SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT} instance limit
-                </strong>{" "}
-                and will stop running across all associated instances.
-              </>
-            )}
-          </p>
-
-          <ModularTable
-            columns={modalColumns}
-            data={filteredSecurityProfiles}
-          />
-        </ConfirmationModal>
+        />
       )}
     </>
   );

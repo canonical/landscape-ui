@@ -1,7 +1,22 @@
-import classNames from "classnames";
-import type { FC } from "react";
-import { lazy, Suspense, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import TagMultiSelect from "@/components/form/TagMultiSelect";
+import InfoItem from "@/components/layout/InfoItem";
+import LoadingState from "@/components/layout/LoadingState";
+import { useActivities } from "@/features/activities";
+import {
+  currentInstanceCan,
+  TagsAddConfirmationModal,
+  useTaggedSecurityProfiles,
+} from "@/features/instances";
+import { useWsl } from "@/features/wsl";
+import useAuth from "@/hooks/useAuth";
+import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
+import useNotify from "@/hooks/useNotify";
+import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { Instance } from "@/types/Instance";
+import type { SelectOption } from "@/types/SelectOption";
+import { getFormikError } from "@/utils/formikErrors";
 import {
   Button,
   CheckboxInput,
@@ -13,26 +28,15 @@ import {
   Input,
   Row,
 } from "@canonical/react-components";
-import TagMultiSelect from "@/components/form/TagMultiSelect";
-import InfoItem from "@/components/layout/InfoItem";
-import LoadingState from "@/components/layout/LoadingState";
-import { useWsl } from "@/features/wsl";
-import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
-import useNotify from "@/hooks/useNotify";
-import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { Instance } from "@/types/Instance";
-import type { SelectOption } from "@/types/SelectOption";
+import classNames from "classnames";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
-import { useFormik } from "formik";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import type { ModalConfirmationFormProps } from "./types";
-import { useActivities } from "@/features/activities";
-import { currentInstanceCan } from "@/features/instances";
-import { getFormikError } from "@/utils/formikErrors";
-import useAuth from "@/hooks/useAuth";
 
 const EditInstance = lazy(
   async () =>
@@ -53,7 +57,13 @@ interface InfoPanelProps {
 }
 
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
-  const [instanceTags, setInstanceTags] = useState(instance.tags);
+  const [instanceTags, setInstanceTags] = useState([...instance.tags]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const addedTags = instanceTags.filter((tag) => !instance.tags.includes(tag));
+
+  const { securityProfiles, isSecurityProfilesLoading } =
+    useTaggedSecurityProfiles(addedTags, [instance]);
 
   const navigate = useNavigate();
   const debug = useDebug();
@@ -72,7 +82,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { isFeatureEnabled } = useAuth();
 
   useEffect(() => {
-    setInstanceTags(instance.tags);
+    setInstanceTags([...instance.tags]);
   }, [instance.tags]);
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -83,7 +93,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       value: name,
     })) ?? [];
 
-  const { mutateAsync: editInstance } = editInstanceQuery;
+  const { mutateAsync: editInstance, isPending: isEditing } = editInstanceQuery;
   const { mutateAsync: removeInstances, isPending: isRemoving } =
     removeInstancesQuery;
   const { mutateAsync: rebootInstances, isPending: isRebooting } =
@@ -189,12 +199,18 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     onSubmit: async () => handleSanitizeInstance(),
   });
 
-  const handleTagsUpdate = async () => {
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const updateTags = async () => {
     try {
       await editInstance({
         instanceId: instance.id,
         tags: instanceTags,
       });
+
+      closeModal();
 
       notify.success({
         title: "Tags updated",
@@ -202,6 +218,14 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       });
     } catch (error) {
       debug(error);
+    }
+  };
+
+  const handleTagsUpdate = async () => {
+    if (securityProfiles.length) {
+      setIsModalVisible(true);
+    } else {
+      updateTags();
     }
   };
 
@@ -514,12 +538,24 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               type="button"
               className="u-no-margin--bottom"
               onClick={handleTagsUpdate}
+              disabled={isSecurityProfilesLoading}
             >
               Update
             </Button>
           </Col>
         </Row>
       </div>
+
+      {isModalVisible && (
+        <TagsAddConfirmationModal
+          instances={[instance]}
+          securityProfiles={securityProfiles}
+          tags={addedTags}
+          onConfirm={updateTags}
+          confirmButtonDisabled={isEditing}
+          close={closeModal}
+        />
+      )}
     </>
   );
 };
