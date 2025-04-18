@@ -37,28 +37,34 @@ const SecurityProfileListContextualMenu: FC<
       hasIcon: true,
       onClick: actions.downloadAudit,
     },
-    {
-      children: (
-        <>
-          <Icon name="edit" />
-          <span>Edit</span>
-        </>
-      ),
-      "aria-label": `Edit "${profile.title}" security profile`,
-      hasIcon: true,
-      onClick: actions.edit,
-    },
-    {
-      children: (
-        <>
-          <Icon name="play" />
-          <span>Run</span>
-        </>
-      ),
-      "aria-label": `Run "${profile.title}" security profile`,
-      hasIcon: true,
-      onClick: actions.run,
-    },
+
+    ...(profile.status !== "archived"
+      ? [
+          {
+            children: (
+              <>
+                <Icon name="edit" />
+                <span>Edit</span>
+              </>
+            ),
+            "aria-label": `Edit "${profile.title}" security profile`,
+            hasIcon: true,
+            onClick: actions.edit,
+          },
+          {
+            children: (
+              <>
+                <Icon name="play" />
+                <span>Run</span>
+              </>
+            ),
+            "aria-label": `Run "${profile.title}" security profile`,
+            hasIcon: true,
+            onClick: actions.run,
+          },
+        ]
+      : []),
+
     {
       children: (
         <>
@@ -71,18 +77,23 @@ const SecurityProfileListContextualMenu: FC<
       onClick: actions.duplicate,
       disabled: profileLimitReached,
     },
-    {
-      children: (
-        <>
-          <Icon name="archive--negative" />
-          <span className={classes.colorNegative}>Archive</span>
-        </>
-      ),
-      "aria-label": `Archive "${profile.title}" security profile`,
-      hasIcon: true,
-      onClick: actions.archive,
-      className: classes.archive,
-    },
+
+    ...(profile.status !== "archived"
+      ? [
+          {
+            children: (
+              <>
+                <Icon name="archive--negative" />
+                <span className={classes.colorNegative}>Archive</span>
+              </>
+            ),
+            "aria-label": `Archive "${profile.title}" security profile`,
+            hasIcon: true,
+            onClick: actions.archive,
+            className: classes.archive,
+          },
+        ]
+      : []),
   ];
 
   return (

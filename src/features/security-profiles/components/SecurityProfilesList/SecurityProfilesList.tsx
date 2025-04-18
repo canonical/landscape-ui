@@ -42,8 +42,46 @@ const SecurityProfileDownloadAuditForm = lazy(
 );
 
 const SecurityProfileForm = lazy(async () => import("../SecurityProfileForm"));
-const ASSOCIATED_INSTANCES_HEADER = "Associated instances\nTags";
-const LAST_RUN_HEADER = "Last run\nSchedule";
+
+const NAME_HEADER = (
+  <span style={{ display: "inline-block", marginTop: "0px" }}>Name</span>
+);
+
+const STATUS_HEADER = (
+  <span style={{ display: "inline-block", marginTop: "0px" }}>Status</span>
+);
+
+const PASSRATE_HEADER = (
+  <span style={{ display: "inline-block", marginTop: "0px" }}>
+    Last audit&apos;s passrate
+  </span>
+);
+
+const ASSOCIATED_INSTANCES_HEADER = (
+  <span style={{ display: "inline-block", marginTop: "18px" }}>
+    associated instances
+    <br />
+    tags
+  </span>
+);
+
+const MODE_HEADER = (
+  <span style={{ display: "inline-block", marginTop: "0px" }}>
+    Profile mode
+  </span>
+);
+
+const LAST_RUN_HEADER = (
+  <span style={{ display: "inline-block", marginTop: "18px" }}>
+    last run
+    <br />
+    schedule
+  </span>
+);
+
+const ACTIONS_HEADER = (
+  <span style={{ display: "inline-block", marginTop: "0px" }}>Actions</span>
+);
 
 interface SecurityProfilesListProps {
   readonly securityProfiles: SecurityProfile[];
@@ -238,7 +276,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
     () => [
       {
         accessor: "name",
-        Header: "Name",
+        Header: NAME_HEADER,
         className: classes.nameCell,
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => {
           return (
@@ -255,7 +293,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       },
       {
         accessor: "status",
-        Header: "Status",
+        Header: STATUS_HEADER,
         className: classes.status,
         Cell: ({
           row: {
@@ -272,7 +310,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       },
       {
         accessor: "lastAuditPassrate",
-        Header: "Last audit's passrate",
+        Header: PASSRATE_HEADER,
         Cell: ({ row }: CellProps<SecurityProfile>) => {
           const { passing, failing, in_progress } =
             row.original.last_run_results;
@@ -377,13 +415,13 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           <>
             {getAssociatedInstancesLink(profile)}
             <br />
-            {getTags(profile)}
+            <div className={classes.ellipsis}>{getTags(profile)}</div>
           </>
         ),
       },
       {
         accessor: "mode",
-        Header: "Profile Mode",
+        Header: MODE_HEADER,
         Cell: ({
           row: {
             original: { mode },
@@ -445,7 +483,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "id",
         className: classes.actions,
-        Header: "Actions",
+        Header: ACTIONS_HEADER,
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <SecurityProfileListContextualMenu
             actions={actions(profile)}
