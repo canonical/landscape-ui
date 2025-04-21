@@ -318,43 +318,29 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
 
           if (!row.original.last_run_results.timestamp) return <NoData />;
 
+          const passRate = Math.round((passing / total) * 100);
+          const failRate = Math.round((failing / total) * 100);
+          const inProgressRate = Math.round((in_progress / total) * 100);
           const notRun = total - (passing + failing + in_progress);
-
-          const passingPercent = ((passing / total) * 100).toFixed(0);
-          const failingPercent = ((failing / total) * 100).toFixed(0);
-          const inProgressPercent = ((in_progress / total) * 100).toFixed(0);
-          const notRunPercent = ((notRun / total) * 100).toFixed(0);
-
-          const totalPercent =
-            parseInt(passingPercent) +
-            parseInt(failingPercent) +
-            parseInt(inProgressPercent) +
-            parseInt(notRunPercent);
-          const difference = 100 - totalPercent;
-
-          const adjustedPassingPercent = (
-            parseInt(passingPercent) + difference
-          ).toString();
+          const notRunRate = Math.round((notRun / total) * 100);
 
           const tooltipMessage = (
             <>
               <div>
-                <strong>Passed:</strong> {passing} instances (
-                {adjustedPassingPercent}%)
+                <strong>Passed:</strong> {passing} instances ({passRate}%)
               </div>
               <div>
-                <strong>Failed:</strong> {failing} instances ({failingPercent}%)
+                <strong>Failed:</strong> {failing} instances ({failRate}%)
               </div>
               <div>
                 <strong>In progress:</strong> {in_progress} instances (
-                {inProgressPercent}%)
+                {inProgressRate}%)
               </div>
               <div>
-                <strong>Not Run:</strong> {notRun} instances ({notRunPercent}%)
+                <strong>Not Run:</strong> {notRun} instances ({notRunRate}%)
               </div>
             </>
           );
-
           return (
             <div>
               <div className={classes.textContainer}>

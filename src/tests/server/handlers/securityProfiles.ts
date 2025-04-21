@@ -22,12 +22,15 @@ export default [
     const limit = parseInt(searchParams.get("limit") || "20");
     const offset = parseInt(searchParams.get("offset") || "0");
     const passRateFrom = parseFloat(searchParams.get("passRateFrom") || "0");
-    const passRateTo = parseFloat(searchParams.get("passRateTo") || "1");
+    const passRateTo = parseFloat(searchParams.get("passRateTo") || "100");
 
     const filteredProfiles = securityProfiles.filter((securityProfile) => {
-      const passRate =
-        securityProfile.last_run_results.passing /
-        securityProfile.associated_instances;
+      const totalInstances = securityProfile.associated_instances;
+      const passed = securityProfile.last_run_results.passing ?? 0;
+
+      const rawPassRate =
+        totalInstances > 0 ? (passed / totalInstances) * 100 : 0;
+      const passRate = Math.round(rawPassRate);
 
       return (
         securityProfile.name.startsWith(search) &&

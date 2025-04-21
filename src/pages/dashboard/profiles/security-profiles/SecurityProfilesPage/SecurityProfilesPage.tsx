@@ -29,7 +29,8 @@ const SecurityProfilesPage: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { notify } = useNotify();
-  const { currentPage, pageSize, search, statuses } = usePageParams();
+  const { currentPage, pageSize, search, statuses, passRateFrom, passRateTo } =
+    usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const { securityProfiles, isSecurityProfilesLoading } =
@@ -38,6 +39,8 @@ const SecurityProfilesPage: FC = () => {
       statuses: statuses.length === 0 ? [] : statuses,
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
+      passRateFrom,
+      passRateTo,
     });
 
   const { getActivitiesQuery } = useActivities();
