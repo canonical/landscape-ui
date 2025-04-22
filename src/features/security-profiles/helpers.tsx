@@ -49,7 +49,7 @@ export const getAssociatedInstancesLink = (profile: SecurityProfile) =>
       {profile.associated_instances === 1 ? "instance" : "instances"}
     </Link>
   ) : (
-    "0 instances"
+    <NoData />
   );
 
 export const getTags = (profile: SecurityProfile) =>
