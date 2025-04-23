@@ -283,7 +283,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             <Button
               appearance="link"
               type="button"
-              className={`${classes.ellipsisButton} u-no-margin--bottom u-no-padding--top`}
+              className={`${classes.ellipsisButton} u-no-margin--bottom u-no-padding--top u-align--left`}
               onClick={actions(profile).viewDetails}
             >
               {profile.title}

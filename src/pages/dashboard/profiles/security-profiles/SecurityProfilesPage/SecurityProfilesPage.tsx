@@ -4,6 +4,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import { TablePagination } from "@/components/layout/TablePagination";
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import {
@@ -44,6 +45,12 @@ const SecurityProfilesPage: FC = () => {
       passRateFrom,
       passRateTo,
     });
+  const { getSecurityProfilesQuery } = useGetSecurityProfiles();
+
+  const { data: getSecurityProfilesQueryResult } = getSecurityProfilesQuery({
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+  });
 
   const { getActivitiesQuery } = useActivities();
 
@@ -334,6 +341,10 @@ const SecurityProfilesPage: FC = () => {
         <SecurityProfilesList
           profileLimitReached={profileLimitReached}
           securityProfiles={securityProfiles}
+        />
+        <TablePagination
+          totalItems={getSecurityProfilesQueryResult?.data.count}
+          currentItemCount={getSecurityProfilesQueryResult?.data.results.length}
         />
       </PageContent>
     </PageMain>
