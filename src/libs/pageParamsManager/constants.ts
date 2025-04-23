@@ -84,9 +84,9 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_STRING,
   },
   {
-    urlParam: "statuses",
+    urlParam: "status",
     shouldResetPage: true,
-    defaultValue: DEFAULT_EMPTY_ARRAY,
+    defaultValue: DEFAULT_EMPTY_STRING,
   },
   {
     urlParam: "tab",

@@ -94,13 +94,7 @@ const useSecurityProfileForm = ({
             : schema,
       ),
 
-      start_date: Yup.string()
-        .required("This field is required.")
-        .test({
-          test: (start_date) =>
-            moment(start_date).utc(true).isSameOrAfter(moment()),
-          message: `The date must not be in the past.`,
-        }),
+      start_date: Yup.string().required("This field is required."),
 
       start_type: Yup.string().required("This field is required."),
 
@@ -112,10 +106,13 @@ const useSecurityProfileForm = ({
         return;
       }
 
-      const scheduleRuleParts = [`FREQ=${values.unit_of_time}`];
+      const scheduleRuleParts = [];
 
       if (values.start_type == "recurring") {
-        scheduleRuleParts.push(`INTERVAL=${values.every}`);
+        scheduleRuleParts.push(
+          `FREQ=${values.unit_of_time}`,
+          `INTERVAL=${values.every}`,
+        );
 
         switch (values.unit_of_time) {
           case "WEEKLY": {
@@ -157,7 +154,7 @@ const useSecurityProfileForm = ({
           );
         }
       } else {
-        scheduleRuleParts.push("COUNT=1");
+        scheduleRuleParts.push("FREQ=WEEKLY", "COUNT=1");
       }
 
       try {

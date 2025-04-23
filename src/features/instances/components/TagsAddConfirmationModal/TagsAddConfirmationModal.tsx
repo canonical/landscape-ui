@@ -1,10 +1,15 @@
 import type { SecurityProfile } from "@/features/security-profiles";
 import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security-profiles";
 import type { Instance } from "@/types/Instance";
-import { ConfirmationModal, ModularTable } from "@canonical/react-components";
+import {
+  ConfirmationModal,
+  Icon,
+  ModularTable,
+  Tooltip,
+} from "@canonical/react-components";
 import { useMemo, type ComponentProps, type FC } from "react";
 import type { CellProps, Column } from "react-table";
-import { finalAssociatedInstanceCount, willBeOverLimit } from "./helpers";
+import { willBeOverLimit } from "./helpers";
 
 interface TagsAddConfirmationModalProps
   extends Omit<
@@ -45,12 +50,25 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
         },
         {
           Header: "Associated instances",
-          Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) =>
-            `${finalAssociatedInstanceCount(profile, instances)} ${finalAssociatedInstanceCount(profile, instances) === 1 ? "instance" : "instances"}`,
+          Cell: ({
+            row: { original: profile },
+          }: CellProps<SecurityProfile>) => (
+            <Tooltip
+              message={
+                willBeOverLimit(profile, instances)
+                  ? `Adding this instance will exceed the ${SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT} instance limit`
+                  : null
+              }
+            >
+              {willBeOverLimit(profile, instances) && <Icon name="warning" />}
+              {profile.associated_instances ?? 0}{" "}
+              {profile.associated_instances === 1 ? "instance" : "instances"}
+            </Tooltip>
+          ),
           getCellIcon: ({
             row: { original: profile },
           }: CellProps<SecurityProfile>) =>
-            willBeOverLimit(profile, instances) ? "warning" : undefined,
+            willBeOverLimit(profile, instances) ? "" : null,
         },
       ].filter((column) => column != null),
     [],

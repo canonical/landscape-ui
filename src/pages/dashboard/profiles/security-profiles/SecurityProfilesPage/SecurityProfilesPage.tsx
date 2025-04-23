@@ -4,6 +4,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import {
   SecurityProfileForm,
@@ -16,6 +17,7 @@ import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Notification } from "@canonical/react-components";
+import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -29,14 +31,14 @@ const SecurityProfilesPage: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { notify } = useNotify();
-  const { currentPage, pageSize, search, statuses, passRateFrom, passRateTo } =
+  const { currentPage, pageSize, search, status, passRateFrom, passRateTo } =
     usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const { securityProfiles, isSecurityProfilesLoading } =
     useGetSecurityProfiles({
       search,
-      statuses: statuses.length === 0 ? [] : statuses,
+      status,
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
       passRateFrom,
@@ -63,7 +65,7 @@ const SecurityProfilesPage: FC = () => {
     securityProfilesCount: activeSecurityProfilesCount,
     isSecurityProfilesLoading: isActiveSecurityProfilesLoading,
   } = useGetSecurityProfiles({
-    statuses: ["active"],
+    status: "active",
   });
 
   const { updateSecurityProfile } = useUpdateSecurityProfile();
@@ -114,7 +116,7 @@ const SecurityProfilesPage: FC = () => {
     </Button>
   );
 
-  if (!securityProfiles.length && !search && !statuses.length) {
+  if (!securityProfiles.length && !search && !status) {
     return (
       <PageMain>
         <PageHeader title="Security profiles" />
@@ -145,7 +147,7 @@ const SecurityProfilesPage: FC = () => {
 
   const activities =
     getActivitiesQueryResponse?.data.results.filter(
-      (activity) => activity.activity_status == "complete",
+      (activity) => activity.activity_status == "succeeded",
     ) ?? [];
 
   return (
@@ -193,7 +195,7 @@ const SecurityProfilesPage: FC = () => {
               onClick={() => {
                 navigate({
                   pathname: location.pathname,
-                  search: "?statuses=over-limit",
+                  search: "?status=over-limit",
                 });
               }}
             >
@@ -235,7 +237,9 @@ const SecurityProfilesPage: FC = () => {
                         every: 1,
                         months: [],
                         randomize_delivery: "no",
-                        start_date: "",
+                        start_date: moment()
+                          .utc()
+                          .format(INPUT_DATE_TIME_FORMAT),
                         start_type: "",
                         tailoring_file: null,
                         unit_of_time: "DAILY",

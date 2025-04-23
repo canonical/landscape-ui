@@ -1,7 +1,9 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import classNames from "classnames";
+import moment from "moment";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useAddSecurityProfile } from "../../api";
@@ -39,7 +41,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       randomize_delivery: "no",
       restart_deliver_delay_window: 1,
       restart_deliver_delay: 1,
-      start_date: "",
+      start_date: moment().utc().format(INPUT_DATE_TIME_FORMAT),
       start_type: "",
       tags: [],
       tailoring_file: null,

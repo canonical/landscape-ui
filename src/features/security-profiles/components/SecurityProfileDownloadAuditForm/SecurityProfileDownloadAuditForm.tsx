@@ -64,7 +64,7 @@ const SecurityProfileDownloadAuditForm: FC<
       return;
     }
 
-    if (getSingleActivityQueryResponse.data.activity_status == "complete") {
+    if (getSingleActivityQueryResponse.data.activity_status == "succeeded") {
       setStatus({
         type: "ready",
         report_uri: getSingleActivityQueryResponse.data.result_text ?? "",

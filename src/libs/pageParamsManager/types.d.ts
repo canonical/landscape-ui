@@ -21,7 +21,7 @@ export interface PageParams {
   search: string;
   sort: SortDirection;
   sortBy: string;
-  statuses: string[];
+  status: string;
   tab: string;
   tags: string[];
   toDate: string;

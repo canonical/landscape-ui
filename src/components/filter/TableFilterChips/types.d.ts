@@ -10,7 +10,7 @@ export type FilterType = Pick<
   | "fromDate"
   | "os"
   | "search"
-  | "statuses"
+  | "status"
   | "tags"
   | "toDate"
   | "type"

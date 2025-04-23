@@ -36,6 +36,7 @@ const ScheduleBlockBase = <T extends ScheduleBlockFormProps>({
             label="Start date"
             min={currentDate}
             {...formik.getFieldProps("start_date")}
+            error={getFormikError(formik, "start_date")}
             required
           />
 

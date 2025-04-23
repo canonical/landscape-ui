@@ -5,7 +5,7 @@ export const defaultFiltersToDisplay: FilterKey[] = [
   "availabilityZones",
   "os",
   "fromDate",
-  "statuses",
+  "status",
   "tags",
   "toDate",
   "type",

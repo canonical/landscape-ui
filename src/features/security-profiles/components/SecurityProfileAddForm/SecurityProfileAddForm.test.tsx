@@ -4,8 +4,6 @@ import SecurityProfileAddForm from "./SecurityProfileAddForm";
 
 describe("SecurityProfileAddForm", () => {
   it("should render", async () => {
-    renderWithProviders(
-      <SecurityProfileAddForm currentDate="" onSuccess={() => undefined} />,
-    );
+    renderWithProviders(<SecurityProfileAddForm onSuccess={() => undefined} />);
   });
 });

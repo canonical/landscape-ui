@@ -1,4 +1,3 @@
-import LoadingState from "@/components/layout/LoadingState";
 import { useOrgSettings } from "@/features/organisation-settings";
 import useEnv from "@/hooks/useEnv";
 import useRoles from "@/hooks/useRoles";
@@ -25,15 +24,8 @@ export default function useSecurityProfileFormNameStep<
     isLoading: isLoadingOrganisationPreferences,
   } = getOrganisationPreferences();
 
-  if (isLoadingAccessGroups || isLoadingOrganisationPreferences) {
-    return <LoadingState />;
-  }
-
-  if (!getAccessGroupQueryResponse || !getOrganisationPreferencesResponse) {
-    return;
-  }
-
   return {
+    isLoading: isLoadingAccessGroups || isLoadingOrganisationPreferences,
     isValid: !formik.errors.title,
     description:
       "Choose a descriptive profile name and the right access group for your security profile.",
@@ -49,7 +41,7 @@ export default function useSecurityProfileFormNameStep<
 
         <Select
           label="Access group"
-          options={getAccessGroupQueryResponse.data.map((group) => ({
+          options={getAccessGroupQueryResponse?.data.map((group) => ({
             label: group.title,
             value: group.name,
           }))}
@@ -65,7 +57,12 @@ export default function useSecurityProfileFormNameStep<
             label="Audit retention"
             required
             disabled
-            value={`${getOrganisationPreferencesResponse.data.audit_retention_period} day${getOrganisationPreferencesResponse.data.audit_retention_period == 1 ? "" : "s"}`}
+            value={
+              getOrganisationPreferencesResponse?.data.audit_retention_period ==
+              -1
+                ? "Infinite"
+                : `${getOrganisationPreferencesResponse?.data.audit_retention_period} day${getOrganisationPreferencesResponse?.data.audit_retention_period == 1 ? "" : "s"}`
+            }
             help="You can change this limit in the Landscape server configuration file."
           />
         )}

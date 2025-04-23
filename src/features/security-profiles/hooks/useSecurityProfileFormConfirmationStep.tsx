@@ -12,7 +12,7 @@ export default function useSecurityProfileFormConfirmationStep<
 >(formik: FormikContextType<T>) {
   return {
     isValid: true,
-    description: `To apply your changes, you need to run the profile. This will ${phrase(
+    description: `This will ${phrase(
       [
         formik.values.mode != "audit" ? "apply fixes" : null,
         formik.values.mode == "audit-fix-restart" ? "restart instances" : null,

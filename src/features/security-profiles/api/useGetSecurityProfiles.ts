@@ -9,7 +9,7 @@ interface GetSecurityProfilesParams {
   limit?: number;
   offset?: number;
   search?: string;
-  statuses?: string[];
+  status?: string;
   passRateFrom?: number;
   passRateTo?: number;
 }

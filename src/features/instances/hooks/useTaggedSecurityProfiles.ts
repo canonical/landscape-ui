@@ -7,7 +7,7 @@ export function useTaggedSecurityProfiles(
   instances: Instance[],
 ) {
   const { securityProfiles, isSecurityProfilesLoading } =
-    useGetSecurityProfiles({ statuses: ["active"] });
+    useGetSecurityProfiles({ status: "active" });
 
   return {
     securityProfiles: securityProfiles.filter(

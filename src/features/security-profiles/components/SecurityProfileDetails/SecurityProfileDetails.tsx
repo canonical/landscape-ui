@@ -81,6 +81,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
               type="button"
               hasIcon
               onClick={actions.run}
+              disabled={!profile.associated_instances}
             >
               <Icon name="play" />
               <span>Run</span>

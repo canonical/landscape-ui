@@ -52,7 +52,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     employeeGroups,
     fromDate,
     os,
-    statuses,
+    status,
     tags,
     toDate,
     type,
@@ -68,7 +68,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       employeeGroups: [],
       fromDate: "",
       os: "",
-      statuses: [],
+      status: "",
       tags: [],
       toDate: "",
       type: "",
@@ -124,7 +124,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     fromDate,
     hiddenChipCount,
     os,
-    statuses.length,
+    status,
     tags.length,
     toDate,
     type,
@@ -140,7 +140,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     fromDate,
     os,
     search,
-    statuses,
+    status,
     tags,
     toDate,
     type,
@@ -191,19 +191,15 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             className="u-no-margin--bottom u-no-margin--right"
           />
         )}
-        {renderResults.areStatusesChipsRender &&
-          statuses.map((status, _, array) => (
-            <Chip
-              key={status}
-              value={`Status: ${getChipLabel(statusOptions, status)}`}
-              onDismiss={() => {
-                setPageParams({
-                  statuses: array.filter((item) => item !== status),
-                });
-              }}
-              className="u-no-margin--bottom u-no-margin--right"
-            />
-          ))}
+        {renderResults.isStatusChipRender && (
+          <Chip
+            value={`Status: ${getChipLabel(statusOptions, status)}`}
+            onDismiss={() => {
+              setPageParams({ status: "" });
+            }}
+            className="u-no-margin--bottom u-no-margin--right"
+          />
+        )}
         {renderResults.isOsChipRender && (
           <Chip
             value={`OS: ${getChipLabel(osOptions, os)}`}

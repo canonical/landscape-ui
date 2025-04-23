@@ -19,7 +19,7 @@ const usePageParams = (): UsePageParamsReturnType => {
     }
   }, [searchParams, setSearchParams, pageParamsManager]);
 
-  const { statuses, passRateFrom, passRateTo, ...parsedSearchParams } =
+  const { status, passRateFrom, passRateTo, ...parsedSearchParams } =
     pageParamsManager.getParsedParams(searchParams);
 
   const setPageParams = (newParams: Partial<PageParams>): void => {
@@ -50,8 +50,7 @@ const usePageParams = (): UsePageParamsReturnType => {
   return {
     ...parsedSearchParams,
     setPageParams,
-    status: statuses[0],
-    statuses,
+    status,
     passRateFrom,
     passRateTo,
   };

@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -95,8 +95,8 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   const { notify } = useNotify();
   const debug = useDebug();
   const { setSidePanelContent, closeSidePanel } = useSidePanel();
-  const { openActivityDetails } = useActivities();
 
+  const { openActivityDetails } = useActivities();
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
   const { updateSecurityProfile, isSecurityProfileUpdating } =
@@ -170,7 +170,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
               every: 1,
               months: [],
               randomize_delivery: "no",
-              start_date: "",
+              start_date: moment().utc().format(INPUT_DATE_TIME_FORMAT),
               start_type: "",
               tailoring_file: null,
               unit_of_time: "DAILY",
@@ -207,7 +207,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
               every: 1,
               months: [],
               randomize_delivery: "no",
-              start_date: "",
+              start_date: moment().utc().format(INPUT_DATE_TIME_FORMAT),
               start_type: "",
               tailoring_file: null,
               unit_of_time: "DAILY",

@@ -3,14 +3,10 @@ import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security
 import type { Instance } from "@/types/Instance";
 import { instancesToAssignCount } from "../../helpers";
 
-export const finalAssociatedInstanceCount = (
-  profile: SecurityProfile,
-  instances: Instance[],
-) => profile.associated_instances + instancesToAssignCount(profile, instances);
-
 export const willBeOverLimit = (
   profile: SecurityProfile,
   instances: Instance[],
 ) =>
-  finalAssociatedInstanceCount(profile, instances) >=
+  (profile.associated_instances ?? 0) +
+    instancesToAssignCount(profile, instances) >=
   SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT;

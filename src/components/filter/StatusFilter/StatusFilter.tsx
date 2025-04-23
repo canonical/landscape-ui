@@ -6,40 +6,27 @@ import TableFilter from "../TableFilter";
 
 interface StatusFilterProps {
   readonly options: SelectOption[];
-  readonly multiple?: boolean;
 }
 
-const StatusFilter: FC<StatusFilterProps> = ({ options, multiple = false }) => {
-  const { setPageParams, statuses } = usePageParams();
+const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
+  const { setPageParams, status } = usePageParams();
 
   useSetDynamicFilterValidation(
-    "statuses",
+    "status",
     options.map((opt) => opt.value),
   );
 
-  const props = multiple
-    ? {
-        multiple,
-        onItemsSelect: (item: string[]) => {
-          setPageParams({ statuses: item });
-        },
-        selectedItems: statuses,
-      }
-    : {
-        multiple,
-        onItemSelect: (item: string) => {
-          setPageParams({ statuses: [item] });
-        },
-        selectedItem: statuses[0],
-      };
-
   return (
     <TableFilter
+      multiple={false}
       label="Status"
       hasToggleIcon
       hasBadge
       options={options}
-      {...props}
+      onItemSelect={(item) => {
+        setPageParams({ status: item });
+      }}
+      selectedItem={status}
     />
   );
 };
