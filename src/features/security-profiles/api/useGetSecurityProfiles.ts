@@ -10,8 +10,8 @@ interface GetSecurityProfilesParams {
   offset?: number;
   search?: string;
   status?: string;
-  passRateFrom?: number;
-  passRateTo?: number;
+  pass_rate_from?: number;
+  pass_rate_to?: number;
 }
 
 export const useGetSecurityProfiles = (params?: GetSecurityProfilesParams) => {

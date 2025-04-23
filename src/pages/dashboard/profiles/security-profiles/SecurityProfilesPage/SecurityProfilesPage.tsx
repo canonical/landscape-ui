@@ -42,8 +42,8 @@ const SecurityProfilesPage: FC = () => {
       status,
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
-      passRateFrom,
-      passRateTo,
+      pass_rate_from: passRateFrom,
+      pass_rate_to: passRateTo,
     });
 
   const {
