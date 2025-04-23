@@ -1,4 +1,5 @@
 import usePageParams from "@/hooks/usePageParams";
+import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -22,10 +23,18 @@ const PassRateFilterBase: FC<PassRateFilterBaseProps> = ({ hideMenu }) => {
       passRateFrom: passRateFrom,
       passRateTo: passRateTo,
     },
-    enableReinitialize: true,
     validationSchema: Yup.object().shape({
-      passRateFrom: Yup.number().min(0).max(100),
-      passRateTo: Yup.number().min(0).max(100),
+      passRateFrom: Yup.number()
+        .required("This field is required")
+        .min(0, "Must not be negative")
+        .integer("Enter an integer")
+        .max(100, "Must not be greater than 100"),
+      passRateTo: Yup.number()
+        .required("This field is required")
+        .max(100, "Must not be greater than 100")
+        .when("passRateFrom", ([from], schema) =>
+          schema.min(from, "Must not be less than minimum pass rate"),
+        ),
     }),
     onSubmit: (values) => {
       setPageParams({
@@ -51,6 +60,7 @@ const PassRateFilterBase: FC<PassRateFilterBaseProps> = ({ hideMenu }) => {
           min={0}
           max={formik.values.passRateTo}
           {...formik.getFieldProps("passRateFrom")}
+          error={getFormikError(formik, "passRateFrom")}
         />
         <span className={classes.percent}>%</span>
       </div>
@@ -63,6 +73,7 @@ const PassRateFilterBase: FC<PassRateFilterBaseProps> = ({ hideMenu }) => {
           min={formik.values.passRateFrom}
           max={100}
           {...formik.getFieldProps("passRateTo")}
+          error={getFormikError(formik, "passRateTo")}
         />
         <span className={classes.percent}>%</span>
       </div>
@@ -73,13 +84,22 @@ const PassRateFilterBase: FC<PassRateFilterBaseProps> = ({ hideMenu }) => {
           type="button"
           appearance="base"
           onClick={() => {
-            hideMenu();
-            formik.resetForm();
+            formik.resetForm({
+              values: {
+                passRateFrom: 0,
+                passRateTo: 100,
+              },
+            });
           }}
         >
           Reset
         </Button>
-        <Button small type="submit" appearance="positive">
+        <Button
+          small
+          type="submit"
+          appearance="positive"
+          disabled={!formik.isValid}
+        >
           Apply
         </Button>
       </div>
