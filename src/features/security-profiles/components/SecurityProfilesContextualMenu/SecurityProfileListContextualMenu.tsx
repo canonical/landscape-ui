@@ -91,7 +91,6 @@ const SecurityProfileListContextualMenu: FC<
             "aria-label": `Archive "${profile.title}" security profile`,
             hasIcon: true,
             onClick: actions.archive,
-            className: classes.archive,
           },
         ]
       : []),
