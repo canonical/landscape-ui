@@ -16,11 +16,7 @@ const Navigation: FC = () => {
   const { isSaas, isSelfHosted } = useEnv();
   const { isOidcAvailable, isFeatureEnabled } = useAuth();
 
-  const { securityProfiles = [] } = useGetSecurityProfiles({});
-
-  const showOverLimitBadge = securityProfiles.some(
-    (profile) => profile.associated_instances > 5000,
-  );
+  const { hasOverLimitProfiles } = useGetSecurityProfiles({});
 
   useEffect(() => {
     const shouldBeExpandedPath = getPathToExpand(pathname);
@@ -167,7 +163,7 @@ const Navigation: FC = () => {
                               >
                                 {subItem.label}
                                 {subItem.label === "Security profiles" &&
-                                  showOverLimitBadge && (
+                                  hasOverLimitProfiles && (
                                     <span className={classes.badge}>
                                       <Badge value={1} isNegative />
                                     </span>
