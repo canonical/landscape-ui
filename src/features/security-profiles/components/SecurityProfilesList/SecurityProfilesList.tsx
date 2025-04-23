@@ -312,17 +312,16 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "lastAuditPassrate",
         Header: PASSRATE_HEADER,
         Cell: ({ row }: CellProps<SecurityProfile>) => {
-          const { passing, failing, in_progress } =
+          const { passing, failing, in_progress, not_started } =
             row.original.last_run_results;
-          const total = row.original.associated_instances;
+          const total = passing + failing + in_progress;
 
           if (!row.original.last_run_results.timestamp) return <NoData />;
 
           const passRate = Math.round((passing / total) * 100);
           const failRate = Math.round((failing / total) * 100);
           const inProgressRate = Math.round((in_progress / total) * 100);
-          const notRun = total - (passing + failing + in_progress);
-          const notRunRate = Math.round((notRun / total) * 100);
+          const notRunRate = Math.round((not_started / total) * 100);
 
           const tooltipMessage = (
             <>
@@ -337,7 +336,8 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 {inProgressRate}%)
               </div>
               <div>
-                <strong>Not Run:</strong> {notRun} instances ({notRunRate}%)
+                <strong>Not run:</strong> {not_started} instances ({notRunRate}
+                %)
               </div>
             </>
           );
@@ -370,19 +370,25 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                   {passing > 0 && (
                     <div
                       className={classes.linePassed}
-                      style={{ width: `${(passing / total) * 100}%` }}
+                      style={{
+                        width: `${(passing / total) * 100}%`,
+                      }}
                     />
                   )}
                   {failing > 0 && (
                     <div
                       className={classes.lineFailed}
-                      style={{ width: `${(failing / total) * 100}%` }}
+                      style={{
+                        width: `${(failing / total) * 100}%`,
+                      }}
                     />
                   )}
                   {in_progress > 0 && (
                     <div
                       className={classes.lineInProgress}
-                      style={{ width: `${(in_progress / total) * 100}%` }}
+                      style={{
+                        width: `${(in_progress / total) * 100}%`,
+                      }}
                     />
                   )}
                 </div>

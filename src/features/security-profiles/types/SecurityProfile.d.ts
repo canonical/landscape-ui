@@ -14,6 +14,8 @@ export interface SecurityProfile extends Record<string, unknown> {
     passing: number;
     failing: number;
     in_progress: number;
+    not_started: number;
+    pass_rate: number;
     report_uri: string | null;
     timestamp: string;
   };
