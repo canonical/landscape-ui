@@ -21,6 +21,7 @@ import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
 import { useOpenScriptProfileDetails } from "../../hooks";
+import classNames from "classnames";
 
 const ActivityDetails = lazy(
   async () => import("@/features/activities/components/ActivityDetails"),
@@ -175,7 +176,10 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             <Button
               type="button"
               appearance="link"
-              className="u-no-margin u-no-padding--top"
+              className={classNames(
+                "u-no-margin u-no-padding--top",
+                classes.link,
+              )}
               onClick={() => {
                 setSidePanelContent(
                   `${profile.title} - ${moment(activity.creation_time).format(DISPLAY_DATE_TIME_FORMAT)}`,
@@ -188,7 +192,6 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
               {moment(activity.creation_time)
                 .utc()
                 .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
-              GMT
             </Button>
           ) : (
             <NoData />

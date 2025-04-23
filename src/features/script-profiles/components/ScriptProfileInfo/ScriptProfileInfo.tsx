@@ -97,7 +97,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({
               label="Next run"
               value={
                 profile.trigger.next_run ? (
-                  `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                  `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)}`
                 ) : (
                   <NoData />
                 )
@@ -122,7 +122,6 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({
                   {moment(activity.creation_time)
                     .utc()
                     .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
-                  GMT
                 </Button>
               ) : (
                 <NoData />

@@ -20,7 +20,7 @@ const ScriptProfileControl: FC<ScriptProfileControlProps> = ({
     return (
       <Notification inline title="Profile archived:" severity="caution">
         The profile was archived on{" "}
-        {moment(profile.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)} GMT.
+        {moment(profile.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}.
       </Notification>
     );
   }

@@ -1,9 +1,11 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ACTIVITY_STATUSES, type Activity } from "@/features/activities";
 import { Button, ModularTable } from "@canonical/react-components";
+import classNames from "classnames";
 import moment from "moment";
 import { useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
+import classes from "./ScriptProfileActivitiesList.module.scss";
 
 interface ScriptProfileActivitiesListProps {
   readonly activities: Activity[];
@@ -22,7 +24,10 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
           <Button
             type="button"
             appearance="link"
-            className="u-no-margin u-no-padding--top"
+            className={classNames(
+              "u-no-margin u-no-padding--top",
+              classes.link,
+            )}
             onClick={() => {
               viewActivityDetails(activity);
             }}
@@ -30,7 +35,6 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
             {moment(activity.creation_time)
               .utc()
               .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
-            GMT
           </Button>
         ),
       },
@@ -43,7 +47,7 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
           ACTIVITY_STATUSES[activity.activity_status].icon,
       },
     ],
-    [],
+    [activities],
   );
 
   return <ModularTable columns={columns} data={activities} />;
