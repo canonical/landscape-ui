@@ -67,7 +67,7 @@ const SecurityProfileDownloadAuditForm: FC<
     if (getSingleActivityQueryResponse.data.activity_status == "succeeded") {
       setStatus({
         type: "ready",
-        report_uri: getSingleActivityQueryResponse.data.result_text ?? "",
+        report_uri: getSingleActivityQueryResponse.data.result_text as string,
       });
     } else {
       setStatus({ type: "pending" });
@@ -124,18 +124,22 @@ const SecurityProfileDownloadAuditForm: FC<
           })
         ).data;
 
-        if (response.report_uri != undefined) {
-          setStatus({ type: "ready", report_uri: response.report_uri });
+        if (response.activity_status == "succeeded") {
+          setStatus({
+            type: "ready",
+            report_uri: response.result_text as string,
+          });
+
           return;
         }
 
         setStatus({ type: "pending" });
 
         if (pendingReport) {
-          pendingReport.activityId = response.activity_id;
+          pendingReport.activityId = response.id;
         } else {
           pendingReports.push({
-            activityId: response.activity_id,
+            activityId: response.id,
             profileId: id,
           });
         }

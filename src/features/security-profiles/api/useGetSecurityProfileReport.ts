@@ -1,3 +1,4 @@
+import type { Activity } from "@/features/activities";
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation } from "@tanstack/react-query";
@@ -14,10 +15,7 @@ export const useGetSecurityProfileReport = () => {
   const authFetch = useFetch();
 
   const { isPending, mutateAsync } = useMutation<
-    AxiosResponse<
-      | { activity_id: undefined; report_uri: string }
-      | { activity_id: number; report_uri: undefined }
-    >,
+    AxiosResponse<Activity>,
     AxiosError<ApiError>,
     GetSecurityProfileReportParams
   >({
