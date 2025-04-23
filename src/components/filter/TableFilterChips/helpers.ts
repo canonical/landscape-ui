@@ -1,3 +1,4 @@
+import { PARAMS_CONFIG } from "@/libs/pageParamsManager/constants";
 import type {
   CheckRenderConditions,
   CheckRenderConditionsReturn,
@@ -77,7 +78,9 @@ export const checkRenderConditions: CheckRenderConditions = ({
         const resultKey =
           `is${key.replace(/^\w/, (c) => c.toUpperCase())}ChipRender` as SingularChipKey;
 
-        const resultValue = Boolean(value);
+        const resultValue =
+          PARAMS_CONFIG.find((param) => param.urlParam == key)?.defaultValue !=
+          value;
 
         result[resultKey] = resultValue;
         result.totalChipsToRenderCount += Number(resultValue);

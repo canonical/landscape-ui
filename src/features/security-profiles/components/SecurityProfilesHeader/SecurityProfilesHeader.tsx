@@ -17,7 +17,7 @@ const SecurityProfilesHeader: FC = () => {
         }
       />
       <TableFilterChips
-        filtersToDisplay={["status", "search"]}
+        filtersToDisplay={["status", "search", "passRateFrom", "passRateTo"]}
         statusOptions={SECURITY_STATUSES}
       />
     </>

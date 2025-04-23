@@ -58,6 +58,8 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     type,
     search,
     query,
+    passRateFrom,
+    passRateTo,
   } = usePageParams();
 
   const handleClearAllFilters = () => {
@@ -74,6 +76,8 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       type: "",
       search: "",
       query: "",
+      passRateFrom: 0,
+      passRateTo: 100,
     });
     setIsExpanded(false);
   };
@@ -129,6 +133,8 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     toDate,
     type,
     search,
+    passRateFrom,
+    passRateTo,
   ]);
 
   const renderResults = checkRenderConditions({
@@ -145,6 +151,8 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     toDate,
     type,
     query,
+    passRateFrom,
+    passRateTo,
   });
 
   if (renderResults.totalChipsToRenderCount === 0) {
@@ -292,6 +300,24 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             value={`To: ${toDate}`}
             onDismiss={() => {
               setPageParams({ toDate: "" });
+            }}
+            className="u-no-margin--bottom u-no-margin--right"
+          />
+        )}
+        {renderResults.isPassRateFromChipRender && (
+          <Chip
+            value={`From: ${passRateFrom}`}
+            onDismiss={() => {
+              setPageParams({ passRateFrom: 0 });
+            }}
+            className="u-no-margin--bottom u-no-margin--right"
+          />
+        )}
+        {renderResults.isPassRateToChipRender && (
+          <Chip
+            value={`To: ${passRateTo}`}
+            onDismiss={() => {
+              setPageParams({ passRateTo: 100 });
             }}
             className="u-no-margin--bottom u-no-margin--right"
           />
