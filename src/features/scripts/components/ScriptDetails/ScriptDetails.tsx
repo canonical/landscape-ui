@@ -44,8 +44,6 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
     afterSuccess: closeSidePanel,
   });
 
-  console.log(isArchiving, " archiving in script details");
-
   const viewVersionHistory = (): void => {
     if (script === null) {
       debug("Script not loaded");

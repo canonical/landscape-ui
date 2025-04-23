@@ -65,7 +65,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
     );
     try {
       const promises: Promise<unknown>[] = [
-        editScript(getEditScriptParams({ script, values })),
+        editScript(getEditScriptParams({ scriptId: script.id, values })),
       ];
       if (values.attachmentsToRemove.length) {
         for (const filename of values.attachmentsToRemove) {
@@ -124,8 +124,6 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   };
 
   const clickFileInput = () => inputRef.current?.click();
-
-  console.log("script profiels", script.script_profiles);
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>

@@ -107,6 +107,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
       {
         Header: "associated profiles",
         accessor: "script_profiles",
+        className: classes.associatedProfiles,
         Cell: ({ row: { original, index } }: CellProps<Script>) => {
           const scriptProfiles = original.script_profiles;
 

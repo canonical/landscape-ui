@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import type { Script, ScriptFormValues } from "./types";
+import type { ScriptFormValues } from "./types";
 import type { CreateScriptAttachmentParams } from "./api";
 
 const getEncodedCode = (code: string) => {
@@ -18,15 +18,15 @@ export const getCreateScriptParams = (values: ScriptFormValues) => {
 };
 
 export const getEditScriptParams = ({
-  script,
+  scriptId,
   values,
 }: {
-  script: Script;
+  scriptId: number;
   values: ScriptFormValues;
 }) => {
   return {
     code: getEncodedCode(values.code),
-    script_id: script.id,
+    script_id: scriptId,
     title: values.title,
   };
 };

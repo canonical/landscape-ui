@@ -10,7 +10,9 @@ import {
 import moment from "moment";
 import { useState, type FC } from "react";
 import { useEditScript, useGetScriptVersion } from "../../api";
-import type { TruncatedScriptVersion } from "../../types";
+import type { ScriptFormValues, TruncatedScriptVersion } from "../../types";
+import useDebug from "@/hooks/useDebug";
+import { getEditScriptParams } from "../../helpers";
 
 interface ScriptVersionHistoryDetailsProps {
   readonly isArchived: boolean;
@@ -27,6 +29,8 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
+  const debug = useDebug();
+
   const { version, isVersionLoading } = useGetScriptVersion({
     scriptId: scriptId,
     versionId: scriptVersion.version_number,
@@ -42,13 +46,28 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
     setModalOpen(false);
   };
 
+  const code = `#!${version?.interpreter}` + "\n" + version?.code;
+
   const handleSubmit = async () => {
-    if (version) {
-      await editScript({
-        script_id: scriptVersion.id,
-        code: version.code,
-      });
-      goBack();
+    try {
+      if (version) {
+        const values = {
+          code,
+          title: version.title,
+        } as ScriptFormValues;
+
+        const params = getEditScriptParams({
+          scriptId: scriptId,
+          values: values,
+        });
+
+        await editScript(params);
+
+        goBack();
+      }
+    } catch (error) {
+      setModalOpen(false);
+      debug(error);
     }
   };
 
@@ -66,7 +85,7 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
           blocks={[
             {
               title: "Code",
-              code: version?.code || "",
+              code: code || "",
               wrapLines: true,
               appearance: "numbered",
             },
@@ -92,6 +111,9 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
           confirmButtonLoading={isEditing}
           confirmButtonDisabled={isEditing}
           onConfirm={handleSubmit}
+          confirmButtonProps={{
+            type: "button",
+          }}
         >
           <p>
             All future script runs will be done using the latest version of the

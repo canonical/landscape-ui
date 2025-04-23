@@ -19,7 +19,7 @@ export const getValidationSchema = () => {
 export const getInitialValues = (script: Script) => {
   return {
     title: script.title,
-    code: script.code,
+    code: `#!${script.interpreter}` + "\n" + script.code,
     time_limit: script.time_limit,
     username: script.username,
     attachments: {
