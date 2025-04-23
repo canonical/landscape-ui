@@ -36,7 +36,7 @@ const SecurityProfilesPage: FC = () => {
     usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
-  const { securityProfiles, isSecurityProfilesLoading } =
+  const { securityProfiles, securityProfilesCount, isSecurityProfilesLoading } =
     useGetSecurityProfiles({
       search,
       status,
@@ -45,11 +45,19 @@ const SecurityProfilesPage: FC = () => {
       passRateFrom,
       passRateTo,
     });
-  const { getSecurityProfilesQuery } = useGetSecurityProfiles();
 
-  const { data: getSecurityProfilesQueryResult } = getSecurityProfilesQuery({
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
+  const {
+    securityProfiles: overLimitSecurityProfiles,
+    isSecurityProfilesLoading: isOverLimitSecurityProfilesLoading,
+  } = useGetSecurityProfiles({
+    status: "over-limit",
+  });
+
+  const {
+    securityProfilesCount: activeSecurityProfilesCount,
+    isSecurityProfilesLoading: isActiveSecurityProfilesLoading,
+  } = useGetSecurityProfiles({
+    status: "active",
   });
 
   const { getActivitiesQuery } = useActivities();
@@ -67,13 +75,6 @@ const SecurityProfilesPage: FC = () => {
       },
       { enabled: !!pendingReports.length },
     );
-
-  const {
-    securityProfilesCount: activeSecurityProfilesCount,
-    isSecurityProfilesLoading: isActiveSecurityProfilesLoading,
-  } = useGetSecurityProfiles({
-    status: "active",
-  });
 
   const { updateSecurityProfile } = useUpdateSecurityProfile();
 
@@ -144,13 +145,9 @@ const SecurityProfilesPage: FC = () => {
     );
   }
 
-  if (isGettingActivities) {
+  if (isGettingActivities || isOverLimitSecurityProfilesLoading) {
     return <LoadingState />;
   }
-
-  const profilesExceedingLimit = securityProfiles.filter(
-    (profile) => profile.associated_instances > 5000,
-  );
 
   const activities =
     getActivitiesQueryResponse?.data.results.filter(
@@ -187,7 +184,7 @@ const SecurityProfilesPage: FC = () => {
           </IgnorableNotifcation>
         )}
 
-        {profilesExceedingLimit.length > 1 && (
+        {overLimitSecurityProfiles.length > 1 && (
           <Notification
             severity="negative"
             inline
@@ -211,21 +208,21 @@ const SecurityProfilesPage: FC = () => {
           </Notification>
         )}
 
-        {profilesExceedingLimit.length === 1 && (
+        {overLimitSecurityProfiles.length === 1 && (
           <Notification
             severity="negative"
             inline
             title="Profile exceeded associated instance limit:"
           >
             Your security profile{" "}
-            <strong>{profilesExceedingLimit[0].name}</strong> is assigned to
+            <strong>{overLimitSecurityProfiles[0].name}</strong> is assigned to
             more than <strong>5,000 instances</strong>. Only the first 5,000
             will be covered. Edit the profile or duplicate it to cover the rest.{" "}
             <Button
               type="button"
               appearance="link"
               onClick={() => {
-                const [profile] = profilesExceedingLimit;
+                const [profile] = overLimitSecurityProfiles;
                 setSidePanelContent(
                   `Edit ${profile.title}`,
                   <Suspense fallback={<LoadingState />}>
@@ -338,13 +335,15 @@ const SecurityProfilesPage: FC = () => {
         )}
 
         <SecurityProfilesHeader />
+
         <SecurityProfilesList
           profileLimitReached={profileLimitReached}
           securityProfiles={securityProfiles}
         />
+
         <TablePagination
-          totalItems={getSecurityProfilesQueryResult?.data.count}
-          currentItemCount={getSecurityProfilesQueryResult?.data.results.length}
+          totalItems={securityProfilesCount}
+          currentItemCount={securityProfiles.length}
         />
       </PageContent>
     </PageMain>

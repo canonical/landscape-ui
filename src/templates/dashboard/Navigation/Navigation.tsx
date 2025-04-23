@@ -1,13 +1,13 @@
+import { useGetSecurityProfiles } from "@/features/security-profiles";
+import useAuth from "@/hooks/useAuth";
+import useEnv from "@/hooks/useEnv";
+import { Badge, Button } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
-import useEnv from "@/hooks/useEnv";
 import { getFilteredByEnvMenuItems, getPathToExpand } from "./helpers";
 import classes from "./Navigation.module.scss";
-import useAuth from "@/hooks/useAuth";
-import { Badge, Button } from "@canonical/react-components";
-import { useGetSecurityProfiles } from "@/features/security-profiles";
 
 const Navigation: FC = () => {
   const [expanded, setExpanded] = useState("");
@@ -16,7 +16,10 @@ const Navigation: FC = () => {
   const { isSaas, isSelfHosted } = useEnv();
   const { isOidcAvailable, isFeatureEnabled } = useAuth();
 
-  const { hasOverLimitProfiles } = useGetSecurityProfiles({});
+  const { securityProfilesCount: overLimitSecurityProfilesCount } =
+    useGetSecurityProfiles({
+      status: "over-limit",
+    });
 
   useEffect(() => {
     const shouldBeExpandedPath = getPathToExpand(pathname);
@@ -163,9 +166,12 @@ const Navigation: FC = () => {
                               >
                                 {subItem.label}
                                 {subItem.label === "Security profiles" &&
-                                  hasOverLimitProfiles && (
+                                  !!overLimitSecurityProfilesCount && (
                                     <span className={classes.badge}>
-                                      <Badge value={1} isNegative />
+                                      <Badge
+                                        value={overLimitSecurityProfilesCount}
+                                        isNegative
+                                      />
                                     </span>
                                   )}
                               </span>

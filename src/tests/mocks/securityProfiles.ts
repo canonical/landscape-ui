@@ -137,7 +137,7 @@ export const securityProfiles: SecurityProfile[] = [
     mode: "audit-fix-restart",
     next_run_time: "",
     schedule: "Every year in May and September",
-    associated_instances: 252,
+    associated_instances: 10000,
     restart_deliver_delay_window: 0,
     restart_deliver_delay: 0,
   },
