@@ -1,33 +1,38 @@
-import CodeEditor from "@/components/form/CodeEditor";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { ConfirmationModal, Form } from "@canonical/react-components";
+import {
+  CodeSnippet,
+  ConfirmationModal,
+  Form,
+} from "@canonical/react-components";
 import moment from "moment";
 import { useState, type FC } from "react";
-import { useGetScriptVersion } from "../../api";
-import { useScripts } from "../../hooks";
-import type { ScriptVersion } from "../../types";
+import { useEditScript, useGetScriptVersion } from "../../api";
+import type { TruncatedScriptVersion } from "../../types";
 
 interface ScriptVersionHistoryDetailsProps {
-  readonly scriptVersion: ScriptVersion;
+  readonly isArchived: boolean;
+  readonly scriptId: number;
+  readonly scriptVersion: TruncatedScriptVersion;
   readonly goBack: () => void;
 }
 
 const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
+  scriptId,
   scriptVersion,
   goBack,
+  isArchived,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const { version, isVersionLoading } = useGetScriptVersion({
-    scriptId: scriptVersion.script_id,
-    versionId: scriptVersion.id,
+    scriptId: scriptId,
+    versionId: scriptVersion.version_number,
   });
 
-  const { editScriptQuery } = useScripts();
-  const { mutateAsync: editScript, isPending: isEditing } = editScriptQuery;
+  const { editScript, isEditing } = useEditScript();
 
   const handleOpenModal = () => {
     setModalOpen(true);
@@ -40,7 +45,7 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
   const handleSubmit = async () => {
     if (version) {
       await editScript({
-        script_id: scriptVersion.script_id,
+        script_id: scriptVersion.id,
         code: version.code,
       });
       goBack();
@@ -51,21 +56,26 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
     <Form noValidate onSubmit={handleSubmit}>
       <InfoItem
         label="author"
-        value={`${moment(scriptVersion.created_at).format(DISPLAY_DATE_TIME_FORMAT)}, by ${scriptVersion.creator_name}`}
+        value={`${moment(scriptVersion.created_at).format(DISPLAY_DATE_TIME_FORMAT)}, by ${scriptVersion.created_by.name}`}
       />
 
       {isVersionLoading ? (
         <LoadingState />
       ) : (
-        <CodeEditor
-          label="Code"
-          value={version?.code ?? ""}
-          options={{ readOnly: true }}
-          language={version?.interpreter ?? ""}
+        <CodeSnippet
+          blocks={[
+            {
+              title: "Code",
+              code: version?.code || "",
+              wrapLines: true,
+              appearance: "numbered",
+            },
+          ]}
         />
       )}
 
       <SidePanelFormButtons
+        hasActionButtons={!isArchived}
         submitButtonAppearance="secondary"
         submitButtonText="Use as new version"
         onSubmit={handleOpenModal}

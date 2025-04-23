@@ -11,7 +11,7 @@ import ScriptsHeader from "./components/ScriptsHeader";
 import { isScriptsEmptyState, isScriptsLoadingState } from "./helpers";
 
 const ScriptsContainer: FC = () => {
-  const { currentPage, pageSize, search } = usePageParams();
+  const { currentPage, pageSize, search, status } = usePageParams();
 
   const { scripts, scriptsCount, isScriptsLoading } = useGetScripts();
 
@@ -22,6 +22,7 @@ const ScriptsContainer: FC = () => {
       isScriptsLoading,
       scriptsCount,
       search,
+      status,
     )
   ) {
     return <ScriptsEmptyState />;
@@ -30,12 +31,7 @@ const ScriptsContainer: FC = () => {
   return (
     <>
       <ScriptsHeader />
-      {isScriptsLoadingState(
-        currentPage,
-        pageSize,
-        isScriptsLoading,
-        search,
-      ) ? (
+      {isScriptsLoadingState(currentPage, pageSize, isScriptsLoading) ? (
         <LoadingState />
       ) : (
         <ScriptList scripts={scripts} />

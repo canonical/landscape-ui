@@ -1,27 +1,43 @@
-import type { Creator } from "@/types/Creator";
 import type { AccessGroup } from "./accessGroup";
 import type { ScriptStatus } from "./ScriptStatus";
+
+interface Creator {
+  id: number;
+  name: string;
+}
+
+export interface TruncatedScriptProfile extends Record<string, unknown> {
+  id: number;
+  title: string;
+}
+
+interface Attachment {
+  id: number;
+  filename: string;
+}
 
 export interface Script extends Record<string, unknown> {
   id: number;
   access_group: AccessGroup["name"];
-  creator: Creator;
+  created_by: Creator;
   title: string;
   time_limit: number;
   username: string;
-  attachments: string[];
+  attachments: Attachment[];
   status: ScriptStatus;
+  created_at: string;
+  last_edited_by: Creator;
+  last_edited_at: string;
+  script_profiles: TruncatedScriptProfile[];
+  code: string;
+  interpreter: string;
+  is_redactable: boolean;
+  is_editable: boolean;
+  is_executable: boolean;
 }
 
 export interface SingleScript extends Script {
   version_number: number;
-  created_by: string;
-  created_at: string;
-  last_edited_by: string;
-  last_edited_at: string;
-  script_profiles: { id: number; title: string }[];
-  code: string;
-  interpreter: string;
 }
 
 export interface ScriptVersion extends Record<string, unknown> {
@@ -32,6 +48,19 @@ export interface ScriptVersion extends Record<string, unknown> {
   creator_id: number;
   created_at: string;
   version_number: number;
+  code: string;
+  interpreter: string;
+  title: string;
+}
+
+export interface TruncatedScriptVersion extends Record<string, unknown> {
+  id: number;
+  version_number: number;
+  created_at: string;
+  created_by: {
+    name: string;
+    id: number;
+  };
   code: string;
   interpreter: string;
   title: string;

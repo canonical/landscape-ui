@@ -2,8 +2,7 @@ export const isScriptsLoadingState = (
   currentPage: number,
   pageSize: number,
   isLoading: boolean,
-  search: string,
-) => currentPage === 1 && pageSize === 20 && isLoading && !search;
+) => currentPage === 1 && pageSize === 20 && isLoading;
 
 export const isScriptsEmptyState = (
   currentPage: number,
@@ -11,5 +10,11 @@ export const isScriptsEmptyState = (
   isLoading: boolean,
   count: number,
   search: string,
+  status: string,
 ) =>
-  currentPage === 1 && pageSize === 20 && !isLoading && count === 0 && !search;
+  currentPage === 1 &&
+  pageSize === 20 &&
+  !isLoading &&
+  count === 0 &&
+  !search &&
+  !status;

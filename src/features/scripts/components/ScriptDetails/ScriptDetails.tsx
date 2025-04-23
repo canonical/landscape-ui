@@ -1,60 +1,61 @@
-import { lazy, Suspense, useState, type FC } from "react";
+import LoadingState from "@/components/layout/LoadingState";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
   ConfirmationButton,
   Icon,
-  Input,
   Notification,
 } from "@canonical/react-components";
-import { useArchiveScript, useGetSingleScriptAttachments } from "../../api";
-import LoadingState from "@/components/layout/LoadingState";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
-import useSidePanel from "@/hooks/useSidePanel";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
+import { lazy, Suspense, type FC } from "react";
+import { useArchiveScriptModal } from "../../hooks";
+import type { ScriptTabId } from "../../types";
 
 const ScriptDetailsTabs = lazy(async () => import("../ScriptDetailsTabs"));
 
-const ScriptsVersionHistory = lazy(
-  async () => import("../ScriptsVersionHistory"),
-);
-
-const SingleScript = lazy(async () => import("../SingleScript"));
+const EditScriptForm = lazy(async () => import("../EditScriptForm"));
 
 interface ScriptDetailsProps {
   readonly scriptId: number;
+  readonly initialTabId?: ScriptTabId;
 }
 
-const ScriptDetails: FC<ScriptDetailsProps> = ({ scriptId }) => {
-  const [confirmArchiveProfileText, setConfirmArchiveProfileText] =
-    useState("");
+const ScriptDetails: FC<ScriptDetailsProps> = ({
+  scriptId,
+  initialTabId = "info",
+}) => {
+  const { setSidePanelContent, closeSidePanel } = useSidePanel();
+  const debug = useDebug();
 
   const { script } = useGetSingleScript(scriptId);
-  const { scriptAttachments } = useGetSingleScriptAttachments(scriptId, {
-    enabled: !!script && script.attachments.length > 0,
+
+  const {
+    archiveModalBody,
+    archiveModalButtonLabel,
+    archiveModalTitle,
+    disabledArchiveConfirmation,
+    isArchiving,
+    onConfirmArchive,
+  } = useArchiveScriptModal({
+    script,
+    afterSuccess: closeSidePanel,
   });
-  const { setSidePanelContent } = useSidePanel();
-  const debug = useDebug();
-  const { notify } = useNotify();
 
-  const { archiveScript, isArchiving } = useArchiveScript(scriptId);
-
-  const loaded = !!script;
+  console.log(isArchiving, " archiving in script details");
 
   const viewVersionHistory = (): void => {
     if (script === null) {
       debug("Script not loaded");
       return;
     }
+
     setSidePanelContent(
       script.title,
       <Suspense fallback={<LoadingState />}>
-        <ScriptsVersionHistory
-          script={script}
-          viewVersionHistory={viewVersionHistory}
-        />
+        <ScriptDetails scriptId={script.id} initialTabId="version-history" />
       </Suspense>,
     );
   };
@@ -67,49 +68,28 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({ scriptId }) => {
     setSidePanelContent(
       `Edit "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <SingleScript action="edit" script={script} />
+        <EditScriptForm script={script} />
       </Suspense>,
     );
   };
 
-  const handleScriptArchive = async (): Promise<void> => {
-    try {
-      await archiveScript();
-
-      notify.success({
-        message: `"${script?.title}" script archived successfully`,
-        title: "Script archived",
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleChangeArchiveText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmArchiveProfileText(e.target.value);
-  };
-
-  if (script?.status === "redacted") {
+  if (script?.status === "REDACTED") {
     return (
       <Notification severity="caution" className="u-no-margin">
-        <p>
-          <b>Script deleted:</b> The script was deleted by{" "}
-          {script.last_edited_by} on{" "}
-          {moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
-        </p>
+        <b>Script deleted:</b> The script was deleted by{" "}
+        {script.last_edited_by.name} on{" "}
+        {moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
       </Notification>
     );
   }
 
   return (
     <>
-      {script?.status === "archived" ? (
-        <Notification severity="caution" className="u-no-margin">
-          <p>
-            <b>Script deleted:</b> The script was archived by{" "}
-            {script.last_edited_by} on{" "}
-            {moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
-          </p>
+      {script?.status === "ARCHIVED" ? (
+        <Notification severity="caution">
+          <b>Script archived:</b> The script was archived by{" "}
+          {script.last_edited_by.name} on{" "}
+          {moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
         </Notification>
       ) : null}
 
@@ -125,40 +105,28 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({ scriptId }) => {
             <span>Edit</span>
           </Button>
           <ConfirmationButton
+            className="p-segmented-control__button"
+            type="button"
             confirmationModalProps={{
-              children: (
-                <>
-                  {/**
-                   * // TODO add modal body
-                   */}
-                  Type <b>delete {script?.title}</b> to confirm.
-                  <Input
-                    type="text"
-                    value={confirmArchiveProfileText}
-                    onChange={handleChangeArchiveText}
-                  />
-                </>
-              ),
-              title: "Archive script",
+              children: archiveModalBody,
+              title: archiveModalTitle,
               confirmButtonAppearance: "negative",
-              confirmButtonLabel: "Archive",
-              confirmButtonDisabled:
-                confirmArchiveProfileText !== `archive ${script?.title}` ||
-                isArchiving,
+              confirmButtonLabel: archiveModalButtonLabel,
+              confirmButtonDisabled: disabledArchiveConfirmation,
               confirmButtonLoading: isArchiving,
-              onConfirm: handleScriptArchive,
+              onConfirm: onConfirmArchive,
             }}
           >
             Archive
           </ConfirmationButton>
         </div>
       </div>
-      {loaded ? (
+      {script ? (
         <Suspense fallback={<LoadingState />}>
           <ScriptDetailsTabs
             script={script}
-            scriptAttachments={scriptAttachments}
             viewVersionHistory={viewVersionHistory}
+            initialTabId={initialTabId}
           />
         </Suspense>
       ) : (

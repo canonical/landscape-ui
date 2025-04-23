@@ -1,5 +1,5 @@
 import type { ChangeEventHandler, FC } from "react";
-import type { ScriptFormValues } from "../../types";
+import type { Script, ScriptFormValues } from "../../types";
 import {
   Button,
   Icon,
@@ -14,7 +14,7 @@ interface ScriptFormAttachmentsProps {
   readonly getFileInputError: (
     key: keyof ScriptFormValues["attachments"],
   ) => string | undefined;
-  readonly initialAttachments: string[];
+  readonly initialAttachments: Script["attachments"];
   readonly onFileInputChange: (
     key: keyof ScriptFormValues["attachments"],
   ) => ChangeEventHandler<HTMLInputElement>;
@@ -36,7 +36,7 @@ const ScriptFormAttachments: FC<ScriptFormAttachmentsProps> = ({
         const initialAttachment = initialAttachments[index];
 
         return !initialAttachment ||
-          attachmentsToRemove.includes(initialAttachment) ? (
+          attachmentsToRemove.includes(initialAttachment.filename) ? (
           <Input
             key={key}
             type="file"
@@ -47,7 +47,7 @@ const ScriptFormAttachments: FC<ScriptFormAttachmentsProps> = ({
           />
         ) : (
           <div key={key} style={{ marginBottom: "1rem" }}>
-            <span>{initialAttachment}</span>
+            <span>{initialAttachment.filename}</span>
             <Button
               type="button"
               hasIcon
@@ -55,7 +55,7 @@ const ScriptFormAttachments: FC<ScriptFormAttachmentsProps> = ({
               className="u-no-margin--bottom"
               aria-label={`Remove ${initialAttachment} attachment`}
               onClick={() => {
-                onInitialAttachmentDelete(initialAttachment);
+                onInitialAttachmentDelete(initialAttachment.filename);
               }}
             >
               <Tooltip message="Remove" position="top-center">

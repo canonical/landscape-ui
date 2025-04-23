@@ -4,3 +4,4 @@ export * from "./useEditScriptProfile";
 export * from "./useGetScriptProfileActivities";
 export * from "./useGetScriptProfileLimits";
 export * from "./useGetScriptProfiles";
+export * from "./useGetScriptProfile";

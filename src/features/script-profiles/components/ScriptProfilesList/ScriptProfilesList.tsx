@@ -20,6 +20,7 @@ import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
+import { useOpenScriptProfileDetails } from "../../hooks";
 
 const ActivityDetails = lazy(
   async () => import("@/features/activities/components/ActivityDetails"),
@@ -96,6 +97,10 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
     },
   });
 
+  useOpenScriptProfileDetails((profile) => {
+    actions(profile).viewDetails();
+  });
+
   const columns = useMemo<Column<ScriptProfile>[]>(
     () => [
       {
@@ -129,6 +134,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
           profile.computers.num_associated_computers ? (
             <Link
+              className={classes.link}
               to={{
                 pathname: "/instances",
                 search: `?tags=${profile.tags.join("%2C")}`,
@@ -137,7 +143,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
               {profile.computers.num_associated_computers} instances
             </Link>
           ) : (
-            "0 instances"
+            <NoData />
           ),
       },
 

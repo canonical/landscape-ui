@@ -1,27 +1,17 @@
 import { CodeSnippet } from "@canonical/react-components";
 import type { FC } from "react";
-import { useScripts } from "../../hooks";
-import LoadingState from "@/components/layout/LoadingState";
 
 interface ScriptCodeProps {
-  readonly scriptId: number;
+  readonly code: string;
 }
 
-const ScriptCode: FC<ScriptCodeProps> = ({ scriptId }) => {
-  const { getScriptCodeQuery } = useScripts();
-
-  const { data: scriptCodeData, isPending } = getScriptCodeQuery({
-    script_id: scriptId,
-  });
-
-  return isPending ? (
-    <LoadingState />
-  ) : (
+const ScriptCode: FC<ScriptCodeProps> = ({ code }) => {
+  return (
     <CodeSnippet
       blocks={[
         {
           title: "Code preview",
-          code: scriptCodeData?.data,
+          code: code,
           wrapLines: true,
           appearance: "numbered",
         },

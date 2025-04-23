@@ -33,7 +33,7 @@ export const useGetScripts = (
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
           search: search ?? undefined,
-          status: status ?? undefined,
+          script_type: status || "v2",
         }
       : {}),
     ...params,

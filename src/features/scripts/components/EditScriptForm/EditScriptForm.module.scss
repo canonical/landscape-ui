@@ -1,0 +1,13 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.modal {
+  table {
+    max-width: 40em;
+  }
+}
+
+.link {
+  &:visited {
+    color: $color-link;
+  }
+}

@@ -1,17 +1,24 @@
 import { StatusFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import type { FC } from "react";
-import { Button, Icon } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
-import { SingleScript } from "@/features/scripts";
+import { Button, Icon } from "@canonical/react-components";
+import { lazy, Suspense, type FC } from "react";
 import classes from "./ScriptsHeader.module.scss";
 import { statusOptions } from "./constants";
+import LoadingState from "@/components/layout/LoadingState";
+
+const CreateScriptForm = lazy(async () => import("../../../CreateScriptForm"));
 
 const ScriptsHeader: FC = () => {
   const { setSidePanelContent } = useSidePanel();
 
   const handleScriptCreate = () => {
-    setSidePanelContent("Add script", <SingleScript action="add" />);
+    setSidePanelContent(
+      "Add script",
+      <Suspense fallback={<LoadingState />}>
+        <CreateScriptForm />
+      </Suspense>,
+    );
   };
 
   return (
@@ -33,7 +40,10 @@ const ScriptsHeader: FC = () => {
           </div>
         }
       />
-      <TableFilterChips filtersToDisplay={["search", "status"]} />
+      <TableFilterChips
+        filtersToDisplay={["search", "status"]}
+        statusOptions={statusOptions}
+      />
     </>
   );
 };

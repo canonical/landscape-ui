@@ -1,1 +1,1 @@
-export type ScriptStatus = "active" | "archived" | "redacted" | "V1";
+export type ScriptStatus = "ACTIVE" | "ARCHIVED" | "REDACTED";

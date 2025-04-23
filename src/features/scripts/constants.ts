@@ -3,16 +3,13 @@ import type { ScriptStatus } from "./types/ScriptStatus";
 export const DEFAULT_SCRIPT = "#!/bin/bash";
 
 export const SCRIPT_STATUSES: Record<ScriptStatus, { label: string }> = {
-  active: {
+  ACTIVE: {
     label: "Active",
   },
-  archived: {
+  ARCHIVED: {
     label: "Archived",
   },
-  redacted: {
+  REDACTED: {
     label: "Redacted",
-  },
-  v1: {
-    label: "V1",
   },
 };

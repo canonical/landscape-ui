@@ -16,13 +16,11 @@ const ScriptsVersionHistory = lazy(
 interface ScriptDetailsTabsProps {
   readonly script: SingleScript;
   readonly viewVersionHistory: () => void;
-  readonly scriptAttachments: unknown[];
   readonly initialTabId?: ScriptTabId;
 }
 
 const ScriptDetailsTabs: FC<ScriptDetailsTabsProps> = ({
   script,
-  scriptAttachments,
   initialTabId = "info",
   viewVersionHistory,
 }) => {
@@ -34,9 +32,7 @@ const ScriptDetailsTabs: FC<ScriptDetailsTabsProps> = ({
     onClick: (): void => {
       setTabId(id);
     },
-  })).filter(
-    (link) => link.label !== "Version history" || script.status !== "V1",
-  );
+  }));
 
   return (
     <>
@@ -44,20 +40,17 @@ const ScriptDetailsTabs: FC<ScriptDetailsTabsProps> = ({
 
       {tabId === "info" && (
         <Suspense fallback={<LoadingState />}>
-          <ScriptDetailsInfo
-            script={script}
-            scriptAttachments={scriptAttachments}
-          />
+          <ScriptDetailsInfo script={script} />
         </Suspense>
       )}
 
       {tabId === "code" && (
         <Suspense fallback={<LoadingState />}>
-          <ScriptCode scriptId={script.id} />
+          <ScriptCode code={script.code} />
         </Suspense>
       )}
 
-      {tabId === "version-history" && script.status !== "V1" && (
+      {tabId === "version-history" && (
         <Suspense fallback={<LoadingState />}>
           <ScriptsVersionHistory
             script={script}

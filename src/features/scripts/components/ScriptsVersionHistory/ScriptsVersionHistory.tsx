@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -8,7 +7,8 @@ import type { FC, ReactNode } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useGetScriptVersions } from "../../api";
-import type { ScriptVersion, SingleScript } from "../../types";
+import type { TruncatedScriptVersion, SingleScript } from "../../types";
+import classes from "./ScriptsVersionHistory.module.scss";
 
 const ScriptVersionHistoryDetails = lazy(
   async () => import("../ScriptVersionHistoryDetails"),
@@ -17,57 +17,62 @@ const ScriptVersionHistoryDetails = lazy(
 interface ScriptsVersionHistoryProps {
   readonly script: SingleScript;
   readonly viewVersionHistory: () => void;
-  readonly isArchived?: boolean;
 }
 
 const ScriptsVersionHistory: FC<ScriptsVersionHistoryProps> = ({
   script,
   viewVersionHistory,
-  isArchived = false,
 }) => {
   const { setSidePanelContent } = useSidePanel();
-
   const { versions, isVersionsLoading } = useGetScriptVersions(script.id);
 
-  const columns = useMemo<Column<ScriptVersion>[]>(
+  const openVersionPanel = (scriptVersion: TruncatedScriptVersion): void => {
+    setSidePanelContent(
+      scriptVersion.title,
+      <Suspense fallback={<LoadingState />}>
+        <ScriptVersionHistoryDetails
+          scriptId={script.id}
+          scriptVersion={scriptVersion}
+          goBack={viewVersionHistory}
+          isArchived={script.status === "ARCHIVED"}
+        />
+      </Suspense>,
+    );
+  };
+
+  const columns = useMemo<Column<TruncatedScriptVersion>[]>(
     () => [
       {
         accessor: "version_number",
         Header: "Version",
-        Cell: ({ row: { original } }: CellProps<ScriptVersion>): ReactNode => {
-          const openVersionPanel = (): void => {
-            setSidePanelContent(
-              original.title,
-              <Suspense fallback={<LoadingState />}>
-                <ScriptVersionHistoryDetails
-                  scriptVersion={original}
-                  goBack={viewVersionHistory}
-                />
-              </Suspense>,
-            );
-          };
-
+        className: classes.version,
+        Cell: ({
+          row: { original },
+        }: CellProps<TruncatedScriptVersion>): ReactNode => {
           return (
             <Button
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top"
-              onClick={openVersionPanel}
+              onClick={() => {
+                openVersionPanel(original);
+              }}
             >
-              Version {original.version_number}
+              {original.version_number}
             </Button>
           );
         },
       },
       {
         accessor: "created_at",
-        Header: "Created at",
+        Header: "Created",
         Cell: ({
-          row: {
-            original: { created_at },
-          },
-        }: CellProps<ScriptVersion>): ReactNode => (
-          <div>{moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
+          row: { original },
+        }: CellProps<TruncatedScriptVersion>): ReactNode => (
+          <>
+            {moment(original.created_at).format(DISPLAY_DATE_TIME_FORMAT)} by{" "}
+            {original.created_by.name}
+          </>
         ),
       },
     ],

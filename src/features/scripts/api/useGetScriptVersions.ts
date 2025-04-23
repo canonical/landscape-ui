@@ -1,15 +1,15 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ScriptVersion } from "../types";
+import type { TruncatedScriptVersion } from "../types";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 
 export const useGetScriptVersions = (scriptId: number) => {
   const authFetch = useFetch();
 
   const { data: response, isLoading } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<ScriptVersion>>,
+    AxiosResponse<ApiPaginatedResponse<TruncatedScriptVersion>>,
     AxiosError<ApiError>
   >({
     queryKey: ["scripts", "versions", scriptId],

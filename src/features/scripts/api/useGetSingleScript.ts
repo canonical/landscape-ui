@@ -4,7 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { SingleScript } from "../types";
 
-export const useGetSingleScript = (scriptId: SingleScript["id"]) => {
+interface Config {
+  enabled?: boolean;
+}
+
+export const useGetSingleScript = (
+  scriptId: SingleScript["id"],
+  config: Config = { enabled: true },
+) => {
   const authFetch = useFetch();
 
   const { data: response, isLoading } = useQuery<
@@ -13,6 +20,7 @@ export const useGetSingleScript = (scriptId: SingleScript["id"]) => {
   >({
     queryKey: ["scripts", scriptId],
     queryFn: async () => authFetch.get(`scripts/${scriptId}`),
+    ...config,
   });
 
   return {

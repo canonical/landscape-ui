@@ -1,22 +1,67 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import InfoItem from "@/components/layout/InfoItem";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { Col, Row } from "@canonical/react-components";
+import { Button, Col, Icon, Row } from "@canonical/react-components";
 import moment from "moment";
-import type { FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import type { SingleScript } from "../../types";
 import { Link } from "react-router";
+import { useGetSingleScriptAttachment } from "../../api";
+import classes from "./ScriptDetailsInfo.module.scss";
+import { formatTitleCase } from "../../helpers";
+import NoData from "@/components/layout/NoData";
 
 interface ScriptDetailsInfoProps {
   readonly script: SingleScript;
-  readonly scriptAttachments: unknown[];
 }
 
-const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({
-  script,
-  scriptAttachments,
-}) => {
-  console.log(script);
+const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
+  const [selectedAttachment, setSelectedAttachment] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
+  const { isScriptAttachmentsLoading, refetch } = useGetSingleScriptAttachment(
+    {
+      attachmentId: selectedAttachment?.id ?? 0,
+      scriptId: script.id,
+    },
+    {
+      enabled: false,
+    },
+  );
+
+  useEffect(() => {
+    const fetchAndDownload = async () => {
+      if (!selectedAttachment) {
+        return;
+      }
+
+      const { data } = await refetch();
+      if (!data) {
+        return;
+      }
+
+      const blob = new Blob([data.data], {
+        type: "application/octet-stream",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = selectedAttachment.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setSelectedAttachment(null);
+    };
+
+    fetchAndDownload();
+  }, [selectedAttachment, refetch]);
+
+  const handleDownload = async (id: number, name: string) => {
+    setSelectedAttachment({ id, name });
+  };
+
   return (
     <>
       <Row className="u-no-padding">
@@ -29,41 +74,74 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({
         </Col>
       </Row>
       <Row className="u-no-padding">
-        <InfoItem label="status" value={script.status} />
+        <InfoItem label="status" value={formatTitleCase(script.status)} />
       </Row>
       <Row className="u-no-padding">
         <InfoItem
           label="Date created"
-          value={moment(script.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+          value={`${moment(script.created_at).format(DISPLAY_DATE_TIME_FORMAT)} by ${script.created_by.name}`}
         />
       </Row>
       <Row className="u-no-padding">
         <InfoItem
           label="Last modified"
-          value={moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
+          value={`${moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)} by ${script.last_edited_by.name}`}
         />
       </Row>
 
-      {/* {scriptAttachments
-        ? scriptAttachments.map((attachment, idx) => (
-            <div key={idx} style={{ marginBottom: "1rem" }}>
-              test
-             </div>
-          ))
-        : null} */}
+      <Row className="u-no-padding">
+        <Col size={12}>
+          <InfoItem
+            className={classes.attachmentBlock}
+            label="attachments"
+            value={
+              script.attachments.length > 0 ? (
+                script.attachments.map((att) => (
+                  <span key={att.id} className={classes.attachment}>
+                    <span>{att.filename}</span>
+                    <Button
+                      className="u-no-margin--bottom"
+                      type="button"
+                      onClick={async () => handleDownload(att.id, att.filename)}
+                      disabled={
+                        isScriptAttachmentsLoading &&
+                        selectedAttachment?.id === att.id
+                      }
+                      appearance="link"
+                      aria-label={`Download ${att.filename}`}
+                    >
+                      <Icon name="begin-downloading" />
+                    </Button>
+                  </span>
+                ))
+              ) : (
+                <NoData />
+              )
+            }
+          />
+        </Col>
+      </Row>
 
-      <div>
-        {/* {script.script_profiles.map((profile) => (
-          <Link to={`/scripts/profiles/${profile.id}`} key={profile.id}>
-            {profile.title}
-          </Link>
-        ))} */}
-      </div>
-
-      {/* <InfoItem
-        label="Employee groups associated"
-        value={script.groups.map((group) => group.name).join(", ")}
-      /> */}
+      <InfoItem
+        label="associated profiles"
+        value={
+          script.script_profiles.length > 0 ? (
+            script.script_profiles.map((profile, index) => (
+              <Link
+                className={classes.link}
+                to="/scripts?tab=profiles"
+                state={{ scriptProfileId: profile.id }}
+                key={profile.id}
+              >
+                {profile.title}
+                {index < script.script_profiles.length - 1 ? ", " : ""}{" "}
+              </Link>
+            ))
+          ) : (
+            <NoData />
+          )
+        }
+      />
     </>
   );
 };

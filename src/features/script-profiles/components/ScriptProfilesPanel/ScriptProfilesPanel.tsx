@@ -17,8 +17,10 @@ import {
 import ScriptProfilesList from "../ScriptProfilesList";
 import classes from "./ScriptProfilesPanel.module.scss";
 
-const SingleScript = lazy(
-  async () => import("@/features/scripts/components/SingleScript"),
+const CreateScriptForm = lazy(async () =>
+  import("@/features/scripts").then((module) => ({
+    default: module.CreateScriptForm,
+  })),
 );
 
 const ScriptProfileForm = lazy(async () => import("../ScriptProfileForm"));
@@ -156,7 +158,7 @@ const ScriptProfilesPanel: FC = () => {
     setSidePanelContent(
       "Add script",
       <Suspense fallback={<LoadingState />}>
-        <SingleScript action="add" />
+        <CreateScriptForm />
       </Suspense>,
     );
   };

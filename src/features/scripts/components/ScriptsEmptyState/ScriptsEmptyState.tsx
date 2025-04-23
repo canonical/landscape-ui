@@ -5,7 +5,7 @@ import EmptyState from "@/components/layout/EmptyState";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 
-const SingleScript = lazy(() => import("../SingleScript"));
+const CreateScriptForm = lazy(async () => import("../CreateScriptForm"));
 
 const ScriptsEmptyState: FC = () => {
   const { setSidePanelContent } = useSidePanel();
@@ -14,7 +14,7 @@ const ScriptsEmptyState: FC = () => {
     setSidePanelContent(
       "Add script",
       <Suspense fallback={<LoadingState />}>
-        <SingleScript action="add" />
+        <CreateScriptForm />
       </Suspense>,
     );
   };

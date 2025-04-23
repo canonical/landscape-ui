@@ -3,15 +3,21 @@ import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-export const useRemoveScript = (scriptId: number) => {
+interface RemoveScriptParams {
+  script_id: number;
+}
+
+export const useRemoveScript = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation<
     AxiosResponse,
-    AxiosError<ApiError>
+    AxiosError<ApiError>,
+    RemoveScriptParams
   >({
-    mutationFn: async () => authFetch.post(`scripts/${scriptId}:redact`),
+    mutationFn: async ({ script_id }) =>
+      authFetch.post(`scripts/${script_id}:redact`),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });

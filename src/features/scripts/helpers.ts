@@ -1,30 +1,6 @@
-import * as Yup from "yup";
-import type { ComponentProps } from "react";
-import type SingleScript from "./SingleScript";
-import type { Script, ScriptFormValues } from "../../types";
 import { Buffer } from "buffer";
-import type { CreateScriptAttachmentParams } from "../../hooks/useScripts";
-
-export const getValidationSchema = (
-  action: ComponentProps<typeof SingleScript>["action"],
-) => {
-  return Yup.object().shape({
-    title: Yup.string().required("This field is required"),
-    code: Yup.string().test({
-      name: "required",
-      message: "This field is required",
-      test: (value) => "edit" === action || !!value,
-    }),
-    attachments: Yup.object().shape({
-      first: Yup.mixed().nullable(),
-      second: Yup.mixed().nullable(),
-      third: Yup.mixed().nullable(),
-      fourth: Yup.mixed().nullable(),
-      fifth: Yup.mixed().nullable(),
-    }),
-    attachmentsToRemove: Yup.array().of(Yup.string()),
-  });
-};
+import type { Script, ScriptFormValues } from "./types";
+import type { CreateScriptAttachmentParams } from "./api";
 
 const getEncodedCode = (code: string) => {
   const escapedCode = JSON.parse(JSON.stringify(code).replace(/\\r/g, ""));
@@ -36,32 +12,21 @@ export const getCreateScriptParams = (values: ScriptFormValues) => {
   return {
     code: getEncodedCode(values.code),
     title: values.title,
-  };
-};
-
-export const getCopyScriptParams = ({
-  props,
-  values,
-}: {
-  props: { action: "copy"; script: Script };
-  values: ScriptFormValues;
-}) => {
-  return {
-    destination_title: values.title,
-    script_id: props.script.id,
+    script_type: "V2",
+    access_group: values.access_group,
   };
 };
 
 export const getEditScriptParams = ({
-  props,
+  script,
   values,
 }: {
-  props: { action: "edit"; script: Script };
+  script: Script;
   values: ScriptFormValues;
 }) => {
   return {
     code: getEncodedCode(values.code),
-    script_id: props.script.id,
+    script_id: script.id,
     title: values.title,
   };
 };
@@ -89,10 +54,19 @@ export const getCreateAttachmentsPromises = async ({
 
   const buffers = await Promise.all(bufferPromises);
 
-  return buffers.map((buffer, index) =>
+  return buffers.map(async (buffer, index) =>
     createScriptAttachment({
       file: `${fileNames[index]}$$${Buffer.from(buffer).toString("base64")}`,
       script_id,
     }),
   );
+};
+
+export const removeFileExtension = (filename: string): string => {
+  const dotIndex = filename.lastIndexOf(".");
+  return dotIndex !== -1 ? filename.slice(0, dotIndex) : filename;
+};
+
+export const formatTitleCase = (word: string) => {
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 };

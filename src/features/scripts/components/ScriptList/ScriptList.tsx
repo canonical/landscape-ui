@@ -1,15 +1,22 @@
 import type { FC, ReactElement } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { Button, ModularTable } from "@canonical/react-components";
 import type { Script } from "../../types";
-import { getCellProps } from "./helpers";
+import { getCellProps, getTableRows, handleRowProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
 import ScriptListContextualMenu from "../ScriptListContextualMenu";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import NoData from "@/components/layout/NoData";
+import { useOnClickOutside } from "usehooks-ts";
+import type { ExpandedCell } from "./types";
+import { Link } from "react-router";
+import { formatTitleCase } from "../../helpers";
+import { useOpenScriptDetails } from "../../hooks";
 
 const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
@@ -18,6 +25,9 @@ interface ScriptListProps {
 }
 
 const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
+  const [expandedCell, setExpandedCell] = useState<ExpandedCell>(null);
+  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
+
   const { setSidePanelContent } = useSidePanel();
 
   const openViewPanel = (script: Script) => {
@@ -29,10 +39,45 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
     );
   };
 
+  useOnClickOutside(
+    expandedCell?.column === "script_profiles"
+      ? { current: tableRowsRef.current[expandedCell.row] }
+      : [],
+    (event) => {
+      if (
+        event.target instanceof Element &&
+        !event.target.closest(`.${classes.truncatedItem}`)
+      ) {
+        setExpandedCell(null);
+      }
+    },
+  );
+
+  useOpenScriptDetails((profile) => {
+    openViewPanel(profile);
+  });
+
+  const handleExpandCellClick = (columnId: string, rowIndex: number) => {
+    setExpandedCell((prevState) => {
+      if (prevState?.column === columnId && prevState.row === rowIndex) {
+        return null;
+      }
+      return {
+        column: columnId,
+        row:
+          prevState &&
+          ["script_profiles"].includes(prevState.column) &&
+          prevState.row < rowIndex
+            ? rowIndex - 1
+            : rowIndex,
+      };
+    });
+  };
+
   const columns = useMemo<Column<Script>[]>(
     () => [
       {
-        Header: "Name",
+        Header: "name",
         Cell: ({ row }: CellProps<Script>) => (
           <Button
             type="button"
@@ -47,33 +92,81 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
         ),
       },
       {
-        Header: "Status",
+        Header: "status",
         accessor: "status",
+        Cell: ({ row }: CellProps<Script>) => (
+          <>{formatTitleCase(row.original.status)}</>
+        ),
+        getCellIcon: ({ row: { original } }: CellProps<Script>) => {
+          if (original.status === "ACTIVE") {
+            return "status-succeeded-small";
+          }
+          return "status-queued-small";
+        },
       },
       {
-        Header: "Created",
+        Header: "associated profiles",
+        accessor: "script_profiles",
+        Cell: ({ row: { original, index } }: CellProps<Script>) => {
+          const scriptProfiles = original.script_profiles;
+
+          return scriptProfiles.length > 0 ? (
+            <TruncatedCell
+              content={scriptProfiles.map((scriptProfile) => (
+                <Link
+                  to="/scripts?tab=profiles"
+                  state={{ scriptProfileId: scriptProfile.id }}
+                  key={scriptProfile.id}
+                  className={classes.truncatedItem}
+                >
+                  {scriptProfile.title}
+                </Link>
+              ))}
+              isExpanded={
+                expandedCell?.column === "script_profiles" &&
+                expandedCell.row === index
+              }
+              onExpand={() => {
+                handleExpandCellClick("script_profiles", index);
+              }}
+            />
+          ) : (
+            <NoData />
+          );
+        },
+      },
+      {
+        Header: "created",
+        accessor: "created_by.name",
         Cell: ({ row }: CellProps<Script>): ReactElement => (
           <div>
-            <div>{moment().format(DISPLAY_DATE_TIME_FORMAT)}</div>
+            <div>
+              {moment(row.original.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+            </div>
             <div className="u-text--muted p-text--small u-no-margin--bottom">
-              {row.original.creator.name}
+              {row.original.created_by.name}
             </div>
           </div>
         ),
       },
       {
-        Header: "Last modified",
+        Header: "last modified",
+        accessor: "last_edited_by.name",
         Cell: ({ row }: CellProps<Script>): ReactElement => (
           <div>
-            <div>{moment().format(DISPLAY_DATE_TIME_FORMAT)}</div>
+            <div>
+              {moment(row.original.last_edited_at).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )}
+            </div>
             <div className="u-text--muted p-text--small u-no-margin--bottom">
-              {row.original.creator.name}
+              {row.original.last_edited_by.name}
             </div>
           </div>
         ),
       },
       {
-        Header: "Actions",
+        Header: "actions",
         accessor: "id",
         className: classes.actions,
         Cell: ({ row }: CellProps<Script>): ReactElement => (
@@ -81,15 +174,19 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
         ),
       },
     ],
-    [scripts],
+    [scripts, expandedCell],
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={scripts}
-      getCellProps={getCellProps}
-    />
+    <div ref={getTableRows(tableRowsRef)}>
+      <ModularTable
+        columns={columns}
+        data={scripts}
+        getCellProps={getCellProps(expandedCell)}
+        getRowProps={handleRowProps(expandedCell)}
+        emptyMsg="No scripts found according to your search parameters"
+      />
+    </div>
   );
 };
 

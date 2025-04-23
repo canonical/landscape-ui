@@ -70,7 +70,6 @@ const ScriptProfileDetails: FC<ScriptProfileDetailsProps> = ({
 
       {tabId == "info" && (
         <ScriptProfileInfo
-          goBack={actions.viewDetails}
           profile={profile}
           viewActivityDetails={viewActivityDetails}
         />
