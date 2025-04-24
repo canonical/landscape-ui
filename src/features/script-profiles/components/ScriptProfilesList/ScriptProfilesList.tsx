@@ -15,7 +15,11 @@ import { type FC, lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useEditScriptProfile } from "../../api";
-import { getStatusText, getTriggerText } from "../../helpers";
+import {
+  getAssociatedInstancesLink,
+  getStatusText,
+  getTriggerText,
+} from "../../helpers";
 import { useOpenScriptProfileDetails } from "../../hooks";
 import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
@@ -127,19 +131,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
       {
         Header: "Associated instances",
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
-          profile.computers.num_associated_computers ? (
-            <Link
-              className={classes.link}
-              to={{
-                pathname: "/instances",
-                search: `?tags=${profile.tags.join("%2C")}`,
-              }}
-            >
-              {profile.computers.num_associated_computers} instances
-            </Link>
-          ) : (
-            <NoData />
-          ),
+          getAssociatedInstancesLink(profile),
       },
 
       {

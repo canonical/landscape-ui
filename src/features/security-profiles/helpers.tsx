@@ -38,12 +38,18 @@ export const notifyCreation = (
   });
 };
 
-export const getAssociatedInstancesLink = (profile: SecurityProfile) =>
-  profile.tags.length || profile.all_computers ? (
+export const getAssociatedInstancesLink = (profile: SecurityProfile) => {
+  const search = [`query=access-group-recursive%3A${profile.access_group}`];
+
+  if (profile.tags.length) {
+    search.push(`tags=${profile.tags.join("%2C")}`);
+  }
+
+  return profile.tags.length || profile.all_computers ? (
     <Link
       to={{
         pathname: "/instances",
-        search: `?tags=${profile.tags.join("%2C")}`,
+        search: `?${search.join("&")}`,
       }}
     >
       {profile.associated_instances ?? 0}{" "}
@@ -52,6 +58,7 @@ export const getAssociatedInstancesLink = (profile: SecurityProfile) =>
   ) : (
     <NoData />
   );
+};
 
 export const getTags = (profile: SecurityProfile) =>
   profile.all_computers

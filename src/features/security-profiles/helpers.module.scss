@@ -1,3 +1,5 @@
+@import "vanilla-framework/scss/settings_colors";
+
 .truncated {
   max-width: 15rem;
   overflow: hidden;
@@ -18,4 +20,10 @@
 
 .tooltipIcon {
   transform: translateX(16px);
+}
+
+.link {
+  &:visited {
+    color: $color-link;
+  }
 }
