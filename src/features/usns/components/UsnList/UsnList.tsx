@@ -1,14 +1,3 @@
-import classNames from "classnames";
-import moment from "moment/moment";
-import type { FC } from "react";
-import { useMemo, useRef, useState } from "react";
-import type { CellProps, Column } from "react-table";
-import { useOnClickOutside } from "usehooks-ts";
-import {
-  Button,
-  CheckboxInput,
-  ModularTable,
-} from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
@@ -18,6 +7,17 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
+import {
+  Button,
+  CheckboxInput,
+  ModularTable,
+} from "@canonical/react-components";
+import classNames from "classnames";
+import moment from "moment/moment";
+import type { FC } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { CellProps, Column } from "react-table";
+import { useOnClickOutside } from "usehooks-ts";
 import UsnPackagesContainer from "../UsnPackagesContainer";
 import {
   getTableRows,
@@ -69,7 +69,9 @@ const UsnList: FC<UsnListProps> = ({
           ? tableRowsRef.current[expandedCell.row]
           : null,
     },
-    () => setExpandedCell(null),
+    () => {
+      setExpandedCell(null);
+    },
   );
 
   const showSelectAllButton =
@@ -131,11 +133,11 @@ const UsnList: FC<UsnListProps> = ({
               checked={
                 selectedUsns.length > 0 && selectedUsns.length === usns.length
               }
-              onChange={() =>
+              onChange={() => {
                 onSelectedUsnsChange(
                   selectedUsns.length > 0 ? [] : usns.map(({ usn }) => usn),
-                )
-              }
+                );
+              }}
             />
           ),
           Cell: ({ row: { original } }: CellProps<Usn>) => (
@@ -147,7 +149,9 @@ const UsnList: FC<UsnListProps> = ({
               disabled={isUsnsLoading}
               name="usn"
               checked={selectedUsns.includes(original.usn)}
-              onChange={() => handleToggleSingleUsn(original.usn)}
+              onChange={() => {
+                handleToggleSingleUsn(original.usn);
+              }}
             />
           ),
         },
@@ -227,7 +231,9 @@ const UsnList: FC<UsnListProps> = ({
               isExpanded={
                 expandedCell?.column === "cves" && expandedCell.row === index
               }
-              onExpand={() => handleExpandCellClick("cves", index)}
+              onExpand={() => {
+                handleExpandCellClick("cves", index);
+              }}
             />
           ),
         },
@@ -254,7 +260,9 @@ const UsnList: FC<UsnListProps> = ({
               aria-expanded={
                 expandedCell?.column === column.id && expandedCell.row === index
               }
-              onClick={() => handleExpandCellClick(column.id, index)}
+              onClick={() => {
+                handleExpandCellClick(column.id, index);
+              }}
             >
               {original.computers_count}
             </Button>
@@ -270,7 +278,9 @@ const UsnList: FC<UsnListProps> = ({
               aria-expanded={
                 expandedCell?.column === column.id && expandedCell.row === index
               }
-              onClick={() => handleExpandCellClick(column.id, index)}
+              onClick={() => {
+                handleExpandCellClick(column.id, index);
+              }}
             >
               {`${expandedCell?.column === column.id && expandedCell.row === index ? "Hide" : "Show"} packages`}
             </Button>
@@ -290,9 +300,9 @@ const UsnList: FC<UsnListProps> = ({
     ],
   );
 
-  return (
-    <div ref={getTableRows(tableRowsRef)}>
-      {otherProps.tableType === "expandable" ? (
+  if (otherProps.tableType == "expandable") {
+    return (
+      <div ref={getTableRows(tableRowsRef)}>
         <ExpandableTable
           columns={securityIssueColumns}
           data={securityIssues}
@@ -304,29 +314,39 @@ const UsnList: FC<UsnListProps> = ({
           })}
           getRowProps={handleRowProps(expandedCell)}
           itemCount={usns.length}
-          itemNames={{ plural: "security issues", singular: "security issue" }}
+          itemNames={{
+            plural: "security issues",
+            singular: "security issue",
+          }}
           onLimitChange={otherProps.onNextPageFetch}
           totalCount={totalUsnCount}
         />
-      ) : (
-        <>
-          <ModularTable
-            columns={securityIssueColumns}
-            data={securityIssues}
-            getCellProps={handleCellProps({ expandedCell, isUsnsLoading })}
-            getRowProps={handleRowProps(expandedCell)}
-            emptyMsg={`No security issues found with the search "${otherProps.search}"`}
-          />
-          {usns.length > 0 && (
-            <TablePagination
-              handleClearSelection={() => onSelectedUsnsChange([])}
-              totalItems={totalUsnCount}
-              currentItemCount={usns.length}
-            />
-          )}
-        </>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div ref={getTableRows(tableRowsRef)}>
+        <ModularTable
+          columns={securityIssueColumns}
+          data={securityIssues}
+          getCellProps={handleCellProps({ expandedCell, isUsnsLoading })}
+          getRowProps={handleRowProps(expandedCell)}
+          emptyMsg={`No security issues found with the search "${otherProps.search}"`}
+        />
+      </div>
+
+      {usns.length && (
+        <TablePagination
+          handleClearSelection={() => {
+            onSelectedUsnsChange([]);
+          }}
+          totalItems={totalUsnCount}
+          currentItemCount={usns.length}
+        />
       )}
-    </div>
+    </>
   );
 };
 
