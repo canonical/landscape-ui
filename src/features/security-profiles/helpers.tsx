@@ -47,6 +47,7 @@ export const getAssociatedInstancesLink = (profile: SecurityProfile) => {
 
   return profile.tags.length || profile.all_computers ? (
     <Link
+      className={classes.link}
       to={{
         pathname: "/instances",
         search: `?${search.join("&")}`,
