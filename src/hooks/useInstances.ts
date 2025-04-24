@@ -1,11 +1,11 @@
-import type { AxiosError, AxiosResponse } from "axios";
-import type { UseQueryOptions } from "@tanstack/react-query";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Activity } from "@/features/activities";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { Instance, PendingInstance } from "@/types/Instance";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
 import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
 

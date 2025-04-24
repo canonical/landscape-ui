@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import ScriptFormAttachments from "./ScriptFormAttachments";
-import type { ComponentProps } from "react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
+import type { Attachment } from "../../types";
+import ScriptFormAttachments from "./ScriptFormAttachments";
 
 describe("ScriptFormAttachments", () => {
   const getFileInputError = vi.fn();
@@ -23,16 +24,41 @@ describe("ScriptFormAttachments", () => {
     onInitialAttachmentDelete,
   };
 
-  const fullAttachments = Object.keys(props.attachments);
+  const fullAttachments: Attachment[] = [
+    {
+      id: 1,
+      filename: "first",
+    },
+    {
+      id: 2,
+      filename: "second",
+    },
+    {
+      id: 3,
+      filename: "third",
+    },
+    {
+      id: 4,
+      filename: "fourth",
+    },
+    {
+      id: 5,
+      filename: "fifth",
+    },
+  ];
 
   it("should render file inputs only", () => {
     render(<ScriptFormAttachments {...props} />);
 
-    for (const key in props.attachments) {
+    for (const attachment in props.attachments) {
       expect(
-        screen.queryByRole("button", { name: `Remove ${key} attachment` }),
+        screen.queryByRole("button", {
+          name: `Remove ${attachment} attachment`,
+        }),
       ).not.toBeInTheDocument();
-      expect(screen.getByLabelText(`${key} attachment`)).toBeInTheDocument();
+      expect(
+        screen.getByLabelText(`${attachment} attachment`),
+      ).toBeInTheDocument();
     }
   });
 
@@ -55,19 +81,25 @@ describe("ScriptFormAttachments", () => {
     render(
       <ScriptFormAttachments
         {...props}
-        attachmentsToRemove={fullAttachments.slice(0, 2)}
+        attachmentsToRemove={fullAttachments
+          .slice(0, 2)
+          .map((attachment) => attachment.filename)}
         initialAttachments={fullAttachments}
       />,
     );
 
     for (const initialAttachment of fullAttachments.slice(2)) {
       expect(
-        screen.getByLabelText(`Remove ${initialAttachment} attachment`),
+        screen.getByLabelText(
+          `Remove ${initialAttachment.filename} attachment`,
+        ),
       ).toBeInTheDocument();
     }
 
-    for (const key of fullAttachments.slice(0, 2)) {
-      expect(screen.getByText(`${key} attachment`)).toBeInTheDocument();
+    for (const attachment of fullAttachments.slice(0, 2)) {
+      expect(
+        screen.getByText(`${attachment.filename} attachment`),
+      ).toBeInTheDocument();
     }
   });
 
@@ -81,12 +113,14 @@ describe("ScriptFormAttachments", () => {
 
     expect(
       screen.getByLabelText(
-        `Remove ${fullAttachments[fullAttachments.length - 1]} attachment`,
+        `Remove ${fullAttachments[fullAttachments.length - 1].filename} attachment`,
       ),
     ).toBeInTheDocument();
 
-    for (const key of fullAttachments.slice(1)) {
-      expect(screen.getByText(`${key} attachment`)).toBeInTheDocument();
+    for (const attachment of fullAttachments.slice(1)) {
+      expect(
+        screen.getByText(`${attachment.filename} attachment`),
+      ).toBeInTheDocument();
     }
   });
 
@@ -97,11 +131,13 @@ describe("ScriptFormAttachments", () => {
 
     await userEvent.click(
       screen.getByRole("button", {
-        name: `Remove ${fullAttachments[0]} attachment`,
+        name: `Remove ${fullAttachments[0].filename} attachment`,
       }),
     );
 
-    expect(onInitialAttachmentDelete).toHaveBeenCalledWith(fullAttachments[0]);
+    expect(onInitialAttachmentDelete).toHaveBeenCalledWith(
+      fullAttachments[0].filename,
+    );
   });
 
   it("should call remove attachment method", () => {
@@ -109,11 +145,13 @@ describe("ScriptFormAttachments", () => {
       <ScriptFormAttachments
         {...props}
         initialAttachments={fullAttachments}
-        attachmentsToRemove={fullAttachments.slice(0, 1)}
+        attachmentsToRemove={fullAttachments
+          .slice(0, 1)
+          .map((attachment) => attachment.filename)}
       />,
     );
 
-    expect(getFileInputError).toHaveBeenCalledWith(fullAttachments[0]);
-    expect(onFileInputChange).toHaveBeenCalledWith(fullAttachments[0]);
+    expect(getFileInputError).toHaveBeenCalledWith(fullAttachments[0].filename);
+    expect(onFileInputChange).toHaveBeenCalledWith(fullAttachments[0].filename);
   });
 });

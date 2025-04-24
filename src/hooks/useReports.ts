@@ -1,7 +1,7 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import useFetchOld from "@/hooks/useFetchOld";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { ApiError } from "@/types/api/ApiError";
 

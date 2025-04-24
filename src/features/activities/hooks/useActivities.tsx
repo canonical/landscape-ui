@@ -1,6 +1,14 @@
-import type { AxiosError, AxiosResponse } from "axios";
+import LoadingState from "@/components/layout/LoadingState";
+import useFetch from "@/hooks/useFetch";
+import useFetchOld from "@/hooks/useFetchOld";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import { lazy, Suspense } from "react";
 import type {
   Activity,
   ActivityCommon,
@@ -10,14 +18,6 @@ import type {
   GetSingleActivityParams,
   RedoUndoActivitiesParams,
 } from "../types";
-import useFetch from "@/hooks/useFetch";
-import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/api/ApiError";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import type { QueryFnType } from "@/types/QueryFnType";
-import useSidePanel from "@/hooks/useSidePanel";
-import { lazy, Suspense } from "react";
-import LoadingState from "@/components/layout/LoadingState";
 
 const ActivityDetails = lazy(
   async () => import("../components/ActivityDetails"),

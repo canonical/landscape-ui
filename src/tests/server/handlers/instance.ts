@@ -1,10 +1,10 @@
+import { API_URL, API_URL_OLD, COMMON_NUMBERS } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
   GetInstancesParams,
   RemoveInstances,
   SanitizeInstancesParams,
 } from "@/hooks/useInstances";
-import { API_URL, API_URL_OLD, COMMON_NUMBERS } from "@/constants";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";

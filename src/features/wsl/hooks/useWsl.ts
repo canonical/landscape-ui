@@ -6,7 +6,7 @@ import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 
 interface GetWslParams {
   limit?: number;

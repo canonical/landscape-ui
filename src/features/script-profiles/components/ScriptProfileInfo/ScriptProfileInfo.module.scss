@@ -1,0 +1,7 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.link {
+  &:visited {
+    color: $color-link;
+  }
+}

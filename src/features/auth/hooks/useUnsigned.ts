@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   QueryFnType,
   QueryFnTypeWithRequiredParam,
-} from "@/types/QueryFnType";
+} from "@/types/api/QueryFnType";
 import type { AxiosError, AxiosResponse } from "axios";
 import axios from "axios";
 import { API_URL } from "@/constants";

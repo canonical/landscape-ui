@@ -6,7 +6,7 @@ import type { ApiError } from "@/types/api/ApiError";
 import type {
   QueryFnType,
   QueryFnTypeWithRequiredParam,
-} from "@/types/QueryFnType";
+} from "@/types/api/QueryFnType";
 import type {
   IdentityProvider,
   SingleIdentityProvider,
