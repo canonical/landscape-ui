@@ -44,7 +44,7 @@ export const useGetScripts = (
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
           search: search ?? undefined,
-          script_type: status || "v2",
+          script_type: status == "all" ? "v2" : status || "active",
         }
       : params),
   };

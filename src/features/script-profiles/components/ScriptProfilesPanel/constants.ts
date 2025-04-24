@@ -1,5 +1,5 @@
 export const STATUS_OPTIONS = [
-  { label: "All", value: "" },
-  { label: "Active", value: "active" },
+  { label: "All", value: "all" },
+  { label: "Active", value: "" },
   { label: "Archived", value: "archived" },
 ];

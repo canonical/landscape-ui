@@ -41,9 +41,7 @@ const ScriptProfilesPanel: FC = () => {
     isGettingScriptProfiles: isGettingActiveScriptProfiles,
   } = useGetScriptProfiles(
     { listenToUrlParams: false },
-    {
-      archived: "active",
-    },
+    { archived: "active" },
   );
 
   const { scriptProfileLimits, isGettingScriptProfileLimits } =

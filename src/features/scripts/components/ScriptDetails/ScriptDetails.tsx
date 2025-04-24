@@ -117,7 +117,8 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
               close: resetArchiveModal,
             }}
           >
-            Archive
+            <Icon name="archive" />
+            <span>Archive</span>
           </ConfirmationButton>
         </div>
       </div>

@@ -41,7 +41,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
   const { securityProfiles, securityProfilesCount, isSecurityProfilesLoading } =
     useGetSecurityProfiles({
       search,
-      status,
+      status: status == "all" ? undefined : status || "active",
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
       pass_rate_from: passRateFrom != 0 ? passRateFrom : undefined,
