@@ -68,6 +68,11 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_PAGE_SIZE,
   },
   {
+    urlParam: "parent",
+    shouldResetPage: true,
+    defaultValue: undefined,
+  },
+  {
     urlParam: "search",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,

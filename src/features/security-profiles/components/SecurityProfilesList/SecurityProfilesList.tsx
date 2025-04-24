@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
-import { useActivities } from "@/features/activities";
+import { useUpdateSecurityProfile } from "@/features/security-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -9,14 +9,13 @@ import { Button, ModularTable, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { CellProps, Column } from "react-table";
 import {
   useAddSecurityProfile,
   useIsSecurityProfilesLimitReached,
   useRunSecurityProfile,
 } from "../../api";
-import { useUpdateSecurityProfile } from "@/features/security-profiles";
 import {
   SECURITY_PROFILE_MODE_LABELS,
   SECURITY_PROFILE_STATUSES,
@@ -94,12 +93,12 @@ interface SecurityProfilesListProps {
 const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   securityProfiles,
 }) => {
+  const navigate = useNavigate();
   const { notify } = useNotify();
   const debug = useDebug();
   const { setSidePanelContent, closeSidePanel } = useSidePanel();
   const profileLimitReached = useIsSecurityProfilesLimitReached();
 
-  const { openActivityDetails } = useActivities();
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
   const { updateSecurityProfile, isSecurityProfileUpdating } =
@@ -127,7 +126,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           {
             label: "View details",
             onClick: () => {
-              openActivityDetails(activity);
+              navigate(`/activities?parent=${activity.id}`);
             },
           },
         ],

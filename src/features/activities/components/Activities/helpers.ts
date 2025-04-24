@@ -16,3 +16,7 @@ export const getTypeQuery = (type?: string): string => {
 export const getStatusQuery = (status?: string): string => {
   return status ? ` status:${status}` : "";
 };
+
+export const getParentQuery = (parent?: number): string => {
+  return parent ? ` parent-id:${parent}` : "";
+};
