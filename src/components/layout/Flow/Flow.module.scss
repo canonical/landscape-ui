@@ -1,0 +1,30 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.body {
+  margin-left: $sph--x-large;
+}
+
+.header {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
+}
+
+.description {
+  color: $colors--light-theme--text-muted;
+  white-space: normal;
+}
+
+.line {
+  border-left: 1.5px solid $colors--light-theme--border-default;
+  height: 1.5rem;
+  margin: 0 auto;
+  width: 0;
+}
+
+.smallCard {
+  border: 1.5px solid $colors--light-theme--border-default;
+  margin: 0 auto;
+  padding: 0 $sph--small;
+}

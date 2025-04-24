@@ -1,14 +1,16 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import EditOrganisationPreferencesForm from "./EditOrganisationPreferencesForm";
 import { REGISTRATION_KEY_REGEX } from "./constants";
 
-const props = {
+const props: ComponentProps<typeof EditOrganisationPreferencesForm> = {
   organisationPreferences: {
     title: "Test Organisation",
     registration_password: "",
     auto_register_new_computers: false,
+    audit_retention_period: -1,
   },
 };
 

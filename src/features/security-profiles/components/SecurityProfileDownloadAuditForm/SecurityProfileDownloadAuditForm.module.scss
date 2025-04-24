@@ -1,0 +1,15 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.dateRange {
+  display: flex;
+  gap: $sph--small;
+
+  .date {
+    flex: 1;
+  }
+}
+
+.separator {
+  position: relative;
+  top: $spv--small;
+}

@@ -15,6 +15,8 @@ export type FilterType = Pick<
   | "toDate"
   | "type"
   | "query"
+  | "passRateFrom"
+  | "passRateTo"
 >;
 
 export type FilterKey = keyof FilterType;
@@ -34,7 +36,7 @@ export type PluralChipsKey = keyof {
 };
 
 export type SingularChipKey = keyof {
-  [key in FilterKey as FilterType[key] extends string
+  [key in FilterKey as FilterType[key] extends string | number
     ? `is${Capitalize<key>}ChipRender`
     : never]: unknown;
 };

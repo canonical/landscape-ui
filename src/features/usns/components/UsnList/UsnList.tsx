@@ -1,3 +1,14 @@
+import classNames from "classnames";
+import moment from "moment/moment";
+import type { FC } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { CellProps, Column } from "react-table";
+import { useOnClickOutside } from "usehooks-ts";
+import {
+  Button,
+  CheckboxInput,
+  ModularTable,
+} from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
@@ -5,20 +16,8 @@ import SelectAllButton from "@/components/layout/SelectAllButton";
 import { TablePagination } from "@/components/layout/TablePagination";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import type { ExpandedCell } from "@/types/ExpandedCell";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
-import {
-  Button,
-  CheckboxInput,
-  ModularTable,
-} from "@canonical/react-components";
-import classNames from "classnames";
-import moment from "moment/moment";
-import type { FC } from "react";
-import { useMemo, useRef, useState } from "react";
-import type { CellProps, Column } from "react-table";
-import { useOnClickOutside } from "usehooks-ts";
 import UsnPackagesContainer from "../UsnPackagesContainer";
 import {
   getTableRows,
@@ -26,6 +25,7 @@ import {
   handleCellProps,
   handleRowProps,
 } from "./helpers";
+import type { ExpandedCell } from "@/types/ExpandedCell";
 import classes from "./UsnList.module.scss";
 
 type UsnListProps = {
@@ -300,9 +300,9 @@ const UsnList: FC<UsnListProps> = ({
     ],
   );
 
-  if (otherProps.tableType == "expandable") {
-    return (
-      <div ref={getTableRows(tableRowsRef)}>
+  return (
+    <div ref={getTableRows(tableRowsRef)}>
+      {otherProps.tableType === "expandable" ? (
         <ExpandableTable
           columns={securityIssueColumns}
           data={securityIssues}
@@ -318,31 +318,27 @@ const UsnList: FC<UsnListProps> = ({
           onLimitChange={otherProps.onNextPageFetch}
           totalCount={totalUsnCount}
         />
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <div ref={getTableRows(tableRowsRef)}>
-        <ModularTable
-          columns={securityIssueColumns}
-          data={securityIssues}
-          getCellProps={handleCellProps({ expandedCell, isUsnsLoading })}
-          getRowProps={handleRowProps(expandedCell)}
-          emptyMsg={`No security issues found with the search "${otherProps.search}"`}
-        />
-      </div>
-      {usns.length > 0 && (
-        <TablePagination
-          handleClearSelection={() => {
-            onSelectedUsnsChange([]);
-          }}
-          totalItems={totalUsnCount}
-          currentItemCount={usns.length}
-        />
+      ) : (
+        <>
+          <ModularTable
+            columns={securityIssueColumns}
+            data={securityIssues}
+            getCellProps={handleCellProps({ expandedCell, isUsnsLoading })}
+            getRowProps={handleRowProps(expandedCell)}
+            emptyMsg={`No security issues found with the search "${otherProps.search}"`}
+          />
+          {usns.length > 0 && (
+            <TablePagination
+              handleClearSelection={() => {
+                onSelectedUsnsChange([]);
+              }}
+              totalItems={totalUsnCount}
+              currentItemCount={usns.length}
+            />
+          )}
+        </>
       )}
-    </>
+    </div>
   );
 };
 

@@ -18,6 +18,7 @@ interface SidePanelContextProps {
     size?: "small" | "medium" | "large",
     titleLabel?: string,
   ) => void;
+  setSidePanelTitle: (title: ReactNode) => void;
 }
 
 const initialState: SidePanelContextProps = {
@@ -25,6 +26,7 @@ const initialState: SidePanelContextProps = {
   changeSidePanelTitleLabel: () => undefined,
   closeSidePanel: () => undefined,
   setSidePanelContent: () => undefined,
+  setSidePanelTitle: () => undefined,
 };
 
 export const SidePanelContext =
@@ -37,7 +39,7 @@ interface SidePanelProviderProps {
 const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState<"small" | "medium" | "large">("small");
-  const [title, setTitle] = useState<ReactNode>("");
+  const [title, setTitle] = useState<ReactNode>(undefined);
   const [titleLabel, setTitleLabel] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
 
@@ -62,12 +64,16 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     notify.clear();
   };
 
+  const handleTitleChange = (newTitle: ReactNode) => {
+    setTitle(newTitle);
+  };
+
   const handleContentChange = (
     newTitle: ReactNode,
     newBody: ReactNode,
     newSize: "small" | "medium" | "large" = "small",
   ) => {
-    setTitle(newTitle);
+    handleTitleChange(newTitle);
     setBody(newBody);
     setSize(newSize);
     sidePanel.setOpen(true);
@@ -86,6 +92,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
         },
         closeSidePanel: handleSidePanelClose,
         setSidePanelContent: handleContentChange,
+        setSidePanelTitle: handleTitleChange,
       }}
     >
       {children}

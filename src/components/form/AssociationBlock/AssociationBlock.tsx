@@ -1,10 +1,10 @@
-import type { FormikContextType } from "formik";
-import { CheckboxInput, Chip } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
-import type { SelectOption } from "@/types/SelectOption";
 import useInstances from "@/hooks/useInstances";
-import type { AssociationBlockFormProps } from "./types";
+import type { SelectOption } from "@/types/SelectOption";
+import { CheckboxInput, Chip } from "@canonical/react-components";
+import type { FormikContextType } from "formik";
 import classes from "./AssociationBlock.module.scss";
+import type { AssociationBlockFormProps } from "./types";
 
 interface AssociationBlockProps<T extends AssociationBlockFormProps> {
   readonly formik: FormikContextType<T>;
@@ -24,8 +24,8 @@ const AssociationBlock = <T extends AssociationBlockFormProps>({
     })) ?? [];
 
   return (
-    <div className={classes.container}>
-      <p className="p-heading--5">Association</p>
+    <>
+      <p className="u-no-margin--bottom">Association</p>
       <CheckboxInput
         label="Associate to all instances"
         {...formik.getFieldProps("all_computers")}
@@ -43,7 +43,7 @@ const AssociationBlock = <T extends AssociationBlockFormProps>({
             selectedItems={tagOptions.filter(({ value }) =>
               formik.values.tags.includes(value),
             )}
-            onItemsUpdate={(items) =>
+            onItemsUpdate={async (items) =>
               formik.setFieldValue(
                 "tags",
                 items.map(({ value }) => value) as string[],
@@ -56,7 +56,7 @@ const AssociationBlock = <T extends AssociationBlockFormProps>({
                 key={tag}
                 className="u-no-margin--bottom u-no-margin--right"
                 value={tag}
-                onDismiss={() =>
+                onDismiss={async () =>
                   formik.setFieldValue(
                     "tags",
                     formik.values.tags.filter((t) => t !== tag),
@@ -67,7 +67,7 @@ const AssociationBlock = <T extends AssociationBlockFormProps>({
           </div>
         </>
       )}
-    </div>
+    </>
   );
 };
 

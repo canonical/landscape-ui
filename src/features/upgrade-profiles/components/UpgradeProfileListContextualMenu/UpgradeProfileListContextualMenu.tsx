@@ -17,7 +17,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 
 const SingleUpgradeProfileForm = lazy(
-  () => import("../SingleUpgradeProfileForm"),
+  async () => import("../SingleUpgradeProfileForm"),
 );
 
 interface UpgradeProfileListContextualMenuProps {

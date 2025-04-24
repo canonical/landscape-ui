@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const useTotalPages = (totalItems: number | undefined, pageSize: number) => {
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(
+    totalItems ? Math.ceil(totalItems / pageSize) : 1,
+  );
 
   useEffect(() => {
     if (totalItems === undefined) {

@@ -1,0 +1,8 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  border-top: 1px solid $colors--light-theme--border-default;
+  margin-top: $spv--x-large;
+  padding-top: $spv--x-large;
+}

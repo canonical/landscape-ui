@@ -15,7 +15,9 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { useRepositoryProfiles } from "../../hooks";
 import useDebug from "@/hooks/useDebug";
 
-const RepositoryProfileForm = lazy(() => import("../RepositoryProfileForm"));
+const RepositoryProfileForm = lazy(
+  async () => import("../RepositoryProfileForm"),
+);
 
 interface RepositoryProfileListContextualMenuProps {
   readonly profile: RepositoryProfile;

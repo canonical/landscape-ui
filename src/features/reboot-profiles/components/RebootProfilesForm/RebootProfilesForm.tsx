@@ -134,7 +134,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             selectedItems={DAY_OPTIONS.filter(({ value }) =>
               formik.values.on_days.includes(value),
             )}
-            onItemsUpdate={(items) =>
+            onItemsUpdate={async (items) =>
               formik.setFieldValue(
                 "on_days",
                 items.map(({ value }) => value),
@@ -244,7 +244,9 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
               label="Yes"
               {...formik.getFieldProps("randomize_delivery")}
               checked={formik.values.randomize_delivery}
-              onChange={() => formik.setFieldValue("randomize_delivery", true)}
+              onChange={async () =>
+                formik.setFieldValue("randomize_delivery", true)
+              }
             />
           </div>
 

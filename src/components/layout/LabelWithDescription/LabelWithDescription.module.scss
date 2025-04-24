@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.description {
+  color: $colors--light-theme--text-muted;
+  white-space: normal;
+}
+
+.link {
+  padding-left: $sph--small;
+}

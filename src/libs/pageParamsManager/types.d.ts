@@ -25,6 +25,8 @@ export interface PageParams {
   tab: string;
   tags: string[];
   toDate: string;
+  passRateTo: number;
+  passRateFrom: number;
   type: string;
   query: string;
   employeeGroups: string[];

@@ -65,33 +65,33 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
       ? getInstancesQueryResult.data.results[0].title
       : "";
 
-  const handleApproveActivity = async (activity: Activity) => {
+  const handleApproveActivity = async (a: Activity) => {
     try {
-      await approveActivities({ query: `id:${activity.id}` });
+      await approveActivities({ query: `id:${a.id}` });
     } catch (error) {
       debug(error);
     }
   };
 
-  const handleCancelActivity = async (activity: Activity) => {
+  const handleCancelActivity = async (a: Activity) => {
     try {
-      await cancelActivities({ query: `id:${activity.id}` });
+      await cancelActivities({ query: `id:${a.id}` });
     } catch (error) {
       debug(error);
     }
   };
 
-  const handleRedoActivity = async (activity: Activity) => {
+  const handleRedoActivity = async (a: Activity) => {
     try {
-      await redoActivities({ activity_ids: [activity.id] });
+      await redoActivities({ activity_ids: [a.id] });
     } catch (error) {
       debug(error);
     }
   };
 
-  const handleUndoActivity = async (activity: Activity) => {
+  const handleUndoActivity = async (a: Activity) => {
     try {
-      await undoActivities({ activity_ids: [activity.id] });
+      await undoActivities({ activity_ids: [a.id] });
     } catch (error) {
       debug(error);
     }
@@ -121,7 +121,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
                     confirmButtonAppearance: "positive",
                     confirmButtonDisabled: approveActivitiesLoading,
                     confirmButtonLoading: approveActivitiesLoading,
-                    onConfirm: () => handleApproveActivity(activity),
+                    onConfirm: async () => handleApproveActivity(activity),
                   }}
                 >
                   Approve
@@ -144,7 +144,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
                     confirmButtonAppearance: "positive",
                     confirmButtonDisabled: cancelActivitiesLoading,
                     confirmButtonLoading: cancelActivitiesLoading,
-                    onConfirm: () => handleCancelActivity(activity),
+                    onConfirm: async () => handleCancelActivity(activity),
                   }}
                 >
                   {!activity.actions?.approvable &&
@@ -171,7 +171,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
                     confirmButtonAppearance: "positive",
                     confirmButtonDisabled: undoActivitiesLoading,
                     confirmButtonLoading: undoActivitiesLoading,
-                    onConfirm: () => handleUndoActivity(activity),
+                    onConfirm: async () => handleUndoActivity(activity),
                   }}
                 >
                   Undo
@@ -194,7 +194,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
                     confirmButtonAppearance: "positive",
                     confirmButtonDisabled: redoActivitiesLoading,
                     confirmButtonLoading: redoActivitiesLoading,
-                    onConfirm: () => handleRedoActivity(activity),
+                    onConfirm: async () => handleRedoActivity(activity),
                   }}
                 >
                   Redo
