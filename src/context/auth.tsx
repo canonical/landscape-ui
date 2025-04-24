@@ -131,10 +131,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setLoading(newState);
   }, []);
 
-  if (isRedirecting) {
-    return <Redirecting />;
-  }
-
   const isFeatureEnabled = useCallback(
     (featureKey: FeatureKey) => {
       if (!user) {
@@ -154,6 +150,10 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     },
     [user],
   );
+
+  if (isRedirecting) {
+    return <Redirecting />;
+  }
 
   return (
     <AuthContext.Provider
