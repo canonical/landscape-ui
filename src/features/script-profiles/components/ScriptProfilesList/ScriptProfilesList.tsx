@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { MenuLink } from "@canonical/react-components";
@@ -57,6 +57,16 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         });
       };
 
+      console.log(moment().utc().format(INPUT_DATE_TIME_FORMAT));
+
+      if (profile.trigger.trigger_type == "one_time") {
+        console.log(profile.trigger.timestamp);
+      }
+
+      if (profile.trigger.trigger_type == "recurring") {
+        console.log(profile.trigger.start_after);
+      }
+
       setSidePanelContent(
         `Edit ${profile.title}`,
         <Suspense fallback={<LoadingState />}>
@@ -68,9 +78,19 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             initialValues={{
               ...profile,
               interval: "",
-              start_after: "",
-              timestamp: "",
               ...profile.trigger,
+              start_after:
+                profile.trigger.trigger_type == "recurring"
+                  ? moment(profile.trigger.start_after)
+                      .utc()
+                      .format(INPUT_DATE_TIME_FORMAT)
+                  : "",
+              timestamp:
+                profile.trigger.trigger_type == "one_time"
+                  ? moment(profile.trigger.timestamp)
+                      .utc()
+                      .format(INPUT_DATE_TIME_FORMAT)
+                  : "",
             }}
             onSubmit={handleSubmit}
             onSuccess={(values) => {
