@@ -16,16 +16,11 @@ import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useEditScriptProfile } from "../../api";
 import { getStatusText, getTriggerText } from "../../helpers";
+import { useOpenScriptProfileDetails } from "../../hooks";
 import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
-import { useOpenScriptProfileDetails } from "../../hooks";
-import classNames from "classnames";
-
-const ActivityDetails = lazy(
-  async () => import("@/features/activities/components/ActivityDetails"),
-);
 
 const ScriptProfileDetails = lazy(
   async () => import("../ScriptProfileDetails"),
@@ -167,31 +162,18 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
           row: {
             original: {
               activities: { last_activity: activity },
-              ...profile
             },
           },
         }: CellProps<ScriptProfile>) =>
           activity ? (
-            <Button
-              type="button"
-              appearance="link"
-              className={classNames(
-                "u-no-margin u-no-padding--top u-align-text--left",
-                classes.link,
-              )}
-              onClick={() => {
-                setSidePanelContent(
-                  `${profile.title} - ${moment(activity.creation_time).format(DISPLAY_DATE_TIME_FORMAT)}`,
-                  <Suspense fallback={<LoadingState />}>
-                    <ActivityDetails activityId={activity.id} />
-                  </Suspense>,
-                );
-              }}
+            <Link
+              className={classes.link}
+              to={`/activities?parent=${activity.id}`}
             >
               {moment(activity.creation_time)
                 .utc()
                 .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
-            </Button>
+            </Link>
           ) : (
             <NoData />
           ),

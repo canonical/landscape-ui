@@ -18,6 +18,7 @@ export interface PageParams {
   groupBy: string;
   os: string;
   pageSize: number;
+  parent: number | undefined;
   search: string;
   sort: SortDirection;
   sortBy: string;
