@@ -93,20 +93,6 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
     {
       children: (
         <>
-          <Icon name="play" />
-          <span>Run script</span>
-        </>
-      ),
-      "aria-label": `Run ${script.title} script`,
-      hasIcon: true,
-      onClick: (): void => {
-        handleScriptRun();
-      },
-      disabled: !is_executable,
-    },
-    {
-      children: (
-        <>
           <Icon name="switcher-environments" />
           <span>View details</span>
         </>
@@ -115,33 +101,56 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
       hasIcon: true,
       onClick: handleViewScriptDetails,
     },
-    {
-      children: (
-        <>
-          <Icon name="edit" />
-          <span>Edit</span>
-        </>
-      ),
-      "aria-label": `Edit ${script.title} script`,
-      hasIcon: true,
-      onClick: handleEditScript,
-      disabled: !is_editable,
-    },
-    {
-      children: (
-        <>
-          <span className="p-icon--archive--negative" />
-          <span className="u-text--negative">Archive</span>
-        </>
-      ),
-      "aria-label": `Archive ${script.title} script`,
-      className: classes.separator,
-      hasIcon: true,
-      onClick: (): void => {
-        setArchiveModalOpen(true);
+  ];
+
+  if (script.status == "ACTIVE") {
+    contextualMenuButtons.push(
+      {
+        children: (
+          <>
+            <Icon name="play" />
+            <span>Run script</span>
+          </>
+        ),
+        "aria-label": `Run ${script.title} script`,
+        hasIcon: true,
+        onClick: (): void => {
+          handleScriptRun();
+        },
+        disabled: !is_executable,
       },
-    },
-    {
+      {
+        children: (
+          <>
+            <Icon name="edit" />
+            <span>Edit</span>
+          </>
+        ),
+        "aria-label": `Edit ${script.title} script`,
+        hasIcon: true,
+        onClick: handleEditScript,
+        disabled: !is_editable,
+      },
+      {
+        children: (
+          <>
+            <span className="p-icon--archive--negative" />
+            <span className="u-text--negative">Archive</span>
+          </>
+        ),
+        "aria-label": `Archive ${script.title} script`,
+        className: classes.separator,
+        hasIcon: true,
+        onClick: (): void => {
+          setArchiveModalOpen(true);
+        },
+        disabled: !is_editable,
+      },
+    );
+  }
+
+  if (script.status != "REDACTED") {
+    contextualMenuButtons.push({
       children: (
         <>
           <span className="p-icon--delete--negative" />
@@ -149,18 +158,19 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
         </>
       ),
       "aria-label": `Delete ${script.title} script`,
+      className: script.status == "ARCHIVED" ? classes.separator : undefined,
       hasIcon: true,
       onClick: (): void => {
         setDeleteModalOpen(true);
       },
       disabled: !is_redactable,
-    },
-  ];
+    });
+  }
 
   return (
     <>
       <ContextualMenu
-        position="left"
+        position="right"
         className={classes.menu}
         toggleClassName={classes.toggleButton}
         toggleAppearance="base"
