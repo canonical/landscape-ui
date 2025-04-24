@@ -59,7 +59,6 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "Security profiles",
         path: "/profiles/security",
-        env: "selfHosted",
       },
     ],
   },
