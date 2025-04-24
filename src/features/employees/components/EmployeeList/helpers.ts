@@ -1,6 +1,6 @@
 import type { HTMLProps, MutableRefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
-import type { ExpandedCell } from "../../../employee-groups/components/EmployeeGroupsList/types";
+import type { ExpandedCell } from "@/types/ExpandedCell";
 import type { Employee } from "../../types";
 import classes from "./EmployeeList.module.scss";
 

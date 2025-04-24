@@ -1,16 +1,6 @@
-import type { CreateScriptParams, ExecuteScriptParams } from "../hooks";
+import type { RunScriptParams } from "../api";
 
 export interface RunInstanceScriptFormValues
-  extends CreateScriptParams,
-    Omit<ExecuteScriptParams, "query"> {
-  attachments: {
-    first: File | null;
-    second: File | null;
-    third: File | null;
-    fourth: File | null;
-    fifth: File | null;
-  };
+  extends Omit<RunScriptParams, "query"> {
   deliverImmediately: boolean;
-  saveScript: boolean;
-  type: "new" | "existing";
 }

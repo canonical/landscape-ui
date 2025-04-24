@@ -1,8 +1,8 @@
 import EmptyState from "@/components/layout/EmptyState";
-import { Button } from "@canonical/react-components";
 import { IS_DEV_ENV } from "@/constants";
-import type { FallbackProps } from "react-error-boundary/dist/declarations/src/types";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
+import type { FallbackProps } from "react-error-boundary/dist/declarations/src/types";
 
 const FallbackComponent: FC<FallbackProps> = ({
   error,

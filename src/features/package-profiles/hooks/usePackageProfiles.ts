@@ -1,4 +1,4 @@
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type {
   PackageProfile,
   PackageProfileConstraint,

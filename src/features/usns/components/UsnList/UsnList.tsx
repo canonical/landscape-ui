@@ -5,6 +5,7 @@ import SelectAllButton from "@/components/layout/SelectAllButton";
 import { TablePagination } from "@/components/layout/TablePagination";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import type { ExpandedCell } from "@/types/ExpandedCell";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
 import {
@@ -25,7 +26,6 @@ import {
   handleCellProps,
   handleRowProps,
 } from "./helpers";
-import type { ExpandedCell } from "./types";
 import classes from "./UsnList.module.scss";
 
 type UsnListProps = {

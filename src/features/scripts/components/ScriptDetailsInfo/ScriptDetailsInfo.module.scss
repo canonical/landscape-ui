@@ -1,0 +1,22 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.attachmentBlock {
+  width: 100%;
+}
+
+.attachment {
+  align-items: center;
+  background-color: $color-light;
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spv--small;
+  padding: $spv--small;
+  text-decoration: none;
+}
+
+.link {
+  &:visited {
+    color: $color-link;
+  }
+}

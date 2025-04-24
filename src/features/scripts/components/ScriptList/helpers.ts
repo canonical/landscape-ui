@@ -1,28 +1,70 @@
-import type { HTMLProps } from "react";
-import type { Cell, TableCellProps } from "react-table";
+import type { HTMLProps, MutableRefObject } from "react";
+import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { Script } from "../../types";
 import classes from "./ScriptList.module.scss";
 
-export const getCellProps = ({ column, row: { original } }: Cell<Script>) => {
-  const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
-    {};
-
-  if (original.title === "loading") {
-    if (column.id === "title") {
-      cellProps.colSpan = 4;
-    } else {
-      cellProps.className = classes.hidden;
-      cellProps["aria-hidden"] = true;
+export const getTableRowsRef = (
+  tableRowsRef: MutableRefObject<HTMLTableRowElement[]>,
+) => {
+  return (instance: HTMLDivElement | null): void => {
+    if (!instance) {
+      return;
     }
-  } else if (column.id === "title") {
-    cellProps.role = "rowheader";
-  } else if (column.id === "access_group") {
-    cellProps["aria-label"] = "Access group";
-  } else if (column.id === "creator.name") {
-    cellProps["aria-label"] = "Creator";
-  } else if (column.id === "id") {
-    cellProps["aria-label"] = "Actions";
-  }
 
-  return cellProps;
+    tableRowsRef.current = [
+      ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
+    ];
+  };
+};
+
+export const getCellProps = (expandedRowIndex: number | null) => {
+  return ({
+    column,
+    row: { index },
+  }: Cell<Script>): Partial<
+    TableCellProps & HTMLProps<HTMLTableCellElement>
+  > => {
+    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
+      {};
+
+    switch (column.id) {
+      case "name":
+        cellProps.role = "rowheader";
+        break;
+      case "status":
+        cellProps["aria-label"] = "status";
+        break;
+      case "associated_profiles":
+        cellProps["aria-label"] = "associated profiles";
+
+        if (expandedRowIndex === index) {
+          cellProps.className = classes.expandedCell;
+        }
+
+        break;
+      case "last_modified_at":
+        cellProps["aria-label"] = "last modified at";
+        break;
+      case "created_at":
+        cellProps["aria-label"] = "created at";
+        break;
+    }
+
+    return cellProps;
+  };
+};
+
+export const getRowProps = (expandedRowIndex: number | null) => {
+  return ({
+    index,
+  }: Row<Script>): Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> => {
+    const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
+      {};
+
+    if (expandedRowIndex === index) {
+      rowProps.className = classes.expandedRow;
+    }
+
+    return rowProps;
+  };
 };

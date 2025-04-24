@@ -36,7 +36,9 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
         ? tableRowsRef.current[expandedCell.rowIndex]
         : null,
     },
-    () => setExpandedCell(null),
+    () => {
+      setExpandedCell(null);
+    },
   );
 
   const { data: getPermissionsQueryResult } = getPermissionsQuery();
@@ -72,9 +74,9 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
               expandedCell?.rowIndex === index &&
               expandedCell.columnId === "view"
             }
-            onExpand={() =>
-              setExpandedCell({ rowIndex: index, columnId: "view" })
-            }
+            onExpand={() => {
+              setExpandedCell({ rowIndex: index, columnId: "view" });
+            }}
           />
         ),
       },
@@ -92,9 +94,9 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
               expandedCell?.rowIndex === index &&
               expandedCell.columnId === "manage"
             }
-            onExpand={() =>
-              setExpandedCell({ rowIndex: index, columnId: "manage" })
-            }
+            onExpand={() => {
+              setExpandedCell({ rowIndex: index, columnId: "manage" });
+            }}
           />
         ),
       },

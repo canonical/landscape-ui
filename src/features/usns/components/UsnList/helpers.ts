@@ -2,8 +2,8 @@ import type { HTMLProps, MutableRefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { Usn } from "@/types/Usn";
 import { EMPTY_USN } from "./constants";
-import type { ExpandedCell } from "./types";
 import classes from "./UsnList.module.scss";
+import type { ExpandedCell } from "@/types/ExpandedCell";
 
 export const getUsnsWithExpanded = ({
   expandedCell,

@@ -1,4 +1,4 @@
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { WslProfile } from "../types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";

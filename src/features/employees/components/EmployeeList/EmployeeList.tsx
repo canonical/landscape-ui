@@ -13,7 +13,7 @@ import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
-import type { ExpandedCell } from "../../../employee-groups/components/EmployeeGroupsList/types";
+import type { ExpandedCell } from "@/types/ExpandedCell";
 import type { Employee } from "../../types";
 import EmployeeListContextualMenu from "../EmployeeListContextualMenu";
 import classes from "./EmployeeList.module.scss";

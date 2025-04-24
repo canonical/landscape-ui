@@ -2,7 +2,7 @@ import type { Activity } from "@/features/activities";
 import type { PackageDiff, PackageObject } from "@/features/packages";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { Pocket } from "./Pocket";
@@ -21,8 +21,6 @@ import type {
   RemovePackageFiltersFromPocketParams,
   RemovePackagesFromPocketParams,
   RemovePocketParams,
-} from "./PocketParams";
-import type {
   RemoveUploaderGPGKeysFromPocketParams,
   SyncMirrorPocketParams,
 } from "./PocketParams";
