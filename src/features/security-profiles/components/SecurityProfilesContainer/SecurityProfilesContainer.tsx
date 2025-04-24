@@ -3,6 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
+import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security-profiles";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -18,7 +19,6 @@ import {
 import SecurityProfileForm from "../SecurityProfileForm";
 import SecurityProfilesHeader from "../SecurityProfilesHeader";
 import SecurityProfilesList from "../SecurityProfilesList";
-import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security-profiles";
 
 interface SecurityProfilesContainerProps {
   readonly hideRetentionNotification: () => void;
@@ -40,7 +40,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
   const { securityProfiles, securityProfilesCount, isSecurityProfilesLoading } =
     useGetSecurityProfiles({
       search,
-      status,
+      status: status == "all" ? undefined : status || "active",
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
       pass_rate_from: passRateFrom != 0 ? passRateFrom : undefined,
