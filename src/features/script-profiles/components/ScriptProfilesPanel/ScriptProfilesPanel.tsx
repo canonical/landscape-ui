@@ -3,11 +3,13 @@ import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
+import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useGetScripts } from "@/features/scripts";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, Notification } from "@canonical/react-components";
+import moment from "moment";
 import { lazy, Suspense, type FC } from "react";
 import {
   useAddScriptProfile,
@@ -66,10 +68,10 @@ const ScriptProfilesPanel: FC = () => {
           initialValues={{
             all_computers: false,
             interval: "",
-            start_after: "",
+            start_after: moment().utc().format(INPUT_DATE_TIME_FORMAT),
             tags: [],
             time_limit: 300,
-            timestamp: "",
+            timestamp: moment().utc().format(INPUT_DATE_TIME_FORMAT),
             title: "",
             trigger_type: "",
             username: "root",
