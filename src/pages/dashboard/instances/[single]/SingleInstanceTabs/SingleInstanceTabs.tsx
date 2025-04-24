@@ -10,37 +10,38 @@ import usePageParams from "@/hooks/usePageParams";
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
 const InfoPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/info"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/info"),
 );
 const ProcessesPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/processes"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/processes"),
 );
 const HardwarePanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/hardware"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/hardware"),
 );
 const PackagesPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/packages"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/packages"),
 );
 const ActivityPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/activities"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/activities"),
 );
 const KernelPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/kernel"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/kernel"),
 );
 const WslPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/wsl"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/wsl"),
 );
 const UserPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/users"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/users"),
 );
 const SecurityIssuesPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/security-issues"),
+  async () =>
+    import("@/pages/dashboard/instances/[single]/tabs/security-issues"),
 );
 const UbuntuProPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/ubuntu-pro"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/ubuntu-pro"),
 );
 const SnapsPanel = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/snaps"),
+  async () => import("@/pages/dashboard/instances/[single]/tabs/snaps"),
 );
 
 interface SingleInstanceTabsProps {

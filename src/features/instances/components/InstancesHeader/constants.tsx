@@ -158,4 +158,18 @@ export const INSTANCE_SEARCH_HELP_TERMS: {
       </span>
     ),
   },
+  {
+    term: "security-profiles:<security-profile-id>:<pass|fail|in-progress>",
+    description: (
+      <span>
+        Search for the security profiles with a specified id. Optionally specify{" "}
+        <code>
+          security-profiles:&lt;security-profiles-id&gt;:&lt;pass|fail|in-progress&gt;
+        </code>{" "}
+        which will only return security profiles whose id matches, and value
+        also contains <code>pass</code>, <code>fail</code>,{" "}
+        <code>in-progress</code> as specified
+      </span>
+    ),
+  },
 ];

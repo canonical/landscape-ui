@@ -25,7 +25,7 @@ import {
   handleCellProps,
   handleRowProps,
 } from "./helpers";
-import type { ExpandedCell } from "./types";
+import type { ExpandedCell } from "@/types/ExpandedCell";
 import classes from "./UsnList.module.scss";
 
 type UsnListProps = {
@@ -69,7 +69,9 @@ const UsnList: FC<UsnListProps> = ({
           ? tableRowsRef.current[expandedCell.row]
           : null,
     },
-    () => setExpandedCell(null),
+    () => {
+      setExpandedCell(null);
+    },
   );
 
   const showSelectAllButton =
@@ -131,11 +133,11 @@ const UsnList: FC<UsnListProps> = ({
               checked={
                 selectedUsns.length > 0 && selectedUsns.length === usns.length
               }
-              onChange={() =>
+              onChange={() => {
                 onSelectedUsnsChange(
                   selectedUsns.length > 0 ? [] : usns.map(({ usn }) => usn),
-                )
-              }
+                );
+              }}
             />
           ),
           Cell: ({ row: { original } }: CellProps<Usn>) => (
@@ -147,7 +149,9 @@ const UsnList: FC<UsnListProps> = ({
               disabled={isUsnsLoading}
               name="usn"
               checked={selectedUsns.includes(original.usn)}
-              onChange={() => handleToggleSingleUsn(original.usn)}
+              onChange={() => {
+                handleToggleSingleUsn(original.usn);
+              }}
             />
           ),
         },
@@ -227,7 +231,9 @@ const UsnList: FC<UsnListProps> = ({
               isExpanded={
                 expandedCell?.column === "cves" && expandedCell.row === index
               }
-              onExpand={() => handleExpandCellClick("cves", index)}
+              onExpand={() => {
+                handleExpandCellClick("cves", index);
+              }}
             />
           ),
         },
@@ -254,7 +260,9 @@ const UsnList: FC<UsnListProps> = ({
               aria-expanded={
                 expandedCell?.column === column.id && expandedCell.row === index
               }
-              onClick={() => handleExpandCellClick(column.id, index)}
+              onClick={() => {
+                handleExpandCellClick(column.id, index);
+              }}
             >
               {original.computers_count}
             </Button>
@@ -270,7 +278,9 @@ const UsnList: FC<UsnListProps> = ({
               aria-expanded={
                 expandedCell?.column === column.id && expandedCell.row === index
               }
-              onClick={() => handleExpandCellClick(column.id, index)}
+              onClick={() => {
+                handleExpandCellClick(column.id, index);
+              }}
             >
               {`${expandedCell?.column === column.id && expandedCell.row === index ? "Hide" : "Show"} packages`}
             </Button>
@@ -319,7 +329,9 @@ const UsnList: FC<UsnListProps> = ({
           />
           {usns.length > 0 && (
             <TablePagination
-              handleClearSelection={() => onSelectedUsnsChange([])}
+              handleClearSelection={() => {
+                onSelectedUsnsChange([]);
+              }}
               totalItems={totalUsnCount}
               currentItemCount={usns.length}
             />

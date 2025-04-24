@@ -1,21 +1,14 @@
-import type { ComponentProps, FC } from "react";
-import { lazy, Suspense } from "react";
-import LoadingState from "@/components/layout/LoadingState";
-
-const SingleScriptComponent = lazy(() => import("./components/SingleScript"));
-
-export const SingleScript: FC<ComponentProps<typeof SingleScriptComponent>> = (
-  props,
-) => {
-  return (
-    <Suspense fallback={<LoadingState />}>
-      <SingleScriptComponent {...props} />
-    </Suspense>
-  );
-};
-
+export { useGetScripts, useGetSingleScript } from "./api";
 export { default as RunInstanceScriptForm } from "./components/RunInstanceScriptForm";
 export { default as ScriptList } from "./components/ScriptList";
+export { default as ScriptsContainer } from "./components/ScriptsContainer";
 export { default as ScriptsEmptyState } from "./components/ScriptsEmptyState";
-export { useScripts } from "./hooks";
-export type { GetScriptCodeParams } from "./hooks";
+export { default as ScriptsTabs } from "./components/ScriptsTabs";
+export { default as CreateScriptForm } from "./components/CreateScriptForm";
+export type {
+  Script,
+  ScriptStatus,
+  SingleScript,
+  ScriptVersion,
+  TruncatedScriptVersion,
+} from "./types";

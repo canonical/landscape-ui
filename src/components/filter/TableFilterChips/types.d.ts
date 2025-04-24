@@ -4,7 +4,9 @@ import type { SearchAndFilterChip } from "@canonical/react-components/dist/compo
 export type FilterType = Pick<
   ReturnType<typeof usePageParams>,
   | "accessGroups"
+  | "autoinstallFiles"
   | "availabilityZones"
+  | "employeeGroups"
   | "fromDate"
   | "os"
   | "search"
@@ -13,6 +15,8 @@ export type FilterType = Pick<
   | "toDate"
   | "type"
   | "query"
+  | "passRateFrom"
+  | "passRateTo"
 >;
 
 export type FilterKey = keyof FilterType;
@@ -32,7 +36,7 @@ export type PluralChipsKey = keyof {
 };
 
 export type SingularChipKey = keyof {
-  [key in FilterKey as FilterType[key] extends string
+  [key in FilterKey as FilterType[key] extends string | number
     ? `is${Capitalize<key>}ChipRender`
     : never]: unknown;
 };

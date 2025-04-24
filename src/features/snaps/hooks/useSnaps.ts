@@ -1,7 +1,7 @@
 import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
@@ -33,7 +33,7 @@ const useSnaps = () => {
       AxiosError<ApiError>
     >({
       queryKey: ["snaps", { ...queryParams }],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get(`computers/${instance_id}/snaps/installed`, {
           params: params,
         }),
@@ -50,7 +50,7 @@ const useSnaps = () => {
       AxiosError<ApiError>
     >({
       queryKey: ["snaps", { ...queryParams }],
-      queryFn: () => {
+      queryFn: async () => {
         if (!queryParams) {
           throw new Error("Missing required parameters");
         }
@@ -68,7 +68,7 @@ const useSnaps = () => {
   > = (queryParams, config = {}) =>
     useQuery<AxiosResponse<AvailableSnapInfo>, AxiosError<ApiError>>({
       queryKey: ["snaps", { ...queryParams }],
-      queryFn: () => {
+      queryFn: async () => {
         if (!queryParams) {
           throw new Error("Missing required parameters");
         }
@@ -86,8 +86,9 @@ const useSnaps = () => {
     SnapActionParams
   >({
     mutationKey: ["snaps", "action"],
-    mutationFn: (params) => authFetch.post("snaps", params),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["snaps"] }),
+    mutationFn: async (params) => authFetch.post("snaps", params),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["snaps"] }),
   });
 
   return {

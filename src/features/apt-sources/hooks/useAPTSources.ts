@@ -1,13 +1,13 @@
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/api/ApiError";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
+  APTSource,
   CreateAPTSourceParams,
   GetAPTSourcesParams,
   RemoveAPTSourceParams,
-  APTSource,
 } from "../types";
 
 export default function useAPTSources() {
@@ -20,7 +20,7 @@ export default function useAPTSources() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<APTSource[]>, AxiosError<ApiError>>({
       queryKey: ["aptSources"],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get("GetAPTSources", {
           params: queryParams,
         }),
@@ -33,8 +33,8 @@ export default function useAPTSources() {
     CreateAPTSourceParams
   >({
     mutationKey: ["aptSources", "new"],
-    mutationFn: (params) => authFetch.get("CreateAPTSource", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.get("CreateAPTSource", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["aptSources"] }),
   });
 
@@ -44,8 +44,8 @@ export default function useAPTSources() {
     RemoveAPTSourceParams
   >({
     mutationKey: ["aptSources", "remove"],
-    mutationFn: (params) => authFetch.get("RemoveAPTSource", { params }),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.get("RemoveAPTSource", { params }),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["aptSources"] }),
   });
 

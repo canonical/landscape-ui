@@ -1,31 +1,44 @@
+import { API_URL } from "@/constants";
+import {
+  scriptDetails,
+  scripts,
+  scriptVersion,
+  scriptVersions,
+} from "@/tests/mocks/script";
+import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
-import { API_URL_OLD } from "@/constants";
-import { isAction } from "@/tests/server/handlers/_helpers";
-import type { GetScriptCodeParams } from "@/features/scripts";
-import { scriptCodes } from "@/tests/mocks/script";
-import { getTestErrorParams } from "@/tests/mocks/error";
 
 export default [
-  http.get<never, GetScriptCodeParams, string>(
-    API_URL_OLD,
-    async ({ request }) => {
-      if (!isAction(request, "GetScriptCode")) {
-        return;
-      }
+  http.get(`${API_URL}scripts`, async () => {
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: scripts,
+        limit: 10,
+        offset: 0,
+        search: "",
+        searchFields: ["title"],
+      }),
+    );
+  }),
 
-      const { script_id } = await request.json();
+  http.get(`${API_URL}scripts/:id/script-profiles`, async () => {
+    return HttpResponse.json({ script_profiles: scriptProfiles });
+  }),
 
-      const script = scriptCodes.find(
-        (scriptCode) => scriptCode.script_id === script_id,
-      );
+  http.get(`${API_URL}scripts/:id`, async () => {
+    return HttpResponse.json(scriptDetails);
+  }),
 
-      if (!script) {
-        const { testError } = getTestErrorParams();
+  http.get(`${API_URL}scripts/:id/versions/:versionId`, async () => {
+    return HttpResponse.json(scriptVersion);
+  }),
 
-        throw testError;
-      }
+  http.get(`${API_URL}scripts-attachment/:id`, async () => {
+    return HttpResponse.json("attachment");
+  }),
 
-      return HttpResponse.json(script.code);
-    },
-  ),
+  http.get(`${API_URL}scripts/:id/versions`, async () => {
+    return HttpResponse.json({ script_versions: scriptVersions });
+  }),
 ];

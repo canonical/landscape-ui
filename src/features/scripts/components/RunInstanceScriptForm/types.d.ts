@@ -1,8 +1,8 @@
-import type { CreateScriptParams, ExecuteScriptParams } from "../../hooks";
+import type { CreateScriptParams, RunScriptParams } from "../../api";
 
 export interface FormProps
   extends CreateScriptParams,
-    Omit<ExecuteScriptParams, "query"> {
+    Omit<RunScriptParams, "query"> {
   attachments: {
     first: File | null;
     second: File | null;

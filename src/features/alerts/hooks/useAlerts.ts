@@ -1,7 +1,7 @@
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/api/ApiError";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
@@ -19,7 +19,7 @@ export default function useAlerts() {
   const getAlertsQuery: QueryFnType<AxiosResponse<Alert[]>, undefined> = () =>
     useQuery<AxiosResponse<Alert[]>, AxiosError<ApiError>>({
       queryKey: ["alert"],
-      queryFn: () => authFetch.get("alerts"),
+      queryFn: async () => authFetch.get("alerts"),
     });
 
   const subscribeQuery = useMutation<
@@ -28,8 +28,10 @@ export default function useAlerts() {
     SubscriptionParams
   >({
     mutationKey: ["alert", "subscribe"],
-    mutationFn: (params) => authFetchOld.get("SubscribeToAlert", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("SubscribeToAlert", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
   const unsubscribeQuery = useMutation<
@@ -38,9 +40,10 @@ export default function useAlerts() {
     SubscriptionParams
   >({
     mutationKey: ["alert", "unsubscribe"],
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("UnsubscribeFromAlert", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
   const associateAlert = useMutation<
@@ -49,8 +52,10 @@ export default function useAlerts() {
     AssociateAlertParams
   >({
     mutationKey: ["alert", "associate"],
-    mutationFn: (params) => authFetchOld.get("AssociateAlert", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("AssociateAlert", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
   const disassociateAlert = useMutation<
@@ -59,8 +64,10 @@ export default function useAlerts() {
     DisassociateAlertParams
   >({
     mutationKey: ["alert", "disassociate"],
-    mutationFn: (params) => authFetchOld.get("DisassociateAlert", { params }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["alert"] }),
+    mutationFn: async (params) =>
+      authFetchOld.get("DisassociateAlert", { params }),
+    onSuccess: async () =>
+      queryClient.invalidateQueries({ queryKey: ["alert"] }),
   });
 
   return {

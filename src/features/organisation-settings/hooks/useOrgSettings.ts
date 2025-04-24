@@ -1,9 +1,9 @@
-import type { ApiError } from "@/types/ApiError";
-import type { QueryFnType } from "@/types/QueryFnType";
+import useFetch from "@/hooks/useFetch";
+import type { ApiError } from "@/types/api/ApiError";
+import type { QueryFnType } from "@/types/api/QueryFnType";
+import type { Preferences } from "@/types/Preferences";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Preferences } from "@/types/Preferences";
-import useFetch from "@/hooks/useFetch";
 
 export interface ChangeOrganisationPreferencesParams {
   title?: string;
@@ -21,7 +21,7 @@ export default function useOrgSettings() {
   > = (_, config = {}) =>
     useQuery<AxiosResponse<Preferences>, AxiosError<ApiError>>({
       queryKey: ["preferences"],
-      queryFn: () => authFetch.get("preferences"),
+      queryFn: async () => authFetch.get("preferences"),
       ...config,
     });
 
@@ -31,8 +31,8 @@ export default function useOrgSettings() {
     ChangeOrganisationPreferencesParams
   >({
     mutationKey: ["preferences", "change"],
-    mutationFn: (params) => authFetch.patch("preferences", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.patch("preferences", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["preferences"] }),
   });
 

@@ -1,0 +1,26 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.actions {
+  width: 4.5rem;
+}
+
+.menu {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.toggleButton {
+  margin-bottom: 0;
+  padding: 0 $sph--x-small;
+}
+
+.archive {
+  border-top: 1px solid $colors--light-theme--border-low-contrast !important;
+}
+
+.link {
+  &:visited {
+    color: $color-link;
+  }
+}

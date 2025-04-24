@@ -1,20 +1,6 @@
 import { IS_DEV_ENV } from "@/constants";
-import type { InstanceWithoutRelation } from "@/types/Instance";
-
-export function currentInstanceCan(
-  capability: "runScripts",
-  instance: InstanceWithoutRelation,
-): boolean {
-  if (capability === "runScripts") {
-    return currentInstanceIs("ubuntu", instance);
-  }
-
-  if (IS_DEV_ENV) {
-    console.error(`Error: The capability "${capability}" does not exist.`);
-  }
-
-  return false;
-}
+import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
+import type { SecurityProfile } from "../security-profiles";
 
 export function currentInstanceIs(
   distribution: "ubuntu",
@@ -30,6 +16,21 @@ export function currentInstanceIs(
 
   if (IS_DEV_ENV) {
     console.error(`Error: The distribution "${distribution}" does not exist.`);
+  }
+
+  return false;
+}
+
+export function currentInstanceCan(
+  capability: "runScripts",
+  instance: InstanceWithoutRelation,
+): boolean {
+  if (capability === "runScripts") {
+    return currentInstanceIs("ubuntu", instance);
+  }
+
+  if (IS_DEV_ENV) {
+    console.error(`Error: The capability "${capability}" does not exist.`);
   }
 
   return false;
@@ -52,3 +53,11 @@ export const hasUpgrades = (
 ): boolean => {
   return hasRegularUpgrades(alerts) || hasSecurityUpgrades(alerts);
 };
+
+export const instancesToAssignCount = (
+  profile: SecurityProfile,
+  instances: Instance[],
+) =>
+  instances.filter((instance) =>
+    profile.tags.every((tag) => !instance.tags.includes(tag)),
+  ).length;

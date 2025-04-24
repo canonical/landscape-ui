@@ -1,12 +1,12 @@
-import type { AxiosError, AxiosResponse } from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Activity } from "@/features/activities";
-import type { RepositoryProfile } from "../types";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
-import type { ApiError } from "@/types/ApiError";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
-import type { QueryFnType } from "@/types/QueryFnType";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { QueryFnType } from "@/types/api/QueryFnType";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import type { RepositoryProfile } from "../types";
 
 interface GetRepositoryProfilesParams {
   names?: string[];
@@ -51,7 +51,7 @@ export default function useRepositoryProfiles() {
       AxiosError<ApiError>
     >({
       queryKey: ["repositoryProfiles", queryParams],
-      queryFn: () =>
+      queryFn: async () =>
         authFetch.get("repositoryprofiles", {
           params: queryParams,
         }),
@@ -63,8 +63,8 @@ export default function useRepositoryProfiles() {
     AxiosError<ApiError>,
     CreateRepositoryProfileParams
   >({
-    mutationFn: (params) => authFetch.post("repositoryprofiles", params),
-    onSuccess: () =>
+    mutationFn: async (params) => authFetch.post("repositoryprofiles", params),
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
   });
 
@@ -73,9 +73,9 @@ export default function useRepositoryProfiles() {
     AxiosError<ApiError>,
     EditRepositoryProfileParams
   >({
-    mutationFn: ({ name, ...params }) =>
+    mutationFn: async ({ name, ...params }) =>
       authFetch.put(`repositoryprofiles/${name}`, params),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
   });
 
@@ -85,9 +85,9 @@ export default function useRepositoryProfiles() {
     RemoveRepositoryProfileParams
   >({
     mutationKey: ["repositoryProfiles"],
-    mutationFn: (params) =>
+    mutationFn: async (params) =>
       authFetchOld.get("RemoveRepositoryProfile", { params }),
-    onSuccess: () =>
+    onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
   });
 

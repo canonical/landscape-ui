@@ -1,21 +1,19 @@
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { MenuLink } from "@canonical/react-components";
 import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
-  ICONS,
 } from "@canonical/react-components";
-import type { ComponentProps, FC, MouseEvent as ReactMouseEvent } from "react";
+import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
-import { useScripts } from "../../hooks";
+import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
 import type { Script } from "../../types";
+import ScriptDetails from "../ScriptDetails";
 import classes from "./ScriptListContextualMenu.module.scss";
 
-const SingleScript = lazy(async () => import("../SingleScript"));
+const EditScriptForm = lazy(async () => import("../EditScriptForm"));
 const RunScriptForm = lazy(async () => import("../RunScriptForm"));
 
 interface ScriptListContextualMenuProps {
@@ -25,96 +23,97 @@ interface ScriptListContextualMenuProps {
 const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
   script,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [archiveModalOpen, setArchiveModalOpen] = useState(false);
 
-  const debug = useDebug();
-  const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
-  const { removeScriptQuery } = useScripts();
 
-  const { mutateAsync: removeScript, isPending: isRemoving } =
-    removeScriptQuery;
+  const { is_executable, is_redactable, is_editable } = script;
 
-  const handleScriptRun = (
-    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
-    scriptToRun: Script,
-  ): void => {
+  const handleScriptRun = (): void => {
     setSidePanelContent(
-      `Run "${scriptToRun.title}" script`,
+      `Run "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={scriptToRun} />
+        <RunScriptForm script={script} />
       </Suspense>,
     );
   };
 
-  const handleScript = (
-    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
-    scriptProps: ComponentProps<typeof SingleScript>,
-  ): void => {
-    if (scriptProps.action === "add") {
-      return;
-    }
-
-    event.currentTarget.blur();
-
-    const title =
-      "copy" === scriptProps.action
-        ? `Duplicate "${scriptProps.script.title}" script`
-        : `Edit "${scriptProps.script.title}" script`;
-
+  const handleViewScriptDetails = () => {
     setSidePanelContent(
-      title,
+      script.title,
       <Suspense fallback={<LoadingState />}>
-        <SingleScript {...scriptProps} />
+        <ScriptDetails scriptId={script.id} />
       </Suspense>,
     );
   };
 
-  const handleScriptRemove = async (): Promise<void> => {
-    try {
-      await removeScript({ script_id: script.id });
+  const handleEditScript = (): void => {
+    setSidePanelContent(
+      `Edit "${script.title}" script`,
+      <Suspense fallback={<LoadingState />}>
+        <EditScriptForm script={script} />
+      </Suspense>,
+    );
+  };
 
-      notify.success({
-        message: `"${script.title}" script removed successfully`,
-        title: "Script removed",
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-  const handleOpenModal = (): void => {
-    setModalOpen(true);
-  };
-  const handleCloseModal = (): void => {
-    setModalOpen(false);
-  };
+  const {
+    archiveModalBody,
+    archiveModalButtonLabel,
+    archiveModalTitle,
+    isArchivingScript,
+    disabledArchiveConfirmation,
+    onConfirmArchive,
+    resetArchiveModal,
+  } = useArchiveScriptModal({
+    script,
+    afterSuccess: () => {
+      resetArchiveModal();
+      setArchiveModalOpen(false);
+    },
+  });
+
+  const {
+    deleteModalBody,
+    deleteModalButtonLabel,
+    deleteModalTitle,
+    disabledDeleteConfirmation,
+    isRemoving,
+    onConfirmDelete,
+    resetDeleteModal,
+  } = useDeleteScriptModal({
+    script,
+    afterSuccess: () => {
+      resetDeleteModal();
+      setDeleteModalOpen(false);
+    },
+  });
 
   const contextualMenuButtons: MenuLink[] = [
     {
       children: (
         <>
-          <Icon name="unit-running" />
+          <Icon name="play" />
           <span>Run script</span>
         </>
       ),
       "aria-label": `Run ${script.title} script`,
       hasIcon: true,
-      onClick: (event): void => {
-        handleScriptRun(event, script);
+      onClick: (): void => {
+        handleScriptRun();
       },
+      disabled: !is_executable,
     },
     {
       children: (
         <>
-          <Icon name="canvas" />
-          <span>Duplicate</span>
+          <Icon name="switcher-environments" />
+          <span>View details</span>
         </>
       ),
-      "aria-label": `Copy ${script.title} script`,
+      "aria-label": `View details for ${script.title} script`,
       hasIcon: true,
-      onClick: (event): void => {
-        handleScript(event, { action: "copy", script });
-      },
+      onClick: handleViewScriptDetails,
     },
     {
       children: (
@@ -125,22 +124,39 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
       ),
       "aria-label": `Edit ${script.title} script`,
       hasIcon: true,
-      onClick: (event): void => {
-        handleScript(event, { action: "edit", script });
+      onClick: handleEditScript,
+      disabled: !is_editable,
+    },
+    {
+      children: (
+        <>
+          <span className="p-icon--archive--negative" />
+          <span className="u-text--negative">Archive</span>
+        </>
+      ),
+      "aria-label": `Archive ${script.title} script`,
+      className: classes.separator,
+      hasIcon: true,
+      onClick: (): void => {
+        setArchiveModalOpen(true);
       },
     },
     {
       children: (
         <>
-          <Icon name={ICONS.delete} />
-          <span>Remove</span>
+          <span className="p-icon--delete--negative" />
+          <span className="u-text--negative">Delete</span>
         </>
       ),
-      "aria-label": `Remove ${script.title} script`,
+      "aria-label": `Delete ${script.title} script`,
       hasIcon: true,
-      onClick: handleOpenModal,
+      onClick: (): void => {
+        setDeleteModalOpen(true);
+      },
+      disabled: !is_redactable,
     },
   ];
+
   return (
     <>
       <ContextualMenu
@@ -153,17 +169,37 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
         links={contextualMenuButtons}
       />
 
-      {modalOpen && (
+      {deleteModalOpen && (
         <ConfirmationModal
-          title="Remove script"
-          confirmButtonLabel="Remove"
+          title={deleteModalTitle}
+          confirmButtonLabel={deleteModalButtonLabel}
           confirmButtonAppearance="negative"
-          confirmButtonDisabled={isRemoving}
+          confirmButtonDisabled={disabledDeleteConfirmation}
           confirmButtonLoading={isRemoving}
-          onConfirm={handleScriptRemove}
-          close={handleCloseModal}
+          onConfirm={onConfirmDelete}
+          close={() => {
+            setDeleteModalOpen(false);
+            resetDeleteModal();
+          }}
         >
-          <p>This will remove &quot;{script.title}&quot; script.</p>
+          {deleteModalBody}
+        </ConfirmationModal>
+      )}
+
+      {archiveModalOpen && (
+        <ConfirmationModal
+          title={archiveModalTitle}
+          confirmButtonLabel={archiveModalButtonLabel}
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={disabledArchiveConfirmation}
+          confirmButtonLoading={isArchivingScript}
+          onConfirm={onConfirmArchive}
+          close={() => {
+            setArchiveModalOpen(false);
+            resetArchiveModal();
+          }}
+        >
+          {archiveModalBody}
         </ConfirmationModal>
       )}
     </>

@@ -1,7 +1,22 @@
-import classNames from "classnames";
-import type { FC } from "react";
-import { lazy, Suspense, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import TagMultiSelect from "@/components/form/TagMultiSelect";
+import InfoItem from "@/components/layout/InfoItem";
+import LoadingState from "@/components/layout/LoadingState";
+import { useActivities } from "@/features/activities";
+import {
+  currentInstanceCan,
+  TagsAddConfirmationModal,
+  useTaggedSecurityProfiles,
+} from "@/features/instances";
+import { useWsl } from "@/features/wsl";
+import useAuth from "@/hooks/useAuth";
+import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
+import useNotify from "@/hooks/useNotify";
+import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { Instance } from "@/types/Instance";
+import type { SelectOption } from "@/types/SelectOption";
+import { getFormikError } from "@/utils/formikErrors";
 import {
   Button,
   CheckboxInput,
@@ -13,32 +28,28 @@ import {
   Input,
   Row,
 } from "@canonical/react-components";
-import TagMultiSelect from "@/components/form/TagMultiSelect";
-import InfoItem from "@/components/layout/InfoItem";
-import LoadingState from "@/components/layout/LoadingState";
-import { useWsl } from "@/features/wsl";
-import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
-import useNotify from "@/hooks/useNotify";
-import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { Instance } from "@/types/Instance";
-import type { SelectOption } from "@/types/SelectOption";
+import classNames from "classnames";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
-import { useFormik } from "formik";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import type { ModalConfirmationFormProps } from "./types";
-import { useActivities } from "@/features/activities";
-import { currentInstanceCan } from "@/features/instances";
 
 const EditInstance = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
+  async () =>
+    import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
 );
-const RunInstanceScriptForm = lazy(() =>
+const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
     default: module.RunInstanceScriptForm,
   })),
+);
+
+const AssignEmployeeToInstanceForm = lazy(
+  async () => import("../AssignEmployeeToInstanceForm"),
 );
 
 interface InfoPanelProps {
@@ -46,7 +57,13 @@ interface InfoPanelProps {
 }
 
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
-  const [instanceTags, setInstanceTags] = useState(instance.tags);
+  const [instanceTags, setInstanceTags] = useState([...instance.tags]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const addedTags = instanceTags.filter((tag) => !instance.tags.includes(tag));
+
+  const { securityProfiles, isSecurityProfilesLoading } =
+    useTaggedSecurityProfiles(addedTags, [instance]);
 
   const navigate = useNavigate();
   const debug = useDebug();
@@ -54,13 +71,18 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
-  const { removeInstancesQuery, rebootInstancesQuery, shutdownInstancesQuery } =
-    useInstances();
+  const {
+    removeInstancesQuery,
+    rebootInstancesQuery,
+    sanitizeInstanceQuery,
+    shutdownInstancesQuery,
+  } = useInstances();
   const { deleteChildInstancesQuery } = useWsl();
   const { editInstanceQuery } = useInstances();
+  const { isFeatureEnabled } = useAuth();
 
   useEffect(() => {
-    setInstanceTags(instance.tags);
+    setInstanceTags([...instance.tags]);
   }, [instance.tags]);
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -71,7 +93,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       value: name,
     })) ?? [];
 
-  const { mutateAsync: editInstance } = editInstanceQuery;
+  const { mutateAsync: editInstance, isPending: isEditing } = editInstanceQuery;
   const { mutateAsync: removeInstances, isPending: isRemoving } =
     removeInstancesQuery;
   const { mutateAsync: rebootInstances, isPending: isRebooting } =
@@ -80,6 +102,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     shutdownInstancesQuery;
   const { mutateAsync: deleteChildInstances, isPending: isDeleting } =
     deleteChildInstancesQuery;
+  const { mutateAsync: sanitizeInstance, isPending: isSanitizing } =
+    sanitizeInstanceQuery;
 
   const handleSubmit = async (values: ModalConfirmationFormProps) => {
     if (!values.action) {
@@ -108,7 +132,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         actions: [
           {
             label: "View details",
-            onClick: () => openActivityDetails(activity),
+            onClick: () => {
+              openActivityDetails(activity);
+            },
           },
         ],
       });
@@ -123,12 +149,68 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     onSubmit: handleSubmit,
   });
 
-  const handleTagsUpdate = async () => {
+  const handleRemoveInstance = async () => {
+    try {
+      await removeInstances({
+        computer_ids: [instance.id],
+      });
+
+      navigate("/instances", { replace: true });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const handleSanitizeInstance = async () => {
+    try {
+      const { data: sanitizeActivity } = await sanitizeInstance({
+        computer_id: instance.id,
+        computer_title: instance.title,
+      });
+
+      notify.success({
+        title: `You have successfully initiated Sanitization for ${instance.title}`,
+        message: `Sanitizing for ${instance.title} has been queued in Activities. The data will be permanently irrecoverable once complete.`,
+        actions: [
+          {
+            label: "View details",
+            onClick: () => {
+              openActivityDetails(sanitizeActivity);
+            },
+          },
+        ],
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const removeInstancesFormik = useFormik({
+    initialValues: {
+      confirmationText: "",
+    },
+    onSubmit: async () => handleRemoveInstance(),
+  });
+
+  const sanitizeInstanceFormik = useFormik({
+    initialValues: {
+      confirmationText: "",
+    },
+    onSubmit: async () => handleSanitizeInstance(),
+  });
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const updateTags = async () => {
     try {
       await editInstance({
         instanceId: instance.id,
         tags: instanceTags,
       });
+
+      closeModal();
 
       notify.success({
         title: "Tags updated",
@@ -139,15 +221,11 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     }
   };
 
-  const handleRemoveInstance = async () => {
-    try {
-      await removeInstances({
-        computer_ids: [instance.id],
-      });
-
-      navigate("/instances", { replace: true });
-    } catch (error) {
-      debug(error);
+  const handleTagsUpdate = async () => {
+    if (securityProfiles.length) {
+      setIsModalVisible(true);
+    } else {
+      updateTags();
     }
   };
 
@@ -165,6 +243,18 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       "Run script",
       <Suspense fallback={<LoadingState />}>
         <RunInstanceScriptForm query={`id:${instance.id}`} />
+      </Suspense>,
+    );
+  };
+
+  const handleAssociateEmployee = () => {
+    setSidePanelContent(
+      `Associate Employee with ${instance.title}`,
+      <Suspense fallback={<LoadingState />}>
+        <AssignEmployeeToInstanceForm
+          instanceTitle={instance.title}
+          employeeId={instance.employee_id}
+        />
       </Suspense>,
     );
   };
@@ -256,14 +346,22 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 confirmationModalProps={{
                   title: "Remove instance from Landscape",
                   children: (
-                    <p>
-                      This will remove the instance <b>{instance.title}</b> from
-                      Landscape.
-                      <br />
-                      <br />
-                      It will remain on the parent machine. You can re-register
-                      it to Landscape at any time.
-                    </p>
+                    <Form onSubmit={formik.handleSubmit} noValidate>
+                      <p>
+                        Removing this {instance.title} will delete all
+                        associated data and free up one license slot for another
+                        computer to be registered.
+                      </p>
+                      <p>
+                        Type <b>remove {instance.title}</b> to confirm.
+                      </p>
+                      <Input
+                        type="text"
+                        {...removeInstancesFormik.getFieldProps(
+                          "confirmationText",
+                        )}
+                      />
+                    </Form>
                   ),
                   confirmButtonLabel: "Remove",
                   confirmButtonAppearance: "negative",
@@ -278,12 +376,54 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               <ConfirmationButton
                 className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"
+                disabled={isSanitizing}
+                confirmationModalProps={{
+                  title: "Sanitize instance",
+                  children: (
+                    <Form
+                      onSubmit={sanitizeInstanceFormik.handleSubmit}
+                      noValidate
+                    >
+                      <p>
+                        Sanitization will permanently delete the encryption keys
+                        for {instance.title}, making its data completely
+                        irrecoverable. This action cannot be undone. Please
+                        confirm your wish to proceed.
+                      </p>
+                      <p>
+                        Type <b>sanitize {instance.title}</b> to confirm.
+                      </p>
+                      <Input
+                        type="text"
+                        {...sanitizeInstanceFormik.getFieldProps(
+                          "confirmationText",
+                        )}
+                      />
+                    </Form>
+                  ),
+                  confirmButtonLabel: "Sanitize",
+                  confirmButtonAppearance: "negative",
+                  confirmButtonDisabled:
+                    isSanitizing ||
+                    sanitizeInstanceFormik.values.confirmationText !==
+                      `sanitize ${instance.title}`,
+                  confirmButtonLoading: isSanitizing,
+                  onConfirm: handleSanitizeInstance,
+                }}
+              >
+                <Icon name="tidy" />
+                <span>Sanitize</span>
+              </ConfirmationButton>
+
+              <ConfirmationButton
+                className="p-segmented-control__button u-no-margin--bottom has-icon"
+                type="button"
                 disabled={isRemoving}
                 confirmationModalProps={{
                   title: "Restart instance",
                   children: (
                     <Form
-                      onSubmit={() => handleFormSubmit("reboot")}
+                      onSubmit={async () => handleFormSubmit("reboot")}
                       noValidate
                     >
                       <CheckboxInput
@@ -299,12 +439,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                         placeholder="Scheduled time"
                         {...formik.getFieldProps("deliver_after")}
                         disabled={formik.values.deliverImmediately}
-                        error={
-                          formik.touched.deliver_after &&
-                          formik.errors.deliver_after
-                            ? formik.errors.deliver_after
-                            : undefined
-                        }
+                        error={getFormikError(formik, "deliver_after")}
                       />
                       <p>
                         This will restart &quot;{instance.title}&quot; instance.
@@ -315,12 +450,22 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                   confirmButtonAppearance: "negative",
                   confirmButtonDisabled: isRebooting,
                   confirmButtonLoading: isRebooting,
-                  onConfirm: () => handleFormSubmit("reboot"),
+                  onConfirm: async () => handleFormSubmit("reboot"),
                 }}
               >
                 <Icon name="restart" />
                 <span>Restart</span>
               </ConfirmationButton>
+              {isFeatureEnabled("employee-management") && (
+                <Button
+                  className="p-segmented-control__button u-no-margin--bottom"
+                  type="button"
+                  onClick={handleAssociateEmployee}
+                >
+                  <Icon name={ICONS.user} />
+                  <span>Associate employee</span>
+                </Button>
+              )}
               <ConfirmationButton
                 className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"
@@ -329,7 +474,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                   title: "Shut down instance",
                   children: (
                     <Form
-                      onSubmit={() => handleFormSubmit("shutdown")}
+                      onSubmit={async () => handleFormSubmit("shutdown")}
                       noValidate
                     >
                       <CheckboxInput
@@ -345,12 +490,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                         placeholder="Scheduled time"
                         {...formik.getFieldProps("deliver_after")}
                         disabled={formik.values.deliverImmediately}
-                        error={
-                          formik.touched.deliver_after &&
-                          formik.errors.deliver_after
-                            ? formik.errors.deliver_after
-                            : undefined
-                        }
+                        error={getFormikError(formik, "deliver_after")}
                       />
                       <p>
                         This will shut down &quot;{instance.title}&quot;
@@ -362,7 +502,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                   confirmButtonAppearance: "negative",
                   confirmButtonDisabled: isShuttingDown,
                   confirmButtonLoading: isShuttingDown,
-                  onConfirm: () => handleFormSubmit("shutdown"),
+                  onConfirm: async () => handleFormSubmit("shutdown"),
                 }}
               >
                 <Icon name="power-off" />
@@ -387,7 +527,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           <Col size={4}>
             <TagMultiSelect
               labelClassName="p-text--small p-text--small-caps u-text--muted"
-              onTagsChange={(value) => setInstanceTags(value)}
+              onTagsChange={(value) => {
+                setInstanceTags(value);
+              }}
               tags={instanceTags}
             />
           </Col>
@@ -396,12 +538,24 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               type="button"
               className="u-no-margin--bottom"
               onClick={handleTagsUpdate}
+              disabled={isSecurityProfilesLoading}
             >
               Update
             </Button>
           </Col>
         </Row>
       </div>
+
+      {isModalVisible && (
+        <TagsAddConfirmationModal
+          instances={[instance]}
+          securityProfiles={securityProfiles}
+          tags={addedTags}
+          onConfirm={updateTags}
+          confirmButtonDisabled={isEditing}
+          close={closeModal}
+        />
+      )}
     </>
   );
 };

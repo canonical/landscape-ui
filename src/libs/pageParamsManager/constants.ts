@@ -1,6 +1,6 @@
-import moment from "moment";
 import { PAGE_SIZE_OPTIONS } from "@/components/layout/TablePagination/components/TablePaginationBase/constants";
 import { DAYS_FILTER_OPTIONS } from "@/features/events-log";
+import moment from "moment";
 import type { ParamsConfig } from "./types";
 
 const DEFAULT_DAY_INDEX = 1;
@@ -12,10 +12,17 @@ export const DEFAULT_EMPTY_STRING = "";
 export const DEFAULT_PAGE_SIZE =
   PAGE_SIZE_OPTIONS[DEFAULT_PAGE_SIZE_INDEX].value;
 export const DEFAULT_DAYS = DAYS_FILTER_OPTIONS[DEFAULT_DAY_INDEX].value;
+export const DEFAULT_RATE_FROM = 0;
+export const DEFAULT_RATE_TO = 100;
 
 export const PARAMS_CONFIG: ParamsConfig = [
   {
     urlParam: "accessGroups",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
+  },
+  {
+    urlParam: "autoinstallFiles",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_ARRAY,
   },
@@ -106,5 +113,25 @@ export const PARAMS_CONFIG: ParamsConfig = [
     urlParam: "query",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,
+  },
+  {
+    urlParam: "employeeGroups",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
+  },
+  {
+    urlParam: "autoinstallFiles",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
+  },
+  {
+    urlParam: "passRateFrom",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_RATE_FROM,
+  },
+  {
+    urlParam: "passRateTo",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_RATE_TO,
   },
 ];

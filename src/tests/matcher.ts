@@ -97,4 +97,24 @@ expect.extend({
       };
     }
   },
+  toHaveIcon(received: HTMLElement, icon: string) {
+    const iconElement = received.querySelector("i");
+
+    if (!iconElement) {
+      return {
+        pass: false,
+        message: () =>
+          `expected ${this.utils.printReceived(received)} to contain icon ${this.utils.printExpected(icon)}`,
+      };
+    }
+    const pass = iconElement.className.includes(icon);
+
+    return {
+      pass,
+      message: () =>
+        pass
+          ? `expected ${this.utils.printReceived(received)} not to contain icon ${this.utils.printExpected(icon)}`
+          : `expected ${this.utils.printReceived(received)} to contain icon ${this.utils.printExpected(icon)}`,
+    };
+  },
 });

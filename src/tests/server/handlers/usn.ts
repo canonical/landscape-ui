@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import type { GetUsnsParams } from "@/features/usns";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Usn } from "@/types/Usn";
 import { API_URL } from "@/constants";
 import { usnPackages, usns } from "@/tests/mocks/usn";

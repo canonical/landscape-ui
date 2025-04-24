@@ -23,7 +23,9 @@ const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
       hasToggleIcon
       hasBadge
       options={options}
-      onItemSelect={(item) => setPageParams({ status: item })}
+      onItemSelect={(item) => {
+        setPageParams({ status: item });
+      }}
       selectedItem={status}
     />
   );

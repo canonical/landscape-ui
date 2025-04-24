@@ -1,0 +1,11 @@
+.truncated {
+  max-width: 15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.container {
+  display: flex;
+  gap: 0.5rem;
+}

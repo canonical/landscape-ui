@@ -1,17 +1,17 @@
-import type { FC } from "react";
-import { useState } from "react";
-import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
-import ColumnFilter from "@/components/form/ColumnFilter";
 import type { GroupedOption } from "@/components/filter";
 import { StatusFilter, TableFilterChips } from "@/components/filter";
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
+import ColumnFilter from "@/components/form/ColumnFilter";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import { SearchBoxWithSavedSearches } from "@/features/saved-searches";
 import useInstances from "@/hooks/useInstances";
 import useRoles from "@/hooks/useRoles";
+import type { FC } from "react";
+import { useState } from "react";
+import GroupFilter from "../../../../components/filter/GroupFilter";
 import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
-import GroupFilter from "../../../../components/filter/GroupFilter";
 import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
@@ -71,7 +71,9 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
       <div className={classes.top}>
         <div className={classes.searchContainer}>
           <SearchBoxWithSavedSearches
-            onHelpButtonClick={() => setShowSearchHelp(true)}
+            onHelpButtonClick={() => {
+              setShowSearchHelp(true);
+            }}
           />
         </div>
         <div className={classes.filters}>
@@ -106,7 +108,9 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
       <SearchHelpPopup
         open={showSearchHelp}
         data={INSTANCE_SEARCH_HELP_TERMS}
-        onClose={() => setShowSearchHelp(false)}
+        onClose={() => {
+          setShowSearchHelp(false);
+        }}
       />
       <PendingInstancesNotification />
     </>

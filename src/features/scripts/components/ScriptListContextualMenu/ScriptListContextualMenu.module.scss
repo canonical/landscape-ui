@@ -1,4 +1,5 @@
 @import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
 
 .toggleButton {
   margin-bottom: 0;
@@ -8,4 +9,12 @@
 .menu {
   display: flex;
   justify-content: flex-end;
+}
+
+.negative {
+  color: $color-negative;
+}
+
+.separator {
+  border-top: 1px solid $colors--light-theme--border-low-contrast !important;
 }

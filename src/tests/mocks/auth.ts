@@ -1,8 +1,10 @@
 import type { AuthStateResponse, AuthUser } from "@/features/auth";
+import { features } from "@/tests/mocks/features";
 
 const testAccount = "test-account";
 
 export const authUser: AuthUser = {
+  features,
   accounts: [
     {
       classic_dashboard_url: "",

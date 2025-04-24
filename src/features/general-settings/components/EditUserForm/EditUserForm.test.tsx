@@ -13,7 +13,7 @@ import { useUserGeneralSettings } from "../../hooks";
 import type { EditUserDetailsParams, UserDetails } from "../../types";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 import { getTestErrorParams } from "@/tests/mocks/error";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
 import type { Account } from "@/features/auth";
@@ -62,6 +62,7 @@ const authContextValues: AuthContextProps = {
   user: authUser,
   isOidcAvailable: true,
   redirectToExternalUrl: vi.fn(),
+  isFeatureEnabled: vi.fn(),
 };
 
 const mockSelfHosted = {

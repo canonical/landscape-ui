@@ -15,7 +15,9 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { useRepositoryProfiles } from "../../hooks";
 import useDebug from "@/hooks/useDebug";
 
-const RepositoryProfileForm = lazy(() => import("../RepositoryProfileForm"));
+const RepositoryProfileForm = lazy(
+  async () => import("../RepositoryProfileForm"),
+);
 
 interface RepositoryProfileListContextualMenuProps {
   readonly profile: RepositoryProfile;
@@ -43,6 +45,15 @@ const RepositoryProfileListContextualMenu: FC<
     );
   };
 
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setConfirmDeleteProfileText("");
+  };
+
   const handleRemoveProfile = async () => {
     try {
       await removeRepositoryProfile({
@@ -53,14 +64,6 @@ const RepositoryProfileListContextualMenu: FC<
     } finally {
       handleCloseModal();
     }
-  };
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

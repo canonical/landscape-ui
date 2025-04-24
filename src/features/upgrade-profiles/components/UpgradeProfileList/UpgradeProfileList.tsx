@@ -10,8 +10,11 @@ import { lazy, Suspense, useMemo } from "react";
 import type { UpgradeProfile } from "../../types";
 import UpgradeProfileListContextualMenu from "../UpgradeProfileListContextualMenu";
 import classes from "./UpgradeProfileList.module.scss";
+import NoData from "@/components/layout/NoData";
 
-const UpgradeProfileDetails = lazy(() => import("../UpgradeProfileDetails"));
+const UpgradeProfileDetails = lazy(
+  async () => import("../UpgradeProfileDetails"),
+);
 
 interface UpgradeProfileListProps {
   readonly profiles: UpgradeProfile[];
@@ -62,7 +65,9 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => handleUpgradeProfileDetailsOpen(original)}
+            onClick={() => {
+              handleUpgradeProfileDetailsOpen(original);
+            }}
           >
             {original.title}
           </Button>
@@ -84,7 +89,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         className: classes.truncated,
         Header: "Tags",
         Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
-          <>{original.tags.join(", ")}</>
+          <>{original.tags ? original.tags.join(", ") : <NoData />}</>
         ),
       },
       {

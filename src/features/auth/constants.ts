@@ -8,6 +8,9 @@ export const SUPPORTED_PROVIDERS: Record<string, Record<"icon", string>> = {
   standalone: {
     icon: "private-key-gray",
   },
+  google: {
+    icon: "google",
+  },
   default: {
     icon: "connected",
   },

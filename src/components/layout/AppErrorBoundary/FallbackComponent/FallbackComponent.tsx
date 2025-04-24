@@ -1,9 +1,16 @@
 import EmptyState from "@/components/layout/EmptyState";
+import { IS_DEV_ENV } from "@/constants";
 import { Button } from "@canonical/react-components";
-import type { FallbackRender } from "@sentry/react";
+import type { FC } from "react";
+import type { FallbackProps } from "react-error-boundary/dist/declarations/src/types";
 
-const FallbackComponent: FallbackRender = (errorData) => {
-  const { resetError } = errorData;
+const FallbackComponent: FC<FallbackProps> = ({
+  error,
+  resetErrorBoundary,
+}) => {
+  if (IS_DEV_ENV) {
+    console.error(error);
+  }
 
   return (
     <EmptyState
@@ -18,7 +25,7 @@ const FallbackComponent: FallbackRender = (errorData) => {
         <Button
           appearance="positive"
           key="try-again-button"
-          onClick={resetError}
+          onClick={resetErrorBoundary}
           type="button"
         >
           Try again

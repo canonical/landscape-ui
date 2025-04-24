@@ -1,0 +1,30 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.container {
+  padding-left: $sph--large;
+  padding-right: $sph--large;
+}
+
+.buttons {
+  border-top: 1px solid $colors--light-theme--border-default;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: $spv--medium;
+}
+
+.inlineInput {
+  align-items: flex-end;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.input {
+  width: 13rem;
+}
+
+.percent {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  width: 1rem;
+}

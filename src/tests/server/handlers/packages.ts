@@ -3,7 +3,7 @@ import { API_URL, COMMON_NUMBERS } from "@/constants";
 import type { GetPackagesParams, Package } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { getInstancePackages, packages } from "@/tests/mocks/packages";
-import type { ApiPaginatedResponse } from "@/types/ApiPaginatedResponse";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { generatePaginatedResponse } from "./_helpers";
 
 export default [

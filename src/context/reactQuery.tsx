@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import useDebug from "@/hooks/useDebug";
 import type { AxiosError } from "axios";
-import type { ApiError } from "@/types/ApiError";
+import type { ApiError } from "@/types/api/ApiError";
 
 declare module "@tanstack/react-query" {
   interface Register {

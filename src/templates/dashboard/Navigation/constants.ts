@@ -44,12 +44,21 @@ export const MENU_ITEMS: MenuItem[] = [
         path: "/profiles/upgrade",
       },
       {
+        label: "Reboot profiles",
+        path: `/profiles/reboot`,
+      },
+      {
         label: "Removal profiles",
         path: "/profiles/removal",
       },
       {
         label: "WSL profiles",
         path: "/profiles/wsl",
+        env: "selfHosted",
+      },
+      {
+        label: "Security profiles",
+        path: "/profiles/security",
         env: "selfHosted",
       },
     ],
@@ -88,6 +97,11 @@ export const MENU_ITEMS: MenuItem[] = [
         path: "/settings/administrators",
       },
       {
+        label: "Employees",
+        path: "/settings/employees",
+        requiresFeature: "employee-management",
+      },
+      {
         label: "Roles",
         path: "/settings/roles",
       },
@@ -98,6 +112,7 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "Identity providers",
         path: "/settings/identity-providers",
+        requiresFeature: "oidc-configuration",
       },
       {
         label: "GPG Keys",

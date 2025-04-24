@@ -18,6 +18,12 @@ export const identityProviders: IdentityProvider[] = [
     enabled: false,
     id: 2,
   },
+  {
+    name: "Google Workspace",
+    provider: "google",
+    enabled: true,
+    id: 3,
+  },
 ];
 
 const oktaProviderConfiguration = {
@@ -45,11 +51,13 @@ export const supportedProviders: SupportedIdentityProvider[] = [
     provider_slug: "okta",
     provider_label: "Okta",
     redirect_uri: "http://onward.landscape.yuriy.works/handle-auth/oidc",
+    supported_features: ["directory-import"],
   },
   {
     provider_slug: "ubuntu-one",
     provider_label: "Ubuntu One",
     redirect_uri: "http://onward.landscape.yuriy.works/handle-auth/ubuntu-one",
+    supported_features: [],
   },
 ];
 
