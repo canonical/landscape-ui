@@ -57,16 +57,6 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         });
       };
 
-      console.log(moment().utc().format(INPUT_DATE_TIME_FORMAT));
-
-      if (profile.trigger.trigger_type == "one_time") {
-        console.log(profile.trigger.timestamp);
-      }
-
-      if (profile.trigger.trigger_type == "recurring") {
-        console.log(profile.trigger.start_after);
-      }
-
       setSidePanelContent(
         `Edit ${profile.title}`,
         <Suspense fallback={<LoadingState />}>
