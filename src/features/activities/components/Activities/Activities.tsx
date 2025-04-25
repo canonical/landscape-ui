@@ -20,12 +20,7 @@ import type { ActivityCommon } from "../../types";
 import ActivitiesEmptyState from "../ActivitiesEmptyState";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
-import {
-  getDateQuery,
-  getParentQuery,
-  getStatusQuery,
-  getTypeQuery,
-} from "./helpers";
+import { getDateQuery, getStatusQuery, getTypeQuery } from "./helpers";
 
 const ActivityDetails = lazy(
   async () => import("@/features/activities/components/ActivityDetails"),
@@ -43,7 +38,7 @@ const Activities: FC<ActivitiesProps> = ({
   setSelectedIds,
 }) => {
   const {
-    parent,
+    query,
     search,
     status,
     fromDate,
@@ -57,9 +52,8 @@ const Activities: FC<ActivitiesProps> = ({
 
   const dateQuery = getDateQuery(fromDate, toDate);
   const typeQuery = getTypeQuery(type);
-  const parentQuery = getParentQuery(parent);
   const statusQuery = getStatusQuery(status);
-  const searchQuery = `${search}${statusQuery}${dateQuery}${typeQuery}${parentQuery}`;
+  const searchQuery = `${search} ${query}${statusQuery}${dateQuery}${typeQuery}`;
 
   const handleActivityDetailsOpen = (activity: ActivityCommon) => {
     setSidePanelContent(

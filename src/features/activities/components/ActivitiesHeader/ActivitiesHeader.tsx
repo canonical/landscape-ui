@@ -93,14 +93,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
         }}
       />
       <TableFilterChips
-        filtersToDisplay={[
-          "status",
-          "type",
-          "fromDate",
-          "toDate",
-          "query",
-          "parent",
-        ]}
+        filtersToDisplay={["status", "type", "fromDate", "toDate", "query"]}
         statusOptions={ACTIVITY_STATUS_OPTIONS}
         typeOptions={ACTIVITY_TYPE_OPTIONS}
       />

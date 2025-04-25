@@ -112,7 +112,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
               activity ? (
                 <Link
                   className={classes.link}
-                  to={`/activities?parent=${activity.id}`}
+                  to={`/activities?query=parent-id%3A${activity.id}`}
                 >
                   {moment(activity.creation_time)
                     .utc()

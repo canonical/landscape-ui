@@ -124,7 +124,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           {
             label: "View details",
             onClick: () => {
-              navigate(`/activities?parent=${activity.id}`);
+              navigate(`/activities?query=parent-id%3A${activity.id}`);
             },
           },
         ],

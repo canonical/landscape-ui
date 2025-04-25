@@ -9,7 +9,6 @@ export type FilterType = Pick<
   | "employeeGroups"
   | "fromDate"
   | "os"
-  | "parent"
   | "search"
   | "status"
   | "tags"

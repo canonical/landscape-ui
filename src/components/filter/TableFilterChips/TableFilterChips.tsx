@@ -52,7 +52,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     employeeGroups,
     fromDate,
     os,
-    parent,
     status,
     tags,
     toDate,
@@ -71,7 +70,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       employeeGroups: [],
       fromDate: "",
       os: "",
-      parent: undefined,
       status: "",
       tags: [],
       toDate: "",
@@ -130,7 +128,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     fromDate,
     hiddenChipCount,
     os,
-    parent,
     status,
     tags.length,
     toDate,
@@ -148,7 +145,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filtersToMonitor,
     fromDate,
     os,
-    parent,
     search,
     status,
     tags,
@@ -331,15 +327,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
             value={`Type: ${getChipLabel(typeOptions, type)}`}
             onDismiss={() => {
               setPageParams({ type: "" });
-            }}
-            className="u-no-margin--bottom u-no-margin--right"
-          />
-        )}
-        {renderResults.isParentChipRender && (
-          <Chip
-            value={`Parent: ${parent}`}
-            onDismiss={() => {
-              setPageParams({ parent: undefined });
             }}
             className="u-no-margin--bottom u-no-margin--right"
           />
