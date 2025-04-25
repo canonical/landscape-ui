@@ -9,11 +9,11 @@ import { type FC } from "react";
 import {
   SECURITY_PROFILE_BENCHMARK_LABELS,
   SECURITY_PROFILE_MODE_LABELS,
-  SECURITY_PROFILE_STATUSES,
 } from "../../constants";
 import {
   getAssociatedInstancesLink,
   getSchedule,
+  getStatus,
   getTags,
   getTailoringFile,
 } from "../../helpers";
@@ -124,10 +124,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
       </Row>
 
       <Row className="u-no-padding">
-        <InfoItem
-          label="Status"
-          value={SECURITY_PROFILE_STATUSES[profile.status].label}
-        />
+        <InfoItem label="Status" value={getStatus(profile).label} />
       </Row>
 
       <hr />

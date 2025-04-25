@@ -2,6 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
+import { useUpdateSecurityProfile } from "@/features/security-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -16,14 +17,11 @@ import {
   useIsSecurityProfilesLimitReached,
   useRunSecurityProfile,
 } from "../../api";
-import { useUpdateSecurityProfile } from "@/features/security-profiles";
-import {
-  SECURITY_PROFILE_MODE_LABELS,
-  SECURITY_PROFILE_STATUSES,
-} from "../../constants";
+import { SECURITY_PROFILE_MODE_LABELS } from "../../constants";
 import {
   getAssociatedInstancesLink,
   getSchedule,
+  getStatus,
   getTags,
   notifyCreation,
 } from "../../helpers";
@@ -298,18 +296,11 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "status",
         Header: STATUS_HEADER,
         className: classes.status,
-        Cell: ({
-          row: {
-            original: { status },
-          },
-        }: CellProps<SecurityProfile>) =>
-          SECURITY_PROFILE_STATUSES[status].label,
+        Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) =>
+          getStatus(profile).label,
         getCellIcon: ({
-          row: {
-            original: { status },
-          },
-        }: CellProps<SecurityProfile>) =>
-          SECURITY_PROFILE_STATUSES[status].icon,
+          row: { original: profile },
+        }: CellProps<SecurityProfile>) => getStatus(profile).icon,
       },
       {
         accessor: "lastAuditPassrate",
