@@ -48,7 +48,10 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
       pass_rate_to: passRateTo != 100 ? passRateFrom : undefined,
     });
 
-  const { overLimitSecurityProfiles } = useGetOverLimitSecurityProfiles();
+  const { overLimitSecurityProfiles } = useGetOverLimitSecurityProfiles({
+    limit: 20,
+    offset: 0,
+  });
 
   const pendingReports = JSON.parse(
     localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",

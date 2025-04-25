@@ -1,10 +1,18 @@
 import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "../constants";
 import { useGetSecurityProfiles } from "./useGetSecurityProfiles";
 
-export const useGetOverLimitSecurityProfiles = () => {
+interface GetOverLimitSecurityProfilesParams {
+  limit?: number;
+  offset?: number;
+}
+
+export const useGetOverLimitSecurityProfiles = (
+  params?: GetOverLimitSecurityProfilesParams,
+) => {
   const { securityProfiles, isSecurityProfilesLoading } =
     useGetSecurityProfiles({
       status: "active",
+      ...params,
     });
 
   const overLimitSecurityProfiles = securityProfiles.filter(

@@ -1,3 +1,4 @@
+import { IS_DEV_ENV } from "@/constants";
 import { useGetOverLimitSecurityProfiles } from "@/features/security-profiles";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
@@ -9,6 +10,8 @@ import { Link, useLocation } from "react-router";
 import { getFilteredByEnvMenuItems, getPathToExpand } from "./helpers";
 import classes from "./Navigation.module.scss";
 
+const INSURANCE_LIMIT = 20;
+
 const Navigation: FC = () => {
   const [expanded, setExpanded] = useState("");
 
@@ -17,7 +20,16 @@ const Navigation: FC = () => {
   const { isOidcAvailable, isFeatureEnabled } = useAuth();
 
   const { hasOverLimitSecurityProfiles, overLimitSecurityProfilesCount } =
-    useGetOverLimitSecurityProfiles();
+    useGetOverLimitSecurityProfiles({
+      limit: INSURANCE_LIMIT,
+      offset: 0,
+    });
+
+  if (IS_DEV_ENV && overLimitSecurityProfilesCount >= INSURANCE_LIMIT) {
+    console.warn(
+      `There are ${INSURANCE_LIMIT} or more over-limit security profiles, so the navigation badge will be inaccurate`,
+    );
+  }
 
   useEffect(() => {
     const shouldBeExpandedPath = getPathToExpand(pathname);
