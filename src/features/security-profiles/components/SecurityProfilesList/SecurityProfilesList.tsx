@@ -57,7 +57,7 @@ const STATUS_HEADER = (
 
 const PASSRATE_HEADER = (
   <span style={{ display: "inline-block", marginTop: "0px" }}>
-    Last audit&apos;s passrate
+    Last audit&apos;s pass rate
   </span>
 );
 
