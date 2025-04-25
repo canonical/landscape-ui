@@ -1,29 +1,29 @@
-import moment from "moment/moment";
-import type { FC } from "react";
-import { lazy, Suspense, useMemo } from "react";
-import type { CellProps, Column } from "react-table";
+import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
+import { TablePagination } from "@/components/layout/TablePagination";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import usePageParams from "@/hooks/usePageParams";
+import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
   CheckboxInput,
   ModularTable,
 } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import { TablePagination } from "@/components/layout/TablePagination";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import ActivitiesEmptyState from "../ActivitiesEmptyState";
-import ActivitiesHeader from "../ActivitiesHeader";
+import moment from "moment/moment";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo } from "react";
+import { Link } from "react-router";
+import type { CellProps, Column } from "react-table";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities, useOpenActivityDetails } from "../../hooks";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { ActivityCommon } from "../../types";
+import ActivitiesEmptyState from "../ActivitiesEmptyState";
+import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
-import usePageParams from "@/hooks/usePageParams";
-import NoData from "@/components/layout/NoData";
-import { Link } from "react-router";
 import { getDateQuery, getStatusQuery, getTypeQuery } from "./helpers";
 
 const ActivityDetails = lazy(
-  () => import("@/features/activities/components/ActivityDetails"),
+  async () => import("@/features/activities/components/ActivityDetails"),
 );
 
 interface ActivitiesProps {
@@ -37,15 +37,23 @@ const Activities: FC<ActivitiesProps> = ({
   selectedIds,
   setSelectedIds,
 }) => {
-  const { search, status, fromDate, toDate, type, currentPage, pageSize } =
-    usePageParams();
+  const {
+    query,
+    search,
+    status,
+    fromDate,
+    toDate,
+    type,
+    currentPage,
+    pageSize,
+  } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getActivitiesQuery } = useActivities();
 
   const dateQuery = getDateQuery(fromDate, toDate);
   const typeQuery = getTypeQuery(type);
   const statusQuery = getStatusQuery(status);
-  const searchQuery = `${search}${statusQuery}${dateQuery}${typeQuery}`;
+  const searchQuery = `${search} ${query}${statusQuery}${dateQuery}${typeQuery}`;
 
   const handleActivityDetailsOpen = (activity: ActivityCommon) => {
     setSidePanelContent(
@@ -134,7 +142,9 @@ const Activities: FC<ActivitiesProps> = ({
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => handleActivityDetailsOpen(row.original)}
+              onClick={() => {
+                handleActivityDetailsOpen(row.original);
+              }}
             >
               {row.original.summary}
             </Button>

@@ -36,9 +36,9 @@ export type PluralChipsKey = keyof {
 };
 
 export type SingularChipKey = keyof {
-  [key in FilterKey as FilterType[key] extends string | number
-    ? `is${Capitalize<key>}ChipRender`
-    : never]: unknown;
+  [key in FilterKey as FilterType[key] extends string[]
+    ? never
+    : `is${Capitalize<key>}ChipRender`]: unknown;
 };
 
 export type CheckRenderConditionsReturn = {

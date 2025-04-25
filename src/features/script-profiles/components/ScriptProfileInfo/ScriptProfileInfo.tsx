@@ -2,26 +2,25 @@ import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import type { Activity } from "@/features/activities";
 import { useGetSingleScript } from "@/features/scripts";
 import useRoles from "@/hooks/useRoles";
-import { Button, Col, Row } from "@canonical/react-components";
+import { Col, Row } from "@canonical/react-components";
 import moment from "moment";
 import { type FC } from "react";
 import { Link } from "react-router";
-import { getStatusText, getTriggerLongText } from "../../helpers";
+import {
+  getAssociatedInstancesLink,
+  getStatusText,
+  getTriggerLongText,
+} from "../../helpers";
 import type { ScriptProfile } from "../../types";
 import classes from "./ScriptProfileInfo.module.scss";
 
 interface ScriptProfileInfoProps {
   readonly profile: ScriptProfile;
-  readonly viewActivityDetails: (activity: Activity) => void;
 }
 
-const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({
-  profile,
-  viewActivityDetails,
-}) => {
+const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
   const { script, isScriptLoading } = useGetSingleScript(profile.script_id);
   const { getAccessGroupQuery } = useRoles();
   const {
@@ -111,18 +110,14 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({
             label="Last run"
             value={
               activity ? (
-                <Button
-                  type="button"
-                  appearance="link"
-                  className="u-no-margin u-no-padding--top"
-                  onClick={() => {
-                    viewActivityDetails(activity);
-                  }}
+                <Link
+                  className={classes.link}
+                  to={`/activities?query=parent-id%3A${activity.id}`}
                 >
                   {moment(activity.creation_time)
                     .utc()
                     .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
-                </Button>
+                </Link>
               ) : (
                 <NoData />
               )
@@ -137,20 +132,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({
       <Row className="u-no-padding">
         <InfoItem
           label="Associated instances"
-          value={
-            profile.computers.num_associated_computers ? (
-              <Link
-                to={{
-                  pathname: "/instances",
-                  search: `?tags=${profile.tags.join("%2C")}`,
-                }}
-              >
-                {profile.computers.num_associated_computers} instances
-              </Link>
-            ) : (
-              <NoData />
-            )
-          }
+          value={getAssociatedInstancesLink(profile)}
         />
       </Row>
 

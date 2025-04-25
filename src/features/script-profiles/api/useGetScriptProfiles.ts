@@ -2,10 +2,10 @@ import useFetch from "@/hooks/useFetch";
 import usePageParams from "@/hooks/usePageParams";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { PaginatedGetHookParams } from "@/types/api/PaginatedGetHookParams";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { ScriptProfile } from "../types";
-import type { PaginatedGetHookParams } from "@/types/api/PaginatedGetHookParams";
 
 interface GetScriptProfilesParams {
   archived?: string;
@@ -37,7 +37,7 @@ export const useGetScriptProfiles = (
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
           search: search ?? undefined,
-          archived: status || "all",
+          archived: status || "active",
         }
       : params),
   };

@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { MenuLink } from "@canonical/react-components";
@@ -15,17 +15,16 @@ import { type FC, lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useEditScriptProfile } from "../../api";
-import { getStatusText, getTriggerText } from "../../helpers";
+import {
+  getAssociatedInstancesLink,
+  getStatusText,
+  getTriggerText,
+} from "../../helpers";
+import { useOpenScriptProfileDetails } from "../../hooks";
 import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
-import { useOpenScriptProfileDetails } from "../../hooks";
-import classNames from "classnames";
-
-const ActivityDetails = lazy(
-  async () => import("@/features/activities/components/ActivityDetails"),
-);
 
 const ScriptProfileDetails = lazy(
   async () => import("../ScriptProfileDetails"),
@@ -69,9 +68,19 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             initialValues={{
               ...profile,
               interval: "",
-              start_after: "",
-              timestamp: "",
               ...profile.trigger,
+              start_after:
+                profile.trigger.trigger_type == "recurring"
+                  ? moment(profile.trigger.start_after)
+                      .utc()
+                      .format(INPUT_DATE_TIME_FORMAT)
+                  : "",
+              timestamp:
+                profile.trigger.trigger_type == "one_time"
+                  ? moment(profile.trigger.timestamp)
+                      .utc()
+                      .format(INPUT_DATE_TIME_FORMAT)
+                  : "",
             }}
             onSubmit={handleSubmit}
             onSuccess={(values) => {
@@ -132,19 +141,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
       {
         Header: "Associated instances",
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
-          profile.computers.num_associated_computers ? (
-            <Link
-              className={classes.link}
-              to={{
-                pathname: "/instances",
-                search: `?tags=${profile.tags.join("%2C")}`,
-              }}
-            >
-              {profile.computers.num_associated_computers} instances
-            </Link>
-          ) : (
-            <NoData />
-          ),
+          getAssociatedInstancesLink(profile),
       },
 
       {
@@ -167,31 +164,18 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
           row: {
             original: {
               activities: { last_activity: activity },
-              ...profile
             },
           },
         }: CellProps<ScriptProfile>) =>
           activity ? (
-            <Button
-              type="button"
-              appearance="link"
-              className={classNames(
-                "u-no-margin u-no-padding--top u-align-text--left",
-                classes.link,
-              )}
-              onClick={() => {
-                setSidePanelContent(
-                  `${profile.title} - ${moment(activity.creation_time).format(DISPLAY_DATE_TIME_FORMAT)}`,
-                  <Suspense fallback={<LoadingState />}>
-                    <ActivityDetails activityId={activity.id} />
-                  </Suspense>,
-                );
-              }}
+            <Link
+              className={classes.link}
+              to={`/activities?query=parent-id%3A${activity.id}`}
             >
               {moment(activity.creation_time)
                 .utc()
                 .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
-            </Button>
+            </Link>
           ) : (
             <NoData />
           ),

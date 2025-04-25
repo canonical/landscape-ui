@@ -1,10 +1,6 @@
-import { SCRIPT_STATUSES } from "../../../../constants";
-import type { ScriptStatus } from "@/features/scripts";
-
 export const statusOptions = [
-  { value: "", label: "All" },
-  ...Object.keys(SCRIPT_STATUSES).map((slug) => ({
-    value: slug.toLowerCase(),
-    label: SCRIPT_STATUSES[slug as ScriptStatus].label,
-  })),
+  { value: "all", label: "All" },
+  { value: "", label: "Active" },
+  { value: "archived", label: "Archived" },
+  { value: "redacted", label: "Redacted" },
 ];

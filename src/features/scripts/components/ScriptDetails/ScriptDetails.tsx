@@ -92,35 +92,41 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
         </Notification>
       ) : null}
 
-      <div className="p-segmented-control">
-        <div className="p-segmented-control__list">
-          <Button
-            type="button"
-            className="p-segmented-control__button"
-            onClick={handleEditScript}
-            hasIcon
-          >
-            <Icon name="edit" />
-            <span>Edit</span>
-          </Button>
-          <ConfirmationButton
-            className="p-segmented-control__button"
-            type="button"
-            confirmationModalProps={{
-              children: archiveModalBody,
-              title: archiveModalTitle,
-              confirmButtonAppearance: "negative",
-              confirmButtonLabel: archiveModalButtonLabel,
-              confirmButtonDisabled: disabledArchiveConfirmation,
-              confirmButtonLoading: isArchivingScript,
-              onConfirm: onConfirmArchive,
-              close: resetArchiveModal,
-            }}
-          >
-            Archive
-          </ConfirmationButton>
+      {script?.status === "ACTIVE" && (
+        <div className="p-segmented-control">
+          <div className="p-segmented-control__list">
+            <Button
+              type="button"
+              className="p-segmented-control__button"
+              onClick={handleEditScript}
+              hasIcon
+              disabled={!script?.is_editable}
+            >
+              <Icon name="edit" />
+              <span>Edit</span>
+            </Button>
+
+            <ConfirmationButton
+              className="p-segmented-control__button"
+              type="button"
+              confirmationModalProps={{
+                children: archiveModalBody,
+                title: archiveModalTitle,
+                confirmButtonAppearance: "negative",
+                confirmButtonLabel: archiveModalButtonLabel,
+                confirmButtonDisabled: disabledArchiveConfirmation,
+                confirmButtonLoading: isArchivingScript,
+                onConfirm: onConfirmArchive,
+                close: resetArchiveModal,
+              }}
+              disabled={!script?.is_editable}
+            >
+              <Icon name="archive" />
+              <span>Archive</span>
+            </ConfirmationButton>
+          </div>
         </div>
-      </div>
+      )}
       {script ? (
         <Suspense fallback={<LoadingState />}>
           <ScriptDetailsTabs

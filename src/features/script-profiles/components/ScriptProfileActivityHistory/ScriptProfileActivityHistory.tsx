@@ -1,7 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import type { Activity } from "@/features/activities";
 import { useState, type FC } from "react";
 import { useGetScriptProfileActivities } from "../../api";
 import type { ScriptProfile } from "../../types";
@@ -9,12 +8,10 @@ import ScriptProfileActivitiesList from "../ScriptProfileActivitiesList";
 
 interface ScriptProfileActivityHistoryProps {
   readonly profile: ScriptProfile;
-  readonly viewActivityDetails: (activity: Activity) => void;
 }
 
 const ScriptProfileActivityHistory: FC<ScriptProfileActivityHistoryProps> = ({
   profile,
-  viewActivityDetails,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -38,10 +35,7 @@ const ScriptProfileActivityHistory: FC<ScriptProfileActivityHistoryProps> = ({
 
   return (
     <>
-      <ScriptProfileActivitiesList
-        activities={activities}
-        viewActivityDetails={viewActivityDetails}
-      />
+      <ScriptProfileActivitiesList activities={activities} />
 
       <SidePanelTablePagination
         currentPage={currentPage}

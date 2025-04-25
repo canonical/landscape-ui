@@ -26,6 +26,18 @@ interface SecurityProfilesContainerProps {
   readonly retentionNotificationVisible?: boolean;
 }
 
+const getStatus = (status: string) => {
+  if (status === "all") {
+    return undefined;
+  }
+
+  if (status) {
+    return status;
+  }
+
+  return "active";
+};
+
 const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
   hideRetentionNotification,
   retentionNotificationVisible,
@@ -41,7 +53,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
   const { securityProfiles, securityProfilesCount, isSecurityProfilesLoading } =
     useGetSecurityProfiles({
       search,
-      status,
+      status: getStatus(status),
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
       pass_rate_from: passRateFrom != 0 ? passRateFrom : undefined,
