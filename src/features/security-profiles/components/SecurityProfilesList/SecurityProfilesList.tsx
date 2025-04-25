@@ -16,13 +16,11 @@ import {
   useIsSecurityProfilesLimitReached,
   useRunSecurityProfile,
 } from "../../api";
-import {
-  SECURITY_PROFILE_MODE_LABELS,
-  SECURITY_PROFILE_STATUSES,
-} from "../../constants";
+import { SECURITY_PROFILE_MODE_LABELS } from "../../constants";
 import {
   getAssociatedInstancesLink,
   getSchedule,
+  getStatus,
   getTags,
   notifyCreation,
 } from "../../helpers";
@@ -297,18 +295,11 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "status",
         Header: STATUS_HEADER,
         className: classes.status,
-        Cell: ({
-          row: {
-            original: { status },
-          },
-        }: CellProps<SecurityProfile>) =>
-          SECURITY_PROFILE_STATUSES[status].label,
+        Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) =>
+          getStatus(profile).label,
         getCellIcon: ({
-          row: {
-            original: { status },
-          },
-        }: CellProps<SecurityProfile>) =>
-          SECURITY_PROFILE_STATUSES[status].icon,
+          row: { original: profile },
+        }: CellProps<SecurityProfile>) => getStatus(profile).icon,
       },
       {
         accessor: "lastAuditPassrate",

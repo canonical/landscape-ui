@@ -12,6 +12,16 @@
   gap: 0.5rem;
 }
 
+.statusWithIcon {
+  align-items: center;
+  display: inline-flex;
+  gap: 1rem;
+}
+
+.tooltipIcon {
+  transform: translateX(16px);
+}
+
 .link {
   &:visited {
     color: $color-link;

@@ -13,8 +13,4 @@ export const SECURITY_STATUSES: SelectOption[] = [
     label: "Archived",
     value: "archived",
   },
-  {
-    label: "Over limit",
-    value: "over-limit",
-  },
 ];

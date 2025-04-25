@@ -12,6 +12,7 @@ import moment from "moment";
 import { type FC, Suspense, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {
+  useGetOverLimitSecurityProfiles,
   useGetSecurityProfiles,
   useIsSecurityProfilesLimitReached,
   useUpdateSecurityProfile,
@@ -47,12 +48,10 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
       pass_rate_to: passRateTo != 100 ? passRateFrom : undefined,
     });
 
-  const { securityProfiles: overLimitSecurityProfiles } =
-    useGetSecurityProfiles({
-      status: "over-limit",
-      offset: 0,
-      limit: 1,
-    });
+  const { overLimitSecurityProfiles } = useGetOverLimitSecurityProfiles({
+    limit: 20,
+    offset: 0,
+  });
 
   const pendingReports = JSON.parse(
     localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",
@@ -188,7 +187,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           title="Profile exceeded associated instance limit:"
         >
           Your security profile{" "}
-          <strong>{overLimitSecurityProfiles[0].name}</strong> is assigned to
+          <strong>{overLimitSecurityProfiles[0].title}</strong> is assigned to
           more than{" "}
           <strong>
             {SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT.toLocaleString()}{" "}
