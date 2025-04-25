@@ -1,4 +1,9 @@
 import LoadingState from "@/components/layout/LoadingState";
+import {
+  useGetScripts,
+  useGetSingleScript,
+  type Script,
+} from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
@@ -9,11 +14,6 @@ import { useDebounceCallback } from "usehooks-ts";
 import classes from "./ScriptDropdown.module.scss";
 import { DEBOUNCE_DELAY } from "./constants";
 import { boldSubstring } from "./helpers";
-import {
-  useGetScripts,
-  useGetSingleScript,
-  type Script,
-} from "@/features/scripts";
 
 interface ScriptDropdownProps {
   readonly script: Script | null | undefined;
@@ -52,7 +52,7 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
     },
     {
       search: search,
-      script_type: "v2",
+      script_type: "active",
       limit: 20,
       offset: 0,
     },

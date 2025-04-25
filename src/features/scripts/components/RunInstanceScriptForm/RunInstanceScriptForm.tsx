@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useGetScripts } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
@@ -11,12 +10,7 @@ import { Col, Form, Input, Row, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { ChangeEvent, FC } from "react";
 import { useMemo } from "react";
-import {
-  useCreateScript,
-  useCreateScriptAttachment,
-  useRemoveScript,
-  useRunScript,
-} from "../../api";
+import { useRunScript } from "../../api";
 import type { RunInstanceScriptFormValues } from "../../types";
 import DeliveryBlock from "../DeliveryBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
@@ -37,7 +31,7 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {
       listenToUrlParams: false,
     },
     {
-      script_type: "v2",
+      script_type: "active",
     },
   );
   const { runScript } = useRunScript();
