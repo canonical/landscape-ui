@@ -1,6 +1,6 @@
 import InfoItem from "@/components/layout/InfoItem";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
+import { Button, Col, Icon, Row, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import { useEffect, useState, type FC } from "react";
 import type { SingleScript } from "../../types";
@@ -9,6 +9,7 @@ import { useGetSingleScriptAttachment } from "../../api";
 import classes from "./ScriptDetailsInfo.module.scss";
 import { formatTitleCase } from "../../helpers";
 import NoData from "@/components/layout/NoData";
+import classNames from "classnames";
 
 interface ScriptDetailsInfoProps {
   readonly script: SingleScript;
@@ -99,19 +100,26 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
                 script.attachments.map((att) => (
                   <span key={att.id} className={classes.attachment}>
                     <span>{att.filename}</span>
-                    <Button
-                      className="u-no-margin--bottom"
-                      type="button"
-                      onClick={async () => handleDownload(att.id, att.filename)}
-                      disabled={
-                        isScriptAttachmentsLoading &&
-                        selectedAttachment?.id === att.id
-                      }
-                      appearance="link"
-                      aria-label={`Download ${att.filename}`}
-                    >
-                      <Icon name="begin-downloading" />
-                    </Button>
+                    <Tooltip message="Download">
+                      <Button
+                        className={classNames(
+                          "u-no-margin--bottom",
+                          classes.downloadButton,
+                        )}
+                        type="button"
+                        onClick={async () =>
+                          handleDownload(att.id, att.filename)
+                        }
+                        disabled={
+                          isScriptAttachmentsLoading &&
+                          selectedAttachment?.id === att.id
+                        }
+                        appearance="link"
+                        aria-label={`Download ${att.filename}`}
+                      >
+                        <Icon name="begin-downloading" />
+                      </Button>
+                    </Tooltip>
                   </span>
                 ))
               ) : (

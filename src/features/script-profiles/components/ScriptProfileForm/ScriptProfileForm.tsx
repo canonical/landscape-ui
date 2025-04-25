@@ -4,7 +4,7 @@ import { toCronPhrase } from "@/components/form/CronSchedule/components/CronSche
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
-import { useGetScripts } from "@/features/scripts";
+import { type Script } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -15,16 +15,16 @@ import {
   Input,
   Notification,
   Row,
-  Select,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { type ComponentProps, type FC, useEffect, useState } from "react";
+import { useEffect, useState, type ComponentProps, type FC } from "react";
 import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
 import classes from "./ScriptProfileForm.module.scss";
+import ScriptDropdown from "./components/ScriptDropdown";
 
 export interface ScriptProfileFormValues
   extends Pick<
@@ -36,6 +36,7 @@ export interface ScriptProfileFormValues
   start_after: string;
   timestamp: string;
   trigger_type: ScriptProfile["trigger"]["trigger_type"] | "";
+  script?: Script | null;
 }
 
 export type ScriptProfileFormSubmitValues = Pick<
@@ -76,23 +77,12 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
 }) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-
-  const { isScriptsLoading, scripts } = useGetScripts(
-    {
-      listenToUrlParams: false,
-    },
-    {
-      script_type: "v2",
-    },
-  );
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
   const { getInstancesQuery } = useInstances();
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,
-
-    validateOnMount: true,
 
     validationSchema: Yup.object().shape({
       interval: Yup.string().when("trigger_type", ([trigger_type], schema) =>
@@ -109,7 +99,11 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
             })
           : schema,
       ),
-      script_id: Yup.number().required("This field is required"),
+      script: Yup.object().when("script_id", ([script_id], schema) =>
+        script_id == undefined
+          ? schema.required("This field is required")
+          : schema,
+      ),
       start_after: Yup.string().when(
         "trigger_type",
         ([trigger_type], schema) =>
@@ -139,6 +133,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     }),
 
     onSubmit: async (values) => {
+      console.log("values", values);
       if (!values.trigger_type || values.script_id == undefined) {
         return;
       }
@@ -234,7 +229,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     );
   }, [getInstancesQueryResult]);
 
-  if (isScriptsLoading || isGettingScriptProfileLimits) {
+  if (isGettingScriptProfileLimits) {
     return <LoadingState />;
   }
 
@@ -252,23 +247,14 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         error={getFormikError(formik, "title")}
       />
 
-      <Select
-        label="Script"
-        required
-        options={[
-          { hidden: true },
-          ...scripts.map((script) => ({
-            label: script.title,
-            value: script.id,
-          })),
-        ]}
-        {...formik.getFieldProps("script_id")}
-        error={getFormikError(formik, "script_id")}
-        disabled={disabledFields.script_id}
-        help={
-          disabledFields.script_id &&
-          "Scripts can't be replaced after the profile has been created."
-        }
+      <ScriptDropdown
+        script={formik.values.script}
+        existingScriptId={formik.values.script_id}
+        setScript={async (script) => {
+          await formik.setFieldValue("script", script);
+          await formik.setFieldValue("script_id", script?.id);
+        }}
+        errorMessage={getFormikError(formik, "script")}
       />
 
       <Row className="u-no-padding">
@@ -301,6 +287,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         }}
         value={formik.values.trigger_type}
         disabled={disabledFields.trigger_type}
+        error={getFormikError(formik, "trigger_type")}
         options={[
           {
             label: (
@@ -392,7 +379,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
               error={getFormikError(formik, "start_after")}
             />
 
-            <Notification severity="caution">
+            <Notification severity="caution" className={classes.notification}>
               There is a minimum interval of{" "}
               <strong>{scriptProfileLimits?.min_interval} minutes</strong>{" "}
               between runs. Depending on the schedule, run times may be
@@ -434,6 +421,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
           isAssociationLimitReached ||
           isInstancesPending
         }
+        submitButtonLoading={submitting || formik.isSubmitting}
         submitButtonText={submitButtonText}
       />
     </>

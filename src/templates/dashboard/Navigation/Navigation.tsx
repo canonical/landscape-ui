@@ -160,17 +160,22 @@ const Navigation: FC = () => {
                                 className={classNames(
                                   "p-side-navigation__label",
                                   classes.label,
+                                  {
+                                    [classes.hasBadge]:
+                                      subItem.label === "Security profiles" &&
+                                      hasOverLimitSecurityProfiles,
+                                  },
                                 )}
                               >
                                 {subItem.label}
                                 {subItem.label === "Security profiles" &&
                                   hasOverLimitSecurityProfiles && (
-                                    <span className={classes.badge}>
+                                    <div className={classes.badge}>
                                       <Badge
                                         value={overLimitSecurityProfilesCount}
                                         isNegative
                                       />
-                                    </span>
+                                    </div>
                                   )}
                               </span>
                             </Link>
