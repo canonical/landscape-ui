@@ -75,6 +75,7 @@ const ScriptProfilesPanel: FC = () => {
             title: "",
             trigger_type: "",
             username: "root",
+            script: null,
           }}
           onSubmit={addScriptProfile}
           onSuccess={(values) => {

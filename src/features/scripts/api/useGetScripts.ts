@@ -4,6 +4,7 @@ import usePageParams from "@/hooks/usePageParams";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { PaginatedGetHookParams } from "@/types/api/PaginatedGetHookParams";
+import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
@@ -21,6 +22,13 @@ interface GetScriptsParams {
 export const useGetScripts = (
   config?: PaginatedGetHookParams,
   params?: GetScriptsParams,
+  options: Omit<
+    UseQueryOptions<
+      AxiosResponse<ApiPaginatedResponse<Script>>,
+      AxiosError<ApiError>
+    >,
+    "queryKey" | "queryFn"
+  > = {},
 ) => {
   const authFetch = useFetch();
   const { currentPage, pageSize, status, search } = usePageParams();
@@ -48,6 +56,7 @@ export const useGetScripts = (
     queryKey: ["scripts", paramsWithPagination],
     queryFn: async () =>
       authFetch.get("scripts", { params: paramsWithPagination }),
+    ...options,
   });
 
   return {
