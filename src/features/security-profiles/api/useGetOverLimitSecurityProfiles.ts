@@ -1,31 +1,24 @@
-import useFetch from "@/hooks/useFetch";
-import type { ApiError } from "@/types/api/ApiError";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { useQuery } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
-import type { SecurityProfile } from "../types";
+import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "../constants";
+import { useGetSecurityProfiles } from "./useGetSecurityProfiles";
 
 export const useGetOverLimitSecurityProfiles = () => {
-  const authFetch = useFetch();
+  const { securityProfiles, isSecurityProfilesLoading } =
+    useGetSecurityProfiles({
+      status: "active",
+    });
 
-  const { data: response, isLoading } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<SecurityProfile>>,
-    AxiosError<ApiError>
-  >({
-    queryKey: ["securityProfiles", "over-limit"],
-    queryFn: async () =>
-      authFetch.get("security-profiles", {
-        params: {
-          status: "over-limit",
-          offset: 0,
-          limit: 1,
-        },
-      }),
-  });
+  const overLimitSecurityProfiles = securityProfiles.filter(
+    (profile) =>
+      profile.associated_instances >=
+      SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
+  );
+
+  const overLimitSecurityProfilesCount = overLimitSecurityProfiles.length;
 
   return {
-    hasOverLimitSecurityProfiles: Number(response?.data.count) > 0,
-    overLimitSecurityProfilesCount: Number(response?.data.count),
-    isOverLimitSecurityProfilesLoading: isLoading,
+    hasOverLimitSecurityProfiles: !!overLimitSecurityProfilesCount,
+    overLimitSecurityProfiles,
+    overLimitSecurityProfilesCount,
+    isOverLimitSecurityProfilesLoading: isSecurityProfilesLoading,
   };
 };
