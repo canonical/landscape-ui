@@ -306,7 +306,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         )}
         {renderResults.isPassRateFromChipRender && (
           <Chip
-            value={`From: ${passRateFrom}`}
+            value={`From pass rate: ${passRateFrom}%`}
             onDismiss={() => {
               setPageParams({ passRateFrom: 0 });
             }}
@@ -315,7 +315,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         )}
         {renderResults.isPassRateToChipRender && (
           <Chip
-            value={`To: ${passRateTo}`}
+            value={`To pass rate: ${passRateTo}%`}
             onDismiss={() => {
               setPageParams({ passRateTo: 100 });
             }}
