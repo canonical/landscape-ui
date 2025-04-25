@@ -19,6 +19,18 @@ interface GetScriptsParams {
   script_type: string;
 }
 
+const getStatus = (status: string) => {
+  if (status === "all") {
+    return "v2";
+  }
+
+  if (status) {
+    return status;
+  }
+
+  return "active";
+};
+
 export const useGetScripts = (
   config?: PaginatedGetHookParams,
   params?: GetScriptsParams,
@@ -44,7 +56,7 @@ export const useGetScripts = (
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
           search: search ?? undefined,
-          script_type: status == "all" ? "v2" : status || "active",
+          script_type: getStatus(status),
         }
       : params),
   };

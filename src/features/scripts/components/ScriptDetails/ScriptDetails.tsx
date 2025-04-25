@@ -92,7 +92,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
         </Notification>
       ) : null}
 
-      {script?.status == "ACTIVE" && (
+      {script?.status === "ACTIVE" && (
         <div className="p-segmented-control">
           <div className="p-segmented-control__list">
             <Button

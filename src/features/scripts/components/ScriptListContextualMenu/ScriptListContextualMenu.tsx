@@ -103,7 +103,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
     },
   ];
 
-  if (script.status == "ACTIVE") {
+  if (script.status === "ACTIVE") {
     contextualMenuButtons.push(
       {
         children: (
@@ -158,7 +158,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
         </>
       ),
       "aria-label": `Delete ${script.title} script`,
-      className: script.status == "ARCHIVED" ? classes.separator : undefined,
+      className: script.status === "ARCHIVED" ? classes.separator : undefined,
       hasIcon: true,
       onClick: (): void => {
         setDeleteModalOpen(true);
