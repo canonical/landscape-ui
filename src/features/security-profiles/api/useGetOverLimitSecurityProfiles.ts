@@ -17,7 +17,7 @@ export const useGetOverLimitSecurityProfiles = (
 
   const overLimitSecurityProfiles = securityProfiles.filter(
     (profile) =>
-      profile.associated_instances >=
+      profile.associated_instances >
       SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
   );
 

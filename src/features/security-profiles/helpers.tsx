@@ -172,7 +172,7 @@ export const getStatus = (profile: SecurityProfile) => {
   }
 
   if (
-    profile.associated_instances >= SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT
+    profile.associated_instances > SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT
   ) {
     return {
       label: (
