@@ -111,7 +111,7 @@ export const useDeleteScriptModal = ({
     deleteModalBody: (
       <>
         <p>
-          Archiving the script will prevent it from running in the future. The
+          Deleting the script will remove the contents from Landscape. The
           script is associated with the following profiles:
         </p>
         <ul>

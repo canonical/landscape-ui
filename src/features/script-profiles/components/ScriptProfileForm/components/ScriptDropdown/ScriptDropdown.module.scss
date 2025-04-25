@@ -1,0 +1,39 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.container {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.suggestionsContainer {
+  max-height: 20rem;
+  position: absolute;
+  width: 100%;
+  z-index: 100;
+}
+
+.pointer {
+  cursor: pointer;
+  padding: $spv--small !important;
+}
+
+.highlighted {
+  background-color: $color-light;
+}
+
+.selectedContainer {
+  align-items: center;
+  background-color: $color-light;
+  display: flex;
+  justify-content: space-between;
+}
+
+.marginTop {
+  margin-top: $spv--medium;
+}
+
+.error {
+  margin-top: $spv--small;
+  margin-bottom: $spv--small;
+}
