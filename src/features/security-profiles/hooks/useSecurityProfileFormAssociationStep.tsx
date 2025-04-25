@@ -32,7 +32,7 @@ export default function useSecurityProfileFormAssociationStep<
     }
 
     setIsAssociationLimitReached(
-      getInstancesQueryResult.data.count >=
+      getInstancesQueryResult.data.count >
         SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
     );
   }, [getInstancesQueryResult]);
