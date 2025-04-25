@@ -4,6 +4,7 @@ import type {
   RebootProfileDay,
   RebootProfilesFormProps,
 } from "./types";
+import { parseSchedule } from "../../helpers";
 
 export const getValidationSchema = (action: "add" | "edit" | "duplicate") => {
   return Yup.object().shape({
@@ -72,6 +73,7 @@ export const getInitialValues = (
       on_days: [],
     };
   }
+  const { at_hour, at_minute, on_days } = parseSchedule(props.profile.schedule);
 
   return {
     title:
@@ -83,9 +85,9 @@ export const getInitialValues = (
     randomize_delivery: props.profile.deliver_delay_window ? true : false,
     deliver_delay_window: props.profile.deliver_delay_window.toString() || "",
     tags: props.profile.tags,
-    at_hour: props.profile.at_hour,
-    at_minute: props.profile.at_minute,
+    at_hour: at_hour,
+    at_minute: at_minute,
     deliver_within: props.profile.deliver_within,
-    on_days: props.profile.on_days,
+    on_days: on_days,
   };
 };

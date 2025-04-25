@@ -81,7 +81,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             deliver_delay_window: values.randomize_delivery
               ? Number(values.deliver_delay_window)
               : 0,
-            deliver_within: Number(values.deliver_delay_window),
+            deliver_within: Number(values.deliver_within),
             all_computers: values.all_computers,
           });
         }
