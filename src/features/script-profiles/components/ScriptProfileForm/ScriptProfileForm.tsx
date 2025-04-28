@@ -12,6 +12,7 @@ import { getFormikError } from "@/utils/formikErrors";
 import {
   Col,
   CustomSelect,
+  Form,
   Input,
   Notification,
   Row,
@@ -133,7 +134,6 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     }),
 
     onSubmit: async (values) => {
-      console.log("values", values);
       if (!values.trigger_type || values.script_id == undefined) {
         return;
       }
@@ -238,7 +238,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   }
 
   return (
-    <>
+    <Form noValidate onSubmit={formik.handleSubmit}>
       <Input
         type="text"
         label="Name"
@@ -249,7 +249,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
 
       <ScriptDropdown
         script={formik.values.script}
-        existingScriptId={formik.values.script_id}
+        existingScriptId={formik.initialValues.script_id}
         setScript={async (script) => {
           await formik.setFieldValue("script", script);
           await formik.setFieldValue("script_id", script?.id);
@@ -412,19 +412,13 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
-        onSubmit={() => {
-          formik.handleSubmit();
-        }}
         submitButtonDisabled={
-          !formik.isValid ||
-          submitting ||
-          isAssociationLimitReached ||
-          isInstancesPending
+          submitting || isAssociationLimitReached || isInstancesPending
         }
-        submitButtonLoading={submitting || formik.isSubmitting}
+        submitButtonLoading={submitting}
         submitButtonText={submitButtonText}
       />
-    </>
+    </Form>
   );
 };
 

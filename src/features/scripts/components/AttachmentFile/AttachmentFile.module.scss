@@ -1,0 +1,26 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.attachment {
+  align-items: center;
+  background-color: $color-light;
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spv--small;
+  padding-left: $spv--small;
+  padding-left: 0;
+  padding-right: 0;
+  text-decoration: none;
+}
+
+.attachmentActions {
+  display: flex;
+  gap: $sph--small;
+}
+
+.actionButton {
+  &:focus,
+  &:hover {
+    background-color: $color-mid-x-light;
+  }
+}

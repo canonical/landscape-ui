@@ -200,6 +200,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
             filename,
           ])
         }
+        scriptId={script.id}
       />
 
       <SidePanelFormButtons
@@ -223,6 +224,9 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
             setModalOpen(false);
           }}
           className={classes.modal}
+          confirmButtonProps={{
+            type: "button",
+          }}
         >
           <p>
             All future script runs will be done using the latest version of the

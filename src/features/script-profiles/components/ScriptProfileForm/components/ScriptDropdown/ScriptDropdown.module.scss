@@ -2,8 +2,8 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .container {
-  position: relative;
   margin-bottom: 1.25rem;
+  position: relative;
 }
 
 .suggestionsContainer {
@@ -27,13 +27,30 @@
   background-color: $color-light;
   display: flex;
   justify-content: space-between;
+  padding-right: 0 !important;
 }
 
 .marginTop {
-  margin-top: $spv--medium;
+  margin-top: $spv--medium !important;
+}
+
+.extraPadding {
+  padding-bottom: $spv--small !important;
+  padding-top: $spv--small !important;
 }
 
 .error {
-  margin-top: $spv--small;
   margin-bottom: $spv--small;
+  margin-top: $spv--small;
+}
+
+.removeButton {
+  &:focus,
+  &:hover {
+    background-color: $color-mid-x-light;
+  }
+}
+
+.icon {
+  vertical-align: middle;
 }

@@ -1,12 +1,8 @@
+import { Input } from "@canonical/react-components";
 import type { ChangeEventHandler, FC } from "react";
 import type { Script, ScriptFormValues } from "../../types";
-import {
-  Button,
-  Icon,
-  ICONS,
-  Input,
-  Tooltip,
-} from "@canonical/react-components";
+import AttachmentFile from "../AttachmentFile";
+import classes from "./ScriptFormAttachments.module.scss";
 
 interface ScriptFormAttachmentsProps {
   readonly attachments: ScriptFormValues["attachments"];
@@ -19,6 +15,7 @@ interface ScriptFormAttachmentsProps {
     key: keyof ScriptFormValues["attachments"],
   ) => ChangeEventHandler<HTMLInputElement>;
   readonly onInitialAttachmentDelete: (attachment: string) => void;
+  readonly scriptId?: number;
 }
 
 const ScriptFormAttachments: FC<ScriptFormAttachmentsProps> = ({
@@ -28,6 +25,7 @@ const ScriptFormAttachments: FC<ScriptFormAttachmentsProps> = ({
   initialAttachments,
   onFileInputChange,
   onInitialAttachmentDelete,
+  scriptId,
 }) => {
   return (
     <>
@@ -46,23 +44,16 @@ const ScriptFormAttachments: FC<ScriptFormAttachmentsProps> = ({
             error={getFileInputError(key)}
           />
         ) : (
-          <div key={key} style={{ marginBottom: "1rem" }}>
-            <span>{initialAttachment.filename}</span>
-            <Button
-              type="button"
-              hasIcon
-              appearance="base"
-              className="u-no-margin--bottom"
-              aria-label={`Remove ${initialAttachment.filename} attachment`}
-              onClick={() => {
-                onInitialAttachmentDelete(initialAttachment.filename);
-              }}
-            >
-              <Tooltip message="Remove" position="top-center">
-                <Icon name={ICONS.delete} />
-              </Tooltip>
-            </Button>
-          </div>
+          <AttachmentFile
+            className={classes.attachment}
+            key={key}
+            attachmentId={initialAttachment.id}
+            filename={initialAttachment.filename}
+            scriptId={scriptId}
+            onInitialAttachmentDelete={() => {
+              onInitialAttachmentDelete(initialAttachment.filename);
+            }}
+          />
         );
       })}
     </>

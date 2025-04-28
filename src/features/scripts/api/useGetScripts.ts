@@ -65,7 +65,7 @@ export const useGetScripts = (
     AxiosResponse<ApiPaginatedResponse<Script>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["scripts", paramsWithPagination],
+    queryKey: ["scripts", paramsWithPagination, config],
     queryFn: async () =>
       authFetch.get("scripts", { params: paramsWithPagination }),
     ...options,

@@ -2,7 +2,10 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useAuth from "@/hooks/useAuth";
+import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { SelectOption } from "@/types/SelectOption";
 import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactElement } from "react";
@@ -16,7 +19,6 @@ import type { Script } from "../../types";
 import ScriptListContextualMenu from "../ScriptListContextualMenu";
 import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
 import classes from "./ScriptList.module.scss";
-import useAuth from "@/hooks/useAuth";
 
 const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
@@ -27,6 +29,9 @@ interface ScriptListProps {
 const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   const { setSidePanelContent } = useSidePanel();
   const { isFeatureEnabled } = useAuth();
+  const { getAccessGroupQuery } = useRoles();
+  const { data: accessGroupsResponse } = getAccessGroupQuery();
+
   const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
 
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
@@ -55,6 +60,13 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   useOpenScriptDetails((profile) => {
     openViewPanel(profile);
   });
+
+  const accessGroupOptions: SelectOption[] = (
+    accessGroupsResponse?.data ?? []
+  ).map(({ name, title }) => ({
+    label: title,
+    value: name,
+  }));
 
   const columns = useMemo<Column<Script>[]>(() => {
     const result = [
@@ -88,8 +100,17 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
         },
       },
       {
+        accessor: "access_group",
+        Header: "Access group",
+        Cell: ({ row }: CellProps<Script>) =>
+          accessGroupOptions.find(
+            ({ value }) => row.original.access_group === value,
+          )?.label ?? row.original.access_group,
+      },
+      {
         Header: "Associated profiles",
         id: "associated_profiles",
+        className: classes.associatedProfiles,
         Cell: ({
           row: {
             original: { script_profiles },
@@ -158,7 +179,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
     return isFeatureEnabled("script-profiles")
       ? result
       : result.filter((column) => column.id !== "associated_profiles");
-  }, [scripts, expandedRowIndex]);
+  }, [scripts, accessGroupOptions, expandedRowIndex]);
 
   return (
     <div ref={getTableRowsRef(tableRowsRef)}>

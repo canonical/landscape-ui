@@ -1,67 +1,29 @@
 import InfoItem from "@/components/layout/InfoItem";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { Button, Col, Icon, Row, Tooltip } from "@canonical/react-components";
-import moment from "moment";
-import { useEffect, useState, type FC } from "react";
-import type { SingleScript } from "../../types";
-import { Link } from "react-router";
-import { useGetSingleScriptAttachment } from "../../api";
-import classes from "./ScriptDetailsInfo.module.scss";
-import { formatTitleCase } from "../../helpers";
 import NoData from "@/components/layout/NoData";
-import classNames from "classnames";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useRoles from "@/hooks/useRoles";
+import { Col, Row } from "@canonical/react-components";
+import moment from "moment";
+import { type FC } from "react";
+import { Link } from "react-router";
+import { formatTitleCase } from "../../helpers";
+import type { SingleScript } from "../../types";
+import AttachmentFile from "../AttachmentFile";
+import classes from "./ScriptDetailsInfo.module.scss";
 
 interface ScriptDetailsInfoProps {
   readonly script: SingleScript;
 }
 
 const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
-  const [selectedAttachment, setSelectedAttachment] = useState<{
-    id: number;
-    name: string;
-  } | null>(null);
+  const { getAccessGroupQuery } = useRoles();
 
-  const { isScriptAttachmentsLoading, refetch } = useGetSingleScriptAttachment(
-    {
-      attachmentId: selectedAttachment?.id ?? 0,
-      scriptId: script.id,
-    },
-    {
-      enabled: false,
-    },
-  );
+  const { data: getAccessGroupQueryResponse } = getAccessGroupQuery();
 
-  useEffect(() => {
-    const fetchAndDownload = async () => {
-      if (!selectedAttachment) {
-        return;
-      }
-
-      const { data } = await refetch();
-      if (!data) {
-        return;
-      }
-
-      const blob = new Blob([data.data], {
-        type: "application/octet-stream",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = selectedAttachment.name;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      setSelectedAttachment(null);
-    };
-
-    fetchAndDownload();
-  }, [selectedAttachment, refetch]);
-
-  const handleDownload = async (id: number, name: string) => {
-    setSelectedAttachment({ id, name });
-  };
+  const accessGroup =
+    getAccessGroupQueryResponse?.data.find(
+      (group) => group.name == script.access_group,
+    )?.title || script.access_group;
 
   return (
     <>
@@ -75,7 +37,13 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
         </Col>
       </Row>
       <Row className="u-no-padding">
-        <InfoItem label="status" value={formatTitleCase(script.status)} />
+        <Col size={6}>
+          <InfoItem label="status" value={formatTitleCase(script.status)} />
+        </Col>
+
+        <Col size={6}>
+          <InfoItem label="access group" value={accessGroup} />
+        </Col>
       </Row>
       <Row className="u-no-padding">
         <InfoItem
@@ -98,29 +66,12 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
             value={
               script.attachments.length > 0 ? (
                 script.attachments.map((att) => (
-                  <span key={att.id} className={classes.attachment}>
-                    <span>{att.filename}</span>
-                    <Tooltip message="Download">
-                      <Button
-                        className={classNames(
-                          "u-no-margin--bottom",
-                          classes.downloadButton,
-                        )}
-                        type="button"
-                        onClick={async () =>
-                          handleDownload(att.id, att.filename)
-                        }
-                        disabled={
-                          isScriptAttachmentsLoading &&
-                          selectedAttachment?.id === att.id
-                        }
-                        appearance="link"
-                        aria-label={`Download ${att.filename}`}
-                      >
-                        <Icon name="begin-downloading" />
-                      </Button>
-                    </Tooltip>
-                  </span>
+                  <AttachmentFile
+                    key={att.id}
+                    attachmentId={att.id}
+                    filename={att.filename}
+                    scriptId={script.id}
+                  />
                 ))
               ) : (
                 <NoData />

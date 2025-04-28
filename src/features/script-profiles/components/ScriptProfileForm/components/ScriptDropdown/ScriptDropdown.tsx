@@ -5,7 +5,13 @@ import {
   type Script,
 } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
-import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
+import {
+  Button,
+  Icon,
+  ICONS,
+  SearchBox,
+  Tooltip,
+} from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
@@ -121,7 +127,7 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
   };
 
   const getHelpText = () => {
-    if (!open && inputValue.length < 3) {
+    if (inputValue.length < 3) {
       return "Min 3. characters";
     }
     if (scripts.length === 0 && search && !isScriptsLoading) {
@@ -240,21 +246,27 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
             classes.selectedContainer,
             {
               [classes.marginTop]: !existingScriptId,
+              [classes.extraPadding]: existingScriptId,
             },
           )}
           key={script.id}
         >
-          <div>
-            <div>{script.title}</div>
-          </div>
+          <span>
+            <b>{script.title}</b>
+          </span>
           {!existingScriptId ? (
             <Button
               type="button"
-              appearance="link"
-              className="u-no-margin--bottom"
+              appearance="base"
+              className={classNames(
+                classes.removeButton,
+                "u-no-margin--bottom u-no-margin--right",
+              )}
               onClick={handleDeleteSelectedItem}
             >
-              <Icon name={ICONS.delete} />
+              <Tooltip message="Remove">
+                <Icon name={ICONS.delete} className={classes.icon} />
+              </Tooltip>
             </Button>
           ) : null}
         </div>
