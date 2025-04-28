@@ -57,7 +57,7 @@ export default function useSecurityProfileFormConfirmationStep<
                         value={
                           formik.values.delivery_time == "asap"
                             ? "As soon as possible"
-                            : "Scheduled"
+                            : `Delayed by ${formik.values.restart_deliver_delay} hour${formik.values.restart_deliver_delay == 1 ? "" : "s"}`
                         }
                       />
                     </Row>
@@ -65,7 +65,11 @@ export default function useSecurityProfileFormConfirmationStep<
                     <Row className="u-no-padding">
                       <InfoItem
                         label="Randomize delivery over a time window"
-                        value={formik.values.randomize_delivery ? "Yes" : "No"}
+                        value={
+                          formik.values.randomize_delivery == "yes"
+                            ? `Yes, over ${formik.values.restart_deliver_delay_window} minute${formik.values.restart_deliver_delay_window == 1 ? "" : "s"}`
+                            : "No"
+                        }
                       />
                     </Row>
                   </>

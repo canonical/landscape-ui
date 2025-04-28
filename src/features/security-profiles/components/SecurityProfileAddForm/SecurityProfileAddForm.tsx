@@ -42,7 +42,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       restart_deliver_delay_window: 1,
       restart_deliver_delay: 1,
       start_date: moment().utc().format(INPUT_DATE_TIME_FORMAT),
-      start_type: "",
+      start_type: "on-a-date",
       tags: [],
       tailoring_file: null,
       title: "",

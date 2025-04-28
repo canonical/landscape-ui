@@ -98,9 +98,7 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
 
       <SidePanelFormButtons
         onSubmit={startSubmit}
-        submitButtonDisabled={
-          !formik.isValid || submitting || !formik.touched.start_type
-        }
+        submitButtonDisabled={!formik.isValid || submitting}
         submitButtonLoading={steps.some((step) => step.isLoading) || submitting}
         submitButtonText={submitButtonText}
         hasBackButton={hasBackButton}

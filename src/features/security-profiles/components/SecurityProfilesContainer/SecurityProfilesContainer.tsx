@@ -57,7 +57,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
       pass_rate_from: passRateFrom != 0 ? passRateFrom : undefined,
-      pass_rate_to: passRateTo != 100 ? passRateFrom : undefined,
+      pass_rate_to: passRateTo != 100 ? passRateTo : undefined,
     });
 
   const { overLimitSecurityProfiles } = useGetOverLimitSecurityProfiles({
@@ -110,7 +110,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
             months: [],
             randomize_delivery: "no",
             start_date: moment().utc().format(INPUT_DATE_TIME_FORMAT),
-            start_type: "",
+            start_type: "on-a-date",
             tailoring_file: null,
             unit_of_time: "DAILY",
             ...profile,

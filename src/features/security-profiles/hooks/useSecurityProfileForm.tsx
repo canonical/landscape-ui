@@ -96,8 +96,6 @@ const useSecurityProfileForm = ({
 
       start_date: Yup.string().required("This field is required."),
 
-      start_type: Yup.string().required("This field is required."),
-
       title: Yup.string().required("This field is required."),
     }),
 
