@@ -109,23 +109,13 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         "trigger_type",
         ([trigger_type], schema) =>
           trigger_type == "recurring"
-            ? schema.required("This field is required").test({
-                test: (value) => {
-                  return moment(value).utc(true).isSameOrAfter(moment());
-                },
-                message: "The start date must not be in the past.",
-              })
+            ? schema.required("This field is required")
             : schema,
       ),
       time_limit: Yup.number().required("This field is required"),
       timestamp: Yup.string().when("trigger_type", ([trigger_type], schema) =>
         trigger_type == "one_time"
-          ? schema.required("This field is required").test({
-              test: (value) => {
-                return moment(value).utc(true).isSameOrAfter(moment());
-              },
-              message: "The date must not be in the past.",
-            })
+          ? schema.required("This field is required")
           : schema,
       ),
       title: Yup.string().required("This field is required"),

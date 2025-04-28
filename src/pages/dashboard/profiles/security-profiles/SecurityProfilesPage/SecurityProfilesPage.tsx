@@ -20,7 +20,7 @@ const SecurityProfilesPage: FC = () => {
     isSecurityProfilesLoading: isInitialSecurityProfilesLoading,
   } = useGetSecurityProfiles({
     offset: 0,
-    limit: 1,
+    limit: 0,
   });
 
   const onAddProfile = () => {

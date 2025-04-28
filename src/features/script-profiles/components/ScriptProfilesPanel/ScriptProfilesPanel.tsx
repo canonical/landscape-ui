@@ -33,7 +33,17 @@ const ScriptProfilesPanel: FC = () => {
   const { currentPage, pageSize, search, status } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
-  const { scriptsCount, isScriptsLoading } = useGetScripts();
+  const {
+    scriptsCount: activeScriptsCount,
+    isScriptsLoading: isActiveScriptsLoading,
+  } = useGetScripts(
+    { listenToUrlParams: false },
+    {
+      script_type: "active",
+      limit: 0,
+      offset: 0,
+    },
+  );
   const { scriptProfiles, scriptProfilesCount, isGettingScriptProfiles } =
     useGetScriptProfiles();
   const { addScriptProfile, isAddingScriptProfile } = useAddScriptProfile();
@@ -160,7 +170,7 @@ const ScriptProfilesPanel: FC = () => {
     );
   }
 
-  if (isScriptsLoading) {
+  if (isActiveScriptsLoading) {
     return <LoadingState />;
   }
 
@@ -173,7 +183,7 @@ const ScriptProfilesPanel: FC = () => {
     );
   };
 
-  if (!scriptsCount) {
+  if (!activeScriptsCount) {
     return (
       <EmptyState
         title="You need at least one script to add a profile"
