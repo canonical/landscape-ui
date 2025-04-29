@@ -10,6 +10,7 @@ import useFetch from "./useFetch";
 import useFetchOld from "./useFetchOld";
 
 export interface GetInstancesParams {
+  archived_only?: boolean;
   query?: string;
   limit?: number;
   offset?: number;

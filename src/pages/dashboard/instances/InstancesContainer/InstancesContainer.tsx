@@ -29,6 +29,7 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
     getInstancesQuery({
       query: getQuery(filters),
       root_only: groupBy === "parent",
+      archived_only: filters.status === "archived",
       with_alerts: true,
       with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
       limit: pageSize,
@@ -51,8 +52,12 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
         <InstanceList
           instances={instances}
           selectedInstances={selectedInstances}
-          setColumnFilterOptions={(options) => setColumnFilterOptions(options)}
-          setSelectedInstances={(instances) => setSelectedInstances(instances)}
+          setColumnFilterOptions={(options) => {
+            setColumnFilterOptions(options);
+          }}
+          setSelectedInstances={(newInstances) => {
+            setSelectedInstances(newInstances);
+          }}
         />
       )}
       <TablePagination

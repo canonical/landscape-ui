@@ -1,4 +1,5 @@
 import type { ListFilter } from "@/types/Filters";
+import type { SelectOption } from "@/types/SelectOption";
 import type { Status } from "./types/Status";
 
 export const STATUSES: Record<string, Status> = {
@@ -139,6 +140,11 @@ const alertTypes = [
   "ChildInstanceProfileAlert",
 ];
 
+const ARCHIVED_STATUS_OPTION: SelectOption = {
+  label: "Archived",
+  value: "archived",
+};
+
 type FilterKey = "os" | "groupBy" | "status";
 
 export const FILTERS: Record<FilterKey, ListFilter> = {
@@ -178,6 +184,7 @@ export const FILTERS: Record<FilterKey, ListFilter> = {
           value: filterValue,
           query,
         })),
+      ARCHIVED_STATUS_OPTION,
     ],
   },
 };
