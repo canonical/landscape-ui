@@ -1,3 +1,26 @@
+# [1.13.0](https://github.com/canonical/landscape-dashboard/compare/v1.12.5...v1.13.0) (2025-04-29)
+
+
+### Bug Fixes
+
+* adding contextual menu to Scripts ([#215](https://github.com/canonical/landscape-dashboard/issues/215)) ([967ef4a](https://github.com/canonical/landscape-dashboard/commit/967ef4aa3f59403132d96fd1d7808e23810000f6))
+* google auth provider icon ([1ba2a4b](https://github.com/canonical/landscape-dashboard/commit/1ba2a4bb910e17a228d176efba16e5864a2ea70c))
+* move security issues table pagination to bottom ([#231](https://github.com/canonical/landscape-dashboard/issues/231)) ([6c608b6](https://github.com/canonical/landscape-dashboard/commit/6c608b6e467788115ef34d13667e5613ebc0623c))
+* production bug during login ([51e64ab](https://github.com/canonical/landscape-dashboard/commit/51e64abce6aa8ef8a9d261f219b15cf30665c592))
+* redirect on refresh ([#210](https://github.com/canonical/landscape-dashboard/issues/210)) ([ea42ad8](https://github.com/canonical/landscape-dashboard/commit/ea42ad86ceea64828f4a79215dca0ba18f21b4ae))
+* upgrade and downgrade kernel forms not scheduling correctly ([79b1f85](https://github.com/canonical/landscape-dashboard/commit/79b1f85b9fdc951e1f97079643f32b5abd9d3bbb))
+
+
+### Features
+
+* add archived status in instances page ([bca548a](https://github.com/canonical/landscape-dashboard/commit/bca548adb11d3fe690aefad7d5f52270e1757169))
+* add employees page; add sanitize action to single instance; add identity issuers ([96a9275](https://github.com/canonical/landscape-dashboard/commit/96a9275859b008743ec318e6f57a0c74660dbc26))
+* add reboot profiles ([#102](https://github.com/canonical/landscape-dashboard/issues/102)) ([c437490](https://github.com/canonical/landscape-dashboard/commit/c4374903c7356b8120559d3c26713aecb8ac10f7))
+* add security profiles ([a5e77a2](https://github.com/canonical/landscape-dashboard/commit/a5e77a2de26c0bce4106c9c3e5d204cb3a1e34c6))
+* implement event based script execution ([9067514](https://github.com/canonical/landscape-dashboard/commit/90675142c11409616ee25c5fd82d9a886f28b542))
+* implement feature availability checks to trigger some UI elements visibility ([614e98b](https://github.com/canonical/landscape-dashboard/commit/614e98bdb777e38a6bafbe5d68a0c748feaac998))
+* remove sentry plugin ([5d7f700](https://github.com/canonical/landscape-dashboard/commit/5d7f70068665d097b2d74bc54ae395deb8ce4198))
+
 ## [1.12.5](https://github.com/canonical/landscape-dashboard/compare/v1.12.4...v1.12.5) (2025-03-05)
 
 
