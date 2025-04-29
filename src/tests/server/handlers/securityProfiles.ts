@@ -1,4 +1,5 @@
 import { API_URL } from "@/constants";
+import type { Activity } from "@/features/activities";
 import type {
   AddSecurityProfileParams,
   SecurityProfile,
@@ -106,5 +107,45 @@ export default [
       );
     }
     return HttpResponse.json();
+  }),
+
+  http.post(`${API_URL}security-profiles/:id\\:archive`, async () => {
+    const endpointStatus = getEndpointStatus();
+    if (endpointStatus.status === "error") {
+      return HttpResponse.json(
+        {
+          error: "InternalServerError",
+          message: "Error response",
+        },
+        {
+          status: 500,
+        },
+      );
+    }
+    return HttpResponse.json();
+  }),
+
+  http.get(`${API_URL}security-profiles/:id/report`, () => {
+    return HttpResponse.json<Activity>({
+      activity_status: "undelivered",
+      approval_time: null,
+      children: [],
+      completion_time: null,
+      computer_id: 0,
+      creation_time: "",
+      creator: undefined,
+      deliver_after_time: null,
+      deliver_before_time: null,
+      delivery_time: null,
+      id: 0,
+      modification_time: "",
+      parent_id: null,
+      result_code: null,
+      result_text: null,
+      schedule_after_time: null,
+      schedule_before_time: null,
+      summary: "",
+      type: "",
+    });
   }),
 ];

@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
-import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useUpdateSecurityProfile } from "@/features/security-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -27,7 +27,7 @@ import {
 import type { SecurityProfile, SecurityProfileActions } from "../../types";
 import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
 import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
-import { getNotificationMessage } from "./helpers";
+import { getInitialValues, getNotificationMessage } from "./helpers";
 import classes from "./SecurityProfilesList.module.scss";
 
 const SecurityProfileRunFixForm = lazy(
@@ -162,22 +162,25 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           <SecurityProfileForm
             confirmationStepDescription="To duplicate the profile, you need to run it."
             initialValues={{
-              day_of_month_type: "day-of-month",
-              days: [],
-              delivery_time: "asap",
-              end_date: "",
-              end_type: "never",
-              every: 1,
-              months: [],
-              randomize_delivery: "no",
-              start_date: moment().utc().format(INPUT_DATE_TIME_FORMAT),
-              start_type: "on-a-date",
-              tailoring_file: null,
-              unit_of_time: "DAILY",
-              ...profile,
+              ...getInitialValues(profile),
               title: `${profile.title} copy`,
             }}
-            mutate={addSecurityProfile}
+            mutate={async (values) => {
+              addSecurityProfile({
+                access_group: values.access_group,
+                all_computers: values.all_computers,
+                benchmark: values.benchmark,
+                mode: values.mode,
+                restart_deliver_delay: values.restart_deliver_delay,
+                restart_deliver_delay_window:
+                  values.restart_deliver_delay_window,
+                schedule: values.schedule,
+                start_date: values.start_date,
+                tags: values.tags,
+                tailoring_file: values.tailoring_file,
+                title: values.title,
+              });
+            }}
             onSuccess={(values) => {
               notifyCreation(values, notify);
             }}
@@ -198,23 +201,19 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             benchmarkStepDisabled
             confirmationStepDescription="To save your changes, you need to run the profile."
             getConfirmationStepDisabled={(values) => values.mode == "audit"}
-            initialValues={{
-              day_of_month_type: "day-of-month",
-              days: [],
-              delivery_time: "asap",
-              end_date: "",
-              end_type: "never",
-              every: 1,
-              months: [],
-              randomize_delivery: "no",
-              start_date: moment().utc().format(INPUT_DATE_TIME_FORMAT),
-              start_type: "on-a-date",
-              tailoring_file: null,
-              unit_of_time: "DAILY",
-              ...profile,
-            }}
-            mutate={async (params) => {
-              updateSecurityProfile({ id: profile.id, ...params });
+            initialValues={getInitialValues(profile)}
+            mutate={async (values) => {
+              updateSecurityProfile({
+                id: profile.id,
+                access_group: values.access_group,
+                all_computers: values.all_computers,
+                restart_deliver_delay: values.restart_deliver_delay,
+                restart_deliver_delay_window:
+                  values.restart_deliver_delay_window,
+                schedule: values.schedule,
+                tags: values.tags,
+                title: values.title,
+              });
             }}
             onSuccess={(values) => {
               notify.success({
@@ -492,7 +491,12 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         data={securityProfiles}
       />
 
-      <SecurityProfileArchiveModal close={closeModal} profile={modalProfile} />
+      {modalProfile && (
+        <SecurityProfileArchiveModal
+          close={closeModal}
+          profile={modalProfile}
+        />
+      )}
     </>
   );
 };

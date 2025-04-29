@@ -1,10 +1,10 @@
 import { API_URL, API_URL_OLD, COMMON_NUMBERS } from "@/constants";
+import type { Activity, GetActivitiesParams } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { activities, activityTypes } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
-import type { Activity, GetActivitiesParams } from "@/features/activities";
-import { activities, activityTypes } from "@/tests/mocks/activity";
 
 export default [
   http.get<never, GetActivitiesParams, ApiPaginatedResponse<Activity>>(
@@ -31,6 +31,39 @@ export default [
           searchFields: ["name"],
         }),
       );
+    },
+  ),
+
+  http.get<never, GetActivitiesParams, Activity>(
+    `${API_URL}activities/:id`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw new HttpResponse(null, { status: 500 });
+      }
+
+      return HttpResponse.json<Activity>({
+        activity_status: "succeeded",
+        approval_time: null,
+        children: [],
+        completion_time: null,
+        computer_id: 0,
+        creation_time: "",
+        creator: undefined,
+        deliver_after_time: null,
+        deliver_before_time: null,
+        delivery_time: null,
+        id: 0,
+        modification_time: "",
+        parent_id: null,
+        result_code: null,
+        result_text: null,
+        schedule_after_time: null,
+        schedule_before_time: null,
+        summary: "",
+        type: "",
+      });
     },
   ),
 

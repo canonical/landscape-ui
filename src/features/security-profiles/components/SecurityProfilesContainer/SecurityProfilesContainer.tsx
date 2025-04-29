@@ -1,14 +1,12 @@
 import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security-profiles";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Notification } from "@canonical/react-components";
-import moment from "moment";
 import { type FC, Suspense, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {
@@ -20,6 +18,7 @@ import {
 import SecurityProfileForm from "../SecurityProfileForm";
 import SecurityProfilesHeader from "../SecurityProfilesHeader";
 import SecurityProfilesList from "../SecurityProfilesList";
+import { getInitialValues } from "../SecurityProfilesList/helpers";
 
 interface SecurityProfilesContainerProps {
   readonly hideRetentionNotification: () => void;
@@ -100,23 +99,18 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           benchmarkStepDisabled
           confirmationStepDescription="To save your changes, you need to run the profile."
           getConfirmationStepDisabled={(values) => values.mode == "audit"}
-          initialValues={{
-            day_of_month_type: "day-of-month",
-            days: [],
-            delivery_time: "asap",
-            end_date: "",
-            end_type: "never",
-            every: 1,
-            months: [],
-            randomize_delivery: "no",
-            start_date: moment().utc().format(INPUT_DATE_TIME_FORMAT),
-            start_type: "on-a-date",
-            tailoring_file: null,
-            unit_of_time: "DAILY",
-            ...profile,
-          }}
-          mutate={async (params) => {
-            updateSecurityProfile({ id: profile.id, ...params });
+          initialValues={getInitialValues(profile)}
+          mutate={async (values) => {
+            updateSecurityProfile({
+              id: profile.id,
+              access_group: values.access_group,
+              all_computers: values.all_computers,
+              restart_deliver_delay: values.restart_deliver_delay,
+              restart_deliver_delay_window: values.restart_deliver_delay_window,
+              schedule: values.schedule,
+              tags: values.tags,
+              title: values.title,
+            });
           }}
           onSuccess={(values) => {
             notify.success({

@@ -1,9 +1,28 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, it } from "vitest";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
 import SecurityProfileAddForm from "./SecurityProfileAddForm";
 
 describe("SecurityProfileAddForm", () => {
-  it("should render", async () => {
+  it("should have a back button after the first page", async () => {
     renderWithProviders(<SecurityProfileAddForm onSuccess={() => undefined} />);
+
+    await userEvent.type(
+      screen.getByRole("textbox", { name: "Profile name" }),
+      "Name",
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Back" }),
+    ).not.toBeInTheDocument();
+
+    await userEvent.click(await screen.findByRole("button", { name: "Next" }));
+
+    await userEvent.click(screen.getByRole("button", { name: "Back" }));
+
+    expect(
+      screen.queryByRole("button", { name: "Back" }),
+    ).not.toBeInTheDocument();
   });
 });

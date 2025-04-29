@@ -48,7 +48,21 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
       title: "",
       unit_of_time: "DAILY",
     },
-    mutate: addSecurityProfile,
+    mutate: async (values) => {
+      addSecurityProfile({
+        access_group: values.access_group,
+        all_computers: values.all_computers,
+        benchmark: values.benchmark,
+        mode: values.mode,
+        restart_deliver_delay: values.restart_deliver_delay,
+        restart_deliver_delay_window: values.restart_deliver_delay_window,
+        schedule: values.schedule,
+        start_date: values.start_date,
+        tags: values.tags,
+        tailoring_file: values.tailoring_file,
+        title: values.start_date,
+      });
+    },
     onSuccess: (values) => {
       notifyCreation(values, notify);
       onSuccess(values);

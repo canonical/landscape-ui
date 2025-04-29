@@ -6,7 +6,7 @@ import type { SecurityProfile } from "../../types";
 
 interface SecurityProfileArchiveModalProps
   extends Pick<ComponentProps<typeof TextConfirmationModal>, "close"> {
-  readonly profile: SecurityProfile | null;
+  readonly profile: SecurityProfile;
 }
 
 const SecurityProfileArchiveModal: FC<SecurityProfileArchiveModalProps> = ({
@@ -17,10 +17,6 @@ const SecurityProfileArchiveModal: FC<SecurityProfileArchiveModalProps> = ({
 
   const { archiveSecurityProfile, isArchivingSecurityProfile } =
     useArchiveSecurityProfile();
-
-  if (!profile) {
-    return;
-  }
 
   const onConfirm = async () => {
     await archiveSecurityProfile({

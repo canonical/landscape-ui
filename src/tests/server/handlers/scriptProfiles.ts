@@ -58,4 +58,12 @@ export default [
       count: activities.length,
     });
   }),
+
+  http.get(`${API_URL}script-profile-limits`, () => {
+    return HttpResponse.json({
+      max_num_computers: 5000,
+      max_num_profiles: 10,
+      min_interval: 30,
+    });
+  }),
 ];

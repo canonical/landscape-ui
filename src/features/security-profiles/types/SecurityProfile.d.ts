@@ -17,12 +17,12 @@ export interface SecurityProfile extends Record<string, unknown> {
     not_started: number;
     pass_rate: number;
     report_uri: string | null;
-    timestamp: string;
+    timestamp: string | null;
   };
   mode: "audit" | "audit-fix" | "audit-fix-restart";
   modification_time: string;
   name: string;
-  next_run_time: string;
+  next_run_time: string | null;
   retention_period: number;
   schedule: string;
   status: "active" | "archived" | "over-limit";

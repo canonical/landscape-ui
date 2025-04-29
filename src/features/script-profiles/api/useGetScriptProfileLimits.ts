@@ -3,7 +3,7 @@ import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-interface GetScriptProfileLimitsResponse {
+export interface GetScriptProfileLimitsResponse {
   max_num_computers: number;
   max_num_profiles: number;
   min_interval: number;

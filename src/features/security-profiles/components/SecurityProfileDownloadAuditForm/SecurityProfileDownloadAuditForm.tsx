@@ -77,8 +77,8 @@ const SecurityProfileDownloadAuditForm: FC<
   const formik = useFormik<SecurityProfileDownloadAuditFormValues>({
     initialValues: {
       audit_timeframe: "specific-date",
-      end_date: "",
-      start_date: "",
+      end_date: moment().format(INPUT_DATE_FORMAT),
+      start_date: moment().format(INPUT_DATE_FORMAT),
       level_of_detail: "summary-only",
     },
 
@@ -173,10 +173,15 @@ const SecurityProfileDownloadAuditForm: FC<
           inline
           title="Your requested audit is ready:"
           onDismiss={() => {
-            pendingReports.splice(
-              pendingReports.findIndex((report) => report.profileId == id),
-              1,
+            const index = pendingReports.findIndex(
+              (report) => report.profileId == id,
             );
+
+            if (index == -1) {
+              return;
+            }
+
+            pendingReports.splice(index, 1);
 
             localStorage.setItem(
               "_landscape_pendingSecurityProfileReports",

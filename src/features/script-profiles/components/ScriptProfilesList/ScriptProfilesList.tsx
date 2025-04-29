@@ -53,7 +53,12 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
       const handleSubmit = async (values: ScriptProfileFormSubmitValues) => {
         editScriptProfile({
           id: profile.id,
-          ...values,
+          all_computers: values.all_computers,
+          tags: values.tags,
+          time_limit: values.time_limit,
+          title: values.title,
+          trigger: values.trigger,
+          username: values.username,
         });
       };
 

@@ -163,7 +163,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             label="Last run"
             value={
               profile.last_run_results.timestamp ? (
-                `${moment(profile.last_run_results.timestamp).utc().format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
               ) : (
                 <NoData />
               )
@@ -176,7 +176,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             label="Next run"
             value={
               profile.next_run_time ? (
-                `${moment(profile.next_run_time).utc().format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
               ) : (
                 <NoData />
               )

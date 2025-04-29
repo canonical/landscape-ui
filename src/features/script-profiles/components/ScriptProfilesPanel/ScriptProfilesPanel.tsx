@@ -87,7 +87,17 @@ const ScriptProfilesPanel: FC = () => {
             username: "root",
             script: null,
           }}
-          onSubmit={addScriptProfile}
+          onSubmit={async (values) => {
+            addScriptProfile({
+              all_computers: values.all_computers,
+              script_id: values.script_id,
+              tags: values.tags,
+              time_limit: values.time_limit,
+              title: values.title,
+              trigger: values.trigger,
+              username: values.username,
+            });
+          }}
           onSuccess={(values) => {
             notify.success({
               title: `You have successfully created ${values.title}`,

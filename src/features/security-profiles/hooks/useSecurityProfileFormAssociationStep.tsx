@@ -16,6 +16,7 @@ export default function useSecurityProfileFormAssociationStep<
       query: formik.values.all_computers
         ? undefined
         : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR "),
+      limit: 1,
     });
 
   const [isAssociationLimitReached, setIsAssociationLimitReached] =
