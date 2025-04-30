@@ -6,6 +6,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.5rem;
+  width: 85%;
 }
 
 .lineContainer {
@@ -15,7 +16,7 @@
   display: flex;
   margin-bottom: 8px;
   overflow: hidden;
-  width: 100%;
+  width: 85%;
 }
 
 .linePassed,
@@ -79,6 +80,14 @@
   width: 10rem;
 }
 
+.associatedInstances {
+  width: 15%;
+}
+
+.mode {
+  width: 15%;
+}
+
 .ellipsis {
   color: rgb(0 0 0 / 60%);
   display: inline-block;
@@ -92,8 +101,4 @@
   max-width: 75%;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.breakableHeader {
-  white-space: pre-line;
 }

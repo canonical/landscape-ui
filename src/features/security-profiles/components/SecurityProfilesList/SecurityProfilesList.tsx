@@ -314,25 +314,34 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           const failRate = Math.round((failing / total) * 100);
           const inProgressRate = Math.round((in_progress / total) * 100);
           const notRunRate = Math.round((not_started / total) * 100);
+          const lastRunHasTotal =
+            passing + failing + in_progress + not_started > 0;
 
           const tooltipMessage = (
             <>
               <div>
-                <strong>Passed:</strong> {passing} instances ({passRate}%)
+                <strong>Passed:</strong>{" "}
+                {passing === 0 ? "---" : `${passing} instances (${passRate}%)`}
               </div>
               <div>
-                <strong>Failed:</strong> {failing} instances ({failRate}%)
+                <strong>Failed:</strong>{" "}
+                {failing === 0 ? "---" : `${failing} instances (${failRate}%)`}
               </div>
               <div>
-                <strong>In progress:</strong> {in_progress} instances (
-                {inProgressRate}%)
+                <strong>In progress:</strong>{" "}
+                {in_progress === 0
+                  ? "---"
+                  : `${in_progress} instances (${inProgressRate}%)`}
               </div>
               <div>
-                <strong>Not run:</strong> {not_started} instances ({notRunRate}
-                %)
+                <strong>Not Run:</strong>{" "}
+                {not_started === 0
+                  ? "---"
+                  : `${not_started} instances (${notRunRate}%)`}
               </div>
             </>
           );
+
           return (
             <div>
               <div className={classes.textContainer}>
@@ -358,32 +367,30 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 positionElementClassName={classes.tooltip}
                 message={tooltipMessage}
               >
-                <div className={classes.lineContainer}>
-                  {passing > 0 && (
-                    <div
-                      className={classes.linePassed}
-                      style={{
-                        width: `${(passing / total) * 100}%`,
-                      }}
-                    />
-                  )}
-                  {failing > 0 && (
-                    <div
-                      className={classes.lineFailed}
-                      style={{
-                        width: `${(failing / total) * 100}%`,
-                      }}
-                    />
-                  )}
-                  {in_progress > 0 && (
-                    <div
-                      className={classes.lineInProgress}
-                      style={{
-                        width: `${(in_progress / total) * 100}%`,
-                      }}
-                    />
-                  )}
-                </div>
+                {lastRunHasTotal ? (
+                  <div className={classes.lineContainer}>
+                    {passing > 0 && (
+                      <div
+                        className={classes.linePassed}
+                        style={{ width: `${(passing / total) * 100}%` }}
+                      />
+                    )}
+                    {failing > 0 && (
+                      <div
+                        className={classes.lineFailed}
+                        style={{ width: `${(failing / total) * 100}%` }}
+                      />
+                    )}
+                    {in_progress > 0 && (
+                      <div
+                        className={classes.lineInProgress}
+                        style={{ width: `${(in_progress / total) * 100}%` }}
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <NoData />
+                )}
               </Tooltip>
             </div>
           );
@@ -393,19 +400,22 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "associatedInstances",
         Header: ASSOCIATED_INSTANCES_HEADER,
-        className: classes.breakableHeader,
+        className: classes.associatedInstances,
 
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <>
-            {getAssociatedInstancesLink(profile)}
-            <br />
-            <div className={classes.ellipsis}>{getTags(profile)}</div>
+            <div className={classes.ellipsis}>
+              {getAssociatedInstancesLink(profile)}
+              <br />
+              {getTags(profile)}
+            </div>
           </>
         ),
       },
       {
         accessor: "mode",
         Header: MODE_HEADER,
+        className: classes.mode,
         Cell: ({
           row: {
             original: { mode },
@@ -415,7 +425,6 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "schedule",
         Header: LAST_RUN_HEADER,
-        className: classes.breakableHeader,
 
         Cell: ({ row }: CellProps<SecurityProfile>) => {
           const lastRun = !row.original.last_run_results.timestamp ? (
