@@ -321,21 +321,25 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             <>
               <div>
                 <strong>Passed:</strong>{" "}
-                {passing === 0 ? "---" : `${passing} instances (${passRate}%)`}
+                {!lastRunHasTotal
+                  ? "---"
+                  : `${passing} instances (${passRate}%)`}
               </div>
               <div>
                 <strong>Failed:</strong>{" "}
-                {failing === 0 ? "---" : `${failing} instances (${failRate}%)`}
+                {!lastRunHasTotal
+                  ? "---"
+                  : `${failing} instances (${failRate}%)`}
               </div>
               <div>
                 <strong>In progress:</strong>{" "}
-                {in_progress === 0
+                {!lastRunHasTotal
                   ? "---"
                   : `${in_progress} instances (${inProgressRate}%)`}
               </div>
               <div>
                 <strong>Not Run:</strong>{" "}
-                {not_started === 0
+                {!lastRunHasTotal
                   ? "---"
                   : `${not_started} instances (${notRunRate}%)`}
               </div>
