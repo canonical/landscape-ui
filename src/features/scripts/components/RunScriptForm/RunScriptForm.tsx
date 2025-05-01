@@ -1,23 +1,22 @@
-import { useFormik } from "formik";
-import moment from "moment/moment";
-import type { FC } from "react";
-import type { MultiSelectItem } from "@canonical/react-components";
-import { Col, Form, Input, Row, Select } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { currentInstanceCan } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import { getFormikError } from "@/utils/formikErrors";
+import type { MultiSelectItem } from "@canonical/react-components";
+import { Col, Form, Input, Row } from "@canonical/react-components";
+import { useFormik } from "formik";
+import moment from "moment/moment";
+import type { FC } from "react";
+import { useRunScript } from "../../api";
 import type { Script } from "../../types";
 import DeliveryBlock from "../DeliveryBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import type { FormProps } from "./types";
-import { currentInstanceCan } from "@/features/instances";
-import { useRunScript } from "../../api";
 import classes from "./RunScriptForm.module.scss";
-import useRoles from "@/hooks/useRoles";
-import { getFormikError } from "@/utils/formikErrors";
+import type { FormProps } from "./types";
 
 interface RunScriptFormProps {
   readonly script: Script;
@@ -28,23 +27,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { getAllInstanceTagsQuery, getInstancesQuery } = useInstances();
-
-  const { getAccessGroupQuery } = useRoles();
-
-  const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =
-    getAccessGroupQuery();
-
-  const accessGroupsOptionsResults = (accessGroupsResponse?.data ?? []).map(
-    (accessGroup) => ({
-      label: accessGroup.title,
-      value: accessGroup.name,
-    }),
-  );
-
-  const ACCESS_GROUP_OPTIONS = [
-    { label: "Select access group", value: "" },
-    ...accessGroupsOptionsResults,
-  ];
 
   const { runScript } = useRunScript();
 
@@ -57,7 +39,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
       script_id: script.id,
       username: values.username,
       time_limit: Number(values.time_limit),
-      in_access_group: values.access_group,
       deliver_after: values.deliverImmediately
         ? undefined
         : moment(values.deliver_after)
@@ -99,7 +80,9 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
       value: tag,
     })) ?? [];
 
-  const { data: getInstancesQueryResult } = getInstancesQuery();
+  const { data: getInstancesQueryResult } = getInstancesQuery({
+    query: `access-group-recursive:${script.access_group}`,
+  });
 
   const instanceOptions: MultiSelectItem[] =
     getInstancesQueryResult?.data.results
@@ -187,14 +170,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
           </div>
         </div>
       </div>
-
-      <Select
-        label="Access group"
-        disabled={isGettingAccessGroups}
-        options={ACCESS_GROUP_OPTIONS}
-        error={getFormikError(formik, "access_group")}
-        {...formik.getFieldProps("parent")}
-      />
 
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>

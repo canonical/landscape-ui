@@ -1,5 +1,4 @@
 export interface FormProps {
-  access_group: string;
   deliver_after: string;
   deliverImmediately: boolean;
   instanceIds: number[];
