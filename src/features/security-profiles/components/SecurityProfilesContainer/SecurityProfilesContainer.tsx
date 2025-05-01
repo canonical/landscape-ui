@@ -64,9 +64,13 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
     offset: 0,
   });
 
-  const pendingReports = JSON.parse(
-    localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",
-  ) as { activityId: number; profileId: number }[];
+  const [pendingReports, setPendingReports] = useState<
+    { activityId: number; profileId: number }[]
+  >(
+    JSON.parse(
+      localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",
+    ),
+  );
 
   const { getActivitiesQuery } = useActivities();
   const { data: getActivitiesQueryResponse } = getActivitiesQuery(
@@ -234,6 +238,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           title="Your audits are ready for download:"
           onDismiss={() => {
             localStorage.removeItem("_landscape_pendingSecurityProfileReports");
+            setPendingReports([]);
           }}
         >
           Several of your audits have been successfully generated and are now
@@ -258,6 +263,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           title="Your audit is ready for download:"
           onDismiss={() => {
             localStorage.removeItem("_landscape_pendingSecurityProfileReports");
+            setPendingReports([]);
           }}
         >
           Your audit has been successfully generated and is now ready for

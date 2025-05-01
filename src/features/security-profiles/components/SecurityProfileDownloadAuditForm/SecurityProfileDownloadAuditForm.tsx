@@ -32,7 +32,8 @@ interface SecurityProfileDownloadAuditFormProps
 type Status =
   | { type: "okay" }
   | { type: "pending" }
-  | { type: "ready"; report_uri: string };
+  | { type: "ready"; report_uri: string }
+  | { type: "error" };
 
 const SecurityProfileDownloadAuditForm: FC<
   SecurityProfileDownloadAuditFormProps
@@ -51,13 +52,25 @@ const SecurityProfileDownloadAuditForm: FC<
 
   const pendingReport = pendingReports.find((report) => report.profileId == id);
 
-  const { data: getSingleActivityQueryResponse, isLoading: isGettingActivity } =
-    getSingleActivityQuery(
-      {
-        activityId: pendingReport?.activityId ?? 0,
-      },
-      { enabled: !!pendingReport, refetchInterval: 1000 },
-    );
+  const {
+    data: getSingleActivityQueryResponse,
+    isLoading: isGettingActivity,
+    isError: isActivityError,
+  } = getSingleActivityQuery(
+    {
+      activityId: pendingReport?.activityId ?? 0,
+    },
+    {
+      enabled: !!pendingReport && status.type == "pending",
+      refetchInterval: 1000,
+    },
+  );
+
+  if (isActivityError && status.type != "error") {
+    setStatus({
+      type: "error",
+    });
+  }
 
   useEffect(() => {
     if (!getSingleActivityQueryResponse) {
@@ -177,16 +190,24 @@ const SecurityProfileDownloadAuditForm: FC<
               (report) => report.profileId == id,
             );
 
+            setStatus({ type: "okay" });
+
             if (index == -1) {
               return;
             }
 
             pendingReports.splice(index, 1);
 
-            localStorage.setItem(
-              "_landscape_pendingSecurityProfileReports",
-              JSON.stringify(pendingReports),
-            );
+            if (pendingReports.length) {
+              localStorage.setItem(
+                "_landscape_pendingSecurityProfileReports",
+                JSON.stringify(pendingReports),
+              );
+            } else {
+              localStorage.removeItem(
+                "_landscape_pendingSecurityProfileReports",
+              );
+            }
           }}
         >
           It has been successfully generated and is now available for download.{" "}
