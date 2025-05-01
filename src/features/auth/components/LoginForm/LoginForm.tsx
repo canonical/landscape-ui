@@ -1,3 +1,4 @@
+import { HOMEPAGE_PATH } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import {
@@ -12,7 +13,6 @@ import { useNavigate, useSearchParams } from "react-router";
 import * as Yup from "yup";
 import { useUnsigned } from "../../hooks";
 import classes from "./LoginForm.module.scss";
-import { HOMEPAGE_PATH } from "@/constants";
 
 interface FormProps {
   email: string;
@@ -47,9 +47,41 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
         ? Yup.string().required("This field is required")
         : Yup.string()
             .required("This field is required")
-            .email("Please provide a valid email address"),
+            .matches(
+              /^[a-zA-Z0-9-_.]+@[a-zA-Z0-9-.]*[a-zA-Z]$/,
+              "Please provide a valid email address",
+            )
+            .test({
+              message: "Please provide a valid email address",
+              test: (value) => {
+                if (value.match(/\.\./)) {
+                  return false;
+                }
+
+                const [first, domain] = value.split("@");
+
+                if (first.startsWith(".") || first.endsWith(".")) {
+                  return false;
+                }
+
+                if (!domain.includes(".")) {
+                  return false;
+                }
+
+                if (domain.startsWith(".") || domain.startsWith("-")) {
+                  return false;
+                }
+
+                if (domain.match(/\.-/) || domain.match(/-\./)) {
+                  return false;
+                }
+
+                return true;
+              },
+            }),
       password: Yup.string().required("This field is required"),
     }),
+    validateOnMount: true,
     onSubmit: async (values) => {
       try {
         const { data } = await signInWithEmailAndPassword({
@@ -103,7 +135,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
         <Button
           type="submit"
           appearance="positive"
-          disabled={formik.isSubmitting}
+          disabled={formik.isSubmitting || !formik.isValid}
           className="u-no-margin--bottom"
         >
           Sign in
