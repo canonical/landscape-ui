@@ -26,7 +26,7 @@ import {
 } from "../../helpers";
 import type { SecurityProfile, SecurityProfileActions } from "../../types";
 import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
-import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
+import SecurityProfileListContextualMenu from "../SecurityProfilesListContextualMenu";
 import { getNotificationMessage } from "./helpers";
 import classes from "./SecurityProfilesList.module.scss";
 
