@@ -304,74 +304,83 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "lastAuditPassrate",
         Header: PASSRATE_HEADER,
         Cell: ({ row }: CellProps<SecurityProfile>) => {
-          const { passing, failing, in_progress, not_started } =
+          const { passing, failing, in_progress } =
             row.original.last_run_results;
-          const total = passing + failing + in_progress;
+          const total = row.original.associated_instances;
 
-          if (!row.original.last_run_results.timestamp) return <NoData />;
-
-          const passRate = Math.round((passing / total) * 100);
-          const failRate = Math.round((failing / total) * 100);
-          const inProgressRate = Math.round((in_progress / total) * 100);
-          const notRunRate = Math.round((not_started / total) * 100);
+          const not_started = total - (passing + failing + in_progress);
           const lastRunHasTotal =
-            passing + failing + in_progress + not_started > 0;
+            passing + failing + in_progress + not_started !== 0;
 
-          const tooltipMessage = (
+          const passingPercent = ((passing / total) * 100).toFixed(0);
+          const failingPercent = ((failing / total) * 100).toFixed(0);
+          const inProgressPercent = ((in_progress / total) * 100).toFixed(0);
+          const notRunPercent = ((not_started / total) * 100).toFixed(0);
+
+          const totalPercent =
+            parseInt(passingPercent) +
+            parseInt(failingPercent) +
+            parseInt(inProgressPercent) +
+            parseInt(notRunPercent);
+          const difference = 100 - totalPercent;
+
+          const adjustedPassingPercent = (
+            parseInt(passingPercent) + difference
+          ).toString();
+
+          const tooltipMessage = lastRunHasTotal ? (
             <>
               <div>
-                <strong>Passed:</strong>{" "}
-                {!lastRunHasTotal
-                  ? "---"
-                  : `${passing} instances (${passRate}%)`}
-              </div>
-              <div>
-                <strong>Failed:</strong>{" "}
-                {!lastRunHasTotal
-                  ? "---"
-                  : `${failing} instances (${failRate}%)`}
-              </div>
-              <div>
-                <strong>In progress:</strong>{" "}
-                {!lastRunHasTotal
-                  ? "---"
-                  : `${in_progress} instances (${inProgressRate}%)`}
-              </div>
-              <div>
-                <strong>Not Run:</strong>{" "}
-                {!lastRunHasTotal
-                  ? "---"
-                  : `${not_started} instances (${notRunRate}%)`}
+                <div>
+                  <strong>Passed:</strong>{" "}
+                  {`${passing} instances (${adjustedPassingPercent}%)`}
+                </div>
+                <div>
+                  <strong>Failed:</strong>{" "}
+                  {`${failing} instances (${failingPercent}%)`}
+                </div>
+                <div>
+                  <strong>In progress:</strong>{" "}
+                  {`${in_progress} instances (${inProgressPercent}%)`}
+                </div>
+                <div>
+                  <strong>Not Run:</strong>{" "}
+                  {`${not_started} instances (${notRunPercent}%)`}
+                </div>
               </div>
             </>
+          ) : (
+            <NoData />
           );
 
           return (
             <div>
-              <div className={classes.textContainer}>
-                <Link
-                  to={{
-                    pathname: "/instances",
-                    search: `?query=security-profile%3A${row.original.id}%3Apass`,
-                  }}
+              {lastRunHasTotal && (
+                <div className={classes.textContainer}>
+                  <Link
+                    to={{
+                      pathname: "/instances",
+                      search: `?query=security-profile%3A${row.original.id}%3Apass`,
+                    }}
+                  >
+                    <span>{passing} passed</span>
+                  </Link>
+                  <Link
+                    to={{
+                      pathname: "/instances",
+                      search: `?query=security-profile%3A${row.original.id}%3Afail`,
+                    }}
+                  >
+                    <span>{failing} failed</span>
+                  </Link>
+                </div>
+              )}
+              {lastRunHasTotal ? (
+                <Tooltip
+                  position="btm-center"
+                  positionElementClassName={classes.tooltip}
+                  message={tooltipMessage}
                 >
-                  <span>{passing} passed</span>
-                </Link>
-                <Link
-                  to={{
-                    pathname: "/instances",
-                    search: `?query=security-profile%3A${row.original.id}%3Afail`,
-                  }}
-                >
-                  <span>{failing} failed</span>
-                </Link>
-              </div>
-              <Tooltip
-                position="btm-center"
-                positionElementClassName={classes.tooltip}
-                message={tooltipMessage}
-              >
-                {lastRunHasTotal ? (
                   <div className={classes.lineContainer}>
                     {passing > 0 && (
                       <div
@@ -392,15 +401,14 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                       />
                     )}
                   </div>
-                ) : (
-                  <NoData />
-                )}
-              </Tooltip>
+                </Tooltip>
+              ) : (
+                <NoData />
+              )}
             </div>
           );
         },
       },
-
       {
         accessor: "associatedInstances",
         Header: ASSOCIATED_INSTANCES_HEADER,
