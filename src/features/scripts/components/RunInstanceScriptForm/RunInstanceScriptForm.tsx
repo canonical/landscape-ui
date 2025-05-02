@@ -1,17 +1,17 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useGetScripts } from "@/features/scripts";
+import type { Script } from "@/features/scripts";
+import { ScriptDropdown } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
-import { Col, Form, Input, Row, Select } from "@canonical/react-components";
+import { Col, Form, Input, Row } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { ChangeEvent, FC } from "react";
+import type { FC } from "react";
 import { useRunScript } from "../../api";
-import type { RunInstanceScriptFormValues } from "../../types";
 import DeliveryBlock from "../DeliveryBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import { getNotification, getScriptOptions } from "./helpers";
+import type { FormProps } from "./types";
 
 interface RunInstanceScriptFormProps {
   readonly query: string;
@@ -26,20 +26,9 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
 
-  const { scripts } = useGetScripts(
-    {
-      listenToUrlParams: false,
-    },
-    {
-      parent_access_group: parentAccessGroup,
-      script_type: "active",
-    },
-  );
   const { runScript } = useRunScript();
 
-  const scriptOptions = getScriptOptions(scripts);
-
-  const handleSubmit = async (values: RunInstanceScriptFormValues) => {
+  const handleSubmit = async (values: FormProps) => {
     try {
       await runScript({
         deliver_after: values.deliverImmediately
@@ -51,7 +40,10 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
       });
       closeSidePanel();
 
-      notify.success(getNotification(values, scriptOptions));
+      notify.success({
+        message: `"${values.script?.title}" script queued to execute successfully`,
+        title: "Script execution queued",
+      });
     } catch (error) {
       debug(error);
     }
@@ -63,14 +55,11 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
     onSubmit: handleSubmit,
   });
 
-  const handleScriptChange = async (event: ChangeEvent<HTMLSelectElement>) => {
-    const scriptId = parseInt(event.target.value);
-
-    await formik.setFieldValue("script_id", scriptId);
+  const handleScriptChange = async (script: Script | null) => {
+    await formik.setFieldValue("script_id", script?.id ?? 0);
 
     if (!formik.values.username) {
-      const userName =
-        scripts.find(({ id }) => id === scriptId)?.username ?? "";
+      const userName = script?.username ?? "";
 
       await formik.setFieldValue("username", userName);
     }
@@ -78,13 +67,14 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Select
-        label="Script"
-        required
-        options={scriptOptions}
-        {...formik.getFieldProps("script_id")}
-        onChange={handleScriptChange}
-        error={getFormikError(formik, "script_id")}
+      <ScriptDropdown
+        script={formik.values.script}
+        setScript={async (script) => {
+          await formik.setFieldValue("script", script);
+          await handleScriptChange(script);
+        }}
+        errorMessage={getFormikError(formik, "script_id")}
+        parentAccessGroup={parentAccessGroup}
       />
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>
