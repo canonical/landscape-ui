@@ -21,7 +21,7 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
         Cell: ({ row: { original: activity } }: CellProps<Activity>) => (
           <Link
             className={classes.link}
-            to={`/activities?parent=${activity.id}`}
+            to={`/activities?query=parent-id%3A${activity.id}`}
           >
             {moment(activity.creation_time)
               .utc()
