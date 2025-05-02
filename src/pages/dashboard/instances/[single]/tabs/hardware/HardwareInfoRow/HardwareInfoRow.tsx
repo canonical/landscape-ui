@@ -1,12 +1,12 @@
 import classNames from "classnames";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { Col, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import classes from "./HardwareInfoRow.module.scss";
 
 interface InfoBlock {
   label: string;
-  value: string;
+  value: ReactNode;
 }
 
 interface HardwareInfoRowProps {
