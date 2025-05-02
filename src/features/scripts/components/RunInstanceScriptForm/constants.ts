@@ -1,18 +1,18 @@
 import moment from "moment";
 import * as Yup from "yup";
-import type { RunInstanceScriptFormValues } from "../../types";
+import type { FormProps } from "./types";
 
-export const INITIAL_VALUES: RunInstanceScriptFormValues = {
+export const INITIAL_VALUES: FormProps = {
   deliverImmediately: true,
   deliver_after: "",
   script_id: 0,
   time_limit: 300,
   username: "root",
+  script: null,
 };
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
   script_id: Yup.number().min(1, "This field is required"),
-  access_group: Yup.string(),
   deliverImmediately: Yup.boolean().required(),
   deliver_after: Yup.string().when("deliverImmediately", {
     is: false,

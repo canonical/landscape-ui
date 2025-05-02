@@ -26,6 +26,7 @@ interface ScriptDropdownProps {
   readonly setScript: (script: Script | null) => void;
   readonly existingScriptId?: number;
   readonly errorMessage?: string;
+  readonly parentAccessGroup?: string;
 }
 
 const ScriptDropdown: FC<ScriptDropdownProps> = ({
@@ -33,6 +34,7 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
   setScript,
   existingScriptId,
   errorMessage,
+  parentAccessGroup,
 }) => {
   const [search, setSearch] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -61,6 +63,7 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
       script_type: "active",
       limit: 20,
       offset: 0,
+      parent_access_group: parentAccessGroup,
     },
     {
       enabled: search.length > 2,

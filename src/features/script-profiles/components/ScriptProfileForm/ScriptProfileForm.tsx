@@ -4,7 +4,7 @@ import { toCronPhrase } from "@/components/form/CronSchedule/components/CronSche
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
-import { type Script } from "@/features/scripts";
+import { ScriptDropdown, type Script } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -25,7 +25,6 @@ import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
 import classes from "./ScriptProfileForm.module.scss";
-import ScriptDropdown from "./components/ScriptDropdown";
 
 export interface ScriptProfileFormValues
   extends Pick<
