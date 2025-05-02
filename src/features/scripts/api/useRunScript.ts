@@ -10,7 +10,6 @@ export interface RunScriptParams {
   script_id: number;
   username: string;
   time_limit?: number;
-  in_access_group?: string;
   // `YYYY-MM-DDTHH:MM:SSZ`
   deliver_after?: string;
 }
