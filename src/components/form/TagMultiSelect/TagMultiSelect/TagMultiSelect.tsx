@@ -58,19 +58,6 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
     setInputId(input.id);
   }, [chipsContainerRef.current]);
 
-  useEffect(() => {
-    if (!showDropdown || !chipsContainerRef.current) {
-      return;
-    }
-
-    handleDropdownPosition();
-  }, [
-    windowHeight,
-    showDropdown,
-    chipsContainerRef.current,
-    chipsContainerRef.current?.clientHeight,
-  ]);
-
   const handleDropdownPosition = () => {
     if (!chipsContainerRef.current) {
       return;
@@ -91,6 +78,19 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
       });
     }
   };
+
+  useEffect(() => {
+    if (!showDropdown || !chipsContainerRef.current) {
+      return;
+    }
+
+    handleDropdownPosition();
+  }, [
+    windowHeight,
+    showDropdown,
+    chipsContainerRef.current,
+    chipsContainerRef.current?.clientHeight,
+  ]);
 
   const handleDropdownClose = () => {
     setShowDropdown(false);
@@ -200,14 +200,16 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
           )}
           aria-expanded={showDropdown}
           ref={chipsContainerRef}
-          onClick={() => setShowDropdown(true)}
+          onClick={() => {
+            setShowDropdown(true);
+          }}
         >
           <TagChips
             containerRef={chipsContainerRef}
             onDismiss={handleChipDismiss}
-            onOverflowingItemsAmountChange={(amount) =>
-              setOverflowingChipsAmount(amount)
-            }
+            onOverflowingItemsAmountChange={(amount) => {
+              setOverflowingChipsAmount(amount);
+            }}
             tagData={tags}
           />
           <div className={classNames("p-search-and-filter__box", classes.box)}>
@@ -218,8 +220,10 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
                 value={inputText}
                 onChange={handleInputChange}
                 placeholder="Add tags"
-                className="u-no-margin--bottom"
-                onClick={() => setShowDropdown(true)}
+                className={classNames("u-no-margin--bottom", classes.input)}
+                onClick={() => {
+                  setShowDropdown(true);
+                }}
                 onKeyUp={handleKeysOnSearchBox}
                 wrapperClassName={inputError ? "is-error" : ""}
                 aria-errormessage={inputError ? `${inputId}-error` : undefined}

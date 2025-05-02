@@ -1,23 +1,20 @@
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import type { WslProfile } from "../../types";
-import type { MenuLink } from "@canonical/react-components";
-import {
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-  ICONS,
-  Input,
-} from "@canonical/react-components";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-import { useWslProfiles } from "../../hooks";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { MenuLink } from "@canonical/react-components";
+import { ContextualMenu, Icon, ICONS } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import { useWslProfiles } from "../../hooks";
+import type { WslProfile } from "../../types";
 import classes from "./WslProfilesListContextualMenu.module.scss";
 
-const WslProfileEditForm = lazy(() => import("../WslProfileEditForm"));
-const WslProfileInstallForm = lazy(() => import("../WslProfileInstallForm"));
+const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
+const WslProfileInstallForm = lazy(
+  async () => import("../WslProfileInstallForm"),
+);
 
 interface WslProfilesListContextualMenuProps {
   readonly profile: WslProfile;
@@ -27,7 +24,6 @@ const WslProfilesListContextualMenu: FC<WslProfilesListContextualMenuProps> = ({
   profile,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [confirmDeleteProfileText, setConfirmDeleteProfileText] = useState("");
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -55,9 +51,19 @@ const WslProfilesListContextualMenu: FC<WslProfilesListContextualMenuProps> = ({
     );
   };
 
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   const handleRemoveWslProfile = async () => {
     try {
       await removeWslProfile({ name: profile.name });
+
+      handleCloseModal();
 
       notify.success({
         message: `WSL profile "${profile.title}" removed successfully.`,
@@ -65,22 +71,7 @@ const WslProfilesListContextualMenu: FC<WslProfilesListContextualMenuProps> = ({
       });
     } catch (error) {
       debug(error);
-    } finally {
-      handleCloseModal();
     }
-  };
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setConfirmDeleteProfileText("");
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmDeleteProfileText(e.target.value);
   };
 
   const contextualMenuLinks: MenuLink[] = [
@@ -91,7 +82,7 @@ const WslProfilesListContextualMenu: FC<WslProfilesListContextualMenuProps> = ({
           <span>Edit</span>
         </>
       ),
-      "aria-label": `Edit ${profile.name} profile`,
+      "aria-label": `Edit ${profile.title} profile`,
       hasIcon: true,
       onClick: handleWslProfileEdit,
     },
@@ -102,7 +93,7 @@ const WslProfilesListContextualMenu: FC<WslProfilesListContextualMenuProps> = ({
           <span>Duplicate</span>
         </>
       ),
-      "aria-label": `Duplicate ${profile.name} profile`,
+      "aria-label": `Duplicate ${profile.title} profile`,
       hasIcon: true,
       onClick: handleWslProfileDuplicate,
     },
@@ -113,7 +104,7 @@ const WslProfilesListContextualMenu: FC<WslProfilesListContextualMenuProps> = ({
           <span>Remove</span>
         </>
       ),
-      "aria-label": `Remove ${profile.name} profile`,
+      "aria-label": `Remove ${profile.title} profile`,
       hasIcon: true,
       onClick: handleOpenModal,
     },
@@ -127,34 +118,27 @@ const WslProfilesListContextualMenu: FC<WslProfilesListContextualMenuProps> = ({
         toggleClassName={classes.toggleButton}
         toggleAppearance="base"
         toggleLabel={<Icon name="contextual-menu" aria-hidden />}
-        toggleProps={{ "aria-label": `${profile.name} profile actions` }}
+        toggleProps={{ "aria-label": `${profile.title} profile actions` }}
         links={contextualMenuLinks}
       />
-      {modalOpen && (
-        <ConfirmationModal
-          title="Remove WSL profile"
-          confirmButtonLabel="Remove"
-          confirmButtonAppearance="negative"
-          confirmButtonDisabled={
-            isRemoving || confirmDeleteProfileText !== `remove ${profile.name}`
-          }
-          confirmButtonLoading={isRemoving}
-          onConfirm={handleRemoveWslProfile}
-          close={handleCloseModal}
-        >
-          <p>
-            Removing this profile will affect{" "}
-            <b>{profile.computers.constrained.length} instances</b>. This action
-            is irreversible.
-          </p>
-          Type <b>remove {profile.name}</b> to confirm.
-          <Input
-            type="text"
-            value={confirmDeleteProfileText}
-            onChange={handleChange}
-          />
-        </ConfirmationModal>
-      )}
+
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        title="Remove WSL profile"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        onConfirm={handleRemoveWslProfile}
+        close={handleCloseModal}
+        confirmationText={`remove ${profile.name}`}
+      >
+        <p>
+          Removing this profile will affect{" "}
+          <b>{profile.computers.constrained.length} instances</b>. This action
+          is <b>irreversible</b>.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

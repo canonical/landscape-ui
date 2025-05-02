@@ -1,16 +1,10 @@
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { MenuLink } from "@canonical/react-components";
-import {
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-  ICONS,
-  Input,
-} from "@canonical/react-components";
-import type { ChangeEvent } from "react";
+import { ContextualMenu, Icon, ICONS } from "@canonical/react-components";
 import { lazy, Suspense, useState, type FC } from "react";
 import { useRemoveRebootProfileQuery } from "../../api";
 import type { RebootProfile } from "../../types";
@@ -26,7 +20,6 @@ const RebootProfilesListContextualMenu: FC<
   RebootProfilesListContextualMenuProps
 > = ({ profile }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [confirmDeleteProfileText, setConfirmDeleteProfileText] = useState("");
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -38,6 +31,9 @@ const RebootProfilesListContextualMenu: FC<
   const handleRemoveRebootProfile = async () => {
     try {
       await removeRebootProfile({ id: profile.id });
+
+      setModalOpen(false);
+
       notify.success({
         message: `Reboot profile "${profile.title}" removed successfully`,
         title: "Reboot profile removed",
@@ -65,17 +61,12 @@ const RebootProfilesListContextualMenu: FC<
     );
   };
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setConfirmDeleteProfileText(event.target.value);
-  };
-
   const handleOpenModal = () => {
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    setConfirmDeleteProfileText("");
   };
 
   const contextualMenuButtons: MenuLink[] = [
@@ -128,33 +119,23 @@ const RebootProfilesListContextualMenu: FC<
         links={contextualMenuButtons}
       />
 
-      {modalOpen && (
-        <ConfirmationModal
-          title="Confirm delete"
-          confirmButtonLabel="Delete"
-          onConfirm={handleRemoveRebootProfile}
-          close={handleCloseModal}
-          confirmButtonDisabled={
-            confirmDeleteProfileText !== `remove ${profile.title}` ||
-            isRemovingRebootProfile
-          }
-        >
-          <div>
-            <p>
-              Are you sure you want to remove &quot;{profile.title}
-              &quot; reboot profile? The removal of &quot;{profile.title}&quot;
-              reboot profile is irreversible and might adversely affect your
-              system.
-            </p>
-            Type <strong>remove {profile.title}</strong> to confirm.
-          </div>
-          <Input
-            type="text"
-            value={confirmDeleteProfileText}
-            onChange={handleChange}
-          />
-        </ConfirmationModal>
-      )}
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        title="Confirm delete"
+        confirmButtonLabel="Delete"
+        onConfirm={handleRemoveRebootProfile}
+        close={handleCloseModal}
+        confirmButtonDisabled={isRemovingRebootProfile}
+        confirmButtonLoading={isRemovingRebootProfile}
+        confirmButtonAppearance="negative"
+        confirmationText={`remove ${profile.title}`}
+      >
+        <p>
+          Are you sure you want to remove &quot;{profile.title}
+          &quot; reboot profile? The removal of &quot;{profile.title}&quot;
+          reboot profile is irreversible and might adversely affect your system.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

@@ -1,12 +1,11 @@
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useNotify from "@/hooks/useNotify";
-import { ConfirmationModal, Input } from "@canonical/react-components";
-import { useState, type FC } from "react";
+import { type FC } from "react";
 import { useArchiveScriptProfile } from "../../api";
 import type { ScriptProfile } from "../../types";
-import classes from "./ScriptProfileArchiveModal.module.scss";
 
 interface ScriptProfileArchiveModalProps {
-  readonly profile: ScriptProfile | null;
+  readonly profile: ScriptProfile;
   readonly removeProfile: () => void;
 }
 
@@ -19,64 +18,38 @@ const ScriptProfileArchiveModal: FC<ScriptProfileArchiveModalProps> = ({
   const { archiveScriptProfile, isArchivingScriptProfile } =
     useArchiveScriptProfile();
 
-  const [confirmationText, setConfirmationText] = useState("");
-
-  if (!profile) {
-    return;
-  }
-
   const closeArchivingModal = () => {
     removeProfile();
-    setConfirmationText("");
   };
 
   const confirmArchiving = async () => {
-    if (!profile) {
-      return;
-    }
-
     await archiveScriptProfile({ ...profile });
 
     closeArchivingModal();
 
     notify.success({
-      title: `You have successfully archived ${profile.title}`,
+      title: `You have successfully archived "${profile.title}"`,
       message: "The profile will no longer run on the defined schedule.",
     });
   };
 
   return (
-    <ConfirmationModal
+    <TextConfirmationModal
+      isOpen
       title={`Archive ${profile.title}`}
       confirmButtonLabel="Archive"
-      confirmButtonDisabled={
-        confirmationText != `archive ${profile.title}` ||
-        isArchivingScriptProfile
-      }
+      confirmButtonDisabled={isArchivingScriptProfile}
       confirmButtonLoading={isArchivingScriptProfile}
       onConfirm={confirmArchiving}
       close={closeArchivingModal}
+      confirmationText={`archive ${profile.title}`}
     >
       <p>
         Archiving the script will prevent it from running in the future.
         <br />
         This action is <strong>irreversible</strong>.
       </p>
-
-      <p className={classes.confirmationPrompt}>
-        Type <strong>archive {profile.title}</strong> to confirm.
-      </p>
-
-      <Input
-        type="text"
-        value={confirmationText}
-        autoComplete="off"
-        placeholder={`archive ${profile.title}`}
-        onChange={(event) => {
-          setConfirmationText(event.target.value);
-        }}
-      />
-    </ConfirmationModal>
+    </TextConfirmationModal>
   );
 };
 

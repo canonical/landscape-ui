@@ -18,6 +18,7 @@ import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps } from "./helpers";
 import classes from "./PackageProfileList.module.scss";
 import usePageParams from "@/hooks/usePageParams";
+import NoData from "@/components/layout/NoData";
 
 interface PackageProfileListProps {
   readonly packageProfiles: PackageProfile[];
@@ -66,7 +67,9 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => handlePackageProfileDetailsOpen(original)}
+            onClick={() => {
+              handlePackageProfileDetailsOpen(original);
+            }}
           >
             {original.title}
           </Button>
@@ -96,7 +99,8 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
           row: {
             original: { tags },
           },
-        }: CellProps<PackageProfile>) => tags.join(", "),
+        }: CellProps<PackageProfile>) =>
+          tags.length > 0 ? tags.join(", ") : <NoData />,
       },
       {
         accessor: "computers['non-compliant']",

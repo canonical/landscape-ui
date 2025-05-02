@@ -22,7 +22,7 @@ import { CONSTRAINT_TYPE_OPTIONS } from "./constants";
 import classes from "./PackageProfileConstraintsEditFormActions.module.scss";
 
 const PackageProfileConstraintsAddForm = lazy(
-  () => import("../PackageProfileConstraintsAddForm"),
+  async () => import("../PackageProfileConstraintsAddForm"),
 );
 
 interface PackageProfileConstraintsEditFormActionsProps {
@@ -62,7 +62,7 @@ const PackageProfileConstraintsEditFormActions: FC<
       setSelectedIds([]);
 
       notify.success({
-        message: `${selectedIds.length} "${profile.name}" profile's ${selectedIds.length === 1 ? "constraint" : "constraints"} removed successfully`,
+        message: `${selectedIds.length} "${profile.title}" profile's ${selectedIds.length === 1 ? "constraint" : "constraints"} removed successfully`,
         title: `Package profile ${selectedIds.length === 1 ? "constraint" : "constraints"} removed`,
       });
     } catch (error) {
@@ -72,7 +72,7 @@ const PackageProfileConstraintsEditFormActions: FC<
 
   const handleConstraintsAdd = () => {
     setSidePanelContent(
-      `Add package constraints to "${profile.name}" profile`,
+      `Add package constraints to "${profile.title}" profile`,
       <Suspense fallback={<LoadingState />}>
         <PackageProfileConstraintsAddForm profile={profile} />
       </Suspense>,
@@ -88,11 +88,11 @@ const PackageProfileConstraintsEditFormActions: FC<
         labelClassName="u-no-padding--top"
         options={CONSTRAINT_TYPE_OPTIONS}
         value={filter}
-        onChange={(event) =>
+        onChange={(event) => {
           onFilterChange(
             event.target.value as PackageProfileConstraintType | "",
-          )
-        }
+          );
+        }}
       />
 
       <ConfirmationButton

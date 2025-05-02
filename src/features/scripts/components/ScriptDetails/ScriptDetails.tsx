@@ -3,16 +3,12 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import {
-  Button,
-  ConfirmationButton,
-  Icon,
-  Notification,
-} from "@canonical/react-components";
+import { Button, Icon, Notification } from "@canonical/react-components";
 import moment from "moment";
-import { lazy, Suspense, type FC } from "react";
+import { lazy, Suspense, useState, type FC } from "react";
 import { useArchiveScriptModal } from "../../hooks";
 import type { ScriptTabId } from "../../types";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const ScriptDetailsTabs = lazy(async () => import("../ScriptDetailsTabs"));
 
@@ -27,22 +23,30 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   scriptId,
   initialTabId = "info",
 }) => {
-  const { setSidePanelContent, closeSidePanel } = useSidePanel();
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const { setSidePanelContent } = useSidePanel();
   const debug = useDebug();
 
   const { script } = useGetSingleScript(scriptId);
+
+  const handleOpenModal = (): void => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = (): void => {
+    setModalOpen(false);
+  };
 
   const {
     archiveModalBody,
     archiveModalButtonLabel,
     archiveModalTitle,
-    disabledArchiveConfirmation,
     isArchivingScript,
     onConfirmArchive,
-    resetArchiveModal,
   } = useArchiveScriptModal({
     script,
-    afterSuccess: closeSidePanel,
+    afterSuccess: handleCloseModal,
   });
 
   const viewVersionHistory = (): void => {
@@ -106,24 +110,17 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
               <span>Edit</span>
             </Button>
 
-            <ConfirmationButton
+            <Button
               className="p-segmented-control__button"
               type="button"
-              confirmationModalProps={{
-                children: archiveModalBody,
-                title: archiveModalTitle,
-                confirmButtonAppearance: "negative",
-                confirmButtonLabel: archiveModalButtonLabel,
-                confirmButtonDisabled: disabledArchiveConfirmation,
-                confirmButtonLoading: isArchivingScript,
-                onConfirm: onConfirmArchive,
-                close: resetArchiveModal,
-              }}
+              onClick={handleOpenModal}
+              hasIcon
+              aria-label={`Archive ${script?.title}`}
               disabled={!script?.is_editable}
             >
               <Icon name="archive" />
               <span>Archive</span>
-            </ConfirmationButton>
+            </Button>
           </div>
         </div>
       )}
@@ -138,6 +135,20 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
       ) : (
         <LoadingState />
       )}
+
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        confirmationText={`archive ${script?.title}`}
+        title={archiveModalTitle}
+        confirmButtonLabel={archiveModalButtonLabel}
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isArchivingScript}
+        confirmButtonLoading={isArchivingScript}
+        onConfirm={onConfirmArchive}
+        close={handleCloseModal}
+      >
+        {archiveModalBody}
+      </TextConfirmationModal>
     </>
   );
 };

@@ -40,7 +40,16 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
   const formik = useFormik({
     initialValues: INITIAL_VALUES,
     enableReinitialize: true,
-    onSubmit: async () => {
+    onSubmit: async (values) => {
+      if (
+        (values.sanitizeInstances &&
+          values.sanitizationConfirmationText !== "sanitize instances") ||
+        (values.removeFromLandscape &&
+          values.removeFromLandscapeConfirmationText !== "remove instances")
+      ) {
+        return;
+      }
+
       await deactivateEmployee({
         id: employee.id,
         remove_instances: formik.values.removeFromLandscape,
@@ -98,7 +107,13 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
       }
       confirmButtonLoading={isDeactivating}
     >
-      <Form noValidate onSubmit={formik.handleSubmit}>
+      <Form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          formik.handleSubmit();
+        }}
+      >
         <p>
           This will prevent {employee.name} from logging in to Landscape and
           from registering any new instances with their account
@@ -144,6 +159,8 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
                   </span>
                 }
                 aria-label="Sanitization confirmation text"
+                placeholder="sanitize instances"
+                autoComplete="off"
                 type="text"
                 {...formik.getFieldProps("sanitizationConfirmationText")}
               />
@@ -190,6 +207,8 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
                     Type <b>remove instances</b> to confirm.
                   </span>
                 }
+                placeholder="remove instances"
+                autoComplete="off"
                 aria-label="Remove from Landscape confirmation text"
                 type="text"
                 {...formik.getFieldProps("removeFromLandscapeConfirmationText")}

@@ -1,32 +1,30 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import type { PackageProfile } from "../../types";
-import {
-  Button,
-  Col,
-  ConfirmationButton,
-  Icon,
-  ICONS,
-  Row,
-} from "@canonical/react-components";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
-import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
-import { usePackageProfiles } from "../../hooks";
 import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import { usePackageProfiles } from "../../hooks";
+import type { PackageProfile } from "../../types";
 import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraints";
 
 const PackageProfileDuplicateForm = lazy(
-  () => import("../PackageProfileDuplicateForm"),
+  async () => import("../PackageProfileDuplicateForm"),
 );
-const PackageProfileEditForm = lazy(() => import("../PackageProfileEditForm"));
+const PackageProfileEditForm = lazy(
+  async () => import("../PackageProfileEditForm"),
+);
 
 interface PackageProfileDetailsProps {
   readonly profile: PackageProfile;
 }
 
 const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
@@ -35,14 +33,23 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
   const { mutateAsync: removePackageProfile, isPending: isRemoving } =
     removePackageProfileQuery;
 
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   const handleRemovePackageProfile = async () => {
     try {
       await removePackageProfile({ name: profile.name });
 
+      handleCloseModal();
       closeSidePanel();
 
       notify.success({
-        message: `Package profile "${name}" removed successfully.`,
+        message: `Package profile "${profile.name}" removed successfully.`,
         title: "Package profile removed",
       });
     } catch (error) {
@@ -89,28 +96,20 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           <Icon name="edit" />
           <span>Edit</span>
         </Button>
-        <ConfirmationButton
-          className="p-segmented-control__button has-icon"
+        <Button
+          className="p-segmented-control__button"
+          hasIcon
           type="button"
-          confirmationModalProps={{
-            title: "Remove package profile",
-            children: (
-              <p>This will remove &quot;{profile.name}&quot; profile.</p>
-            ),
-            confirmButtonLabel: "Remove",
-            confirmButtonAppearance: "negative",
-            confirmButtonDisabled: isRemoving,
-            confirmButtonLoading: isRemoving,
-            onConfirm: handleRemovePackageProfile,
-          }}
+          onClick={handleOpenModal}
+          aria-label={`Remove ${profile.title} package profile`}
         >
           <Icon name={ICONS.delete} />
           <span>Remove</span>
-        </ConfirmationButton>
+        </Button>
       </div>
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={3}>
-          <InfoItem label="Name" value={profile.name} />
+          <InfoItem label="Name" value={profile.title} />
         </Col>
         <Col size={9}>
           <InfoItem label="Description" value={profile.description} />
@@ -142,6 +141,23 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
       </Row>
 
       <PackageProfileDetailsConstraints profile={profile} />
+
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        title="Remove package profile"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonLoading={isRemoving}
+        confirmButtonDisabled={isRemoving}
+        close={handleCloseModal}
+        confirmationText={`remove ${profile.name}`}
+        onConfirm={handleRemovePackageProfile}
+      >
+        <p>
+          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+          <b>irreversible</b>.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

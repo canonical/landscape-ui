@@ -30,6 +30,7 @@ import {
   MAX_AUTOINSTALL_FILE_VERSION_COUNT,
 } from "./constants";
 import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
+import NoData from "@/components/layout/NoData";
 
 const AutoinstallFileDetails = lazy(
   async () => import("../AutoinstallFileDetails"),
@@ -233,6 +234,10 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             index,
           },
         }: CellProps<WithGroups<AutoinstallFile>>): ReactNode => {
+          if (!groups || groups.length === 0) {
+            return <NoData />;
+          }
+
           const [firstGroupName, ...lastGroupNames] = groups.map(
             (group) => group.name,
           );
