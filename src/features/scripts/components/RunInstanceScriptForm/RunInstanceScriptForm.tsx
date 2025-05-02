@@ -2,14 +2,11 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useGetScripts } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
 import { Col, Form, Input, Row, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { ChangeEvent, FC } from "react";
-import { useMemo } from "react";
 import { useRunScript } from "../../api";
 import type { RunInstanceScriptFormValues } from "../../types";
 import DeliveryBlock from "../DeliveryBlock";
@@ -18,19 +15,23 @@ import { getNotification, getScriptOptions } from "./helpers";
 
 interface RunInstanceScriptFormProps {
   readonly query: string;
+  readonly parentAccessGroup?: string;
 }
 
-const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {
+const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
+  parentAccessGroup,
+  query,
+}) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { getAccessGroupQuery } = useRoles();
 
   const { scripts } = useGetScripts(
     {
       listenToUrlParams: false,
     },
     {
+      parent_access_group: parentAccessGroup,
       script_type: "active",
     },
   );
@@ -75,17 +76,6 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {
     }
   };
 
-  const { data: getAccessGroupResult } = getAccessGroupQuery();
-
-  const accessGroupsOptions = useMemo<SelectOption[]>(
-    () =>
-      (getAccessGroupResult?.data ?? []).map(({ name, title }) => ({
-        label: title,
-        value: name,
-      })),
-    [getAccessGroupResult],
-  );
-
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Select
@@ -95,15 +85,6 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({ query }) => {
         {...formik.getFieldProps("script_id")}
         onChange={handleScriptChange}
         error={getFormikError(formik, "script_id")}
-      />
-      <Select
-        label="Access group"
-        options={[
-          { label: "Select access group", value: "" },
-          ...accessGroupsOptions,
-        ]}
-        {...formik.getFieldProps("in_access_group")}
-        error={getFormikError(formik, "in_access_group")}
       />
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>

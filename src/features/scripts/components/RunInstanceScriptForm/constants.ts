@@ -1,9 +1,8 @@
+import moment from "moment";
 import * as Yup from "yup";
 import type { RunInstanceScriptFormValues } from "../../types";
-import moment from "moment";
 
 export const INITIAL_VALUES: RunInstanceScriptFormValues = {
-  in_access_group: "",
   deliverImmediately: true,
   deliver_after: "",
   script_id: 0,

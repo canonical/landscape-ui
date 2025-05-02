@@ -242,7 +242,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
-        <RunInstanceScriptForm query={`id:${instance.id}`} />
+        <RunInstanceScriptForm
+          parentAccessGroup={instance.access_group}
+          query={`id:${instance.id}`}
+        />
       </Suspense>,
     );
   };

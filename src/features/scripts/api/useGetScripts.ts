@@ -15,6 +15,7 @@ const DEFAULT_CONFIG: PaginatedGetHookParams = {
 interface GetScriptsParams {
   limit?: number;
   offset?: number;
+  parent_access_group?: string;
   search?: string;
   script_type: string;
 }
