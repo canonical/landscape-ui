@@ -304,13 +304,14 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "lastAuditPassrate",
         Header: PASSRATE_HEADER,
         Cell: ({ row }: CellProps<SecurityProfile>) => {
-          const { passing, failing, in_progress } =
+          const { passing, failing, in_progress, not_started } =
             row.original.last_run_results;
 
-          const { not_started } = row.original.last_run_results;
           const total = passing + failing + in_progress + not_started;
 
-          const lastRunHasTotal = !!total;
+          if (!total) {
+            return <NoData />;
+          }
 
           const passRate = ((passing / total) * 100).toFixed(0);
           const failRate = ((failing / total) * 100).toFixed(0);
@@ -352,58 +353,52 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           );
 
           return (
-            <div>
-              {lastRunHasTotal ? (
-                <>
-                  <div className={classes.textContainer}>
-                    <Link
-                      to={{
-                        pathname: "/instances",
-                        search: `?query=security-profile%3A${row.original.id}%3Apass`,
-                      }}
-                    >
-                      <span>{passing} passed</span>
-                    </Link>
-                    <Link
-                      to={{
-                        pathname: "/instances",
-                        search: `?query=security-profile%3A${row.original.id}%3Afail`,
-                      }}
-                    >
-                      <span>{failing} failed</span>
-                    </Link>
-                  </div>
-                  <Tooltip
-                    position="btm-center"
-                    positionElementClassName={classes.tooltip}
-                    message={tooltipMessage}
-                  >
-                    <div className={classes.lineContainer}>
-                      {passing > 0 && (
-                        <div
-                          className={classes.linePassed}
-                          style={{ width: `${(passing / total) * 100}%` }}
-                        />
-                      )}
-                      {failing > 0 && (
-                        <div
-                          className={classes.lineFailed}
-                          style={{ width: `${(failing / total) * 100}%` }}
-                        />
-                      )}
-                      {in_progress > 0 && (
-                        <div
-                          className={classes.lineInProgress}
-                          style={{ width: `${(in_progress / total) * 100}%` }}
-                        />
-                      )}
-                    </div>
-                  </Tooltip>
-                </>
-              ) : (
-                <NoData />
-              )}
-            </div>
+            <>
+              <div className={classes.textContainer}>
+                <Link
+                  to={{
+                    pathname: "/instances",
+                    search: `?query=security-profile%3A${row.original.id}%3Apass`,
+                  }}
+                >
+                  <span>{passing} passed</span>
+                </Link>
+                <Link
+                  to={{
+                    pathname: "/instances",
+                    search: `?query=security-profile%3A${row.original.id}%3Afail`,
+                  }}
+                >
+                  <span>{failing} failed</span>
+                </Link>
+              </div>
+              <Tooltip
+                position="btm-center"
+                positionElementClassName={classes.tooltip}
+                message={tooltipMessage}
+              >
+                <div className={classes.lineContainer}>
+                  {passing > 0 && (
+                    <div
+                      className={classes.linePassed}
+                      style={{ width: `${(passing / total) * 100}%` }}
+                    />
+                  )}
+                  {failing > 0 && (
+                    <div
+                      className={classes.lineFailed}
+                      style={{ width: `${(failing / total) * 100}%` }}
+                    />
+                  )}
+                  {in_progress > 0 && (
+                    <div
+                      className={classes.lineInProgress}
+                      style={{ width: `${(in_progress / total) * 100}%` }}
+                    />
+                  )}
+                </div>
+              </Tooltip>
+            </>
           );
         },
       },
