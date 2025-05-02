@@ -30,7 +30,7 @@ const PackageProfileConstraintsAddForm: FC<
 
   const handleConstraintsEdit = () => {
     setSidePanelContent(
-      `Edit "${profile.name}" profile's constraints`,
+      `Edit "${profile.title}" profile's constraints`,
       <Suspense fallback={<LoadingState />}>
         <PackageProfileConstraintsEditForm profile={profile} />
       </Suspense>,
@@ -77,7 +77,7 @@ const PackageProfileConstraintsAddForm: FC<
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={`Add ${formik.values.constraints.length === 1 ? "constraint" : "constraints"}`}
-        submitButtonAriaLabel={`Add ${formik.values.constraints.length === 1 ? "constraint" : "constraints"} to "${profile.name}" profile`}
+        submitButtonAriaLabel={`Add ${formik.values.constraints.length === 1 ? "constraint" : "constraints"} to "${profile.title}" profile`}
         cancelButtonDisabled={formik.isSubmitting}
       />
     </Form>

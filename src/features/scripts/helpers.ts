@@ -11,7 +11,7 @@ const getEncodedCode = (code: string) => {
 export const getCreateScriptParams = (values: ScriptFormValues) => {
   return {
     code: getEncodedCode(values.code),
-    title: values.title,
+    title: values.title.trim(),
     script_type: "V2",
     access_group: values.access_group,
   };
@@ -27,7 +27,7 @@ export const getEditScriptParams = ({
   return {
     code: getEncodedCode(values.code),
     script_id: scriptId,
-    title: values.title,
+    title: values.title.trim(),
   };
 };
 

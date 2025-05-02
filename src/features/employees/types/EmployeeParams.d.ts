@@ -10,6 +10,8 @@ interface CommonEmployeeParams {
   employee_group_ids?: string[];
   autoinstall_file_ids?: string[];
   is_active?: boolean;
+  limit?: number;
+  offset?: number;
 }
 
 export interface GetEmployeeParams extends CommonEmployeeParams {

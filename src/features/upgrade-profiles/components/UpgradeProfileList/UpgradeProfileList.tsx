@@ -89,7 +89,9 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         className: classes.truncated,
         Header: "Tags",
         Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
-          <>{original.tags ? original.tags.join(", ") : <NoData />}</>
+          <>
+            {original.tags.length > 0 ? original.tags.join(", ") : <NoData />}
+          </>
         ),
       },
       {

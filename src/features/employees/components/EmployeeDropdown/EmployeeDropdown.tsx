@@ -29,6 +29,7 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
 
   const debug = useDebug();
   const { employees, isFetching } = useGetEmployees(
+    { listenToUrlParams: false },
     {
       search: search,
       with_groups: true,

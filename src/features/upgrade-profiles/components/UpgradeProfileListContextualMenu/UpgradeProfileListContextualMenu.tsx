@@ -2,19 +2,14 @@ import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import type { UpgradeProfile } from "../../types";
 import type { MenuLink } from "@canonical/react-components";
-import {
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-  ICONS,
-  Input,
-} from "@canonical/react-components";
+import { ContextualMenu, Icon, ICONS } from "@canonical/react-components";
 import classes from "./UpgradeProfileListContextualMenu.module.scss";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { useUpgradeProfiles } from "../../hooks";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const SingleUpgradeProfileForm = lazy(
   async () => import("../SingleUpgradeProfileForm"),
@@ -28,7 +23,6 @@ const UpgradeProfileListContextualMenu: FC<
   UpgradeProfileListContextualMenuProps
 > = ({ profile }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [confirmDeleteProfileText, setConfirmDeleteProfileText] = useState("");
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -38,9 +32,19 @@ const UpgradeProfileListContextualMenu: FC<
   const { mutateAsync: removeUpgradeProfile, isPending: isRemoving } =
     removeUpgradeProfileQuery;
 
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   const handleRemoveUpgradeProfile = async () => {
     try {
       await removeUpgradeProfile({ name: profile.name });
+
+      handleCloseModal();
 
       notify.success({
         message: `Upgrade profile "${profile.title}" removed successfully`,
@@ -58,19 +62,6 @@ const UpgradeProfileListContextualMenu: FC<
         <SingleUpgradeProfileForm action="edit" profile={profile} />
       </Suspense>,
     );
-  };
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setConfirmDeleteProfileText("");
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmDeleteProfileText(e.target.value);
   };
 
   const contextualMenuButtons: MenuLink[] = [
@@ -106,34 +97,26 @@ const UpgradeProfileListContextualMenu: FC<
         toggleClassName={classes.toggleButton}
         toggleAppearance="base"
         toggleLabel={<Icon name="contextual-menu" aria-hidden />}
-        toggleProps={{ "aria-label": `${profile.name} profile actions` }}
+        toggleProps={{ "aria-label": `${profile.title} profile actions` }}
         links={contextualMenuButtons}
       />
 
-      {modalOpen && (
-        <ConfirmationModal
-          title="Remove upgrade profile"
-          confirmButtonLabel="Remove"
-          confirmButtonAppearance="negative"
-          confirmButtonDisabled={
-            isRemoving || confirmDeleteProfileText !== `remove ${profile.name}`
-          }
-          confirmButtonLoading={isRemoving}
-          onConfirm={handleRemoveUpgradeProfile}
-          close={handleCloseModal}
-        >
-          <p>
-            This will remove &quot;{profile.title}&quot; profile. This action is
-            irreversible.
-          </p>
-          Type <b>remove {profile.name}</b> to confirm.
-          <Input
-            type="text"
-            value={confirmDeleteProfileText}
-            onChange={handleChange}
-          />
-        </ConfirmationModal>
-      )}
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        confirmationText={`remove ${profile.name}`}
+        title="Remove upgrade profile"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        onConfirm={handleRemoveUpgradeProfile}
+        close={handleCloseModal}
+      >
+        <p>
+          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+          <b>irreversible</b>.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

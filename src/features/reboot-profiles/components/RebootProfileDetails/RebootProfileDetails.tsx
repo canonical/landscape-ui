@@ -1,27 +1,20 @@
-import type { ChangeEvent, FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import {
-  Button,
-  Col,
-  ConfirmationButton,
-  Icon,
-  ICONS,
-  Input,
-  Row,
-} from "@canonical/react-components";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import type { RebootProfile } from "../../types";
-import classes from "./RebootProfileDetails.module.scss";
+import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { formatWeeklyRebootSchedule } from "./helpers";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useRemoveRebootProfileQuery } from "../../api";
+import type { RebootProfile } from "../../types";
+import { formatWeeklyRebootSchedule } from "./helpers";
+import classes from "./RebootProfileDetails.module.scss";
 
 const RebootProfilesForm = lazy(async () => import("../RebootProfilesForm"));
 
@@ -34,7 +27,7 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
   accessGroupOptions,
   profile,
 }) => {
-  const [confirmDeleteProfileText, setConfirmDeleteProfileText] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -42,15 +35,12 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
   const { removeRebootProfile, isRemovingRebootProfile } =
     useRemoveRebootProfileQuery();
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setConfirmDeleteProfileText(event.target.value);
-  };
-
   const handleRemoveRebootProfile = async () => {
     try {
       await removeRebootProfile({
         id: profile.id,
       });
+
       closeSidePanel();
 
       notify.success({
@@ -80,6 +70,14 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
     );
   };
 
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
   return (
     <>
       <div className="p-segmented-control">
@@ -103,41 +101,16 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
           <Icon name="canvas" />
           <span>Duplicate</span>
         </Button>
-        <ConfirmationButton
-          key={profile.id}
+        <Button
           className="p-segmented-control__button has-icon"
-          confirmationModalProps={{
-            title: "Remove reboot profile",
-            children: (
-              <>
-                <div>
-                  <p>
-                    Are you sure you want to remove &quot;{profile.title}
-                    &quot; reboot profile? The removal of &quot;{profile.title}
-                    &quot; reboot profile is irreversible and might adversely
-                    affect your system.
-                  </p>
-                  Type <strong>remove {profile.title}</strong> to confirm.
-                </div>
-                <Input
-                  type="text"
-                  value={confirmDeleteProfileText}
-                  onChange={handleChange}
-                />
-              </>
-            ),
-            confirmButtonLabel: "Remove",
-            confirmButtonAppearance: "negative",
-            onConfirm: handleRemoveRebootProfile,
-            confirmButtonDisabled:
-              confirmDeleteProfileText !== `remove ${profile.title}` ||
-              isRemovingRebootProfile,
-            confirmButtonLoading: isRemovingRebootProfile,
-          }}
+          type="button"
+          hasIcon
+          onClick={handleOpenModal}
+          aria-label={`Remove reboot profile ${profile.title}`}
         >
           <Icon name={ICONS.delete} />
           <span>Remove</span>
-        </ConfirmationButton>
+        </Button>
       </div>
 
       <Row className="u-no-padding--left u-no-padding--right">
@@ -190,6 +163,25 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
           <InfoItem label="associated instances" value={profile.tags} />
         )}
       </div>
+
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        title="Remove reboot profile"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        onConfirm={handleRemoveRebootProfile}
+        confirmButtonDisabled={isRemovingRebootProfile}
+        confirmButtonLoading={isRemovingRebootProfile}
+        close={handleCloseModal}
+        confirmationText={`remove ${profile.title}`}
+      >
+        <p>
+          Are you sure you want to remove &quot;{profile.title}
+          &quot; reboot profile? The removal of &quot;{profile.title}
+          &quot; reboot profile is irreversible and might adversely affect your
+          system.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

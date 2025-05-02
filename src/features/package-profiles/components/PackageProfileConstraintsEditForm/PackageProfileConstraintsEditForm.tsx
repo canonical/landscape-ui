@@ -67,7 +67,7 @@ const PackageProfileConstraintsEditForm: FC<
       });
 
       notify.success({
-        message: `"${profile.name}" package profile's constraint updated successfully`,
+        message: `"${profile.title}" package profile's constraint updated successfully`,
         title: "Package profile constraint updated",
       });
 
