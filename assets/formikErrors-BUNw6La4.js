@@ -1,1 +1,0 @@
-const u=({errors:e,touched:n},f)=>{if(typeof f=="string")return!n[f]||!e[f]||typeof e[f]!="string"?void 0:e[f];let o=n,t=e;for(const r of f){if(!o||typeof o!="object"||!(r in o)||!t||typeof t!="object"||!(r in t))return;o=o[r],t=t[r]}return o&&t&&typeof t=="string"?t:void 0};export{u as g};
