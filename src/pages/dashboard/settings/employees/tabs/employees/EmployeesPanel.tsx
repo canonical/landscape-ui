@@ -10,21 +10,11 @@ import usePageParams from "@/hooks/usePageParams";
 import { Notification } from "@canonical/react-components";
 import { type FC, useMemo } from "react";
 import { EMPLOYEE_LIMIT, EMPTY_STATE } from "./constants";
-import { getStatus } from "./helpers";
 
 const EmployeesPanel: FC = () => {
   const { status, employeeGroups, autoinstallFiles, search } = usePageParams();
 
-  const { employees, isPending, count } = useGetEmployees({
-    with_autoinstall_file: true,
-    with_computers: true,
-    with_groups: true,
-    is_active: getStatus(status),
-    employee_group_ids: employeeGroups.length > 0 ? employeeGroups : undefined,
-    autoinstall_file_ids:
-      autoinstallFiles.length > 0 ? autoinstallFiles : undefined,
-    search,
-  });
+  const { employees, isPending, count } = useGetEmployees();
 
   const memoizedEmployees = useMemo(() => employees, [employees]);
 

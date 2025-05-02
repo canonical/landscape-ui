@@ -1,13 +1,7 @@
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import type { MenuLink } from "@canonical/react-components";
-import {
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-  ICONS,
-  Input,
-} from "@canonical/react-components";
+import { ContextualMenu, Icon, ICONS } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";
@@ -15,6 +9,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./PackageProfileListContextualMenu.module.scss";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const PackageProfileConstraintsEditForm = lazy(
   async () => import("../PackageProfileConstraintsEditForm"),
@@ -34,7 +29,6 @@ const PackageProfileListContextualMenu: FC<
   PackageProfileListContextualMenuProps
 > = ({ profile }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [confirmDeleteProfileText, setConfirmDeleteProfileText] = useState("");
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -78,12 +72,13 @@ const PackageProfileListContextualMenu: FC<
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    setConfirmDeleteProfileText("");
   };
 
   const handleRemovePackageProfile = async () => {
     try {
       await removePackageProfile({ name: profile.name });
+
+      handleCloseModal();
 
       notify.success({
         message: `Package profile "${profile.title}" removed successfully`,
@@ -91,13 +86,7 @@ const PackageProfileListContextualMenu: FC<
       });
     } catch (error) {
       debug(error);
-    } finally {
-      handleCloseModal();
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmDeleteProfileText(e.target.value);
   };
 
   const contextualMenuButtons: MenuLink[] = [
@@ -159,30 +148,22 @@ const PackageProfileListContextualMenu: FC<
         links={contextualMenuButtons}
       />
 
-      {modalOpen && (
-        <ConfirmationModal
-          title="Remove package profile"
-          confirmButtonLabel="Remove"
-          confirmButtonAppearance="negative"
-          confirmButtonDisabled={
-            isRemoving || confirmDeleteProfileText !== `remove ${profile.name}`
-          }
-          confirmButtonLoading={isRemoving}
-          onConfirm={handleRemovePackageProfile}
-          close={handleCloseModal}
-        >
-          <p>
-            This will remove &quot;{profile.title}&quot; profile. This action is
-            irreversible.
-          </p>
-          Type <b>remove {profile.name}</b> to confirm.
-          <Input
-            type="text"
-            value={confirmDeleteProfileText}
-            onChange={handleChange}
-          />
-        </ConfirmationModal>
-      )}
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        title="Remove package profile"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonLoading={isRemoving}
+        confirmButtonDisabled={isRemoving}
+        close={handleCloseModal}
+        confirmationText={`remove ${profile.name}`}
+        onConfirm={handleRemovePackageProfile}
+      >
+        <p>
+          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+          <b>irreversible</b>.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

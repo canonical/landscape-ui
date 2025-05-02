@@ -1,17 +1,14 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { MenuLink } from "@canonical/react-components";
-import {
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-} from "@canonical/react-components";
+import { ContextualMenu, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
 import type { Script } from "../../types";
 import ScriptDetails from "../ScriptDetails";
 import classes from "./ScriptListContextualMenu.module.scss";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const EditScriptForm = lazy(async () => import("../EditScriptForm"));
 const RunScriptForm = lazy(async () => import("../RunScriptForm"));
@@ -62,13 +59,10 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
     archiveModalButtonLabel,
     archiveModalTitle,
     isArchivingScript,
-    disabledArchiveConfirmation,
     onConfirmArchive,
-    resetArchiveModal,
   } = useArchiveScriptModal({
     script,
     afterSuccess: () => {
-      resetArchiveModal();
       setArchiveModalOpen(false);
     },
   });
@@ -77,14 +71,11 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
     deleteModalBody,
     deleteModalButtonLabel,
     deleteModalTitle,
-    disabledDeleteConfirmation,
     isRemoving,
     onConfirmDelete,
-    resetDeleteModal,
   } = useDeleteScriptModal({
     script,
     afterSuccess: () => {
-      resetDeleteModal();
       setDeleteModalOpen(false);
     },
   });
@@ -149,7 +140,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
     );
   }
 
-  if (script.status != "REDACTED") {
+  if (script.status !== "REDACTED") {
     contextualMenuButtons.push({
       children: (
         <>
@@ -179,39 +170,37 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
         links={contextualMenuButtons}
       />
 
-      {deleteModalOpen && (
-        <ConfirmationModal
-          title={deleteModalTitle}
-          confirmButtonLabel={deleteModalButtonLabel}
-          confirmButtonAppearance="negative"
-          confirmButtonDisabled={disabledDeleteConfirmation}
-          confirmButtonLoading={isRemoving}
-          onConfirm={onConfirmDelete}
-          close={() => {
-            setDeleteModalOpen(false);
-            resetDeleteModal();
-          }}
-        >
-          {deleteModalBody}
-        </ConfirmationModal>
-      )}
+      <TextConfirmationModal
+        isOpen={deleteModalOpen}
+        confirmationText={`delete ${script.title}`}
+        title={deleteModalTitle}
+        confirmButtonLabel={deleteModalButtonLabel}
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        onConfirm={onConfirmDelete}
+        close={() => {
+          setDeleteModalOpen(false);
+        }}
+      >
+        {deleteModalBody}
+      </TextConfirmationModal>
 
-      {archiveModalOpen && (
-        <ConfirmationModal
-          title={archiveModalTitle}
-          confirmButtonLabel={archiveModalButtonLabel}
-          confirmButtonAppearance="negative"
-          confirmButtonDisabled={disabledArchiveConfirmation}
-          confirmButtonLoading={isArchivingScript}
-          onConfirm={onConfirmArchive}
-          close={() => {
-            setArchiveModalOpen(false);
-            resetArchiveModal();
-          }}
-        >
-          {archiveModalBody}
-        </ConfirmationModal>
-      )}
+      <TextConfirmationModal
+        isOpen={archiveModalOpen}
+        confirmationText={`archive ${script.title}`}
+        title={archiveModalTitle}
+        confirmButtonLabel={archiveModalButtonLabel}
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isArchivingScript}
+        confirmButtonLoading={isArchivingScript}
+        onConfirm={onConfirmArchive}
+        close={() => {
+          setArchiveModalOpen(false);
+        }}
+      >
+        {archiveModalBody}
+      </TextConfirmationModal>
     </>
   );
 };

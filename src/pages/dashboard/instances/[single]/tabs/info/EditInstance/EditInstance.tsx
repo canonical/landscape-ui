@@ -10,6 +10,7 @@ import type { FormProps } from "./types";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useRoles from "@/hooks/useRoles";
 import type { SelectOption } from "@/types/SelectOption";
+import useNotify from "@/hooks/useNotify";
 
 interface EditInstanceProps {
   readonly instance: InstanceWithoutRelation;
@@ -18,6 +19,7 @@ interface EditInstanceProps {
 const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
+  const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
   const { editInstanceQuery } = useInstances();
 
@@ -29,10 +31,15 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
         instanceId: instance.id,
         ...values,
       });
+
+      closeSidePanel();
+
+      notify.success({
+        title: "Instance updated",
+        message: `Instance "${instance.title}" updated successfully`,
+      });
     } catch (error) {
       debug(error);
-    } finally {
-      closeSidePanel();
     }
   };
 

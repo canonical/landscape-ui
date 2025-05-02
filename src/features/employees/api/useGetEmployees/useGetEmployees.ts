@@ -5,10 +5,28 @@ import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { Employee, GetEmployeesParams } from "../../types";
+import type { PaginatedGetHookParams } from "@/types/api/PaginatedGetHookParams";
+import usePageParams from "@/hooks/usePageParams";
+
+const DEFAULT_CONFIG: PaginatedGetHookParams = {
+  listenToUrlParams: true,
+};
+
+export const getStatus = (status: string) => {
+  switch (status) {
+    case "active":
+      return true;
+    case "inactive":
+      return false;
+    default:
+      return undefined;
+  }
+};
 
 const useGetEmployees = (
-  queryParams: GetEmployeesParams = {},
-  config: Omit<
+  config?: PaginatedGetHookParams,
+  params?: GetEmployeesParams,
+  options: Omit<
     UseQueryOptions<
       AxiosResponse<ApiPaginatedResponse<Employee>, AxiosError<ApiError>>
     >,
@@ -16,14 +34,46 @@ const useGetEmployees = (
   > = {},
 ) => {
   const authFetch = useFetch();
+  const {
+    autoinstallFiles,
+    currentPage,
+    employeeGroups,
+    pageSize,
+    search,
+    status,
+  } = usePageParams();
+
+  config = {
+    ...DEFAULT_CONFIG,
+    ...config,
+  };
+
+  const paramsWithPagination = {
+    ...(config.listenToUrlParams
+      ? {
+          with_autoinstall_file: true,
+          with_computers: true,
+          with_groups: true,
+          is_active: getStatus(status),
+          employee_group_ids:
+            employeeGroups.length > 0 ? employeeGroups : undefined,
+          autoinstall_file_ids:
+            autoinstallFiles.length > 0 ? autoinstallFiles : undefined,
+          limit: pageSize,
+          offset: (currentPage - 1) * pageSize,
+          search: search ?? undefined,
+        }
+      : params),
+  };
 
   const { data, isPending, isFetching } = useQuery<
     AxiosResponse<ApiPaginatedResponse<Employee>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["employees", queryParams],
-    queryFn: async () => authFetch.get("employees", { params: queryParams }),
-    ...config,
+    queryKey: ["employees", paramsWithPagination, config],
+    queryFn: async () =>
+      authFetch.get("employees", { params: paramsWithPagination }),
+    ...options,
   });
 
   return {

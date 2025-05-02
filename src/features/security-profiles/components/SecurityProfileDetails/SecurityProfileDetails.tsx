@@ -63,7 +63,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             <span>Download audit</span>
           </Button>
 
-          {profile.status != "archived" && (
+          {profile.status !== "archived" && (
             <Button
               className="p-segmented-control__button"
               type="button"
@@ -75,7 +75,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             </Button>
           )}
 
-          {profile.status != "archived" && (
+          {profile.status !== "archived" && (
             <Button
               className="p-segmented-control__button"
               type="button"
@@ -99,7 +99,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             <span>Duplicate</span>
           </Button>
 
-          {profile.status != "archived" && (
+          {profile.status !== "archived" && (
             <Button
               className="p-segmented-control__button"
               type="button"

@@ -1,19 +1,15 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import type { Script } from "../types";
-import { Input } from "@canonical/react-components";
 import { useRemoveScript } from "../api";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import classes from "../styles.module.scss";
 
 interface DeleteModalResult {
   deleteModalTitle: string;
   deleteModalButtonLabel: string;
-  disabledDeleteConfirmation: boolean;
   deleteModalBody: ReactNode;
   isRemoving: boolean;
   onConfirmDelete: () => Promise<void>;
-  resetDeleteModal: () => void;
 }
 
 interface DeleteModalProps {
@@ -25,32 +21,21 @@ export const useDeleteScriptModal = ({
   script,
   afterSuccess,
 }: DeleteModalProps): DeleteModalResult => {
-  const [confirmDeleteProfileText, setConfirmDeleteProfileText] = useState("");
-
   const debug = useDebug();
   const { notify } = useNotify();
+  const { removeScript, isRemoving } = useRemoveScript();
 
   if (!script) {
     return {
       deleteModalTitle: "",
       deleteModalButtonLabel: "",
-      disabledDeleteConfirmation: false,
       deleteModalBody: <></>,
       isRemoving: false,
       onConfirmDelete: async () => {
         debug("Script not loaded");
       },
-      resetDeleteModal: () => {
-        setConfirmDeleteProfileText("");
-      },
     };
   }
-
-  const { removeScript, isRemoving } = useRemoveScript();
-
-  const handleChangeDeleteText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmDeleteProfileText(e.target.value);
-  };
 
   const handleScriptDelete = async (): Promise<void> => {
     try {
@@ -59,6 +44,7 @@ export const useDeleteScriptModal = ({
       });
 
       afterSuccess();
+
       notify.success({
         message: `"${script.title}" script removed successfully`,
         title: "Script removed",
@@ -70,13 +56,8 @@ export const useDeleteScriptModal = ({
 
   const commonModalFields = {
     deleteModalTitle: `Delete ${script.title}`,
-    disabledDeleteConfirmation:
-      confirmDeleteProfileText !== `delete ${script.title}` || isRemoving,
     isRemoving,
     onConfirmDelete: handleScriptDelete,
-    resetDeleteModal: () => {
-      setConfirmDeleteProfileText("");
-    },
   };
 
   if (script.script_profiles.length === 0) {
@@ -84,23 +65,11 @@ export const useDeleteScriptModal = ({
       ...commonModalFields,
       deleteModalButtonLabel: "Delete",
       deleteModalBody: (
-        <>
-          <p>
-            Deleting the script will remove the contents from Landscape.
-            <br />
-            This action is <b>irreversible</b>.
-          </p>
-          <p className={classes.confirmationPrompt}>
-            Type <b>delete {script.title}</b> to confirm.
-          </p>
-          <Input
-            type="text"
-            autoComplete="off"
-            placeholder={`delete ${script.title}`}
-            value={confirmDeleteProfileText}
-            onChange={handleChangeDeleteText}
-          />
-        </>
+        <p>
+          Deleting the script will remove the contents from Landscape.
+          <br />
+          This action is <b>irreversible</b>.
+        </p>
       ),
     };
   }
@@ -124,16 +93,6 @@ export const useDeleteScriptModal = ({
           run in the future. <br />
           This action is <b>irreversible</b>.
         </p>
-        <p className={classes.confirmationPrompt}>
-          Type <b>delete {script.title}</b> to confirm.
-        </p>
-        <Input
-          type="text"
-          autoComplete="off"
-          placeholder={`delete ${script.title}`}
-          value={confirmDeleteProfileText}
-          onChange={handleChangeDeleteText}
-        />
       </>
     ),
   };

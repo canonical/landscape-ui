@@ -255,11 +255,12 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         data={profiles}
         emptyMsg="No script profiles found according to your search parameters."
       />
-
-      <ScriptProfileArchiveModal
-        profile={modalProfile}
-        removeProfile={removeModalProfile}
-      />
+      {modalProfile && (
+        <ScriptProfileArchiveModal
+          profile={modalProfile}
+          removeProfile={removeModalProfile}
+        />
+      )}
     </>
   );
 };

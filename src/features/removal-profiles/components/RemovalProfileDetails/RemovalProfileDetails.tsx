@@ -1,13 +1,6 @@
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import {
-  Button,
-  Col,
-  ConfirmationButton,
-  Icon,
-  ICONS,
-  Row,
-} from "@canonical/react-components";
+import { lazy, Suspense, useState } from "react";
+import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
@@ -18,9 +11,10 @@ import type { SelectOption } from "@/types/SelectOption";
 import { useRemovalProfiles } from "../../hooks";
 import type { RemovalProfile } from "../../types";
 import classes from "./RemovalProfileDetails.module.scss";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const SingleRemovalProfileForm = lazy(
-  () => import("../SingleRemovalProfileForm"),
+  async () => import("../SingleRemovalProfileForm"),
 );
 
 interface RemovalProfileDetailsProps {
@@ -32,6 +26,8 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
   accessGroupOptions,
   profile,
 }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
@@ -40,15 +36,24 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
   const { mutateAsync: removeRemovalProfile, isPending: isRemoving } =
     removeRemovalProfileQuery;
 
-  const handleRemoveRemovalProfile = async () => {
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleRemovalProfileRemove = async () => {
     try {
       await removeRemovalProfile({ name: profile.name });
 
+      handleCloseModal();
       closeSidePanel();
 
       notify.success({
         title: "Removal profile removed",
-        message: `Removal profile ${profile.name} has been removed`,
+        message: `Removal profile ${profile.title} has been removed`,
       });
     } catch (error) {
       debug(error);
@@ -77,24 +82,16 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
           <Icon name="edit" />
           <span>Edit</span>
         </Button>
-        <ConfirmationButton
-          className="p-segmented-control__button has-icon"
+        <Button
+          className="p-segmented-control__button"
+          hasIcon
           type="button"
-          confirmationModalProps={{
-            title: "Remove removal profile",
-            children: (
-              <p>This will remove &quot;{profile.name}&quot; profile.</p>
-            ),
-            confirmButtonLabel: "Remove",
-            confirmButtonAppearance: "negative",
-            confirmButtonDisabled: isRemoving,
-            confirmButtonLoading: isRemoving,
-            onConfirm: handleRemoveRemovalProfile,
-          }}
+          onClick={handleOpenModal}
+          aria-label={`Remove ${profile.title}`}
         >
           <Icon name={ICONS.delete} />
           <span>Remove</span>
-        </ConfirmationButton>
+        </Button>
       </div>
 
       <Row className="u-no-padding--left u-no-padding--right">
@@ -134,6 +131,23 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
           />
         )}
       </div>
+
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        title="Remove package profile"
+        confirmationText={`remove ${profile.name}`}
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        onConfirm={handleRemovalProfileRemove}
+        close={handleCloseModal}
+      >
+        <p>
+          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+          <b>irreversible</b>.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

@@ -9,7 +9,9 @@ describe("SecurityProfileArchiveModal", () => {
   it("should render require a text entry", async () => {
     const [profile] = securityProfiles;
 
-    renderWithProviders(<SecurityProfileArchiveModal profile={profile} />);
+    renderWithProviders(
+      <SecurityProfileArchiveModal profile={profile} close={vi.fn()} />,
+    );
 
     expect(
       await screen.findByRole("button", { name: "Archive" }),

@@ -308,7 +308,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             row.original.last_run_results;
           const total = passing + failing + in_progress;
 
-          if (!row.original.last_run_results.timestamp) return <NoData />;
+          if (!total) {
+            return <NoData />;
+          }
 
           const passRate = Math.round((passing / total) * 100);
           const failRate = Math.round((failing / total) * 100);

@@ -1,13 +1,6 @@
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import {
-  Button,
-  Col,
-  ConfirmationButton,
-  Icon,
-  ICONS,
-  Row,
-} from "@canonical/react-components";
+import { lazy, Suspense, useState } from "react";
+import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
@@ -19,9 +12,10 @@ import { useUpgradeProfiles } from "../../hooks";
 import type { UpgradeProfile } from "../../types";
 import { getScheduleInfo } from "./helpers";
 import classes from "./UpgradeProfileDetails.module.scss";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const SingleUpgradeProfileForm = lazy(
-  () => import("../SingleUpgradeProfileForm"),
+  async () => import("../SingleUpgradeProfileForm"),
 );
 
 interface UpgradeProfileDetailsProps {
@@ -33,6 +27,8 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
   accessGroupOptions,
   profile,
 }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
@@ -42,15 +38,24 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
     removeUpgradeProfileQuery;
   const { scheduleMessage, nextRunMessage } = getScheduleInfo(profile);
 
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
   const handleRemoveUpgradeProfile = async () => {
     try {
       await removeUpgradeProfile({ name: profile.name });
 
+      handleCloseModal();
       closeSidePanel();
 
       notify.success({
         title: "Upgrade profile removed",
-        message: `Upgrade profile ${profile.name} has been removed`,
+        message: `Upgrade profile ${profile.title} has been removed`,
       });
     } catch (error) {
       debug(error);
@@ -74,32 +79,20 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
           hasIcon
           className="p-segmented-control__button"
           onClick={handleEditUpgradeProfile}
-          aria-label={`Edit upgrade profile ${profile.name}`}
+          aria-label={`Edit upgrade profile ${profile.title}`}
         >
           <Icon name="edit" />
           <span>Edit</span>
         </Button>
-        <ConfirmationButton
+        <Button
           className="has-icon p-segmented-control__button"
-          aria-label={`Remove upgrade profile ${profile.name}`}
+          aria-label={`Remove upgrade profile ${profile.title}`}
           type="button"
-          confirmationModalProps={{
-            title: "Remove upgrade profile",
-            children: (
-              <p>
-                This will remove &quot;{profile.name}&quot; upgrade profile.
-              </p>
-            ),
-            confirmButtonAppearance: "negative",
-            confirmButtonLabel: "Remove",
-            confirmButtonDisabled: isRemoving,
-            confirmButtonLoading: isRemoving,
-            onConfirm: handleRemoveUpgradeProfile,
-          }}
+          onClick={handleOpenModal}
         >
           <Icon name={ICONS.delete} />
           <span>Remove</span>
-        </ConfirmationButton>
+        </Button>
       </div>
 
       <Row className="u-no-padding--left u-no-padding--right">
@@ -159,6 +152,23 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
           />
         )}
       </div>
+
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        title="Remove upgrade profile"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        onConfirm={handleRemoveUpgradeProfile}
+        close={handleCloseModal}
+        confirmationText={`remove ${profile.name}`}
+      >
+        <p>
+          This will remove &quot;{profile.title}&quot; upgrade profile. This
+          action is <b>irreversible</b>.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

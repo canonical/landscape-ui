@@ -6,14 +6,14 @@ import {
   ConfirmationModal,
   ContextualMenu,
   Icon,
-  Input,
 } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
 import classes from "./WslInstanceListActions.module.scss";
-import { getModalBody } from "./helpers";
 import type { Action } from "./types";
 import type { WslInstanceWithoutRelation } from "@/types/Instance";
+import useNotify from "@/hooks/useNotify";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 interface WslInstanceListActionsProps {
   readonly instance: WslInstanceWithoutRelation;
@@ -25,8 +25,8 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   parentId,
 }) => {
   const [action, setAction] = useState<Action>(null);
-  const [confirmationText, setConfirmationText] = useState<string>("");
 
+  const { notify } = useNotify();
   const debug = useDebug();
   const { setDefaultChildInstanceQuery, deleteChildInstancesQuery } = useWsl();
   const { removeInstancesQuery } = useInstances();
@@ -50,10 +50,15 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
         child_id: instance.id,
         parent_id: parentId,
       });
+
+      handleCloseModal();
+
+      notify.success({
+        title: `You queued ${instance.title} to be set as the default instance`,
+        message: `${instance.title} will be the default instance.`,
+      });
     } catch (error) {
       debug(error);
-    } finally {
-      handleCloseModal();
     }
   };
 
@@ -62,10 +67,15 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
       await deleteChildInstances({
         computer_ids: [instance.id],
       });
+
+      handleCloseModal();
+
+      notify.success({
+        title: `You queued ${instance.title} to be deleted.`,
+        message: `${instance.title} will be deleted.`,
+      });
     } catch (error) {
       debug(error);
-    } finally {
-      handleCloseModal();
     }
   };
 
@@ -74,20 +84,15 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
       await removeInstances({
         computer_ids: [instance.id],
       });
+
+      handleCloseModal();
+
+      notify.success({
+        title: `You have successfully removed ${instance.title}`,
+        message: `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
+      });
     } catch (error) {
       debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
-
-  const handleModalAction = () => {
-    if (action === "setDefault") {
-      handleSetDefaultChildInstance();
-    } else if (action === "remove") {
-      handleRemoveInstanceFromLandscape();
-    } else if (action === "delete") {
-      handleDeleteChildInstance();
     }
   };
 
@@ -120,13 +125,6 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     return true;
   });
 
-  const { body, appearance, title, label } = getModalBody(instance, action);
-  const isPerformingAction =
-    isSettingDefaultChildInstance || isRemoving || isDeleting;
-
-  const isWrongConfirmationText =
-    action === "remove" && confirmationText !== `remove ${instance.title}`;
-
   return (
     <>
       <ContextualMenu
@@ -138,33 +136,54 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
         toggleProps={{ "aria-label": `${instance.title} instance actions` }}
         links={contextualMenuLinks}
       />
-      {action && (
+      {action === "setDefault" && (
         <ConfirmationModal
-          title={title}
-          confirmButtonLabel={label}
-          confirmButtonAppearance={appearance}
-          confirmButtonDisabled={isPerformingAction || isWrongConfirmationText}
-          confirmButtonLoading={isPerformingAction}
-          onConfirm={handleModalAction}
+          title="Set default instance"
+          confirmButtonLabel="Set default"
+          confirmButtonAppearance="positive"
+          confirmButtonDisabled={isSettingDefaultChildInstance}
+          confirmButtonLoading={isSettingDefaultChildInstance}
+          onConfirm={handleSetDefaultChildInstance}
           close={handleCloseModal}
         >
-          {body}
-          {action === "remove" && (
-            <>
-              <p>
-                Type <b>{`remove ${instance.title}`}</b> to confirm.
-              </p>
-              <Input
-                type="text"
-                value={confirmationText}
-                onChange={(e) => {
-                  setConfirmationText(e.target.value);
-                }}
-              />
-            </>
-          )}
+          <p>
+            Are you sure you want to set {instance.title} as default instance?
+          </p>
         </ConfirmationModal>
       )}
+      <TextConfirmationModal
+        isOpen={action === "delete"}
+        close={handleCloseModal}
+        title="Delete instance"
+        confirmButtonLabel="Delete"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isDeleting}
+        confirmButtonLoading={isDeleting}
+        confirmationText={`delete ${instance.title}`}
+        onConfirm={handleDeleteChildInstance}
+      >
+        <p>
+          This will permanently delete the instance <b>{instance.title}</b> from
+          both the Windows host machine and Landscape.
+        </p>
+      </TextConfirmationModal>
+      <TextConfirmationModal
+        isOpen={action === "remove"}
+        close={handleCloseModal}
+        title="Remove instance from Landscape"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        confirmationText={`remove ${instance.title}`}
+        onConfirm={handleRemoveInstanceFromLandscape}
+      >
+        <p>
+          This will remove the instance <b>{instance.title}</b> from Landscape.
+          It will remain on the parent machine. You can re-register it to
+          Landscape at any time.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

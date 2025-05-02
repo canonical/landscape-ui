@@ -57,6 +57,7 @@ const EmployeesPanelHeader: FC = () => {
         ]}
         employeeGroupOptions={employeeGroupOptions}
         autoinstallFileOptions={autoinstallFileOptions}
+        statusOptions={STATUS_OPTIONS}
       />
     </>
   );

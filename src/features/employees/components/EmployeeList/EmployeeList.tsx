@@ -99,12 +99,10 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
       {
         accessor: "groups",
         Header: "employee group",
-        Cell: ({ row: { original, index } }: CellProps<Employee>) => {
-          const employeeGroups = original.groups;
-
-          return employeeGroups ? (
+        Cell: ({ row: { original, index } }: CellProps<Employee>) =>
+          original.groups && original.groups.length > 0 ? (
             <TruncatedCell
-              content={employeeGroups.map((group) => (
+              content={original.groups.map((group) => (
                 <Link
                   to={`/settings/employees?tab=employee-groups&search=${group.name}`}
                   key={group.group_id}
@@ -122,8 +120,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
             />
           ) : (
             <NoData />
-          );
-        },
+          ),
       },
       {
         accessor: "autoinstall_file",
@@ -161,7 +158,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
         accessor: "computers",
         Header: "associated instances",
         Cell: ({ row: { original, index } }: CellProps<Employee>) =>
-          original.computers ? (
+          original.computers && original.computers.length > 0 ? (
             <TruncatedCell
               content={original.computers?.map((computer) => (
                 <Link

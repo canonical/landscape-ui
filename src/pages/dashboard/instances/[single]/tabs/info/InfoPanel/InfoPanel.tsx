@@ -37,6 +37,7 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const EditInstance = lazy(
   async () =>
@@ -58,7 +59,7 @@ interface InfoPanelProps {
 
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const [instanceTags, setInstanceTags] = useState([...instance.tags]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState<string>("");
 
   const addedTags = instanceTags.filter((tag) => !instance.tags.includes(tag));
 
@@ -149,12 +150,17 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     onSubmit: handleSubmit,
   });
 
+  const closeModal = () => {
+    setIsModalVisible("");
+  };
+
   const handleRemoveInstance = async () => {
     try {
       await removeInstances({
         computer_ids: [instance.id],
       });
 
+      closeModal();
       navigate("/instances", { replace: true });
     } catch (error) {
       debug(error);
@@ -167,6 +173,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         computer_id: instance.id,
         computer_title: instance.title,
       });
+
+      closeModal();
 
       notify.success({
         title: `You have successfully initiated Sanitization for ${instance.title}`,
@@ -183,24 +191,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     } catch (error) {
       debug(error);
     }
-  };
-
-  const removeInstancesFormik = useFormik({
-    initialValues: {
-      confirmationText: "",
-    },
-    onSubmit: async () => handleRemoveInstance(),
-  });
-
-  const sanitizeInstanceFormik = useFormik({
-    initialValues: {
-      confirmationText: "",
-    },
-    onSubmit: async () => handleSanitizeInstance(),
-  });
-
-  const closeModal = () => {
-    setIsModalVisible(false);
   };
 
   const updateTags = async () => {
@@ -223,7 +213,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   const handleTagsUpdate = async () => {
     if (securityProfiles.length) {
-      setIsModalVisible(true);
+      setIsModalVisible("securityProfilesTags");
     } else {
       updateTags();
     }
@@ -327,6 +317,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 className="p-segmented-control__button u-no-margin--bottom"
                 type="button"
                 onClick={handleEditInstance}
+                hasIcon
               >
                 <Icon name="edit" />
                 <span>Edit</span>
@@ -336,87 +327,37 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                   className="p-segmented-control__button u-no-margin--bottom"
                   type="button"
                   onClick={handleRunScript}
+                  hasIcon
                 >
                   <Icon name="code" />
                   <span>Run script</span>
                 </Button>
               )}
 
-              <ConfirmationButton
+              <Button
                 className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"
                 disabled={isRemoving}
-                confirmationModalProps={{
-                  title: "Remove instance from Landscape",
-                  children: (
-                    <Form onSubmit={formik.handleSubmit} noValidate>
-                      <p>
-                        Removing this {instance.title} will delete all
-                        associated data and free up one license slot for another
-                        computer to be registered.
-                      </p>
-                      <p>
-                        Type <b>remove {instance.title}</b> to confirm.
-                      </p>
-                      <Input
-                        type="text"
-                        {...removeInstancesFormik.getFieldProps(
-                          "confirmationText",
-                        )}
-                      />
-                    </Form>
-                  ),
-                  confirmButtonLabel: "Remove",
-                  confirmButtonAppearance: "negative",
-                  confirmButtonDisabled: isRemoving,
-                  confirmButtonLoading: isRemoving,
-                  onConfirm: handleRemoveInstance,
+                onClick={() => {
+                  setIsModalVisible("remove");
                 }}
+                aria-label={`Remove ${instance.title} instance`}
               >
                 <Icon name={ICONS.delete} />
                 <span>Remove from Landscape</span>
-              </ConfirmationButton>
-              <ConfirmationButton
+              </Button>
+              <Button
                 className="p-segmented-control__button u-no-margin--bottom has-icon"
                 type="button"
                 disabled={isSanitizing}
-                confirmationModalProps={{
-                  title: "Sanitize instance",
-                  children: (
-                    <Form
-                      onSubmit={sanitizeInstanceFormik.handleSubmit}
-                      noValidate
-                    >
-                      <p>
-                        Sanitization will permanently delete the encryption keys
-                        for {instance.title}, making its data completely
-                        irrecoverable. This action cannot be undone. Please
-                        confirm your wish to proceed.
-                      </p>
-                      <p>
-                        Type <b>sanitize {instance.title}</b> to confirm.
-                      </p>
-                      <Input
-                        type="text"
-                        {...sanitizeInstanceFormik.getFieldProps(
-                          "confirmationText",
-                        )}
-                      />
-                    </Form>
-                  ),
-                  confirmButtonLabel: "Sanitize",
-                  confirmButtonAppearance: "negative",
-                  confirmButtonDisabled:
-                    isSanitizing ||
-                    sanitizeInstanceFormik.values.confirmationText !==
-                      `sanitize ${instance.title}`,
-                  confirmButtonLoading: isSanitizing,
-                  onConfirm: handleSanitizeInstance,
+                onClick={() => {
+                  setIsModalVisible("sanitize");
                 }}
+                aria-label={`Sanitize ${instance.title} instance`}
               >
                 <Icon name="tidy" />
                 <span>Sanitize</span>
-              </ConfirmationButton>
+              </Button>
 
               <ConfirmationButton
                 className="p-segmented-control__button u-no-margin--bottom has-icon"
@@ -463,6 +404,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 <Button
                   className="p-segmented-control__button u-no-margin--bottom"
                   type="button"
+                  hasIcon
                   onClick={handleAssociateEmployee}
                 >
                   <Icon name={ICONS.user} />
@@ -549,7 +491,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </Row>
       </div>
 
-      {isModalVisible && (
+      {isModalVisible === "securityProfilesTags" && (
         <TagsAddConfirmationModal
           instances={[instance]}
           securityProfiles={securityProfiles}
@@ -559,6 +501,41 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           close={closeModal}
         />
       )}
+
+      <TextConfirmationModal
+        isOpen={isModalVisible === "remove"}
+        title="Remove instance from Landscape"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        onConfirm={handleRemoveInstance}
+        close={closeModal}
+        confirmationText={`remove ${instance.title}`}
+      >
+        <p>
+          Removing this {instance.title} will delete all associated data and
+          free up one license slot for another computer to be registered.
+        </p>
+      </TextConfirmationModal>
+
+      <TextConfirmationModal
+        isOpen={isModalVisible === "sanitize"}
+        confirmButtonLabel="Sanitize"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isSanitizing}
+        confirmButtonLoading={isSanitizing}
+        onConfirm={handleSanitizeInstance}
+        close={closeModal}
+        confirmationText={`sanitize ${instance.title}`}
+        title="Sanitize instance"
+      >
+        <p>
+          Sanitization will permanently delete the encryption keys for{" "}
+          {instance.title}, making its data completely irrecoverable. This
+          action cannot be undone. Please confirm your wish to proceed.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

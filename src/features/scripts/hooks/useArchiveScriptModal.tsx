@@ -1,19 +1,15 @@
-import { useState, type ReactNode } from "react";
-import type { Script } from "../types";
-import { Input } from "@canonical/react-components";
-import { useArchiveScript } from "../api";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import classes from "../styles.module.scss";
+import { type ReactNode } from "react";
+import { useArchiveScript } from "../api";
+import type { Script } from "../types";
 
 interface ArchiveModalResult {
   archiveModalTitle: string;
   archiveModalButtonLabel: string;
-  disabledArchiveConfirmation: boolean;
   archiveModalBody: ReactNode;
   isArchivingScript: boolean;
   onConfirmArchive: () => Promise<void>;
-  resetArchiveModal: () => void;
 }
 
 interface ArchiveModalProps {
@@ -25,26 +21,30 @@ export const useArchiveScriptModal = ({
   script,
   afterSuccess,
 }: ArchiveModalProps): ArchiveModalResult => {
-  const [confirmArchiveProfileText, setConfirmArchiveProfileText] =
-    useState("");
-
   const debug = useDebug();
   const { notify } = useNotify();
   const { archiveScript, isArchivingScript } = useArchiveScript();
 
-  const handleChangeArchiveText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setConfirmArchiveProfileText(e.target.value);
-  };
-
-  const reset = () => {
-    setConfirmArchiveProfileText("");
-  };
+  if (!script) {
+    return {
+      archiveModalTitle: "",
+      archiveModalButtonLabel: "",
+      archiveModalBody: <></>,
+      isArchivingScript: false,
+      onConfirmArchive: async () => {
+        debug("Script not loaded");
+      },
+    };
+  }
 
   const handleScriptArchive = async (): Promise<void> => {
     try {
-      await archiveScript(script?.id || 0);
+      await archiveScript(script.id || 0);
 
-      afterSuccess();
+      if (afterSuccess) {
+        afterSuccess();
+      }
+
       notify.success({
         message: `"${script?.title}" script archived successfully`,
         title: "Script archived",
@@ -55,51 +55,21 @@ export const useArchiveScriptModal = ({
   };
 
   const commonModalFields = {
-    archiveModalTitle: `Archive ${script?.title}`,
-    disabledArchiveConfirmation:
-      confirmArchiveProfileText !== `archive ${script?.title}` ||
-      isArchivingScript,
+    archiveModalTitle: `Archive ${script.title}`,
     isArchivingScript,
     onConfirmArchive: handleScriptArchive,
-    resetArchiveModal: reset,
   };
-
-  if (!script) {
-    return {
-      archiveModalTitle: "",
-      archiveModalButtonLabel: "",
-      disabledArchiveConfirmation: false,
-      archiveModalBody: <></>,
-      isArchivingScript: false,
-      onConfirmArchive: async () => {
-        debug("Script not loaded");
-      },
-      resetArchiveModal: reset,
-    };
-  }
 
   if (script.script_profiles.length === 0) {
     return {
       ...commonModalFields,
       archiveModalButtonLabel: "Archive",
       archiveModalBody: (
-        <>
-          <p>
-            Archiving the script will prevent it from running in the future.
-            <br />
-            This action is <b>irreversible</b>.
-          </p>
-          <p className={classes.confirmationPrompt}>
-            Type <b>archive {script.title}</b> to confirm.
-          </p>
-          <Input
-            type="text"
-            placeholder={`archive ${script.title}`}
-            autoComplete="off"
-            value={confirmArchiveProfileText}
-            onChange={handleChangeArchiveText}
-          />
-        </>
+        <p>
+          Archiving the script will prevent it from running in the future.
+          <br />
+          This action is <b>irreversible</b>.
+        </p>
       ),
     };
   }
@@ -125,16 +95,6 @@ export const useArchiveScriptModal = ({
           <br />
           This action is <b>irreversible</b>.
         </p>
-        <p className={classes.confirmationPrompt}>
-          Type <b>archive {script.title}</b> to confirm.
-        </p>
-        <Input
-          type="text"
-          placeholder={`archive ${script.title}`}
-          autoComplete="off"
-          value={confirmArchiveProfileText}
-          onChange={handleChangeArchiveText}
-        />
       </>
     ),
   };

@@ -97,10 +97,13 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       },
       {
         accessor: "associated",
-        Header: "associated instances",
-        Cell: ({ row }: CellProps<RebootProfile>) => (
-          <>{row.original.num_computers || <NoData />}</>
-        ),
+        Header: "associated",
+        Cell: ({ row }: CellProps<RebootProfile>) =>
+          row.original.num_computers ? (
+            <>{row.original.num_computers} instances</>
+          ) : (
+            <NoData />
+          ),
       },
       {
         accessor: "scheduled_reboot",

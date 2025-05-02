@@ -35,7 +35,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        message: `Package profile "${profile.name}" updated successfully`,
+        message: `Package profile "${profile.title}" updated successfully`,
         title: "Package profile updated",
       });
     } catch (error) {
