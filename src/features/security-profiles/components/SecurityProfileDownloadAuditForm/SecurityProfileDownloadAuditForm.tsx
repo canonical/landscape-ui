@@ -5,13 +5,14 @@ import { INPUT_DATE_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import { getFormikError } from "@/utils/formikErrors";
-import { Input, Notification } from "@canonical/react-components";
+import { Button, Input, Notification } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
 import type { ComponentProps } from "react";
 import { useEffect, useState, type FC } from "react";
 import * as Yup from "yup";
 import { useGetSecurityProfileReport } from "../../api";
+import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
 import classes from "./SecurityProfileDownloadAuditForm.module.scss";
 
 interface SecurityProfileDownloadAuditFormValues {
@@ -32,7 +33,8 @@ interface SecurityProfileDownloadAuditFormProps
 type Status =
   | { type: "okay" }
   | { type: "pending" }
-  | { type: "ready"; report_uri: string };
+  | { type: "ready"; report_uri: string }
+  | { type: "error" };
 
 const SecurityProfileDownloadAuditForm: FC<
   SecurityProfileDownloadAuditFormProps
@@ -43,6 +45,8 @@ const SecurityProfileDownloadAuditForm: FC<
   const { getSecurityProfileReport, isSecurityProfileReportLoading } =
     useGetSecurityProfileReport();
 
+  const downloadAudit = useSecurityProfileDownloadAudit();
+
   const [status, setStatus] = useState<Status>({ type: "okay" });
 
   const pendingReports = JSON.parse(
@@ -51,13 +55,25 @@ const SecurityProfileDownloadAuditForm: FC<
 
   const pendingReport = pendingReports.find((report) => report.profileId == id);
 
-  const { data: getSingleActivityQueryResponse, isLoading: isGettingActivity } =
-    getSingleActivityQuery(
-      {
-        activityId: pendingReport?.activityId ?? 0,
-      },
-      { enabled: !!pendingReport, refetchInterval: 1000 },
-    );
+  const {
+    data: getSingleActivityQueryResponse,
+    isLoading: isGettingActivity,
+    isError: isActivityError,
+  } = getSingleActivityQuery(
+    {
+      activityId: pendingReport?.activityId ?? 0,
+    },
+    {
+      enabled: !!pendingReport && status.type == "pending",
+      refetchInterval: 1000,
+    },
+  );
+
+  if (isActivityError && status.type != "error") {
+    setStatus({
+      type: "error",
+    });
+  }
 
   useEffect(() => {
     if (!getSingleActivityQueryResponse) {
@@ -177,22 +193,37 @@ const SecurityProfileDownloadAuditForm: FC<
               (report) => report.profileId == id,
             );
 
+            setStatus({ type: "okay" });
+
             if (index == -1) {
               return;
             }
 
             pendingReports.splice(index, 1);
 
-            localStorage.setItem(
-              "_landscape_pendingSecurityProfileReports",
-              JSON.stringify(pendingReports),
-            );
+            if (pendingReports.length) {
+              localStorage.setItem(
+                "_landscape_pendingSecurityProfileReports",
+                JSON.stringify(pendingReports),
+              );
+            } else {
+              localStorage.removeItem(
+                "_landscape_pendingSecurityProfileReports",
+              );
+            }
           }}
         >
           It has been successfully generated and is now available for download.{" "}
-          <a href={status.report_uri} download>
+          <Button
+            appearance="link"
+            type="button"
+            className="u-no-margin--bottom u-no-padding--top"
+            onClick={() => {
+              downloadAudit(status.report_uri);
+            }}
+          >
             Download audit
-          </a>
+          </Button>
         </Notification>
       )}
 
