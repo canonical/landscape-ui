@@ -1,9 +1,8 @@
+import moment from "moment";
 import * as Yup from "yup";
 import type { FormProps } from "./types";
-import moment from "moment";
 
 export const INITIAL_VALUES: FormProps = {
-  access_group: "",
   deliver_after: "",
   deliverImmediately: true,
   instanceIds: [],
