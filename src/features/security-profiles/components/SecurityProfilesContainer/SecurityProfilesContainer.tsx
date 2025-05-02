@@ -15,6 +15,7 @@ import {
   useIsSecurityProfilesLimitReached,
   useUpdateSecurityProfile,
 } from "../../api";
+import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
 import SecurityProfileForm from "../SecurityProfileForm";
 import SecurityProfilesHeader from "../SecurityProfilesHeader";
 import SecurityProfilesList from "../SecurityProfilesList";
@@ -83,6 +84,8 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
   );
 
   const { updateSecurityProfile } = useUpdateSecurityProfile();
+
+  const downloadAudit = useSecurityProfileDownloadAudit();
 
   const [
     isProfileLimitNotificationIgnored,
@@ -246,9 +249,10 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           <Button
             appearance="link"
             type="button"
+            className="u-no-margin--bottom u-no-padding--top"
             onClick={() => {
               for (const activity of activities) {
-                window.open(activity.result_text ?? "");
+                downloadAudit(activity.result_text);
               }
             }}
           >
@@ -268,9 +272,16 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
         >
           Your audit has been successfully generated and is now ready for
           download.{" "}
-          <a href={activities[0].result_text ?? ""} download>
+          <Button
+            appearance="link"
+            type="button"
+            className="u-no-margin--bottom u-no-padding--top"
+            onClick={() => {
+              downloadAudit(activities[0].result_text);
+            }}
+          >
             Download audit
-          </a>
+          </Button>
         </Notification>
       )}
 

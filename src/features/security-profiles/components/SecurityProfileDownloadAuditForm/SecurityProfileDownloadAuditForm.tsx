@@ -5,13 +5,14 @@ import { INPUT_DATE_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import { getFormikError } from "@/utils/formikErrors";
-import { Input, Notification } from "@canonical/react-components";
+import { Button, Input, Notification } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
 import type { ComponentProps } from "react";
 import { useEffect, useState, type FC } from "react";
 import * as Yup from "yup";
 import { useGetSecurityProfileReport } from "../../api";
+import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
 import classes from "./SecurityProfileDownloadAuditForm.module.scss";
 
 interface SecurityProfileDownloadAuditFormValues {
@@ -43,6 +44,8 @@ const SecurityProfileDownloadAuditForm: FC<
   const { getSingleActivityQuery } = useActivities();
   const { getSecurityProfileReport, isSecurityProfileReportLoading } =
     useGetSecurityProfileReport();
+
+  const downloadAudit = useSecurityProfileDownloadAudit();
 
   const [status, setStatus] = useState<Status>({ type: "okay" });
 
@@ -211,9 +214,16 @@ const SecurityProfileDownloadAuditForm: FC<
           }}
         >
           It has been successfully generated and is now available for download.{" "}
-          <a href={status.report_uri} download>
+          <Button
+            appearance="link"
+            type="button"
+            className="u-no-margin--bottom u-no-padding--top"
+            onClick={() => {
+              downloadAudit(status.report_uri);
+            }}
+          >
             Download audit
-          </a>
+          </Button>
         </Notification>
       )}
 
