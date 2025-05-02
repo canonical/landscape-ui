@@ -306,27 +306,26 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         Cell: ({ row }: CellProps<SecurityProfile>) => {
           const { passing, failing, in_progress, not_started } =
             row.original.last_run_results;
-
           const total = passing + failing + in_progress + not_started;
 
           if (!total) {
             return <NoData />;
           }
 
-          const passRate = ((passing / total) * 100).toFixed(0);
-          const failRate = ((failing / total) * 100).toFixed(0);
-          const inProgressRate = ((in_progress / total) * 100).toFixed(0);
-          const notRunRate = ((not_started / total) * 100).toFixed(0);
+          const passingPercent = ((passing / total) * 100).toFixed(0);
+          const failingPercent = ((failing / total) * 100).toFixed(0);
+          const inProgressPercent = ((in_progress / total) * 100).toFixed(0);
+          const notRunPercent = ((not_started / total) * 100).toFixed(0);
 
           const totalPercent =
-            parseInt(passRate) +
-            parseInt(failRate) +
-            parseInt(inProgressRate) +
-            parseInt(notRunRate);
+            parseInt(passingPercent) +
+            parseInt(failingPercent) +
+            parseInt(inProgressPercent) +
+            parseInt(notRunPercent);
           const difference = 100 - totalPercent;
 
           const adjustedPassingPercent = (
-            parseInt(passRate) + difference
+            parseInt(passingPercent) + difference
           ).toString();
 
           const tooltipMessage = (
@@ -338,15 +337,15 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 </div>
                 <div>
                   <strong>Failed:</strong>{" "}
-                  {`${failing} instances (${failRate}%)`}
+                  {`${failing} instances (${failingPercent}%)`}
                 </div>
                 <div>
                   <strong>In progress:</strong>{" "}
-                  {`${in_progress} instances (${inProgressRate}%)`}
+                  {`${in_progress} instances (${inProgressPercent}%)`}
                 </div>
                 <div>
                   <strong>Not Run:</strong>{" "}
-                  {`${not_started} instances (${notRunRate}%)`}
+                  {`${not_started} instances (${notRunPercent}%)`}
                 </div>
               </div>
             </>
