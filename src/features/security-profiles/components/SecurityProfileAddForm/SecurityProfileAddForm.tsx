@@ -60,7 +60,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         start_date: values.start_date,
         tags: values.tags,
         tailoring_file: values.tailoring_file,
-        title: values.start_date,
+        title: values.title,
       });
     },
     onSuccess: (values) => {

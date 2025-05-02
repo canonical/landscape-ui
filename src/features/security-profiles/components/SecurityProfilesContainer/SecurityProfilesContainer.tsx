@@ -15,6 +15,7 @@ import {
   useIsSecurityProfilesLimitReached,
   useUpdateSecurityProfile,
 } from "../../api";
+import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
 import SecurityProfileForm from "../SecurityProfileForm";
 import SecurityProfilesHeader from "../SecurityProfilesHeader";
 import SecurityProfilesList from "../SecurityProfilesList";
@@ -64,9 +65,13 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
     offset: 0,
   });
 
-  const pendingReports = JSON.parse(
-    localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",
-  ) as { activityId: number; profileId: number }[];
+  const [pendingReports, setPendingReports] = useState<
+    { activityId: number; profileId: number }[]
+  >(
+    JSON.parse(
+      localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",
+    ),
+  );
 
   const { getActivitiesQuery } = useActivities();
   const { data: getActivitiesQueryResponse } = getActivitiesQuery(
@@ -79,6 +84,8 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
   );
 
   const { updateSecurityProfile } = useUpdateSecurityProfile();
+
+  const downloadAudit = useSecurityProfileDownloadAudit();
 
   const [
     isProfileLimitNotificationIgnored,
@@ -234,6 +241,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           title="Your audits are ready for download:"
           onDismiss={() => {
             localStorage.removeItem("_landscape_pendingSecurityProfileReports");
+            setPendingReports([]);
           }}
         >
           Several of your audits have been successfully generated and are now
@@ -241,9 +249,10 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           <Button
             appearance="link"
             type="button"
+            className="u-no-margin--bottom u-no-padding--top"
             onClick={() => {
               for (const activity of activities) {
-                window.open(activity.result_text ?? "");
+                downloadAudit(activity.result_text);
               }
             }}
           >
@@ -258,13 +267,21 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           title="Your audit is ready for download:"
           onDismiss={() => {
             localStorage.removeItem("_landscape_pendingSecurityProfileReports");
+            setPendingReports([]);
           }}
         >
           Your audit has been successfully generated and is now ready for
           download.{" "}
-          <a href={activities[0].result_text ?? ""} download>
+          <Button
+            appearance="link"
+            type="button"
+            className="u-no-margin--bottom u-no-padding--top"
+            onClick={() => {
+              downloadAudit(activities[0].result_text);
+            }}
+          >
             Download audit
-          </a>
+          </Button>
         </Notification>
       )}
 
