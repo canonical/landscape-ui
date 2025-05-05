@@ -1,0 +1,1 @@
+import{c as s,d as l,j as o,T as u}from"./index-2fzpjuii.js";const p=({options:a})=>{const{groupBy:t,setPageParams:r}=s();return l("groupBy",a.map(e=>e.value)),o.jsx(u,{multiple:!1,label:"Group by",hasToggleIcon:!0,hasBadge:!0,options:a,onItemSelect:e=>{r({groupBy:e})},selectedItem:t})};export{p as G};
