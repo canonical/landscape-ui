@@ -206,6 +206,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   grouped_hardware?: GroupedHardware;
   alerts?: InstanceAlert[];
   upgrades?: InstanceUpgrades;
+  archived: boolean;
 }
 
 interface WithRelation<Type extends InstanceWithoutRelation> extends Type {
