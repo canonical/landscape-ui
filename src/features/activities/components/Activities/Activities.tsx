@@ -27,15 +27,15 @@ const ActivityDetails = lazy(
 );
 
 interface ActivitiesProps {
-  readonly selectedIds: number[];
-  readonly setSelectedIds: (ids: number[]) => void;
+  readonly selected: ActivityCommon[];
+  readonly setSelected: (activities: ActivityCommon[]) => void;
   readonly instanceId?: number;
 }
 
 const Activities: FC<ActivitiesProps> = ({
   instanceId,
-  selectedIds,
-  setSelectedIds,
+  selected,
+  setSelected,
 }) => {
   const {
     query,
@@ -67,7 +67,7 @@ const Activities: FC<ActivitiesProps> = ({
   useOpenActivityDetails(handleActivityDetailsOpen);
 
   const handleClearSelection = () => {
-    setSelectedIds([]);
+    setSelected([]);
   };
 
   const {
@@ -86,16 +86,14 @@ const Activities: FC<ActivitiesProps> = ({
   );
 
   const toggleAll = () => {
-    setSelectedIds(
-      selectedIds.length !== 0 ? [] : activities.map(({ id }) => id),
-    );
+    setSelected(selected.length !== 0 ? [] : activities);
   };
 
-  const handleToggleActivity = (activityId: number) => {
-    setSelectedIds(
-      selectedIds.includes(activityId)
-        ? selectedIds.filter((selectedId) => selectedId !== activityId)
-        : [...selectedIds, activityId],
+  const handleToggleActivity = (activity: ActivityCommon) => {
+    setSelected(
+      selected.includes(activity)
+        ? selected.filter((selectedActivity) => selectedActivity !== activity)
+        : [...selected, activity],
     );
   };
 
@@ -111,11 +109,10 @@ const Activities: FC<ActivitiesProps> = ({
               inline
               onChange={toggleAll}
               checked={
-                activities.length > 0 &&
-                selectedIds.length === activities.length
+                activities.length > 0 && selected.length === activities.length
               }
               indeterminate={
-                selectedIds.length > 0 && selectedIds.length < activities.length
+                selected.length > 0 && selected.length < activities.length
               }
             />
           ),
@@ -126,9 +123,9 @@ const Activities: FC<ActivitiesProps> = ({
               }
               inline
               labelClassName="u-no-margin--bottom u-no-padding--top"
-              checked={selectedIds.includes(row.original.id)}
+              checked={selected.includes(row.original)}
               onChange={() => {
-                handleToggleActivity(row.original.id);
+                handleToggleActivity(row.original);
               }}
             />
           ),
@@ -200,7 +197,7 @@ const Activities: FC<ActivitiesProps> = ({
           ),
         },
       ].filter((col) => !instanceId || col.accessor !== "computer_id"),
-    [activities, selectedIds],
+    [activities, selected],
   );
 
   return (

@@ -3,13 +3,14 @@ import { useState } from "react";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import type { ActivityCommon } from "@/features/activities";
 import { Activities, useActivities } from "@/features/activities";
 import { ConfirmationButton } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import classes from "./ActivitiesPage.module.scss";
 
 const ActivitiesPage: FC = () => {
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selected, setSelected] = useState<ActivityCommon[]>([]);
 
   const debug = useDebug();
   const {
@@ -29,6 +30,8 @@ const ActivitiesPage: FC = () => {
     redoActivitiesQuery;
   const { mutateAsync: undoActivities, isPending: undoActivitiesLoading } =
     undoActivitiesQuery;
+
+  const selectedIds = selected.map((activity) => activity.id);
 
   const handleApproveActivities = async () => {
     try {
@@ -73,13 +76,17 @@ const ActivitiesPage: FC = () => {
               <ConfirmationButton
                 className="p-segmented-control__button"
                 type="button"
-                disabled={selectedIds.length === 0 || approveActivitiesLoading}
+                disabled={
+                  !selected.length ||
+                  approveActivitiesLoading ||
+                  selected.some((activity) => !activity.actions?.approvable)
+                }
                 confirmationModalProps={{
-                  title: `Approve ${selectedIds.length === 1 ? "activity" : "activities"}`,
+                  title: `Approve ${selected.length === 1 ? "activity" : "activities"}`,
                   children: (
                     <p>
                       Are you sure you want to approve selected{" "}
-                      {selectedIds.length === 1 ? "activity" : "activities"}?
+                      {selected.length === 1 ? "activity" : "activities"}?
                     </p>
                   ),
                   confirmButtonLabel: "Approve",
@@ -94,13 +101,17 @@ const ActivitiesPage: FC = () => {
               <ConfirmationButton
                 className="p-segmented-control__button"
                 type="button"
-                disabled={selectedIds.length === 0 || cancelActivitiesLoading}
+                disabled={
+                  !selected.length ||
+                  cancelActivitiesLoading ||
+                  selected.some((activity) => !activity.actions?.cancelable)
+                }
                 confirmationModalProps={{
-                  title: `Cancel ${selectedIds.length === 1 ? "activity" : "activities"}`,
+                  title: `Cancel ${selected.length === 1 ? "activity" : "activities"}`,
                   children: (
                     <p>
                       Are you sure you want to cancel selected{" "}
-                      {selectedIds.length === 1 ? "activity" : "activities"}?
+                      {selected.length === 1 ? "activity" : "activities"}?
                     </p>
                   ),
                   confirmButtonLabel: "Apply",
@@ -115,13 +126,17 @@ const ActivitiesPage: FC = () => {
               <ConfirmationButton
                 className="p-segmented-control__button"
                 type="button"
-                disabled={selectedIds.length === 0 || undoActivitiesLoading}
+                disabled={
+                  !selected.length ||
+                  undoActivitiesLoading ||
+                  selected.some((activity) => !activity.actions?.revertable)
+                }
                 confirmationModalProps={{
-                  title: `Undo ${selectedIds.length === 1 ? "activity" : "activities"}`,
+                  title: `Undo ${selected.length === 1 ? "activity" : "activities"}`,
                   children: (
                     <p>
                       Are you sure you want to undo selected{" "}
-                      {selectedIds.length === 1 ? "activity" : "activities"}?
+                      {selected.length === 1 ? "activity" : "activities"}?
                     </p>
                   ),
                   confirmButtonLabel: "Undo",
@@ -136,13 +151,17 @@ const ActivitiesPage: FC = () => {
               <ConfirmationButton
                 className="p-segmented-control__button"
                 type="button"
-                disabled={selectedIds.length === 0 || redoActivitiesLoading}
+                disabled={
+                  !selected.length ||
+                  redoActivitiesLoading ||
+                  selected.some((activity) => !activity.actions?.reappliable)
+                }
                 confirmationModalProps={{
-                  title: `Redo ${selectedIds.length === 1 ? "activity" : "activities"}`,
+                  title: `Redo ${selected.length === 1 ? "activity" : "activities"}`,
                   children: (
                     <p>
                       Are you sure you want to redo selected{" "}
-                      {selectedIds.length === 1 ? "activity" : "activities"}?
+                      {selected.length === 1 ? "activity" : "activities"}?
                     </p>
                   ),
                   confirmButtonLabel: "Redo",
@@ -159,10 +178,7 @@ const ActivitiesPage: FC = () => {
         ]}
       />
       <PageContent>
-        <Activities
-          selectedIds={selectedIds}
-          setSelectedIds={(items) => setSelectedIds(items)}
-        />
+        <Activities selected={selected} setSelected={setSelected} />
       </PageContent>
     </PageMain>
   );
