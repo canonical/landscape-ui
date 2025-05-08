@@ -1,8 +1,10 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
@@ -15,7 +17,11 @@ import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
-import { useDeleteAutoinstallFile, useUpdateAutoinstallFile } from "../../api";
+import {
+  useDeleteAutoinstallFile,
+  useGetSecretsClient,
+  useUpdateAutoinstallFile,
+} from "../../api";
 import type {
   AutoinstallFile,
   AutoinstallFileTabId,
@@ -27,11 +33,8 @@ import classes from "./AutoinstallFilesList.module.scss";
 import {
   EDIT_AUTOINSTALL_FILE_NOTIFICATION,
   LOCAL_STORAGE_ITEM,
-  MAX_AUTOINSTALL_FILE_VERSION_COUNT,
 } from "./constants";
 import { getCellProps, getRowProps } from "./helpers";
-import { useExpandableRow } from "@/hooks/useExpandableRow";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const AutoinstallFileDetails = lazy(
   async () => import("../AutoinstallFileDetails"),
@@ -54,8 +57,18 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
+
+  const { secretsClient, isSecretsClientLoading } = useGetSecretsClient();
   const { deleteAutoinstallFile } = useDeleteAutoinstallFile();
   const { updateAutoinstallFile } = useUpdateAutoinstallFile();
+
+  if (isSecretsClientLoading) {
+    return <LoadingState />;
+  }
+
+  if (!secretsClient) {
+    throw new Error();
+  }
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
     useExpandableRow();
 
@@ -90,10 +103,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   };
 
   const openEditModal = (file: AutoinstallFile): void => {
-    if (
-      isEditModalIgnored ||
-      file.version < MAX_AUTOINSTALL_FILE_VERSION_COUNT
-    ) {
+    if (isEditModalIgnored || file.version < secretsClient.max_versions) {
       openEditForm(file);
     } else {
       setIsEditModalVisible(true);
@@ -323,9 +333,10 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           title="Edit History Limit Reached"
         >
           <p>
-            You&apos;ve reached the maximum of 100 saved edits for this file. To
-            continue editing, the system will remove the oldest version to make
-            space for your new changes. This ensures that the most recent 100
+            You&apos;ve reached the maximum of {secretsClient.max_versions}{" "}
+            saved edits for this file. To continue editing, the system will
+            remove the oldest version to make space for your new changes. This
+            ensures that the most recent {secretsClient.max_versions}
             versions are always retained in the history.
           </p>
 
