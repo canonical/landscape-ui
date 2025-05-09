@@ -6,7 +6,6 @@ import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { Instance } from "@/types/Instance";
 import { getFormikError } from "@/utils/formikErrors";
 import type { MultiSelectItem } from "@canonical/react-components";
 import {
@@ -14,16 +13,15 @@ import {
   ConfirmationModal,
   Form,
   Input,
-  ModularTable,
   Row,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment/moment";
-import { useMemo, useState, type FC } from "react";
-import type { CellProps, Column } from "react-table";
+import { useState, type FC } from "react";
 import { useRunScript } from "../../api";
 import type { Script } from "../../types";
 import DeliveryBlock from "../DeliveryBlock";
+import RunScriptFormInstanceList from "../RunScriptFormInstanceList";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./RunScriptForm.module.scss";
 import type { FormProps } from "./types";
@@ -92,17 +90,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
     getInstancesQuery({
       query: `access-group-recursive:${script.access_group}`,
     });
-
-  const modalColumns = useMemo<Column<Instance>[]>(
-    () => [
-      {
-        Header: "Instance",
-        Cell: ({ row: { original: instance } }: CellProps<Instance>) =>
-          instance.title,
-      },
-    ],
-    [],
-  );
 
   if (isGettingTags || isGettingInstances) {
     return <LoadingState />;
@@ -277,12 +264,8 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
             {formik.values.tags.length == 1 ? "tag" : "tags"}.
           </p>
 
-          <ModularTable
-            columns={modalColumns}
-            data={instances.filter((instance) =>
-              instance.tags.some((tag) => formik.values.tags.includes(tag)),
-            )}
-            className={classes.table}
+          <RunScriptFormInstanceList
+            query={`access-group-recursive:${script.access_group} ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`}
           />
         </ConfirmationModal>
       )}
