@@ -1,5 +1,6 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import LoadingState from "@/components/layout/LoadingState";
 import { currentInstanceCan } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -84,35 +85,13 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const hideModal = () => {
-    setIsModalVisible(false);
-  };
+  const { data: getAllInstanceTagsQueryResult, isLoading: isGettingTags } =
+    getAllInstanceTagsQuery();
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
-
-  const tagOptions: MultiSelectItem[] =
-    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
-      label: tag,
-      value: tag,
-    })) ?? [];
-
-  const { data: getInstancesQueryResult } = getInstancesQuery({
-    query: `access-group-recursive:${script.access_group}`,
-  });
-
-  const instances =
-    getInstancesQueryResult?.data.results.filter((instance) => {
-      return currentInstanceCan("runScripts", instance);
-    }) ?? [];
-
-  const instanceOptions: MultiSelectItem[] = instances.map(({ title, id }) => ({
-    label: title,
-    value: id,
-  }));
+  const { data: getInstancesQueryResult, isLoading: isGettingInstances } =
+    getInstancesQuery({
+      query: `access-group-recursive:${script.access_group}`,
+    });
 
   const modalColumns = useMemo<Column<Instance>[]>(
     () => [
@@ -124,6 +103,34 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
     ],
     [],
   );
+
+  if (isGettingTags || isGettingInstances) {
+    return <LoadingState />;
+  }
+
+  const hideModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const tagOptions: MultiSelectItem[] =
+    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
+      label: tag,
+      value: tag,
+    })) ?? [];
+
+  const instances =
+    getInstancesQueryResult?.data.results.filter((instance) => {
+      return currentInstanceCan("runScripts", instance);
+    }) ?? [];
+
+  const instanceOptions: MultiSelectItem[] = instances.map(({ title, id }) => ({
+    label: title,
+    value: id,
+  }));
 
   const trySubmit = () => {
     if (formik.values.queryType == "tags") {
@@ -190,6 +197,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
                     formik.setFieldTouched("tags", true, false);
                   }}
                   error={getFormikError(formik, "tags")}
+                  scrollOverflow
                 />
               )}
 
@@ -214,6 +222,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
                     formik.setFieldTouched("instanceIds", true, false);
                   }}
                   error={getFormikError(formik, "instanceIds")}
+                  scrollOverflow
                 />
               )}
             </div>
