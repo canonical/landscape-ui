@@ -1,14 +1,14 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable } from "@canonical/react-components";
-import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useGetScriptVersions } from "../../api";
-import type { TruncatedScriptVersion, SingleScript } from "../../types";
+import { getAuthorInfo } from "../../helpers";
+import type { SingleScript, TruncatedScriptVersion } from "../../types";
 import classes from "./ScriptsVersionHistory.module.scss";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 
 const ScriptVersionHistoryDetails = lazy(
   async () => import("../ScriptVersionHistoryDetails"),
@@ -23,8 +23,23 @@ const ScriptsVersionHistory: FC<ScriptsVersionHistoryProps> = ({
   script,
   viewVersionHistory,
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
   const { setSidePanelContent } = useSidePanel();
-  const { versions, isVersionsLoading } = useGetScriptVersions(script.id);
+  const { versions, isVersionsLoading, count } = useGetScriptVersions({
+    scriptId: script.id,
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+  });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+  };
 
   const openVersionPanel = (scriptVersion: TruncatedScriptVersion): void => {
     setSidePanelContent(
@@ -70,8 +85,10 @@ const ScriptsVersionHistory: FC<ScriptsVersionHistoryProps> = ({
           row: { original },
         }: CellProps<TruncatedScriptVersion>): ReactNode => (
           <>
-            {moment(original.created_at).format(DISPLAY_DATE_TIME_FORMAT)} by{" "}
-            {original.created_by.name}
+            {getAuthorInfo({
+              author: original.created_by.name,
+              date: original.created_at,
+            })}
           </>
         ),
       },
@@ -83,7 +100,18 @@ const ScriptsVersionHistory: FC<ScriptsVersionHistoryProps> = ({
     return <LoadingState />;
   }
 
-  return <ModularTable columns={columns} data={versions} />;
+  return (
+    <>
+      <ModularTable columns={columns} data={versions} />
+      <SidePanelTablePagination
+        currentPage={currentPage}
+        pageSize={pageSize}
+        paginate={handlePageChange}
+        setPageSize={handlePageSizeChange}
+        totalItems={count}
+      />
+    </>
+  );
 };
 
 export default ScriptsVersionHistory;

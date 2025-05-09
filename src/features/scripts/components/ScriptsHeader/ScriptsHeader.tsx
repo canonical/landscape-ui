@@ -4,10 +4,10 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
 import classes from "./ScriptsHeader.module.scss";
-import { statusOptions } from "./constants";
+import { STATUS_OPTIONS } from "./constants";
 import LoadingState from "@/components/layout/LoadingState";
 
-const CreateScriptForm = lazy(async () => import("../../../CreateScriptForm"));
+const CreateScriptForm = lazy(async () => import("../CreateScriptForm"));
 
 const ScriptsHeader: FC = () => {
   const { setSidePanelContent } = useSidePanel();
@@ -26,7 +26,7 @@ const ScriptsHeader: FC = () => {
       <HeaderWithSearch
         actions={
           <div className={classes.actions}>
-            <StatusFilter options={statusOptions} />
+            <StatusFilter options={STATUS_OPTIONS} />
             <Button
               type="button"
               appearance="positive"
@@ -42,7 +42,7 @@ const ScriptsHeader: FC = () => {
       />
       <TableFilterChips
         filtersToDisplay={["search", "status"]}
-        statusOptions={statusOptions}
+        statusOptions={STATUS_OPTIONS}
       />
     </>
   );

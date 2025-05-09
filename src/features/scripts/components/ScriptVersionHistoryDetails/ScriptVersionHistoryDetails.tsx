@@ -1,18 +1,16 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import {
   CodeSnippet,
   ConfirmationModal,
   Form,
 } from "@canonical/react-components";
-import moment from "moment";
 import { useState, type FC } from "react";
 import { useEditScript, useGetScriptVersion } from "../../api";
 import type { ScriptFormValues, TruncatedScriptVersion } from "../../types";
 import useDebug from "@/hooks/useDebug";
-import { getEditScriptParams } from "../../helpers";
+import { getAuthorInfo, getCode, getEditScriptParams } from "../../helpers";
 
 interface ScriptVersionHistoryDetailsProps {
   readonly isArchived: boolean;
@@ -46,7 +44,10 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
     setModalOpen(false);
   };
 
-  const code = `#!${version?.interpreter}` + "\n" + version?.code;
+  const code = getCode({
+    code: version?.code,
+    interpreter: version?.interpreter,
+  });
 
   const handleSubmit = async () => {
     try {
@@ -75,7 +76,10 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
     <Form noValidate onSubmit={handleSubmit}>
       <InfoItem
         label="author"
-        value={`${moment(scriptVersion.created_at).format(DISPLAY_DATE_TIME_FORMAT)}, by ${scriptVersion.created_by.name}`}
+        value={getAuthorInfo({
+          author: scriptVersion.created_by.name,
+          date: scriptVersion.created_at,
+        })}
       />
 
       {isVersionLoading ? (
@@ -112,6 +116,9 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
           confirmButtonDisabled={isEditing}
           onConfirm={handleSubmit}
           confirmButtonProps={{
+            type: "button",
+          }}
+          cancelButtonProps={{
             type: "button",
           }}
         >

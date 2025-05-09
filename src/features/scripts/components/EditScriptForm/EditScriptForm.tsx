@@ -135,11 +135,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
         label="Title"
         required
         {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
       />
 
       <input

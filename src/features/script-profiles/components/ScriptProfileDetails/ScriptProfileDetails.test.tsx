@@ -4,6 +4,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it } from "vitest";
 import ScriptProfileDetails from "./ScriptProfileDetails";
+import { expectLoadingState } from "@/tests/helpers";
 
 describe("ScriptProfileDetails", () => {
   it("should change tabs", async () => {
@@ -17,6 +18,7 @@ describe("ScriptProfileDetails", () => {
         profile={scriptProfiles[0]}
       />,
     );
+    await expectLoadingState();
 
     await userEvent.click(screen.getByText("Activity history"));
 

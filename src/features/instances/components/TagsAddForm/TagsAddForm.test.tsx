@@ -1,117 +1,159 @@
-import { renderWithProviders } from "@/tests/render";
-import TagsAddForm from "./TagsAddForm";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { expectLoadingState } from "@/tests/helpers";
 import { instances } from "@/tests/mocks/instance";
-import { screen } from "@testing-library/react";
+import { securityProfiles } from "@/tests/mocks/securityProfiles";
+import { tags } from "@/tests/mocks/tag";
+import { renderWithProviders } from "@/tests/render";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { getTestErrorParams } from "@/tests/mocks/error";
-import type useInstances from "@/hooks/useInstances";
+import TagsAddForm from "./TagsAddForm";
 
 describe("TagsAddForm", async () => {
-  const addTagsToInstances = vi.hoisted(() =>
-    vi.fn(({ tags }: { tags: string[] }) => {
-      if (tags.includes("error")) {
-        const { testError } = getTestErrorParams();
-
-        throw testError;
-      }
-    }),
-  );
   const selected = instances;
 
-  vi.mock("@/hooks/useInstances", async (importOriginal) => {
-    const original = await importOriginal<{ default: typeof useInstances }>();
-
-    return {
-      default: () => ({
-        ...original.default(),
-        addTagsToInstancesQuery: {
-          mutateAsync: addTagsToInstances,
-        },
-      }),
-    };
-  });
-
   describe("multiple instances", () => {
-    beforeEach(() => {
+    it("should render form", async () => {
       renderWithProviders(<TagsAddForm selected={selected} />);
-    });
+      await expectLoadingState();
 
-    it("should render form", () => {
       expect(
-        screen.getByRole("combobox", { name: /tags/i }),
+        screen.getByRole("searchbox", { name: /search/i }),
       ).toBeInTheDocument();
+
+      expect(screen.getByRole("table")).toBeInTheDocument();
+
       expect(
         screen.getByRole("button", { name: /assign/i }),
       ).toBeInTheDocument();
     });
 
-    it("should validate form", async () => {
-      await userEvent.click(screen.getByRole("button", { name: /assign/i }));
+    it("should disable submit button when no tags are selected", async () => {
+      renderWithProviders(<TagsAddForm selected={selected} />);
+      await expectLoadingState();
 
-      expect(addTagsToInstances).not.toHaveBeenCalled();
+      const assignButton = screen.getByRole("button", { name: /assign/i });
 
-      expect(
-        screen.getByText(/At least one tag is required/i),
-      ).toBeInTheDocument();
+      expect(assignButton).toBeDisabled();
+
+      await userEvent.click(assignButton);
+
+      expect(screen.queryByText(/tags assigned/i)).not.toBeInTheDocument();
     });
 
     it("should add selected tags to the selected instances", async () => {
-      const tags = ["tag1", "tag2"];
-      const query = selected.map(({ id }) => `id:${id}`).join(" OR ");
+      setEndpointStatus({
+        status: "empty",
+        path: "security-profiles",
+      });
+      renderWithProviders(<TagsAddForm selected={selected} />);
+      await expectLoadingState();
 
-      await userEvent.click(screen.getByRole("combobox", { name: /tags/i }));
+      const filteredTags = Array.from(
+        new Set(
+          securityProfiles.flatMap((profile) =>
+            profile.tags.filter(
+              (tag) =>
+                tags.includes(tag) &&
+                !selected.every((instance) => instance.tags.includes(tag)),
+            ),
+          ),
+        ),
+      );
 
-      for (const tag of tags) {
-        await userEvent.click(screen.getByText(tag));
+      const rows = screen.getAllByRole("row");
+
+      for (const tag of filteredTags) {
+        const row = rows.find((r) => within(r).queryByText(tag));
+        assert(row);
+        const checkbox = within(row).getByRole("checkbox");
+        await userEvent.click(checkbox);
       }
+      expect(screen.getByRole("button", { name: /assign/i })).toBeEnabled();
 
       await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
-      expect(addTagsToInstances).toHaveBeenCalledWith({ query, tags });
       expect(
-        screen.getByText(
+        await screen.findByText(
           `Tags successfully assigned to ${selected.length} instances`,
         ),
       ).toBeInTheDocument();
     });
 
-    it("should handle error", async () => {
-      const tags = ["error"];
-      const { testErrorMessage } = getTestErrorParams();
+    it("should show confirmation modal and assign tags after confirming", async () => {
+      renderWithProviders(<TagsAddForm selected={selected} />);
+      await expectLoadingState();
 
-      await userEvent.click(screen.getByRole("combobox", { name: /tags/i }));
+      const filteredTags = Array.from(
+        new Set(
+          securityProfiles.flatMap((profile) =>
+            profile.tags.filter(
+              (tag) =>
+                tags.includes(tag) &&
+                !selected.every((instance) => instance.tags.includes(tag)),
+            ),
+          ),
+        ),
+      );
 
-      for (const tag of tags) {
-        await userEvent.click(screen.getByText(tag));
-      }
+      const rows = screen.getAllByRole("row");
+      const row = rows.find((r) => within(r).queryByText(filteredTags[0]));
+      assert(row);
+      const checkbox = within(row).getByRole("checkbox");
+      await userEvent.click(checkbox);
 
       await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
-      expect(screen.getByText(testErrorMessage)).toBeInTheDocument();
+      expect(
+        screen.getByText(/adding tags could trigger/i),
+      ).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: /add tags/i }));
+
+      expect(
+        await screen.findByText(
+          `Tags successfully assigned to ${selected.length} instances`,
+        ),
+      ).toBeInTheDocument();
     });
   });
 
-  it("should add selected tags to the single instances", async () => {
-    renderWithProviders(<TagsAddForm selected={selected.slice(-1)} />);
+  it("should add selected tags to the single instance", async () => {
+    const selectedInstances = instances.slice(0, 1);
 
-    const tags = ["tag1", "tag2"];
-    const query = selected
-      .slice(-1)
-      .map(({ id }) => `id:${id}`)
-      .join(" OR ");
+    renderWithProviders(<TagsAddForm selected={selectedInstances} />);
+    await expectLoadingState();
 
-    await userEvent.click(screen.getByRole("combobox", { name: /tags/i }));
+    const filteredTags = Array.from(
+      new Set(
+        securityProfiles.flatMap((profile) =>
+          profile.tags.filter(
+            (tag) =>
+              tags.includes(tag) &&
+              !selectedInstances.every((instance) =>
+                instance.tags.includes(tag),
+              ),
+          ),
+        ),
+      ),
+    );
 
-    for (const tag of tags) {
-      await userEvent.click(screen.getByText(tag));
+    const rows = screen.getAllByRole("row");
+
+    for (const tag of filteredTags) {
+      const row = rows.find((r) => within(r).queryByText(tag));
+      assert(row);
+      const checkbox = within(row).getByRole("checkbox");
+      await userEvent.click(checkbox);
     }
 
     await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
-    expect(addTagsToInstances).toHaveBeenCalledWith({ query, tags });
+    const modal = await screen.findByRole("dialog");
+    expect(modal).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /add tags/i }));
     expect(
-      screen.getByText(
-        `Tags successfully assigned to "${selected[selected.length - 1].title}" instance`,
+      await screen.findByText(
+        `Tags successfully assigned to "${selectedInstances[0].title}" instance`,
       ),
     ).toBeInTheDocument();
   });

@@ -2,6 +2,7 @@ import { API_URL } from "@/constants";
 import type { Activity } from "@/features/activities";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { http, HttpResponse } from "msw";
+import { generatePaginatedResponse } from "./_helpers";
 
 export default [
   http.get(`${API_URL}script-profiles`, ({ request }) => {
@@ -20,10 +21,13 @@ export default [
       );
     });
 
-    return HttpResponse.json({
-      results: filteredProfiles.slice(offset, offset + limit),
-      count: filteredProfiles.length,
-    });
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: filteredProfiles,
+        limit,
+        offset,
+      }),
+    );
   }),
 
   http.get(`${API_URL}script-profiles/:profileId/activities`, ({ request }) => {
@@ -53,10 +57,13 @@ export default [
       },
     ];
 
-    return HttpResponse.json({
-      results: activities.slice(offset, offset + limit),
-      count: activities.length,
-    });
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: activities,
+        limit,
+        offset,
+      }),
+    );
   }),
 
   http.get(`${API_URL}script-profile-limits`, () => {

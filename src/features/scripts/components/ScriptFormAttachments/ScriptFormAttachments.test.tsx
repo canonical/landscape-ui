@@ -1,8 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import type { Attachment } from "../../types";
 import ScriptFormAttachments from "./ScriptFormAttachments";
+import { renderWithProviders } from "@/tests/render";
 
 describe("ScriptFormAttachments", () => {
   const getFileInputError = vi.fn();
@@ -48,7 +49,7 @@ describe("ScriptFormAttachments", () => {
   ];
 
   it("should render file inputs only", () => {
-    render(<ScriptFormAttachments {...props} />);
+    renderWithProviders(<ScriptFormAttachments {...props} />);
 
     for (const attachment in props.attachments) {
       expect(
@@ -63,7 +64,7 @@ describe("ScriptFormAttachments", () => {
   });
 
   it("should render remove buttons only", () => {
-    render(
+    renderWithProviders(
       <ScriptFormAttachments {...props} initialAttachments={fullAttachments} />,
     );
 
@@ -78,7 +79,7 @@ describe("ScriptFormAttachments", () => {
   });
 
   it("should render remove buttons and file inputs", () => {
-    render(
+    renderWithProviders(
       <ScriptFormAttachments
         {...props}
         attachmentsToRemove={fullAttachments
@@ -104,7 +105,7 @@ describe("ScriptFormAttachments", () => {
   });
 
   it("should render single remove button and several file inputs", () => {
-    render(
+    renderWithProviders(
       <ScriptFormAttachments
         {...props}
         initialAttachments={fullAttachments.slice(-1)}
@@ -125,7 +126,7 @@ describe("ScriptFormAttachments", () => {
   });
 
   it("should call remove attachment method", async () => {
-    render(
+    renderWithProviders(
       <ScriptFormAttachments {...props} initialAttachments={fullAttachments} />,
     );
 
@@ -141,7 +142,7 @@ describe("ScriptFormAttachments", () => {
   });
 
   it("should call remove attachment method", () => {
-    render(
+    renderWithProviders(
       <ScriptFormAttachments
         {...props}
         initialAttachments={fullAttachments}

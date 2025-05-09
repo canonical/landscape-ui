@@ -5,6 +5,7 @@ import classes from "@/pages/dashboard/instances/[single]/SingleInstanceTabs/Sin
 import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import { TABS } from "./constants";
 
 const ScriptsPanel = lazy(async () => import("../ScriptsContainer"));
 const ScriptProfilesPanel = lazy(
@@ -12,29 +13,16 @@ const ScriptProfilesPanel = lazy(
     import("@/features/script-profiles/components/ScriptProfilesPanel"),
 );
 
-const tabs = [
-  {
-    label: "Scripts",
-    id: "tab-link-scripts",
-    role: "tab",
-  },
-  {
-    label: "Profiles",
-    id: "tab-link-profiles",
-    role: "tab",
-  },
-];
-
 const ScriptsTabs: FC = () => {
   const { tab, setPageParams } = usePageParams();
 
-  const currentTab = tab ? `tab-link-${tab}` : tabs[0].id;
+  const currentTab = tab ? `tab-link-${tab}` : TABS[0].id;
 
   return (
     <>
       <Tabs
         listClassName="u-no-margin--bottom"
-        links={tabs.map((item) => ({
+        links={TABS.map((item) => ({
           ...item,
           active: item.id === currentTab,
           onClick: () => {

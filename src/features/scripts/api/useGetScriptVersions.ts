@@ -5,19 +5,36 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { TruncatedScriptVersion } from "../types";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 
-export const useGetScriptVersions = (scriptId: number) => {
+interface GetScriptVersionsParams {
+  scriptId: number;
+  limit?: number;
+  offset?: number;
+}
+
+export const useGetScriptVersions = ({
+  scriptId,
+  limit,
+  offset,
+}: GetScriptVersionsParams) => {
   const authFetch = useFetch();
 
   const { data: response, isLoading } = useQuery<
     AxiosResponse<ApiPaginatedResponse<TruncatedScriptVersion>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["scripts", "versions", scriptId],
-    queryFn: async () => authFetch.get(`scripts/${scriptId}/versions`),
+    queryKey: ["scripts", "versions", scriptId, limit, offset],
+    queryFn: async () =>
+      authFetch.get(`scripts/${scriptId}/versions`, {
+        params: {
+          limit,
+          offset,
+        },
+      }),
   });
 
   return {
     versions: response?.data.results ?? [],
     isVersionsLoading: isLoading,
+    count: response?.data.count,
   };
 };

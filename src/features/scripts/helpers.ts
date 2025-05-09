@@ -1,6 +1,8 @@
 import { Buffer } from "buffer";
 import type { ScriptFormValues } from "./types";
 import type { CreateScriptAttachmentParams } from "./api";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import moment from "moment";
 
 const getEncodedCode = (code: string) => {
   const escapedCode = JSON.parse(JSON.stringify(code).replace(/\\r/g, ""));
@@ -69,4 +71,24 @@ export const removeFileExtension = (filename: string): string => {
 
 export const formatTitleCase = (word: string) => {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+};
+
+export const getCode = ({
+  interpreter,
+  code,
+}: {
+  interpreter: string | undefined;
+  code: string | undefined;
+}) => {
+  return `#!${interpreter}` + "\n" + code;
+};
+
+export const getAuthorInfo = ({
+  author,
+  date,
+}: {
+  author: string;
+  date: string;
+}) => {
+  return `${moment(date).format(DISPLAY_DATE_TIME_FORMAT)}, by ${author}`;
 };

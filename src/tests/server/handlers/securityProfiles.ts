@@ -12,6 +12,7 @@ import { generatePaginatedResponse } from "./_helpers";
 export default [
   http.get(`${API_URL}security-profiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
+    const endpointStatus = getEndpointStatus();
 
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") ?? "";
@@ -38,7 +39,7 @@ export default [
 
     return HttpResponse.json(
       generatePaginatedResponse({
-        data: filteredProfiles,
+        data: endpointStatus.status === "empty" ? [] : filteredProfiles,
         offset,
         limit,
         search,
