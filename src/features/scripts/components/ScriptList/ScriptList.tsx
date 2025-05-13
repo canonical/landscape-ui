@@ -78,6 +78,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+            aria-label={`Show details of script ${original.title}`}
             onClick={() => {
               openViewPanel(original);
             }}

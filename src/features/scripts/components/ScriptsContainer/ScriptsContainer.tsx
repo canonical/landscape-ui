@@ -7,7 +7,7 @@ import {
 } from "@/features/scripts";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import ScriptsHeader from "./components/ScriptsHeader";
+import ScriptsHeader from "../ScriptsHeader";
 import { isScriptsEmptyState, isScriptsLoadingState } from "./helpers";
 
 const ScriptsContainer: FC = () => {

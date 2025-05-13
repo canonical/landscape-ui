@@ -5,7 +5,7 @@ import { Input } from "@canonical/react-components";
 import type { RunInstanceScriptFormValues } from "../../types";
 import classes from "./DeliveryBlock.module.scss";
 
-type DeliveryProps = Pick<
+export type DeliveryProps = Pick<
   RunInstanceScriptFormValues,
   "deliverImmediately" | "deliver_after"
 >;

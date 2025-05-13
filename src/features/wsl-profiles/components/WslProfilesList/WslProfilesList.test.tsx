@@ -1,16 +1,16 @@
 import type { ComponentProps } from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
-import WslProfileList from "./WslProfilesList";
+import WslProfilesList from "./WslProfilesList";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 
-const props: ComponentProps<typeof WslProfileList> = {
+const props: ComponentProps<typeof WslProfilesList> = {
   wslProfiles: wslProfiles,
 };
 
-describe("WslProfileList", () => {
+describe("WslProfilesList", () => {
   it("should render profile list", async () => {
-    const { container } = renderWithProviders(<WslProfileList {...props} />);
+    const { container } = renderWithProviders(<WslProfilesList {...props} />);
 
     expect(container).toHaveTexts([
       "Name",
@@ -28,7 +28,7 @@ describe("WslProfileList", () => {
       wslProfiles.forEach(async (profile) => {
         expect(screen.getByText(profile.title)).toBeInTheDocument();
         expect(
-          screen.getByLabelText(`${profile.name} profile actions`),
+          screen.getByLabelText(`${profile.title} profile actions`),
         ).toBeInTheDocument();
       });
     });
@@ -38,7 +38,7 @@ describe("WslProfileList", () => {
     const searchText = wslProfiles[0].title;
 
     renderWithProviders(
-      <WslProfileList {...props} />,
+      <WslProfilesList {...props} />,
       undefined,
       `/profiles/wsl?search=${searchText}`,
     );

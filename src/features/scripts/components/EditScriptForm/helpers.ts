@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import type { Script } from "../../types";
+import { getCode } from "../../helpers";
 
 export const getValidationSchema = () => {
   return Yup.object().shape({
@@ -19,7 +20,10 @@ export const getValidationSchema = () => {
 export const getInitialValues = (script: Script) => {
   return {
     title: script.title,
-    code: `#!${script.interpreter}` + "\n" + script.code,
+    code: getCode({
+      code: script.code,
+      interpreter: script.interpreter,
+    }),
     time_limit: script.time_limit,
     username: script.username,
     attachments: {

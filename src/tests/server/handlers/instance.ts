@@ -90,4 +90,13 @@ export default [
       return HttpResponse.json(instances);
     },
   ),
+
+  http.get(API_URL_OLD, async ({ request }) => {
+    if (!isAction(request, ["AddTagsToComputers"])) {
+      return;
+    }
+    await delay();
+
+    return HttpResponse.json(instances);
+  }),
 ];

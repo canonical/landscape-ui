@@ -1,12 +1,10 @@
 import InfoItem from "@/components/layout/InfoItem";
 import NoData from "@/components/layout/NoData";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useRoles from "@/hooks/useRoles";
 import { Col, Row } from "@canonical/react-components";
-import moment from "moment";
 import { type FC } from "react";
 import { Link } from "react-router";
-import { formatTitleCase } from "../../helpers";
+import { formatTitleCase, getAuthorInfo } from "../../helpers";
 import type { SingleScript } from "../../types";
 import AttachmentFile from "../AttachmentFile";
 import classes from "./ScriptDetailsInfo.module.scss";
@@ -48,13 +46,19 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
       <Row className="u-no-padding">
         <InfoItem
           label="Date created"
-          value={`${moment(script.created_at).format(DISPLAY_DATE_TIME_FORMAT)} by ${script.created_by.name}`}
+          value={getAuthorInfo({
+            author: script.created_by.name,
+            date: script.created_at,
+          })}
         />
       </Row>
       <Row className="u-no-padding">
         <InfoItem
           label="Last modified"
-          value={`${moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)} by ${script.last_edited_by.name}`}
+          value={getAuthorInfo({
+            author: script.last_edited_by.name,
+            date: script.last_edited_at,
+          })}
         />
       </Row>
 

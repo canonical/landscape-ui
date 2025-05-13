@@ -31,7 +31,7 @@ describe("SecurityProfileForm", () => {
       title: "New profile",
       unit_of_time: "DAILY",
     },
-    mutate: async () => undefined,
+    mutate: vi.fn(),
     submitButtonText: "Submit",
   };
 

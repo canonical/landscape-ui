@@ -57,6 +57,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
 export const getRowProps = (expandedRowIndex: number | null) => {
   return ({
     index,
+    original,
   }: Row<Script>): Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> => {
     const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
       {};
@@ -64,6 +65,7 @@ export const getRowProps = (expandedRowIndex: number | null) => {
     if (expandedRowIndex === index) {
       rowProps.className = classes.expandedRow;
     }
+    rowProps["aria-label"] = `${original.title} script row`;
 
     return rowProps;
   };

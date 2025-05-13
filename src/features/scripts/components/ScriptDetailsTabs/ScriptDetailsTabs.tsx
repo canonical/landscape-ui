@@ -4,6 +4,7 @@ import { lazy, Suspense, useState } from "react";
 import type { ScriptTabId, SingleScript } from "../../types";
 import { SCRIPT_TABS } from "./constants";
 import LoadingState from "@/components/layout/LoadingState";
+import { getCode } from "../../helpers";
 
 const ScriptDetailsInfo = lazy(async () => import("../ScriptDetailsInfo"));
 
@@ -46,7 +47,12 @@ const ScriptDetailsTabs: FC<ScriptDetailsTabsProps> = ({
 
       {tabId === "code" && (
         <Suspense fallback={<LoadingState />}>
-          <ScriptCode code={`#!${script.interpreter}` + "\n" + script.code} />
+          <ScriptCode
+            code={getCode({
+              code: script.code,
+              interpreter: script.interpreter,
+            })}
+          />
         </Suspense>
       )}
 

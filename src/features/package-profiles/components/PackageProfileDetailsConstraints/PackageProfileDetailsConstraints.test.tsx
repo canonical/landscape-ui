@@ -52,7 +52,7 @@ describe("PackageProfileDetailsConstraints", () => {
 
     expect(
       screen.queryByRole("heading", {
-        name: `Change "${packageProfiles[0].name}" profile's constraints`,
+        name: `Change "${packageProfiles[0].title}" profile's constraints`,
       }),
     ).toBeInTheDocument();
   });

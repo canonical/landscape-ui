@@ -32,13 +32,10 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
     return <LoadingState />;
   }
 
-  const accessGroup = getAccessGroupQueryResponse?.data.find(
-    (group) => group.name == profile.access_group,
-  );
-
-  if (!script || !accessGroup) {
-    throw new Error();
-  }
+  const accessGroup =
+    getAccessGroupQueryResponse?.data.find(
+      (group) => group.name == profile.access_group,
+    )?.title || profile.access_group;
 
   const activity = profile.activities.last_activity;
 
@@ -59,19 +56,23 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
           <InfoItem
             label="Script"
             value={
-              <Link
-                className={classes.link}
-                to="/scripts?tab=scripts"
-                state={{ scriptId: script.id }}
-              >
-                {script.title}
-              </Link>
+              script ? (
+                <Link
+                  className={classes.link}
+                  to="/scripts?tab=scripts"
+                  state={{ scriptId: script.id }}
+                >
+                  {script.title}
+                </Link>
+              ) : (
+                <NoData />
+              )
             }
           />
         </Col>
 
         <Col size={6}>
-          <InfoItem label="Access group" value={accessGroup.title} />
+          <InfoItem label="Access group" value={accessGroup} />
         </Col>
       </Row>
 

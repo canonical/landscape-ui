@@ -1,4 +1,8 @@
-import type { Script, ScriptVersion, SingleScript } from "@/features/scripts";
+import type {
+  Script,
+  SingleScript,
+  TruncatedScriptVersion,
+} from "@/features/scripts";
 
 export const scripts: Script[] = [
   {
@@ -65,7 +69,7 @@ export const scripts: Script[] = [
     username: "",
     is_redactable: true,
     is_editable: true,
-    is_executable: true,
+    is_executable: false,
   },
   {
     id: 32,
@@ -89,7 +93,7 @@ export const scripts: Script[] = [
     access_group: "global",
     time_limit: 300,
     username: "",
-    is_redactable: true,
+    is_redactable: false,
     is_editable: true,
     is_executable: true,
   },
@@ -116,7 +120,7 @@ export const scripts: Script[] = [
     time_limit: 300,
     username: "",
     is_redactable: true,
-    is_editable: true,
+    is_editable: false,
     is_executable: true,
   },
   {
@@ -296,48 +300,113 @@ export const scriptDetails: SingleScript = {
   ],
 };
 
-export const scriptVersions: ScriptVersion[] = [
+export const activeScriptDetails: SingleScript = {
+  ...scripts[0],
+  status: "ACTIVE",
+  code: "#!/bin/shell\nls /tmp",
+  version_number: 1,
+};
+
+export const detailedScriptsData: SingleScript[] = [
   {
-    account_id: 1,
+    ...scripts[0],
+    status: "ACTIVE",
     code: "#!/bin/shell\nls /tmp",
-    created_at: "2023-10-01T00:00:00Z",
-    creator_id: 1,
-    creator_name: "John Smith",
-    id: 1,
-    interpreter: "shell",
-    script_id: 1,
-    title: "List temporary files",
     version_number: 1,
   },
   {
-    account_id: 1,
+    ...scripts[1],
+    status: "ARCHIVED",
     code: "#!/bin/shell\nls /tmp",
-    created_at: "2023-10-01T00:00:00Z",
-    creator_id: 1,
-    creator_name: "John Smith",
-    id: 2,
-    interpreter: "shell",
-    script_id: 1,
-    title: "List temporary files",
-    version_number: 2,
+    version_number: 1,
   },
   {
-    account_id: 1,
+    ...scripts[2],
+    status: "REDACTED",
     code: "#!/bin/shell\nls /tmp",
-    created_at: "2023-10-01T00:00:00Z",
-    creator_id: 1,
-    creator_name: "John Smith",
-    id: 3,
-    interpreter: "shell",
-    script_id: 1,
-    title: "List temporary files",
-    version_number: 3,
+    version_number: 1,
   },
 ];
 
+export const scriptVersions: TruncatedScriptVersion[] = [
+  {
+    code: "#!/bin/shell\nls /tmp",
+    created_at: "2023-10-01T00:00:00Z",
+    id: 1,
+    interpreter: "shell",
+    title: "List temporary files",
+    version_number: 1,
+    created_by: {
+      id: 1,
+      name: "John Smith",
+    },
+  },
+  {
+    code: "#!/bin/shell\nls /tmp",
+    created_at: "2023-10-01T00:00:00Z",
+    id: 2,
+    interpreter: "shell",
+    title: "List temporary files",
+    version_number: 2,
+    created_by: {
+      id: 1,
+      name: "John Smith",
+    },
+  },
+  {
+    code: "#!/bin/shell\nls /tmp",
+    created_at: "2023-10-01T00:00:00Z",
+    id: 3,
+    interpreter: "shell",
+    title: "List temporary files",
+    version_number: 3,
+    created_by: {
+      id: 1,
+      name: "John Smith",
+    },
+  },
+  {
+    code: "#!/bin/shell\nls /tmp",
+    created_at: "2023-10-01T00:00:00Z",
+    id: 4,
+    interpreter: "shell",
+    title: "List temporary files",
+    version_number: 4,
+    created_by: {
+      id: 1,
+      name: "John Smith",
+    },
+  },
+  {
+    code: "#!/bin/shell\nls /tmp",
+    created_at: "2023-10-01T00:00:00Z",
+    id: 5,
+    interpreter: "shell",
+    title: "List temporary files",
+    version_number: 5,
+    created_by: {
+      id: 1,
+      name: "John Smith",
+    },
+  },
+];
+
+export const scriptVersionsWithPagination: TruncatedScriptVersion[] = [
+  ...scriptVersions,
+  ...scriptVersions,
+  ...scriptVersions,
+  ...scriptVersions,
+  ...scriptVersions,
+  ...scriptVersions,
+].map((version, index) => ({
+  ...version,
+  id: version.id + index * 5,
+  version_number: version.version_number + index,
+}));
+
 export const scriptVersion = {
   id: 1,
-  code: "#!/bin/shell\nls /tmp",
+  code: "ls /tmp",
   created_by: {
     name: "John Smith",
     id: 1,
