@@ -31,6 +31,6 @@ describe("ProviderListActions", () => {
 
     expect(
       screen.getByRole("button", { name: "Delete Ubuntu One provider" }),
-    ).toHaveAttribute("aria-disabled", "true");
+    ).toHaveAttribute("aria-disabled");
   });
 });

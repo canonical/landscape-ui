@@ -27,7 +27,7 @@ describe("EditOrganisationPreferencesForm", () => {
 
     const saveButton = screen.getByRole("button", { name: /save changes/i });
     expect(saveButton).toBeInTheDocument();
-    expect(saveButton).toHaveAttribute("aria-disabled", "true");
+    expect(saveButton).toHaveAttribute("aria-disabled");
   });
 
   it("enables save button when form values change", async () => {

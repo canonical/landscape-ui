@@ -127,7 +127,7 @@ const EmployeeGroupsListContextualMenu: FC<
           onConfirm={deleteEmployeeGroups}
           close={handleCloseModal}
         >
-          {body}
+          <>{body}</>
         </ConfirmationModal>
       )}
     </>

@@ -22,6 +22,7 @@ export const handleEventLogsCellProps =
   ({ column, row: { index } }: Cell<EventLog>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
+
     if (column.id === "creation_time") {
       cellProps.role = "rowheader";
     } else if (column.id === "person_name") {

@@ -33,7 +33,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   onSubmit,
   submitButtonAppearance = "positive",
   cancelButtonDisabled = false,
-}): ReactElement => {
+}): ReactElement<Element> => {
   const { closeSidePanel } = useSidePanel();
   return (
     <div className={classes.buttons}>
@@ -66,7 +66,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
               className="u-no-margin--bottom"
               onClick={secondaryActionButtonSubmit}
             >
-              {secondaryActionButtonTitle}
+              <>{secondaryActionButtonTitle}</>
             </Button>
           )}
           <ActionButton

@@ -25,7 +25,9 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
       current:
         expandedRowIndex !== -1 ? tableRowsRef.current[expandedRowIndex] : null,
     },
-    () => setExpandedRowIndex(-1),
+    () => {
+      setExpandedRowIndex(-1);
+    },
   );
 
   const columns = useMemo<Column<EventLog>[]>(

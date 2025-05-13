@@ -15,7 +15,7 @@ interface PieChartProps {
 }
 
 const PieChart: React.FC<PieChartProps> = ({ data }) => {
-  const chartRef = useRef<ChartJSOrUndefined<"pie"> | null>();
+  const chartRef = useRef<ChartJSOrUndefined<"pie"> | null>(undefined);
   const [chartInstance, setChartInstance] = useState<Chart | null>(null);
   const [selectedArc, setSelectedArc] = useState<number | null>(null);
 

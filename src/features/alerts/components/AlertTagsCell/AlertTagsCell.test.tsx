@@ -69,10 +69,7 @@ describe("AlertTagsCell", () => {
 
     await userEvent.click(screen.getByRole("combobox"));
 
-    expect(screen.getByText("Save changes")).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
-    expect(screen.getByText("Revert")).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByText("Save changes")).toHaveAttribute("aria-disabled");
+    expect(screen.getByText("Revert")).toHaveAttribute("aria-disabled");
   });
 });

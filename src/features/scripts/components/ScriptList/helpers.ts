@@ -1,10 +1,10 @@
-import type { HTMLProps, MutableRefObject } from "react";
+import type { HTMLProps, RefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { Script } from "../../types";
 import classes from "./ScriptList.module.scss";
 
 export const getTableRowsRef = (
-  tableRowsRef: MutableRefObject<HTMLTableRowElement[]>,
+  tableRowsRef: RefObject<HTMLTableRowElement[]>,
 ) => {
   return (instance: HTMLDivElement | null): void => {
     if (!instance) {

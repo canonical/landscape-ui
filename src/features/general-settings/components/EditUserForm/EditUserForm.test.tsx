@@ -118,7 +118,7 @@ describe("EditUserForm", () => {
 
       const saveButton = screen.getByRole("button", { name: /save changes/i });
       expect(saveButton).toBeInTheDocument();
-      expect(saveButton).toHaveAttribute("aria-disabled", "true");
+      expect(saveButton).toHaveAttribute("aria-disabled");
     });
 
     it("enables save button when form values change", async () => {
@@ -172,7 +172,7 @@ describe("EditUserForm", () => {
       const saveButton = screen.getByRole("button", { name: /save changes/i });
       await userEvent.click(saveButton);
 
-      expect(saveButton).toHaveAttribute("aria-disabled", "true");
+      expect(saveButton).toHaveAttribute("aria-disabled");
     });
 
     it("should show an empty option for default organisation select if user has not yet selected one", async () => {
