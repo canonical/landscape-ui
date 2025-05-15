@@ -1,3 +1,15 @@
+## [1.13.1](https://github.com/canonical/landscape-dashboard/compare/v1.13.0...v1.13.1) (2025-05-15)
+
+
+### Bug Fixes
+
+* add empty state to instance hardware panel ([55fbf2d](https://github.com/canonical/landscape-dashboard/commit/55fbf2d5cb9d16bf640dc5a964f4b892bb482eb9))
+* make forms in modals submittable by pressing enter ([c6e6c96](https://github.com/canonical/landscape-dashboard/commit/c6e6c96e042f4747c91b308045c969ea90ea5c44))
+* remove access group select, filter by access group ([#241](https://github.com/canonical/landscape-dashboard/issues/241)) ([cdf185e](https://github.com/canonical/landscape-dashboard/commit/cdf185e8fc9118d6377fd1a21f5356ba7f587ae0))
+* restore APT sources for SaaS environment ([da81756](https://github.com/canonical/landscape-dashboard/commit/da81756b1188cdd82662b1c75e83e9a1c27590bd))
+* security profile audits ([43eaf7b](https://github.com/canonical/landscape-dashboard/commit/43eaf7b22cda63bb09833188aaff959204446f44))
+* security profile time zones and schedule, extra info in requests, add tests ([4679e89](https://github.com/canonical/landscape-dashboard/commit/4679e89786b9a9473876ce341bf428c606a90017))
+
 # [1.13.0](https://github.com/canonical/landscape-dashboard/compare/v1.12.5...v1.13.0) (2025-04-29)
 
 
