@@ -66,18 +66,18 @@ export const MENU_ITEMS: MenuItem[] = [
     label: "Repositories",
     path: "/repositories",
     icon: "fork",
-    env: "selfHosted",
     items: [
       {
         label: "Mirrors",
         path: "/repositories/mirrors",
+        env: "selfHosted",
       },
       {
         label: "GPG Keys",
         path: "/repositories/gpg-keys",
       },
       {
-        label: "APT Sources",
+        label: "APT sources",
         path: "/repositories/apt-sources",
       },
     ],
@@ -112,11 +112,6 @@ export const MENU_ITEMS: MenuItem[] = [
         label: "Identity providers",
         path: "/settings/identity-providers",
         requiresFeature: "oidc-configuration",
-      },
-      {
-        label: "GPG Keys",
-        path: "/repositories/gpg-keys",
-        env: "saas",
       },
     ],
   },

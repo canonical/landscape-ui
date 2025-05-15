@@ -17,19 +17,25 @@ const RepositoryProfileFormTabs: FC<RepositoryProfileFormTabsProps> = ({
           label: "Details",
           role: "tab",
           active: 0 === currentTab,
-          onClick: () => onCurrentTabChange(0),
+          onClick: () => {
+            onCurrentTabChange(0);
+          },
         },
         {
           label: "Pockets",
           role: "tab",
           active: 1 === currentTab,
-          onClick: () => onCurrentTabChange(1),
+          onClick: () => {
+            onCurrentTabChange(1);
+          },
         },
         {
-          label: "APT Sources",
+          label: "APT sources",
           role: "tab",
           active: 2 === currentTab,
-          onClick: () => onCurrentTabChange(2),
+          onClick: () => {
+            onCurrentTabChange(2);
+          },
         },
       ]}
     />

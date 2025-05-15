@@ -16,7 +16,7 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import * as Yup from "yup";
 import { useAPTSources } from "../../hooks";
-import { INITIAL_VALUES, APT_LINE_TOOLTIP } from "./constants";
+import { APT_LINE_TOOLTIP, INITIAL_VALUES } from "./constants";
 import classes from "./NewAPTSourceForm.module.scss";
 import type { FormProps } from "./types";
 
@@ -148,7 +148,7 @@ const NewAPTSourceForm: FC = () => {
       />
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Add APT Source"
+        submitButtonText="Add APT source"
       />
     </Form>
   );

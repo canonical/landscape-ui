@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import PageContent from "@/components/layout/PageContent";
@@ -8,8 +8,6 @@ import LoadingState from "@/components/layout/LoadingState";
 import EmptyState from "@/components/layout/EmptyState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { GPGKeysList, useGPGKeys } from "@/features/gpg-keys";
-import { useLocation, useNavigate } from "react-router";
-import useEnv from "@/hooks/useEnv";
 
 const NewGPGKeyForm = lazy(async () =>
   import("@/features/gpg-keys").then((module) => ({
@@ -20,19 +18,6 @@ const NewGPGKeyForm = lazy(async () =>
 const GPGKeysPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
   const { getGPGKeysQuery } = useGPGKeys();
-  const { isSelfHosted, isSaas } = useEnv();
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    if ("/repositories/gpg-keys" === pathname && isSaas) {
-      navigate("/settings/gpg-keys", { replace: true });
-    }
-
-    if ("/settings/gpg-keys" === pathname && isSelfHosted) {
-      navigate("/repositories/gpg-keys", { replace: true });
-    }
-  }, [pathname]);
 
   const { data, isLoading } = getGPGKeysQuery();
 

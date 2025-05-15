@@ -9,7 +9,7 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 
-const NewAPTSourceForm = lazy(() =>
+const NewAPTSourceForm = lazy(async () =>
   import("@/features/apt-sources").then((module) => ({
     default: module.NewAPTSourceForm,
   })),
@@ -35,7 +35,7 @@ const APTSourcesPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        title="APT Sources"
+        title="APT sources"
         actions={[
           <Button
             key="new-key-button"
