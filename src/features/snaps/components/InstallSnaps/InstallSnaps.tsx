@@ -49,8 +49,12 @@ const InstallSnaps: FC = () => {
     <>
       <SnapDropdownSearch
         selectedItems={selectedSnaps}
-        setSelectedItems={(items) => setSelectedSnaps(items)}
-        setConfirming={(item) => setConfirming(item)}
+        setSelectedItems={(items) => {
+          setSelectedSnaps(items);
+        }}
+        setConfirming={(item) => {
+          setConfirming(item);
+        }}
       />
       <SidePanelFormButtons
         submitButtonDisabled={

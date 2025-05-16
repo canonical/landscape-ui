@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 
 export const INSTANCE_SEARCH_HELP_TERMS: {
   term: string;
-  description: string | ReactElement;
+  description: string | ReactElement<ReactElement>;
 }[] = [
   {
     term: "<keyword>",

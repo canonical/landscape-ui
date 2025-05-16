@@ -4,7 +4,7 @@ import { ACTIVITY_STATUSES } from "../../constants";
 
 export const ACTIVITY_SEARCH_HELP_TERMS: {
   term: string;
-  description: string | ReactElement;
+  description: string | ReactElement<Element>;
 }[] = [
   {
     term: "id:<activity_id>",

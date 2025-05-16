@@ -4,7 +4,7 @@ import { useEventListener } from "usehooks-ts";
 import { Chip } from "@canonical/react-components";
 
 interface TagChipsProps {
-  containerRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
   onDismiss: (value: string) => void;
   onOverflowingItemsAmountChange: (amount: number) => void;
   tagData: string[];
@@ -38,7 +38,13 @@ const TagChips: FC<TagChipsProps> = ({
   }, [tagData.length]);
 
   return tagData.map((tag) => (
-    <Chip key={tag} value={tag} onDismiss={() => onDismiss(tag)} />
+    <Chip
+      key={tag}
+      value={tag}
+      onDismiss={() => {
+        onDismiss(tag);
+      }}
+    />
   ));
 };
 

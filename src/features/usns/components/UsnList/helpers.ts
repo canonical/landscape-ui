@@ -1,4 +1,4 @@
-import type { HTMLProps, MutableRefObject } from "react";
+import type { HTMLProps, RefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { Usn } from "@/types/Usn";
 import { EMPTY_USN } from "./constants";
@@ -106,11 +106,12 @@ export const handleRowProps =
   };
 
 export const getTableRows =
-  (ref: MutableRefObject<HTMLTableRowElement[]>) =>
+  (ref: RefObject<HTMLTableRowElement[]>) =>
   (instance: HTMLDivElement | null) => {
     if (!instance) {
       return;
     }
+
     ref.current = [
       ...instance.querySelectorAll<HTMLTableRowElement>("tbody tr"),
     ];

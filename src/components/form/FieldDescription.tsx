@@ -19,7 +19,7 @@ const FieldDescription: FC<FieldDescriptionProps> = ({
   return (
     <div className={classes.wrapper}>
       <span>{label}</span>
-      <Tooltip position={tooltipPosition} message={description}>
+      <Tooltip position={tooltipPosition} message={<>{description}</>}>
         <Icon name={ICONS.help} />
       </Tooltip>
     </div>

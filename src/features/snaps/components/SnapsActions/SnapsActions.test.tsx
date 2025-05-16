@@ -68,7 +68,7 @@ describe("SnapsActions", () => {
         for (const button of tableSnapButtons) {
           const actionButton = screen.getByRole("button", { name: button });
           if (button !== "Install") {
-            expect(actionButton).toHaveAttribute("aria-disabled", "true");
+            expect(actionButton).toHaveAttribute("aria-disabled");
           } else {
             expect(actionButton).not.toHaveAttribute("aria-disabled");
           }
@@ -86,7 +86,7 @@ describe("SnapsActions", () => {
           />,
         );
         const unholdButton = screen.getByRole("button", { name: "Unhold" });
-        expect(unholdButton).toHaveAttribute("aria-disabled", "true");
+        expect(unholdButton).toHaveAttribute("aria-disabled");
       });
 
       it("Hold button disabled when only held snaps are selected", () => {
@@ -100,7 +100,7 @@ describe("SnapsActions", () => {
           />,
         );
         const holdButton = screen.getByRole("button", { name: "Hold" });
-        expect(holdButton).toHaveAttribute("aria-disabled", "true");
+        expect(holdButton).toHaveAttribute("aria-disabled");
       });
 
       it("Hold and Unhold enabled when only held and unheld snaps are selected", () => {

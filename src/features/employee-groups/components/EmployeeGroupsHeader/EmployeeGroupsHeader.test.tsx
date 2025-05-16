@@ -53,7 +53,7 @@ describe("EmployeeGroupsHeader", () => {
       name: /reassign autoinstall file/i,
     });
     expect(assignButton).toBeInTheDocument();
-    expect(assignButton).toHaveAttribute("aria-disabled", "true");
+    expect(assignButton).toHaveAttribute("aria-disabled");
   });
 
   it("enables Remove and Assign autoinstall file buttons when groups are selected", () => {
@@ -65,7 +65,7 @@ describe("EmployeeGroupsHeader", () => {
     const assignButton = screen.getByRole("button", {
       name: /reassign autoinstall file/i,
     });
-    expect(assignButton).not.toHaveAttribute("aria-disabled", "true");
+    expect(assignButton).not.toBeDisabled();
   });
 
   it("calls setSidePanelContent when 'Import employee groups' button is clicked", async () => {

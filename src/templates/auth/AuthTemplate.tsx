@@ -28,7 +28,7 @@ const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
             {`You've been invited to ${invitationAccount?.account_title}`}
           </Notification>
         )}
-        {children}
+        <>{children}</>
       </LoginPageLayout>
     </div>
   );

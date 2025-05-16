@@ -5,7 +5,7 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, Notification } from "@canonical/react-components";
 import moment from "moment";
-import { lazy, Suspense, useState, type FC } from "react";
+import { type FC, lazy, Suspense, useState } from "react";
 import { useArchiveScriptModal } from "../../hooks";
 import type { ScriptTabId } from "../../types";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
@@ -147,7 +147,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
         onConfirm={onConfirmArchive}
         close={handleCloseModal}
       >
-        {archiveModalBody}
+        <>{archiveModalBody}</>
       </TextConfirmationModal>
     </>
   );

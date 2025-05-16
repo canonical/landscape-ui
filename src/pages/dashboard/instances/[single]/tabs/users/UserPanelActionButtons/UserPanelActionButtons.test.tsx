@@ -51,9 +51,9 @@ describe("UserPanelActionButtons", () => {
         for (const button of tableUserButtons) {
           const actionButton = screen.getByRole("button", { name: button });
           if (button !== "Add user") {
-            expect(actionButton).toHaveAttribute("aria-disabled", "true");
+            expect(actionButton).toBeDisabled();
           } else {
-            expect(actionButton).not.toHaveAttribute("aria-disabled");
+            expect(actionButton).not.toBeDisabled();
           }
         }
       });
@@ -69,7 +69,7 @@ describe("UserPanelActionButtons", () => {
           />,
         );
         const unlockButton = screen.getByRole("button", { name: "Unlock" });
-        expect(unlockButton).toHaveAttribute("aria-disabled", "true");
+        expect(unlockButton).toBeDisabled();
       });
 
       it("Lock button disabled when only locked users are selected", () => {
@@ -83,7 +83,7 @@ describe("UserPanelActionButtons", () => {
           />,
         );
         const lockButton = screen.getByRole("button", { name: "Lock" });
-        expect(lockButton).toHaveAttribute("aria-disabled", "true");
+        expect(lockButton).toBeDisabled();
       });
 
       it("Lock and Unlock enabled when only locked and unlocked users are selected", () => {

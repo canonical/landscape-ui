@@ -117,7 +117,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
             original: { script_profiles },
             index,
           },
-        }: CellProps<Script>): ReactElement =>
+        }: CellProps<Script>): ReactElement<Element> =>
           script_profiles.length > 0 ? (
             <TruncatedCell
               content={script_profiles.map(({ id, title }) => (
@@ -143,7 +143,9 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
       {
         Header: "Created",
         id: "created_at",
-        Cell: ({ row: { original } }: CellProps<Script>): ReactElement => (
+        Cell: ({
+          row: { original },
+        }: CellProps<Script>): ReactElement<Element> => (
           <div>
             <div>
               {moment(original.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
@@ -157,7 +159,9 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
       {
         Header: "Last modified",
         id: "last_modified_at",
-        Cell: ({ row: { original } }: CellProps<Script>): ReactElement => (
+        Cell: ({
+          row: { original },
+        }: CellProps<Script>): ReactElement<Element> => (
           <div>
             <div>
               {moment(original.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
@@ -171,7 +175,9 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
       {
         Header: "Actions",
         className: classes.actions,
-        Cell: ({ row: { original } }: CellProps<Script>): ReactElement => (
+        Cell: ({
+          row: { original },
+        }: CellProps<Script>): ReactElement<Element> => (
           <ScriptListContextualMenu script={original} />
         ),
       },

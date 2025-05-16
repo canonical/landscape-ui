@@ -10,7 +10,7 @@ import {
   ModularTable,
   SearchBox,
 } from "@canonical/react-components";
-import { useMemo, useState, type FC } from "react";
+import { type FC, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useTaggedSecurityProfiles } from "../../hooks";
 import TagsAddConfirmationModal from "../TagsAddConfirmationModal";
@@ -117,6 +117,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
         Cell: ({
           row: {
             original: { value: tag },
+            index,
           },
         }: CellProps<TagObject>) => {
           const toggle = () => {
@@ -139,26 +140,24 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
           };
 
           return (
-            <>
-              <CheckboxInput
-                inline
-                label={null}
-                disabled={selected.every((instance) =>
-                  instance.tags.includes(tag),
-                )}
-                checked={
-                  tags.includes(tag) ||
-                  selected.every((instance) => instance.tags.includes(tag))
-                }
-                indeterminate={
-                  !tags.includes(tag) &&
-                  selected.some((instance) => instance.tags.includes(tag)) &&
-                  selected.some((instance) => !instance.tags.includes(tag))
-                }
-                onChange={toggle}
-              />
-              {tag}
-            </>
+            <CheckboxInput
+              inline
+              label={tag}
+              disabled={selected.every((instance) =>
+                instance.tags.includes(tag),
+              )}
+              name={`tag-${index}`}
+              checked={
+                tags.includes(tag) ||
+                selected.every((instance) => instance.tags.includes(tag))
+              }
+              indeterminate={
+                !tags.includes(tag) &&
+                selected.some((instance) => instance.tags.includes(tag)) &&
+                selected.some((instance) => !instance.tags.includes(tag))
+              }
+              onChange={toggle}
+            />
           );
         },
       },

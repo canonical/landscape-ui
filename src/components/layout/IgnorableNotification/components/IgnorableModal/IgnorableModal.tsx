@@ -1,6 +1,6 @@
 import { CheckboxInput, ConfirmationModal } from "@canonical/react-components";
 import type { ComponentProps, MouseEvent, ReactNode } from "react";
-import { useState, type FC } from "react";
+import { type FC, useState } from "react";
 
 interface IgnorableModalProps
   extends Omit<
@@ -47,7 +47,7 @@ const IgnorableModal: FC<IgnorableModalProps> = ({
 
   return (
     <ConfirmationModal {...props} onConfirm={confirmModal} close={closeModal}>
-      {children}
+      {<>{children}</>}
 
       <CheckboxInput
         checked={isChecked}
