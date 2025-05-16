@@ -42,7 +42,6 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
       email: "",
       password: "",
     },
-    validateOnMount: true,
     validationSchema: Yup.object().shape({
       email: isIdentityAvailable
         ? Yup.string().required("This field is required")
