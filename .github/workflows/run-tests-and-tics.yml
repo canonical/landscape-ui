@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.15.1
       - name: Check internet connection
         run: |
           if curl -s -I https://www.google.com > /dev/null; then
@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.15.1
       - name: Install dependencies
         run: npm install
         env:
