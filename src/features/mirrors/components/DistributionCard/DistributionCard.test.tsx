@@ -1,11 +1,11 @@
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { distributions } from "@/tests/mocks/distributions";
-import type { ComponentProps } from "react";
-import DistributionCard from "./DistributionCard";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { vi } from "vitest";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
+import DistributionCard from "./DistributionCard";
 
 const commonProps: ComponentProps<typeof DistributionCard> = {
   distribution: {
@@ -27,7 +27,13 @@ const withSeriesProps: ComponentProps<typeof DistributionCard> = {
   },
 };
 
-const checkModalActions = async ({ isLarge }: { isLarge: boolean }) => {
+const checkModalActions = async ({
+  distributionName,
+  isLarge,
+}: {
+  distributionName: string;
+  isLarge: boolean;
+}) => {
   const removeDistributionButton = await screen.findByRole("button", {
     name: /remove distribution/i,
   });
@@ -53,7 +59,9 @@ const checkModalActions = async ({ isLarge }: { isLarge: boolean }) => {
   await userEvent.click(cancelButton);
 
   if (!isLarge) {
-    await userEvent.click(screen.getByText(/actions/i));
+    await userEvent.click(
+      screen.getByLabelText(`${distributionName} distribution actions`),
+    );
   }
   const addSeriesButton = await screen.findByRole("button", {
     name: /add series/i,
@@ -71,7 +79,10 @@ describe("DistributionCard", () => {
 
     renderWithProviders(<DistributionCard {...commonProps} />);
 
-    await checkModalActions({ isLarge: true });
+    await checkModalActions({
+      distributionName: commonProps.distribution.name,
+      isLarge: true,
+    });
   });
 
   it("renders contextual menu buttons", async () => {
@@ -85,7 +96,10 @@ describe("DistributionCard", () => {
     expect(contextualMenuButton).toBeVisible();
 
     await userEvent.click(contextualMenuButton);
-    await checkModalActions({ isLarge: false });
+    await checkModalActions({
+      distributionName: commonProps.distribution.name,
+      isLarge: false,
+    });
   });
 
   it("renders empty distribution card", () => {

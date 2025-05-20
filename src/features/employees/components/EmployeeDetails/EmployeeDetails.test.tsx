@@ -1,9 +1,9 @@
+import NoData from "@/components/layout/NoData";
+import { employees } from "@/tests/mocks/employees";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import EmployeeDetails from "./EmployeeDetails";
-import { employees } from "@/tests/mocks/employees";
-import NoData from "@/components/layout/NoData";
 
 const employeeWithInstances = employees.find(
   (employee) => employee.computers && employee.computers.length > 0,
@@ -17,7 +17,7 @@ describe("EmployeeDetails", () => {
   assert(employeeWithInstances);
   assert(employeeWithoutInstances);
 
-  it("renders header, info items and instances table correctly", () => {
+  it("renders header, info items and instances table correctly", async () => {
     const { container } = renderWithProviders(
       <EmployeeDetails employee={employeeWithoutInstances} />,
     );
@@ -40,7 +40,7 @@ describe("EmployeeDetails", () => {
       },
       {
         label: "status",
-        value: employeeWithoutInstances.is_active ? "active" : "inactive",
+        value: employeeWithoutInstances.is_active ? "Active" : "Inactive",
       },
       {
         label: "autoinstall file",

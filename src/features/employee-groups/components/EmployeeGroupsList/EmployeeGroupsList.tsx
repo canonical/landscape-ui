@@ -85,14 +85,14 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       },
       {
         accessor: "name",
-        Header: "name",
+        Header: "Name",
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
           <>{original.name}</>
         ),
       },
       {
         accessor: "employee_count",
-        Header: "employees",
+        Header: "Employees",
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) =>
           original.employee_count ? (
             <Link
@@ -107,7 +107,7 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       },
       {
         accessor: "autoinstall_file.filename",
-        Header: "assigned autoinstall file",
+        Header: "Assigned autoinstall file",
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
           <AutoinstallFileTableCell
             fileName={original.autoinstall_file?.filename}
@@ -118,7 +118,7 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       },
       {
         accessor: "priority",
-        Header: "priority",
+        Header: "Priority",
         Cell: ({ row }: CellProps<EmployeeGroup>) => (
           <>{row.original.priority || "N/A"}</>
         ),

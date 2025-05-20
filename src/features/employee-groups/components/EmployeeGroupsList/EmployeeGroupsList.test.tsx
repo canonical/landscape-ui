@@ -28,11 +28,11 @@ describe("EmployeeGroupsList", () => {
     ).toBeInTheDocument();
 
     expect(container).toHaveTexts([
-      "name",
-      "employees",
-      "assigned autoinstall file",
-      "priority",
-      "actions",
+      "Name",
+      "Employees",
+      "Assigned autoinstall file",
+      "Priority",
+      "Actions",
     ]);
 
     employeeGroups.forEach((group) => {

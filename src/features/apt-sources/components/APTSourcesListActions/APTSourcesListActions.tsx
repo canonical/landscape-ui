@@ -42,7 +42,7 @@ const APTSourcesListActions: FC<APTSourcesListActionsProps> = ({
           {
             icon: ICONS.delete,
             label: "Delete",
-            "aria-label": `Delete "${aptSource.name}" access group`,
+            "aria-label": `Remove ${aptSource.name} APT source`,
             onClick: openModal,
           },
         ]}
