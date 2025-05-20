@@ -1,16 +1,17 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button, ModularTable } from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import type { UpgradeProfile } from "../../types";
-import UpgradeProfileListContextualMenu from "../UpgradeProfileListContextualMenu";
+import UpgradeProfileListActions from "../UpgradeProfileListActions";
 import classes from "./UpgradeProfileList.module.scss";
-import NoData from "@/components/layout/NoData";
 
 const UpgradeProfileDetails = lazy(
   async () => import("../UpgradeProfileDetails"),
@@ -99,11 +100,9 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         Header: "Associated",
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
-          <UpgradeProfileListContextualMenu profile={original} />
+          <UpgradeProfileListActions profile={original} />
         ),
       },
     ],

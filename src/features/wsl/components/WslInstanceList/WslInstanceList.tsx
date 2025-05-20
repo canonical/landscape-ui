@@ -1,16 +1,17 @@
-import type { FC } from "react";
-import { useMemo, useState } from "react";
-import { Link } from "react-router";
-import type { CellProps, Column } from "react-table";
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import usePageParams from "@/hooks/usePageParams";
 import type {
   WindowsInstance,
   WslInstanceWithoutRelation,
 } from "@/types/Instance";
+import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router";
+import type { CellProps, Column } from "react-table";
 import WslInstanceListActions from "../WslInstanceListActions";
 import WslInstancesHeader from "../WslInstancesHeader";
 import classes from "./WslInstanceList.module.scss";
-import usePageParams from "@/hooks/usePageParams";
 
 interface WslInstanceListProps {
   readonly instance: WindowsInstance;
@@ -78,7 +79,9 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
               checked={selectedInstances.some(
                 ({ id }) => id === row.original.id,
               )}
-              onChange={() => handleInstanceCheck(row.original)}
+              onChange={() => {
+                handleInstanceCheck(row.original);
+              }}
             />
             <Link to={`/instances/${instance.id}/${row.original.id}`}>
               {row.original.title}
@@ -104,9 +107,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
         ),
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({
           row: { original },
         }: CellProps<WslInstanceWithoutRelation>) => (

@@ -1,15 +1,16 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import NoData from "@/components/layout/NoData";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { SelectOption } from "@/types/SelectOption";
 import { ModularTable } from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
 import type { FC } from "react";
 import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import type { RepositoryProfile } from "../../types";
-import RepositoryProfileListContextualMenu from "../RepositoryProfileListContextualMenu";
+import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { handleCellProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
-import NoData from "@/components/layout/NoData";
-import usePageParams from "@/hooks/usePageParams";
 
 interface RepositoryProfileListProps {
   readonly repositoryProfiles: RepositoryProfile[];
@@ -62,11 +63,9 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
           )?.label ?? original.access_group,
       },
       {
-        accessor: "id",
-        className: classes.actions,
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row }: CellProps<RepositoryProfile>) => (
-          <RepositoryProfileListContextualMenu profile={row.original} />
+          <RepositoryProfileListActions profile={row.original} />
         ),
       },
     ],

@@ -1,10 +1,11 @@
 import InfoItem from "@/components/layout/InfoItem";
+import NoData from "@/components/layout/NoData";
 import { Col, Row } from "@canonical/react-components";
 import type { FC } from "react";
+import { getStatusText } from "../../helpers";
 import type { Employee } from "../../types";
 import EmployeeDetailsHeader from "../EmployeeDetailsHeader";
 import EmployeeInstancesTable from "../EmployeeInstancesTable";
-import NoData from "@/components/layout/NoData";
 
 interface EmployeeDetailsProps {
   readonly employee: Employee;
@@ -33,10 +34,7 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
           />
         </Col>
         <Col size={6}>
-          <InfoItem
-            label="status"
-            value={employee.is_active ? "active" : "inactive"}
-          />
+          <InfoItem label="status" value={getStatusText(employee)} />
         </Col>
       </Row>
       <InfoItem

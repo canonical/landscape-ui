@@ -1,12 +1,11 @@
+import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { MenuLink } from "@canonical/react-components";
 import {
   Button,
   ConfirmationButton,
   ConfirmationModal,
-  ContextualMenu,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -115,14 +114,19 @@ const DistributionCard: FC<DistributionCardProps> = ({
     </ConfirmationButton>,
   ];
 
-  const contextualMenuLinks: MenuLink[] = [
+  const actions = [
     {
-      children: addSeriesButton.label,
+      icon: "plus",
+      label: addSeriesButton.label,
       "aria-label": addSeriesButton.ariaLabel,
       onClick: addSeriesButton.onClick,
     },
+  ];
+
+  const destructiveActions = [
     {
-      children: removeDistributionButton.label,
+      icon: "delete",
+      label: removeDistributionButton.label,
       "aria-label": removeDistributionButton.ariaLabel,
       onClick: removeDistributionButton.onClick,
     },
@@ -143,14 +147,10 @@ const DistributionCard: FC<DistributionCardProps> = ({
           {isLargeScreen ? (
             <div>{largeScreenButtons}</div>
           ) : (
-            <ContextualMenu
-              position="left"
-              hasToggleIcon
-              toggleLabel="Actions"
-              toggleProps={{
-                "aria-label": `${distribution.name} distribution actions`,
-              }}
-              links={contextualMenuLinks}
+            <ListActions
+              toggleAriaLabel={`${distribution.name} distribution actions`}
+              actions={actions}
+              destructiveActions={destructiveActions}
             />
           )}
         </div>

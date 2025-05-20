@@ -1,8 +1,8 @@
 import NoData from "@/components/layout/NoData";
 import { Tooltip } from "@canonical/react-components";
+import classNames from "classnames";
 import type { FC } from "react";
 import classes from "./AutoinstallFileTableCell.module.scss";
-import classNames from "classnames";
 
 interface AutoinstallFileTableCellProps {
   readonly fileName: string | undefined;
@@ -28,7 +28,7 @@ const AutoinstallFileTableCell: FC<AutoinstallFileTableCellProps> = ({
         <Tooltip
           position="top-center"
           positionElementClassName={classes.position}
-          message="This group will inherit default Autoinstall file since none has been assigned."
+          message="This group will inherit default autoinstall file since none has been assigned."
         >
           <span
             className={classNames(

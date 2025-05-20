@@ -1,13 +1,13 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
+import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import PageContent from "@/components/layout/PageContent";
-import { Button } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import EmptyState from "@/components/layout/EmptyState";
-import useSidePanel from "@/hooks/useSidePanel";
 import { GPGKeysList, useGPGKeys } from "@/features/gpg-keys";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 
 const NewGPGKeyForm = lazy(async () =>
   import("@/features/gpg-keys").then((module) => ({
@@ -35,7 +35,7 @@ const GPGKeysPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        title="GPG Keys"
+        title="GPG keys"
         actions={[
           <Button
             key="new-key-button"
@@ -57,7 +57,7 @@ const GPGKeysPage: FC = () => {
             body={
               <>
                 <p className="u-no-margin--bottom">
-                  You haven’t added any GPG keys yet.
+                  You haven&apos;t added any GPG keys yet.
                 </p>
                 <a
                   href="https://ubuntu.com/landscape/docs/repositories"

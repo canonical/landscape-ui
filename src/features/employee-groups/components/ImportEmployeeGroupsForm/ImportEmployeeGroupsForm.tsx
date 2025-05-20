@@ -1,22 +1,24 @@
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-import { CheckboxInput, Form, ModularTable } from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
-import type { FC, FormEvent } from "react";
-import { lazy, Suspense, useMemo, useState } from "react";
-import type { StagedOidcGroup } from "../../types";
 import SearchBoxWithForm from "@/components/form/SearchBoxWithForm";
-import { useImportEmployeeGroups, useStagedOidcGroups } from "../../api";
-import type { OidcIssuer } from "@/features/oidc";
-import MaybeExceededLimitNotification from "../MaybeExceededLimitNotification";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
-import classes from "./ImportEmployeeGroupsForm.module.scss";
-import SidePanelDescription from "../SidePanelDescription";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import { PAGE_SIZE_OPTIONS } from "@/components/layout/TablePagination/components/TablePaginationBase/constants";
-import EmptyState from "@/components/layout/EmptyState";
+import type { OidcIssuer } from "@/features/oidc";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import { pluralize } from "@/utils/_helpers";
+import { CheckboxInput, Form, ModularTable } from "@canonical/react-components";
+import type { FC, FormEvent } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
+import type { CellProps, Column } from "react-table";
+import { useBoolean } from "usehooks-ts";
+import { useImportEmployeeGroups, useStagedOidcGroups } from "../../api";
+import type { StagedOidcGroup } from "../../types";
+import MaybeExceededLimitNotification from "../MaybeExceededLimitNotification";
+import SidePanelDescription from "../SidePanelDescription";
+import classes from "./ImportEmployeeGroupsForm.module.scss";
 
 const EmployeeGroupIdentityIssuerListContainer = lazy(
   async () => import("../EmployeeGroupIdentityIssuerListContainer"),
@@ -31,7 +33,7 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
 }) => {
   const [search, setSearch] = useState("");
   const [selectedGroupIds, setSelectedGroupIds] = useState<number[]>([]);
-  const [importAll, setImportAll] = useState(true);
+  const { value: importAll, toggle: toggleImportAll } = useBoolean();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0].value);
 
@@ -69,9 +71,9 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You’ve successfully Imported ${count} Employee ${count > 1 ? "groups" : "group"}.`,
+        title: `You've successfully imported ${count} employee ${pluralize(count, "group")}.`,
         message:
-          "Newly added Employee groups can now be managed within Landscape.",
+          "Newly added employee groups can now be managed within Landscape.",
       });
     } catch (error) {
       debug(error);
@@ -192,15 +194,13 @@ const ImportEmployeeGroupsForm: FC<ImportEmployeeGroupsFormProps> = ({
       <MaybeExceededLimitNotification />
       <SidePanelDescription>
         Choose employee groups to import into Landscape. Once imported, you can
-        set their priority, assign Autoinstall files, and manage associated
+        set their priority, assign autoinstall files, and manage associated
         employees.
       </SidePanelDescription>
       <div className={classes.checkbox}>
         <CheckboxInput
           label="Import all groups"
-          onChange={() => {
-            setImportAll((prev) => !prev);
-          }}
+          onChange={toggleImportAll}
           checked={importAll}
         />
       </div>

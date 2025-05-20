@@ -1,5 +1,5 @@
-import type { InternalAxiosRequestConfig } from "axios";
 import { API_VERSION } from "@/constants";
+import type { InternalAxiosRequestConfig } from "axios";
 
 const figureRequestParams = (config: InternalAxiosRequestConfig) =>
   ["get", "delete"].includes(config.method ?? "get")
@@ -71,4 +71,12 @@ export const handleParams = ({
   }
 
   return paramsToPass;
+};
+
+export const pluralize = (
+  count: number,
+  singularForm: string,
+  pluralForm?: string,
+) => {
+  return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
 };

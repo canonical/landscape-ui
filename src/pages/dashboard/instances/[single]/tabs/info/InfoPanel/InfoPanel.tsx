@@ -1,4 +1,5 @@
 import TagMultiSelect from "@/components/form/TagMultiSelect";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import { useActivities } from "@/features/activities";
@@ -37,7 +38,6 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const EditInstance = lazy(
   async () =>
@@ -242,7 +242,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   const handleAssociateEmployee = () => {
     setSidePanelContent(
-      `Associate Employee with ${instance.title}`,
+      `Associate employee with ${instance.title}`,
       <Suspense fallback={<LoadingState />}>
         <AssignEmployeeToInstanceForm
           instanceTitle={instance.title}

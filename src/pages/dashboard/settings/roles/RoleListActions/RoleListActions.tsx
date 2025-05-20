@@ -1,22 +1,14 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import {
-  Button,
-  ConfirmationButton,
-  Icon,
-  ICONS,
-  Tooltip,
-} from "@canonical/react-components";
+import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Role } from "@/types/Role";
-import classes from "./RoleListActions.module.scss";
-
-const EditRoleForm = lazy(
-  () => import("@/pages/dashboard/settings/roles/EditRoleForm"),
-);
+import { pluralize } from "@/utils/_helpers";
+import { ConfirmationModal } from "@canonical/react-components";
+import { Suspense, type FC } from "react";
+import { useBoolean } from "usehooks-ts";
+import EditRoleForm from "../EditRoleForm";
 
 interface RoleListActionsProps {
   readonly role: Role;
@@ -25,19 +17,27 @@ interface RoleListActionsProps {
 const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
+
   const { removeRoleQuery } = useRoles();
+  const { mutateAsync: remove, isPending: isRemoving } = removeRoleQuery;
 
-  const { mutateAsync: removeRole, isPending: isRemoving } = removeRoleQuery;
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean();
 
-  const handleRemoveRole = async (roleName: string) => {
+  const tryRemove = async () => {
     try {
-      await removeRole({ name: roleName });
+      await remove({ name: role.name });
     } catch (error) {
       debug(error);
     }
+
+    closeModal();
   };
 
-  const handleEditRole = (role: Role) => {
+  const edit = () => {
     setSidePanelContent(
       `Edit "${role.name}" role`,
       <Suspense fallback={<LoadingState />}>
@@ -47,56 +47,52 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
   };
 
   return (
-    <div className="divided-blocks">
-      <div className="divided-blocks__item">
-        <Tooltip message="Edit" position="top-center">
-          <Button
-            small
-            hasIcon
-            type="button"
-            appearance="base"
-            className="u-no-margin--bottom u-no-padding--left"
-            aria-label={`Edit ${role.name} role`}
-            onClick={() => handleEditRole(role)}
-          >
-            <Icon name="edit" className="u-no-margin--left" />
-          </Button>
-        </Tooltip>
-      </div>
-      <div className="divided-blocks__item">
-        <ConfirmationButton
-          className="u-no-margin--bottom u-no-padding--left is-small has-icon"
-          type="button"
-          appearance="base"
-          aria-label={`Delete ${role.name} role`}
-          confirmationModalProps={{
-            title: `Remove '${role.name}' role`,
-            children: (
-              <p>
-                <span>{`This will remove '${role.name}' role.`}</span>
-                {role.persons.length > 0 && (
-                  <>
-                    <br />
-                    <span className={classes.bold}>
-                      {`This will affect ${role.persons.length} administrator${role.persons.length === 1 ? "" : "s"}`}
-                    </span>
-                  </>
-                )}
-              </p>
-            ),
-            confirmButtonLabel: "Remove",
-            confirmButtonAppearance: "negative",
-            confirmButtonDisabled: isRemoving,
-            confirmButtonLoading: isRemoving,
-            onConfirm: () => handleRemoveRole(role.name),
-          }}
+    <>
+      <ListActions
+        toggleAriaLabel={`${role.name} role actions`}
+        actions={[
+          {
+            icon: "edit",
+            label: "Edit",
+            "aria-label": `Edit "${role.group}" role`,
+            onClick: edit,
+          },
+        ]}
+        destructiveActions={[
+          {
+            icon: "delete",
+            label: "Remove",
+            "aria-label": `Remove "${role.group}" role`,
+            onClick: openModal,
+          },
+        ]}
+      />
+
+      {isModalOpen && (
+        <ConfirmationModal
+          close={closeModal}
+          title={`Remove '${role.name}' role`}
+          confirmButtonLabel="Remove"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={isRemoving}
+          confirmButtonLoading={isRemoving}
+          onConfirm={tryRemove}
         >
-          <Tooltip position="top-center" message="Delete">
-            <Icon name={ICONS.delete} />
-          </Tooltip>
-        </ConfirmationButton>
-      </div>
-    </div>
+          <p>
+            <span>{`This will remove '${role.name}' role.`}</span>
+
+            {role.persons.length > 0 && (
+              <>
+                <br />
+                <strong>
+                  {`This will affect ${role.persons.length} ${pluralize(role.persons.length, "administrator")}.`}
+                </strong>
+              </>
+            )}
+          </p>
+        </ConfirmationModal>
+      )}
+    </>
   );
 };
 

@@ -27,7 +27,7 @@ export const useGetSecurityProfiles = (params?: GetSecurityProfilesParams) => {
 
   return {
     securityProfiles: response?.data.results ?? [],
-    securityProfilesCount: response?.data.count ?? 0,
+    securityProfilesCount: response?.data.count,
     isSecurityProfilesLoading: isLoading,
   };
 };

@@ -1,16 +1,10 @@
-import useDebug from "@/hooks/useDebug";
-import {
-  ConfirmationButton,
-  Icon,
-  ICONS,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import { ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
-import { useGPGKeys } from "../../hooks";
+import type { CellProps, Column } from "react-table";
 import type { GPGKey } from "../../types";
+import GPGKeysListActions from "../GPGKeysListActions";
 import classes from "./GPGKeysList.module.scss";
 import { handleCellProps } from "./helpers";
 
@@ -19,21 +13,7 @@ interface GPGKeysListProps {
 }
 
 const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
-  const { removeGPGKeyQuery } = useGPGKeys();
-  const debug = useDebug();
-
-  const { mutateAsync: removeGPGKey, isPending: isRemoving } =
-    removeGPGKeyQuery;
-
   const gpgKeys = useMemo(() => items, [items.length]);
-
-  const handleRemoveGPGKey = async (name: string) => {
-    try {
-      await removeGPGKey({ name });
-    } catch (error) {
-      debug(error);
-    }
-  };
 
   const columns = useMemo<Column<GPGKey>[]>(
     () => [
@@ -54,37 +34,9 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
         className: classes.fingerprint,
       },
       {
-        accessor: "actions",
-        className: classes.actions,
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row }: CellProps<GPGKey>) => (
-          <div className="divided-blocks">
-            <div className="divided-blocks__item">
-              <ConfirmationButton
-                className="u-no-margin--bottom u-no-padding--left is-small has-icon"
-                type="button"
-                appearance="base"
-                aria-label={`Remove ${row.original.name} GPG key`}
-                confirmationModalProps={{
-                  title: `Deleting ${row.original.name} GPG key`,
-                  children: (
-                    <p>
-                      Are you sure? This action is permanent and cannot be
-                      undone.
-                    </p>
-                  ),
-                  confirmButtonLabel: "Delete",
-                  confirmButtonAppearance: "negative",
-                  confirmButtonLoading: isRemoving,
-                  confirmButtonDisabled: isRemoving,
-                  onConfirm: () => handleRemoveGPGKey(row.original.name),
-                }}
-              >
-                <Tooltip position="top-center" message="Delete">
-                  <Icon name={ICONS.delete} />
-                </Tooltip>
-              </ConfirmationButton>
-            </div>
-          </div>
+          <GPGKeysListActions gpgKey={row.original} />
         ),
       },
     ],

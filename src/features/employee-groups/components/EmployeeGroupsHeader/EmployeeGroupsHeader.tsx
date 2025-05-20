@@ -56,7 +56,7 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
 
   const handleEditPriority = () => {
     setSidePanelContent(
-      "Organize Employee groups priority",
+      "Organize employee groups priority",
       <Suspense fallback={<LoadingState />}>
         <EmployeeGroupsOrganiserForm groups={selectedGroups} />
       </Suspense>,

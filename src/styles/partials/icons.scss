@@ -267,3 +267,13 @@
   @extend %icon;
   @include vf-icon-delete($color-negative);
 }
+
+.p-icon--tidy--negative {
+  @extend %icon;
+  @include vf-icon-tidy($color-negative);
+}
+
+.p-icon--pause--negative {
+  @extend %icon;
+  @include vf-icon-pause($color-negative);
+}

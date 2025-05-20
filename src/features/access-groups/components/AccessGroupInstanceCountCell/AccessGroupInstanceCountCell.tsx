@@ -1,4 +1,5 @@
 import useInstances from "@/hooks/useInstances";
+import { pluralize } from "@/utils/_helpers";
 import { Spinner } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link } from "react-router";
@@ -36,18 +37,22 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
         <Spinner aria-hidden />
       </>
     );
-  } else if (getInstancesQueryResult?.data.count) {
+  }
+
+  const count = getInstancesQueryResult?.data.count;
+
+  if (count) {
     return (
       <Link
         className={classes.link}
         to={`/instances?accessGroups=${accessGroup.name}`}
       >
-        {getInstancesQueryResult.data.count}
+        {count} {pluralize(count, "instance")}
       </Link>
     );
-  } else {
-    return <>0</>;
   }
+
+  return "0 instances";
 };
 
 export default AccessGroupInstanceCountCell;

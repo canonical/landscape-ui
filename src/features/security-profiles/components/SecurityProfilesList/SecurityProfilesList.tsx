@@ -1,3 +1,4 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
@@ -26,7 +27,7 @@ import {
 } from "../../helpers";
 import type { SecurityProfile, SecurityProfileActions } from "../../types";
 import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
-import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
+import SecurityProfileListActions from "../SecurityProfileListActions";
 import { getInitialValues, getNotificationMessage } from "./helpers";
 import classes from "./SecurityProfilesList.module.scss";
 
@@ -478,11 +479,10 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         },
       },
       {
-        accessor: "id",
-        className: classes.actions,
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Header: ACTIONS_HEADER,
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
-          <SecurityProfileListContextualMenu
+          <SecurityProfileListActions
             actions={actions(profile)}
             profile={profile}
           />

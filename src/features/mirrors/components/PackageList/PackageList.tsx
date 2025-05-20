@@ -2,6 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   Col,
@@ -13,8 +14,7 @@ import {
 import classNames from "classnames";
 import type { ComponentProps, FC } from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { useMediaQuery } from "usehooks-ts";
-import { pluralize } from "../../helpers";
+import { useBoolean, useMediaQuery } from "usehooks-ts";
 import { usePockets } from "../../hooks";
 import type { Distribution, Pocket, Series } from "../../types";
 import type { FormattedPackage } from "../../types/FormattedPackage";
@@ -41,8 +41,10 @@ const PackageList: FC<PackageListProps> = ({
   const [currentPage, setCurrentPage] = useState(defaultPage);
   const [itemsPerPage, setItemsPerPage] = useState(defaultItemsPerPage);
   const [selectedPackages, setSelectedPackages] = useState<number[]>([]);
-  const [hasUpdatedOrDeletedPackages, setHasUpdatedOrDeletedPackages] =
-    useState(false);
+  const {
+    value: hasUpdatedOrDeletedPackages,
+    setTrue: setHasUpdatedOrDeletedPackagesTrue,
+  } = useBoolean();
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
   const [diffPullPocket, setDiffPullPocket] = useState<
@@ -195,7 +197,7 @@ const PackageList: FC<PackageListProps> = ({
       }
 
       if (diff.update.length || diff.delete.length) {
-        setHasUpdatedOrDeletedPackages(true);
+        setHasUpdatedOrDeletedPackagesTrue();
       }
 
       for (const [packageName, , newVersion] of diff.update) {
@@ -359,12 +361,8 @@ const PackageList: FC<PackageListProps> = ({
                     children: (
                       <p>
                         This will delete {selectedPackages.length} selected{" "}
-                        {pluralize(
-                          selectedPackages.length,
-                          "package",
-                          "packages",
-                        )}{" "}
-                        from {pocket.name} pocket {seriesName} series of{" "}
+                        {pluralize(selectedPackages.length, "package")} from{" "}
+                        {pocket.name} pocket {seriesName} series of{" "}
                         {distributionName} distribution
                       </p>
                     ),

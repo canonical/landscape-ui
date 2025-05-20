@@ -1,4 +1,6 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
@@ -10,9 +12,8 @@ import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RebootProfile } from "../../types";
-import RebootProfilesListContextualMenu from "../RebootProfilesListContextualMenu";
+import RebootProfilesListActions from "../RebootProfilesListActions";
 import classes from "./RebootProfilesList.module.scss";
-import NoData from "@/components/layout/NoData";
 
 const RebootProfileDetails = lazy(
   async () => import("../RebootProfileDetails"),
@@ -117,11 +118,9 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
         },
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row }: CellProps<RebootProfile>) => (
-          <RebootProfilesListContextualMenu profile={row.original} />
+          <RebootProfilesListActions profile={row.original} />
         ),
       },
     ],

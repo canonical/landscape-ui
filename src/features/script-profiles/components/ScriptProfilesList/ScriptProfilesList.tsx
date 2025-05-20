@@ -1,15 +1,12 @@
+import ListActions, {
+  LIST_ACTIONS_COLUMN_PROPS,
+} from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { MenuLink } from "@canonical/react-components";
-import {
-  Button,
-  ContextualMenu,
-  Icon,
-  ModularTable,
-} from "@canonical/react-components";
+import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
@@ -188,55 +185,39 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
       },
 
       {
-        className: classes.actions,
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => {
-          const links: MenuLink[] = [
+          const nondestructiveActions = [
             {
-              children: (
-                <>
-                  <Icon name="switcher-environments" />
-                  <span>View details</span>
-                </>
-              ),
-              hasIcon: true,
+              icon: "switcher-environments",
+              label: "View details",
               onClick: actions(profile).viewDetails,
             },
           ];
 
           if (!profile.archived) {
-            links.push(
-              {
-                children: (
-                  <>
-                    <Icon name="edit" />
-                    <span>Edit</span>
-                  </>
-                ),
-                hasIcon: true,
-                onClick: actions(profile).edit,
-              },
-              {
-                children: (
-                  <>
-                    <Icon name="archive--negative" />
-                    <span className="u-text--negative">Archive</span>
-                  </>
-                ),
-                hasIcon: true,
-                onClick: actions(profile).archive,
-                className: classes.archive,
-              },
-            );
+            nondestructiveActions.push({
+              icon: "edit",
+              label: "Edit",
+              onClick: actions(profile).edit,
+            });
           }
 
+          const destructiveActions = !profile.archived
+            ? [
+                {
+                  icon: "archive",
+                  label: "Archive",
+                  onClick: actions(profile).archive,
+                },
+              ]
+            : undefined;
+
           return (
-            <ContextualMenu
-              className={classes.menu}
-              toggleAppearance="base"
-              toggleClassName={classes.toggleButton}
-              toggleLabel={<Icon name="contextual-menu" />}
-              links={links}
+            <ListActions
+              toggleAriaLabel={`${profile.title} script profile actions`}
+              actions={nondestructiveActions}
+              destructiveActions={destructiveActions}
             />
           );
         },

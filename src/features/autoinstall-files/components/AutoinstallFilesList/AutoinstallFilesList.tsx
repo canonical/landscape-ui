@@ -1,4 +1,6 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
@@ -22,7 +24,7 @@ import type {
   WithGroups,
 } from "../../types";
 import AutoinstallFileSidePanelTitle from "../AutoinstallFileSidePanelTitle";
-import AutoinstallFilesListContextualMenu from "../AutoinstallFilesListContextualMenu";
+import AutoinstallFilesListActions from "../AutoinstallFilesListActions";
 import classes from "./AutoinstallFilesList.module.scss";
 import {
   EDIT_AUTOINSTALL_FILE_NOTIFICATION,
@@ -30,7 +32,6 @@ import {
   MAX_AUTOINSTALL_FILE_VERSION_COUNT,
 } from "./constants";
 import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
-import NoData from "@/components/layout/NoData";
 
 const AutoinstallFileDetails = lazy(
   async () => import("../AutoinstallFileDetails"),
@@ -89,7 +90,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       <Suspense fallback={<LoadingState />}>
         <AutoinstallFileForm
           buttonText="Save changes"
-          description={`The duplicated ${file.filename} will inherit the Employee group assignments of the original file.`}
+          description={`The duplicated ${file.filename} will inherit the employee group assignments of the original file.`}
           initialFile={file}
           notification={EDIT_AUTOINSTALL_FILE_NOTIFICATION}
           onSubmit={async ({ contents }) => {
@@ -126,8 +127,8 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
     notify.success({
       message:
-        "Employee groups without an Autoinstall file assigned will inherit this default file.",
-      title: `You have successfully set ${file.filename} as the default Autoinstall file`,
+        "Employee groups without an autoinstall file assigned will inherit this default file.",
+      title: `You have successfully set ${file.filename} as the default autoinstall file`,
     });
   };
 
@@ -153,8 +154,8 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
       closeSidePanel();
 
       notify.success({
-        message: `The ${modalFile.filename} Autoinstall file has been permanently removed. All Employee groups associated with this file are now using the default Autoinstall file.`,
-        title: `You have successfully removed ${modalFile.filename} Autoinstall file`,
+        message: `The ${modalFile.filename} autoinstall file has been permanently removed. All employee groups associated with this file are now using the default autoinstall file.`,
+        title: `You have successfully removed ${modalFile.filename} autoinstall file`,
       });
     }
   };
@@ -285,12 +286,11 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
         ),
       },
       {
-        className: classes.actions,
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({
           row: { original },
         }: CellProps<WithGroups<AutoinstallFile>>): ReactNode => (
-          <AutoinstallFilesListContextualMenu
+          <AutoinstallFilesListActions
             edit={openEditModal}
             file={original}
             remove={openRemoveModal}
@@ -351,12 +351,12 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           confirmButtonAppearance="negative"
           confirmButtonLabel="Remove"
           onConfirm={handleConfirmRemoveModal}
-          title={`Remove ${modalFile.filename}, Autoinstall File`}
+          title={`Remove ${modalFile.filename}, autoinstall File`}
         >
           <p>
-            You are about to remove {modalFile.filename}, an Autoinstall file.
-            This action is irreversible. All Employee groups this file is
-            associated with, will have the default Autoinstall file associated
+            You are about to remove {modalFile.filename}, an autoinstall file.
+            This action is irreversible. All employee groups this file is
+            associated with, will have the default autoinstall file associated
             instead.
           </p>
         </ConfirmationModal>

@@ -1,20 +1,14 @@
+import ListActions from "@/components/layout/ListActions";
+import LoadingState from "@/components/layout/LoadingState";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import { ConfirmationModal, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
-import type { MenuLink } from "@canonical/react-components";
-import {
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-  ICONS,
-} from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { IdentityProvider } from "../../types";
-import classes from "./ProviderListActions.module.scss";
 import { useAuthHandle } from "../../hooks";
-import useDebug from "@/hooks/useDebug";
+import type { IdentityProvider } from "../../types";
 
-const ProviderForm = lazy(() => import("../ProviderForm"));
+const ProviderForm = lazy(async () => import("../ProviderForm"));
 
 interface ProviderListActionsProps {
   readonly canBeDisabled: boolean;
@@ -65,27 +59,20 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
     }
   };
 
-  const contextualMenuButtons: MenuLink[] = [
+  const actions = [
     {
-      children: (
-        <>
-          <Icon name="edit" />
-          <span>Edit</span>
-        </>
-      ),
+      icon: "edit",
+      label: "Edit",
       "aria-label": `Edit ${provider.name} provider`,
-      hasIcon: true,
       onClick: handleIdentityProviderEdit,
     },
+  ];
+
+  const destructiveActions = [
     {
-      children: (
-        <>
-          <Icon name={ICONS.delete} />
-          <span>Delete</span>
-        </>
-      ),
+      icon: ICONS.delete,
+      label: "Delete",
       "aria-label": `Delete ${provider.name} provider`,
-      hasIcon: true,
       onClick: handleOpenModal,
       disabled: provider.provider === "ubuntu-one",
     },
@@ -93,13 +80,10 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
 
   return (
     <>
-      <ContextualMenu
-        position="left"
-        toggleClassName={classes.toggleButton}
-        toggleAppearance="base"
-        toggleLabel={<Icon name="contextual-menu" />}
-        toggleProps={{ "aria-label": `${provider.name} provider actions` }}
-        links={contextualMenuButtons}
+      <ListActions
+        toggleAriaLabel={`${provider.name} provider actions`}
+        actions={actions}
+        destructiveActions={destructiveActions}
       />
       {modalOpen && (
         <ConfirmationModal

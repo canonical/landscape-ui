@@ -1,9 +1,10 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import { ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import { ModularTable } from "@canonical/react-components";
-import ProviderListActions from "../ProviderListActions";
 import type { IdentityProvider } from "../../types";
+import ProviderListActions from "../ProviderListActions";
 import { UBUNTU_ONE_PROVIDER } from "./constants";
 
 interface ProviderListProps {
@@ -51,9 +52,7 @@ const ProviderList: FC<ProviderListProps> = ({
         Header: "Provider",
       },
       {
-        accessor: "actions",
-        className: "u-align--right",
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<IdentityProvider>) => (
           <ProviderListActions
             canBeDisabled={canBeDisabled}

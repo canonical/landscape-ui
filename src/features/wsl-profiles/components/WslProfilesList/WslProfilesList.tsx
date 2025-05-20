@@ -1,26 +1,27 @@
-import classNames from "classnames";
-import type { FC } from "react";
-import { lazy, Suspense, useMemo } from "react";
-import type { CellProps, Column } from "react-table";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
+import usePageParams from "@/hooks/usePageParams";
+import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { SelectOption } from "@/types/SelectOption";
 import {
   Button,
   Icon,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
+import classNames from "classnames";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import type { WslProfile } from "../../types";
-import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { SelectOption } from "@/types/SelectOption";
+import WslProfilesListActions from "../WslProfilesListActions";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
-import usePageParams from "@/hooks/usePageParams";
-import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
-import WslProfilesListContextualMenu from "../WslProfilesListContextualMenu";
 
-const WslProfileDetails = lazy(() => import("../WslProfileDetails"));
+const WslProfileDetails = lazy(async () => import("../WslProfileDetails"));
 
 interface WslProfileListProps {
   readonly wslProfiles: WslProfile[];
@@ -71,7 +72,9 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => handleWslProfileDetailsOpen(original)}
+            onClick={() => {
+              handleWslProfileDetailsOpen(original);
+            }}
           >
             {original.title}
           </Button>
@@ -142,11 +145,9 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
         ),
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<WslProfile>) => (
-          <WslProfilesListContextualMenu profile={original} />
+          <WslProfilesListActions profile={original} />
         ),
       },
     ],

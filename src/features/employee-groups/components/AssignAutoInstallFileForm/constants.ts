@@ -1,6 +1,6 @@
 import type { SelectOption } from "@/types/SelectOption";
-import type { FormProps } from "./types";
 import * as Yup from "yup";
+import type { FormProps } from "./types";
 
 export const AUTOINSTALL_FILES: SelectOption[] = [
   {
@@ -8,15 +8,15 @@ export const AUTOINSTALL_FILES: SelectOption[] = [
     value: "",
   },
   {
-    label: "Add new Autoinstall file",
+    label: "Add new autoinstall file",
     value: "new",
   },
   {
-    label: "Assign existing Autoinstall file",
+    label: "Assign existing autoinstall file",
     value: "assign-existing",
   },
   {
-    label: "Inherit default Autoinstall file",
+    label: "Inherit default autoinstall file",
     value: "inherit",
   },
 ];

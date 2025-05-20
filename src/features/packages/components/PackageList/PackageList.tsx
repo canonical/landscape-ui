@@ -1,15 +1,17 @@
-import type { FC } from "react";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router";
-import type { CellProps, Column } from "react-table";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import LoadingState from "@/components/layout/LoadingState";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { UrlParams } from "@/types/UrlParams";
 import {
   Button,
   CheckboxInput,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import type { FC } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router";
+import type { CellProps, Column } from "react-table";
 import type { InstancePackage } from "../../types";
 import PackageListActions from "../PackageListActions";
 import UbuntuProNotification from "../UbuntuProNotification";
@@ -20,9 +22,8 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
-import type { UrlParams } from "@/types/UrlParams";
 
-const PackageDetails = lazy(() => import("../PackageDetails"));
+const PackageDetails = lazy(async () => import("../PackageDetails"));
 
 interface PackageListProps {
   readonly emptyMsg: string;
@@ -204,9 +205,7 @@ const PackageList: FC<PackageListProps> = ({
           ),
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<InstancePackage>) => (
           <PackageListActions pkg={original} />
         ),
@@ -218,7 +217,11 @@ const PackageList: FC<PackageListProps> = ({
   return (
     <>
       {!hideUbuntuProInfo && packages.some(isUbuntuProRequired) && (
-        <UbuntuProNotification onDismiss={() => setHideUbuntuProInfo(true)} />
+        <UbuntuProNotification
+          onDismiss={() => {
+            setHideUbuntuProInfo(true);
+          }}
+        />
       )}
       <ModularTable
         columns={columns}

@@ -73,7 +73,7 @@ export const MENU_ITEMS: MenuItem[] = [
         env: "selfHosted",
       },
       {
-        label: "GPG Keys",
+        label: "GPG keys",
         path: "/repositories/gpg-keys",
       },
       {

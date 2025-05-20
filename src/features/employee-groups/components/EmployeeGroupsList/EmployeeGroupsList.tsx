@@ -1,3 +1,5 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -5,10 +7,9 @@ import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import type { EmployeeGroup } from "../../types";
 import AutoinstallFileTableCell from "../AutoinstallFileTableCell";
-import EmployeeGroupsListContextualMenu from "../EmployeeGroupsListContextualMenu";
+import EmployeeGroupsListActions from "../EmployeeGroupsListActions";
 import classes from "./EmployeeGroupsList.module.scss";
 import { handleCellProps } from "./helpers";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface EmployeeGroupsListProps {
   readonly onSelectedEmployeeGroupsChange: (employeeGroups: number[]) => void;
@@ -123,11 +124,9 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
         ),
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
-          <EmployeeGroupsListContextualMenu employeeGroup={original} />
+          <EmployeeGroupsListActions employeeGroup={original} />
         ),
       },
     ],

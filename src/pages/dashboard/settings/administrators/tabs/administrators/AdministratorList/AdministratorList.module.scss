@@ -1,15 +1,8 @@
 @import "vanilla-framework/scss/settings_colors";
 
-.roles,
-.actions {
-  overflow: visible;
-}
-
-.table {
-  border-bottom: 1px solid $colors--light-theme--border-default;
-}
-
 .roles {
+  overflow: visible;
+
   tbody & {
     border-color: $color-mid-x-light;
     border-style: solid;
@@ -18,7 +11,6 @@
   }
 }
 
-.actions {
-  text-align: right;
-  width: 15%;
+.table {
+  border-bottom: 1px solid $colors--light-theme--border-default;
 }
