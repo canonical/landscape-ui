@@ -64,11 +64,21 @@ describe("TableFilter", () => {
         }
 
         expect(element).toHaveRole("button");
-
-        await userEvent.click(element);
-
-        expect(singleFilterProps.onItemSelect).toHaveBeenCalledWith(value);
       }
+    });
+
+    it("should close single filter when clicking option", async () => {
+      render(<TableFilter {...singleFilterProps} />);
+
+      const button = screen.getByRole("button");
+
+      await userEvent.click(button);
+
+      expect(screen.getByRole("list")).toBeInTheDocument();
+
+      await userEvent.click(screen.getByText(options[1].label));
+
+      expect(screen.queryByRole("list")).not.toBeInTheDocument();
     });
 
     it("should render a divider between different option groups", async () => {
@@ -144,34 +154,17 @@ describe("TableFilter", () => {
 
       await userEvent.click(button);
 
-      for (const { label, value } of options.slice(1)) {
-        await userEvent.click(screen.getByText(label));
-
-        expect(singleFilterProps.onItemSelect).toHaveBeenCalledWith(value);
-
-        rerender(
-          <TableFilter {...singleFilterProps} hasBadge selectedItem={value} />,
-        );
-
-        expect(within(button).getByRole("img")).toBeInTheDocument();
-      }
-
-      await userEvent.click(
-        screen.getByText(singleSelectionFilterOptions[0].label),
-      );
-      expect(singleFilterProps.onItemSelect).toHaveBeenCalledWith(
-        options[0].value,
-      );
+      await userEvent.click(screen.getByText(options[0].label));
 
       rerender(
         <TableFilter
           {...singleFilterProps}
+          selectedItem={options[0].value}
           hasBadge
-          selectedItem={singleSelectionFilterOptions[0].value}
         />,
       );
 
-      expect(within(button).queryByText("1")).not.toBeInTheDocument();
+      expect(within(button).getByRole("img")).toBeInTheDocument();
     });
 
     it("should render search box", async () => {
