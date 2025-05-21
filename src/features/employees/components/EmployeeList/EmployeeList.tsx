@@ -18,6 +18,7 @@ import type { Employee } from "../../types";
 import EmployeeListContextualMenu from "../EmployeeListContextualMenu";
 import classes from "./EmployeeList.module.scss";
 import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
+import { ROUTES } from "@/libs/routes";
 
 const EmployeeDetails = lazy(async () => import("../EmployeeDetails"));
 
@@ -104,7 +105,10 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
             <TruncatedCell
               content={original.groups.map((group) => (
                 <Link
-                  to={`/settings/employees?tab=employee-groups&search=${group.name}`}
+                  to={ROUTES.settingsEmployees({
+                    tab: "employee-groups",
+                    search: group.name,
+                  })}
                   key={group.group_id}
                   className={classes.truncatedItem}
                 >
@@ -164,7 +168,9 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
                 <Link
                   key={computer.id}
                   className={classes.truncatedItem}
-                  to={`/instances/${computer.id}`}
+                  to={ROUTES.instancesSingle({
+                    instanceId: computer.id.toString(),
+                  })}
                 >
                   {computer.title}
                 </Link>

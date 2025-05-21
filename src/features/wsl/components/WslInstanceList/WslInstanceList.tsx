@@ -11,6 +11,7 @@ import WslInstanceListActions from "../WslInstanceListActions";
 import WslInstancesHeader from "../WslInstancesHeader";
 import classes from "./WslInstanceList.module.scss";
 import usePageParams from "@/hooks/usePageParams";
+import { ROUTES } from "@/libs/routes";
 
 interface WslInstanceListProps {
   readonly instance: WindowsInstance;
@@ -80,7 +81,12 @@ const WslInstanceList: FC<WslInstanceListProps> = ({ instance }) => {
               )}
               onChange={() => handleInstanceCheck(row.original)}
             />
-            <Link to={`/instances/${instance.id}/${row.original.id}`}>
+            <Link
+              to={ROUTES.instancesChild({
+                instanceId: instance.id.toString(),
+                childInstanceId: row.original.id.toString(),
+              })}
+            >
               {row.original.title}
             </Link>
           </div>

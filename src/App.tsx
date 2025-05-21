@@ -20,7 +20,7 @@ import {
   useSearchParams,
 } from "react-router";
 import type { FeatureKey } from "@/types/FeatureKey";
-import { HOMEPAGE_PATH } from "@/constants";
+import { ROUTE_PATHS, ROUTES } from "./libs/routes";
 
 const OidcAuthPage = lazy(async () => import("@/pages/auth/handle/oidc"));
 const UbuntuOneAuthPage = lazy(
@@ -119,9 +119,7 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
 
     const redirectTo = encodeURIComponent(`${pathname}${search}`);
 
-    navigate(`login?redirect-to=${redirectTo}`, {
-      replace: true,
-    });
+    navigate(ROUTES.login({ "redirect-to": redirectTo }), { replace: true });
     queryClient.removeQueries({
       predicate: (query) => query.queryKey[0] !== "authUser",
     });
@@ -147,7 +145,7 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
     const redirectTo = searchParams.get("redirect-to");
 
     if (!redirectTo) {
-      navigate(HOMEPAGE_PATH, { replace: true });
+      navigate(ROUTES.overview(), { replace: true });
       return;
     }
 
@@ -174,7 +172,7 @@ const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
       return;
     }
 
-    navigate("/env-error", { replace: true });
+    navigate(ROUTES.envError(), { replace: true });
   }, [isSelfHosted, envLoading]);
 
   if (envLoading) {
@@ -195,7 +193,7 @@ const FeatureRoute: FC<FeatureRouteProps> = ({ feature, children }) => {
   return isFeatureEnabled(feature) ? (
     <>{children}</>
   ) : (
-    <Navigate to={HOMEPAGE_PATH} replace />
+    <Navigate to={ROUTES.overview()} replace />
   );
 };
 
@@ -217,7 +215,7 @@ const App: FC = () => {
               </AuthRoute>
             }
           >
-            <Route path="/" element={<DashboardPage />}>
+            <Route path={ROUTE_PATHS.root} element={<DashboardPage />}>
               <Route
                 element={
                   <SelfHostedRoute>
@@ -228,10 +226,13 @@ const App: FC = () => {
                 }
               >
                 <Route
-                  path="repositories/mirrors"
+                  path={ROUTE_PATHS.repositoriesMirrors}
                   element={<DistributionsPage />}
                 />
-                <Route path="profiles/wsl" element={<WslProfilesPage />} />
+                <Route
+                  path={ROUTE_PATHS.profilesWsl}
+                  element={<WslProfilesPage />}
+                />
               </Route>
               <Route
                 element={
@@ -240,35 +241,50 @@ const App: FC = () => {
                   </Suspense>
                 }
               >
-                <Route path="repositories" element={<RepositoryPage />} />
                 <Route
-                  path="profiles/repositories"
+                  path={ROUTE_PATHS.repositories}
+                  element={<RepositoryPage />}
+                />
+                <Route
+                  path={ROUTE_PATHS.profilesRepository}
                   element={<RepositoryProfilesPage />}
                 />
-                <Route path="repositories/gpg-keys" element={<GPGKeysPage />} />
                 <Route
-                  path="repositories/apt-sources"
+                  path={ROUTE_PATHS.repositoriesGpgKeys}
+                  element={<GPGKeysPage />}
+                />
+                <Route
+                  path={ROUTE_PATHS.repositoriesAptSources}
                   element={<APTSourcesPage />}
                 />
-                <Route path="instances" element={<InstancesPage />} />
                 <Route
-                  path="instances/:instanceId"
+                  path={ROUTE_PATHS.instances}
+                  element={<InstancesPage />}
+                />
+                <Route
+                  path={ROUTE_PATHS.instancesSingle}
                   element={<SingleInstance />}
                 />
                 <Route
-                  path="instances/:instanceId/:childInstanceId"
+                  path={ROUTE_PATHS.instancesChild}
                   element={<SingleInstance />}
                 />
-                <Route path="activities" element={<ActivitiesPage />} />
-                <Route path="scripts" element={<ScriptsPage />} />
-                <Route path="events-log" element={<EventsLogPage />} />
-                <Route path="settings" element={<SettingsPage />} />
                 <Route
-                  path="settings/administrators"
+                  path={ROUTE_PATHS.activities}
+                  element={<ActivitiesPage />}
+                />
+                <Route path={ROUTE_PATHS.scripts} element={<ScriptsPage />} />
+                <Route
+                  path={ROUTE_PATHS.eventsLog}
+                  element={<EventsLogPage />}
+                />
+                <Route path={ROUTE_PATHS.settings} element={<SettingsPage />} />
+                <Route
+                  path={ROUTE_PATHS.settingsAdministrators}
                   element={<AdministratorsPage />}
                 />
                 <Route
-                  path="settings/employees"
+                  path={ROUTE_PATHS.settingsEmployees}
                   element={
                     <FeatureRoute feature="employee-management">
                       <EmployeesPage />
@@ -276,17 +292,20 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="settings/access-groups"
+                  path={ROUTE_PATHS.settingsAccessGroups}
                   element={<AccessGroupsPage />}
                 />
-                <Route path="settings/roles" element={<RolesPage />} />
                 <Route
-                  path="settings/general"
+                  path={ROUTE_PATHS.settingsRoles}
+                  element={<RolesPage />}
+                />
+                <Route
+                  path={ROUTE_PATHS.settingsGeneral}
                   element={<GeneralOrganisationSettings />}
                 />
                 {!isOidcAvailable && (
                   <Route
-                    path="settings/identity-providers"
+                    path={ROUTE_PATHS.settingsIdentityProviders}
                     element={
                       <FeatureRoute feature="oidc-configuration">
                         <IdentityProvidersPage />
@@ -294,37 +313,43 @@ const App: FC = () => {
                     }
                   />
                 )}
-                <Route path="profiles" element={<ProfilesPage />} />
+                <Route path={ROUTE_PATHS.profiles} element={<ProfilesPage />} />
                 <Route
-                  path="profiles/package"
+                  path={ROUTE_PATHS.profilesPackage}
                   element={<PackageProfilesPage />}
                 />
                 <Route
-                  path="profiles/removal"
+                  path={ROUTE_PATHS.profilesRemoval}
                   element={<RemovalProfilesPage />}
                 />
                 <Route
-                  path="profiles/upgrade"
+                  path={ROUTE_PATHS.profilesUpgrade}
                   element={<UpgradeProfilesPage />}
                 />
                 <Route
-                  path="profiles/security"
+                  path={ROUTE_PATHS.profilesSecurity}
                   element={<SecurityProfilesPage />}
                 />
                 <Route
-                  path="profiles/reboot"
+                  path={ROUTE_PATHS.profilesReboot}
                   element={<RebootProfilesPage />}
                 />
-                <Route path="account" element={<AccountPage />} />
-                <Route path="account/general" element={<GeneralSettings />} />
-                <Route path="account/alerts" element={<Alerts />} />
+                <Route path={ROUTE_PATHS.account} element={<AccountPage />} />
                 <Route
-                  path="account/api-credentials"
+                  path={ROUTE_PATHS.accountGeneral}
+                  element={<GeneralSettings />}
+                />
+                <Route path={ROUTE_PATHS.accountAlerts} element={<Alerts />} />
+                <Route
+                  path={ROUTE_PATHS.accountApiCredentials}
                   element={<ApiCredentials />}
                 />
-                <Route path="alerts" element={<AlertNotificationsPage />} />
-                <Route path="overview" element={<OverviewPage />} />
-                <Route path="env-error" element={<EnvError />} />
+                <Route
+                  path={ROUTE_PATHS.alerts}
+                  element={<AlertNotificationsPage />}
+                />
+                <Route path={ROUTE_PATHS.overview} element={<OverviewPage />} />
+                <Route path={ROUTE_PATHS.envError} element={<EnvError />} />
               </Route>
             </Route>
           </Route>
@@ -337,15 +362,18 @@ const App: FC = () => {
               </GuestRoute>
             }
           >
-            <Route path={"/login"} element={<LoginPage />} />
-            <Route path={"/handle-auth/oidc"} element={<OidcAuthPage />} />
+            <Route path={ROUTE_PATHS.login} element={<LoginPage />} />
             <Route
-              path={"/handle-auth/ubuntu-one"}
+              path={ROUTE_PATHS.handleAuthOidc}
+              element={<OidcAuthPage />}
+            />
+            <Route
+              path={ROUTE_PATHS.handleAuthUbuntuOne}
               element={<UbuntuOneAuthPage />}
             />
           </Route>
           <Route
-            path={"/*"}
+            path={ROUTE_PATHS.notFound}
             element={
               <Suspense fallback={<LoadingState />}>
                 <PageNotFound />

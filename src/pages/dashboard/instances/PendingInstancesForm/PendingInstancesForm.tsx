@@ -16,6 +16,7 @@ import PendingInstanceList from "@/pages/dashboard/instances/PendingInstanceList
 import type { PendingInstance } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
 import classes from "./PendingInstancesForm.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 interface PendingInstanceListProps {
   readonly instances: PendingInstance[];
@@ -107,7 +108,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
           for manual approval of each computer. You can enable this feature in
           the{" "}
         </span>
-        <Link to="/settings/general">Org. settings</Link>
+        <Link to={ROUTES.settingsGeneral()}>Org. settings</Link>
         <span> or </span>
         <a
           href="https://ubuntu.com/landscape/docs/managing-computers"

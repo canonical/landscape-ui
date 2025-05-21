@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router";
 import { ConfirmationButton, Icon } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import { useUsns } from "@/features/usns";
 import type { UrlParams } from "@/types/UrlParams";
+import { ROUTES } from "@/libs/routes";
 
 interface UsnPackagesRemoveButtonProps {
   readonly instanceTitle: string;
@@ -20,7 +20,6 @@ const UsnPackagesRemoveButton: FC<UsnPackagesRemoveButtonProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { removeUsnPackagesQuery } = useUsns();
-  const { setPageParams } = usePageParams();
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
 
   const instanceId = Number(urlInstanceId);
@@ -28,10 +27,22 @@ const UsnPackagesRemoveButton: FC<UsnPackagesRemoveButtonProps> = ({
     removeUsnPackagesQuery;
 
   const handleActivityDetailsView = () => {
-    navigate(
-      `/instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`,
-    );
-    setPageParams({ tab: "activities" });
+    if (childInstanceId && urlInstanceId) {
+      navigate(
+        ROUTES.instancesChild(
+          { instanceId: urlInstanceId, childInstanceId },
+          { tab: "activities" },
+        ),
+      );
+    } else if (urlInstanceId) {
+      navigate(
+        ROUTES.instancesSingle(
+          { instanceId: urlInstanceId },
+          { tab: "activities" },
+        ),
+      );
+    }
+
     notify.clear();
   };
 

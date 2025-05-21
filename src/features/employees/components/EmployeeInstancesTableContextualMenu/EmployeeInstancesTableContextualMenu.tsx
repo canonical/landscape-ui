@@ -1,4 +1,3 @@
-import { ROOT_PATH } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -10,6 +9,7 @@ import { useState, type FC } from "react";
 import { useNavigate } from "react-router";
 import classes from "./EmployeeInstancesTableContextualMenu.module.scss";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import { ROUTES } from "@/libs/routes";
 
 interface EmployeeInstancesTableContextualMenuProps {
   readonly instance: Instance;
@@ -89,7 +89,10 @@ const EmployeeInstancesTableContextualMenu: FC<
       ),
       "aria-label": `View ${instance.title} instance details`,
       hasIcon: true,
-      onClick: async () => navigate(`${ROOT_PATH}instances/${instance.id}`),
+      onClick: async () =>
+        navigate(
+          ROUTES.instancesSingle({ instanceId: instance.id.toString() }),
+        ),
     },
     {
       children: (

@@ -20,6 +20,7 @@ import {
 } from "./helpers";
 import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
+import { ROUTES } from "@/libs/routes";
 
 interface InstanceListProps {
   readonly instances: Instance[];
@@ -122,8 +123,13 @@ const InstanceList: FC<InstanceListProps> = ({
             <Link
               to={
                 row.original.parent
-                  ? `/instances/${row.original.parent.id}/${row.original.id}`
-                  : `/instances/${row.original.id}`
+                  ? ROUTES.instancesChild({
+                      instanceId: row.original.parent.id.toString(),
+                      childInstanceId: row.original.id.toString(),
+                    })
+                  : ROUTES.instancesSingle({
+                      instanceId: row.original.id.toString(),
+                    })
               }
             >
               {row.original.title}

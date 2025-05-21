@@ -9,6 +9,7 @@ import EmployeeGroupsListContextualMenu from "../EmployeeGroupsListContextualMen
 import classes from "./EmployeeGroupsList.module.scss";
 import { handleCellProps } from "./helpers";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import { ROUTES } from "@/libs/routes";
 
 interface EmployeeGroupsListProps {
   readonly onSelectedEmployeeGroupsChange: (employeeGroups: number[]) => void;
@@ -95,7 +96,10 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) =>
           original.employee_count ? (
             <Link
-              to={`/settings/employees?tab=employees&employeeGroups=${original.id}`}
+              to={ROUTES.settingsEmployees({
+                tab: "employees",
+                employeeGroups: [original.id.toString()],
+              })}
               className={classes.link}
             >
               {original.employee_count}

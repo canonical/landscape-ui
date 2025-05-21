@@ -2,6 +2,7 @@ import type { HTMLProps } from "react";
 import type { Cell, TableCellProps } from "react-table";
 import type { InstancePackage } from "../../types";
 import classes from "./PackageList.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 export const isUbuntuProRequired = (pkg: InstancePackage) => {
   return (
@@ -65,4 +66,23 @@ export const handleCellProps = ({ column, row }: Cell<InstancePackage>) => {
   }
 
   return cellProps;
+};
+
+export const getInstanceNavigationLink = (
+  instanceId: string | undefined,
+  childInstanceId: string | undefined,
+) => {
+  if (childInstanceId && instanceId) {
+    return ROUTES.instancesChild(
+      {
+        instanceId,
+        childInstanceId,
+      },
+      { tab: "ubuntu-pro" },
+    );
+  } else if (instanceId) {
+    return ROUTES.instancesSingle({ instanceId }, { tab: "ubuntu-pro" });
+  } else {
+    return ROUTES.instances();
+  }
 };

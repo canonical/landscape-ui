@@ -6,6 +6,7 @@ import LogoIcon from "../../assets/images/logo-white-icon.svg";
 import { APP_TITLE } from "@/constants";
 import classes from "./DesktopHeader.module.scss";
 import classNames from "classnames";
+import { ROUTES } from "@/libs/routes";
 
 interface DesktopHeaderProps {
   readonly closeMenu: () => void;
@@ -19,7 +20,7 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
         classes.container,
       )}
     >
-      <Link to="/" className={classes.link}>
+      <Link to={ROUTES.default()} className={classes.link}>
         <img
           className={classNames("is-fading-when-collapsed", classes.logoImg)}
           src={Logo}

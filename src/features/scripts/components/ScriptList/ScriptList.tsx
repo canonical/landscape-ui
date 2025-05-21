@@ -19,6 +19,7 @@ import type { Script } from "../../types";
 import ScriptListContextualMenu from "../ScriptListContextualMenu";
 import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
 import classes from "./ScriptList.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
@@ -122,7 +123,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
             <TruncatedCell
               content={script_profiles.map(({ id, title }) => (
                 <Link
-                  to="/scripts?tab=profiles"
+                  to={ROUTES.scripts({ tab: "profiles" })}
                   state={{ scriptProfileId: id }}
                   key={id}
                   className={classes.truncatedItem}

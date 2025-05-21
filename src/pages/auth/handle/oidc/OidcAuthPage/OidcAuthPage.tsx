@@ -1,10 +1,11 @@
 import type { FC } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
+import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 import { useUnsigned } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import classes from "./OidcAuthPage.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 const OidcAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
@@ -39,7 +40,7 @@ const OidcAuthPage: FC = () => {
       setUser(getAuthStateQueryResult.data);
 
       const url = new URL(
-        getAuthStateQueryResult.data.return_to?.url ?? HOMEPAGE_PATH,
+        getAuthStateQueryResult.data.return_to?.url ?? ROUTES.overview(),
         location.origin,
       );
 
@@ -60,7 +61,7 @@ const OidcAuthPage: FC = () => {
       ) : (
         <div>
           <p>{CONTACT_SUPPORT_TEAM_MESSAGE}</p>
-          <Link to="/login" className="p-button">
+          <Link to={ROUTES.login()} className="p-button">
             Back to login
           </Link>
         </div>

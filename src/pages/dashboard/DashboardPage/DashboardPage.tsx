@@ -3,18 +3,18 @@ import { Suspense, useEffect } from "react";
 import DashboardTemplate from "@/templates/dashboard";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
-import { HOMEPAGE_PATH } from "@/constants";
+import { ROUTES } from "@/libs/routes";
 
 const DashboardPage: FC = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if ("/" !== pathname) {
+    if (ROUTES.default() !== pathname) {
       return;
     }
 
-    navigate(HOMEPAGE_PATH, { replace: true });
+    navigate(ROUTES.overview(), { replace: true });
   }, [pathname]);
 
   return (

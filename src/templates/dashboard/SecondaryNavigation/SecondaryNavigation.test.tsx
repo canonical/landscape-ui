@@ -2,6 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import SecondaryNavigation from "./SecondaryNavigation";
 import { ACCOUNT_SETTINGS } from "./constants";
+import { ROUTE_PATHS, ROUTES } from "@/libs/routes";
 
 describe("SecondaryNavigation", () => {
   it("renders correctly", () => {
@@ -23,8 +24,8 @@ describe("SecondaryNavigation", () => {
     renderWithProviders(
       <SecondaryNavigation />,
       {},
-      "/account/general",
-      "/:path/:subpath",
+      ROUTES.accountGeneral(),
+      ROUTE_PATHS.accountGeneral,
     );
 
     const activeLink = screen.getByRole("link", {

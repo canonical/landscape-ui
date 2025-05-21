@@ -15,6 +15,7 @@ import {
 } from "../../helpers";
 import type { ScriptProfile } from "../../types";
 import classes from "./ScriptProfileInfo.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 interface ScriptProfileInfoProps {
   readonly profile: ScriptProfile;
@@ -59,7 +60,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
               script ? (
                 <Link
                   className={classes.link}
-                  to="/scripts?tab=scripts"
+                  to={ROUTES.scripts({ tab: "scripts" })}
                   state={{ scriptId: script.id }}
                 >
                   {script.title}
@@ -113,7 +114,9 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
               activity ? (
                 <Link
                   className={classes.link}
-                  to={`/activities?query=parent-id%3A${activity.id}`}
+                  to={ROUTES.activities({
+                    query: `parent-id%3A${activity.id}`,
+                  })}
                 >
                   {moment(activity.creation_time)
                     .utc()

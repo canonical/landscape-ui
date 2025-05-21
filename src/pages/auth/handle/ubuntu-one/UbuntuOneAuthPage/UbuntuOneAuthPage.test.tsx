@@ -3,7 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import type { AuthStateResponse } from "@/features/auth";
 import { authUser } from "@/tests/mocks/auth";
-import { HOMEPAGE_PATH } from "@/constants";
+import { ROUTES } from "@/libs/routes";
 
 const redirectToExternalUrl = vi.fn();
 const navigate = vi.fn();
@@ -125,7 +125,7 @@ describe("UbuntuOneAuthPage", () => {
 
     it("should redirect to internal URL when return_to is not provided", async () => {
       expect(navigate).toHaveBeenCalledWith(
-        new URL(HOMEPAGE_PATH, location.origin).pathname,
+        new URL(ROUTES.overview(), location.origin).pathname,
         { replace: true },
       );
     });

@@ -3,7 +3,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/tests/render";
 import { authUser } from "@/tests/mocks/auth";
-import { HOMEPAGE_PATH } from "@/constants";
+import { ROUTES } from "@/libs/routes";
 
 const user = {
   email: "john@example.com",
@@ -80,7 +80,7 @@ describe("LoginForm", () => {
 
     it("should sign in and redirect to default url", async () => {
       expect(navigate).toHaveBeenCalledWith(
-        new URL(HOMEPAGE_PATH, location.origin).pathname,
+        new URL(ROUTES.overview(), location.origin).pathname,
         { replace: true },
       );
 
@@ -143,7 +143,7 @@ describe("LoginForm", () => {
 
     it("should sign in and redirect to default url", async () => {
       expect(navigate).toHaveBeenCalledWith(
-        new URL(HOMEPAGE_PATH, location.origin).pathname,
+        new URL(ROUTES.overview(), location.origin).pathname,
         { replace: true },
       );
     });

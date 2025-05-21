@@ -3,14 +3,15 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect } from "vitest";
 import InstallSnaps from "./InstallSnaps";
+import { ROUTE_PATHS } from "@/libs/routes";
 
 describe("InstallSnaps", () => {
   beforeEach(async () => {
     renderWithProviders(
       <InstallSnaps />,
       {},
-      `/instances/1`,
-      "/instances/:instanceId",
+      "/instances/1",
+      ROUTE_PATHS.instancesSingle,
     );
   });
 

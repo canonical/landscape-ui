@@ -9,6 +9,7 @@ import EmployeeInstancesTableContextualMenu from "../EmployeeInstancesTableConte
 import classes from "./EmployeeInstancesTable.module.scss";
 import { handleCellProps } from "./helpers";
 import { EMPTY_STATE } from "./constants";
+import { ROUTES } from "@/libs/routes";
 
 interface EmployeeInstancesTableProps {
   readonly instances: Instance[] | null;
@@ -27,8 +28,13 @@ const EmployeeInstancesTable: FC<EmployeeInstancesTableProps> = ({
             className={classes.link}
             to={
               row.original.parent
-                ? `/instances/${row.original.parent.id}/${row.original.id}`
-                : `/instances/${row.original.id}`
+                ? ROUTES.instancesChild({
+                    instanceId: row.original.parent.id.toString(),
+                    childInstanceId: row.original.id.toString(),
+                  })
+                : ROUTES.instancesSingle({
+                    instanceId: row.original.id.toString(),
+                  })
             }
           >
             {row.original.title}

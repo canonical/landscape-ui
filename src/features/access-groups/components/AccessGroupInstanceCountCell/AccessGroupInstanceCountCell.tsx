@@ -4,6 +4,7 @@ import type { FC } from "react";
 import { Link } from "react-router";
 import type { AccessGroupWithInstancesCount } from "../../types/AccessGroup";
 import classes from "./AccessGroupInstanceCountCell.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 interface AccessGroupInstanceCountCellProps {
   readonly accessGroup: AccessGroupWithInstancesCount;
@@ -40,7 +41,7 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
     return (
       <Link
         className={classes.link}
-        to={`/instances?accessGroups=${accessGroup.name}`}
+        to={ROUTES.instances({ accessGroups: [accessGroup.name] })}
       >
         {getInstancesQueryResult.data.count}
       </Link>

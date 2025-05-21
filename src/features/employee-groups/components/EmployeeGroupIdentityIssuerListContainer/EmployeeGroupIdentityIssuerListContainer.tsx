@@ -6,6 +6,7 @@ import EmptyState from "@/components/layout/EmptyState";
 import { useNavigate } from "react-router";
 import EmployeeGroupIdentityIssuerList from "../EmployeeGroupIdentityIssuerList";
 import { EMPTY_STATE } from "./constants";
+import { ROUTES } from "@/libs/routes";
 
 const EmployeeGroupIdentityIssuerListContainer: FC = () => {
   const { oidcDirectoryIssuers, isOidcIssuersLoading } = useOidcIssuers();
@@ -25,7 +26,7 @@ const EmployeeGroupIdentityIssuerListContainer: FC = () => {
             key="import-employee-groups"
             appearance="positive"
             className="p-segmented-control__button"
-            onClick={async () => navigate("/settings/identity-providers")}
+            onClick={async () => navigate(ROUTES.settingsIdentityProviders())}
           >
             <span>Go to Identity Providers</span>
           </Button>,

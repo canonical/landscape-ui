@@ -42,6 +42,7 @@ import {
   getValidationSchema,
   removeFileExtension,
 } from "./helpers";
+import { ROUTES } from "@/libs/routes";
 
 interface EditScriptFormProps {
   readonly script: Script;
@@ -236,7 +237,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
                   accessor: "title",
                   Cell: ({ row }: CellProps<TruncatedScriptProfile>) => (
                     <Link
-                      to="/scripts?tab=profiles"
+                      to={ROUTES.scripts({ tab: "profiles" })}
                       state={{ scriptProfileId: row.original.id }}
                       target="_blank"
                       className={classes.link}
@@ -261,7 +262,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
 
                     return associatedComputers ? (
                       <Link
-                        to={`/instances?tags=${associatedProfile?.tags.join(",")}`}
+                        to={ROUTES.instances({ tags: associatedProfile?.tags })}
                         target="_blank"
                         className={classes.link}
                       >

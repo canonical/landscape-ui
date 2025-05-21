@@ -8,6 +8,7 @@ import { formatTitleCase, getAuthorInfo } from "../../helpers";
 import type { SingleScript } from "../../types";
 import AttachmentFile from "../AttachmentFile";
 import classes from "./ScriptDetailsInfo.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 interface ScriptDetailsInfoProps {
   readonly script: SingleScript;
@@ -92,7 +93,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
             script.script_profiles.map((profile, index) => (
               <Link
                 className={classes.link}
-                to="/scripts?tab=profiles"
+                to={ROUTES.scripts({ tab: "profiles" })}
                 state={{ scriptProfileId: profile.id }}
                 key={profile.id}
               >
