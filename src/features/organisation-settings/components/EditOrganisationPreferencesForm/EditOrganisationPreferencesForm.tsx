@@ -1,3 +1,4 @@
+import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -5,10 +6,9 @@ import type { Preferences } from "@/types/Preferences";
 import { Button, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { ChangeEvent, FC } from "react";
-import classes from "./EditOrganisationPreferencesForm.module.scss";
-import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 import { useOrgSettings } from "../../hooks";
 import { VALIDATION_SCHEMA } from "./constants";
+import classes from "./EditOrganisationPreferencesForm.module.scss";
 
 interface FormProps {
   title: string;
@@ -79,7 +79,7 @@ const EditOrganisationPreferencesForm: FC<
 
         notify.success({
           title: "Your changes have been saved",
-          message: `Changes made to organisation settings for ${values.title} have been successfully saved.`,
+          message: `Changes made to organization settings for ${values.title} have been successfully saved.`,
         });
       } catch (error) {
         debug(error);
@@ -102,9 +102,9 @@ const EditOrganisationPreferencesForm: FC<
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <Input
-        label="Organisation's name"
+        label="Organization's name"
         type="text"
-        help="Visible to others in organisation"
+        help="Visible to others in organization"
         error={
           formik.touched.title && formik.errors.title
             ? formik.errors.title
@@ -140,7 +140,7 @@ const EditOrganisationPreferencesForm: FC<
             label="Auto register new computers"
             type="checkbox"
             checked={formik.values.auto_register_new_computers}
-            help="This will automatically accept new instances that register to your organisation."
+            help="This will automatically accept new instances that register to your organization."
             {...formik.getFieldProps("auto_register_new_computers")}
           />
         </div>

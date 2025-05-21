@@ -61,7 +61,7 @@ const AdministratorListActions: FC<AdministratorListActionsProps> = ({
           onConfirm={tryDisable}
         >
           <p>
-            This will remove the administrator from your Landscape organisation.
+            This will remove the administrator from your Landscape organization.
           </p>
         </ConfirmationModal>
       )}

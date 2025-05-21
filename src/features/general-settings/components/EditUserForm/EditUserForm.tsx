@@ -1,10 +1,12 @@
 import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 import LoadingState from "@/components/layout/LoadingState";
 import useAuth from "@/hooks/useAuth";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useDebug from "@/hooks/useDebug";
 import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Input, Link, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -15,8 +17,6 @@ import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
 import classes from "./EditUserForm.module.scss";
 import { getAccountOptions } from "./helpers";
 import type { EditUserFormValues } from "./types";
-import { getFormikError } from "@/utils/formikErrors";
-import useAuthAccounts from "@/hooks/useAuthAccounts";
 
 const ChangePasswordForm = lazy(async () => import("../ChangePasswordForm"));
 
@@ -89,7 +89,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
         label="Name"
         type="text"
         error={getFormikError(formik, "name")}
-        help="Visible to others in the organisation"
+        help="Visible to others in the organization"
         {...formik.getFieldProps("name")}
       />
       {EMAIL_OPTIONS.length > 1 ? (
@@ -185,7 +185,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
       />
       {!isOnSubdomain && options.length > 1 && (
         <Select
-          label="Default organisation"
+          label="Default organization"
           options={getAccountOptions(options, formik.values.preferred_account)}
           {...formik.getFieldProps("preferred_account")}
           error={getFormikError(formik, "preferred_account")}

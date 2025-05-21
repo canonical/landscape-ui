@@ -1,8 +1,8 @@
 import InfoItem from "@/components/layout/InfoItem";
 import { NOT_AVAILABLE } from "@/constants";
+import type { UserDetails } from "@/features/general-settings";
 import { distributionCardClasses, seriesCardClasses } from "@/features/mirrors";
 import useDebug from "@/hooks/useDebug";
-import type { UserDetails } from "@/features/general-settings";
 
 import {
   Col,
@@ -10,10 +10,10 @@ import {
   ModularTable,
   Row,
 } from "@canonical/react-components";
-import type { Column } from "react-table";
 import classNames from "classnames";
 import type { FC } from "react";
 import React, { useMemo } from "react";
+import type { Column } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
 import { useApiCredentials } from "../../hooks";
 import type { Credential } from "../../types";
@@ -54,7 +54,7 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
       {
         Header: "Value",
         accessor: "value",
-        Cell: ({ value }: { value: React.ReactNode }) => value,
+        Cell: async ({ value }: { value: React.ReactNode }) => value,
       },
     ],
     [user, credentials],
@@ -115,13 +115,13 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
                       ? `${action.slice(0, -1)}ing your API credentials will make your previously used credentials obsolete and deauthenticate any clients using them. `
                       : ""}
                     This action will create new credentials for integrating with
-                    the {account.title} organisation
+                    the {account.title} organization
                   </p>
                 ),
                 confirmButtonLabel: `${action} API credentials`,
                 confirmButtonDisabled: isGenerating,
                 confirmButtonLoading: isGenerating,
-                onConfirm: () => handleGenerateKeysMutation(account.name),
+                onConfirm: async () => handleGenerateKeysMutation(account.name),
               }}
             >
               {action} API credentials

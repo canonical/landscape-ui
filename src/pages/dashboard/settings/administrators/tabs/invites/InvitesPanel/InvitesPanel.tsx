@@ -1,13 +1,13 @@
-import moment from "moment";
-import type { FC, HTMLProps } from "react";
-import { useMemo } from "react";
-import type { Cell, CellProps, Column, TableCellProps } from "react-table";
-import { ConfirmationButton, ModularTable } from "@canonical/react-components";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useInvitations from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Invitation } from "@/types/Invitation";
+import { ConfirmationButton, ModularTable } from "@canonical/react-components";
+import moment from "moment";
+import type { FC, HTMLProps } from "react";
+import { useMemo } from "react";
+import type { Cell, CellProps, Column, TableCellProps } from "react-table";
 
 const InvitesPanel: FC = () => {
   const debug = useDebug();
@@ -92,14 +92,14 @@ const InvitesPanel: FC = () => {
                 children: (
                   <p>
                     This action will prevent {row.original.name} from joining
-                    your Landscape organisation.
+                    your Landscape organization.
                   </p>
                 ),
                 confirmButtonLabel: "Revoke invitation",
                 confirmButtonAppearance: "negative",
                 confirmButtonDisabled: isRevokingInvitation,
                 confirmButtonLoading: isRevokingInvitation,
-                onConfirm: () => handleRevokeInvitation(row.original),
+                onConfirm: async () => handleRevokeInvitation(row.original),
               }}
             >
               Revoke
@@ -118,7 +118,7 @@ const InvitesPanel: FC = () => {
                 confirmButtonAppearance: "positive",
                 confirmButtonDisabled: isResendingInvitation,
                 confirmButtonLoading: isResendingInvitation,
-                onConfirm: () => handleResendInvitation(row.original),
+                onConfirm: async () => handleResendInvitation(row.original),
               }}
             >
               Resend

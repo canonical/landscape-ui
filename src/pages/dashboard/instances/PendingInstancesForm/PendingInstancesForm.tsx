@@ -1,11 +1,3 @@
-import type { FC } from "react";
-import { useState } from "react";
-import { Link } from "react-router";
-import {
-  Button,
-  ConfirmationButton,
-  Select,
-} from "@canonical/react-components";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -15,6 +7,14 @@ import useSidePanel from "@/hooks/useSidePanel";
 import PendingInstanceList from "@/pages/dashboard/instances/PendingInstanceList";
 import type { PendingInstance } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
+import {
+  Button,
+  ConfirmationButton,
+  Select,
+} from "@canonical/react-components";
+import type { FC } from "react";
+import { useState } from "react";
+import { Link } from "react-router";
 import classes from "./PendingInstancesForm.module.scss";
 
 interface PendingInstanceListProps {
@@ -64,7 +64,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       closeSidePanel();
 
       notify.success({
-        message: `${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"} have been rejected to add to your ${userOrganisation} organisation.`,
+        message: `${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"} have been rejected to add to your ${userOrganisation} organization.`,
         title: `You have rejected ${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"}`,
       });
     } catch (error) {
@@ -82,7 +82,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       closeSidePanel();
 
       notify.success({
-        message: `${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"} have been successfully added to your ${userOrganisation} organisation.`,
+        message: `${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"} have been successfully added to your ${userOrganisation} organization.`,
         title: `You have approved ${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"}`,
       });
     } catch (error) {
@@ -124,7 +124,9 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
           options={accessGroupOptions}
           name="access_group"
           value={accessGroup}
-          onChange={(event) => setAccessGroup(event.target.value)}
+          onChange={(event) => {
+            setAccessGroup(event.target.value);
+          }}
         />
       )}
 
@@ -132,7 +134,9 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
         <PendingInstanceList
           accessGroupOptions={accessGroupOptions}
           instances={instances}
-          onSelectedIdsChange={(value) => setInstanceIds(value)}
+          onSelectedIdsChange={(value) => {
+            setInstanceIds(value);
+          }}
           selectedIds={instanceIds}
         />
       )}
@@ -156,7 +160,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
                   <p>
                     This will approve {instanceIds.length} selected{" "}
                     {instanceIds.length === 1 ? "instance" : "instances"} to add
-                    to your {userOrganisation} organisation.
+                    to your {userOrganisation} organization.
                   </p>
                 ),
                 confirmButtonLabel: "Approve",
@@ -182,7 +186,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
                   <p>
                     This will reject {instanceIds.length} selected{" "}
                     {instanceIds.length === 1 ? "instance" : "instances"} to add
-                    to your {userOrganisation} organisation.
+                    to your {userOrganisation} organization.
                   </p>
                 ),
                 confirmButtonLabel: "Reject",
