@@ -39,11 +39,7 @@ export const notifyCreation = (
 };
 
 export const getAssociatedInstancesLink = (profile: SecurityProfile) => {
-  const search = [`query=access-group-recursive%3A${profile.access_group}`];
-
-  if (profile.tags.length) {
-    search.push(`tags=${profile.tags.join("%2C")}`);
-  }
+  const search = [`query=security-profile%3A${profile.id}`];
 
   return profile.tags.length || profile.all_computers ? (
     <Link
