@@ -1,5 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
+import useSidePanel from "@/hooks/useSidePanel";
 import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -31,6 +32,8 @@ const tabLinks = [
 ];
 
 const EmployeesTabs: FC = () => {
+  const { closeSidePanel } = useSidePanel();
+
   const { tab, setPageParams } = usePageParams();
 
   const currentTabLinkId = tab ? `tab-link-${tab}` : "tab-link-employee-groups";
@@ -50,6 +53,7 @@ const EmployeesTabs: FC = () => {
           active: id === currentTabLinkId,
           onClick: () => {
             onActiveTabChange(id);
+            closeSidePanel();
           },
         }))}
       />
