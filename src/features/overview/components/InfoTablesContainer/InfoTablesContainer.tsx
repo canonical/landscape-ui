@@ -29,8 +29,13 @@ import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import type { CellProps, Column } from "react-table";
+import {
+  MAX_ACTIVITY_COUNT,
+  MAX_PACKAGE_COUNT,
+  MAX_UPGRADE_COUNT,
+  MAX_USN_COUNT,
+} from "./constants";
 import classes from "./InfoTablesContainer.module.scss";
-import { MAX_ACTIVITY_COUNT, MAX_UPGRADE_COUNT } from "./constants";
 
 const InfoTablesContainer: FC = () => {
   const [currentUpgradesTab, setCurrentUpgradesTab] = useState<
@@ -52,6 +57,9 @@ const InfoTablesContainer: FC = () => {
     upgradePackagesQuery;
   const { mutateAsync: approveActivities, isPending: isApproving } =
     approveActivitiesQuery;
+
+  const [packagesLimit, setPackagesLimit] = useState(MAX_PACKAGE_COUNT);
+  const [usnsLimit, setUsnsLimit] = useState(MAX_USN_COUNT);
 
   const {
     data: unapprovedActivitiesRes = {
@@ -103,7 +111,7 @@ const InfoTablesContainer: FC = () => {
   } = getUsnsQuery(
     {
       computer_ids: instancesData.map((instance) => instance.id),
-      limit: 11,
+      limit: usnsLimit,
     },
     {
       enabled: !!instancesData.length && currentUpgradesTab === "usns",
@@ -119,7 +127,7 @@ const InfoTablesContainer: FC = () => {
     {
       query: instancesData.map((instance) => `id:${instance.id}`).join(" OR "),
       upgrade: true,
-      limit: 10,
+      limit: packagesLimit,
     },
     {
       enabled: !!instancesData.length && currentUpgradesTab === "packages",
@@ -213,12 +221,11 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Packages",
             accessor: "upgrades",
             Cell: ({ row }: CellProps<Instance>): ReactNode => {
-              return (
-                <>
-                  {(row.original.upgrades?.security ?? 0) +
-                    (row.original.upgrades?.regular ?? 0)}
-                </>
-              );
+              const packageCount =
+                (row.original.upgrades?.security ?? 0) +
+                (row.original.upgrades?.regular ?? 0);
+
+              return `${packageCount} ${packageCount === 1 ? "package" : "packages"}`;
             },
             className: classes.lastCol,
           },
@@ -232,14 +239,8 @@ const InfoTablesContainer: FC = () => {
           {
             Header: "Affected Instances",
             accessor: "computers",
-            Cell: ({ row }: CellProps<Package>): ReactNode => (
-              <Link
-                to="/instances"
-                className={classNames("u-no-margin--bottom", classes.link)}
-              >
-                {row.original.computers.length}
-              </Link>
-            ),
+            Cell: ({ row }: CellProps<Package>): ReactNode =>
+              `${row.original.computers.length} ${row.original.computers.length === 1 ? "instance" : "instances"}`,
             className: classes.lastCol,
           },
         ];
@@ -252,14 +253,8 @@ const InfoTablesContainer: FC = () => {
           {
             Header: "Affected Instances",
             accessor: "computers_count",
-            Cell: ({ row }: CellProps<Usn>): ReactNode => (
-              <Link
-                to="/instances"
-                className={classNames("u-no-margin--bottom", classes.link)}
-              >
-                {row.original.computers_count}
-              </Link>
-            ),
+            Cell: ({ row }: CellProps<Usn>): ReactNode =>
+              `${row.original.computers_count} ${row.original.computers_count === 1 ? "instance" : "instances"}`,
             className: classes.lastCol,
           },
         ];
@@ -395,6 +390,39 @@ const InfoTablesContainer: FC = () => {
     }
   };
 
+  const handleUpgradesLimitChange = async () => {
+    switch (currentUpgradesTab) {
+      case "instances": {
+        await navigate("/instances?status=package-upgrades");
+        break;
+      }
+
+      case "packages": {
+        setPackagesLimit((limit) => limit + 5);
+        break;
+      }
+
+      case "usns": {
+        setUsnsLimit((limit) => limit + 5);
+        break;
+      }
+    }
+  };
+
+  const handleActivitiesLimitChange = async () => {
+    switch (currentActivitiesTab) {
+      case "unapproved": {
+        await navigate("/activities?status=unapproved");
+        break;
+      }
+
+      case "inProgress": {
+        await navigate("/activities?status=delivered");
+        break;
+      }
+    }
+  };
+
   return (
     <Row
       className={classNames("u-no-padding u-no-max-width", classes.container)}
@@ -405,12 +433,13 @@ const InfoTablesContainer: FC = () => {
           <ConfirmationButton
             type="button"
             className="is-small u-no-margin--bottom"
+            disabled={!upgradesTableData.length}
             confirmationModalProps={{
               title: `Upgrade ${currentUpgradesTab === "usns" ? "USNs" : "packages"}`,
               children: (
                 <p>
                   Are you sure you want to upgrade all{" "}
-                  {currentUpgradesTab === "usns" ? "USNs" : "packages"}
+                  {currentUpgradesTab === "usns" ? "USNs" : "packages"}?
                 </p>
               ),
               confirmButtonLabel: "Upgrade",
@@ -474,15 +503,15 @@ const InfoTablesContainer: FC = () => {
               columns={upgradesTableColumns}
               className="u-no-margin--bottom"
             />
-            {getTotalTableItemsCount("upgrades") > MAX_UPGRADE_COUNT && (
+            {getTotalTableItemsCount("upgrades") > MAX_PACKAGE_COUNT && (
               <ExpandableTableFooter
-                viewAll
+                viewAll={currentUpgradesTab === "instances"}
                 itemNames={{
                   singular: getUpgradesTableFooterName(),
                   plural: `${getUpgradesTableFooterName()}s`,
                 }}
-                itemCount={MAX_UPGRADE_COUNT}
-                onLimitChange={async () => navigate("/instances")}
+                itemCount={upgradesTableData.length}
+                onLimitChange={handleUpgradesLimitChange}
                 totalCount={getTotalTableItemsCount("upgrades")}
                 className={classes.footer}
               />
@@ -498,6 +527,7 @@ const InfoTablesContainer: FC = () => {
             <ConfirmationButton
               className="is-small u-no-margin--bottom"
               type="button"
+              disabled={!getTotalTableItemsCount("activities")}
               confirmationModalProps={{
                 title: "Approve activities",
                 children: (
@@ -547,7 +577,7 @@ const InfoTablesContainer: FC = () => {
             }
             body={
               currentActivitiesTab === "unapproved"
-                ? "There are currently no pending approval requests. Check back later for any new approval activities"
+                ? "There are currently no pending approval requests. Check back later for any new approval activities."
                 : "There are currently no activities in progress. Check back later."
             }
             cta={[
@@ -575,7 +605,7 @@ const InfoTablesContainer: FC = () => {
                   plural: "activities",
                 }}
                 itemCount={MAX_ACTIVITY_COUNT}
-                onLimitChange={async () => navigate("/activities")}
+                onLimitChange={handleActivitiesLimitChange}
                 totalCount={getTotalTableItemsCount("activities")}
                 className={classes.footer}
               />
