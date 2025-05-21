@@ -1,7 +1,8 @@
+import { currentInstanceIs } from "@/features/instances";
 import type { KernelStatus } from "@/features/kernel";
+import { ROUTES } from "@/libs/routes";
 import type { Breadcrumb } from "@/types/Breadcrumb";
 import type { Instance } from "@/types/Instance";
-import { currentInstanceIs } from "../../../../../features/instances/helpers";
 
 export const getBreadcrumbs = (
   instance: Instance | null,
@@ -12,7 +13,7 @@ export const getBreadcrumbs = (
 
   if (!instance.parent) {
     return [
-      { label: "Instances", path: "/instances" },
+      { label: "Instances", path: ROUTES.instances() },
       { label: instance.title, current: true },
     ];
   }
@@ -20,11 +21,13 @@ export const getBreadcrumbs = (
   return [
     {
       label: "Instances",
-      path: "/instances",
+      path: ROUTES.instances(),
     },
     {
       label: instance.parent.title,
-      path: `/instances/${instance.parent.id}`,
+      path: ROUTES.instancesSingle({
+        instanceId: instance.parent.id.toString(),
+      }),
     },
     {
       label: instance.title,

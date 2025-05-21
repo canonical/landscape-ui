@@ -2,6 +2,7 @@ import type { FC } from "react";
 import { Link } from "react-router";
 import EmptyState from "@/components/layout/EmptyState";
 import useEnv from "@/hooks/useEnv";
+import { ROUTES } from "@/libs/routes";
 
 const EnvError: FC = () => {
   const { isSaas, isSelfHosted } = useEnv();
@@ -19,7 +20,7 @@ const EnvError: FC = () => {
             </span>
           </p>
           <Link
-            to="/"
+            to={ROUTES.default()}
             replace
             className="p-button--positive u-no-margin--bottom"
           >

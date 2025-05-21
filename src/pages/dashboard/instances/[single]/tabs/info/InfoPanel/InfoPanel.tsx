@@ -38,6 +38,7 @@ import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import { ROUTES } from "@/libs/routes";
 
 const EditInstance = lazy(
   async () =>
@@ -161,7 +162,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       });
 
       closeModal();
-      navigate("/instances", { replace: true });
+      navigate(ROUTES.instances(), { replace: true });
     } catch (error) {
       debug(error);
     }
@@ -258,7 +259,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         computer_ids: [instance.id],
       });
 
-      navigate("/instances", { replace: true });
+      navigate(ROUTES.instances(), { replace: true });
     } catch (error) {
       debug(error);
     }

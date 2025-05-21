@@ -1,137 +1,63 @@
+import { ROUTES } from "@/libs/routes";
 import type { MenuItem } from "./types";
 
+const PROFILE_SUBMENU: MenuItem[] = [
+  { label: "Repository profiles", path: ROUTES.profilesRepository() },
+  { label: "Package profiles", path: ROUTES.profilesPackage() },
+  { label: "Upgrade profiles", path: ROUTES.profilesUpgrade() },
+  { label: "Removal profiles", path: ROUTES.profilesRemoval() },
+  { label: "WSL profiles", path: ROUTES.profilesWsl(), env: "selfHosted" },
+  { label: "Security profiles", path: ROUTES.profilesSecurity() },
+];
+
+const REPOSITORY_SUBMENU: MenuItem[] = [
+  { label: "Mirrors", path: ROUTES.repositoriesMirrors() },
+  { label: "GPG Keys", path: ROUTES.repositoriesGpgKeys() },
+  { label: "APT Sources", path: ROUTES.repositoriesAptSources() },
+];
+
+const SETTINGS_SUBMENU: MenuItem[] = [
+  { label: "General", path: ROUTES.settingsGeneral() },
+  { label: "Administrators", path: ROUTES.settingsAdministrators() },
+  { label: "Roles", path: ROUTES.settingsRoles() },
+  { label: "Access groups", path: ROUTES.settingsAccessGroups() },
+  { label: "Identity providers", path: ROUTES.settingsIdentityProviders() },
+];
+
+const HELP_SUBMENU: MenuItem[] = [
+  { label: "Legal", path: ROUTES.legal() },
+  { label: "Documentation", path: ROUTES.documentation() },
+  { label: "Support", path: ROUTES.support() },
+];
+
 export const MENU_ITEMS: MenuItem[] = [
-  {
-    label: "Overview",
-    path: "/overview",
-    icon: "switcher-dashboard",
-  },
-  {
-    label: "Instances",
-    path: "/instances",
-    icon: "machines",
-  },
+  { label: "Overview", path: ROUTES.overview(), icon: "switcher-dashboard" },
+  { label: "Instances", path: ROUTES.instances(), icon: "machines" },
   {
     label: "Activities",
-    path: "/activities",
+    path: ROUTES.activities(),
     icon: "switcher-environments",
   },
-  {
-    label: "Scripts",
-    path: "/scripts",
-    icon: "code",
-  },
-  {
-    label: "Events log",
-    path: "/events-log",
-    icon: "status",
-  },
+  { label: "Scripts", path: ROUTES.scripts(), icon: "code" },
+  { label: "Events log", path: ROUTES.eventsLog(), icon: "status" },
   {
     label: "Profiles",
-    path: "/profile",
+    path: ROUTES.profiles(),
     icon: "cluster",
-    items: [
-      {
-        label: "Repository profiles",
-        path: "/profiles/repositories",
-      },
-      {
-        label: "Package profiles",
-        path: "/profiles/package",
-      },
-      {
-        label: "Upgrade profiles",
-        path: "/profiles/upgrade",
-      },
-      {
-        label: "Reboot profiles",
-        path: `/profiles/reboot`,
-      },
-      {
-        label: "Removal profiles",
-        path: "/profiles/removal",
-      },
-      {
-        label: "WSL profiles",
-        path: "/profiles/wsl",
-        env: "selfHosted",
-      },
-      {
-        label: "Security profiles",
-        path: "/profiles/security",
-      },
-    ],
+    items: PROFILE_SUBMENU,
   },
   {
     label: "Repositories",
-    path: "/repositories",
+    path: ROUTES.repositories(),
     icon: "fork",
-    items: [
-      {
-        label: "Mirrors",
-        path: "/repositories/mirrors",
-        env: "selfHosted",
-      },
-      {
-        label: "GPG Keys",
-        path: "/repositories/gpg-keys",
-      },
-      {
-        label: "APT sources",
-        path: "/repositories/apt-sources",
-      },
-    ],
+    env: "selfHosted",
+    items: REPOSITORY_SUBMENU,
   },
   {
     label: "Org. settings",
-    path: "/settings",
+    path: ROUTES.settings(),
     icon: "settings",
-    items: [
-      {
-        label: "General",
-        path: "/settings/general",
-      },
-      {
-        label: "Administrators",
-        path: "/settings/administrators",
-      },
-      {
-        label: "Employees",
-        path: "/settings/employees",
-        requiresFeature: "employee-management",
-      },
-      {
-        label: "Roles",
-        path: "/settings/roles",
-      },
-      {
-        label: "Access groups",
-        path: "/settings/access-groups",
-      },
-      {
-        label: "Identity providers",
-        path: "/settings/identity-providers",
-        requiresFeature: "oidc-configuration",
-      },
-    ],
+    items: SETTINGS_SUBMENU,
   },
-  {
-    label: "Help",
-    path: "/help",
-    icon: "help",
-    items: [
-      {
-        label: "Legal",
-        path: "https://ubuntu.com/legal",
-      },
-      {
-        label: "Documentation",
-        path: "https://ubuntu.com/landscape/docs",
-      },
-      {
-        label: "Support",
-        path: "https://support-portal.canonical.com/",
-      },
-    ],
-  },
+  { label: "Help", path: ROUTES.help(), icon: "help", items: HELP_SUBMENU },
 ];

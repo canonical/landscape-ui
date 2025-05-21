@@ -21,6 +21,7 @@ import ActivitiesEmptyState from "../ActivitiesEmptyState";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
 import { getDateQuery, getStatusQuery, getTypeQuery } from "./helpers";
+import { ROUTES } from "@/libs/routes";
 
 const ActivityDetails = lazy(
   async () => import("@/features/activities/components/ActivityDetails"),
@@ -170,7 +171,9 @@ const Activities: FC<ActivitiesProps> = ({
             row.original.computer_id ? (
               <Link
                 className={classes.link}
-                to={`/instances/${row.original.computer_id}`}
+                to={ROUTES.instancesSingle({
+                  instanceId: row.original.computer_id.toString(),
+                })}
               >
                 ID: {row.original.computer_id}
               </Link>

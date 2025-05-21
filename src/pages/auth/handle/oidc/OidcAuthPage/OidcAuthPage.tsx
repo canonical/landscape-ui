@@ -5,6 +5,7 @@ import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
 import { useUnsigned } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import classes from "./OidcAuthPage.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 const OidcAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
@@ -60,7 +61,7 @@ const OidcAuthPage: FC = () => {
       ) : (
         <div>
           <p>{CONTACT_SUPPORT_TEAM_MESSAGE}</p>
-          <Link to="/login" className="p-button">
+          <Link to={ROUTES.login()} className="p-button">
             Back to login
           </Link>
         </div>

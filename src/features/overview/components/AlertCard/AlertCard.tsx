@@ -8,6 +8,7 @@ import type { Status } from "@/features/instances";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
+import { ROUTES } from "@/libs/routes";
 
 const PendingInstancesForm = lazy(
   () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -103,7 +104,7 @@ const AlertCard: FC<Status> = ({
           {!isPendingComputersAlert && alertCount > 0 && (
             <Link
               className={classNames("u-no-margin u-no-padding", classes.link)}
-              to={`/instances?status=${filterValue}`}
+              to={ROUTES.instances({ status: filterValue })}
             >
               <span className={classes.instancesNumber}>{alertCount}</span>{" "}
               {alertCount === 1 ? "instance" : "instances"}

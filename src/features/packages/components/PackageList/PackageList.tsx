@@ -15,6 +15,7 @@ import PackageListActions from "../PackageListActions";
 import UbuntuProNotification from "../UbuntuProNotification";
 import { LOADING_PACKAGE } from "./constants";
 import {
+  getInstanceNavigationLink,
   getPackageStatusInfo,
   handleCellProps,
   isUbuntuProRequired,
@@ -116,8 +117,7 @@ const PackageList: FC<PackageListProps> = ({
                 <div>
                   <p className="u-no-padding--top">Ubuntu Pro is required</p>
                   <Link
-                    to={`/instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`}
-                    state={{ tab: "ubuntu-pro" }}
+                    to={getInstanceNavigationLink(instanceId, childInstanceId)}
                     className={classes.tooltipLink}
                   >
                     learn more

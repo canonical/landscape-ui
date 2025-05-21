@@ -6,6 +6,7 @@ export { default as TagsAddConfirmationModal } from "./components/TagsAddConfirm
 export { FILTERS, STATUSES } from "./constants";
 export {
   currentInstanceCan,
+  currentInstanceIs,
   hasRegularUpgrades,
   hasSecurityUpgrades,
   hasUpgrades,

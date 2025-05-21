@@ -6,6 +6,7 @@ import { useMemo, type FC } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import classes from "./ScriptProfileActivitiesList.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 interface ScriptProfileActivitiesListProps {
   readonly activities: Activity[];
@@ -21,7 +22,7 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
         Cell: ({ row: { original: activity } }: CellProps<Activity>) => (
           <Link
             className={classes.link}
-            to={`/activities?query=parent-id%3A${activity.id}`}
+            to={ROUTES.activities({ query: `parent-id%3A${activity.id}` })}
           >
             {moment(activity.creation_time)
               .utc()

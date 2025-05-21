@@ -9,6 +9,7 @@ import { lazy, Suspense } from "react";
 import { Link } from "react-router";
 import type { AlertSummary } from "../../types";
 import classes from "./AlertNotificationsList.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 const PendingInstancesForm = lazy(
   () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -56,7 +57,7 @@ const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
           </Button>
         ) : (
           <Link
-            to={`/instances?status=${status.filterValue}`}
+            to={ROUTES.instances({ status: status.filterValue })}
             className={classNames(
               "u-no-margin u-no-padding",
               classes.listItem__link,

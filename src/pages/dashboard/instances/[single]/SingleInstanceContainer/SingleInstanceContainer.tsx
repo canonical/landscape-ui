@@ -28,6 +28,7 @@ import {
 } from "./helpers";
 import type { UrlParams } from "@/types/UrlParams";
 import { useKernel } from "@/features/kernel";
+import { ROUTES } from "@/libs/routes";
 
 const SingleInstanceContainer: FC = () => {
   const { instanceId, childInstanceId } = useParams<UrlParams>();
@@ -53,7 +54,7 @@ const SingleInstanceContainer: FC = () => {
       return;
     }
 
-    navigate("/instances", { replace: true });
+    navigate(ROUTES.instances(), { replace: true });
   }, [user?.current_account]);
 
   const {

@@ -3,6 +3,7 @@ import { EMPTY_STATE_NO_ISSUERS } from "@/pages/dashboard/settings/employees/tab
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
 import { useNavigate } from "react-router";
+import { ROUTES } from "@/libs/routes";
 
 const EmptyStateNoIssuers: FC = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const EmptyStateNoIssuers: FC = () => {
           appearance="positive"
           className="p-segmented-control__button"
           hasIcon
-          onClick={async () => navigate("/settings/identity-providers")}
+          onClick={async () => navigate(ROUTES.settingsIdentityProviders())}
         >
           <Icon name={ICONS.plus} light />
           <span>Add identity provider</span>

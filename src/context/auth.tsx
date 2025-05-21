@@ -14,6 +14,7 @@ import type { AuthUser } from "@/features/auth";
 import { redirectToExternalUrl, useUnsigned } from "@/features/auth";
 import Redirecting from "@/components/layout/Redirecting";
 import type { FeatureKey } from "@/types/FeatureKey";
+import { ROUTES } from "@/libs/routes";
 
 export interface AuthContextProps {
   authLoading: boolean;
@@ -101,7 +102,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const handleLogout = () => {
     setUser(null);
-    navigate("/login", { replace: true });
+    navigate(ROUTES.login(), { replace: true });
     queryClient.removeQueries({
       predicate: (query) => query.queryKey[0] !== "authUser",
     });

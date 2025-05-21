@@ -29,6 +29,7 @@ import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
 import SecurityProfileListContextualMenu from "../SecurityProfilesContextualMenu";
 import { getInitialValues, getNotificationMessage } from "./helpers";
 import classes from "./SecurityProfilesList.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 const SecurityProfileRunFixForm = lazy(
   async () => import("../SecurityProfileRunFixForm"),
@@ -355,18 +356,16 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
             <>
               <div className={classes.textContainer}>
                 <Link
-                  to={{
-                    pathname: "/instances",
-                    search: `?query=security-profile%3A${row.original.id}%3Apass`,
-                  }}
+                  to={ROUTES.instances({
+                    query: `security-profile%3A${row.original.id}%3Apass`,
+                  })}
                 >
                   <span>{passing} passed</span>
                 </Link>
                 <Link
-                  to={{
-                    pathname: "/instances",
-                    search: `?query=security-profile%3A${row.original.id}%3Afail`,
-                  }}
+                  to={ROUTES.instances({
+                    query: `security-profile%3A${row.original.id}%3Afail`,
+                  })}
                 >
                   <span>{failing} failed</span>
                 </Link>
