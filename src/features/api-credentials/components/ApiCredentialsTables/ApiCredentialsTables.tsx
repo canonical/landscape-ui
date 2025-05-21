@@ -11,8 +11,8 @@ import {
   Row,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import type { FC } from "react";
-import React, { useMemo } from "react";
+import type { FC, ReactNode } from "react";
+import { useMemo } from "react";
 import type { Column } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
 import { useApiCredentials } from "../../hooks";
@@ -45,7 +45,7 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
     }
   };
 
-  const columns = useMemo<Column<{ label: string; value: React.ReactNode }>[]>(
+  const columns = useMemo<Column<{ label: string; value: ReactNode }>[]>(
     () => [
       {
         Header: "Label",
@@ -54,7 +54,7 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
       {
         Header: "Value",
         accessor: "value",
-        Cell: async ({ value }: { value: React.ReactNode }) => value,
+        Cell: ({ value }: { value: ReactNode }): ReactNode => value,
       },
     ],
     [user, credentials],

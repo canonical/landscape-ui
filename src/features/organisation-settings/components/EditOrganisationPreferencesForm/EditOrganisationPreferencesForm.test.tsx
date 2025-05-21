@@ -21,7 +21,7 @@ describe("EditOrganisationPreferencesForm", () => {
     );
 
     expect(container).toHaveTexts([
-      "Organisation's name",
+      "Organization's name",
       "Use registration key",
     ]);
 
@@ -51,7 +51,7 @@ describe("EditOrganisationPreferencesForm", () => {
     await userEvent.click(useRegistrationKeyCheckbox);
 
     expect(container).toHaveTexts([
-      "Organisation's name",
+      "Organization's name",
       "Use registration key",
       "Auto register new computers",
     ]);

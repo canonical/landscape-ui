@@ -1,22 +1,22 @@
+import type { AuthContextProps } from "@/context/auth";
+import type { Account } from "@/features/auth";
+import useAuth from "@/hooks/useAuth";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
+import useEnv from "@/hooks/useEnv";
+import { accountsDefault } from "@/tests/mocks/accounts";
+import { authUser } from "@/tests/mocks/auth";
+import { getTestErrorParams } from "@/tests/mocks/error";
 import { renderWithProviders } from "@/tests/render";
+import type { ApiError } from "@/types/api/ApiError";
+import type { UseMutationResult } from "@tanstack/react-query";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { AxiosError, AxiosResponse } from "axios";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import EditUserForm from "./EditUserForm";
-import useEnv from "@/hooks/useEnv";
-import useAuth from "@/hooks/useAuth";
-import type { AuthContextProps } from "@/context/auth";
-import { authUser } from "@/tests/mocks/auth";
-import { accountsDefault } from "@/tests/mocks/accounts";
 import { useUserGeneralSettings } from "../../hooks";
 import type { EditUserDetailsParams, UserDetails } from "../../types";
-import type { UseMutationResult } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/api/ApiError";
-import { getTestErrorParams } from "@/tests/mocks/error";
-import useAuthAccounts from "@/hooks/useAuthAccounts";
-import type { Account } from "@/features/auth";
+import EditUserForm from "./EditUserForm";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
@@ -113,7 +113,7 @@ describe("EditUserForm", () => {
         "Email address",
         "Current",
         "Timezone",
-        "Default organisation",
+        "Default organization",
       ]);
 
       const saveButton = screen.getByRole("button", { name: /save changes/i });
@@ -183,7 +183,7 @@ describe("EditUserForm", () => {
       );
 
       const organisationSelect = screen.getByRole("combobox", {
-        name: /default organisation/i,
+        name: /default organization/i,
       });
 
       expect(organisationSelect).toHaveValue("");
