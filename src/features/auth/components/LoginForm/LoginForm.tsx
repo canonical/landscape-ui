@@ -61,6 +61,8 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
                 const [first, domain] = value.split("@");
 
                 if (
+                  !first ||
+                  !domain ||
                   first.startsWith(".") ||
                   first.endsWith(".") ||
                   !domain.includes(".") ||
