@@ -6,7 +6,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 
 const PendingInstanceList = lazy(
-  () => import("@/pages/dashboard/instances/PendingInstancesForm"),
+  async () => import("@/pages/dashboard/instances/PendingInstancesForm"),
 );
 
 const PendingInstancesNotification: FC = () => {
