@@ -1,3 +1,5 @@
+import { ROUTES } from "./libs/routes";
+
 export const IS_DEV_ENV = import.meta.env.DEV;
 export const IS_SELF_HOSTED_ENV = import.meta.env.VITE_SELF_HOSTED_ENV;
 export const API_URL = import.meta.env.VITE_API_URL;
@@ -29,4 +31,4 @@ export const COMMON_NUMBERS = {
   ONE: 1,
   TWO: 2,
 };
-export const HOMEPAGE_PATH = "/overview";
+export const HOMEPAGE_PATH = ROUTES.overview();

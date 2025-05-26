@@ -25,6 +25,7 @@ import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 const ScriptProfileDetails = lazy(
   async () => import("../ScriptProfileDetails"),
@@ -175,7 +176,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
           activity ? (
             <Link
               className={classes.link}
-              to={`/activities?query=parent-id%3A${activity.id}`}
+              to={ROUTES.activities({ query: `parent-id%3A${activity.id}` })}
             >
               {moment(activity.creation_time)
                 .utc()

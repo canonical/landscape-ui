@@ -31,6 +31,7 @@ import { Link, useNavigate } from "react-router";
 import type { CellProps, Column } from "react-table";
 import classes from "./InfoTablesContainer.module.scss";
 import { MAX_ACTIVITY_COUNT, MAX_UPGRADE_COUNT } from "./constants";
+import { ROUTES } from "@/libs/routes";
 
 const InfoTablesContainer: FC = () => {
   const [currentUpgradesTab, setCurrentUpgradesTab] = useState<
@@ -202,7 +203,9 @@ const InfoTablesContainer: FC = () => {
             accessor: "instanceName",
             Cell: ({ row }: CellProps<Instance>): ReactNode => (
               <Link
-                to={`/instances/${row.original.id}`}
+                to={ROUTES.instancesSingle({
+                  instanceId: row.original.id.toString(),
+                })}
                 className={classNames("u-no-margin--bottom", classes.link)}
               >
                 {row.original.title}
@@ -234,7 +237,7 @@ const InfoTablesContainer: FC = () => {
             accessor: "computers",
             Cell: ({ row }: CellProps<Package>): ReactNode => (
               <Link
-                to="/instances"
+                to={ROUTES.instances()}
                 className={classNames("u-no-margin--bottom", classes.link)}
               >
                 {row.original.computers.length}
@@ -254,7 +257,7 @@ const InfoTablesContainer: FC = () => {
             accessor: "computers_count",
             Cell: ({ row }: CellProps<Usn>): ReactNode => (
               <Link
-                to="/instances"
+                to={ROUTES.instances()}
                 className={classNames("u-no-margin--bottom", classes.link)}
               >
                 {row.original.computers_count}
@@ -303,7 +306,7 @@ const InfoTablesContainer: FC = () => {
         className: classes.description,
         Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => (
           <Link
-            to="/activities"
+            to={ROUTES.activities()}
             state={{ activity: row.original as Activity }}
             className={classNames("u-no-margin--bottom", classes.link)}
           >
@@ -482,7 +485,7 @@ const InfoTablesContainer: FC = () => {
                   plural: `${getUpgradesTableFooterName()}s`,
                 }}
                 itemCount={MAX_UPGRADE_COUNT}
-                onLimitChange={async () => navigate("/instances")}
+                onLimitChange={async () => navigate(ROUTES.instances())}
                 totalCount={getTotalTableItemsCount("upgrades")}
                 className={classes.footer}
               />
@@ -575,7 +578,7 @@ const InfoTablesContainer: FC = () => {
                   plural: "activities",
                 }}
                 itemCount={MAX_ACTIVITY_COUNT}
-                onLimitChange={async () => navigate("/activities")}
+                onLimitChange={async () => navigate(ROUTES.activities())}
                 totalCount={getTotalTableItemsCount("activities")}
                 className={classes.footer}
               />

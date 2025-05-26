@@ -3,6 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { Link } from "react-router";
 import classes from "./helpers.module.scss";
 import type { ScriptProfile } from "./types";
+import { ROUTES } from "@/libs/routes";
 
 export const getStatusText = (profile: ScriptProfile) =>
   profile.archived ? "Archived" : "Active";
@@ -52,10 +53,7 @@ export const getAssociatedInstancesLink = (profile: ScriptProfile) => {
   return profile.tags.length || profile.all_computers ? (
     <Link
       className={classes.link}
-      to={{
-        pathname: "/instances",
-        search: `?${search.join("&")}`,
-      }}
+      to={ROUTES.instances({ search: search.join("&") })}
     >
       {profile.computers.num_associated_computers ?? 0}{" "}
       {profile.computers.num_associated_computers === 1
