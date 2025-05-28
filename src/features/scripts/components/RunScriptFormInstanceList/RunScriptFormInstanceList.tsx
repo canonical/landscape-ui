@@ -1,7 +1,4 @@
-import LoadingState from "@/components/layout/LoadingState";
 import TablePaginationBase from "@/components/layout/TablePagination/components/TablePaginationBase";
-import { currentInstanceCan } from "@/features/instances";
-import useInstances from "@/hooks/useInstances";
 import {
   DEFAULT_CURRENT_PAGE,
   DEFAULT_PAGE_SIZE,
@@ -13,20 +10,14 @@ import type { CellProps, Column } from "react-table";
 import classes from "./RunScriptFormInstanceList.module.scss";
 
 interface RunScriptFormInstanceListProps {
-  readonly query?: string;
+  readonly instances: Instance[];
 }
 
 const RunScriptFormInstanceList: FC<RunScriptFormInstanceListProps> = ({
-  query,
+  instances,
 }) => {
-  const { getInstancesQuery } = useInstances();
-
   const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-
-  const { data: response, isLoading } = getInstancesQuery({
-    query,
-  });
 
   const columns = useMemo<Column<Instance>[]>(
     () => [
@@ -38,18 +29,6 @@ const RunScriptFormInstanceList: FC<RunScriptFormInstanceListProps> = ({
     ],
     [],
   );
-
-  if (isLoading) {
-    return <LoadingState />;
-  }
-
-  if (!response) {
-    throw new Error();
-  }
-
-  const instances = response.data.results.filter((instance) => {
-    return currentInstanceCan("runScripts", instance);
-  });
 
   const offset = (currentPage - 1) * pageSize;
 

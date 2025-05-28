@@ -91,8 +91,25 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
       query: `access-group-recursive:${script.access_group}`,
     });
 
+  const {
+    data: getTaggedInstancesQueryResult,
+    isLoading: isGettingTaggedInstances,
+    error: taggedInstancesQueryError,
+  } = getInstancesQuery(
+    {
+      query: `access-group-recursive:${script.access_group} ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`,
+    },
+    {
+      enabled: !!formik.values.tags.length,
+    },
+  );
+
   if (isGettingTags || isGettingInstances) {
     return <LoadingState />;
+  }
+
+  if (taggedInstancesQueryError) {
+    debug(taggedInstancesQueryError);
   }
 
   const hideModal = () => {
@@ -119,6 +136,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
     value: id,
   }));
 
+  const taggedInstances =
+    getTaggedInstancesQueryResult?.data.results.filter((instance) => {
+      return currentInstanceCan("runScripts", instance);
+    }) ?? [];
+
   const trySubmit = () => {
     if (formik.values.queryType == "tags") {
       showModal();
@@ -138,14 +160,16 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
                 type="radio"
                 label="Tags"
                 {...formik.getFieldProps("queryType")}
-                onChange={(event) => {
+                onChange={async (event) => {
                   formik.getFieldProps("queryType").onChange(event);
 
-                  formik.setFieldValue("tags", []);
-                  formik.setFieldTouched("tags", false);
+                  await Promise.all([
+                    formik.setFieldValue("tags", []),
+                    formik.setFieldTouched("tags", false),
 
-                  formik.setFieldValue("instanceIds", []);
-                  formik.setFieldTouched("instanceIds", false);
+                    formik.setFieldValue("instanceIds", []),
+                    formik.setFieldTouched("instanceIds", false),
+                  ]);
                 }}
                 value="tags"
                 checked={formik.values.queryType === "tags"}
@@ -256,7 +280,10 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
           onConfirm={() => {
             formik.handleSubmit();
           }}
-          confirmButtonDisabled={formik.isSubmitting}
+          confirmButtonDisabled={
+            formik.isSubmitting || !!taggedInstancesQueryError
+          }
+          confirmButtonLoading={isGettingTaggedInstances}
           close={hideModal}
           confirmButtonAppearance="positive"
         >
@@ -266,9 +293,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
             {formik.values.tags.length == 1 ? "tag" : "tags"}.
           </p>
 
-          <RunScriptFormInstanceList
-            query={`access-group-recursive:${script.access_group} ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`}
-          />
+          <RunScriptFormInstanceList instances={taggedInstances} />
         </ConfirmationModal>
       )}
     </>
