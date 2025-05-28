@@ -102,7 +102,7 @@ export const getStatusCellIconAndLabel = (
 ): { label: ReactNode; icon?: string } => {
   if (instance.archived) {
     return {
-      icon: "archive--negative",
+      icon: "archive",
       label: "Archived",
     };
   }

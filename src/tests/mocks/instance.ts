@@ -596,7 +596,7 @@ export const instances: Instance[] = [
       release: "12.04",
     },
     employee_id: null,
-    archived: false,
+    archived: true,
   },
   windowsInstance,
   {
