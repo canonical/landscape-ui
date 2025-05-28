@@ -281,7 +281,9 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
             formik.handleSubmit();
           }}
           confirmButtonDisabled={
-            formik.isSubmitting || !!taggedInstancesQueryError
+            formik.isSubmitting ||
+            !!taggedInstancesQueryError ||
+            isGettingTaggedInstances
           }
           confirmButtonLoading={isGettingTaggedInstances}
           close={hideModal}
