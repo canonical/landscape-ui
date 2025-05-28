@@ -25,13 +25,17 @@ const TagFilter: FC<TagFilterProps> = ({ options }) => {
 
   return (
     <TableFilter
-      multiple
+      type="multiple"
       label="Tag"
       hasToggleIcon
       hasBadge
       options={filteredOptions}
-      onItemsSelect={(items) => setPageParams({ tags: items })}
-      onSearch={(search) => setSearchText(search)}
+      onItemsSelect={(items) => {
+        setPageParams({ tags: items });
+      }}
+      onSearch={(search) => {
+        setSearchText(search);
+      }}
       selectedItems={tags}
     />
   );

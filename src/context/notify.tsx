@@ -52,7 +52,9 @@ const NotifyProvider: FC<NotifyProviderProps> = ({ children }) => {
         notify,
         sidePanel: {
           open: isSidePanelOpen,
-          setOpen: (newState) => setIsSidePanelOpen(newState),
+          setOpen: (newState) => {
+            setIsSidePanelOpen(newState);
+          },
         },
       }}
     >

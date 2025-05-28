@@ -41,12 +41,16 @@ const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
 
   return (
     <TableFilter
-      multiple
+      type="multiple"
       label="Availability zone"
       hasToggleIcon
       hasBadge
       onSearch={
-        options.length > 9 ? (search) => setSearchText(search) : undefined
+        options.length > 9
+          ? (search) => {
+              setSearchText(search);
+            }
+          : undefined
       }
       options={filteredOptions}
       onItemsSelect={handleItemsSelect}

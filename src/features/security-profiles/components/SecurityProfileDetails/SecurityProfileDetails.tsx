@@ -5,7 +5,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useRoles from "@/hooks/useRoles";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import moment from "moment";
-import { type FC } from "react";
+import type { FC } from "react";
 import {
   SECURITY_PROFILE_BENCHMARK_LABELS,
   SECURITY_PROFILE_MODE_LABELS,

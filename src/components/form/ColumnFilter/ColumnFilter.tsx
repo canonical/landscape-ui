@@ -26,7 +26,7 @@ const ColumnFilter: FC<ColumnFilterProps> = ({ options }) => {
 
   return (
     <TableFilter
-      multiple
+      type="multiple"
       showSelectedItemCount
       label={
         <>
@@ -34,9 +34,9 @@ const ColumnFilter: FC<ColumnFilterProps> = ({ options }) => {
           <span className={classes.label}>Columns</span>
         </>
       }
-      onItemsSelect={(items) =>
-        setPageParams({ disabledColumns: getValues(items) })
-      }
+      onItemsSelect={(items) => {
+        setPageParams({ disabledColumns: getValues(items) });
+      }}
       options={options}
       disabledOptions={options.filter(({ canBeHidden }) => !canBeHidden)}
       selectedItems={getValues(disabledColumns)}

@@ -7,7 +7,8 @@ import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Notification } from "@canonical/react-components";
-import { type FC, Suspense, useState } from "react";
+import type { FC } from "react";
+import { Suspense, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {
   useGetOverLimitSecurityProfiles,

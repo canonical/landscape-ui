@@ -1,6 +1,6 @@
 import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
-import { type FC } from "react";
+import type { FC } from "react";
 import { useGetSingleScriptAttachment } from "../../api";
 import classes from "./AttachmentFile.module.scss";
 

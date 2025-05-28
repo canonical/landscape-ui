@@ -1,0 +1,19 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  display: block;
+  padding: $spv--medium $sph--large;
+}
+
+.hideSelectAllButton {
+  flex-direction: row-reverse;
+}
+
+.footer {
+  align-items: center;
+  border-top: 1px solid $colors--light-theme--border-low-contrast;
+  display: flex;
+  justify-content: space-between;
+  padding: $spv--medium $sph--large;
+}

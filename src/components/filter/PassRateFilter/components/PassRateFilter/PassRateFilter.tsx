@@ -1,39 +1,35 @@
 import tableFilterClasses from "@/components/filter/TableFilter/TableFilter.module.scss";
-import { ContextualMenu } from "@canonical/react-components";
-import { useState } from "react";
+import { Badge } from "@canonical/react-components";
 import PassRateFilterBase from "../PassRateFilterBase";
+import usePageParams from "@/hooks/usePageParams";
+import TableFilter from "@/components/filter/TableFilter";
 
 const PassRateFilter = () => {
-  const [visible, setVisible] = useState(false);
+  const { passRateFrom, passRateTo } = usePageParams();
 
-  const toggleMenu = () => {
-    setVisible((v) => !v);
-  };
-
-  const hideMenu = () => {
-    setVisible(false);
-  };
+  const hasPassRateFrom = passRateFrom !== 0;
+  const hasPassRateTo = passRateTo !== 100;
 
   return (
-    <ContextualMenu
-      visible={visible}
-      autoAdjust={true}
-      toggleAppearance="base"
-      toggleLabel={
+    <TableFilter
+      type="custom"
+      label={
         <>
           <span>Pass rate</span>
+          <span className={tableFilterClasses.badgeContainer}>
+            {hasPassRateFrom || hasPassRateTo ? (
+              <Badge
+                value={hasPassRateFrom && hasPassRateTo ? 2 : 1}
+                className={tableFilterClasses.badge}
+              />
+            ) : null}
+          </span>
         </>
       }
-      toggleClassName={tableFilterClasses.toggle}
-      toggleProps={{
-        onClick: toggleMenu,
-      }}
-      hasToggleIcon={true}
-      dropdownClassName={tableFilterClasses.dropdown}
-      position="left"
-    >
-      <PassRateFilterBase hideMenu={hideMenu} />
-    </ContextualMenu>
+      customComponent={({ closeMenu }) => (
+        <PassRateFilterBase closeMenu={closeMenu} />
+      )}
+    />
   );
 };
 

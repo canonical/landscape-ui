@@ -183,7 +183,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
           setDeleteModalOpen(false);
         }}
       >
-        <>{deleteModalBody}</>
+        {deleteModalBody}
       </TextConfirmationModal>
 
       <TextConfirmationModal
@@ -199,7 +199,7 @@ const ScriptListContextualMenu: FC<ScriptListContextualMenuProps> = ({
           setArchiveModalOpen(false);
         }}
       >
-        <>{archiveModalBody}</>
+        {archiveModalBody}
       </TextConfirmationModal>
     </>
   );

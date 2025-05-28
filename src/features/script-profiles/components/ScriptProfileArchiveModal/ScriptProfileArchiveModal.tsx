@@ -1,6 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useNotify from "@/hooks/useNotify";
-import { type FC } from "react";
+import type { FC } from "react";
 import { useArchiveScriptProfile } from "../../api";
 import type { ScriptProfile } from "../../types";
 

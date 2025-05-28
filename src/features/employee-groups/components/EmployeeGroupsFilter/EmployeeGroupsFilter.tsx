@@ -2,7 +2,8 @@ import type { GroupedOption } from "@/components/filter";
 import { TableFilter } from "@/components/filter";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { type FC, useMemo, useState } from "react";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
 
 interface EmployeeGroupsFilterProps {
   readonly options: GroupedOption[];
@@ -30,7 +31,7 @@ const EmployeeGroupsFilter: FC<EmployeeGroupsFilterProps> = ({ options }) => {
 
   return (
     <TableFilter
-      multiple
+      type="multiple"
       hasBadge
       label="Employee group"
       hasToggleIcon

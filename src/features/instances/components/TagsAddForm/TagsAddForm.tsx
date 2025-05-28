@@ -10,7 +10,8 @@ import {
   ModularTable,
   SearchBox,
 } from "@canonical/react-components";
-import { type FC, useMemo, useState } from "react";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useTaggedSecurityProfiles } from "../../hooks";
 import TagsAddConfirmationModal from "../TagsAddConfirmationModal";

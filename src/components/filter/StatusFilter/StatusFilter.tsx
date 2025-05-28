@@ -18,7 +18,7 @@ const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
 
   return (
     <TableFilter
-      multiple={false}
+      type="single"
       label="Status"
       hasToggleIcon
       hasBadge

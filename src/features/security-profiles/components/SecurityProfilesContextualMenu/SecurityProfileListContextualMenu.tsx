@@ -1,10 +1,10 @@
+import { useIsSecurityProfilesLimitReached } from "@/features/security-profiles";
 import type { MenuLink } from "@canonical/react-components";
 import { ContextualMenu, Icon } from "@canonical/react-components";
-import { type FC } from "react";
+import type { FC } from "react";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
 import classes from "./SecurityProfileListContextualMenu.module.scss";
-import { useIsSecurityProfilesLimitReached } from "@/features/security-profiles";
 
 interface SecurityProfileListContextualMenuProps {
   readonly actions: SecurityProfileActions;

@@ -1,3 +1,4 @@
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
@@ -5,10 +6,10 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, Notification } from "@canonical/react-components";
 import moment from "moment";
-import { type FC, lazy, Suspense, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useArchiveScriptModal } from "../../hooks";
 import type { ScriptTabId } from "../../types";
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const ScriptDetailsTabs = lazy(async () => import("../ScriptDetailsTabs"));
 

@@ -1,11 +1,6 @@
 import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-  within,
-} from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import EmployeeInstancesTableContextualMenu from "./EmployeeInstancesTableContextualMenu";
@@ -109,6 +104,9 @@ describe("EmployeeInstancesTableContextualMenu", () => {
     expect(confirmButton).toBeEnabled();
 
     await user.click(confirmButton);
-    await waitForElementToBeRemoved(() => screen.queryByRole("dialog"));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 });
