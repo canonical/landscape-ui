@@ -66,7 +66,7 @@ const InfoTablesContainer: FC = () => {
       data: { results: [] as Activity[], count: 0 },
     } as AxiosResponse<ApiPaginatedResponse<Activity>>,
     refetch: refetchUnapprovedActivities,
-    isLoading: isLoadingUnapprovedActivitiesData,
+    isFetching: isFetchingUnapprovedActivitiesData,
   } = getActivitiesQuery({
     query: "status:unapproved",
     limit: MAX_ACTIVITY_COUNT,
@@ -77,7 +77,7 @@ const InfoTablesContainer: FC = () => {
       data: { results: [] as Activity[], count: 0 },
     } as AxiosResponse<ApiPaginatedResponse<Activity>>,
     refetch: refetchInProgressActivities,
-    isLoading: isLoadingInProgressActivitiesData,
+    isFetching: isFetchingInProgressActivitiesData,
   } = getActivitiesQuery(
     {
       query: "status:delivered",
@@ -93,7 +93,7 @@ const InfoTablesContainer: FC = () => {
       data: { results: [] as Instance[], count: 0 },
     } as AxiosResponse<ApiPaginatedResponse<Instance>>,
     refetch: refetchInstanceUpgrades,
-    isLoading: isLoadingInstanceUpgrades,
+    isFetching: isFetchingInstanceUpgrades,
   } = getInstancesQuery({
     query: "alert:security-upgrades OR alert:package-upgrades",
     limit: MAX_UPGRADE_COUNT,
@@ -107,7 +107,7 @@ const InfoTablesContainer: FC = () => {
       data: { results: [] as Usn[], count: 0 },
     } as AxiosResponse<ApiPaginatedResponse<Usn>>,
     refetch: refetchUsns,
-    isLoading: isLoadingUsns,
+    isFetching: isFetchingUsns,
   } = getUsnsQuery(
     {
       computer_ids: instancesData.map((instance) => instance.id),
@@ -122,7 +122,7 @@ const InfoTablesContainer: FC = () => {
       data: { results: [] as Package[], count: 0 },
     } as AxiosResponse<ApiPaginatedResponse<Package>>,
     refetch: refetchPackages,
-    isLoading: isLoadingPackages,
+    isFetching: isFetchingPackages,
   } = getPackagesQuery(
     {
       query: instancesData.map((instance) => `id:${instance.id}`).join(" OR "),
@@ -186,11 +186,11 @@ const InfoTablesContainer: FC = () => {
   const getIsLoadingUpgrades = (): boolean => {
     switch (currentUpgradesTab) {
       case "instances":
-        return isLoadingInstanceUpgrades;
+        return isFetchingInstanceUpgrades;
       case "packages":
-        return isLoadingPackages;
+        return isFetchingPackages;
       case "usns":
-        return isLoadingUsns;
+        return isFetchingUsns;
     }
   };
 
@@ -282,9 +282,9 @@ const InfoTablesContainer: FC = () => {
   const getIsLoadingActivities = (): boolean => {
     switch (currentActivitiesTab) {
       case "unapproved":
-        return isLoadingUnapprovedActivitiesData;
+        return isFetchingUnapprovedActivitiesData;
       case "inProgress":
-        return isLoadingInProgressActivitiesData;
+        return isFetchingInProgressActivitiesData;
       default:
         return false;
     }

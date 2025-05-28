@@ -139,7 +139,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
         )}
         placeholder="Select roles"
         onItemsUpdate={async (items) =>
-          formik.setFieldValue(
+          await formik.setFieldValue(
             "roles",
             items.map(({ value }) => value as string),
           )
