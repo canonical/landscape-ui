@@ -1,4 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
@@ -24,16 +25,17 @@ const RemovalProfileListActions: FC<RemovalProfileListActionsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
-  const { removeRemovalProfileQuery } = useRemovalProfiles();
 
-  const { mutateAsync: removeRemovalProfile, isPending: isRemoving } =
-    removeRemovalProfileQuery;
+  const { removeRemovalProfileQuery } = useRemovalProfiles();
 
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
+
+  const { mutateAsync: removeRemovalProfile, isPending: isRemoving } =
+    removeRemovalProfileQuery;
 
   const handleRemovalProfileRemove = async () => {
     try {
@@ -59,7 +61,7 @@ const RemovalProfileListActions: FC<RemovalProfileListActionsProps> = ({
     );
   };
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "edit",
       label: "Edit",
@@ -70,7 +72,7 @@ const RemovalProfileListActions: FC<RemovalProfileListActionsProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: "Remove",

@@ -1,3 +1,4 @@
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
@@ -114,7 +115,7 @@ const DistributionCard: FC<DistributionCardProps> = ({
     </ConfirmationButton>,
   ];
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "plus",
       label: addSeriesButton.label,
@@ -123,7 +124,7 @@ const DistributionCard: FC<DistributionCardProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: removeDistributionButton.label,

@@ -16,13 +16,13 @@ const APTSourcesListActions: FC<APTSourcesListActionsProps> = ({
   const { removeAPTSourceQuery } = useAPTSources();
   const debug = useDebug();
 
-  const { mutateAsync: remove, isPending: isRemoving } = removeAPTSourceQuery;
-
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
+
+  const { mutateAsync: remove, isPending: isRemoving } = removeAPTSourceQuery;
 
   const tryRemove = async () => {
     try {

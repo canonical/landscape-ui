@@ -16,14 +16,15 @@ const AdministratorListActions: FC<AdministratorListActionsProps> = ({
   const debug = useDebug();
 
   const { disableAdministratorQuery } = useAdministrators();
-  const { mutateAsync: disable, isPending: isDisabling } =
-    disableAdministratorQuery;
 
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
+
+  const { mutateAsync: disable, isPending: isDisabling } =
+    disableAdministratorQuery;
 
   const tryDisable = async () => {
     try {

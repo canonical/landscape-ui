@@ -1,3 +1,4 @@
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -15,6 +16,8 @@ interface EmployeeDetailsActionsProps {
 }
 
 const EmployeeListActions: FC<EmployeeDetailsActionsProps> = ({ employee }) => {
+  const { setSidePanelContent } = useSidePanel();
+
   const {
     value: isActivateModalOpen,
     setTrue: openActivateModal,
@@ -27,8 +30,6 @@ const EmployeeListActions: FC<EmployeeDetailsActionsProps> = ({ employee }) => {
     setFalse: closeDeactivateModal,
   } = useBoolean();
 
-  const { setSidePanelContent } = useSidePanel();
-
   const handleViewDetails = () => {
     setSidePanelContent(
       "Employee details",
@@ -39,7 +40,7 @@ const EmployeeListActions: FC<EmployeeDetailsActionsProps> = ({ employee }) => {
     );
   };
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "file",
       label: "View details",
@@ -48,7 +49,7 @@ const EmployeeListActions: FC<EmployeeDetailsActionsProps> = ({ employee }) => {
     },
   ];
 
-  const destructiveActions = [];
+  const destructiveActions: ListAction[] = [];
 
   if (employee.is_active) {
     destructiveActions.push({

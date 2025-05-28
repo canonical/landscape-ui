@@ -64,14 +64,15 @@ const SecurityProfilesPage: FC = () => {
               title="You don't have any security profiles yet"
             />
           )}
-        {!isInitialSecurityProfilesLoading && initialSecurityProfilesCount && (
-          <SecurityProfilesContainer
-            hideRetentionNotification={() => {
-              setIsRetentionNotificationVisible(false);
-            }}
-            retentionNotificationVisible={isRetentionNotificationVisible}
-          />
-        )}
+        {!isInitialSecurityProfilesLoading &&
+          !!initialSecurityProfilesCount && (
+            <SecurityProfilesContainer
+              hideRetentionNotification={() => {
+                setIsRetentionNotificationVisible(false);
+              }}
+              retentionNotificationVisible={isRetentionNotificationVisible}
+            />
+          )}
       </PageContent>
     </PageMain>
   );

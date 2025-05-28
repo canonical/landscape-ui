@@ -1,4 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
@@ -27,16 +28,17 @@ interface PackageProfileListActionsProps {
 const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
   profile,
 }) => {
+  const debug = useDebug();
+  const { notify } = useNotify();
+  const { setSidePanelContent } = useSidePanel();
+
+  const { removePackageProfileQuery } = usePackageProfiles();
+
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
-
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
-  const { removePackageProfileQuery } = usePackageProfiles();
 
   const { mutateAsync: removePackageProfile, isPending: isRemoving } =
     removePackageProfileQuery;
@@ -84,7 +86,7 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
     }
   };
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "edit",
       label: "Edit",
@@ -105,7 +107,7 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: "Remove",

@@ -17,13 +17,13 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
 
   const { removeAccessGroupQuery } = useRoles();
 
-  const { mutateAsync: remove, isPending: isRemoving } = removeAccessGroupQuery;
-
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
+
+  const { mutateAsync: remove, isPending: isRemoving } = removeAccessGroupQuery;
 
   const tryRemove = async () => {
     try {

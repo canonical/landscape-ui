@@ -1,5 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import ListActions from "@/components/layout/ListActions";
+import ListActions, { type ListAction } from "@/components/layout/ListActions";
 import { useWsl } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -19,12 +19,13 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   instance,
   parentId,
 }) => {
-  const [action, setAction] = useState<Action>(null);
-
   const { notify } = useNotify();
   const debug = useDebug();
+
   const { setDefaultChildInstanceQuery, deleteChildInstancesQuery } = useWsl();
   const { removeInstancesQuery } = useInstances();
+
+  const [action, setAction] = useState<Action>(null);
 
   const {
     mutateAsync: setDefaultChildInstance,
@@ -91,7 +92,7 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     }
   };
 
-  const actions = !instance.is_default_child
+  const actions: ListAction[] | undefined = !instance.is_default_child
     ? [
         {
           icon: "starred",
@@ -104,7 +105,7 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
       ]
     : undefined;
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: "Remove instance from Landscape",

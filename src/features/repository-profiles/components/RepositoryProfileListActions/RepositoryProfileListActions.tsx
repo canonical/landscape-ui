@@ -1,4 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
@@ -24,7 +25,14 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
+
   const { removeRepositoryProfileQuery } = useRepositoryProfiles();
+
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean();
 
   const { mutateAsync: removeRepositoryProfile, isPending: isRemoving } =
     removeRepositoryProfileQuery;
@@ -37,12 +45,6 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
       </Suspense>,
     );
   };
-
-  const {
-    value: isModalOpen,
-    setTrue: openModal,
-    setFalse: closeModal,
-  } = useBoolean();
 
   const handleRemoveProfile = async () => {
     try {
@@ -61,7 +63,7 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
     }
   };
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "edit",
       label: "Edit",
@@ -70,7 +72,7 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: "Remove",

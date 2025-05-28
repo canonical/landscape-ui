@@ -1,3 +1,4 @@
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -35,7 +36,7 @@ const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {
     );
   };
 
-  const actions = Object.keys(INSTALLED_PACKAGE_ACTIONS)
+  const actions: ListAction[] = Object.keys(INSTALLED_PACKAGE_ACTIONS)
     .map((key) => key as InstalledPackageAction)
     .filter(
       (packageAction) =>
@@ -57,7 +58,9 @@ const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {
       };
     });
 
-  const destructiveActions = Object.keys(INSTALLED_PACKAGE_ACTIONS)
+  const destructiveActions: ListAction[] = Object.keys(
+    INSTALLED_PACKAGE_ACTIONS,
+  )
     .map((key) => key as InstalledPackageAction)
     .filter(
       (packageAction) =>

@@ -1,6 +1,6 @@
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import { useIsSecurityProfilesLimitReached } from "@/features/security-profiles";
-import type { ComponentProps } from "react";
 import { type FC } from "react";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
@@ -16,7 +16,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
 }) => {
   const profileLimitReached = useIsSecurityProfilesLimitReached();
 
-  const nondestructiveActions: ComponentProps<typeof ListActions>["actions"] = [
+  const nondestructiveActions: ListAction[] = [
     {
       icon: "switcher-environments",
       label: "View details",
@@ -57,7 +57,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
     disabled: profileLimitReached,
   });
 
-  const destructiveActions =
+  const destructiveActions: ListAction[] | undefined =
     profile.status !== "archived"
       ? [
           {

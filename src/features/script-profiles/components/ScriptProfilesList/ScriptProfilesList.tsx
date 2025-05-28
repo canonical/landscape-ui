@@ -1,3 +1,4 @@
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions, {
   LIST_ACTIONS_COLUMN_PROPS,
 } from "@/components/layout/ListActions";
@@ -187,7 +188,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => {
-          const nondestructiveActions = [
+          const nondestructiveActions: ListAction[] = [
             {
               icon: "switcher-environments",
               label: "View details",
@@ -203,7 +204,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             });
           }
 
-          const destructiveActions = !profile.archived
+          const destructiveActions: ListAction[] | undefined = !profile.archived
             ? [
                 {
                   icon: "archive",

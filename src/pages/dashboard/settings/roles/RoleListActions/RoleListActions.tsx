@@ -19,13 +19,14 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
   const { setSidePanelContent } = useSidePanel();
 
   const { removeRoleQuery } = useRoles();
-  const { mutateAsync: remove, isPending: isRemoving } = removeRoleQuery;
 
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
+
+  const { mutateAsync: remove, isPending: isRemoving } = removeRoleQuery;
 
   const tryRemove = async () => {
     try {

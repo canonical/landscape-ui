@@ -1,5 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import ListActions from "@/components/layout/ListActions";
+import ListActions, { type ListAction } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -25,16 +25,17 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
-  const { removeWslProfileQuery } = useWslProfiles();
 
-  const { mutateAsync: removeWslProfile, isPending: isRemoving } =
-    removeWslProfileQuery;
+  const { removeWslProfileQuery } = useWslProfiles();
 
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
+
+  const { mutateAsync: removeWslProfile, isPending: isRemoving } =
+    removeWslProfileQuery;
 
   const handleWslProfileEdit = () => {
     setSidePanelContent(
@@ -69,7 +70,7 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
     }
   };
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "edit",
       label: "Edit",
@@ -84,7 +85,7 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: "Remove",

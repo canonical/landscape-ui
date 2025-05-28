@@ -1,13 +1,8 @@
-import type { ButtonProps } from "@canonical/react-components";
 import { ContextualMenu, Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import type { ComponentProps, FC } from "react";
 import classes from "./ListActions.module.scss";
-
-type ListAction = Omit<ButtonProps, "children" | "hasIcon"> & {
-  icon: string;
-  label: string;
-};
+import type { ListAction } from "./types";
 
 type ListActionsProps = Omit<
   ComponentProps<typeof ContextualMenu<null>>,

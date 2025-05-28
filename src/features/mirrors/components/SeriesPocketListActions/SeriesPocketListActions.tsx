@@ -1,3 +1,4 @@
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
@@ -26,13 +27,12 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
 }) => {
   const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
+
   const {
     removePocketQuery,
     syncMirrorPocketQuery,
     pullPackagesToPocketQuery,
   } = usePockets();
-  const { mutateAsync: removePocket, isPending: isRemovingPocket } =
-    removePocketQuery;
 
   const {
     value: isSyncModalOpen,
@@ -51,6 +51,9 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     setTrue: openRemoveModal,
     setFalse: closeRemoveModal,
   } = useBoolean();
+
+  const { mutateAsync: removePocket, isPending: isRemovingPocket } =
+    removePocketQuery;
 
   const handleRemovePocket = async (): Promise<void> => {
     try {
@@ -118,7 +121,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     (ref) => ref.distributionName === distributionName,
   );
 
-  const actions = [];
+  const actions: ListAction[] = [];
 
   switch (pocket.mode) {
     case "mirror": {
@@ -154,7 +157,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     disabled,
   });
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: "Remove",

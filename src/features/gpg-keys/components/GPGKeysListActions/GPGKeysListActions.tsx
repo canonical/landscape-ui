@@ -15,13 +15,13 @@ const GPGKeysListActions: FC<GPGKeysListActionsProps> = ({ gpgKey }) => {
 
   const { removeGPGKeyQuery } = useGPGKeys();
 
-  const { mutateAsync: remove, isPending: isRemoving } = removeGPGKeyQuery;
-
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
+
+  const { mutateAsync: remove, isPending: isRemoving } = removeGPGKeyQuery;
 
   const tryRemove = async () => {
     try {

@@ -1,3 +1,4 @@
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import type { FC } from "react";
 import type { AutoinstallFile, WithGroups } from "../../types";
@@ -17,12 +18,11 @@ const AutoinstallFilesListActions: FC<AutoinstallFilesListActionsProps> = ({
   setAsDefault,
   viewDetails,
 }) => {
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "topic",
       label: "View details",
       "aria-label": `View ${file.filename} details`,
-      hasIcon: true,
       onClick: (): void => {
         viewDetails(file);
       },
@@ -46,7 +46,7 @@ const AutoinstallFilesListActions: FC<AutoinstallFilesListActionsProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: "Remove",

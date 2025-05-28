@@ -1,8 +1,9 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { ComponentProps, FC } from "react";
+import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
@@ -18,35 +19,6 @@ interface ScriptListActionsProps {
 
 const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
   const { setSidePanelContent } = useSidePanel();
-
-  const { is_executable, is_redactable, is_editable } = script;
-
-  const handleScriptRun = (): void => {
-    setSidePanelContent(
-      `Run "${script.title}" script`,
-      <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={script} />
-      </Suspense>,
-    );
-  };
-
-  const handleViewScriptDetails = () => {
-    setSidePanelContent(
-      script.title,
-      <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} />
-      </Suspense>,
-    );
-  };
-
-  const handleEditScript = (): void => {
-    setSidePanelContent(
-      `Edit "${script.title}" script`,
-      <Suspense fallback={<LoadingState />}>
-        <EditScriptForm script={script} />
-      </Suspense>,
-    );
-  };
 
   const {
     value: archiveModalOpen,
@@ -82,7 +54,36 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
     afterSuccess: closeDeleteModal,
   });
 
-  const nondestructiveActions: ComponentProps<typeof ListActions>["actions"] = [
+  const { is_executable, is_redactable, is_editable } = script;
+
+  const handleScriptRun = (): void => {
+    setSidePanelContent(
+      `Run "${script.title}" script`,
+      <Suspense fallback={<LoadingState />}>
+        <RunScriptForm script={script} />
+      </Suspense>,
+    );
+  };
+
+  const handleViewScriptDetails = () => {
+    setSidePanelContent(
+      script.title,
+      <Suspense fallback={<LoadingState />}>
+        <ScriptDetails scriptId={script.id} />
+      </Suspense>,
+    );
+  };
+
+  const handleEditScript = (): void => {
+    setSidePanelContent(
+      `Edit "${script.title}" script`,
+      <Suspense fallback={<LoadingState />}>
+        <EditScriptForm script={script} />
+      </Suspense>,
+    );
+  };
+
+  const nondestructiveActions: ListAction[] = [
     {
       icon: "switcher-environments",
       label: "View details",
@@ -91,7 +92,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
     },
   ];
 
-  const destructiveActions = [];
+  const destructiveActions: ListAction[] = [];
 
   if (script.status === "ACTIVE") {
     nondestructiveActions.push(

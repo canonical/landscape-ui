@@ -1,4 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import { ROOT_PATH } from "@/constants";
 import { useActivities } from "@/features/activities";
@@ -78,7 +79,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     }
   };
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "machines",
       label: "View details",
@@ -87,7 +88,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "tidy",
       label: "Sanitize",

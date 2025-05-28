@@ -1,5 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import ListActions from "@/components/layout/ListActions";
+import ListActions, { type ListAction } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -24,16 +24,17 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
-  const { removeUpgradeProfileQuery } = useUpgradeProfiles();
 
-  const { mutateAsync: removeUpgradeProfile, isPending: isRemoving } =
-    removeUpgradeProfileQuery;
+  const { removeUpgradeProfileQuery } = useUpgradeProfiles();
 
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
+
+  const { mutateAsync: removeUpgradeProfile, isPending: isRemoving } =
+    removeUpgradeProfileQuery;
 
   const handleRemoveUpgradeProfile = async () => {
     try {
@@ -59,7 +60,7 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
     );
   };
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "edit",
       label: "Edit",
@@ -68,7 +69,7 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: "Remove",

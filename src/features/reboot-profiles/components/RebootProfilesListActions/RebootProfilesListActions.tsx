@@ -1,4 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
@@ -20,16 +21,17 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
 
-  const { removeRebootProfile, isRemovingRebootProfile } =
-    useRemoveRebootProfileQuery();
+  const { setSidePanelContent } = useSidePanel();
 
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
+
+  const { removeRebootProfile, isRemovingRebootProfile } =
+    useRemoveRebootProfileQuery();
 
   const handleRemoveRebootProfile = async () => {
     try {
@@ -64,7 +66,7 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
     );
   };
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "edit",
       label: "Edit",
@@ -79,7 +81,7 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: "delete",
       label: "Remove",

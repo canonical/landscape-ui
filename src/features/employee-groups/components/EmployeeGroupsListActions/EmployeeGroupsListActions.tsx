@@ -1,3 +1,4 @@
+import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -61,7 +62,7 @@ const EmployeeGroupsListActions: FC<EmployeeDetailsActionsProps> = ({
     );
   };
 
-  const actions = [
+  const actions: ListAction[] = [
     {
       icon: "sort-both",
       label: "Edit priority",
@@ -76,7 +77,7 @@ const EmployeeGroupsListActions: FC<EmployeeDetailsActionsProps> = ({
     },
   ];
 
-  const destructiveActions = [
+  const destructiveActions: ListAction[] = [
     {
       icon: ICONS.delete,
       label: "Remove",
