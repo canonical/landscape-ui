@@ -10,12 +10,12 @@ import PageMain from "@/components/layout/PageMain";
 import useSidePanel from "@/hooks/useSidePanel";
 import { DistributionContainer } from "@/features/mirrors";
 
-const NewDistributionForm = lazy(() =>
+const NewDistributionForm = lazy(async () =>
   import("@/features/mirrors").then((module) => ({
     default: module.NewDistributionForm,
   })),
 );
-const NewSeriesForm = lazy(() =>
+const NewSeriesForm = lazy(async () =>
   import("@/features/mirrors").then((module) => ({
     default: module.NewSeriesForm,
   })),
@@ -68,7 +68,9 @@ const DistributionsPage: FC = () => {
       type="button"
       className="u-no-margin--right"
       aria-label={item.ariaLabel}
-      onMouseDown={(event) => event.preventDefault()}
+      onMouseDown={(event) => {
+        event.preventDefault();
+      }}
       appearance={item.appearance}
       disabled={item.disabled}
       onClick={item.onClick}
@@ -104,9 +106,9 @@ const DistributionsPage: FC = () => {
       />
       <PageContent>
         <DistributionContainer
-          onDistributionsLengthChange={(length) =>
-            setDistributionsLength(length)
-          }
+          onDistributionsLengthChange={(length) => {
+            setDistributionsLength(length);
+          }}
         />
       </PageContent>
     </PageMain>

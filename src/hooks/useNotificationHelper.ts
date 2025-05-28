@@ -13,22 +13,24 @@ const useNotificationHelper = (): NotificationHelper => {
   return {
     notification,
 
-    error: ({ message, error, actions, title }) =>
+    error: ({ message, error, actions, title }) => {
       setDeduplicated({
         actions,
         error,
         message,
         title,
         type: "negative",
-      }),
+      });
+    },
 
-    info: ({ message, actions, title }) =>
+    info: ({ message, actions, title }) => {
       setDeduplicated({
         actions,
         message,
         title,
         type: "information",
-      }),
+      });
+    },
 
     success: ({ message, actions, title }) => {
       setDeduplicated({
@@ -38,10 +40,14 @@ const useNotificationHelper = (): NotificationHelper => {
         type: "positive",
       });
 
-      setTimeout(() => setNotification(null), 5000);
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
     },
 
-    clear: () => setNotification(null),
+    clear: () => {
+      setNotification(null);
+    },
   };
 };
 

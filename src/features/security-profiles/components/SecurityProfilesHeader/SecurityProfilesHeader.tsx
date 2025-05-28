@@ -1,7 +1,7 @@
 import { StatusFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import type { FC } from "react";
-import PassRateFilter from "../../../../components/filter/PassRateFilter/components/PassRateFilter/PassRateFilter";
+import PassRateFilter from "@/components/filter/PassRateFilter";
 import { SECURITY_STATUSES } from "./constants";
 import classes from "./SecurityProfilesHeader.module.scss";
 

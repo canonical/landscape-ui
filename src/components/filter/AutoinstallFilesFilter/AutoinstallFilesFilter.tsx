@@ -2,7 +2,8 @@ import type { GroupedOption } from "@/components/filter";
 import { TableFilter } from "@/components/filter";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { type FC, useMemo, useState } from "react";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
 
 interface AutoinstallFilesFilterProps {
   readonly options: GroupedOption[];
@@ -28,7 +29,7 @@ const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
 
   return (
     <TableFilter
-      multiple
+      type="multiple"
       hasBadge
       label="Autoinstall file"
       hasToggleIcon

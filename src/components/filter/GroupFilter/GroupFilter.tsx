@@ -18,7 +18,7 @@ const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
 
   return (
     <TableFilter
-      multiple={false}
+      type="single"
       label="Group by"
       hasToggleIcon
       hasBadge

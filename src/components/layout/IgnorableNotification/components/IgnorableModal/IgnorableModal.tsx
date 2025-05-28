@@ -1,6 +1,6 @@
 import { CheckboxInput, ConfirmationModal } from "@canonical/react-components";
-import type { ComponentProps, MouseEvent, ReactNode } from "react";
-import { type FC, useState } from "react";
+import type { ComponentProps, FC, MouseEvent, ReactNode } from "react";
+import { useState } from "react";
 
 interface IgnorableModalProps
   extends Omit<

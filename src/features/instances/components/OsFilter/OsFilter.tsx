@@ -18,12 +18,14 @@ const OsFilter: FC<OsFilterProps> = ({ options }) => {
 
   return (
     <TableFilter
-      multiple={false}
+      type="single"
       hasBadge
       label="OS"
       hasToggleIcon
       options={options}
-      onItemSelect={(item) => setPageParams({ os: item })}
+      onItemSelect={(item) => {
+        setPageParams({ os: item });
+      }}
       selectedItem={os}
     />
   );

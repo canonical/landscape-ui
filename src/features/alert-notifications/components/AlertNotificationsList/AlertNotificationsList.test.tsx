@@ -64,7 +64,7 @@ describe("AlertNotificationsList", () => {
       />,
     );
     const button = screen.getByRole("button", {
-      name: /1 pending computer needs authorization/i,
+      name: `${pendingInstances.length} pending computer${pendingInstances.length > 1 ? "s" : ""} need${pendingInstances.length > 1 ? "" : "s"} authorization`,
     });
     expect(button).toBeInTheDocument();
   });

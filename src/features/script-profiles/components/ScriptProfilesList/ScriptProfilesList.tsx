@@ -11,7 +11,8 @@ import {
   ModularTable,
 } from "@canonical/react-components";
 import moment from "moment";
-import { type FC, lazy, Suspense, useMemo, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useEditScriptProfile } from "../../api";

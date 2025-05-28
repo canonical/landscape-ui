@@ -18,12 +18,14 @@ const AccessGroupFilter: FC<AccessGroupFilterProps> = ({ options }) => {
 
   return (
     <TableFilter
-      multiple
+      type="multiple"
       label="Access group"
       hasToggleIcon
       hasBadge
       options={options}
-      onItemsSelect={(items) => setPageParams({ accessGroups: items })}
+      onItemsSelect={(items) => {
+        setPageParams({ accessGroups: items });
+      }}
       selectedItems={accessGroups}
     />
   );

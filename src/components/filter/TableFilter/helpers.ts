@@ -1,25 +1,20 @@
-import type { ReactNode } from "react";
-import type {
-  GroupedOption,
-  MultipleSelectProps,
-  SingleSelectProps,
-} from "./types";
+import type { Position } from "@canonical/react-components";
+import classes from "./TableFilter.module.scss";
 
-export const getToggleLabel = ({
-  label,
-  options,
-  otherProps,
-}: {
-  label: ReactNode;
-  options: GroupedOption[];
-  otherProps: SingleSelectProps | MultipleSelectProps;
-}): ReactNode => {
-  if (!otherProps.multiple && otherProps.showSelectionOnToggleLabel) {
-    return (
-      options.find((selection) => selection.value === otherProps.selectedItem)
-        ?.label || label
-    );
-  }
-
-  return label;
+export const getCommonContextualMenuProps = (
+  onSearch?: (value: string) => void,
+) => {
+  return {
+    autoAdjust: true,
+    toggleAppearance: "base",
+    position: "left" as Position,
+    hasToggleIcon: true,
+    toggleClassName: classes.toggle,
+    dropdownClassName: classes.dropdown,
+    onToggleMenu: (isOpen: boolean) => {
+      if (isOpen && onSearch) {
+        onSearch("");
+      }
+    },
+  };
 };

@@ -25,13 +25,17 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({ options }) => {
 
   return (
     <TableFilter
-      multiple={false}
+      type="single"
       label="Type"
       hasToggleIcon
       hasBadge
-      onSearch={(search) => setSearchText(search)}
+      onSearch={(search) => {
+        setSearchText(search);
+      }}
       options={newOptions}
-      onItemSelect={(item) => setPageParams({ type: item })}
+      onItemSelect={(item) => {
+        setPageParams({ type: item });
+      }}
       selectedItem={type}
     />
   );

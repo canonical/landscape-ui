@@ -2,7 +2,7 @@ import InfoItem from "@/components/layout/InfoItem";
 import NoData from "@/components/layout/NoData";
 import useRoles from "@/hooks/useRoles";
 import { Col, Row } from "@canonical/react-components";
-import { type FC } from "react";
+import type { FC } from "react";
 import { Link } from "react-router";
 import { formatTitleCase, getAuthorInfo } from "../../helpers";
 import type { SingleScript } from "../../types";

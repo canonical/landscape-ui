@@ -1,2 +1,2 @@
 export { default } from "./TableFilter";
-export type { GroupedOption } from "./types";
+export type { GroupedOption, CustomFilterComponentProps } from "./types";

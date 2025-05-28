@@ -8,7 +8,8 @@ import {
 } from "@/features/employees";
 import usePageParams from "@/hooks/usePageParams";
 import { Notification } from "@canonical/react-components";
-import { type FC, useMemo } from "react";
+import type { FC } from "react";
+import { useMemo } from "react";
 import { EMPLOYEE_LIMIT, EMPTY_STATE } from "./constants";
 
 const EmployeesPanel: FC = () => {

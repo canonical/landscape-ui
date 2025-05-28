@@ -1,5 +1,5 @@
 import { Button, Icon } from "@canonical/react-components";
-import { useCallback, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import type { Employee } from "../../types";
 import EmployeeActivationStatusModal from "../EmployeeActivationStatusModal";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -18,10 +18,10 @@ const EmployeeDetailsHeader: FC<EmployeeDetailsHeaderProps> = ({
     setOpen(true);
   };
 
-  const handleClose = useCallback((): void => {
+  const handleClose = (): void => {
     setOpen(false);
     closeSidePanel();
-  }, []);
+  };
 
   return (
     <div>

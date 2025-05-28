@@ -50,7 +50,9 @@ const AlertNotificationsPage: FC = () => {
               <Button
                 appearance="positive"
                 key="go-to-alerts-page"
-                onClick={() => navigate("/account/alerts", { replace: true })}
+                onClick={async () =>
+                  navigate("/account/alerts", { replace: true })
+                }
                 type="button"
                 aria-label="Go to alerts page"
               >

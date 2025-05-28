@@ -1,3 +1,4 @@
+import type { CustomFilterComponentProps } from "@/components/filter/TableFilter";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Input } from "@canonical/react-components";
@@ -11,11 +12,7 @@ interface FormProps {
   passRateTo: number;
 }
 
-interface PassRateFilterBaseProps {
-  readonly hideMenu: () => void;
-}
-
-const PassRateFilterBase: FC<PassRateFilterBaseProps> = ({ hideMenu }) => {
+const PassRateFilterBase: FC<CustomFilterComponentProps> = ({ closeMenu }) => {
   const { setPageParams, passRateFrom, passRateTo } = usePageParams();
 
   const formik = useFormik<FormProps>({
@@ -23,6 +20,7 @@ const PassRateFilterBase: FC<PassRateFilterBaseProps> = ({ hideMenu }) => {
       passRateFrom: passRateFrom,
       passRateTo: passRateTo,
     },
+    enableReinitialize: true,
     validationSchema: Yup.object().shape({
       passRateFrom: Yup.number()
         .required("This field is required")
@@ -41,8 +39,7 @@ const PassRateFilterBase: FC<PassRateFilterBaseProps> = ({ hideMenu }) => {
         passRateFrom: values.passRateFrom,
         passRateTo: values.passRateTo,
       });
-
-      hideMenu();
+      closeMenu();
     },
   });
 
@@ -83,13 +80,13 @@ const PassRateFilterBase: FC<PassRateFilterBaseProps> = ({ hideMenu }) => {
           small
           type="button"
           appearance="base"
+          className="u-no-margin--bottom"
           onClick={() => {
-            formik.resetForm({
-              values: {
-                passRateFrom: 0,
-                passRateTo: 100,
-              },
+            setPageParams({
+              passRateFrom: 0,
+              passRateTo: 100,
             });
+            closeMenu();
           }}
         >
           Reset
@@ -98,6 +95,7 @@ const PassRateFilterBase: FC<PassRateFilterBaseProps> = ({ hideMenu }) => {
           small
           type="submit"
           appearance="positive"
+          className="u-no-margin--bottom"
           disabled={!formik.isValid}
         >
           Apply

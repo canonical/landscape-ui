@@ -6,7 +6,7 @@ import { useGetSingleScript } from "@/features/scripts";
 import useRoles from "@/hooks/useRoles";
 import { Col, Row } from "@canonical/react-components";
 import moment from "moment";
-import { type FC } from "react";
+import type { FC } from "react";
 import { Link } from "react-router";
 import {
   getAssociatedInstancesLink,

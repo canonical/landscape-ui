@@ -5,7 +5,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import { Input } from "@canonical/react-components";
 import moment from "moment";
-import { type FC } from "react";
+import type { FC } from "react";
 import { useGetAutoinstallFile } from "../../api";
 import {
   AUTOINSTALL_FILE_EXTENSION,

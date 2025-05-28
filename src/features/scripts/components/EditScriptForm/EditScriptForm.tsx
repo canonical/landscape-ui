@@ -224,57 +224,66 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
             type: "button",
           }}
         >
-          <p>
-            All future script runs will be done using the latest version of the
-            code. Submitting these changes will affect the following profiles:
-          </p>
-          {associatedScriptProfiles.length > 0 && (
-            <ModularTable
-              columns={[
-                {
-                  Header: "active profiles",
-                  accessor: "title",
-                  Cell: ({ row }: CellProps<TruncatedScriptProfile>) => (
-                    <Link
-                      to="/scripts?tab=profiles"
-                      state={{ scriptProfileId: row.original.id }}
-                      target="_blank"
-                      className={classes.link}
-                    >
-                      {row.original.title}
-                    </Link>
-                  ),
-                },
-                {
-                  Header: "associated instances",
-                  Cell: ({ row }: CellProps<TruncatedScriptProfile>) => {
-                    const associatedProfile = associatedScriptProfiles.find(
-                      (profile) => profile.id === row.original.id,
-                    );
-
-                    const associatedComputers =
-                      associatedProfile?.computers.num_associated_computers;
-
-                    if (isAssociatedScriptProfilesLoading) {
-                      return <LoadingState />;
-                    }
-
-                    return associatedComputers ? (
+          {associatedScriptProfiles.length > 0 ? (
+            <>
+              <p>
+                All future script runs will be done using the latest version of
+                the code. Submitting these changes will affect the following
+                profiles:
+              </p>
+              <ModularTable
+                columns={[
+                  {
+                    Header: "active profiles",
+                    accessor: "title",
+                    Cell: ({ row }: CellProps<TruncatedScriptProfile>) => (
                       <Link
-                        to={`/instances?tags=${associatedProfile?.tags.join(",")}`}
+                        to="/scripts?tab=profiles"
+                        state={{ scriptProfileId: row.original.id }}
                         target="_blank"
                         className={classes.link}
                       >
-                        {associatedComputers} instances
+                        {row.original.title}
                       </Link>
-                    ) : (
-                      <NoData />
-                    );
+                    ),
                   },
-                },
-              ]}
-              data={script.script_profiles}
-            />
+                  {
+                    Header: "associated instances",
+                    Cell: ({ row }: CellProps<TruncatedScriptProfile>) => {
+                      const associatedProfile = associatedScriptProfiles.find(
+                        (profile) => profile.id === row.original.id,
+                      );
+
+                      const associatedComputers =
+                        associatedProfile?.computers.num_associated_computers;
+
+                      if (isAssociatedScriptProfilesLoading) {
+                        return <LoadingState />;
+                      }
+
+                      return associatedComputers ? (
+                        <Link
+                          to={`/instances?tags=${associatedProfile?.tags.join(",")}`}
+                          target="_blank"
+                          className={classes.link}
+                        >
+                          {associatedComputers} instance
+                          {associatedComputers > 1 ? "s" : ""}
+                        </Link>
+                      ) : (
+                        <NoData />
+                      );
+                    },
+                  },
+                ]}
+                data={script.script_profiles}
+              />
+            </>
+          ) : (
+            <p>
+              All future script runs will be done using the latest version of
+              the code.
+            </p>
           )}
         </ConfirmationModal>
       )}
