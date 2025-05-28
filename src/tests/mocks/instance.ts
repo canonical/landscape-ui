@@ -43,6 +43,7 @@ export const ubuntuInstance: Instance = {
     release: "10.04",
   },
   employee_id: null,
+  archived: false,
 };
 
 export const ubuntuCoreInstance = {
@@ -167,6 +168,7 @@ export const ubuntuCoreInstance = {
     regular: 0,
     security: 0,
   },
+  archived: false,
 };
 
 export const windowsInstance = {
@@ -223,6 +225,7 @@ export const windowsInstance = {
         release: "18.04",
       },
       employee_id: null,
+      archived: false,
     },
   ],
   parent: null,
@@ -233,6 +236,7 @@ export const windowsInstance = {
     release: "10 / 11",
   },
   employee_id: null,
+  archived: false,
 };
 
 export const instances: Instance[] = [
@@ -273,6 +277,7 @@ export const instances: Instance[] = [
       release: "12.04",
     },
     employee_id: null,
+    archived: false,
   },
   {
     id: 11,
@@ -334,8 +339,10 @@ export const instances: Instance[] = [
         code_name: "windows",
       },
       employee_id: null,
+      archived: false,
     },
     employee_id: null,
+    archived: false,
   },
   {
     id: 7,
@@ -369,6 +376,7 @@ export const instances: Instance[] = [
       release: "12.04",
     },
     employee_id: null,
+    archived: false,
   },
   {
     id: 3,
@@ -406,6 +414,7 @@ export const instances: Instance[] = [
       release: "10.04",
     },
     employee_id: null,
+    archived: false,
   },
   {
     id: 8,
@@ -439,6 +448,7 @@ export const instances: Instance[] = [
       release: "11.10",
     },
     employee_id: null,
+    archived: false,
   },
   {
     id: 5,
@@ -476,6 +486,7 @@ export const instances: Instance[] = [
       release: "10.04",
     },
     employee_id: null,
+    archived: false,
   },
   {
     id: 4,
@@ -513,6 +524,7 @@ export const instances: Instance[] = [
       release: "11.04",
     },
     employee_id: null,
+    archived: false,
   },
   {
     id: 9,
@@ -550,6 +562,7 @@ export const instances: Instance[] = [
       release: "12.04",
     },
     employee_id: null,
+    archived: false,
   },
   {
     id: 10,
@@ -583,6 +596,7 @@ export const instances: Instance[] = [
       release: "12.04",
     },
     employee_id: null,
+    archived: true,
   },
   windowsInstance,
   {
@@ -725,6 +739,7 @@ export const instances: Instance[] = [
       release: "22.04",
     },
     employee_id: null,
+    archived: false,
   },
   {
     id: 12,
@@ -757,6 +772,7 @@ export const instances: Instance[] = [
     },
     distribution_info: null,
     employee_id: null,
+    archived: false,
   },
   {
     id: 21,
@@ -830,6 +846,7 @@ export const instances: Instance[] = [
       release: "20.04",
     },
     employee_id: null,
+    archived: false,
   },
   ubuntuCoreInstance,
 ];

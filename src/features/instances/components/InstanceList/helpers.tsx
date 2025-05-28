@@ -100,6 +100,13 @@ export const handleCheckboxChange = ({
 export const getStatusCellIconAndLabel = (
   instance: Instance,
 ): { label: ReactNode; icon?: string } => {
+  if (instance.archived) {
+    return {
+      icon: "archive",
+      label: "Archived",
+    };
+  }
+
   const filteredAlerts = (instance?.alerts ?? []).filter(
     ({ type }) =>
       !["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(type),

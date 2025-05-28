@@ -40,6 +40,30 @@ describe("InstanceList", () => {
     }
   });
 
+  it("should show correct status for an archived instance", async () => {
+    renderWithProviders(<InstanceList {...props} />);
+    // There must be at least one archived instance
+    assert(
+      instances.find((instance) => {
+        return instance.archived;
+      }),
+    );
+
+    for (const row of screen
+      .getAllByRole<HTMLTableRowElement>("row")
+      .slice(1)) {
+      const instance = instances.find((rowInstance) => {
+        return row.cells[0].textContent?.includes(rowInstance.title);
+      });
+
+      assert(instance);
+
+      if (instance.archived) {
+        expect(within(row.cells[1]).getByText("Archived")).toBeInTheDocument();
+      }
+    }
+  });
+
   it("should select all instances when clicking ToggleAll checkbox", async () => {
     const { rerender } = renderWithProviders(<InstanceList {...props} />);
 
