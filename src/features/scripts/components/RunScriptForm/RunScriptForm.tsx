@@ -133,35 +133,37 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
         <p className="u-no-margin--bottom">Select instances by:</p>
         <div className="is-required">
           <div>
-            <Input
-              type="radio"
-              label="Tags"
-              {...formik.getFieldProps("queryType")}
-              onChange={(event) => {
-                formik.getFieldProps("queryType").onChange(event);
+            <div className={classes.radioGroup}>
+              <Input
+                type="radio"
+                label="Tags"
+                {...formik.getFieldProps("queryType")}
+                onChange={(event) => {
+                  formik.getFieldProps("queryType").onChange(event);
 
-                formik.setFieldValue("tags", []);
-                formik.setFieldTouched("tags", false);
+                  formik.setFieldValue("tags", []);
+                  formik.setFieldTouched("tags", false);
 
-                formik.setFieldValue("instanceIds", []);
-                formik.setFieldTouched("instanceIds", false);
-              }}
-              value="tags"
-              checked={formik.values.queryType === "tags"}
-            />
+                  formik.setFieldValue("instanceIds", []);
+                  formik.setFieldTouched("instanceIds", false);
+                }}
+                value="tags"
+                checked={formik.values.queryType === "tags"}
+              />
 
-            <Input
-              type="radio"
-              label="Instance names"
-              {...formik.getFieldProps("queryType")}
-              value="ids"
-              checked={formik.values.queryType === "ids"}
-              disabled={!instanceOptions.length}
-              help={
-                !instanceOptions.length &&
-                "There are no available instances in this script's access group"
-              }
-            />
+              <Input
+                type="radio"
+                label="Instance names"
+                {...formik.getFieldProps("queryType")}
+                value="ids"
+                checked={formik.values.queryType === "ids"}
+                disabled={!instanceOptions.length}
+                help={
+                  !instanceOptions.length &&
+                  "There are no available instances in this script's access group"
+                }
+              />
+            </div>
             <div className={classes.instanceSelectionContainer}>
               {formik.values.queryType === "tags" && (
                 <MultiSelectField

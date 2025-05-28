@@ -8,3 +8,8 @@
   padding-left: $sph--large;
   padding-top: $sph--small;
 }
+
+.radioGroup {
+  column-gap: $sph--x-large;
+  display: flex;
+}
