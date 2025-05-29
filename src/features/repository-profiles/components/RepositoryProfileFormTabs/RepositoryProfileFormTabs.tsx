@@ -1,5 +1,5 @@
-import type { FC } from "react";
 import { Tabs } from "@canonical/react-components";
+import type { FC } from "react";
 
 interface RepositoryProfileFormTabsProps {
   readonly currentTab: number;

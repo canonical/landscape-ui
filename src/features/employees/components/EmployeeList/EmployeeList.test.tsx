@@ -1,10 +1,10 @@
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { employees } from "@/tests/mocks/employees";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import EmployeeList from "./EmployeeList";
-import { employees } from "@/tests/mocks/employees";
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 describe("EmployeeList", () => {
   const user = userEvent.setup();
@@ -51,7 +51,7 @@ describe("EmployeeList", () => {
         within(row).getByRole("cell", {
           name: /status/i,
         }),
-      ).toHaveTextContent(employee.is_active ? "active" : "inactive");
+      ).toHaveTextContent(employee.is_active ? "Active" : "Inactive");
 
       expect(
         within(row).getByRole("cell", {

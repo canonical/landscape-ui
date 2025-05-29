@@ -1,6 +1,7 @@
 import { aptSources } from "@/tests/mocks/apt-sources";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect } from "vitest";
 import APTSourcesList from "./APTSourcesList";
@@ -23,9 +24,13 @@ describe("APTSourcesList", () => {
 
   it("should show Delete button for each row", async () => {
     for (const aptSource of aptSources) {
-      const deleteButton = screen.getByRole("button", {
-        name: `Remove ${aptSource.name} APT source`,
-      });
+      await userEvent.click(
+        screen.getByLabelText(`${aptSource.name} APT source actions`),
+      );
+
+      const deleteButton = screen.getByLabelText(
+        `Remove ${aptSource.name} APT source`,
+      );
 
       expect(deleteButton).toBeInTheDocument();
     }

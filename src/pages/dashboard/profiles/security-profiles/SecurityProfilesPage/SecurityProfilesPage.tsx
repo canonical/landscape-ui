@@ -65,7 +65,7 @@ const SecurityProfilesPage: FC = () => {
             />
           )}
         {!isInitialSecurityProfilesLoading &&
-          initialSecurityProfilesCount > 0 && (
+          !!initialSecurityProfilesCount && (
             <SecurityProfilesContainer
               hideRetentionNotification={() => {
                 setIsRetentionNotificationVisible(false);

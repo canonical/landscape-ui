@@ -1,14 +1,15 @@
 import EmptyState from "@/components/layout/EmptyState";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import { getStatusCellIconAndLabel } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { ModularTable } from "@canonical/react-components";
 import { useMemo, type FC } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import EmployeeInstancesTableContextualMenu from "../EmployeeInstancesTableContextualMenu";
+import EmployeeInstancesTableActions from "../EmployeeInstancesTableActions";
+import { EMPTY_STATE } from "./constants";
 import classes from "./EmployeeInstancesTable.module.scss";
 import { handleCellProps } from "./helpers";
-import { EMPTY_STATE } from "./constants";
 
 interface EmployeeInstancesTableProps {
   readonly instances: Instance[] | null;
@@ -54,11 +55,9 @@ const EmployeeInstancesTable: FC<EmployeeInstancesTableProps> = ({
         Cell: () => "****************",
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<Instance>) => (
-          <EmployeeInstancesTableContextualMenu instance={original} />
+          <EmployeeInstancesTableActions instance={original} />
         ),
       },
     ],

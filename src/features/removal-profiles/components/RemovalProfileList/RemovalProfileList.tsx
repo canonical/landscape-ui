@@ -1,17 +1,20 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable } from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import type { RemovalProfile } from "../../types";
-import RemovalProfileListContextualMenu from "../RemovalProfileListContextualMenu";
+import RemovalProfileListActions from "../RemovalProfileListActions";
 import classes from "./RemovalProfileList.module.scss";
-import NoData from "@/components/layout/NoData";
 
-const RemovalProfileDetails = lazy(() => import("../RemovalProfileDetails"));
+const RemovalProfileDetails = lazy(
+  async () => import("../RemovalProfileDetails"),
+);
 
 interface RemovalProfileListProps {
   readonly profiles: RemovalProfile[];
@@ -61,7 +64,9 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
           <Button
             type="button"
             appearance="link"
-            onClick={() => handleRemovalProfileDetailsOpen(original)}
+            onClick={() => {
+              handleRemovalProfileDetailsOpen(original);
+            }}
             className="u-no-margin--bottom u-no-padding--top"
             aria-label={`Open "${original.title}" profile details`}
           >
@@ -92,11 +97,9 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
         Header: "Associated",
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<RemovalProfile>) => (
-          <RemovalProfileListContextualMenu profile={original} />
+          <RemovalProfileListActions profile={original} />
         ),
       },
     ],

@@ -1,13 +1,14 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import useRoles from "@/hooks/useRoles";
+import { getPermissionOptions } from "@/pages/dashboard/settings/roles/helpers";
+import type { Role } from "@/types/Role";
+import { ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
-import { ModularTable } from "@canonical/react-components";
-import TruncatedCell from "@/components/layout/TruncatedCell";
-import useRoles from "@/hooks/useRoles";
-import RoleListActions from "@/pages/dashboard/settings/roles/RoleListActions";
-import { getPermissionOptions } from "@/pages/dashboard/settings/roles/helpers";
-import type { Role } from "@/types/Role";
+import RoleListActions from "../RoleListActions";
 import {
   getPermissionListByType,
   getTableRows,
@@ -15,7 +16,6 @@ import {
   handleRowProps,
 } from "./helpers";
 import type { CellCoordinates } from "./types";
-import classes from "./RoleList.module.scss";
 
 interface RoleListProps {
   readonly roleList: Role[];
@@ -25,8 +25,6 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
   const [expandedCell, setExpandedCell] = useState<CellCoordinates | null>(
     null,
   );
-
-  const { getPermissionsQuery } = useRoles();
 
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
 
@@ -40,6 +38,8 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
       setExpandedCell(null);
     },
   );
+
+  const { getPermissionsQuery } = useRoles();
 
   const { data: getPermissionsQueryResult } = getPermissionsQuery();
 
@@ -101,12 +101,14 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
         ),
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Cell: ({ row: { original } }: CellProps<Role>) =>
-          original.name !== "GlobalAdmin" ? (
-            <RoleListActions role={original} />
-          ) : null,
+        ...LIST_ACTIONS_COLUMN_PROPS,
+        Cell: ({ row }: CellProps<Role>) => {
+          if (row.original.name == "GlobalAdmin") {
+            return null;
+          }
+
+          return <RoleListActions role={row.original} />;
+        },
       },
     ],
     [roles, getPermissionsQueryResult, expandedCell],

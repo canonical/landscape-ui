@@ -1,7 +1,8 @@
+import LoadingState from "@/components/layout/LoadingState";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import { Button } from "@canonical/react-components";
-import useSidePanel from "@/hooks/useSidePanel";
 import { useIsSecurityProfilesLimitReached } from "../../api";
 
 const SecurityProfileAddForm = lazy(
@@ -22,7 +23,7 @@ const AddSecurityProfileButton: FC<AddSecurityProfileButtonProps> = ({
   const addSecurityProfile = () => {
     setSidePanelContent(
       "Add security profile",
-      <Suspense>
+      <Suspense fallback={<LoadingState />}>
         <SecurityProfileAddForm onSuccess={onAddProfile} />
       </Suspense>,
     );

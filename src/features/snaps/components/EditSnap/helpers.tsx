@@ -57,11 +57,11 @@ const messages = {
   single: {
     [EditSnapType.Refresh]:
       "This will update {snapName} to the latest version available. Automatic updates will resume, and {snapName} will be upgraded based on the regular refresh schedule.",
-    [EditSnapType.Uninstall]: "This will remove the Snap from your system",
+    [EditSnapType.Uninstall]: "This will remove the snap from your system",
     [EditSnapType.Hold]:
       "This will pause automatic updates for that particular snap. {snapName} will maintain the current version",
     [EditSnapType.Unhold]:
-      "This will resume automatic updates for that particular Snap. {snapName} will be eligible for the latest version upgrades based on the regular refresh schedule.",
+      "This will resume automatic updates for that particular snap. {snapName} will be eligible for the latest version upgrades based on the regular refresh schedule.",
   },
   multiple: {
     [EditSnapType.Refresh]:
@@ -69,9 +69,9 @@ const messages = {
     [EditSnapType.Uninstall]:
       "This will remove the selected snaps from your system",
     [EditSnapType.Hold]:
-      "Holding a Snap will pause automatic updates for that particular snap.",
+      "Holding a snap will pause automatic updates for that particular snap.",
     [EditSnapType.Unhold]:
-      "Unholding a Snap will resume automatic updates for that particular snap.",
+      "Unholding a snap will resume automatic updates for that particular snap.",
   },
 };
 

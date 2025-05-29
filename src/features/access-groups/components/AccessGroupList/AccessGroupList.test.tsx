@@ -20,16 +20,18 @@ describe("AccessGroupList", () => {
 
   describe("Remove Access Group", () => {
     it("opens confirmation modal when delete button is clicked", async () => {
-      const groupToDelete = accessGroups[1]; // Developers
-      const deleteButton = screen.getByLabelText(
-        `Remove ${groupToDelete.name} access group`,
-      );
-      expect(deleteButton).toBeInTheDocument();
+      const [, groupToDelete] = accessGroups; // Developers
 
-      await userEvent.click(deleteButton);
+      await userEvent.click(
+        screen.getByLabelText(`${groupToDelete.title} access group actions`),
+      );
+
+      await userEvent.click(
+        screen.getByLabelText(`Delete "${groupToDelete.title}" access group`),
+      );
 
       const confirmationTitle = await screen.findByText(
-        `Deleting ${groupToDelete.name} access group`,
+        `Deleting ${groupToDelete.title} access group`,
       );
       expect(confirmationTitle).toBeInTheDocument();
 

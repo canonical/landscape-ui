@@ -1,8 +1,7 @@
-import type { FC } from "react";
+import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import LoadingState from "@/components/layout/LoadingState";
 import {
   useWslProfiles,
   WslProfileInstallForm,
@@ -12,6 +11,7 @@ import {
 } from "@/features/wsl-profiles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
+import type { FC } from "react";
 
 const WslProfilesPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
@@ -30,7 +30,7 @@ const WslProfilesPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        title="WSL Profiles"
+        title="WSL profiles"
         actions={[
           <Button
             type="button"

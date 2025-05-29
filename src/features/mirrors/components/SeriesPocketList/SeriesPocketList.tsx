@@ -1,11 +1,12 @@
 import InfoItem from "@/components/layout/InfoItem";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import { pluralize } from "@/utils/_helpers";
 import { Col, ModularTable, Row } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
-import { pluralize } from "../../helpers";
 import type { Distribution, Pocket, Series, SyncPocketRef } from "../../types";
 import PocketSyncActivity from "../PocketSyncActivity";
 import SeriesPocketDetailsButton from "../SeriesPocketDetailsButton";
@@ -69,13 +70,11 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           <>{`${original.package_count} ${pluralize(
             original.package_count,
             "package",
-            "packages",
           )}`}</>
         ),
       },
       {
-        accessor: "actions",
-        className: classes.actions,
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<CommonPocket>): ReactNode => (
           <SeriesPocketListActions
             distributionName={distributionName}
@@ -136,7 +135,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
           <InfoItem
             label="Content"
             value={
-              <>{`${pocket.package_count} ${pluralize(pocket.package_count, "package", "packages")}`}</>
+              <>{`${pocket.package_count} ${pluralize(pocket.package_count, "package")}`}</>
             }
           />
         </Col>

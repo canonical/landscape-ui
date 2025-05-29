@@ -1,19 +1,14 @@
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import ListActions, { type ListAction } from "@/components/layout/ListActions";
 import { useWsl } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
-import type { MenuLink } from "@canonical/react-components";
-import {
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-} from "@canonical/react-components";
+import useNotify from "@/hooks/useNotify";
+import type { WslInstanceWithoutRelation } from "@/types/Instance";
+import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
-import classes from "./WslInstanceListActions.module.scss";
 import type { Action } from "./types";
-import type { WslInstanceWithoutRelation } from "@/types/Instance";
-import useNotify from "@/hooks/useNotify";
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 interface WslInstanceListActionsProps {
   readonly instance: WslInstanceWithoutRelation;
@@ -24,12 +19,13 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   instance,
   parentId,
 }) => {
-  const [action, setAction] = useState<Action>(null);
-
   const { notify } = useNotify();
   const debug = useDebug();
+
   const { setDefaultChildInstanceQuery, deleteChildInstancesQuery } = useWsl();
   const { removeInstancesQuery } = useInstances();
+
+  const [action, setAction] = useState<Action>(null);
 
   const {
     mutateAsync: setDefaultChildInstance,
@@ -96,45 +92,44 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     }
   };
 
-  const contextualMenuLinks: MenuLink[] = [
+  const actions: ListAction[] | undefined = !instance.is_default_child
+    ? [
+        {
+          icon: "starred",
+          label: "Set default instance",
+          "aria-label": `Set ${instance.title} as default instance`,
+          onClick: () => {
+            setAction("setDefault");
+          },
+        },
+      ]
+    : undefined;
+
+  const destructiveActions: ListAction[] = [
     {
-      children: "Set default instance",
-      "aria-label": `Set ${instance.title} as default instance`,
-      onClick: () => {
-        setAction("setDefault");
-      },
-    },
-    {
-      children: "Remove instance from Landscape",
+      icon: "delete",
+      label: "Remove instance from Landscape",
       "aria-label": `Remove ${instance.title} instance from Landscape`,
       onClick: () => {
         setAction("remove");
       },
     },
     {
-      children: "Delete instance",
+      icon: "delete",
+      label: "Delete instance",
       "aria-label": `Delete ${instance.title} instance`,
       onClick: () => {
         setAction("delete");
       },
     },
-  ].filter((link) => {
-    if (link.children === "Set default instance") {
-      return !instance.is_default_child;
-    }
-    return true;
-  });
+  ];
 
   return (
     <>
-      <ContextualMenu
-        position="left"
-        className={classes.menu}
-        toggleClassName={classes.toggleButton}
-        toggleAppearance="base"
-        toggleLabel={<Icon name="contextual-menu" />}
-        toggleProps={{ "aria-label": `${instance.title} instance actions` }}
-        links={contextualMenuLinks}
+      <ListActions
+        toggleAriaLabel={`${instance.title} instance actions`}
+        actions={actions}
+        destructiveActions={destructiveActions}
       />
       {action === "setDefault" && (
         <ConfirmationModal

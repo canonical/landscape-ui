@@ -1,14 +1,14 @@
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { useMediaQuery } from "usehooks-ts";
-import type { MenuLink } from "@canonical/react-components";
-import { Button, ContextualMenu } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import useSidePanel from "@/hooks/useSidePanel";
 import { DistributionContainer } from "@/features/mirrors";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { MenuLink } from "@canonical/react-components";
+import { Button, ContextualMenu } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
+import { useMediaQuery } from "usehooks-ts";
 
 const NewDistributionForm = lazy(async () =>
   import("@/features/mirrors").then((module) => ({
@@ -89,7 +89,7 @@ const DistributionsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        title="Repository Mirrors"
+        title="Mirrors"
         actions={
           isLargeScreen
             ? largeScreenButtons

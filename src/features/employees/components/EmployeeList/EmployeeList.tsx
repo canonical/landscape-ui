@@ -1,7 +1,9 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { ExpandedCell } from "@/types/ExpandedCell";
 import {
   Button,
   Icon,
@@ -13,9 +15,9 @@ import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
-import type { ExpandedCell } from "@/types/ExpandedCell";
+import { getStatusText } from "../../helpers";
 import type { Employee } from "../../types";
-import EmployeeListContextualMenu from "../EmployeeListContextualMenu";
+import EmployeeListActions from "../EmployeeListActions";
 import classes from "./EmployeeList.module.scss";
 import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
 
@@ -145,7 +147,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
         accessor: "status",
         Header: "status",
         Cell: ({ row: { original } }: CellProps<Employee>) => (
-          <span>{original.is_active ? "active" : "inactive"}</span>
+          <span>{getStatusText(original)}</span>
         ),
         getCellIcon: ({
           row: {
@@ -182,11 +184,9 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
           ),
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<Employee>) => (
-          <EmployeeListContextualMenu employee={original} />
+          <EmployeeListActions employee={original} />
         ),
       },
     ],

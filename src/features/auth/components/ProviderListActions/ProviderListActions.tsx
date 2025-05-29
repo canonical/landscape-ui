@@ -1,20 +1,16 @@
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import type { MenuLink } from "@canonical/react-components";
-import {
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-  ICONS,
-} from "@canonical/react-components";
+import type { ListAction } from "@/components/layout/ListActions";
+import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { IdentityProvider } from "../../types";
-import classes from "./ProviderListActions.module.scss";
-import { useAuthHandle } from "../../hooks";
 import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import { ConfirmationModal, ICONS } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
+import { useAuthHandle } from "../../hooks";
+import type { IdentityProvider } from "../../types";
 
-const ProviderForm = lazy(() => import("../ProviderForm"));
+const ProviderForm = lazy(async () => import("../ProviderForm"));
 
 interface ProviderListActionsProps {
   readonly canBeDisabled: boolean;
@@ -25,11 +21,16 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
   canBeDisabled,
   provider,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
-
   const { setSidePanelContent } = useSidePanel();
   const debug = useDebug();
+
   const { deleteProviderQuery } = useAuthHandle();
+
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean();
 
   const { mutateAsync: deleteProvider, isPending: isRemoving } =
     deleteProviderQuery;
@@ -47,61 +48,43 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
     );
   };
 
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
   const handleProviderDelete = async () => {
     try {
       await deleteProvider({ providerId: provider.id });
 
-      handleCloseModal();
+      closeModal();
     } catch (error) {
       debug(error);
     }
   };
 
-  const contextualMenuButtons: MenuLink[] = [
+  const actions: ListAction[] = [
     {
-      children: (
-        <>
-          <Icon name="edit" />
-          <span>Edit</span>
-        </>
-      ),
+      icon: "edit",
+      label: "Edit",
       "aria-label": `Edit ${provider.name} provider`,
-      hasIcon: true,
       onClick: handleIdentityProviderEdit,
     },
+  ];
+
+  const destructiveActions: ListAction[] = [
     {
-      children: (
-        <>
-          <Icon name={ICONS.delete} />
-          <span>Delete</span>
-        </>
-      ),
+      icon: ICONS.delete,
+      label: "Delete",
       "aria-label": `Delete ${provider.name} provider`,
-      hasIcon: true,
-      onClick: handleOpenModal,
+      onClick: openModal,
       disabled: provider.provider === "ubuntu-one",
     },
   ];
 
   return (
     <>
-      <ContextualMenu
-        position="left"
-        toggleClassName={classes.toggleButton}
-        toggleAppearance="base"
-        toggleLabel={<Icon name="contextual-menu" />}
-        toggleProps={{ "aria-label": `${provider.name} provider actions` }}
-        links={contextualMenuButtons}
+      <ListActions
+        toggleAriaLabel={`${provider.name} provider actions`}
+        actions={actions}
+        destructiveActions={destructiveActions}
       />
-      {modalOpen && (
+      {isModalOpen && (
         <ConfirmationModal
           title="Delete identity provider"
           confirmButtonLabel="Delete"
@@ -109,7 +92,7 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
           confirmButtonDisabled={isRemoving}
           confirmButtonLoading={isRemoving}
           onConfirm={handleProviderDelete}
-          close={handleCloseModal}
+          close={closeModal}
         >
           <p>This will delete the {provider.name} provider.</p>
         </ConfirmationModal>

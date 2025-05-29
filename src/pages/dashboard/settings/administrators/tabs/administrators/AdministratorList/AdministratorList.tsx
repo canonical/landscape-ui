@@ -1,22 +1,15 @@
-import type { FC, HTMLProps } from "react";
-import { useMemo } from "react";
-import {
-  Button,
-  ConfirmationButton,
-  Icon,
-  ICONS,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
-import type { Cell, CellProps, Column, TableCellProps } from "react-table";
-import useAdministrators from "@/hooks/useAdministrators";
-import useDebug from "@/hooks/useDebug";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import useSidePanel from "@/hooks/useSidePanel";
+import AdministratorRolesCell from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorRolesCell";
+import EditAdministratorForm from "@/pages/dashboard/settings/administrators/tabs/administrators/EditAdministratorForm";
 import type { Administrator } from "@/types/Administrator";
 import type { Role } from "@/types/Role";
 import type { SelectOption } from "@/types/SelectOption";
-import EditAdministratorForm from "@/pages/dashboard/settings/administrators/tabs/administrators/EditAdministratorForm";
-import AdministratorRolesCell from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorRolesCell";
+import { Button, ModularTable } from "@canonical/react-components";
+import type { FC, HTMLProps } from "react";
+import { useMemo } from "react";
+import type { Cell, CellProps, Column, TableCellProps } from "react-table";
+import AdministratorListActions from "../AdministratorListActions";
 import classes from "./AdministratorList.module.scss";
 
 interface AdministratorListProps {
@@ -30,12 +23,7 @@ const AdministratorList: FC<AdministratorListProps> = ({
   emptyMessage,
   roles,
 }) => {
-  const debug = useDebug();
   const { setSidePanelContent } = useSidePanel();
-  const { disableAdministratorQuery } = useAdministrators();
-
-  const { mutateAsync: disableAdministrator, isPending: isDisabling } =
-    disableAdministratorQuery;
 
   const administratorsData = useMemo(() => administrators, [administrators]);
 
@@ -47,14 +35,6 @@ const AdministratorList: FC<AdministratorListProps> = ({
       })),
     [roles],
   );
-
-  const handleAdministratorDisabling = async (email: string) => {
-    try {
-      await disableAdministrator({ email });
-    } catch (error) {
-      debug(error);
-    }
-  };
 
   const handleAdministratorClick = (administrator: Administrator) => {
     setSidePanelContent(
@@ -97,36 +77,9 @@ const AdministratorList: FC<AdministratorListProps> = ({
         ),
       },
       {
-        accessor: "actions",
-        className: classes.actions,
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row }: CellProps<Administrator>) => (
-          <ConfirmationButton
-            className="u-no-margin--bottom u-no-padding--left is-small has-icon"
-            type="button"
-            appearance="base"
-            aria-label={`Remove ${row.original.name}`}
-            confirmationModalProps={{
-              title: `Remove ${row.original.name}`,
-              children: (
-                <p>
-                  This will remove the administrator from your Landscape
-                  organisation.
-                </p>
-              ),
-              confirmButtonLabel: "Remove",
-              confirmButtonAppearance: "negative",
-              confirmButtonDisabled: isDisabling,
-              confirmButtonLoading: isDisabling,
-              onConfirm: () => handleAdministratorDisabling(row.original.email),
-            }}
-          >
-            <Tooltip position="top-center" message="Remove">
-              <Icon
-                name={ICONS.delete}
-                className="u-no-margin--left u-no-padding"
-              />
-            </Tooltip>
-          </ConfirmationButton>
+          <AdministratorListActions administrator={row.original} />
         ),
       },
     ],

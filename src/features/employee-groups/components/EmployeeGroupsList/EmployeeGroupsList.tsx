@@ -1,3 +1,5 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -5,10 +7,9 @@ import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import type { EmployeeGroup } from "../../types";
 import AutoinstallFileTableCell from "../AutoinstallFileTableCell";
-import EmployeeGroupsListContextualMenu from "../EmployeeGroupsListContextualMenu";
+import EmployeeGroupsListActions from "../EmployeeGroupsListActions";
 import classes from "./EmployeeGroupsList.module.scss";
 import { handleCellProps } from "./helpers";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface EmployeeGroupsListProps {
   readonly onSelectedEmployeeGroupsChange: (employeeGroups: number[]) => void;
@@ -84,14 +85,14 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       },
       {
         accessor: "name",
-        Header: "name",
+        Header: "Name",
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
           <>{original.name}</>
         ),
       },
       {
         accessor: "employee_count",
-        Header: "employees",
+        Header: "Employees",
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) =>
           original.employee_count ? (
             <Link
@@ -106,7 +107,7 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       },
       {
         accessor: "autoinstall_file.filename",
-        Header: "assigned autoinstall file",
+        Header: "Assigned autoinstall file",
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
           <AutoinstallFileTableCell
             fileName={original.autoinstall_file?.filename}
@@ -117,17 +118,15 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
       },
       {
         accessor: "priority",
-        Header: "priority",
+        Header: "Priority",
         Cell: ({ row }: CellProps<EmployeeGroup>) => (
           <>{row.original.priority || "N/A"}</>
         ),
       },
       {
-        accessor: "actions",
-        className: classes.actions,
-        Header: "actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<EmployeeGroup>) => (
-          <EmployeeGroupsListContextualMenu employeeGroup={original} />
+          <EmployeeGroupsListActions employeeGroup={original} />
         ),
       },
     ],

@@ -1,21 +1,14 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
-import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
-import useRoles from "@/hooks/useRoles";
-import {
-  ConfirmationButton,
-  Icon,
-  ICONS,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
-import type { CellProps, Column, Row } from "react-table";
+import { ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
-import AccessGroupInstanceCountCell from "../AccessGroupInstanceCountCell";
-import classes from "./AccessGroupList.module.scss";
-import { buildHierarchy, findAncestors, handleCellProps } from "./helpers";
+import type { CellProps, Column, Row } from "react-table";
 import type { AccessGroup, AccessGroupWithInstancesCount } from "../../types";
+import AccessGroupInstanceCountCell from "../AccessGroupInstanceCountCell";
+import AccessGroupListActions from "../AccessGroupListActions";
+import { buildHierarchy, findAncestors, handleCellProps } from "./helpers";
 
 interface AccessGroupListProps {
   readonly accessGroups: AccessGroup[];
@@ -23,11 +16,6 @@ interface AccessGroupListProps {
 
 const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
   const { groupBy, search } = usePageParams();
-  const { removeAccessGroupQuery } = useRoles();
-  const debug = useDebug();
-
-  const { mutateAsync: removeAccessGroup, isPending: isRemoving } =
-    removeAccessGroupQuery;
 
   const accessGroupsData: AccessGroupWithInstancesCount[] = useMemo(() => {
     const filteredAccessGroups = search
@@ -68,16 +56,6 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
         subRows: buildHierarchy(accessGroup.name, allRelevantGroups),
       }));
   }, [accessGroups, search, groupBy]);
-
-  const handleRemoveAccessGroup = async (accessGroupName: string) => {
-    try {
-      await removeAccessGroup({
-        name: accessGroupName,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
 
   const columns = useMemo<Column<AccessGroupWithInstancesCount>[]>(
     () => [
@@ -127,38 +105,13 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
         },
       },
       {
-        accessor: "id",
-        className: classes.actions,
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row }: CellProps<AccessGroupWithInstancesCount>) => {
           if (row.original.name === "global") {
             return null;
           }
 
-          return (
-            <div className="divided-blocks">
-              <div className="divided-blocks__item">
-                <ConfirmationButton
-                  className="u-no-margin--bottom u-no-padding--left is-small has-icon"
-                  type="button"
-                  appearance="base"
-                  aria-label={`Remove ${row.original.name} access group`}
-                  confirmationModalProps={{
-                    title: `Deleting ${row.original.name} access group`,
-                    children: <p>Are you sure?</p>,
-                    confirmButtonLabel: "Delete",
-                    confirmButtonAppearance: "negative",
-                    confirmButtonDisabled: isRemoving,
-                    confirmButtonLoading: isRemoving,
-                    onConfirm: () => handleRemoveAccessGroup(row.original.name),
-                  }}
-                >
-                  <Tooltip position="btm-center" message="Delete">
-                    <Icon name={ICONS.delete} />
-                  </Tooltip>
-                </ConfirmationButton>
-              </div>
-            </div>
-          );
+          return <AccessGroupListActions accessGroup={row.original} />;
         },
       },
     ],
@@ -166,13 +119,15 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={accessGroupsData}
-      sortable
-      getCellProps={handleCellProps}
-      emptyMsg="No access groups found according to your search parameters."
-    />
+    <>
+      <ModularTable
+        columns={columns}
+        data={accessGroupsData}
+        sortable
+        getCellProps={handleCellProps}
+        emptyMsg="No access groups found according to your search parameters."
+      />
+    </>
   );
 };
 

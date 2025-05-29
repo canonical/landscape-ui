@@ -1,3 +1,4 @@
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import TruncatedCell from "@/components/layout/TruncatedCell";
@@ -16,7 +17,7 @@ import { useOnClickOutside } from "usehooks-ts";
 import { formatTitleCase } from "../../helpers";
 import { useOpenScriptDetails } from "../../hooks";
 import type { Script } from "../../types";
-import ScriptListContextualMenu from "../ScriptListContextualMenu";
+import ScriptListActions from "../ScriptListActions";
 import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
 import classes from "./ScriptList.module.scss";
 
@@ -173,12 +174,9 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
         ),
       },
       {
-        Header: "Actions",
-        className: classes.actions,
-        Cell: ({
-          row: { original },
-        }: CellProps<Script>): ReactElement<Element> => (
-          <ScriptListContextualMenu script={original} />
+        ...LIST_ACTIONS_COLUMN_PROPS,
+        Cell: ({ row: { original } }: CellProps<Script>): ReactElement => (
+          <ScriptListActions script={original} />
         ),
       },
     ];

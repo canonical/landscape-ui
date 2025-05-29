@@ -80,6 +80,12 @@ describe("SeriesPocketListActions", () => {
   it("renders correct buttons for mirror pockets", async () => {
     renderWithProviders(<SeriesPocketListActions {...propsWithMirrorPocket} />);
 
+    await userEvent.click(
+      screen.getByLabelText(
+        `${propsWithMirrorPocket.pocket.name} pocket of ${propsWithMirrorPocket.distributionName}/${propsWithMirrorPocket.seriesName} actions`,
+      ),
+    );
+
     const syncButton = screen.getByRole("button", {
       name: `Synchronize ${propsWithMirrorPocket.pocket.name} pocket of ${propsWithMirrorPocket.distributionName}/${propsWithMirrorPocket.seriesName}`,
     });
@@ -100,6 +106,12 @@ describe("SeriesPocketListActions", () => {
   it("renders correct buttons for pull pockets", async () => {
     renderWithProviders(<SeriesPocketListActions {...propsWithPullPocket} />);
 
+    await userEvent.click(
+      screen.getByLabelText(
+        `${propsWithPullPocket.pocket.name} pocket of ${propsWithPullPocket.distributionName}/${propsWithPullPocket.seriesName} actions`,
+      ),
+    );
+
     const pullButton = screen.getByRole("button", {
       name: `Pull packages to ${propsWithPullPocket.pocket.name} pocket of ${propsWithPullPocket.distributionName}/${propsWithPullPocket.seriesName}`,
     });
@@ -119,11 +131,17 @@ describe("SeriesPocketListActions", () => {
     );
   });
 
-  it("renders correct buttons for upload pockets", () => {
+  it("renders correct buttons for upload pockets", async () => {
     renderWithProviders(<SeriesPocketListActions {...propsWithUploadPocket} />);
 
+    await userEvent.click(
+      screen.getByLabelText(
+        `${propsWithUploadPocket.pocket.name} pocket of ${propsWithUploadPocket.distributionName}/${propsWithUploadPocket.seriesName} actions`,
+      ),
+    );
+
     const buttonsLength = screen.getAllByRole("button").length;
-    expect(buttonsLength).toBe(2);
+    expect(buttonsLength).toBe(3);
 
     checkEditAndDeleteButtons(
       propsWithUploadPocket.pocket.name,

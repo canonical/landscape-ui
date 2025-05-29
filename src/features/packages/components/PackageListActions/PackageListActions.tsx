@@ -1,15 +1,14 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import type { MenuLink } from "@canonical/react-components";
-import { ContextualMenu, Icon } from "@canonical/react-components";
-import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
-import type { InstalledPackageAction, InstancePackage } from "../../types";
-import classes from "./PackageListActions.module.scss";
+import type { ListAction } from "@/components/layout/ListActions";
+import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
+import type { InstalledPackageAction, InstancePackage } from "../../types";
 
 const InstalledPackagesActionForm = lazy(
-  () => import("../InstalledPackagesActionForm"),
+  async () => import("../InstalledPackagesActionForm"),
 );
 
 interface PackageListActionsProps {
@@ -37,37 +36,57 @@ const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {
     );
   };
 
-  const contextualMenuButtons: MenuLink[] = Object.keys(
-    INSTALLED_PACKAGE_ACTIONS,
-  )
+  const actions: ListAction[] = Object.keys(INSTALLED_PACKAGE_ACTIONS)
     .map((key) => key as InstalledPackageAction)
-    .filter((packageAction) => buttonRenderCondition[packageAction])
+    .filter(
+      (packageAction) =>
+        buttonRenderCondition[packageAction] &&
+        INSTALLED_PACKAGE_ACTIONS[packageAction].appearance == "positive",
+    )
     .sort(
       (a, b) =>
         INSTALLED_PACKAGE_ACTIONS[b].order - INSTALLED_PACKAGE_ACTIONS[a].order,
     )
     .map((packageAction) => {
       return {
-        children: (
-          <>
-            <Icon name={INSTALLED_PACKAGE_ACTIONS[packageAction].icon} />
-            <span>{INSTALLED_PACKAGE_ACTIONS[packageAction].label}</span>
-          </>
-        ),
+        icon: INSTALLED_PACKAGE_ACTIONS[packageAction].icon,
+        label: INSTALLED_PACKAGE_ACTIONS[packageAction].label,
         "aria-label": `${INSTALLED_PACKAGE_ACTIONS[packageAction].label} ${pkg.name} package`,
-        hasIcon: true,
-        onClick: () => handlePackageAction(packageAction),
+        onClick: () => {
+          handlePackageAction(packageAction);
+        },
+      };
+    });
+
+  const destructiveActions: ListAction[] = Object.keys(
+    INSTALLED_PACKAGE_ACTIONS,
+  )
+    .map((key) => key as InstalledPackageAction)
+    .filter(
+      (packageAction) =>
+        buttonRenderCondition[packageAction] &&
+        INSTALLED_PACKAGE_ACTIONS[packageAction].appearance == "negative",
+    )
+    .sort(
+      (a, b) =>
+        INSTALLED_PACKAGE_ACTIONS[b].order - INSTALLED_PACKAGE_ACTIONS[a].order,
+    )
+    .map((packageAction) => {
+      return {
+        icon: INSTALLED_PACKAGE_ACTIONS[packageAction].icon,
+        label: INSTALLED_PACKAGE_ACTIONS[packageAction].label,
+        "aria-label": `${INSTALLED_PACKAGE_ACTIONS[packageAction].label} ${pkg.name} package`,
+        onClick: () => {
+          handlePackageAction(packageAction);
+        },
       };
     });
 
   return (
-    <ContextualMenu
-      position="left"
-      toggleClassName={classes.toggleButton}
-      toggleAppearance="base"
-      toggleLabel={<Icon name="contextual-menu" />}
-      toggleProps={{ "aria-label": `${pkg.name} package actions` }}
-      links={contextualMenuButtons}
+    <ListActions
+      toggleAriaLabel={`${pkg.name} package actions`}
+      actions={actions}
+      destructiveActions={destructiveActions}
     />
   );
 };

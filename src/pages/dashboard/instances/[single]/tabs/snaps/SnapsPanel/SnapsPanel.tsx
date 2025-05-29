@@ -68,7 +68,7 @@ const SnapsPanel: FC = () => {
                 key="empty-state-install-snap"
                 onClick={handleEmptyStateInstall}
               >
-                Install Snap
+                Install snap
               </Button>,
             ]}
           />
@@ -86,7 +86,9 @@ const SnapsPanel: FC = () => {
           />
           <SnapsList
             selectedSnapIds={selectedSnapIds}
-            setSelectedSnapIds={(items) => setSelectedSnapIds(items)}
+            setSelectedSnapIds={(items) => {
+              setSelectedSnapIds(items);
+            }}
             installedSnaps={installedSnaps}
             isSnapsLoading={isLoading}
           />

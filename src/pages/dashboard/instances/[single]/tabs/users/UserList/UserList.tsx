@@ -1,5 +1,9 @@
+import ListActions, {
+  LIST_ACTIONS_COLUMN_PROPS,
+} from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { User } from "@/types/User";
@@ -9,19 +13,19 @@ import {
   CheckboxInput,
   Icon,
   MainTable,
-  Tooltip,
 } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import { SORT_KEYS } from "../constants";
 import classes from "./UserList.module.scss";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 const EditUserForm = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
+  async () =>
+    import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
 );
 const UserDetails = lazy(
-  () => import("@/pages/dashboard/instances/[single]/tabs/users/UserDetails"),
+  async () =>
+    import("@/pages/dashboard/instances/[single]/tabs/users/UserDetails"),
 );
 
 interface UserListProps {
@@ -90,7 +94,10 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
       { content: "status", sortKey: SORT_KEYS.status },
       { content: "uid", sortKey: SORT_KEYS.uid },
       { content: "full name", sortKey: SORT_KEYS.name },
-      { content: null, className: classes.actions },
+      {
+        content: LIST_ACTIONS_COLUMN_PROPS.Header,
+        className: LIST_ACTIONS_COLUMN_PROPS.className,
+      },
     ],
     [users, selected],
   );
@@ -112,7 +119,9 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
                 }
                 disabled={users.length === 0}
                 checked={selected.includes(user.uid)}
-                onChange={() => handleSelectionChange(user.uid)}
+                onChange={() => {
+                  handleSelectionChange(user.uid);
+                }}
               />
             ),
           },
@@ -122,7 +131,9 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
                 type="button"
                 appearance="link"
                 className="u-no-margin--bottom u-no-padding--top"
-                onClick={() => handleShowUserDetails(user)}
+                onClick={() => {
+                  handleShowUserDetails(user);
+                }}
                 aria-label={`Show details of user ${user.username}`}
               >
                 {user.username}
@@ -155,21 +166,21 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
             content: user.name || <NoData />,
           },
           {
-            className: classes.actions,
+            className: LIST_ACTIONS_COLUMN_PROPS.className,
             content: (
-              <Tooltip message="Edit" position="btm-center">
-                <Button
-                  type="button"
-                  small
-                  hasIcon
-                  appearance="base"
-                  className="u-no-margin--bottom u-no-padding--left"
-                  aria-label={`Edit ${user.name} profile`}
-                  onClick={() => handleEditUser(user)}
-                >
-                  <Icon name="edit" className="u-no-margin--left" />
-                </Button>
-              </Tooltip>
+              <ListActions
+                toggleAriaLabel={`"${user.name}" user actions`}
+                actions={[
+                  {
+                    icon: "edit",
+                    label: "Edit",
+                    "aria-label": `Edit "${user.name}" user`,
+                    onClick: () => {
+                      handleEditUser(user);
+                    },
+                  },
+                ]}
+              />
             ),
           },
         ],
