@@ -63,6 +63,7 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
       {
         accessor: "view",
         Header: "View",
+        className: classes.view,
         Cell: ({ row: { original, index } }: CellProps<Role>) => (
           <TruncatedCell
             content={getPermissionListByType(

@@ -209,7 +209,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
                   ? formik.errors.rootfsImage
                   : undefined
               }
-              help="The file path must be reachable by the affected WSL instances"
+              help="The file path must be reachable by the affected WSL instances."
             />
           </>
         )}

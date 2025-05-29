@@ -8,6 +8,7 @@ import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { usePackageProfiles } from "../../hooks";
+import useRoles from "@/hooks/useRoles";
 import type { PackageProfile } from "../../types";
 import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraints";
 
@@ -29,6 +30,10 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
   const { removePackageProfileQuery } = usePackageProfiles();
+
+  const { getAccessGroupQuery } = useRoles();
+  const { data: accessGroupsData } = getAccessGroupQuery();
+  const accessGroups = accessGroupsData?.data ?? [];
 
   const { mutateAsync: removePackageProfile, isPending: isRemoving } =
     removePackageProfileQuery;
@@ -115,7 +120,13 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           <InfoItem label="Description" value={profile.description} />
         </Col>
         <Col size={3}>
-          <InfoItem label="Access group" value={profile.access_group} />
+          <InfoItem
+            label="Access group"
+            value={
+              accessGroups.find((group) => group.name === profile.access_group)
+                ?.title ?? profile.access_group
+            }
+          />
         </Col>
         <Col size={9}>
           <InfoItem label="Tags" value={profile.tags.join(", ")} />

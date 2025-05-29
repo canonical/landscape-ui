@@ -377,7 +377,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
               await formik.setFieldValue("hasPockets", !!event.target.value);
             }}
             error={getFormikError(formik, "pockets")}
-            help="List the pocket names separated by commas"
+            help="List the pocket names separated by commas."
           />
           <Input
             type="text"
@@ -393,7 +393,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
               );
             }}
             error={getFormikError(formik, "components")}
-            help="List the component names separated by commas"
+            help="List the component names separated by commas."
           />
           <Input
             type="text"
@@ -409,7 +409,7 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
               );
             }}
             error={getFormikError(formik, "architectures")}
-            help="List the architectures separated by commas"
+            help="List the architectures separated by commas."
           />
         </>
       )}

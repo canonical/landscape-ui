@@ -143,7 +143,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
           {...formik.getFieldProps("enabled")}
           checked={formik.values.enabled}
           disabled={disabled}
-          help={`If checked the identity provider will be enabled ${
+          help={`If checked the identity provider will be enabled. ${
             action === "add" ? "when it is created." : "for logging in."
           }`}
         />
