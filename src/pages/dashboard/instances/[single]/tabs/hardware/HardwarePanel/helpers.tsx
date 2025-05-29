@@ -42,7 +42,7 @@ const getMemoryInfo = (groupedHardware: GroupedHardware | undefined) => {
   ];
 };
 
-const getPartitionsInfo = (groupedHardware: GroupedHardware | undefined) => {
+const getNetworkInfo = (groupedHardware: GroupedHardware | undefined) => {
   if (!groupedHardware?.network) {
     return [[{ label: "Network", value: <NoData /> }]];
   }
@@ -146,7 +146,7 @@ export const getHardwareInfo = (
   return {
     memory: getMemoryInfo(groupedHardware),
     multimedia: getMultimediaInfo(groupedHardware),
-    partitions: getPartitionsInfo(groupedHardware),
+    network: getNetworkInfo(groupedHardware),
     processor: getProcessorInfo(groupedHardware),
     system: getSystemInfo(groupedHardware),
   };

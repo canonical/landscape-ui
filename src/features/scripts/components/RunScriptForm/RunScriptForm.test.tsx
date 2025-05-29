@@ -13,7 +13,7 @@ describe("RunScriptForm", () => {
   it("should display run script form", async () => {
     renderWithProviders(<RunScriptForm script={script} />);
 
-    expect(screen.getByText(/run script/i)).toBeInTheDocument();
+    expect(await screen.findByText(/run script/i)).toBeInTheDocument();
 
     const tagsRadio = screen.getByRole("radio", {
       name: /tags/i,
@@ -38,7 +38,7 @@ describe("RunScriptForm", () => {
   it("should display instance names when instance names radio is checked", async () => {
     renderWithProviders(<RunScriptForm script={script} />);
 
-    const instanceIdsRadio = screen.getByRole("radio", {
+    const instanceIdsRadio = await screen.findByRole("radio", {
       name: /instance names/i,
     });
 

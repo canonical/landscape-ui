@@ -1,9 +1,9 @@
-import type { FC } from "react";
+import EmptyState from "@/components/layout/EmptyState";
 import HardwareInfoRow from "@/pages/dashboard/instances/[single]/tabs/hardware/HardwareInfoRow";
 import type { Instance } from "@/types/Instance";
 import type { UrlParams } from "@/types/UrlParams";
+import type { FC } from "react";
 import { useParams } from "react-router";
-import EmptyState from "@/components/layout/EmptyState";
 import { getHardwareInfo } from "./helpers";
 
 interface HardwarePanelProps {
@@ -47,8 +47,8 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
         infoBlocksArray={hardwareInfo.memory}
       />
       <HardwareInfoRow
-        infoRowLabel="Partitions"
-        infoBlocksArray={hardwareInfo.partitions}
+        infoRowLabel="Network"
+        infoBlocksArray={hardwareInfo.network}
       />
       <HardwareInfoRow
         infoRowLabel="Multimedia"

@@ -1,15 +1,3 @@
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { useEffect, useState } from "react";
-import * as Yup from "yup";
-import {
-  Col,
-  ConfirmationButton,
-  Form,
-  Icon,
-  ICONS,
-  Row,
-} from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
@@ -20,6 +8,18 @@ import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import type { Administrator } from "@/types/Administrator";
 import type { SelectOption } from "@/types/SelectOption";
+import {
+  Col,
+  ConfirmationButton,
+  Form,
+  Icon,
+  ICONS,
+  Row,
+} from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useEffect, useState } from "react";
+import * as Yup from "yup";
 
 interface EditAdministratorFormProps {
   readonly administrator: Administrator;
@@ -101,7 +101,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
           children: (
             <p>
               This will remove the administrator from your Landscape
-              organisation.
+              organization.
             </p>
           ),
           confirmButtonLabel: "Remove",
@@ -138,8 +138,8 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
           formik.values.roles.includes(value),
         )}
         placeholder="Select roles"
-        onItemsUpdate={(items) =>
-          formik.setFieldValue(
+        onItemsUpdate={async (items) =>
+          await formik.setFieldValue(
             "roles",
             items.map(({ value }) => value as string),
           )

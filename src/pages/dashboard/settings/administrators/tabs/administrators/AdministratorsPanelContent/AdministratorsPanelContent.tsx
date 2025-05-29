@@ -1,10 +1,10 @@
-import type { FC } from "react";
 import { TablePagination } from "@/components/layout/TablePagination";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import type { Administrator } from "@/types/Administrator";
 import AdministratorList from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorList";
 import AdministratorsPanelHeader from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelHeader";
-import usePageParams from "@/hooks/usePageParams";
+import type { Administrator } from "@/types/Administrator";
+import type { FC } from "react";
 
 interface AdministratorsPanelContentProps {
   readonly administrators: Administrator[];
@@ -49,7 +49,7 @@ const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
         emptyMessage={
           searchText.trim()
             ? `No administrators found with the search: "${searchText.trim()}"`
-            : "You have no administrators on your Landscape organisation"
+            : "You have no administrators on your Landscape organization"
         }
         roles={getRolesQueryResult?.data ?? []}
       />

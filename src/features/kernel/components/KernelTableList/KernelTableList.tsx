@@ -1,9 +1,9 @@
 import EmptyState from "@/components/layout/EmptyState";
 import NoData from "@/components/layout/NoData";
 import { Link, ModularTable } from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
 import type { FC } from "react";
 import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import type { Fix } from "../../types";
 import { EMPTY_TABLE_MESSAGE } from "./constants";
 import { generateCveLink, handleCellProps } from "./helpers";
@@ -64,23 +64,26 @@ const KernelTableList: FC<KernelTableListProps> = ({ kernelData }) => {
 
   return (
     <>
-      <h3 className="p-heading--5 u-no-padding u-no-margin">
-        Patches discovered since last restart
-      </h3>
       {kernelData.length === 0 ? (
         <EmptyState
           title="No outstanding kernel patches"
           body={EMPTY_TABLE_MESSAGE}
         />
       ) : (
-        <ModularTable
-          columns={columns}
-          data={kernelData}
-          getCellProps={handleCellProps}
-          sortable
-          initialSortColumn="Name"
-          initialSortDirection="ascending"
-        />
+        <>
+          <h3 className="p-heading--5 u-no-padding u-no-margin">
+            Patches discovered since last restart
+          </h3>
+
+          <ModularTable
+            columns={columns}
+            data={kernelData}
+            getCellProps={handleCellProps}
+            sortable
+            initialSortColumn="Name"
+            initialSortDirection="ascending"
+          />
+        </>
       )}
     </>
   );

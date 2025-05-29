@@ -1,13 +1,13 @@
-import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
-import { beforeEach } from "vitest";
 import type { AccountsContextProps } from "@/context/accounts";
+import type { Account } from "@/features/auth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
-import OrganisationSwitch from "./OrganisationSwitch";
-import userEvent from "@testing-library/user-event";
 import useSidePanel from "@/hooks/useSidePanel";
 import { accountsDefault, accountsForSubdomain } from "@/tests/mocks/accounts";
-import type { Account } from "@/features/auth";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach } from "vitest";
+import OrganisationSwitch from "./OrganisationSwitch";
 
 vi.mock("@/hooks/useAuthAccounts");
 vi.mock("@/hooks/useSidePanel");
@@ -49,7 +49,7 @@ describe("OrganisationSwitch", () => {
 
     renderWithProviders(<OrganisationSwitch />);
 
-    expect(screen.queryByText(/organisation/i)).toBeInTheDocument();
+    expect(screen.queryByText(/organization/i)).toBeInTheDocument();
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
   });
 
@@ -66,7 +66,7 @@ describe("OrganisationSwitch", () => {
 
     renderWithProviders(<OrganisationSwitch />);
 
-    expect(screen.queryByText(/organisation/i)).toBeInTheDocument();
+    expect(screen.queryByText(/organization/i)).toBeInTheDocument();
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
   });
 
@@ -78,7 +78,7 @@ describe("OrganisationSwitch", () => {
 
     it("should render select if there are multiple organisations", () => {
       expect(
-        screen.getByRole("combobox", { name: /organisation/i }),
+        screen.getByRole("combobox", { name: /organization/i }),
       ).toBeInTheDocument();
     });
 

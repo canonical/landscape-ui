@@ -1,12 +1,12 @@
+import InfoItem from "@/components/layout/InfoItem";
+import { useAuthHandle } from "@/features/auth";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
 import { Select } from "@canonical/react-components";
 import classNames from "classnames";
-import classes from "./OrganisationSwitch.module.scss";
-import { useAuthHandle } from "@/features/auth";
-import useDebug from "@/hooks/useDebug";
 import type { ChangeEvent } from "react";
-import InfoItem from "@/components/layout/InfoItem";
-import useSidePanel from "@/hooks/useSidePanel";
-import useAuthAccounts from "@/hooks/useAuthAccounts";
+import classes from "./OrganisationSwitch.module.scss";
 
 const OrganisationSwitch = () => {
   const { isOnSubdomain, options, handleAccountSwitch, currentAccount } =
@@ -18,7 +18,7 @@ const OrganisationSwitch = () => {
   if (isOnSubdomain || options.length === 1) {
     return (
       <InfoItem
-        label="Organisation"
+        label="Organization"
         value={currentAccount.title}
         className={classes.organisation}
       />
@@ -46,7 +46,7 @@ const OrganisationSwitch = () => {
   return (
     <div className={classes.container}>
       <Select
-        label="Organisation"
+        label="Organization"
         labelClassName={classNames(
           classes.organisation,
           "p-text--small p-text--small-caps u-no-margin--bottom",
