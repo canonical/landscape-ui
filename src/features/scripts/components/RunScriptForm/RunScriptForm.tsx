@@ -1,27 +1,27 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import LoadingState from "@/components/layout/LoadingState";
 import { currentInstanceCan } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { Instance } from "@/types/Instance";
 import { getFormikError } from "@/utils/formikErrors";
 import type { MultiSelectItem } from "@canonical/react-components";
 import {
   Col,
   ConfirmationModal,
+  Form,
   Input,
-  ModularTable,
   Row,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment/moment";
-import { useMemo, useState, type FC } from "react";
-import type { CellProps, Column } from "react-table";
+import { useState, type FC } from "react";
 import { useRunScript } from "../../api";
 import type { Script } from "../../types";
 import DeliveryBlock from "../DeliveryBlock";
+import RunScriptFormInstanceList from "../RunScriptFormInstanceList";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./RunScriptForm.module.scss";
 import type { FormProps } from "./types";
@@ -77,10 +77,40 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
   const formik = useFormik({
     initialValues: INITIAL_VALUES,
     onSubmit: handleSubmit,
+    validateOnMount: true,
     validationSchema: VALIDATION_SCHEMA,
   });
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const { data: getAllInstanceTagsQueryResult, isLoading: isGettingTags } =
+    getAllInstanceTagsQuery();
+
+  const { data: getInstancesQueryResult, isLoading: isGettingInstances } =
+    getInstancesQuery({
+      query: `access-group-recursive:${script.access_group}`,
+    });
+
+  const {
+    data: getTaggedInstancesQueryResult,
+    isLoading: isGettingTaggedInstances,
+    error: taggedInstancesQueryError,
+  } = getInstancesQuery(
+    {
+      query: `access-group-recursive:${script.access_group} ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`,
+    },
+    {
+      enabled: !!formik.values.tags.length,
+    },
+  );
+
+  if (isGettingTags || isGettingInstances) {
+    return <LoadingState />;
+  }
+
+  if (taggedInstancesQueryError) {
+    debug(taggedInstancesQueryError);
+  }
 
   const hideModal = () => {
     setIsModalVisible(false);
@@ -90,17 +120,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
     setIsModalVisible(true);
   };
 
-  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
-
   const tagOptions: MultiSelectItem[] =
     getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
       label: tag,
       value: tag,
     })) ?? [];
-
-  const { data: getInstancesQueryResult } = getInstancesQuery({
-    query: `access-group-recursive:${script.access_group}`,
-  });
 
   const instances =
     getInstancesQueryResult?.data.results.filter((instance) => {
@@ -112,16 +136,10 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
     value: id,
   }));
 
-  const modalColumns = useMemo<Column<Instance>[]>(
-    () => [
-      {
-        Header: "Instance",
-        Cell: ({ row: { original: instance } }: CellProps<Instance>) =>
-          instance.title,
-      },
-    ],
-    [],
-  );
+  const taggedInstances =
+    getTaggedInstancesQueryResult?.data.results.filter((instance) => {
+      return currentInstanceCan("runScripts", instance);
+    }) ?? [];
 
   const trySubmit = () => {
     if (formik.values.queryType == "tags") {
@@ -133,30 +151,43 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
 
   return (
     <>
-      <>
+      <Form onSubmit={trySubmit} noValidate>
         <p className="u-no-margin--bottom">Select instances by:</p>
         <div className="is-required">
           <div>
-            <Input
-              type="radio"
-              label="Tags"
-              {...formik.getFieldProps("queryType")}
-              value="tags"
-              checked={formik.values.queryType === "tags"}
-            />
+            <div className={classes.radioGroup}>
+              <Input
+                type="radio"
+                label="Tags"
+                {...formik.getFieldProps("queryType")}
+                onChange={async (event) => {
+                  formik.getFieldProps("queryType").onChange(event);
 
-            <Input
-              type="radio"
-              label="Instance names"
-              {...formik.getFieldProps("queryType")}
-              value="ids"
-              checked={formik.values.queryType === "ids"}
-              disabled={!instanceOptions.length}
-              help={
-                !instanceOptions.length &&
-                "There are no available instances in this script's access group"
-              }
-            />
+                  await Promise.all([
+                    formik.setFieldValue("tags", []),
+                    formik.setFieldTouched("tags", false),
+
+                    formik.setFieldValue("instanceIds", []),
+                    formik.setFieldTouched("instanceIds", false),
+                  ]);
+                }}
+                value="tags"
+                checked={formik.values.queryType === "tags"}
+              />
+
+              <Input
+                type="radio"
+                label="Instance names"
+                {...formik.getFieldProps("queryType")}
+                value="ids"
+                checked={formik.values.queryType === "ids"}
+                disabled={!instanceOptions.length}
+                help={
+                  !instanceOptions.length &&
+                  "There are no available instances in this script's access group"
+                }
+              />
+            </div>
             <div className={classes.instanceSelectionContainer}>
               {formik.values.queryType === "tags" && (
                 <MultiSelectField
@@ -170,18 +201,16 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
                   selectedItems={tagOptions.filter(({ value }) =>
                     formik.values.tags.includes(value as string),
                   )}
-                  onItemsUpdate={async (items) =>
+                  onItemsUpdate={async (items) => {
                     formik.setFieldValue(
                       "tags",
                       items.map(({ value }) => value),
-                    )
-                  }
-                  error={
-                    formik.touched.tags &&
-                    typeof formik.errors.tags === "string"
-                      ? formik.errors.tags
-                      : undefined
-                  }
+                    );
+
+                    formik.setFieldTouched("tags", true, false);
+                  }}
+                  error={getFormikError(formik, "tags")}
+                  scrollOverflow
                 />
               )}
 
@@ -197,18 +226,16 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
                   selectedItems={instanceOptions.filter(({ value }) =>
                     formik.values.instanceIds.includes(value as number),
                   )}
-                  onItemsUpdate={async (items) =>
+                  onItemsUpdate={async (items) => {
                     formik.setFieldValue(
                       "instanceIds",
                       items.map(({ value }) => value),
-                    )
-                  }
-                  error={
-                    formik.touched.instanceIds &&
-                    typeof formik.errors.instanceIds === "string"
-                      ? formik.errors.instanceIds
-                      : undefined
-                  }
+                    );
+
+                    formik.setFieldTouched("instanceIds", true, false);
+                  }}
+                  error={getFormikError(formik, "instanceIds")}
+                  scrollOverflow
                 />
               )}
             </div>
@@ -240,11 +267,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
         <DeliveryBlock formik={formik} />
 
         <SidePanelFormButtons
-          submitButtonDisabled={formik.isSubmitting}
+          submitButtonDisabled={formik.isSubmitting || !formik.isValid}
           submitButtonText="Run script"
           onSubmit={trySubmit}
         />
-      </>
+      </Form>
 
       {isModalVisible && (
         <ConfirmationModal
@@ -253,7 +280,12 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
           onConfirm={() => {
             formik.handleSubmit();
           }}
-          confirmButtonDisabled={formik.isSubmitting}
+          confirmButtonDisabled={
+            formik.isSubmitting ||
+            !!taggedInstancesQueryError ||
+            isGettingTaggedInstances
+          }
+          confirmButtonLoading={isGettingTaggedInstances}
           close={hideModal}
           confirmButtonAppearance="positive"
         >
@@ -263,13 +295,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
             {formik.values.tags.length == 1 ? "tag" : "tags"}.
           </p>
 
-          <ModularTable
-            columns={modalColumns}
-            data={instances.filter((instance) =>
-              instance.tags.some((tag) => formik.values.tags.includes(tag)),
-            )}
-            className={classes.table}
-          />
+          <RunScriptFormInstanceList instances={taggedInstances} />
         </ConfirmationModal>
       )}
     </>

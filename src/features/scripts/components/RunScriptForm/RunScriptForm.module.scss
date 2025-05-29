@@ -9,6 +9,7 @@
   padding-top: $sph--small;
 }
 
-.table {
-  width: max-content;
+.radioGroup {
+  column-gap: $sph--x-large;
+  display: flex;
 }
