@@ -3,6 +3,7 @@ import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Preferences } from "@/types/Preferences";
+import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { ChangeEvent, FC } from "react";
@@ -105,11 +106,7 @@ const EditOrganisationPreferencesForm: FC<
         label="Organization's name"
         type="text"
         help="Visible to others in organization"
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
         {...formik.getFieldProps("title")}
       />
 
@@ -128,12 +125,7 @@ const EditOrganisationPreferencesForm: FC<
             label="Registration key"
             aria-label="Registration key"
             type="text"
-            error={
-              formik.touched.registration_password &&
-              formik.errors.registration_password
-                ? formik.errors.registration_password
-                : undefined
-            }
+            error={getFormikError(formik, "registration_password")}
             {...formik.getFieldProps("registration_password")}
           />
           <Input
