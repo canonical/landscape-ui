@@ -22,23 +22,25 @@ const TruncatedCell: FC<TruncatedCellProps> = ({
   const [overflownChildCount, setOverflownChildCount] = useState<
     number | undefined
   >(undefined);
-  const containerRef = useRef<HTMLSpanElement | null>(null);
+  const cellRef = useRef<HTMLDivElement | null>(null);
+  const contentSpanRef = useRef<HTMLSpanElement | null>(null);
 
   const expandabilityCheck = (): void => {
-    const container = containerRef.current;
+    const cell = cellRef.current;
+    const contentSpan = contentSpanRef.current;
 
-    if (!container) {
+    if (!cell || !contentSpan) {
       return;
     }
 
     setOverflownChildCount(
-      [...container.childNodes].filter((child) => {
+      [...contentSpan.childNodes].filter((child) => {
         const range = document.createRange();
         range.selectNodeContents(child);
 
         return (
           range.getBoundingClientRect().right >
-          container.getBoundingClientRect().right
+          cell.getBoundingClientRect().right
         );
       }).length,
     );
@@ -47,18 +49,29 @@ const TruncatedCell: FC<TruncatedCellProps> = ({
   useEffect(() => {
     expandabilityCheck();
 
-    window.addEventListener("resize", expandabilityCheck);
+    if (!cellRef.current) {
+      return;
+    }
 
-    return (): void => {
-      window.removeEventListener("resize", expandabilityCheck);
+    const observer = new ResizeObserver(() => {
+      expandabilityCheck();
+    });
+
+    observer.observe(cellRef.current);
+
+    return () => {
+      observer.disconnect();
     };
   }, []);
 
   return (
     <div className={classNames({ [classes.container]: isExpanded })}>
-      <div className={isExpanded ? classes.expanded : classes.collapsed}>
+      <div
+        ref={cellRef}
+        className={isExpanded ? classes.expanded : classes.collapsed}
+      >
         <span
-          ref={containerRef}
+          ref={contentSpanRef}
           className={isExpanded ? classes.expandedContent : classes.truncated}
         >
           {content}
