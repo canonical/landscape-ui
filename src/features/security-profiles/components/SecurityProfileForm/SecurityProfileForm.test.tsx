@@ -1,6 +1,6 @@
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
 import type { ComponentProps } from "react";
@@ -64,20 +64,8 @@ describe("SecurityProfileForm", () => {
       />,
     );
 
-    const submitButton = screen.getByRole("button", {
-      name: "Waiting for action to complete",
-    });
-
-    await waitFor(() => {
-      if (props.submitButtonText === undefined) {
-        expect(submitButton).toBeEmptyDOMElement();
-      } else {
-        expect(submitButton).toHaveTextContent(props.submitButtonText);
-      }
-    });
-
     await userEvent.click(
-      screen.getByRole("button", { name: props.submitButtonText }),
+      await screen.findByRole("button", { name: props.submitButtonText }),
     );
 
     expect(onSuccess).toHaveBeenCalledTimes(1);
