@@ -6,9 +6,13 @@ import type { FC } from "react";
 
 interface GroupFilterProps {
   readonly options: SelectOption[];
+  readonly onItemSelect?: () => void;
 }
 
-const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
+const GroupFilter: FC<GroupFilterProps> = ({
+  onItemSelect = () => undefined,
+  options,
+}) => {
   const { groupBy, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation(
@@ -24,6 +28,7 @@ const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
       hasBadge
       options={options}
       onItemSelect={(item) => {
+        onItemSelect();
         setPageParams({ groupBy: item });
       }}
       selectedItem={groupBy}

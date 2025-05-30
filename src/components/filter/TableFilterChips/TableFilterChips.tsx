@@ -18,6 +18,7 @@ interface TableFilterChipsProps {
   readonly accessGroupOptions?: SelectOption[];
   readonly autoinstallFileOptions?: SelectOption[];
   readonly availabilityZonesOptions?: SelectOption[];
+  readonly clearSelection?: () => void;
   readonly employeeGroupOptions?: SelectOption[];
   readonly filtersToDisplay?: FilterKey[];
   readonly osOptions?: SelectOption[];
@@ -30,6 +31,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   accessGroupOptions,
   availabilityZonesOptions,
   autoinstallFileOptions,
+  clearSelection = () => undefined,
   employeeGroupOptions,
   filtersToDisplay,
   osOptions,
@@ -63,6 +65,8 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   } = usePageParams();
 
   const handleClearAllFilters = () => {
+    clearSelection();
+
     setPageParams({
       accessGroups: [],
       autoinstallFiles: [],
@@ -185,6 +189,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               key={value + idx}
               value={`Query: ${value}`}
               onDismiss={() => {
+                clearSelection();
                 setPageParams({ query: filterSearchQuery(query, value) });
               }}
               className="u-no-margin--bottom u-no-margin--right"
@@ -194,6 +199,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           <Chip
             value={`Search: ${search}`}
             onDismiss={() => {
+              clearSelection();
               setPageParams({ search: "" });
             }}
             className="u-no-margin--bottom u-no-margin--right"
@@ -203,6 +209,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           <Chip
             value={`Status: ${getChipLabel(statusOptions, status)}`}
             onDismiss={() => {
+              clearSelection();
               setPageParams({ status: "" });
             }}
             className="u-no-margin--bottom u-no-margin--right"
@@ -212,6 +219,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           <Chip
             value={`OS: ${getChipLabel(osOptions, os)}`}
             onDismiss={() => {
+              clearSelection();
               setPageParams({ os: "" });
             }}
             className="u-no-margin--bottom u-no-margin--right"
@@ -223,6 +231,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               key={availabilityZone}
               value={`Availability z.: ${getChipLabel(availabilityZonesOptions, availabilityZone)}`}
               onDismiss={() => {
+                clearSelection();
                 setPageParams({
                   availabilityZones: array.filter(
                     (item) => item !== availabilityZone,
@@ -238,6 +247,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               key={accessGroup}
               value={`Access group: ${getChipLabel(accessGroupOptions, accessGroup)}`}
               onDismiss={() => {
+                clearSelection();
                 setPageParams({
                   accessGroups: array.filter((item) => item !== accessGroup),
                 });
@@ -251,6 +261,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               key={autoinstallFile}
               value={`Autoinstall file: ${getChipLabel(autoinstallFileOptions, autoinstallFile)}`}
               onDismiss={() => {
+                clearSelection();
                 setPageParams({
                   autoinstallFiles: array.filter(
                     (item) => item !== autoinstallFile,
@@ -266,6 +277,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               key={employeeGroup}
               value={`Employee group: ${getChipLabel(employeeGroupOptions, employeeGroup)}`}
               onDismiss={() => {
+                clearSelection();
                 setPageParams({
                   employeeGroups: array.filter(
                     (item) => item !== employeeGroup,
@@ -281,6 +293,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
               key={tag}
               value={`Tag: ${getChipLabel(tagOptions, tag)}`}
               onDismiss={() => {
+                clearSelection();
                 setPageParams({ tags: array.filter((item) => item !== tag) });
               }}
               className="u-no-margin--bottom u-no-margin--right"
@@ -290,6 +303,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           <Chip
             value={`From: ${fromDate}`}
             onDismiss={() => {
+              clearSelection();
               setPageParams({ fromDate: "" });
             }}
             className="u-no-margin--bottom u-no-margin--right"
@@ -299,6 +313,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           <Chip
             value={`To: ${toDate}`}
             onDismiss={() => {
+              clearSelection();
               setPageParams({ toDate: "" });
             }}
             className="u-no-margin--bottom u-no-margin--right"
@@ -308,6 +323,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           <Chip
             value={`From pass rate: ${passRateFrom}%`}
             onDismiss={() => {
+              clearSelection();
               setPageParams({ passRateFrom: 0 });
             }}
             className="u-no-margin--bottom u-no-margin--right"
@@ -317,6 +333,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           <Chip
             value={`To pass rate: ${passRateTo}%`}
             onDismiss={() => {
+              clearSelection();
               setPageParams({ passRateTo: 100 });
             }}
             className="u-no-margin--bottom u-no-margin--right"
@@ -326,6 +343,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           <Chip
             value={`Type: ${getChipLabel(typeOptions, type)}`}
             onDismiss={() => {
+              clearSelection();
               setPageParams({ type: "" });
             }}
             className="u-no-margin--bottom u-no-margin--right"

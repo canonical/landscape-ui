@@ -6,9 +6,13 @@ import TableFilter from "../TableFilter";
 
 interface StatusFilterProps {
   readonly options: SelectOption[];
+  readonly onItemSelect?: () => void;
 }
 
-const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
+const StatusFilter: FC<StatusFilterProps> = ({
+  onItemSelect = () => undefined,
+  options,
+}) => {
   const { setPageParams, status } = usePageParams();
 
   useSetDynamicFilterValidation(
@@ -24,6 +28,7 @@ const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
       hasBadge
       options={options}
       onItemSelect={(item) => {
+        onItemSelect();
         setPageParams({ status: item });
       }}
       selectedItem={status}

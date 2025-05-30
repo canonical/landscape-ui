@@ -1,14 +1,18 @@
-import type { FC } from "react";
 import type { GroupedOption } from "@/components/filter";
 import { TableFilter } from "@/components/filter";
-import usePageParams from "@/hooks/usePageParams";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+import type { FC } from "react";
 
 interface AccessGroupFilterProps {
   readonly options: GroupedOption[];
+  readonly onItemSelect?: () => void;
 }
 
-const AccessGroupFilter: FC<AccessGroupFilterProps> = ({ options }) => {
+const AccessGroupFilter: FC<AccessGroupFilterProps> = ({
+  onItemSelect = () => undefined,
+  options,
+}) => {
   const { accessGroups, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation(
@@ -24,6 +28,7 @@ const AccessGroupFilter: FC<AccessGroupFilterProps> = ({ options }) => {
       hasBadge
       options={options}
       onItemsSelect={(items) => {
+        onItemSelect();
         setPageParams({ accessGroups: items });
       }}
       selectedItems={accessGroups}

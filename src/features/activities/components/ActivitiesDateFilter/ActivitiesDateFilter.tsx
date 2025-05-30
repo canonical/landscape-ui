@@ -1,3 +1,4 @@
+import { TableFilter } from "@/components/filter";
 import tableFilterClasses from "@/components/filter/TableFilter/TableFilter.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
@@ -6,14 +7,19 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import * as Yup from "yup";
 import classes from "./ActivitiesDateFilter.module.scss";
-import { TableFilter } from "@/components/filter";
 
 interface FormProps {
   fromDate: string;
   toDate: string;
 }
 
-const ActivitiesDateFilter: FC = () => {
+interface ActivitiesDateFilterProps {
+  readonly onChange?: () => void;
+}
+
+const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
+  onChange = () => undefined,
+}) => {
   const { setPageParams, fromDate, toDate } = usePageParams();
 
   const formik = useFormik<FormProps>({
@@ -31,6 +37,7 @@ const ActivitiesDateFilter: FC = () => {
         ),
     }),
     onSubmit: (values) => {
+      onChange();
       setPageParams({
         fromDate: values.fromDate,
         toDate: values.toDate,
@@ -88,6 +95,7 @@ const ActivitiesDateFilter: FC = () => {
                 appearance="base"
                 className="u-no-margin--bottom"
                 onClick={() => {
+                  onChange();
                   setPageParams({
                     fromDate: "",
                     toDate: "",

@@ -1,15 +1,19 @@
-import type { FC } from "react";
-import { useState } from "react";
 import { TableFilter } from "@/components/filter";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import type { FC } from "react";
+import { useState } from "react";
 
 interface TagFilterProps {
   readonly options: SelectOption[];
+  readonly onItemSelect?: () => void;
 }
 
-const TagFilter: FC<TagFilterProps> = ({ options }) => {
+const TagFilter: FC<TagFilterProps> = ({
+  onItemSelect = () => undefined,
+  options,
+}) => {
   const [searchText, setSearchText] = useState("");
 
   const { tags, setPageParams } = usePageParams();
@@ -31,6 +35,7 @@ const TagFilter: FC<TagFilterProps> = ({ options }) => {
       hasBadge
       options={filteredOptions}
       onItemsSelect={(items) => {
+        onItemSelect();
         setPageParams({ tags: items });
       }}
       onSearch={(search) => {

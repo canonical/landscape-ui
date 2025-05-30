@@ -44,7 +44,10 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
 
   return (
     <>
-      <InstancesHeader columnFilterOptions={columnFilterOptions} />
+      <InstancesHeader
+        columnFilterOptions={columnFilterOptions}
+        clearSelection={handleClearSelection}
+      />
 
       {getInstancesQueryLoading ? (
         <LoadingState />

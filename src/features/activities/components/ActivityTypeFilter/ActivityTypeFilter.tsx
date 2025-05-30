@@ -7,9 +7,13 @@ import { useState } from "react";
 
 interface ActivityTypeFilterProps {
   readonly options: SelectOption[];
+  readonly onItemSelect?: () => void;
 }
 
-const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({ options }) => {
+const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({
+  onItemSelect = () => undefined,
+  options,
+}) => {
   const [searchText, setSearchText] = useState("");
 
   const { setPageParams, type } = usePageParams();
@@ -34,6 +38,7 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({ options }) => {
       }}
       options={newOptions}
       onItemSelect={(item) => {
+        onItemSelect();
         setPageParams({ type: item });
       }}
       selectedItem={type}

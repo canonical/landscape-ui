@@ -21,12 +21,16 @@ const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
         afterSearch={handleClearSelection}
         actions={
           <div className={classes.actions}>
-            <StatusFilter options={STATUS_OPTIONS} />
+            <StatusFilter
+              onItemSelect={handleClearSelection}
+              options={STATUS_OPTIONS}
+            />
             <PackageActions selectedPackages={selectedPackages} />
           </div>
         }
       />
       <TableFilterChips
+        clearSelection={handleClearSelection}
         filtersToDisplay={["search", "status"]}
         statusOptions={STATUS_OPTIONS}
       />

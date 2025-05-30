@@ -80,9 +80,15 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
         />
 
         <div className={classes.filters}>
-          <StatusFilter options={ACTIVITY_STATUS_OPTIONS} />
-          <ActivityTypeFilter options={ACTIVITY_TYPE_OPTIONS} />
-          <ActivitiesDateFilter />
+          <StatusFilter
+            onItemSelect={resetSelectedIds}
+            options={ACTIVITY_STATUS_OPTIONS}
+          />
+          <ActivityTypeFilter
+            onItemSelect={resetSelectedIds}
+            options={ACTIVITY_TYPE_OPTIONS}
+          />
+          <ActivitiesDateFilter onChange={resetSelectedIds} />
         </div>
       </div>
       <SearchHelpPopup
@@ -94,6 +100,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
       />
       <TableFilterChips
         filtersToDisplay={["status", "type", "fromDate", "toDate", "query"]}
+        clearSelection={resetSelectedIds}
         statusOptions={ACTIVITY_STATUS_OPTIONS}
         typeOptions={ACTIVITY_TYPE_OPTIONS}
       />

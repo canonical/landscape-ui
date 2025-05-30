@@ -20,9 +20,13 @@ import classes from "./InstancesHeader.module.scss";
 
 interface InstancesHeaderProps {
   readonly columnFilterOptions: ColumnFilterOption[];
+  readonly clearSelection: () => void;
 }
 
-const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
+const InstancesHeader: FC<InstancesHeaderProps> = ({
+  columnFilterOptions,
+  clearSelection,
+}) => {
   const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const { getAccessGroupQuery } = useRoles();
@@ -77,13 +81,19 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           />
         </div>
         <div className={classes.filters}>
-          <GroupFilter options={groupOptions} />
+          <GroupFilter onItemSelect={clearSelection} options={groupOptions} />
           <span className={classes.divider} />
-          <StatusFilter options={statusOptions} />
-          <OsFilter options={osOptions} />
-          <AvailabilityZoneFilter options={availabilityZoneOptions} />
-          <AccessGroupFilter options={accessGroupOptions} />
-          <TagFilter options={tagOptions} />
+          <StatusFilter onItemSelect={clearSelection} options={statusOptions} />
+          <OsFilter onItemSelect={clearSelection} options={osOptions} />
+          <AvailabilityZoneFilter
+            onItemSelect={clearSelection}
+            options={availabilityZoneOptions}
+          />
+          <AccessGroupFilter
+            onItemSelect={clearSelection}
+            options={accessGroupOptions}
+          />
+          <TagFilter onItemSelect={clearSelection} options={tagOptions} />
           <span className={classes.divider} />
           <ColumnFilter options={columnFilterOptions} />
         </div>
@@ -98,6 +108,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           "tags",
           "query",
         ]}
+        clearSelection={clearSelection}
         accessGroupOptions={accessGroupOptions}
         availabilityZonesOptions={availabilityZoneOptions}
         osOptions={osOptions}

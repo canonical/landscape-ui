@@ -1,15 +1,17 @@
-import type { FC } from "react";
-import { useState } from "react";
 import type { GroupedOption } from "@/components/filter";
 import { TableFilter } from "@/components/filter";
-import usePageParams from "@/hooks/usePageParams";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+import type { FC } from "react";
+import { useState } from "react";
 
 interface AvailabilityZoneFilterProps {
   readonly options: GroupedOption[];
+  readonly onItemSelect?: () => void;
 }
 
 const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
+  onItemSelect = () => undefined,
   options,
 }) => {
   const [searchText, setSearchText] = useState("");
@@ -29,6 +31,8 @@ const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
   );
 
   const handleItemsSelect = (items: string[]) => {
+    onItemSelect();
+
     if (items[items.length - 1] === "none") {
       setPageParams({ availabilityZones: ["none"] });
     } else {
