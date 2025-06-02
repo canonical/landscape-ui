@@ -1,8 +1,8 @@
-import { renderWithProviders } from "@/tests/render";
-import AccessGroupChange from "./AccessGroupChange";
 import { instances } from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import AccessGroupChange from "./AccessGroupChange";
 
 const selected = instances.slice(0, 2);
 const newAccessGroup = "test";
@@ -15,11 +15,9 @@ describe("AccessGroupChange", () => {
       screen.queryByText("This field is required"),
     ).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /assign/i }));
-
-    expect(screen.getByText("This field is required")).toBeInTheDocument();
-
-    const select = screen.getByRole("combobox", { name: /access group/i });
+    const select = await screen.findByRole("combobox", {
+      name: /access group/i,
+    });
 
     await userEvent.selectOptions(select, newAccessGroup);
 

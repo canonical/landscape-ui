@@ -1,12 +1,12 @@
-import useDebug from "@/hooks/useDebug";
-import { useFormik } from "formik";
-import { Form, Input, Select } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { Form, Input, Select } from "@canonical/react-components";
+import { useFormik } from "formik";
 import type { FC } from "react";
-import type { FormProps } from "./types";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import type { FormProps } from "./types";
 
 const NewAccessGroupForm: FC = () => {
   const { createAccessGroupQuery, getAccessGroupQuery } = useRoles();
@@ -21,11 +21,6 @@ const NewAccessGroupForm: FC = () => {
       value: accessGroup.name,
     }),
   );
-
-  const ACCESS_GROUP_OPTIONS = [
-    { label: "Select access group", value: "" },
-    ...accessGroupsOptionsResults,
-  ];
 
   const debug = useDebug();
   const formik = useFormik<FormProps>({
@@ -58,7 +53,7 @@ const NewAccessGroupForm: FC = () => {
         required
         label="Parent"
         disabled={isGettingAccessGroups}
-        options={ACCESS_GROUP_OPTIONS}
+        options={accessGroupsOptionsResults}
         error={
           formik.touched.parent && formik.errors.parent
             ? formik.errors.parent

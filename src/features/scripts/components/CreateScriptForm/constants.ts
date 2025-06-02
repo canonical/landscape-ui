@@ -3,7 +3,7 @@ import type { ScriptFormValues } from "../../types";
 export const SCRIPT_FORM_INITIAL_VALUES: ScriptFormValues = {
   title: "",
   code: "",
-  access_group: "",
+  access_group: "global",
   attachments: {
     first: null,
     second: null,

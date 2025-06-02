@@ -1,8 +1,8 @@
-import type { DuplicateFormProps } from "../../types";
 import * as Yup from "yup";
+import type { DuplicateFormProps } from "../../types";
 
 export const INITIAL_VALUES: DuplicateFormProps = {
-  access_group: "",
+  access_group: "global",
   all_computers: false,
   description: "",
   tags: [],

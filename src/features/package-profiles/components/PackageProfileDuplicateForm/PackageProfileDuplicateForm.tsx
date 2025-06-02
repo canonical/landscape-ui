@@ -1,17 +1,17 @@
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { useEffect } from "react";
-import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import type { CopyPackageProfileParams } from "../../hooks";
-import { usePackageProfiles } from "../../hooks";
-import type { DuplicateFormProps, PackageProfile } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { Form, Input, Select } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useEffect } from "react";
+import type { CopyPackageProfileParams } from "../../hooks";
+import { usePackageProfiles } from "../../hooks";
+import type { DuplicateFormProps, PackageProfile } from "../../types";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileDuplicateFormProps {
@@ -36,8 +36,6 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       label: title,
       value: name,
     })) ?? [];
-
-  accessGroupOptions.unshift({ label: "Select access group", value: "" });
 
   const handleSubmit = async (values: DuplicateFormProps) => {
     const valuesToSubmit: CopyPackageProfileParams = {

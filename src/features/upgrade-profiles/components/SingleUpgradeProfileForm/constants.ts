@@ -6,7 +6,7 @@ export const CTA_LABELS = {
 };
 
 export const INITIAL_VALUES: FormProps = {
-  access_group: "",
+  access_group: "global",
   all_computers: false,
   at_hour: "",
   at_minute: "",

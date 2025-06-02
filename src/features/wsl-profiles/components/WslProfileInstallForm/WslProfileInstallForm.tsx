@@ -1,25 +1,25 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
+import CodeEditor from "@/components/form/CodeEditor";
+import FileInput from "@/components/form/FileInput";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { useWsl } from "@/features/wsl";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
+import { useWslProfiles } from "../../hooks";
+import type { WslProfile } from "../../types";
+import { CLOUD_INIT_OPTIONS, FILE_INPUT_HELPER_TEXT } from "../constants";
+import { CTA_INFO } from "./constants";
 import {
   getCloudInitFile,
   getInitialValues,
   getValidationSchema,
 } from "./helpers";
-import FileInput from "@/components/form/FileInput";
-import { useWsl } from "@/features/wsl";
-import { useWslProfiles } from "../../hooks";
-import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
-import useNotify from "@/hooks/useNotify";
 import classes from "./WslProfileInstallForm.module.scss";
-import type { WslProfile } from "../../types";
-import { CLOUD_INIT_OPTIONS, FILE_INPUT_HELPER_TEXT } from "../constants";
-import CodeEditor from "@/components/form/CodeEditor";
-import { CTA_INFO } from "./constants";
 
 interface FormProps {
   title: string;
@@ -70,11 +70,6 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
       label: title,
       value: name,
     })) ?? [];
-
-  const ACCESS_GROUP_OPTIONS = [
-    { label: "Select access group", value: "" },
-    ...accessGroupResultOptions,
-  ];
 
   const handleSubmit = async (values: FormProps) => {
     try {
@@ -155,7 +150,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
         label="Access group"
         aria-label="Access group"
         required
-        options={ACCESS_GROUP_OPTIONS}
+        options={accessGroupResultOptions}
         {...formik.getFieldProps("access_group")}
         error={
           formik.touched.access_group && formik.errors.access_group

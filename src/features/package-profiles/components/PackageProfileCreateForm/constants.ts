@@ -3,7 +3,7 @@ import { EMPTY_CONSTRAINT } from "../../constants";
 import type { AddFormProps } from "../../types";
 
 export const INITIAL_VALUES: AddFormProps = {
-  access_group: "",
+  access_group: "global",
   all_computers: false,
   constraints: [EMPTY_CONSTRAINT],
   constraintsType: "",

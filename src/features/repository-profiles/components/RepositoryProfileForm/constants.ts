@@ -1,7 +1,7 @@
 import type { RepositoryProfileFormValues } from "../../types";
 
 export const INITIAL_VALUES: RepositoryProfileFormValues = {
-  access_group: "",
+  access_group: "global",
   all_computers: false,
   apt_sources: [],
   description: "",

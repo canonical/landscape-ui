@@ -1,9 +1,9 @@
-import type { FormProps } from "./types";
 import * as Yup from "yup";
+import type { FormProps } from "./types";
 
 export const INITIAL_VALUES: FormProps = {
   title: "",
-  parent: "",
+  parent: "global",
 };
 
 export const VALIDATION_SCHEMA = Yup.object().shape({

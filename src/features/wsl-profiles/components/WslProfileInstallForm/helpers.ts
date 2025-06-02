@@ -1,6 +1,6 @@
+import type { ComponentProps } from "react";
 import * as Yup from "yup";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "../constants";
-import type { ComponentProps } from "react";
 import type WslProfileInstallForm from "./WslProfileInstallForm";
 
 export const getValidationSchema = () => {
@@ -68,7 +68,7 @@ export const getInitialValues = (
   return props.action === "add"
     ? {
         title: "",
-        access_group: "",
+        access_group: "global",
         description: "",
         instanceType: "",
         customImageName: "",
@@ -109,8 +109,12 @@ const fileToBase64 = (file: File | null): Promise<string> | undefined => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = (error) => {
+      reject(error);
+    };
   });
 };
 
