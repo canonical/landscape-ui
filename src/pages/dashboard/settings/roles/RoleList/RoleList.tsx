@@ -16,6 +16,7 @@ import {
   handleRowProps,
 } from "./helpers";
 import type { CellCoordinates } from "./types";
+import classes from "./RoleList.module.scss";
 
 interface RoleListProps {
   readonly roleList: Role[];
