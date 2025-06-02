@@ -1,19 +1,20 @@
-import moment from "moment";
-import type { FC } from "react";
+import InfoItem from "@/components/layout/InfoItem";
+import LoadingState from "@/components/layout/LoadingState";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import useDebug from "@/hooks/useDebug";
+import useInstances from "@/hooks/useInstances";
 import {
+  CodeSnippet,
   Col,
   ConfirmationButton,
   Icon,
   Row,
 } from "@canonical/react-components";
-import InfoItem from "@/components/layout/InfoItem";
-import LoadingState from "@/components/layout/LoadingState";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import moment from "moment";
+import type { FC } from "react";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities } from "../../hooks";
 import type { Activity } from "../../types";
-import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import classes from "./ActivityDetails.module.scss";
 
 interface ActivityDetailsProps {
@@ -257,11 +258,14 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
             )}
             {activity.result_text && (
               <Col size={12}>
-                <InfoItem
-                  label="Output"
-                  type="snippet"
-                  value={activity.result_text}
+                <CodeSnippet
                   className={classes.output}
+                  blocks={[
+                    {
+                      title: "Output",
+                      code: activity.result_text,
+                    },
+                  ]}
                 />
               </Col>
             )}

@@ -17,7 +17,7 @@ export const activities: Activity[] = [
     },
     type: "StartChildComputerActivity",
     summary: "Start instance Bionic WSL",
-    result_text: null,
+    result_text: "test\ntest",
     computer_id: 6,
     approval_time: null,
     delivery_time: "2024-04-15T15:47:07Z",

@@ -34,36 +34,38 @@ export default [
     },
   ),
 
-  http.get<never, GetActivitiesParams, Activity>(
+  http.get<{ id: string }, GetActivitiesParams, Activity>(
     `${API_URL}activities/:id`,
-    async () => {
+    async ({ params: { id } }) => {
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
         throw new HttpResponse(null, { status: 500 });
       }
 
-      return HttpResponse.json<Activity>({
-        activity_status: "succeeded",
-        approval_time: null,
-        children: [],
-        completion_time: null,
-        computer_id: 0,
-        creation_time: "",
-        creator: undefined,
-        deliver_after_time: null,
-        deliver_before_time: null,
-        delivery_time: null,
-        id: 0,
-        modification_time: "",
-        parent_id: null,
-        result_code: null,
-        result_text: null,
-        schedule_after_time: null,
-        schedule_before_time: null,
-        summary: "",
-        type: "",
-      });
+      return HttpResponse.json<Activity>(
+        activities.find((activity) => activity.id === parseInt(id)) ?? {
+          activity_status: "succeeded",
+          approval_time: null,
+          children: [],
+          completion_time: null,
+          computer_id: 0,
+          creation_time: "",
+          creator: undefined,
+          deliver_after_time: null,
+          deliver_before_time: null,
+          delivery_time: null,
+          id: 0,
+          modification_time: "",
+          parent_id: null,
+          result_code: null,
+          result_text: null,
+          schedule_after_time: null,
+          schedule_before_time: null,
+          summary: "",
+          type: "",
+        },
+      );
     },
   ),
 
