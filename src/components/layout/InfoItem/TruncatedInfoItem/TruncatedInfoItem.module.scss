@@ -1,0 +1,18 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.truncated {
+  border-bottom: 1px solid $color-mid-light;
+}
+
+.truncatedContent {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.showMore {
+  align-self: flex-end;
+  width: fit-content;
+}
