@@ -22,7 +22,7 @@ const EmptyStateNoGroups: FC<EmptyStateNoGroupsProps> = ({
         onClick={handleImportEmployeeGroups}
       >
         <Icon name={ICONS.plus} light />
-        <span>Import employee groups</span>
+        <span>Import employee groups.</span>
       </Button>,
     ]}
   />

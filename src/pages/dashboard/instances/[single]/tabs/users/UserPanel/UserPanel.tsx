@@ -68,7 +68,7 @@ const UserPanel: FC = () => {
         (!userResponse || userResponse.data.results.length === 0) && (
           <EmptyState
             title="No users found"
-            body="Add new users by clicking the button below"
+            body="Add new users by clicking the button below."
             icon="connected"
             cta={[
               <Button
@@ -108,7 +108,9 @@ const UserPanel: FC = () => {
             )}
           <UserList
             selected={selected}
-            setSelected={(userIds) => setSelected(userIds)}
+            setSelected={(userIds) => {
+              setSelected(userIds);
+            }}
             users={users}
           />
         </>

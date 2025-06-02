@@ -23,7 +23,7 @@ const UbuntuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
           <p>
             This computer is not currently attached to an Ubuntu Pro
             entitlement, which provides additional security updates and other
-            benefits from Canonical
+            benefits from Canonical.
           </p>
           <a
             href="https://ubuntu.com/pro"
