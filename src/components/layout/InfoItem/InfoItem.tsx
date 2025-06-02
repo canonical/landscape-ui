@@ -12,7 +12,9 @@ export type InfoItemProps =
 const InfoItem: FC<InfoItemProps> = (props) => {
   switch (props.type) {
     case "password": {
-      return <RegularInfoItem value="****************" {...props} />;
+      return (
+        <RegularInfoItem {...props} value={<span>****************</span>} />
+      );
     }
 
     case "truncated": {
@@ -20,7 +22,7 @@ const InfoItem: FC<InfoItemProps> = (props) => {
     }
 
     default: {
-      return <RegularInfoItem {...props} />;
+      return <RegularInfoItem {...props} value={<span>{props.value}</span>} />;
     }
   }
 };
