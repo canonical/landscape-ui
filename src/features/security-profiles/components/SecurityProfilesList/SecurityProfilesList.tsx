@@ -46,43 +46,43 @@ const SecurityProfileDownloadAuditForm = lazy(
 const SecurityProfileForm = lazy(async () => import("../SecurityProfileForm"));
 
 const NAME_HEADER = (
-  <span style={{ display: "inline-block", marginTop: "0px" }}>name</span>
+  <span style={{ display: "inline-block", marginTop: "0px" }}>Name</span>
 );
 
 const STATUS_HEADER = (
-  <span style={{ display: "inline-block", marginTop: "0px" }}>status</span>
+  <span style={{ display: "inline-block", marginTop: "0px" }}>Status</span>
 );
 
 const PASSRATE_HEADER = (
   <span style={{ display: "inline-block", marginTop: "0px" }}>
-    last audit&apos;s pass rate
+    Last audit&apos;s pass rate
   </span>
 );
 
 const ASSOCIATED_INSTANCES_HEADER = (
   <span style={{ display: "inline-block", marginTop: "18px" }}>
-    associated instances
+    Associated instances
     <br />
-    tags
+    Tags
   </span>
 );
 
 const MODE_HEADER = (
   <span style={{ display: "inline-block", marginTop: "0px" }}>
-    profile mode
+    Profile mode
   </span>
 );
 
 const LAST_RUN_HEADER = (
   <span style={{ display: "inline-block", marginTop: "18px" }}>
-    last run
+    Last run
     <br />
-    schedule
+    Schedule
   </span>
 );
 
 const ACTIONS_HEADER = (
-  <span style={{ display: "inline-block", marginTop: "0px" }}>actions</span>
+  <span style={{ display: "inline-block", marginTop: "0px" }}>Actions</span>
 );
 
 interface SecurityProfilesListProps {
