@@ -63,7 +63,7 @@ const ASSOCIATED_INSTANCES_HEADER = (
   <span style={{ display: "inline-block", marginTop: "18px" }}>
     associated instances
     <br />
-    tags
+    <span className="u-text--muted">tags</span>
   </span>
 );
 
@@ -77,7 +77,7 @@ const LAST_RUN_HEADER = (
   <span style={{ display: "inline-block", marginTop: "18px" }}>
     last run
     <br />
-    schedule
+    <span className="u-text--muted">schedule</span>
   </span>
 );
 
