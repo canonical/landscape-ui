@@ -15,8 +15,8 @@ import {
   handleCellProps,
   handleRowProps,
 } from "./helpers";
-import type { CellCoordinates } from "./types";
 import classes from "./RoleList.module.scss";
+import type { CellCoordinates } from "./types";
 
 interface RoleListProps {
   readonly roleList: Role[];
@@ -59,12 +59,12 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
       {
         accessor: "persons",
         Header: "Administrators",
+        className: classes.administrators,
         Cell: ({ row }: CellProps<Role>) => row.original.persons.length,
       },
       {
         accessor: "view",
         Header: "View",
-        className: classes.view,
         Cell: ({ row: { original, index } }: CellProps<Role>) => (
           <TruncatedCell
             content={getPermissionListByType(
