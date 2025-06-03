@@ -21,7 +21,8 @@
 
 .linePassed,
 .lineFailed,
-.lineInProgress {
+.lineInProgress,
+.lineNotRun {
   display: inline-block;
   height: $spv--small;
 }
@@ -38,6 +39,10 @@
 .lineInProgress {
   background-color: rgb(0 0 0 / 60%);
   border-left: 1px solid #ccc;
+}
+
+.lineNotRun {
+  background-color: #ccc;
 }
 
 .lineContainer *:last-child {

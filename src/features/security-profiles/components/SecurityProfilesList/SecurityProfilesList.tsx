@@ -355,23 +355,34 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
           return (
             <>
               <div className={classes.textContainer}>
-                <Link
-                  to={{
-                    pathname: "/instances",
-                    search: `?query=security-profile%3A${row.original.id}%3Apass`,
-                  }}
-                >
-                  <span>{passing} passed</span>
-                </Link>
-                <Link
-                  to={{
-                    pathname: "/instances",
-                    search: `?query=security-profile%3A${row.original.id}%3Afail`,
-                  }}
-                >
+                <div>
+                  {passing > 0 ? (
+                    <Link
+                      to={{
+                        pathname: "/instances",
+                        search: `?query=security-profile%3A${row.original.id}%3Apass`,
+                      }}
+                    >
+                      <span>{passing} passed</span>
+                    </Link>
+                  ) : (
+                    <span>{passing} passed</span>
+                  )}
+                </div>
+                {failing > 0 ? (
+                  <Link
+                    to={{
+                      pathname: "/instances",
+                      search: `?query=security-profile%3A${row.original.id}%3Afail`,
+                    }}
+                  >
+                    <span>{failing} failed</span>
+                  </Link>
+                ) : (
                   <span>{failing} failed</span>
-                </Link>
+                )}
               </div>
+
               <Tooltip
                 position="btm-center"
                 positionElementClassName={classes.tooltip}
@@ -394,6 +405,12 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                     <div
                       className={classes.lineInProgress}
                       style={{ width: `${(in_progress / total) * 100}%` }}
+                    />
+                  )}
+                  {not_started > 0 && (
+                    <div
+                      className={classes.lineNotRun}
+                      style={{ width: `${(not_started / total) * 100}%` }}
                     />
                   )}
                 </div>
