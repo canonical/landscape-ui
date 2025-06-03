@@ -87,7 +87,7 @@ const TruncatedCell: FC<TruncatedCellProps> = ({
             onClick={onExpand}
           >
             <span className={classNames("u-text--muted", classes.buttonText)}>
-              {showCount ? `+${overflownChildCount}` : "show more"}
+              {showCount ? `+${overflownChildCount}` : "Show more"}
             </span>
           </Button>
         )}
