@@ -27,7 +27,7 @@ const EmployeeGroupIdentityIssuerListContainer: FC = () => {
             className="p-segmented-control__button"
             onClick={async () => navigate("/settings/identity-providers")}
           >
-            <span>Go to identity Providers</span>
+            <span>Go to identity providers</span>
           </Button>,
         ]}
       />
