@@ -47,6 +47,12 @@ const checkEditAndDeleteButtons = async (
   seriesName: string,
   distributionName: string,
 ) => {
+  await userEvent.click(
+    screen.getByLabelText(
+      `${pocketName} pocket of ${distributionName}/${seriesName} actions`,
+    ),
+  );
+
   const editButton = screen.getByRole("button", {
     name: `Edit ${pocketName} pocket of ${distributionName}/${seriesName}`,
   });
@@ -61,6 +67,12 @@ const checkEditAndDeleteButtons = async (
     screen.getByRole("button", { name: /close side panel/i }),
   );
 
+  await userEvent.click(
+    screen.getByLabelText(
+      `${pocketName} pocket of ${distributionName}/${seriesName} actions`,
+    ),
+  );
+
   const deleteButton = screen.getByRole("button", {
     name: `Remove ${pocketName} pocket of ${distributionName}/${seriesName}`,
   });
@@ -68,10 +80,9 @@ const checkEditAndDeleteButtons = async (
   await userEvent.click(deleteButton);
 
   expect(
-    screen.getByText(`
-                Do you really want to delete ${pocketName} pocket from${" "}
-                ${seriesName} series of ${distributionName} distribution?
-              `),
+    screen.getByText(
+      `Do you really want to delete ${pocketName} pocket from ${seriesName} series of ${distributionName} distribution?`,
+    ),
   ).toBeVisible();
   await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
 };
@@ -96,7 +107,9 @@ describe("SeriesPocketListActions", () => {
       screen.getByText("Do you want to synchronize packages?"),
     ).toBeInTheDocument();
 
-    checkEditAndDeleteButtons(
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+    await checkEditAndDeleteButtons(
       propsWithMirrorPocket.pocket.name,
       propsWithMirrorPocket.seriesName,
       propsWithMirrorPocket.distributionName,
@@ -124,7 +137,9 @@ describe("SeriesPocketListActions", () => {
       ),
     ).toBeInTheDocument();
 
-    checkEditAndDeleteButtons(
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+    await checkEditAndDeleteButtons(
       propsWithPullPocket.pocket.name,
       propsWithPullPocket.seriesName,
       propsWithPullPocket.distributionName,
@@ -143,7 +158,13 @@ describe("SeriesPocketListActions", () => {
     const buttonsLength = screen.getAllByRole("button").length;
     expect(buttonsLength).toBe(3);
 
-    checkEditAndDeleteButtons(
+    await userEvent.click(
+      screen.getByLabelText(
+        `${propsWithUploadPocket.pocket.name} pocket of ${propsWithUploadPocket.distributionName}/${propsWithUploadPocket.seriesName} actions`,
+      ),
+    );
+
+    await checkEditAndDeleteButtons(
       propsWithUploadPocket.pocket.name,
       propsWithUploadPocket.seriesName,
       propsWithUploadPocket.distributionName,
