@@ -15,6 +15,8 @@ import type { Activity } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import classes from "./ActivityDetails.module.scss";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
 
 interface ActivityDetailsProps {
   readonly activityId: number;
@@ -22,7 +24,8 @@ interface ActivityDetailsProps {
 
 const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
   const debug = useDebug();
-
+  const { notify } = useNotify();
+  const { closeSidePanel } = useSidePanel();
   const {
     approveActivitiesQuery,
     cancelActivitiesQuery,
@@ -68,6 +71,14 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
   const handleApproveActivity = async (a: Activity) => {
     try {
       await approveActivities({ query: `id:${a.id}` });
+
+      closeSidePanel();
+
+      notify.success({
+        title: "You have successfully approved an activity.",
+        message:
+          "This activity will be delivered the next time the Landscape server connects with the client.",
+      });
     } catch (error) {
       debug(error);
     }
@@ -76,6 +87,14 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
   const handleCancelActivity = async (a: Activity) => {
     try {
       await cancelActivities({ query: `id:${a.id}` });
+
+      closeSidePanel();
+
+      notify.success({
+        title: "You have successfully canceled an activity.",
+        message:
+          "This activity won't be delivered to the client and will not run.",
+      });
     } catch (error) {
       debug(error);
     }
@@ -84,6 +103,13 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
   const handleRedoActivity = async (a: Activity) => {
     try {
       await redoActivities({ activity_ids: [a.id] });
+
+      closeSidePanel();
+
+      notify.success({
+        title: "You have successfully redone an activity.",
+        message: "An activity has been queued to re-run this activity.",
+      });
     } catch (error) {
       debug(error);
     }
@@ -92,6 +118,14 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
   const handleUndoActivity = async (a: Activity) => {
     try {
       await undoActivities({ activity_ids: [a.id] });
+
+      closeSidePanel();
+
+      notify.success({
+        title: "You have successfully undone an activity.",
+        message:
+          "An activity has been queued to revert the changes delivered by this activity.",
+      });
     } catch (error) {
       debug(error);
     }

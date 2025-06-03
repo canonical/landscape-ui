@@ -5,6 +5,11 @@ import { useUsns } from "@/features/usns";
 import usePageParams from "@/hooks/usePageParams";
 import SecurityIssueList from "@/pages/dashboard/instances/[single]/tabs/security-issues/SecurityIssueList";
 import type { Instance } from "@/types/Instance";
+import {
+  isSecurityEmptyState,
+  isSecurityListLoaded,
+  isSecurityLoadingState,
+} from "./helpers";
 
 interface SecurityIssuesPanelProps {
   readonly instance: Instance;
@@ -25,24 +30,28 @@ const SecurityIssuesPanel: FC<SecurityIssuesPanelProps> = ({ instance }) => {
 
   return (
     <>
-      {!search &&
-        currentPage === 1 &&
-        pageSize === 20 &&
-        getUsnsQueryLoading && <LoadingState />}
-      {!search &&
-        currentPage === 1 &&
-        pageSize === 20 &&
-        !getUsnsQueryLoading &&
-        (!getUsnsQueryResult ||
-          getUsnsQueryResult.data.results.length === 0) && (
-          <EmptyState icon="inspector-debug" title="No security issues found" />
-        )}
-      {(search ||
-        currentPage > 1 ||
-        pageSize !== 20 ||
-        (!getUsnsQueryLoading &&
-          getUsnsQueryResult &&
-          getUsnsQueryResult.data.results.length > 0)) && (
+      {isSecurityLoadingState({
+        search,
+        currentPage,
+        pageSize,
+        getUsnsQueryLoading,
+      }) && <LoadingState />}
+      {isSecurityEmptyState({
+        search,
+        currentPage,
+        pageSize,
+        getUsnsQueryLoading,
+        getUsnsQueryResult,
+      }) && (
+        <EmptyState icon="inspector-debug" title="No security issues found" />
+      )}
+      {isSecurityListLoaded({
+        currentPage,
+        getUsnsQueryLoading,
+        getUsnsQueryResult,
+        pageSize,
+        search,
+      }) && (
         <SecurityIssueList
           instance={instance}
           isUsnsLoading={getUsnsQueryLoading}

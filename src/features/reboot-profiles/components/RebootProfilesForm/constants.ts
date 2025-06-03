@@ -28,4 +28,4 @@ export const DAY_OPTIONS: (SelectOption & {
 
 export const EXPIRATION_TOOLTIP_MESSAGE = `If Landscape cannot reboot the
 associated instances by this point,
-the reboot will be cancelled.`;
+the reboot will be canceled.`;

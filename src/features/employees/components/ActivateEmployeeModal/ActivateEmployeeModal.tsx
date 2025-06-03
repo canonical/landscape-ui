@@ -3,6 +3,7 @@ import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import type { Employee } from "../../types";
 import { usePatchEmployee } from "../../api";
+import useDebug from "@/hooks/useDebug";
 
 interface ActivateEmployeeModalProps {
   readonly employee: Employee;
@@ -14,19 +15,23 @@ const ActivateEmployeeModal: FC<ActivateEmployeeModalProps> = ({
   handleClose,
 }) => {
   const { notify } = useNotify();
-
+  const debug = useDebug();
   const { patchEmployee, isPending } = usePatchEmployee();
 
   const handleActivateEmployee = async () => {
-    await patchEmployee({
-      id: employee.id,
-      is_active: true,
-    });
-    notify.success({
-      title: `You have successfully activated ${employee.name}`,
-      message: `${employee.name} will be able to log in to Landscape and register new instances with their account.`,
-    });
-    handleClose();
+    try {
+      await patchEmployee({
+        id: employee.id,
+        is_active: true,
+      });
+      notify.success({
+        title: `You have successfully activated ${employee.name}`,
+        message: `${employee.name} will be able to log in to Landscape and register new instances with their account.`,
+      });
+      handleClose();
+    } catch (error) {
+      debug(error);
+    }
   };
 
   return (

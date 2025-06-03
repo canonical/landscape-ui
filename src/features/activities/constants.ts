@@ -35,7 +35,7 @@ export const ACTIVITY_STATUSES: Record<
   },
   canceled: {
     icon: "error-grey",
-    label: "Cancelled",
+    label: "Canceled",
   },
   failed: {
     icon: `error-grey ${classes.iconError}`,

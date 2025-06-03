@@ -1,6 +1,7 @@
 import ListActions from "@/components/layout/ListActions";
 import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import type { Administrator } from "@/types/Administrator";
 import { ConfirmationModal } from "@canonical/react-components";
 import { type FC } from "react";
@@ -14,7 +15,7 @@ const AdministratorListActions: FC<AdministratorListActionsProps> = ({
   administrator,
 }) => {
   const debug = useDebug();
-
+  const { notify } = useNotify();
   const { disableAdministratorQuery } = useAdministrators();
 
   const {
@@ -29,6 +30,12 @@ const AdministratorListActions: FC<AdministratorListActionsProps> = ({
   const tryDisable = async () => {
     try {
       await disable({ email: administrator.email });
+
+      notify.success({
+        title: `You have successfully removed ${administrator.name} as an administrator.`,
+        message:
+          "They will no longer be able to access this Landscape organization and all permissions have been revoked.",
+      });
     } catch (error) {
       debug(error);
     } finally {
