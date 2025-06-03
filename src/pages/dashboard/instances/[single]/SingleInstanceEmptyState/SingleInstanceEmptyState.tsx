@@ -26,11 +26,12 @@ const SingleInstanceEmptyState: FC<SingleInstanceEmptyStateProps> = ({
           {childInstanceId ? (
             <>
               <span>have a child instance with id = </span>
-              <code>{childInstanceId}</code>.
+              <code>{childInstanceId}</code>
             </>
           ) : (
             <span>exist</span>
           )}
+          .
         </p>
       }
       cta={[

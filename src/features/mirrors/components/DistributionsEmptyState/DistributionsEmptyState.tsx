@@ -26,7 +26,7 @@ const DistributionsEmptyState: FC = () => {
       body={
         <>
           <p className="u-no-margin--bottom">
-            To add a new mirror you must first add a distribution.
+            To add a new mirror, you must first add a distribution.
           </p>
           <a
             href="https://ubuntu.com/landscape/docs/repositories"
