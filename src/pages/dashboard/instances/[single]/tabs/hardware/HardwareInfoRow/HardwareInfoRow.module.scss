@@ -5,7 +5,11 @@
 .wrapper {
   display: flex;
 
-  @media (max-width: $breakpoint-small - 1px) {
+  &:not(:first-child) {
+    border-top: 1px solid $colors--light-theme--border-default;
+  }
+
+  @media (max-width: #{$breakpoint-small - 1px}) {
     flex-direction: column;
   }
 }

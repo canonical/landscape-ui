@@ -112,6 +112,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                   >
                     Ubuntu One
                   </Link>
+                  .
                 </>
               )}
             </>
@@ -140,6 +141,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                   >
                     Ubuntu One
                   </Link>
+                  .
                 </>
               )}
             </>
@@ -167,6 +169,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                 >
                   Ubuntu One
                 </Link>
+                .
               </>
             ) : undefined
           }

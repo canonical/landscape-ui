@@ -142,7 +142,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         help="Regular upgrades will not be applied"
         {...formik.getFieldProps("upgrade_type")}
         checked={formik.values.upgrade_type === "security"}
-        onChange={() =>
+        onChange={async () =>
           formik.setFieldValue(
             "upgrade_type",
             formik.values.upgrade_type === "all" ? "security" : "all",
@@ -153,7 +153,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       <Input
         type="checkbox"
         label="Remove packages that are no longer needed"
-        help="This will affect packages installed to satisfy dependencies that are no longer required after upgrading"
+        help="This will affect packages installed to satisfy dependencies that are no longer required after upgrading."
         {...formik.getFieldProps("autoremove")}
         checked={formik.values.autoremove}
       />

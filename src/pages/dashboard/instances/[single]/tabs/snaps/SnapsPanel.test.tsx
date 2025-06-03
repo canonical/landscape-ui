@@ -14,7 +14,7 @@ describe("SnapsPanel", () => {
     await expectLoadingState();
 
     const emptyStateTitle = await screen.findByText(
-      "You haven't installed any snaps yet",
+      "You haven't installed any snaps yet.",
     );
     expect(emptyStateTitle).toBeInTheDocument();
   });

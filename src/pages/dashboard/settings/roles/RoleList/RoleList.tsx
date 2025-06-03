@@ -15,6 +15,7 @@ import {
   handleCellProps,
   handleRowProps,
 } from "./helpers";
+import classes from "./RoleList.module.scss";
 import type { CellCoordinates } from "./types";
 
 interface RoleListProps {
@@ -58,6 +59,7 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
       {
         accessor: "persons",
         Header: "Administrators",
+        className: classes.administrators,
         Cell: ({ row }: CellProps<Role>) => row.original.persons.length,
       },
       {

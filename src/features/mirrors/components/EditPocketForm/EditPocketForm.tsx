@@ -300,7 +300,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
         <Textarea
           label="Filter packages"
           rows={3}
-          help="List packages to filter separated by commas"
+          help="List packages to filter separated by commas."
           {...formik.getFieldProps("filters")}
           onChange={(event) => {
             formik.setFieldValue(

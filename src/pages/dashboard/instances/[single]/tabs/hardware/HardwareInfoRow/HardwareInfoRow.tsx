@@ -21,7 +21,7 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
   return (
     <div
       className={classNames(
-        "p-strip is-bordered u-no-padding--bottom u-no-padding--top u-no-max-width",
+        "p-strip u-no-padding--bottom u-no-padding--top u-no-max-width",
         classes.wrapper,
       )}
     >

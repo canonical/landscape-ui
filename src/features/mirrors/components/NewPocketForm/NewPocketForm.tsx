@@ -273,7 +273,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             <Textarea
               label="Filter packages"
               rows={3}
-              help="List packages to filter separated by commas"
+              help="List packages to filter separated by commas."
               {...formik.getFieldProps("filter_packages")}
               onChange={(event) => {
                 formik.setFieldValue(

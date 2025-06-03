@@ -1,15 +1,15 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import DistributionsEmptyState from "./DistributionsEmptyState";
 import userEvent from "@testing-library/user-event";
+import DistributionsEmptyState from "./DistributionsEmptyState";
 
 describe("DistributionsEmptyState", () => {
   it("renders empty state", () => {
     const { container } = renderWithProviders(<DistributionsEmptyState />);
 
     expect(container).toHaveTexts([
-      "No mirrors have been added yet",
-      "To add a new mirror you must first add a distribution",
+      "No mirrors have been added yet.",
+      "To add a new mirror, you must first add a distribution.",
       "How to manage repositories in Landscape",
     ]);
 

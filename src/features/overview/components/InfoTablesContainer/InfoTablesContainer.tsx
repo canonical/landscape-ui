@@ -484,7 +484,7 @@ const InfoTablesContainer: FC = () => {
           <LoadingState />
         ) : !upgradesTableData.length ? (
           <EmptyState
-            title="All instances are up to date"
+            title="All instances are up to date."
             body="Your instances are up to date. Check back later for any new upgrades."
             cta={[
               <Button
@@ -572,8 +572,8 @@ const InfoTablesContainer: FC = () => {
           <EmptyState
             title={
               currentActivitiesTab === "unapproved"
-                ? "All activities have been approved"
-                : "There are no activities in progress"
+                ? "All activities have been approved."
+                : "There are no activities in progress."
             }
             body={
               currentActivitiesTab === "unapproved"

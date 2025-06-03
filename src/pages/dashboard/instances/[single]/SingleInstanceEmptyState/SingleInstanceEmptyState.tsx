@@ -31,13 +31,14 @@ const SingleInstanceEmptyState: FC<SingleInstanceEmptyStateProps> = ({
           ) : (
             <span>exist</span>
           )}
+          .
         </p>
       }
       cta={[
         <Button
           appearance="positive"
           key="go-back-to-instances-page"
-          onClick={() => navigate("/instances", { replace: true })}
+          onClick={async () => navigate("/instances", { replace: true })}
           type="button"
           aria-label="Go back"
         >
@@ -45,7 +46,7 @@ const SingleInstanceEmptyState: FC<SingleInstanceEmptyStateProps> = ({
         </Button>,
         <Button
           key="go-back-to-home-page"
-          onClick={() => navigate("/", { replace: true })}
+          onClick={async () => navigate("/", { replace: true })}
           type="button"
           aria-label="Go back"
         >

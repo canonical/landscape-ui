@@ -18,7 +18,7 @@ describe("DistributionContainer", () => {
     renderWithProviders(<DistributionContainer {...props} />);
 
     await expectLoadingState();
-    expect(screen.getByText("No mirrors have been added yet")).toBeVisible();
+    expect(screen.getByText("No mirrors have been added yet.")).toBeVisible();
     expect(
       screen.getByRole("button", { name: /add distribution/i }),
     ).toBeVisible();
