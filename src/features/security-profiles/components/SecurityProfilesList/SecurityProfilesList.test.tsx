@@ -9,7 +9,7 @@ const props: ComponentProps<typeof SecurityProfilesList> = {
 };
 
 describe("SecurityProfilesList", () => {
-  it("should render security profiles list", async () => {
+  it("should render security profiles list", () => {
     renderWithProviders(<SecurityProfilesList {...props} />);
 
     expect(screen.getByText("Name")).toBeInTheDocument();
@@ -20,11 +20,11 @@ describe("SecurityProfilesList", () => {
     expect(screen.getByText("Last runSchedule")).toBeInTheDocument();
     expect(screen.getByText("Actions")).toBeInTheDocument();
 
-    securityProfiles.forEach(async (profile) => {
+    for (const profile of securityProfiles) {
       expect(screen.getByText(profile.title)).toBeInTheDocument();
       expect(
         screen.getByLabelText(`${profile.name} profile actions`),
       ).toBeInTheDocument();
-    });
+    }
   });
 });

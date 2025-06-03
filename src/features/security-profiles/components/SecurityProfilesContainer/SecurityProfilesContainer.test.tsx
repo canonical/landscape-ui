@@ -16,20 +16,20 @@ describe("SecurityProfilesContainer", () => {
 
     await expectLoadingState();
 
-    securityProfiles
-      .filter(({ title }) => title.startsWith(searchText))
-      .forEach((profile) => {
-        expect(
-          screen.getByRole("button", { name: profile.title }),
-        ).toBeInTheDocument();
-      });
+    for (const profile of securityProfiles.filter(({ title }) =>
+      title.startsWith(searchText),
+    )) {
+      expect(
+        screen.getByRole("button", { name: profile.title }),
+      ).toBeInTheDocument();
+    }
 
-    securityProfiles
-      .filter(({ title }) => !title.startsWith(searchText))
-      .forEach((profile) => {
-        expect(
-          screen.queryByRole("button", { name: profile.title }),
-        ).not.toBeInTheDocument();
-      });
+    for (const profile of securityProfiles.filter(
+      ({ title }) => !title.startsWith(searchText),
+    )) {
+      expect(
+        screen.queryByRole("button", { name: profile.title }),
+      ).not.toBeInTheDocument();
+    }
   });
 });
