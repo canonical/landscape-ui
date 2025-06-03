@@ -112,6 +112,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                   >
                     Ubuntu One
                   </Link>
+                  .
                 </>
               )}
             </>
@@ -140,6 +141,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                   >
                     Ubuntu One
                   </Link>
+                  .
                 </>
               )}
             </>
@@ -165,8 +167,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                   target="_blank"
                   rel="nofollow noopener noreferrer"
                 >
-                  Ubuntu One.
+                  Ubuntu One
                 </Link>
+                .
               </>
             ) : undefined
           }

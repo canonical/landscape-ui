@@ -9,7 +9,7 @@ describe("DistributionsEmptyState", () => {
 
     expect(container).toHaveTexts([
       "No mirrors have been added yet",
-      "To add a new mirror you must first add a distribution",
+      "To add a new mirror, you must first add a distribution",
       "How to manage repositories in Landscape",
     ]);
 
