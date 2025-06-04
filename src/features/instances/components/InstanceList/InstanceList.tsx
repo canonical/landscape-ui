@@ -181,12 +181,12 @@ const InstanceList: FC<InstanceListProps> = ({
         accessor: "ubuntu_pro",
         canBeHidden: true,
         optionLabel: "Ubuntu pro",
-        Header: "Ubuntu pro",
+        Header: "Ubuntu pro expiration",
         Cell: ({ row }: CellProps<Instance>) => (
           <>
             {row.original.ubuntu_pro_info &&
             moment(row.original.ubuntu_pro_info.expires).isValid() ? (
-              `Exp. ${moment(row.original.ubuntu_pro_info.expires).format(
+              `${moment(row.original.ubuntu_pro_info.expires).format(
                 DISPLAY_DATE_TIME_FORMAT,
               )}`
             ) : (
