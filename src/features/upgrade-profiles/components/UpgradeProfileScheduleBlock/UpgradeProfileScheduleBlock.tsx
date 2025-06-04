@@ -1,8 +1,8 @@
+import MultiSelectField from "@/components/form/MultiSelectField";
+import { Icon, Input, RadioInput, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FormikContextType } from "formik";
 import type { FC } from "react";
-import { Icon, Input, RadioInput, Tooltip } from "@canonical/react-components";
-import MultiSelectField from "@/components/form/MultiSelectField";
 import { DAY_OPTIONS } from "../../constants";
 import type { FormProps } from "../../types";
 import { EXPIRATION_TOOLTIP_MESSAGE } from "./constants";
@@ -39,6 +39,8 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
             items.map(({ value }) => value),
           )
         }
+        isSortedAlphabetically={false}
+        hasSelectedItemsFirst={false}
         error={
           formik.touched.on_days && typeof formik.errors.on_days === "string"
             ? formik.errors.on_days
