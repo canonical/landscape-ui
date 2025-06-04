@@ -69,16 +69,24 @@ const InvitesPanel: FC = () => {
       {
         accessor: "creation_time",
         Header: "Invited",
-        Cell: ({ row }: CellProps<Invitation>) =>
-          moment(row.original.creation_time).format(DISPLAY_DATE_TIME_FORMAT),
+        Cell: ({ row }: CellProps<Invitation>) => (
+          <span style={{ fontFamily: "monospace" }}>
+            {moment(row.original.creation_time).format(
+              DISPLAY_DATE_TIME_FORMAT,
+            )}
+          </span>
+        ),
       },
       {
         accessor: "expiration_time",
         Header: "Expires",
-        Cell: ({ row }: CellProps<Invitation>) =>
-          moment(row.original.creation_time)
-            .add(14, "days")
-            .format(DISPLAY_DATE_TIME_FORMAT),
+        Cell: ({ row }: CellProps<Invitation>) => (
+          <span style={{ fontFamily: "monospace" }}>
+            {moment(row.original.creation_time)
+              .add(14, "days")
+              .format(DISPLAY_DATE_TIME_FORMAT)}
+          </span>
+        ),
       },
       {
         accessor: "actions",

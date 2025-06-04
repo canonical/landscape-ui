@@ -128,9 +128,9 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
         Header: "scheduled reboot",
         Cell: ({ row }: CellProps<RebootProfile>) => {
           return (
-            <>
+            <span style={{ fontFamily: "monospace" }}>
               {moment(row.original.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
-            </>
+            </span>
           );
         },
       },
