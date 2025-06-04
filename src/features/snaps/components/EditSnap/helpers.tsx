@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import { EditSnapType, getSnapUpgradeCounts } from "../../helpers";
 import type { InstalledSnap } from "../../types";
 import type { FormValidationSchemaShape } from "./types";
+import { pluralize } from "@/utils/_helpers";
 
 const commonValidationSchema = {
   deliver_immediately: Yup.string(),
@@ -141,5 +142,5 @@ export const getSuccessMessage = (snapCount: number, action: EditSnapType) => {
       break;
   }
 
-  return `You queued ${snapCount} ${snapCount === 1 ? "snap" : "snaps"} to be ${verb}.`;
+  return `You queued ${snapCount} ${pluralize(snapCount, "snap")} to be ${verb}.`;
 };

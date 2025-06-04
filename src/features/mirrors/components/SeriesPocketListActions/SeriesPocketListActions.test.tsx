@@ -6,6 +6,8 @@ import type { ComponentProps } from "react";
 import type { PullPocket } from "../../types/Pocket";
 import SeriesPocketListActions from "./SeriesPocketListActions";
 
+const user = userEvent.setup();
+
 const propsWithMirrorPocket: ComponentProps<typeof SeriesPocketListActions> = {
   distributionName: "Ubuntu",
   pocket:
@@ -58,14 +60,12 @@ const checkEditAndDeleteButtons = async (
   });
   expect(editButton).toBeInTheDocument();
 
-  await userEvent.click(editButton);
+  await user.click(editButton);
 
   const formHeader = await screen.findByText(`Edit ${pocketName} pocket`);
   expect(formHeader).toBeInTheDocument();
 
-  await userEvent.click(
-    screen.getByRole("button", { name: /close side panel/i }),
-  );
+  await user.click(screen.getByRole("button", { name: /close side panel/i }));
 
   await userEvent.click(
     screen.getByLabelText(
@@ -77,32 +77,30 @@ const checkEditAndDeleteButtons = async (
     name: `Remove ${pocketName} pocket of ${distributionName}/${seriesName}`,
   });
   expect(deleteButton).toBeInTheDocument();
-  await userEvent.click(deleteButton);
+  await user.click(deleteButton);
 
   expect(
     screen.getByText(
       `Do you really want to delete ${pocketName} pocket from ${seriesName} series of ${distributionName} distribution?`,
     ),
   ).toBeVisible();
-  await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+  await user.click(screen.getByRole("button", { name: /cancel/i }));
 };
 
 describe("SeriesPocketListActions", () => {
   it("renders correct buttons for mirror pockets", async () => {
     renderWithProviders(<SeriesPocketListActions {...propsWithMirrorPocket} />);
-
-    await userEvent.click(
-      screen.getByLabelText(
-        `${propsWithMirrorPocket.pocket.name} pocket of ${propsWithMirrorPocket.distributionName}/${propsWithMirrorPocket.seriesName} actions`,
-      ),
+    const contextualListButton = screen.getByLabelText(
+      `${propsWithMirrorPocket.pocket.name} pocket of ${propsWithMirrorPocket.distributionName}/${propsWithMirrorPocket.seriesName} actions`,
     );
+    await user.click(contextualListButton);
 
     const syncButton = screen.getByRole("button", {
       name: `Synchronize ${propsWithMirrorPocket.pocket.name} pocket of ${propsWithMirrorPocket.distributionName}/${propsWithMirrorPocket.seriesName}`,
     });
     expect(syncButton).toBeInTheDocument();
 
-    await userEvent.click(syncButton);
+    await user.click(syncButton);
     expect(
       screen.getByText("Do you want to synchronize packages?"),
     ).toBeInTheDocument();
@@ -118,19 +116,18 @@ describe("SeriesPocketListActions", () => {
 
   it("renders correct buttons for pull pockets", async () => {
     renderWithProviders(<SeriesPocketListActions {...propsWithPullPocket} />);
-
-    await userEvent.click(
-      screen.getByLabelText(
-        `${propsWithPullPocket.pocket.name} pocket of ${propsWithPullPocket.distributionName}/${propsWithPullPocket.seriesName} actions`,
-      ),
+    const contextualListButton = screen.getByLabelText(
+      `${propsWithPullPocket.pocket.name} pocket of ${propsWithPullPocket.distributionName}/${propsWithPullPocket.seriesName} actions`,
     );
+
+    await user.click(contextualListButton);
 
     const pullButton = screen.getByRole("button", {
       name: `Pull packages to ${propsWithPullPocket.pocket.name} pocket of ${propsWithPullPocket.distributionName}/${propsWithPullPocket.seriesName}`,
     });
     expect(pullButton).toBeInTheDocument();
 
-    await userEvent.click(pullButton);
+    await user.click(pullButton);
     expect(
       screen.getByText(
         `Do you want to pull packages from ${(propsWithPullPocket.pocket as PullPocket).pull_pocket}?`,
@@ -148,12 +145,10 @@ describe("SeriesPocketListActions", () => {
 
   it("renders correct buttons for upload pockets", async () => {
     renderWithProviders(<SeriesPocketListActions {...propsWithUploadPocket} />);
-
-    await userEvent.click(
-      screen.getByLabelText(
-        `${propsWithUploadPocket.pocket.name} pocket of ${propsWithUploadPocket.distributionName}/${propsWithUploadPocket.seriesName} actions`,
-      ),
+    const contextualListButton = screen.getByLabelText(
+      `${propsWithUploadPocket.pocket.name} pocket of ${propsWithUploadPocket.distributionName}/${propsWithUploadPocket.seriesName} actions`,
     );
+    await user.click(contextualListButton);
 
     const buttonsLength = screen.getAllByRole("button").length;
     expect(buttonsLength).toBe(3);

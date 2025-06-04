@@ -8,6 +8,7 @@ import { Activities, useActivities } from "@/features/activities";
 import { ConfirmationButton } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import classes from "./ActivitiesPage.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
 const ActivitiesPage: FC = () => {
   const [selected, setSelected] = useState<ActivityCommon[]>([]);
@@ -82,11 +83,11 @@ const ActivitiesPage: FC = () => {
                   selected.some((activity) => !activity.actions?.approvable)
                 }
                 confirmationModalProps={{
-                  title: `Approve ${selected.length === 1 ? "activity" : "activities"}`,
+                  title: `Approve ${pluralize(selected.length, "activity", "activities")}`,
                   children: (
                     <p>
                       Are you sure you want to approve selected{" "}
-                      {selected.length === 1 ? "activity" : "activities"}?
+                      {pluralize(selected.length, "activity", "activities")}?
                     </p>
                   ),
                   confirmButtonLabel: "Approve",
@@ -107,11 +108,11 @@ const ActivitiesPage: FC = () => {
                   selected.some((activity) => !activity.actions?.cancelable)
                 }
                 confirmationModalProps={{
-                  title: `Cancel ${selected.length === 1 ? "activity" : "activities"}`,
+                  title: `Cancel ${pluralize(selected.length, "activity", "activities")}`,
                   children: (
                     <p>
                       Are you sure you want to cancel selected{" "}
-                      {selected.length === 1 ? "activity" : "activities"}?
+                      {pluralize(selected.length, "activity", "activities")}?
                     </p>
                   ),
                   confirmButtonLabel: "Apply",
@@ -132,11 +133,11 @@ const ActivitiesPage: FC = () => {
                   selected.some((activity) => !activity.actions?.revertable)
                 }
                 confirmationModalProps={{
-                  title: `Undo ${selected.length === 1 ? "activity" : "activities"}`,
+                  title: `Undo ${pluralize(selected.length, "activity", "activities")}`,
                   children: (
                     <p>
                       Are you sure you want to undo selected{" "}
-                      {selected.length === 1 ? "activity" : "activities"}?
+                      {pluralize(selected.length, "activity", "activities")}?
                     </p>
                   ),
                   confirmButtonLabel: "Undo",
@@ -157,11 +158,11 @@ const ActivitiesPage: FC = () => {
                   selected.some((activity) => !activity.actions?.reappliable)
                 }
                 confirmationModalProps={{
-                  title: `Redo ${selected.length === 1 ? "activity" : "activities"}`,
+                  title: `Redo ${pluralize(selected.length, "activity", "activities")}`,
                   children: (
                     <p>
                       Are you sure you want to redo selected{" "}
-                      {selected.length === 1 ? "activity" : "activities"}?
+                      {pluralize(selected.length, "activity", "activities")}?
                     </p>
                   ),
                   confirmButtonLabel: "Redo",

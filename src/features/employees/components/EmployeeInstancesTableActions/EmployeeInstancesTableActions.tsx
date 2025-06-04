@@ -43,8 +43,6 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
         computer_title: instance.title,
       });
 
-      handleCloseModal();
-
       notify.success({
         title: `You have successfully initiated Sanitization for ${instance.title}`,
         message: `Sanitizing for ${instance.title} has been queued in Activities. The data will be permanently irrecoverable once complete.`,
@@ -59,6 +57,8 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
       });
     } catch (error) {
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 
@@ -68,14 +68,14 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
         computer_ids: [instance.id],
       });
 
-      handleCloseModal();
-
       notify.success({
         title: `You have successfully removed ${instance.title}`,
         message: `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
       });
     } catch (error) {
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 

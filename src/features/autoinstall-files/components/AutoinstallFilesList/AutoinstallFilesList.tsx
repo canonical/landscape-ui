@@ -14,9 +14,8 @@ import {
 import classNames from "classnames";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { lazy, Suspense, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
-import { useOnClickOutside } from "usehooks-ts";
 import { useDeleteAutoinstallFile, useUpdateAutoinstallFile } from "../../api";
 import type {
   AutoinstallFile,
@@ -31,7 +30,8 @@ import {
   LOCAL_STORAGE_ITEM,
   MAX_AUTOINSTALL_FILE_VERSION_COUNT,
 } from "./constants";
-import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
+import { getCellProps, getRowProps } from "./helpers";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 
 const AutoinstallFileDetails = lazy(
   async () => import("../AutoinstallFileDetails"),
@@ -51,25 +51,13 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
     !!localStorage.getItem(LOCAL_STORAGE_ITEM),
   );
   const [modalFile, setModalFile] = useState<AutoinstallFile | null>(null);
-  const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
-  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
 
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
   const { deleteAutoinstallFile } = useDeleteAutoinstallFile();
   const { updateAutoinstallFile } = useUpdateAutoinstallFile();
-
-  useOnClickOutside(
-    {
-      current:
-        expandedRowIndex == null
-          ? null
-          : tableRowsRef.current[expandedRowIndex],
-    },
-    () => {
-      setExpandedRowIndex(null);
-    },
-  );
+  const { expandedRowIndex, getTableRowsRef, handleExpand } =
+    useExpandableRow();
 
   const toggleIsEditModalIgnored = (): void => {
     setIsEditModalIgnored((isIgnored) => !isIgnored);
@@ -256,7 +244,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
               }
               isExpanded={index == expandedRowIndex}
               onExpand={() => {
-                setExpandedRowIndex(index);
+                handleExpand(index);
               }}
               showCount
             />
@@ -312,7 +300,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
 
   return (
     <>
-      <div ref={getTableRowsRef(tableRowsRef)}>
+      <div ref={getTableRowsRef}>
         <ModularTable
           columns={columns}
           data={autoinstallFiles}

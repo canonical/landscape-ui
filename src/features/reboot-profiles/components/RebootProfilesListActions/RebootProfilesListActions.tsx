@@ -37,14 +37,14 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
     try {
       await removeRebootProfile({ id: profile.id });
 
-      openModal();
-
       notify.success({
         message: `Reboot profile "${profile.title}" removed successfully`,
         title: "Reboot profile removed",
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 

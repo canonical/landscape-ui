@@ -6,6 +6,7 @@ import type { FormikContextType } from "formik";
 import moment from "moment";
 import { phrase } from "../helpers";
 import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
+import { pluralize } from "@/utils/_helpers";
 
 export default function useSecurityProfileFormConfirmationStep<
   T extends SecurityProfileFormValues,
@@ -57,7 +58,7 @@ export default function useSecurityProfileFormConfirmationStep<
                         value={
                           formik.values.delivery_time == "asap"
                             ? "As soon as possible"
-                            : `Delayed by ${formik.values.restart_deliver_delay} hour${formik.values.restart_deliver_delay == 1 ? "" : "s"}`
+                            : `Delayed by ${formik.values.restart_deliver_delay} ${pluralize(formik.values.restart_deliver_delay, "hour")}`
                         }
                       />
                     </Row>
@@ -67,7 +68,7 @@ export default function useSecurityProfileFormConfirmationStep<
                         label="Randomize delivery over a time window"
                         value={
                           formik.values.randomize_delivery == "yes"
-                            ? `Yes, over ${formik.values.restart_deliver_delay_window} minute${formik.values.restart_deliver_delay_window == 1 ? "" : "s"}`
+                            ? `Yes, over ${formik.values.restart_deliver_delay_window} ${pluralize(formik.values.restart_deliver_delay_window, "minute")}`
                             : "No"
                         }
                       />

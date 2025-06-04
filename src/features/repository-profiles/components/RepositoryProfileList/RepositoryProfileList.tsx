@@ -69,7 +69,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
         ),
       },
     ],
-    [profiles, accessGroupOptions],
+    [accessGroupOptions],
   );
 
   return (

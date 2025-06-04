@@ -40,14 +40,14 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
     try {
       await removeUpgradeProfile({ name: profile.name });
 
-      closeModal();
-
       notify.success({
         message: `Upgrade profile "${profile.title}" removed successfully`,
         title: "Upgrade profile removed",
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 

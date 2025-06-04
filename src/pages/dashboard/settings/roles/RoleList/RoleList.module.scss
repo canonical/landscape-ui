@@ -1,15 +1,3 @@
-@import "vanilla-framework/scss/settings_colors";
-
 .administrators {
   width: 20%;
-}
-
-.expandedRow {
-  background-color: $color-x-light;
-  filter: drop-shadow(0 4px 8px $color-mid-light);
-}
-
-.expandedCell {
-  overflow: visible;
-  padding: 0;
 }

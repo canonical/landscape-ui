@@ -8,6 +8,7 @@ import type { Status } from "@/features/instances";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
+import { pluralize } from "@/utils/_helpers";
 
 const PendingInstancesForm = lazy(
   () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -96,7 +97,7 @@ const AlertCard: FC<Status> = ({
               onClick={handlePendingInstancesReview}
             >
               <span className={classes.instancesNumber}>{alertCount}</span>{" "}
-              {alertCount !== 1 ? "instances" : "instance"}
+              {pluralize(alertCount, "instance")}
             </Button>
           )}
 
@@ -106,7 +107,7 @@ const AlertCard: FC<Status> = ({
               to={`/instances?status=${filterValue}`}
             >
               <span className={classes.instancesNumber}>{alertCount}</span>{" "}
-              {alertCount === 1 ? "instance" : "instances"}
+              {pluralize(alertCount, "instance")}
             </Link>
           )}
 

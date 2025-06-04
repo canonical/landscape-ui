@@ -4,9 +4,10 @@ import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
 import UpgradeProfileDetails from "./UpgradeProfileDetails";
 import { getScheduleInfo } from "../UpgradeProfileDetails/helpers";
+import { pluralize } from "@/utils/_helpers";
 
 describe("UpgradeProfileDetails", () => {
-  const testProfile = upgradeProfiles[0];
+  const [testProfile] = upgradeProfiles;
 
   const { scheduleMessage, nextRunMessage } = getScheduleInfo(testProfile);
 
@@ -35,7 +36,7 @@ describe("UpgradeProfileDetails", () => {
     },
     {
       label: "Delivery delay window",
-      value: `${testProfile.deliver_delay_window} ${testProfile.deliver_delay_window !== "1" ? "minutes" : "minute"}`,
+      value: `${testProfile.deliver_delay_window} ${pluralize(Number(testProfile.deliver_delay_window), "minute")}`,
     },
   ];
 

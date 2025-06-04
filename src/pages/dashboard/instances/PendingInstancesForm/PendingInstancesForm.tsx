@@ -16,6 +16,7 @@ import type { FC } from "react";
 import { useState } from "react";
 import { Link } from "react-router";
 import classes from "./PendingInstancesForm.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
 interface PendingInstanceListProps {
   readonly instances: PendingInstance[];
@@ -64,8 +65,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       closeSidePanel();
 
       notify.success({
-        message: `${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"} have been rejected to add to your ${userOrganisation} organization.`,
-        title: `You have rejected ${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"}`,
+        message: `${instanceIds.length} pending ${pluralize(instanceIds.length, "instance")} ${pluralize(instanceIds.length, "has", "have")} been rejected to add to your ${userOrganisation} organization.`,
+        title: `You have rejected ${instanceIds.length} pending ${pluralize(instanceIds.length, "instance")}`,
       });
     } catch (error) {
       debug(error);
@@ -82,8 +83,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       closeSidePanel();
 
       notify.success({
-        message: `${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"} have been successfully added to your ${userOrganisation} organization.`,
-        title: `You have approved ${instanceIds.length} pending ${instanceIds.length === 1 ? "instance" : "instances"}`,
+        message: `${instanceIds.length} pending ${pluralize(instanceIds.length, "instance")} ${pluralize(instanceIds.length, "has", "have")} been successfully added to your ${userOrganisation} organization.`,
+        title: `You have approved ${instanceIds.length} pending ${pluralize(instanceIds.length, "instance")}`,
       });
     } catch (error) {
       debug(error);
@@ -159,8 +160,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
                 children: (
                   <p>
                     This will approve {instanceIds.length} selected{" "}
-                    {instanceIds.length === 1 ? "instance" : "instances"} to add
-                    to your {userOrganisation} organization.
+                    {pluralize(instanceIds.length, "instance")} to add to your{" "}
+                    {userOrganisation} organization.
                   </p>
                 ),
                 confirmButtonLabel: "Approve",
@@ -185,8 +186,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
                 children: (
                   <p>
                     This will reject {instanceIds.length} selected{" "}
-                    {instanceIds.length === 1 ? "instance" : "instances"} to add
-                    to your {userOrganisation} organization.
+                    {pluralize(instanceIds.length, "instance")} to add to your{" "}
+                    {userOrganisation} organization.
                   </p>
                 ),
                 confirmButtonLabel: "Reject",

@@ -5,6 +5,7 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Input, Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
+import { pluralize } from "@/utils/_helpers";
 
 export default function useSecurityProfileFormNameStep<
   T extends SecurityProfileFormValues,
@@ -23,6 +24,17 @@ export default function useSecurityProfileFormNameStep<
     data: getOrganisationPreferencesResponse,
     isLoading: isLoadingOrganisationPreferences,
   } = getOrganisationPreferences();
+
+  const getAuditRetentionPeriod = () => {
+    const auditRetentionPeriod =
+      getOrganisationPreferencesResponse?.data.audit_retention_period;
+
+    if (!auditRetentionPeriod || auditRetentionPeriod === -1) {
+      return "Infinite";
+    }
+
+    return `${auditRetentionPeriod} ${pluralize(auditRetentionPeriod, "day")}`;
+  };
 
   return {
     isLoading: isLoadingAccessGroups || isLoadingOrganisationPreferences,
@@ -57,12 +69,7 @@ export default function useSecurityProfileFormNameStep<
             label="Audit retention"
             required
             disabled
-            value={
-              getOrganisationPreferencesResponse?.data.audit_retention_period ==
-              -1
-                ? "Infinite"
-                : `${getOrganisationPreferencesResponse?.data.audit_retention_period} day${getOrganisationPreferencesResponse?.data.audit_retention_period == 1 ? "" : "s"}`
-            }
+            value={getAuditRetentionPeriod()}
             help="You can change this limit in the Landscape server configuration file."
           />
         )}

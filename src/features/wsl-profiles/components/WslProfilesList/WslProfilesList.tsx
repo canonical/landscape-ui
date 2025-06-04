@@ -11,15 +11,17 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import classNames from "classnames";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { WslProfile } from "../../types";
 import WslProfilesListActions from "../WslProfilesListActions";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
-import { getCellProps } from "./helpers";
+import { getCellProps, getRowProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { pluralize } from "@/utils/_helpers";
 
 const WslProfileDetails = lazy(async () => import("../WslProfileDetails"));
 
@@ -31,6 +33,8 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
   const { search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
+  const { expandedRowIndex, getTableRowsRef, handleExpand } =
+    useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -82,7 +86,7 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
       },
       {
         accessor: "description",
-        className: classNames(classes.truncated, classes.description),
+        className: classes.description,
         Header: "Description",
       },
       {
@@ -98,10 +102,24 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
       },
       {
         accessor: "tags",
-        className: classes.truncated,
         Header: "Tags",
-        Cell: ({ row: { original } }: CellProps<WslProfile>) =>
-          original.tags.join(", ") || <NoData />,
+        Cell: ({ row: { original, index } }: CellProps<WslProfile>) =>
+          original.tags.length > 0 ? (
+            <TruncatedCell
+              content={original.tags.map((tag) => (
+                <span className="truncatedItem" key={tag}>
+                  {tag}
+                </span>
+              ))}
+              isExpanded={index == expandedRowIndex}
+              onExpand={() => {
+                handleExpand(index);
+              }}
+              showCount
+            />
+          ) : (
+            <NoData />
+          ),
       },
       {
         accessor: "computers['non-compliant']",
@@ -115,7 +133,7 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
         ),
         Cell: ({ row: { original } }: CellProps<WslProfile>) => (
           <>
-            {`${original.computers["non-compliant"].length} ${original.computers["non-compliant"].length === 1 ? "instance" : "instances"}`}
+            {`${original.computers["non-compliant"].length} ${pluralize(original.computers["non-compliant"].length, "instance")}`}
           </>
         ),
       },
@@ -131,7 +149,7 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
         ),
         Cell: ({ row: { original } }: CellProps<WslProfile>) => (
           <>
-            {`${original.computers["pending"]?.length ?? 0} ${original.computers["pending"]?.length === 1 ? "instance" : "instances"}`}
+            {`${original.computers["pending"].length ?? 0} ${pluralize(original.computers["pending"].length, "instance")}`}
           </>
         ),
       },
@@ -140,7 +158,7 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
         Header: "Associated",
         Cell: ({ row: { original } }: CellProps<WslProfile>) => (
           <>
-            {`${original.computers["constrained"].length} ${original.computers["constrained"].length === 1 ? "instance" : "instances"}`}
+            {`${original.computers["constrained"].length} ${pluralize(original.computers["constrained"].length, "instance")}`}
           </>
         ),
       },
@@ -151,16 +169,19 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
         ),
       },
     ],
-    [profiles, accessGroupOptions.length],
+    [accessGroupOptions.length, expandedRowIndex],
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={profiles}
-      emptyMsg={`No WSL profiles found with the search "${search}"`}
-      getCellProps={getCellProps}
-    />
+    <div ref={getTableRowsRef}>
+      <ModularTable
+        columns={columns}
+        data={profiles}
+        emptyMsg={`No WSL profiles found with the search "${search}"`}
+        getCellProps={getCellProps(expandedRowIndex)}
+        getRowProps={getRowProps(expandedRowIndex)}
+      />
+    </div>
   );
 };
 

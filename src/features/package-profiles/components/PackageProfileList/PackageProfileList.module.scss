@@ -1,15 +1,10 @@
-@import "vanilla-framework/scss/settings_spacing";
-
-.truncated,
+.description,
 .noWrap {
   white-space: nowrap;
 }
 
-.truncated {
+.description {
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.description {
   width: 20%;
 }

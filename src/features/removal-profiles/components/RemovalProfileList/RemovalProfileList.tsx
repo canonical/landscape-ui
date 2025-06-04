@@ -10,7 +10,9 @@ import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RemovalProfile } from "../../types";
 import RemovalProfileListActions from "../RemovalProfileListActions";
-import classes from "./RemovalProfileList.module.scss";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
+import { getCellProps, getRowProps } from "./helpers";
 
 const RemovalProfileDetails = lazy(
   async () => import("../RemovalProfileDetails"),
@@ -24,6 +26,8 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
   const { search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
+  const { expandedRowIndex, handleExpand, getTableRowsRef } =
+    useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -87,10 +91,24 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
       },
       {
         accessor: "tags",
-        className: classes.truncated,
         Header: "Tags",
-        Cell: ({ row: { original } }: CellProps<RemovalProfile>) =>
-          original.tags.join(", ") || <NoData />,
+        Cell: ({ row: { original, index } }: CellProps<RemovalProfile>) =>
+          original.tags.length > 0 ? (
+            <TruncatedCell
+              content={original.tags.map((tag) => (
+                <span className="truncatedItem" key={tag}>
+                  {tag}
+                </span>
+              ))}
+              isExpanded={index == expandedRowIndex}
+              onExpand={() => {
+                handleExpand(index);
+              }}
+              showCount
+            />
+          ) : (
+            <NoData />
+          ),
       },
       {
         accessor: "associated",
@@ -103,15 +121,19 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [filteredProfiles],
+    [expandedRowIndex],
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={filteredProfiles}
-      emptyMsg={`No removal profiles found with the search: "${search}"`}
-    />
+    <div ref={getTableRowsRef}>
+      <ModularTable
+        columns={columns}
+        data={filteredProfiles}
+        emptyMsg={`No removal profiles found with the search: "${search}"`}
+        getCellProps={getCellProps(expandedRowIndex)}
+        getRowProps={getRowProps(expandedRowIndex)}
+      />
+    </div>
   );
 };
 

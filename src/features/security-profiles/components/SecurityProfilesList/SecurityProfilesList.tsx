@@ -489,7 +489,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         ),
       },
     ],
-    [securityProfiles],
+    [],
   );
 
   const closeModal = () => {

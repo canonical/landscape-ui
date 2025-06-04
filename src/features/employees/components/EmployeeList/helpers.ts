@@ -1,8 +1,7 @@
-import type { HTMLProps, MutableRefObject } from "react";
+import type { HTMLProps, RefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { ExpandedCell } from "@/types/ExpandedCell";
 import type { Employee } from "../../types";
-import classes from "./EmployeeList.module.scss";
 
 export const handleRowProps =
   (expandedCell: ExpandedCell) =>
@@ -15,7 +14,7 @@ export const handleRowProps =
         expandedCell?.column === "groups") &&
       expandedCell.row === index
     ) {
-      rowProps.className = classes.expandedRow;
+      rowProps.className = "expandedRow";
     }
     return rowProps;
   };
@@ -29,13 +28,13 @@ export const handleCellProps =
       cellProps["aria-label"] = "Associated instances";
 
       if (expandedCell?.column === column.id && expandedCell.row === index) {
-        cellProps.className = classes.expandedCell;
+        cellProps.className = "expandedCell";
       }
     } else if (column.id === "groups") {
       cellProps["aria-label"] = "Employee group";
 
       if (expandedCell?.column === column.id && expandedCell.row === index) {
-        cellProps.className = classes.expandedCell;
+        cellProps.className = "expandedCell";
       }
     } else if (column.id === "name") {
       cellProps.role = "rowheader";
@@ -53,7 +52,7 @@ export const handleCellProps =
   };
 
 export const getTableRows =
-  (ref: MutableRefObject<HTMLTableRowElement[]>) =>
+  (ref: RefObject<HTMLTableRowElement[]>) =>
   (instance: HTMLDivElement | null) => {
     if (!instance) {
       return;

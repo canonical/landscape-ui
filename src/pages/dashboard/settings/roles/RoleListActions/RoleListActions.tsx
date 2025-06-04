@@ -33,9 +33,9 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
       await remove({ name: role.name });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
-
-    closeModal();
   };
 
   const edit = () => {

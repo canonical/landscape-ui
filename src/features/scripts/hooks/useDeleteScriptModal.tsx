@@ -43,14 +43,14 @@ export const useDeleteScriptModal = ({
         script_id: script.id,
       });
 
-      afterSuccess();
-
       notify.success({
         message: `"${script.title}" script removed successfully`,
         title: "Script removed",
       });
     } catch (error) {
       debug(error);
+    } finally {
+      afterSuccess();
     }
   };
 
