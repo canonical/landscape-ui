@@ -7,6 +7,7 @@ import classNames from "classnames";
 import useSidePanel from "@/hooks/useSidePanel";
 import ReportForm from "@/pages/dashboard/instances/ReportForm";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { pluralize } from "@/utils/_helpers";
 
 interface ReportViewProps {
   readonly instanceIds: number[];
@@ -97,8 +98,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
                 currentCount={
                   instanceIds.length - securityUpgradesInstanceCount.pending
                 }
-                negativeDescription={`${securityUpgradesInstanceCount.pending || "No"} instance${securityUpgradesInstanceCount.pending !== 1 ? "s are" : " is"} not yet patched.`}
-                positiveDescription={`${instanceIds.length - securityUpgradesInstanceCount.pending || "No"} instance${instanceIds.length - securityUpgradesInstanceCount.pending !== 1 ? "s are" : " is"} securely patched.`}
+                negativeDescription={`${securityUpgradesInstanceCount.pending || "No"} instance${pluralize(securityUpgradesInstanceCount.pending, " is", "s are")} not yet patched.`}
+                positiveDescription={`${instanceIds.length - securityUpgradesInstanceCount.pending || "No"} instance${pluralize(instanceIds.length - securityUpgradesInstanceCount.pending, " is", "s are")} securely patched.`}
                 title="Securely patched"
                 totalCount={instanceIds.length}
               />
@@ -108,8 +109,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getInstancesNotUpgradedLoading && (
               <ReportWidget
                 currentCount={upgradedInstanceCount}
-                negativeDescription={`${getInstancesNotUpgradedResult?.data.length || "No"} instance${getInstancesNotUpgradedResult?.data.length !== 1 ? "s are" : " is"} not covered by upgrade profiles.`}
-                positiveDescription={`${upgradedInstanceCount || "No"} instance${upgradedInstanceCount !== 1 ? "s are" : " is"} covered by upgrade profiles.`}
+                negativeDescription={`${getInstancesNotUpgradedResult?.data.length || "No"} instance${pluralize(Number(getInstancesNotUpgradedResult?.data.length), " is", "s are")} not covered by upgrade profiles.`}
+                positiveDescription={`${upgradedInstanceCount || "No"} instance${pluralize(upgradedInstanceCount, " is", "s are")} covered by upgrade profiles.`}
                 title="Upgrade profiles"
                 totalCount={instanceIds.length}
               />
@@ -119,8 +120,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getNotPingingInstancesLoading && (
               <ReportWidget
                 currentCount={pingingInstancesCount}
-                negativeDescription={`${getNotPingingInstancesResult?.data.length || "No"} instance${getNotPingingInstancesResult?.data.length !== 1 ? "s have" : " has"} not contacted the server within the last 5 minutes.`}
-                positiveDescription={`${pingingInstancesCount || "No"} instance${pingingInstancesCount !== 1 ? "s have" : " has"} contacted the server within the last 5 minutes.`}
+                negativeDescription={`${getNotPingingInstancesResult?.data.length || "No"} instance${pluralize(Number(getNotPingingInstancesResult?.data.length), " has", "s have")} not contacted the server within the last 5 minutes.`}
+                positiveDescription={`${pingingInstancesCount || "No"} instance${pluralize(pingingInstancesCount, " has", "s have")} contacted the server within the last 5 minutes.`}
                 title="Contacted"
                 totalCount={instanceIds.length}
               />

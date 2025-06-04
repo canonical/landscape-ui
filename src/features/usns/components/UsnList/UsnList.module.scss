@@ -1,6 +1,5 @@
 @import "vanilla-framework/scss/base_placeholders";
 @import "vanilla-framework/scss/settings_colors";
-@import "vanilla-framework/scss/settings_spacing";
 
 .expanded {
   @include vf-highlight-bar($colors--light-theme--text-default, bottom, false);
@@ -28,16 +27,6 @@
 .expanded {
   padding-bottom: 0;
   padding-top: 0;
-}
-
-.expandedRow {
-  background-color: $color-x-light;
-  filter: drop-shadow(0 4px 8px $color-mid-light);
-}
-
-.expandedCell {
-  overflow: visible;
-  padding: 0;
 }
 
 .cve {

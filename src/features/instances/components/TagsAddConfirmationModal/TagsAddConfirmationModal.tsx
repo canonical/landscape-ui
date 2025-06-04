@@ -10,6 +10,7 @@ import {
 import { useMemo, type ComponentProps, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import { willBeOverLimit } from "./helpers";
+import { pluralize } from "@/utils/_helpers";
 
 interface TagsAddConfirmationModalProps
   extends Omit<
@@ -62,7 +63,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
             >
               {willBeOverLimit(profile, instances) && <Icon name="warning" />}
               {profile.associated_instances ?? 0}{" "}
-              {profile.associated_instances === 1 ? "instance" : "instances"}
+              {pluralize(profile.associated_instances, "instance")}
             </Tooltip>
           ),
           getCellIcon: ({
@@ -89,7 +90,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
         {instances.length > 1
           ? `${instances.length} instances`
           : `the ${instances[0].title} instance`}{" "}
-        will associate the instance{instances.length > 1 ? "s" : ""} with the
+        will associate the {pluralize(instances.length, "instance")} with the
         following profiles.
         {securityProfiles.some((profile) =>
           willBeOverLimit(profile, instances),

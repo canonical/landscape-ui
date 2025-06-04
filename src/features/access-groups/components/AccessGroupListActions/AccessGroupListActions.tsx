@@ -32,9 +32,9 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
-
-    closeModal();
   };
 
   return (

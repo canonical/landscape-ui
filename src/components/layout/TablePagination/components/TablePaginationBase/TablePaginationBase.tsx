@@ -5,6 +5,7 @@ import { useTotalPages } from "../../hooks";
 import PageNumberInput from "../PageNumberInput";
 import classes from "./TablePaginationBase.module.scss";
 import { PAGE_SIZE_OPTIONS } from "./constants";
+import { pluralize } from "@/utils/_helpers";
 
 interface TablePaginationBaseProps {
   readonly className?: string;
@@ -58,9 +59,8 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
             classes.description,
           )}
         >
-          {`Showing ${currentItemCount} of ${totalItems} ${
-            totalItems === 1 ? "result" : "results"
-          }`}
+          {`Showing ${currentItemCount} of ${totalItems} 
+          ${pluralize(totalItems, "result")}`}
         </p>
       )}
 

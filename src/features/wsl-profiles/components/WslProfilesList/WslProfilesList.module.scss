@@ -1,13 +1,10 @@
-.truncated,
+.description,
 .noWrap {
   white-space: nowrap;
 }
 
-.truncated {
+.description {
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.description {
   width: 20%;
 }

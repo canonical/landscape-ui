@@ -16,6 +16,7 @@ import UpgradeInfo from "../UpgradeInfo";
 import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
 import { getInitialValues, getTabLinks } from "./helpers";
 import type { UpgradesFormProps } from "./types";
+import { pluralize } from "@/utils/_helpers";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
@@ -61,7 +62,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
 
       notify.success({
         title: "You queued packages to be upgraded",
-        message: `Packages on ${selectedInstances.length} ${selectedInstances.length !== 1 ? "instances" : "instance"} will be upgraded and are queued in Activities`,
+        message: `Packages on ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")} will be upgraded and are queued in Activities`,
       });
     } catch (error) {
       debug(error);
@@ -81,7 +82,9 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
       <Tabs
         links={getTabLinks({
           activeTabLinkId,
-          onTabLinkClick: (id) => setActiveTabLinkId(id),
+          onTabLinkClick: (id) => {
+            setActiveTabLinkId(id);
+          },
           withUsnsTab: instancesWithUsn.length > 0,
         })}
       />
@@ -93,7 +96,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
               <TAB_PANELS.instances
                 excludedPackages={formik.values.excludedPackages}
                 instances={affectedInstances}
-                onExcludedPackagesChange={(newExcludedPackages) =>
+                onExcludedPackagesChange={async (newExcludedPackages) =>
                   formik.setFieldValue("excludedPackages", newExcludedPackages)
                 }
               />
@@ -102,7 +105,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
               <TAB_PANELS.packages
                 excludedPackages={formik.values.excludedPackages}
                 instances={affectedInstances}
-                onExcludedPackagesChange={(newExcludedPackages) =>
+                onExcludedPackagesChange={async (newExcludedPackages) =>
                   formik.setFieldValue("excludedPackages", newExcludedPackages)
                 }
               />
@@ -111,7 +114,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
               <TAB_PANELS.usns
                 excludedUsns={formik.values.excludedUsns}
                 instances={instancesWithUsn}
-                onExcludedUsnsChange={(usns) =>
+                onExcludedUsnsChange={async (usns) =>
                   formik.setFieldValue("excludedUsns", usns)
                 }
               />

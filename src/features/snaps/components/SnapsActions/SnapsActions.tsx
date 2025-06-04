@@ -13,6 +13,7 @@ import type { InstalledSnap } from "../../types";
 import EditSnap from "../EditSnap";
 import InstallSnaps from "../InstallSnaps";
 import classes from "./SnapActions.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
 interface SnapsActionProps {
   readonly selectedSnapIds: string[];
@@ -41,7 +42,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
 
     const title = singleSnap
       ? `${action} ${singleSnap.snap.name}${action === EditSnapType.Switch ? "'s channel" : ""}`
-      : `${action} ${count} ${count === 1 ? "snap" : "snaps"}`;
+      : `${action} ${count} ${pluralize(count, "snap")}`;
 
     setSidePanelContent(
       title,
@@ -80,7 +81,9 @@ const SnapsActions: FC<SnapsActionProps> = ({
             type="button"
             className="p-segmented-control__button has-icon u-no-margin--bottom"
             disabled={0 === selectedSnapIds.length}
-            onClick={() => handleEditSnap(EditSnapType.Switch)}
+            onClick={() => {
+              handleEditSnap(EditSnapType.Switch);
+            }}
           >
             <Icon name="fork" />
             <span>Switch channel</span>

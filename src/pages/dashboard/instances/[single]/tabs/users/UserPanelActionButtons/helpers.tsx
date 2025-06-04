@@ -1,4 +1,5 @@
 import type { User } from "@/types/User";
+import { pluralize } from "@/utils/_helpers";
 import type { ReactNode } from "react";
 
 export enum UserAction {
@@ -46,7 +47,7 @@ export const formatCountableNoun = ({
   plural?: string;
 }) => (
   <span>
-    <strong>{count}</strong> {count === 1 ? singular : plural}
+    <strong>{count}</strong> {pluralize(count, singular, plural)}
   </span>
 );
 

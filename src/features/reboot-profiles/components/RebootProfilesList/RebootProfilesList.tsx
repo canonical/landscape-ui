@@ -13,7 +13,9 @@ import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RebootProfile } from "../../types";
 import RebootProfilesListActions from "../RebootProfilesListActions";
-import classes from "./RebootProfilesList.module.scss";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { getCellProps, getRowProps } from "./helpers";
 
 const RebootProfileDetails = lazy(
   async () => import("../RebootProfileDetails"),
@@ -27,6 +29,8 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
   const { setSidePanelContent } = useSidePanel();
   const { search } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
+  const { expandedRowIndex, handleExpand, getTableRowsRef } =
+    useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -90,11 +94,24 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       },
       {
         accessor: "tags",
-        className: classes.truncated,
         Header: "Tags",
-        Cell: ({ row: { original } }: CellProps<RebootProfile>) => (
-          <>{original.tags.join(", ") || <NoData />}</>
-        ),
+        Cell: ({ row: { original, index } }: CellProps<RebootProfile>) =>
+          original.tags.length > 0 ? (
+            <TruncatedCell
+              content={original.tags.map((tag) => (
+                <span className="truncatedItem" key={tag}>
+                  {tag}
+                </span>
+              ))}
+              isExpanded={index == expandedRowIndex}
+              onExpand={() => {
+                handleExpand(index);
+              }}
+              showCount
+            />
+          ) : (
+            <NoData />
+          ),
       },
       {
         accessor: "associated",
@@ -124,15 +141,19 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [filteredProfiles, accessGroupOptions.length],
+    [accessGroupOptions.length, expandedRowIndex],
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={filteredProfiles}
-      emptyMsg={`No profiles found with the search: "${search}"`}
-    />
+    <div ref={getTableRowsRef}>
+      <ModularTable
+        columns={columns}
+        data={filteredProfiles}
+        emptyMsg={`No profiles found with the search: "${search}"`}
+        getCellProps={getCellProps(expandedRowIndex)}
+        getRowProps={getRowProps(expandedRowIndex)}
+      />
+    </div>
   );
 };
 

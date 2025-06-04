@@ -4,6 +4,7 @@ import {
   hasUpgrades,
 } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
+import { pluralize } from "@/utils/_helpers";
 import classNames from "classnames";
 import type { FC } from "react";
 
@@ -39,9 +40,7 @@ const UpgradeInfo: FC<UpgradeInfoProps> = ({ instances }) => {
             <span>Security upgrades are available for </span>
             <b>{instancesWithSecurityUpgradeCount}</b>
             <span>
-              {instancesWithSecurityUpgradeCount !== 1
-                ? " instances"
-                : " instance"}
+              {pluralize(instancesWithSecurityUpgradeCount, "instance")}
             </span>
           </li>
         )}
@@ -50,9 +49,7 @@ const UpgradeInfo: FC<UpgradeInfoProps> = ({ instances }) => {
             <span>Regular upgrades are available for </span>
             <b>{instancesWithRegularUpgradeCount}</b>
             <span>
-              {instancesWithRegularUpgradeCount !== 1
-                ? " instances"
-                : " instance"}
+              {pluralize(instancesWithRegularUpgradeCount, "instance")}
             </span>
           </li>
         )}
@@ -64,9 +61,7 @@ const UpgradeInfo: FC<UpgradeInfoProps> = ({ instances }) => {
             <b>{notAffectedInstancesCount}</b>
           </span>
           <span>
-            {notAffectedInstancesCount !== 1
-              ? " instances needed."
-              : " instance needed."}
+            {pluralize(notAffectedInstancesCount, "instance")} needed.
           </span>
         </p>
       )}

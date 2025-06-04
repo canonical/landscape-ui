@@ -19,6 +19,7 @@ import {
 } from "../../helpers";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
+import { pluralize } from "@/utils/_helpers";
 
 interface SecurityProfileDetailsProps {
   readonly actions: SecurityProfileActions;
@@ -191,9 +192,9 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             label="Restart schedule"
             value={`${
               profile.restart_deliver_delay
-                ? `Delayed by ${profile.restart_deliver_delay} hour${profile.restart_deliver_delay == 1 ? "" : "s"}`
+                ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
                 : "As soon as possible"
-            }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} minute${profile.restart_deliver_delay_window == 1 ? "" : "s"}` : ""}`}
+            }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
           />
         </Row>
       )}

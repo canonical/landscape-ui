@@ -1,4 +1,4 @@
-import type { FC, MutableRefObject, ReactNode, Ref } from "react";
+import type { FC, RefObject, ReactNode, Ref } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { MultiSelectProps } from "@canonical/react-components";
 import { MultiSelect } from "@canonical/react-components";
@@ -41,7 +41,7 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
       if (typeof innerRef === "function") {
         innerRef(node);
       } else {
-        (innerRef as MutableRefObject<HTMLDivElement>).current = node;
+        (innerRef as RefObject<HTMLDivElement>).current = node;
       }
     }
 
@@ -55,9 +55,7 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
     const input = node.querySelector<HTMLInputElement>(".p-search-box__input");
 
     (
-      controlRef as MutableRefObject<
-        HTMLButtonElement | HTMLInputElement | null
-      >
+      controlRef as RefObject<HTMLButtonElement | HTMLInputElement | null>
     ).current = button || input;
 
     dropdownIdRef.current =

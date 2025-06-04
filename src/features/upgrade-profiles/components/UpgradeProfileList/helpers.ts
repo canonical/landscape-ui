@@ -1,4 +1,4 @@
-import type { WslProfile } from "../../types";
+import type { UpgradeProfile } from "../../types";
 import type { HTMLProps } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 
@@ -6,7 +6,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
   return ({
     column,
     row: { index },
-  }: Cell<WslProfile>): Partial<
+  }: Cell<UpgradeProfile>): Partial<
     TableCellProps & HTMLProps<HTMLTableCellElement>
   > => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
@@ -25,16 +25,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
           cellProps.className = "expandedCell";
         }
         break;
-      case "description":
-        cellProps["aria-label"] = "Description";
-        break;
-      case "computers['non-compliant']":
-        cellProps["aria-label"] = "Not compliant instances";
-        break;
-      case "computers['pending']":
-        cellProps["aria-label"] = "Pending instances";
-        break;
-      case "computers['constrained']":
+      case "associated":
         cellProps["aria-label"] = "Associated instances";
         break;
       case "actions":
@@ -50,7 +41,7 @@ export const getRowProps = (expandedRowIndex: number | null) => {
   return ({
     index,
     original,
-  }: Row<WslProfile>): Partial<
+  }: Row<UpgradeProfile>): Partial<
     TableRowProps & HTMLProps<HTMLTableRowElement>
   > => {
     const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
@@ -59,7 +50,7 @@ export const getRowProps = (expandedRowIndex: number | null) => {
     if (expandedRowIndex === index) {
       rowProps.className = "expandedRow";
     }
-    rowProps["aria-label"] = `${original.title} wsl profile row`;
+    rowProps["aria-label"] = `${original.title} upgrade profile row`;
 
     return rowProps;
   };

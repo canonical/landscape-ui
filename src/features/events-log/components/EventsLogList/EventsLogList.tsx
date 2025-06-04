@@ -1,34 +1,22 @@
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { getTableRows } from "@/features/usns";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import { ModularTable } from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
 import moment from "moment";
 import type { FC } from "react";
-import { useMemo, useRef, useState } from "react";
-import { useOnClickOutside } from "usehooks-ts";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import type { EventLog } from "../../types";
 import classes from "./EventsLogList.module.scss";
-import { handleEventLogsCellProps, handleRowProps } from "./helpers";
+import { getCellProps, getRowProps } from "./helpers";
 
 interface EventsLogListProps {
   readonly eventsLog: EventLog[];
 }
 
 const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
-  const [expandedEvent, setExpandedEvent] = useState<string>("");
-  const [expandedRowIndex, setExpandedRowIndex] = useState(-1);
-  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
-
-  useOnClickOutside(
-    {
-      current:
-        expandedRowIndex !== -1 ? tableRowsRef.current[expandedRowIndex] : null,
-    },
-    () => {
-      setExpandedRowIndex(-1);
-    },
-  );
+  const { expandedRowIndex, getTableRowsRef, handleExpand } =
+    useExpandableRow();
 
   const columns = useMemo<Column<EventLog>[]>(
     () => [
@@ -67,8 +55,7 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
             content={original.message}
             isExpanded={index === expandedRowIndex}
             onExpand={() => {
-              setExpandedEvent("");
-              setExpandedRowIndex(expandedEvent ? index - 1 : index);
+              handleExpand(index);
             }}
           />
         ),
@@ -78,13 +65,13 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
   );
 
   return (
-    <div ref={getTableRows(tableRowsRef)}>
+    <div ref={getTableRowsRef}>
       <ModularTable
-        getCellProps={handleEventLogsCellProps(expandedRowIndex)}
-        getRowProps={handleRowProps(expandedRowIndex)}
         columns={columns}
         data={eventsLog}
         emptyMsg="No events found according to your search parameters."
+        getCellProps={getCellProps(expandedRowIndex)}
+        getRowProps={getRowProps(expandedRowIndex)}
       />
     </div>
   );

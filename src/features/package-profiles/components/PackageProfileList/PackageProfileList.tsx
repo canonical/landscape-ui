@@ -10,7 +10,6 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import classNames from "classnames";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -18,8 +17,11 @@ import type { PackageProfile } from "../../types";
 import PackageProfileDetails from "../PackageProfileDetails";
 import PackageProfileListActions from "../PackageProfileListActions";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
-import { getCellProps } from "./helpers";
+import { getCellProps, getRowProps } from "./helpers";
 import classes from "./PackageProfileList.module.scss";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { pluralize } from "@/utils/_helpers";
 
 interface PackageProfileListProps {
   readonly packageProfiles: PackageProfile[];
@@ -31,6 +33,8 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
   const { search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
+  const { expandedRowIndex, handleExpand, getTableRowsRef } =
+    useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -78,7 +82,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       },
       {
         accessor: "description",
-        className: classNames(classes.truncated, classes.description),
+        className: classes.description,
         Header: "Description",
       },
       {
@@ -94,14 +98,29 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       },
       {
         accessor: "tags",
-        className: classes.truncated,
         Header: "Tags",
         Cell: ({
           row: {
             original: { tags },
+            index,
           },
         }: CellProps<PackageProfile>) =>
-          tags.length > 0 ? tags.join(", ") : <NoData />,
+          tags.length > 0 ? (
+            <TruncatedCell
+              content={tags.map((tag) => (
+                <span className="truncatedItem" key={tag}>
+                  {tag}
+                </span>
+              ))}
+              isExpanded={index == expandedRowIndex}
+              onExpand={() => {
+                handleExpand(index);
+              }}
+              showCount
+            />
+          ) : (
+            <NoData />
+          ),
       },
       {
         accessor: "computers['non-compliant']",
@@ -115,7 +134,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${original.computers["non-compliant"].length} ${original.computers["non-compliant"].length === 1 ? "instance" : "instances"}`}
+            {`${original.computers["non-compliant"].length} ${pluralize(original.computers["non-compliant"].length, "instance")}`}
           </>
         ),
       },
@@ -131,7 +150,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${original.computers["pending"]?.length ?? 0} ${original.computers["pending"]?.length === 1 ? "instance" : "instances"}`}
+            {`${original.computers["pending"]?.length ?? 0} ${pluralize(original.computers["pending"].length, "instance")}`}
           </>
         ),
       },
@@ -140,7 +159,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         Header: "Associated",
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${original.computers["constrained"].length} ${original.computers["constrained"].length === 1 ? "instance" : "instances"}`}
+            {`${original.computers["constrained"].length} ${pluralize(original.computers["constrained"].length, "instance")}`}
           </>
         ),
       },
@@ -151,16 +170,19 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
       },
     ],
-    [profiles, accessGroupOptions.length],
+    [accessGroupOptions.length, expandedRowIndex],
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={profiles}
-      emptyMsg={`No package profiles found with the search "${search}"`}
-      getCellProps={getCellProps}
-    />
+    <div ref={getTableRowsRef}>
+      <ModularTable
+        columns={columns}
+        data={profiles}
+        emptyMsg={`No package profiles found with the search "${search}"`}
+        getCellProps={getCellProps(expandedRowIndex)}
+        getRowProps={getRowProps(expandedRowIndex)}
+      />
+    </div>
   );
 };
 

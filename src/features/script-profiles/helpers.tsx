@@ -3,6 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { Link } from "react-router";
 import classes from "./helpers.module.scss";
 import type { ScriptProfile } from "./types";
+import { pluralize } from "@/utils/_helpers";
 
 export const getStatusText = (profile: ScriptProfile) =>
   profile.archived ? "Archived" : "Active";
@@ -58,9 +59,7 @@ export const getAssociatedInstancesLink = (profile: ScriptProfile) => {
       }}
     >
       {profile.computers.num_associated_computers ?? 0}{" "}
-      {profile.computers.num_associated_computers === 1
-        ? "instance"
-        : "instances"}
+      {pluralize(profile.computers.num_associated_computers, "instance")}
     </Link>
   ) : (
     <NoData />

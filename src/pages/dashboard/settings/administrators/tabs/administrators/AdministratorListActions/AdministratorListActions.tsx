@@ -31,9 +31,9 @@ const AdministratorListActions: FC<AdministratorListActionsProps> = ({
       await disable({ email: administrator.email });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
-
-    closeModal();
   };
 
   return (

@@ -71,7 +71,7 @@ export const handleCellProps =
       cellProps["aria-label"] = "CVE(s)";
 
       if (expandedCell?.column === column.id && expandedCell.row === index) {
-        cellProps.className = classes.expandedCell;
+        cellProps.className = "expandedCell";
       }
     } else if (column.id === "date") {
       cellProps["aria-label"] = "Date published";
@@ -99,7 +99,7 @@ export const handleRowProps =
       {};
 
     if (expandedCell?.column === "cves" && expandedCell.row === index) {
-      rowProps.className = classes.expandedRow;
+      rowProps.className = "expandedRow";
     }
 
     return rowProps;

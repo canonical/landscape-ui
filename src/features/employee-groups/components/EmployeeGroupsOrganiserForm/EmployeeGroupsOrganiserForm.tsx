@@ -10,6 +10,7 @@ import useNotify from "@/hooks/useNotify";
 import { useUpdateEmployeeGroups } from "../../api";
 import { EDIT_PRIORITY_DESCRIPTION } from "../../constants";
 import SidePanelDescription from "../SidePanelDescription";
+import { pluralize } from "@/utils/_helpers";
 
 interface EmployeeGroupsOrganiserFormProps {
   readonly groups: EmployeeGroup[];
@@ -42,13 +43,17 @@ const EmployeeGroupsOrganiserForm: FC<EmployeeGroupsOrganiserFormProps> = ({
 
       closeSidePanel();
 
-      const title =
-        updatedGroups.length === 1 ? "Priority updated" : "Priorities updated";
+      const title = `${pluralize(
+        updatedGroups.length,
+        "Priority",
+        "Priorities",
+      )} updated`;
 
-      const message =
-        updatedGroups.length === 1
-          ? `You've successfully updated priority for the ${updatedGroups[0].name} group.`
-          : `You've successfully updated priorities for ${updatedGroups.length} ${updatedGroups.length > 1 ? "groups" : "group"}.`;
+      const message = pluralize(
+        updatedGroups.length,
+        `You've successfully updated priority for the ${updatedGroups[0].name} group.`,
+        `You've successfully updated priorities for ${updatedGroups.length} ${pluralize(updatedGroups.length, "group")}.`,
+      );
 
       notify.success({
         title,

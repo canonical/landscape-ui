@@ -160,10 +160,11 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         computer_ids: [instance.id],
       });
 
-      closeModal();
       navigate("/instances", { replace: true });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 
@@ -173,8 +174,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         computer_id: instance.id,
         computer_title: instance.title,
       });
-
-      closeModal();
 
       notify.success({
         title: `You have successfully initiated Sanitization for ${instance.title}`,
@@ -190,6 +189,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 
@@ -200,14 +201,14 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         tags: instanceTags,
       });
 
-      closeModal();
-
       notify.success({
         title: "Tags updated",
         message: `"${instance.title}" instance tags have been updated successfully`,
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 

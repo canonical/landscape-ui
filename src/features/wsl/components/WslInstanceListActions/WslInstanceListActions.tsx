@@ -47,14 +47,14 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
         parent_id: parentId,
       });
 
-      handleCloseModal();
-
       notify.success({
         title: `You queued ${instance.title} to be set as the default instance`,
         message: `${instance.title} will be the default instance.`,
       });
     } catch (error) {
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 
@@ -64,14 +64,14 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
         computer_ids: [instance.id],
       });
 
-      handleCloseModal();
-
       notify.success({
         title: `You queued ${instance.title} to be deleted.`,
         message: `${instance.title} will be deleted.`,
       });
     } catch (error) {
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 
@@ -81,14 +81,14 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
         computer_ids: [instance.id],
       });
 
-      handleCloseModal();
-
       notify.success({
         title: `You have successfully removed ${instance.title}`,
         message: `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
       });
     } catch (error) {
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 

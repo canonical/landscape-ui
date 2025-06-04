@@ -3,7 +3,6 @@ import { lazy, Suspense, useState } from "react";
 import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -56,6 +55,7 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
         message: `Removal profile ${profile.title} has been removed`,
       });
     } catch (error) {
+      handleCloseModal();
       debug(error);
     }
   };
@@ -127,7 +127,8 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
         {!profile.all_computers && profile.tags.length > 0 && (
           <InfoItem
             label="Tags"
-            value={profile.tags.length ? profile.tags.join(", ") : <NoData />}
+            type="truncated"
+            value={profile.tags.join(", ")}
           />
         )}
       </div>
