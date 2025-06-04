@@ -1,7 +1,7 @@
 import { Button } from "@canonical/react-components";
 import classNames from "classnames";
-import type { FC, MouseEvent as ReactMouseEvent, ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import type { FC, MouseEvent as ReactMouseEvent, ReactNode, Ref } from "react";
+import { useState } from "react";
 import classes from "./TruncatedCell.module.scss";
 
 interface TruncatedCellProps {
@@ -22,56 +22,49 @@ const TruncatedCell: FC<TruncatedCellProps> = ({
   const [overflownChildCount, setOverflownChildCount] = useState<
     number | undefined
   >(undefined);
-  const cellRef = useRef<HTMLDivElement | null>(null);
-  const contentSpanRef = useRef<HTMLSpanElement | null>(null);
 
-  const expandabilityCheck = (): void => {
-    const cell = cellRef.current;
-    const contentSpan = contentSpanRef.current;
-
-    if (!cell || !contentSpan) {
-      return;
-    }
-
+  const expandabilityCheck = (
+    element: HTMLElement,
+    parentElement: HTMLElement,
+  ) => {
     setOverflownChildCount(
-      [...contentSpan.childNodes].filter((child) => {
+      [...element.childNodes].filter((child) => {
         const range = document.createRange();
         range.selectNodeContents(child);
 
         return (
           range.getBoundingClientRect().right >
-          cell.getBoundingClientRect().right
+          parentElement.getBoundingClientRect().right
         );
       }).length,
     );
   };
 
-  useEffect(() => {
-    expandabilityCheck();
+  const initialCheck: Ref<HTMLElement> = (element) => {
+    const parentElement = element?.parentElement;
 
-    if (!cellRef.current) {
+    if (!parentElement) {
       return;
     }
 
+    expandabilityCheck(element, parentElement);
+
     const observer = new ResizeObserver(() => {
-      expandabilityCheck();
+      expandabilityCheck(element, parentElement);
     });
 
-    observer.observe(cellRef.current);
+    observer.observe(parentElement);
 
     return () => {
       observer.disconnect();
     };
-  }, []);
+  };
 
   return (
     <div className={classNames({ [classes.container]: isExpanded })}>
-      <div
-        ref={cellRef}
-        className={isExpanded ? classes.expanded : classes.collapsed}
-      >
+      <div className={isExpanded ? classes.expanded : classes.collapsed}>
         <span
-          ref={contentSpanRef}
+          ref={initialCheck}
           className={isExpanded ? classes.expandedContent : classes.truncated}
         >
           {content}
