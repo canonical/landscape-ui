@@ -1,13 +1,14 @@
-import type { FC } from "react";
-import { useState } from "react";
-import PageMain from "@/components/layout/PageMain";
-import PageHeader from "@/components/layout/PageHeader";
 import PageContent from "@/components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
+import PageMain from "@/components/layout/PageMain";
+import { InstancesPageActions } from "@/features/instances";
+import usePageParams from "@/hooks/usePageParams";
 import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer/InstancesContainer";
 import type { Instance } from "@/types/Instance";
-import { InstancesPageActions } from "@/features/instances";
+import type { FC } from "react";
+import { useState } from "react";
 
-const InstancesPage: FC = () => {
+const InstancesPageBase: FC = () => {
   const [selected, setSelected] = useState<Instance[]>([]);
 
   return (
@@ -20,13 +21,17 @@ const InstancesPage: FC = () => {
       <PageContent>
         <InstancesContainer
           selectedInstances={selected}
-          setSelectedInstances={(instances) => {
-            setSelected(instances);
-          }}
+          setSelectedInstances={setSelected}
         />
       </PageContent>
     </PageMain>
   );
+};
+
+const InstancesPage: FC = () => {
+  const pageParams = usePageParams();
+
+  return <InstancesPageBase key={JSON.stringify(pageParams)} />;
 };
 
 export default InstancesPage;

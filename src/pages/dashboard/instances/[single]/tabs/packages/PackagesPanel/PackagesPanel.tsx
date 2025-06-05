@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useLocation, useParams } from "react-router";
 import { getEmptyMessage } from "./helpers";
 
-const PackagesPanel: FC = () => {
+const PackagesPanelBase: FC = () => {
   const [selected, setSelected] = useState<InstancePackage[]>([]);
 
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
@@ -77,6 +77,12 @@ const PackagesPanel: FC = () => {
       />
     </>
   );
+};
+
+const PackagesPanel: FC = () => {
+  const pageParams = usePageParams();
+
+  return <PackagesPanelBase key={JSON.stringify(pageParams)} />;
 };
 
 export default PackagesPanel;

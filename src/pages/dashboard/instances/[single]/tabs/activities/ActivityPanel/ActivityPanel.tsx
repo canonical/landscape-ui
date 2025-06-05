@@ -1,13 +1,14 @@
-import type { FC } from "react";
-import { useState } from "react";
 import type { ActivityCommon } from "@/features/activities";
 import { Activities } from "@/features/activities";
+import usePageParams from "@/hooks/usePageParams";
+import type { FC } from "react";
+import { useState } from "react";
 
 interface ActivityPanelProps {
   readonly instanceId?: number;
 }
 
-const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
+const ActivityPanelBase: FC<ActivityPanelProps> = ({ instanceId }) => {
   const [selected, setSelected] = useState<ActivityCommon[]>([]);
 
   return (
@@ -17,6 +18,12 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
       setSelected={setSelected}
     />
   );
+};
+
+const ActivityPanel: FC<ActivityPanelProps> = (props) => {
+  const pageParams = usePageParams();
+
+  return <ActivityPanelBase key={JSON.stringify(pageParams)} {...props} />;
 };
 
 export default ActivityPanel;
