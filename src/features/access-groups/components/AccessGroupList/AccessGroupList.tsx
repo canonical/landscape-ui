@@ -1,5 +1,6 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import { ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
@@ -107,7 +108,7 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row }: CellProps<AccessGroupWithInstancesCount>) => {
-          if (row.original.name === "global") {
+          if (row.original.name === DEFAULT_ACCESS_GROUP_NAME) {
             return null;
           }
 

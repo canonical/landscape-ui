@@ -1,5 +1,5 @@
 import { DAY_OPTIONS } from "@/components/form/ScheduleBlock/components/ScheduleBlockBase/constants";
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
+import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { useFormik } from "formik";
@@ -158,7 +158,9 @@ const useSecurityProfileForm = ({
       try {
         await mutate({
           access_group:
-            values.access_group == "global" ? undefined : values.access_group,
+            values.access_group == DEFAULT_ACCESS_GROUP_NAME
+              ? undefined
+              : values.access_group,
           all_computers: values.all_computers || undefined,
           benchmark: values.benchmark,
           mode: values.mode,

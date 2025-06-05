@@ -1,9 +1,10 @@
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import * as Yup from "yup";
 import type { FormProps } from "./types";
 
 export const INITIAL_VALUES: FormProps = {
   title: "",
-  parent: "global",
+  parent: DEFAULT_ACCESS_GROUP_NAME,
 };
 
 export const VALIDATION_SCHEMA = Yup.object().shape({

@@ -1,9 +1,10 @@
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import * as Yup from "yup";
 import { EMPTY_CONSTRAINT } from "../../constants";
 import type { AddFormProps } from "../../types";
 
 export const INITIAL_VALUES: AddFormProps = {
-  access_group: "global",
+  access_group: DEFAULT_ACCESS_GROUP_NAME,
   all_computers: false,
   constraints: [EMPTY_CONSTRAINT],
   constraintsType: "",

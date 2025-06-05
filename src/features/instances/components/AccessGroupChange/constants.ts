@@ -1,8 +1,9 @@
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import * as Yup from "yup";
 import type { AccessGroupChangeFormValues } from "./types";
 
 export const INITIAL_VALUES: AccessGroupChangeFormValues = {
-  access_group: "global",
+  access_group: DEFAULT_ACCESS_GROUP_NAME,
 };
 
 export const VALIDATION_SCHEMA = Yup.object({

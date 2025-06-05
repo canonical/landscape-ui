@@ -1,3 +1,4 @@
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import type { ComponentProps } from "react";
 import * as Yup from "yup";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "../constants";
@@ -68,7 +69,7 @@ export const getInitialValues = (
   return props.action === "add"
     ? {
         title: "",
-        access_group: "global",
+        access_group: DEFAULT_ACCESS_GROUP_NAME,
         description: "",
         instanceType: "",
         customImageName: "",

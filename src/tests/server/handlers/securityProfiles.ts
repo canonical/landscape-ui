@@ -1,4 +1,4 @@
-import { API_URL } from "@/constants";
+import { API_URL, DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
   AddSecurityProfileParams,
@@ -56,7 +56,7 @@ export default [
         mode,
         title,
         start_date,
-        access_group = "global",
+        access_group = DEFAULT_ACCESS_GROUP_NAME,
         all_computers = false,
         tags = [],
       } = await request.json();

@@ -1,3 +1,4 @@
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import * as Yup from "yup";
 import { parseSchedule } from "../../helpers";
 import type {
@@ -59,7 +60,7 @@ export const getInitialValues = (props: RebootProfilesFormProps): FormProps => {
   if (props.action === "add") {
     return {
       title: "",
-      access_group: "global",
+      access_group: DEFAULT_ACCESS_GROUP_NAME,
       all_computers: false,
       randomize_delivery: false,
       deliver_delay_window: "",

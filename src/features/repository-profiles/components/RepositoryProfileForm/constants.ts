@@ -1,7 +1,8 @@
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import type { RepositoryProfileFormValues } from "../../types";
 
 export const INITIAL_VALUES: RepositoryProfileFormValues = {
-  access_group: "global",
+  access_group: DEFAULT_ACCESS_GROUP_NAME,
   all_computers: false,
   apt_sources: [],
   description: "",

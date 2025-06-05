@@ -1,5 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
+import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import classNames from "classnames";
@@ -30,7 +30,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   const { formik, steps } = useSecurityProfileForm({
     initialValues: {
       all_computers: false,
-      access_group: "global",
+      access_group: DEFAULT_ACCESS_GROUP_NAME,
       day_of_month_type: "day-of-month",
       days: [],
       delivery_time: "asap",

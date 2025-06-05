@@ -1,3 +1,4 @@
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import type { FormProps } from "./types";
 
 export const NOTIFICATION_ACTIONS = {
@@ -11,7 +12,7 @@ export const CTA_LABELS = {
 };
 
 export const INITIAL_VALUES: FormProps = {
-  access_group: "global",
+  access_group: DEFAULT_ACCESS_GROUP_NAME,
   all_computers: false,
   days_without_exchange: "",
   tags: [],
