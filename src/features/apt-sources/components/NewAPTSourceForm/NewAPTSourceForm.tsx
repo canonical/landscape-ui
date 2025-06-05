@@ -135,10 +135,7 @@ const NewAPTSourceForm: FC = () => {
       <Select
         label="Access group"
         disabled={isGettingAccessGroups}
-        options={[
-          { label: "Select access group", value: "" },
-          ...accessGroupsOptions,
-        ]}
+        options={accessGroupsOptions}
         {...formik.getFieldProps("access_group")}
         error={
           formik.touched.access_group && formik.errors.access_group

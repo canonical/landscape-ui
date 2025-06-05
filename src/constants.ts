@@ -30,3 +30,4 @@ export const COMMON_NUMBERS = {
   TWO: 2,
 };
 export const HOMEPAGE_PATH = "/overview";
+export const DEFAULT_ACCESS_GROUP_NAME = "global";

@@ -1,15 +1,16 @@
-import type { FC } from "react";
-import type { Instance } from "@/types/Instance";
-import useRoles from "@/hooks/useRoles";
-import { useFormik } from "formik";
-import { Form, Select } from "@canonical/react-components";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import type { AccessGroupChangeFormValues } from "./types";
-import useDebug from "@/hooks/useDebug";
-import { getAccessGroupOptions } from "./helpers";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import LoadingState from "@/components/layout/LoadingState";
+import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { Instance } from "@/types/Instance";
+import { Form, Select } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import { getAccessGroupOptions } from "./helpers";
+import type { AccessGroupChangeFormValues } from "./types";
 
 interface AccessGroupChangeProps {
   readonly selected: Instance[];
@@ -21,7 +22,7 @@ const AccessGroupChange: FC<AccessGroupChangeProps> = ({ selected }) => {
   const { closeSidePanel } = useSidePanel();
   const { getAccessGroupQuery, changeComputersAccessGroupQuery } = useRoles();
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
+  const { data: getAccessGroupQueryResult, isLoading } = getAccessGroupQuery();
 
   const { mutateAsync: changeComputersAccessGroup } =
     changeComputersAccessGroupQuery;
@@ -55,6 +56,10 @@ const AccessGroupChange: FC<AccessGroupChangeProps> = ({ selected }) => {
     onSubmit: handleSubmit,
     validationSchema: VALIDATION_SCHEMA,
   });
+
+  if (isLoading) {
+    return <LoadingState />;
+  }
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>

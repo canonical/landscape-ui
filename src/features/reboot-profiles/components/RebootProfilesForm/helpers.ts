@@ -1,10 +1,11 @@
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import * as Yup from "yup";
+import { parseSchedule } from "../../helpers";
 import type {
   FormProps,
   RebootProfileDay,
   RebootProfilesFormProps,
 } from "./types";
-import { parseSchedule } from "../../helpers";
 
 export const getValidationSchema = (action: "add" | "edit" | "duplicate") => {
   return Yup.object().shape({
@@ -55,14 +56,11 @@ export const getValidationSchema = (action: "add" | "edit" | "duplicate") => {
   });
 };
 
-export const getInitialValues = (
-  props: RebootProfilesFormProps,
-  accessGroupOptions?: { value: string; label: string }[],
-): FormProps => {
+export const getInitialValues = (props: RebootProfilesFormProps): FormProps => {
   if (props.action === "add") {
     return {
       title: "",
-      access_group: accessGroupOptions?.[0]?.value || "",
+      access_group: DEFAULT_ACCESS_GROUP_NAME,
       all_computers: false,
       randomize_delivery: false,
       deliver_delay_window: "",

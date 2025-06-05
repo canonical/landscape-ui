@@ -49,7 +49,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
     })) ?? [];
 
   const formik = useFormik<FormProps>({
-    initialValues: getInitialValues(props, accessGroupOptions),
+    initialValues: getInitialValues(props),
     enableReinitialize: true,
     onSubmit: async (values) => {
       try {

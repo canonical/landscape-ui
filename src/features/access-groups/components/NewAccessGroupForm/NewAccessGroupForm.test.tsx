@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import NewAccessGroupForm from "./NewAccessGroupForm";
 import userEvent from "@testing-library/user-event";
+import NewAccessGroupForm from "./NewAccessGroupForm";
 
 describe("NewAccessGroupForm", () => {
   it("renders form fields", () => {
@@ -22,6 +22,6 @@ describe("NewAccessGroupForm", () => {
     });
     expect(addAccessGroupButton).toBeInTheDocument();
     await userEvent.click(addAccessGroupButton);
-    expect(screen.getAllByText("This field is required")).toHaveLength(2);
+    expect(screen.getByText("This field is required")).toBeInTheDocument();
   });
 });

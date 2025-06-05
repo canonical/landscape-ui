@@ -1,3 +1,4 @@
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import type { FormProps } from "../../types";
 
 export const CTA_LABELS = {
@@ -6,7 +7,7 @@ export const CTA_LABELS = {
 };
 
 export const INITIAL_VALUES: FormProps = {
-  access_group: "",
+  access_group: DEFAULT_ACCESS_GROUP_NAME,
   all_computers: false,
   at_hour: "",
   at_minute: "",
