@@ -137,7 +137,7 @@ const NewUserForm: FC = () => {
       <Input
         type="checkbox"
         label="Require passphrase reset"
-        help="User must change password at first login"
+        help="User must change password at first login."
         {...formik.getFieldProps("requirePasswordReset")}
         checked={formik.values.requirePasswordReset}
       />

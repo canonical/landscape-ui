@@ -1,32 +1,66 @@
-import type { Cell, TableCellProps } from "react-table";
 import type { PackageProfile } from "../../types";
 import type { HTMLProps } from "react";
+import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 
-export const getCellProps = ({
-  column,
-}: Cell<PackageProfile>): Partial<
-  TableCellProps & HTMLProps<HTMLTableCellElement>
-> => {
-  const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
-    {};
+export const getCellProps = (expandedRowIndex: number | null) => {
+  return ({
+    column,
+    row: { index },
+  }: Cell<PackageProfile>): Partial<
+    TableCellProps & HTMLProps<HTMLTableCellElement>
+  > => {
+    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
+      {};
 
-  if (column.id === "name") {
-    cellProps.role = "rowheader";
-  } else if (column.id === "description") {
-    cellProps["aria-label"] = "Description";
-  } else if (column.id === "access_group") {
-    cellProps["aria-label"] = "Access group";
-  } else if (column.id === "tags") {
-    cellProps["aria-label"] = "Tags";
-  } else if (column.id === "computers['non-compliant']") {
-    cellProps["aria-label"] = "Not compliant instances";
-  } else if (column.id === "computers['pending']") {
-    cellProps["aria-label"] = "Pending instances";
-  } else if (column.id === "computers['constrained']") {
-    cellProps["aria-label"] = "Associated instances";
-  } else if (column.id === "actions") {
-    cellProps["aria-label"] = "Actions";
-  }
+    switch (column.id) {
+      case "name":
+        cellProps.role = "rowheader";
+        break;
+      case "description":
+        cellProps["aria-label"] = "Description";
+        break;
+      case "access_group":
+        cellProps["aria-label"] = "Access group";
+        break;
+      case "tags":
+        cellProps["aria-label"] = "Tags";
+        if (expandedRowIndex === index) {
+          cellProps.className = "expandedCell";
+        }
+        break;
+      case "computers['non-compliant']":
+        cellProps["aria-label"] = "Not compliant instances";
+        break;
+      case "computers['pending']":
+        cellProps["aria-label"] = "Pending instances";
+        break;
+      case "computers['constrained']":
+        cellProps["aria-label"] = "Associated instances";
+        break;
+      case "actions":
+        cellProps["aria-label"] = "Actions";
+        break;
+    }
 
-  return cellProps;
+    return cellProps;
+  };
+};
+
+export const getRowProps = (expandedRowIndex: number | null) => {
+  return ({
+    index,
+    original,
+  }: Row<PackageProfile>): Partial<
+    TableRowProps & HTMLProps<HTMLTableRowElement>
+  > => {
+    const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
+      {};
+
+    if (expandedRowIndex === index) {
+      rowProps.className = "expandedRow";
+    }
+    rowProps["aria-label"] = `${original.title} package profile row`;
+
+    return rowProps;
+  };
 };

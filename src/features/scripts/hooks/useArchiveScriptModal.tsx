@@ -41,16 +41,14 @@ export const useArchiveScriptModal = ({
     try {
       await archiveScript(script.id || 0);
 
-      if (afterSuccess) {
-        afterSuccess();
-      }
-
       notify.success({
         message: `"${script?.title}" script archived successfully`,
         title: "Script archived",
       });
     } catch (error) {
       debug(error);
+    } finally {
+      afterSuccess();
     }
   };
 

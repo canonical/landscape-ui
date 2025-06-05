@@ -184,7 +184,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
                 disabled={!instanceOptions.length}
                 help={
                   !instanceOptions.length &&
-                  "There are no available instances in this script's access group"
+                  "There are no available instances in this script's access group."
                 }
               />
             </div>

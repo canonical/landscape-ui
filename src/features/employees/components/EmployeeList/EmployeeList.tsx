@@ -41,7 +41,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
     (event) => {
       if (
         event.target instanceof Element &&
-        !event.target.closest(`.${classes.truncatedItem}`)
+        !event.target.closest("truncatedItem")
       ) {
         setExpandedCell(null);
       }
@@ -108,7 +108,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
                 <Link
                   to={`/settings/employees?tab=employee-groups&search=${group.name}`}
                   key={group.group_id}
-                  className={classes.truncatedItem}
+                  className="truncatedItem"
                 >
                   {group.name}
                 </Link>
@@ -165,7 +165,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
               content={original.computers?.map((computer) => (
                 <Link
                   key={computer.id}
-                  className={classes.truncatedItem}
+                  className="truncatedItem"
                   to={`/instances/${computer.id}`}
                 >
                   {computer.title}

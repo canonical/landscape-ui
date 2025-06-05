@@ -13,6 +13,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { VALIDATION_SCHEMA } from "./constants";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { pluralize } from "@/utils/_helpers";
 
 interface PackageProfileConstraintsAddFormProps {
   readonly profile: PackageProfile;
@@ -55,7 +56,7 @@ const PackageProfileConstraintsAddForm: FC<
       handleConstraintsEdit();
 
       notify.success({
-        message: `${constraints.length} package profile ${constraints.length === 1 ? "constraint" : "constraints"}  added successfully`,
+        message: `${constraints.length} package profile ${pluralize(constraints.length, "constraint")}  added successfully`,
         title: "Package profile constraints added",
       });
     } catch (error) {
@@ -76,8 +77,8 @@ const PackageProfileConstraintsAddForm: FC<
       <PackageProfileConstraintsBlock formik={formik} />
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText={`Add ${formik.values.constraints.length === 1 ? "constraint" : "constraints"}`}
-        submitButtonAriaLabel={`Add ${formik.values.constraints.length === 1 ? "constraint" : "constraints"} to "${profile.title}" profile`}
+        submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
+        submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
         cancelButtonDisabled={formik.isSubmitting}
       />
     </Form>

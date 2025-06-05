@@ -196,7 +196,7 @@ const ScriptProfilesPanel: FC = () => {
   if (!activeScriptsCount) {
     return (
       <EmptyState
-        title="You need at least one script to add a profile"
+        title="You need at least one script to add a profile."
         body={
           <>
             <p>
@@ -222,7 +222,7 @@ const ScriptProfilesPanel: FC = () => {
 
   return (
     <EmptyState
-      title="You don't have any script profiles yet"
+      title="You don't have any script profiles yet."
       body={
         <>
           <p>

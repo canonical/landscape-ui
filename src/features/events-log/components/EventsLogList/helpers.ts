@@ -1,24 +1,26 @@
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
-
 import type { HTMLProps } from "react";
 import type { EventLog } from "../../types";
-import classes from "./EventsLogList.module.scss";
 
-export const handleRowProps =
-  (rowIndex?: number) =>
-  ({ index }: Row<EventLog>) => {
+export const getRowProps = (expandedRowIndex: number | null) => {
+  return ({
+    index,
+  }: Row<EventLog>): Partial<
+    TableRowProps & HTMLProps<HTMLTableRowElement>
+  > => {
     const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
       {};
 
-    if (rowIndex === index) {
-      rowProps.className = classes.expandedRow;
+    if (expandedRowIndex === index) {
+      rowProps.className = "expandedRow";
     }
 
     return rowProps;
   };
+};
 
-export const handleEventLogsCellProps =
-  (expandedRowIndex: number) =>
+export const getCellProps =
+  (expandedRowIndex: number | null) =>
   ({ column, row: { index } }: Cell<EventLog>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
@@ -34,7 +36,7 @@ export const handleEventLogsCellProps =
     } else if (column.id === "message") {
       cellProps["aria-label"] = "message";
       if (expandedRowIndex === index) {
-        cellProps.className = classes.expandedCell;
+        cellProps.className = "expandedCell";
       }
     }
     return cellProps;

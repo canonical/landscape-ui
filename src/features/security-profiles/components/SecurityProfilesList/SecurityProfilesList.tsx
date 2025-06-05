@@ -61,9 +61,10 @@ const PASSRATE_HEADER = (
 
 const ASSOCIATED_INSTANCES_HEADER = (
   <span style={{ display: "inline-block", marginTop: "18px" }}>
-    associated instances
+    Associated instances
     <br />
     <span className="u-text--muted">tags</span>
+    Tags
   </span>
 );
 
@@ -75,9 +76,10 @@ const MODE_HEADER = (
 
 const LAST_RUN_HEADER = (
   <span style={{ display: "inline-block", marginTop: "18px" }}>
-    last run
+    Last run
     <br />
     <span className="u-text--muted">schedule</span>
+    Schedule
   </span>
 );
 
@@ -506,7 +508,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         ),
       },
     ],
-    [securityProfiles],
+    [],
   );
 
   const closeModal = () => {

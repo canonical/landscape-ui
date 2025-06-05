@@ -8,8 +8,11 @@ import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { usePackageProfiles } from "../../hooks";
+import useRoles from "@/hooks/useRoles";
 import type { PackageProfile } from "../../types";
 import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraints";
+import NoData from "@/components/layout/NoData";
+import { pluralize } from "@/utils/_helpers";
 
 const PackageProfileDuplicateForm = lazy(
   async () => import("../PackageProfileDuplicateForm"),
@@ -29,6 +32,10 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
   const { removePackageProfileQuery } = usePackageProfiles();
+
+  const { getAccessGroupQuery } = useRoles();
+  const { data: accessGroupsData } = getAccessGroupQuery();
+  const accessGroups = accessGroupsData?.data ?? [];
 
   const { mutateAsync: removePackageProfile, isPending: isRemoving } =
     removePackageProfileQuery;
@@ -53,6 +60,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         title: "Package profile removed",
       });
     } catch (error) {
+      handleCloseModal();
       debug(error);
     }
   };
@@ -115,27 +123,43 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           <InfoItem label="Description" value={profile.description} />
         </Col>
         <Col size={3}>
-          <InfoItem label="Access group" value={profile.access_group} />
+          <InfoItem
+            label="Access group"
+            value={
+              accessGroups.find((group) => group.name === profile.access_group)
+                ?.title ?? profile.access_group
+            }
+          />
         </Col>
         <Col size={9}>
-          <InfoItem label="Tags" value={profile.tags.join(", ")} />
+          <InfoItem
+            label="Tags"
+            {...(profile.tags.length > 0
+              ? {
+                  type: "truncated",
+                  value: profile.tags.join(", "),
+                }
+              : {
+                  value: <NoData />,
+                })}
+          />
         </Col>
         <Col size={3}>
           <InfoItem
             label="Associated to"
-            value={`${profile.computers.constrained.length} instances`}
+            value={`${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`}
           />
         </Col>
         <Col size={3}>
           <InfoItem
             label="Pending on"
-            value={`${profile.computers.pending?.length ?? 0} instances`}
+            value={`${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`}
           />
         </Col>
         <Col size={3}>
           <InfoItem
             label="Not compliant on"
-            value={`${profile.computers["non-compliant"].length} instances`}
+            value={`${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`}
           />
         </Col>
       </Row>

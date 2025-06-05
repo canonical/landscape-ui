@@ -1,9 +1,8 @@
-import type { HTMLProps, MutableRefObject } from "react";
+import type { HTMLProps, RefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { PermissionOption } from "@/pages/dashboard/settings/roles/types";
 import type { Role } from "@/types/Role";
 import type { CellCoordinates } from "./types";
-import classes from "./RoleList.module.scss";
 
 export const getPermissionListByType = (
   role: Role,
@@ -62,7 +61,7 @@ export const handleCellProps =
       expandedCell?.rowIndex === index &&
       expandedCell.columnId === column.id
     ) {
-      cellProps.className = classes.expandedCell;
+      cellProps.className = "expandedCell";
     }
 
     if (column.id === "name") {
@@ -87,14 +86,14 @@ export const handleRowProps =
       {};
 
     if (rowIndex === index) {
-      rowProps.className = classes.expandedRow;
+      rowProps.className = "expandedRow";
     }
 
     return rowProps;
   };
 
 export const getTableRows =
-  (ref: MutableRefObject<HTMLTableRowElement[]>) =>
+  (ref: RefObject<HTMLTableRowElement[]>) =>
   (instance: HTMLDivElement | null) => {
     if (!instance) {
       return;

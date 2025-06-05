@@ -18,6 +18,7 @@ import { lazy, Suspense, useMemo } from "react";
 import { useRemoveEmployeeGroupsModal } from "../../hooks";
 import type { EmployeeGroup } from "../../types";
 import classes from "./EmployeeGroupsHeader.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
 const EmployeeGroupIdentityIssuerListContainer = lazy(
   async () => import("../EmployeeGroupIdentityIssuerListContainer"),
@@ -73,10 +74,11 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
   };
 
   const handleAssignAutoinstallFile = () => {
-    const formTitle =
-      selectedGroups.length === 1
-        ? `Reassign autoinstall file to ${selectedGroups[0].name}`
-        : `Reassign autoinstall files to ${selectedGroups.length} employee groups`;
+    const formTitle = pluralize(
+      selectedGroups.length,
+      `Reassign autoinstall file to ${selectedGroups[0].name}`,
+      `Reassign autoinstall files to ${selectedGroups.length} employee groups`,
+    );
 
     setSidePanelContent(
       formTitle,

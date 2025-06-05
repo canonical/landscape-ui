@@ -3,7 +3,6 @@ import { lazy, Suspense, useState } from "react";
 import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -13,6 +12,7 @@ import type { UpgradeProfile } from "../../types";
 import { getScheduleInfo } from "./helpers";
 import classes from "./UpgradeProfileDetails.module.scss";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import { pluralize } from "@/utils/_helpers";
 
 const SingleUpgradeProfileForm = lazy(
   async () => import("../SingleUpgradeProfileForm"),
@@ -58,6 +58,7 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
         message: `Upgrade profile ${profile.title} has been removed`,
       });
     } catch (error) {
+      handleCloseModal();
       debug(error);
     }
   };
@@ -133,7 +134,7 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
         </div>
         <InfoItem
           label="Delivery delay window"
-          value={`${profile.deliver_delay_window} ${profile.deliver_delay_window !== "1" ? "minutes" : "minute"}`}
+          value={`${profile.deliver_delay_window} ${pluralize(Number(profile.deliver_delay_window), "minute")}`}
         />
       </div>
 
@@ -148,7 +149,8 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
         {!profile.all_computers && profile.tags.length > 0 && (
           <InfoItem
             label="Tags"
-            value={profile.tags.length ? profile.tags.join(", ") : <NoData />}
+            type="truncated"
+            value={profile.tags.join(", ")}
           />
         )}
       </div>

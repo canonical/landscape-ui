@@ -75,14 +75,14 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
     try {
       await removePackageProfile({ name: profile.name });
 
-      closeModal();
-
       notify.success({
         message: `Package profile "${profile.title}" removed successfully`,
         title: "Package profile removed",
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 

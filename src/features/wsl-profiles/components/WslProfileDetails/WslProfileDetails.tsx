@@ -1,7 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -12,6 +11,7 @@ import { lazy, Suspense, useState } from "react";
 import { useWslProfiles } from "../../hooks";
 import type { WslProfile } from "../../types";
 import classes from "./WslProfileDetails.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
 const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
 const WslProfileInstallForm = lazy(
@@ -57,6 +57,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
         title: "WSL profile removed",
       });
     } catch (error) {
+      handleCloseModal();
       debug(error);
     }
   };
@@ -150,29 +151,26 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
             <p>This profile has not yet been associated with any instances.</p>
           )}
           {!profile.all_computers && profile.tags.length > 0 && (
-            <InfoItem
-              label="tags"
-              value={profile.tags.length ? profile.tags.join(", ") : <NoData />}
-            />
+            <InfoItem label="tags" value={profile.tags.join(", ")} />
           )}
         </div>
 
         <Col size={12}>
           <InfoItem
             label="associated"
-            value={`${profile.computers.constrained.length} instances`}
+            value={`${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`}
           />
         </Col>
         <Col size={6}>
           <InfoItem
             label="not compliant"
-            value={`${profile.computers["non-compliant"].length} instances`}
+            value={`${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`}
           />
         </Col>
         <Col size={6}>
           <InfoItem
             label="pending"
-            value={`${profile.computers.pending?.length ?? 0} instances`}
+            value={`${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`}
           />
         </Col>
       </Row>

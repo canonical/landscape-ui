@@ -1,7 +1,6 @@
 import type { HTMLProps, RefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { Script } from "../../types";
-import classes from "./ScriptList.module.scss";
 
 export const getTableRowsRef = (
   tableRowsRef: RefObject<HTMLTableRowElement[]>,
@@ -38,7 +37,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
         cellProps["aria-label"] = "associated profiles";
 
         if (expandedRowIndex === index) {
-          cellProps.className = classes.expandedCell;
+          cellProps.className = "expandedCell";
         }
 
         break;
@@ -63,7 +62,7 @@ export const getRowProps = (expandedRowIndex: number | null) => {
       {};
 
     if (expandedRowIndex === index) {
-      rowProps.className = classes.expandedRow;
+      rowProps.className = "expandedRow";
     }
     rowProps["aria-label"] = `${original.title} script row`;
 

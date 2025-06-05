@@ -28,9 +28,9 @@ const GPGKeysListActions: FC<GPGKeysListActionsProps> = ({ gpgKey }) => {
       await remove({ name: gpgKey.name });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
-
-    closeModal();
   };
 
   return (

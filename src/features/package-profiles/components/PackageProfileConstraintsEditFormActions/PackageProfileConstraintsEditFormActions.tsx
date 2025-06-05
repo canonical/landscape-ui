@@ -20,6 +20,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { CONSTRAINT_TYPE_OPTIONS } from "./constants";
 import classes from "./PackageProfileConstraintsEditFormActions.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
 const PackageProfileConstraintsAddForm = lazy(
   async () => import("../PackageProfileConstraintsAddForm"),
@@ -62,8 +63,8 @@ const PackageProfileConstraintsEditFormActions: FC<
       setSelectedIds([]);
 
       notify.success({
-        message: `${selectedIds.length} "${profile.title}" profile's ${selectedIds.length === 1 ? "constraint" : "constraints"} removed successfully`,
-        title: `Package profile ${selectedIds.length === 1 ? "constraint" : "constraints"} removed`,
+        message: `${selectedIds.length} "${profile.title}" profile's ${pluralize(selectedIds.length, "constraint")} removed successfully`,
+        title: `Package profile ${pluralize(selectedIds.length, "constraint")} removed`,
       });
     } catch (error) {
       debug(error);
@@ -99,13 +100,13 @@ const PackageProfileConstraintsEditFormActions: FC<
         className="has-icon u-no-margin--right u-no-margin--bottom"
         type="button"
         disabled={selectedIds.length === 0 || formik.values.id !== 0}
-        aria-label={`Remove selected ${selectedIds.length === 1 ? "constraint" : "constraints"}`}
+        aria-label={`Remove selected ${pluralize(selectedIds.length, "constraint")}`}
         confirmationModalProps={{
-          title: `Remove ${selectedIds.length === 1 ? "constraint" : "constraints"}`,
+          title: `Remove ${pluralize(selectedIds.length, "constraint")}`,
           children: (
             <p>
               This will remove {selectedIds.length}{" "}
-              {selectedIds.length === 1 ? "constraint" : "constraints"}.
+              {pluralize(selectedIds.length, "constraint")}.
             </p>
           ),
           confirmButtonLabel: "Remove",

@@ -59,14 +59,14 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
     try {
       await removeWslProfile({ name: profile.name });
 
-      closeModal();
-
       notify.success({
         message: `WSL profile "${profile.title}" removed successfully.`,
         title: "WSL profile removed",
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 

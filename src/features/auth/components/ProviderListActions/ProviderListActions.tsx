@@ -51,10 +51,10 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
   const handleProviderDelete = async () => {
     try {
       await deleteProvider({ providerId: provider.id });
-
-      closeModal();
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 

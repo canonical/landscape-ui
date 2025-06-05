@@ -10,16 +10,16 @@ import type { SelectOption } from "@/types/SelectOption";
 import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactElement } from "react";
-import { lazy, Suspense, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import { useOnClickOutside } from "usehooks-ts";
 import { formatTitleCase } from "../../helpers";
 import { useOpenScriptDetails } from "../../hooks";
 import type { Script } from "../../types";
 import ScriptListActions from "../ScriptListActions";
-import { getCellProps, getRowProps, getTableRowsRef } from "./helpers";
+import { getCellProps, getRowProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 
 const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
@@ -32,22 +32,8 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   const { isFeatureEnabled } = useAuth();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
-
-  const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
-
-  const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
-
-  useOnClickOutside(
-    {
-      current:
-        expandedRowIndex == null
-          ? null
-          : tableRowsRef.current[expandedRowIndex],
-    },
-    () => {
-      setExpandedRowIndex(null);
-    },
-  );
+  const { expandedRowIndex, getTableRowsRef, handleExpand } =
+    useExpandableRow();
 
   const openViewPanel = (script: Script) => {
     setSidePanelContent(
@@ -126,14 +112,14 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
                   to="/scripts?tab=profiles"
                   state={{ scriptProfileId: id }}
                   key={id}
-                  className={classes.truncatedItem}
+                  className="truncatedItem"
                 >
                   {title}
                 </Link>
               ))}
               isExpanded={index == expandedRowIndex}
               onExpand={() => {
-                setExpandedRowIndex(index);
+                handleExpand(index);
               }}
               showCount
             />
@@ -187,7 +173,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   }, [scripts, accessGroupOptions, expandedRowIndex]);
 
   return (
-    <div ref={getTableRowsRef(tableRowsRef)}>
+    <div ref={getTableRowsRef}>
       <ModularTable
         columns={columns}
         data={scripts}

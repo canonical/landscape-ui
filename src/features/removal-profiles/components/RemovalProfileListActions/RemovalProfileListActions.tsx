@@ -41,14 +41,14 @@ const RemovalProfileListActions: FC<RemovalProfileListActionsProps> = ({
     try {
       await removeRemovalProfile({ name: profile.name });
 
-      closeModal();
-
       notify.success({
         message: `${profile.title} profile removed successfully`,
         title: "Removal profile removed",
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 

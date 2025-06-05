@@ -1,7 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -15,6 +14,7 @@ import { useRemoveRebootProfileQuery } from "../../api";
 import type { RebootProfile } from "../../types";
 import { formatWeeklyRebootSchedule } from "./helpers";
 import classes from "./RebootProfileDetails.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
 const RebootProfilesForm = lazy(async () => import("../RebootProfilesForm"));
 
@@ -154,13 +154,13 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
           <p>This profile has not yet been associated with any instances.</p>
         )}
         {!profile.all_computers && profile.tags.length > 0 && (
-          <InfoItem
-            label="Tags"
-            value={profile.tags.length ? profile.tags.join(", ") : <NoData />}
-          />
-        )}
-        {!profile.all_computers && profile.tags.length > 0 && (
-          <InfoItem label="associated instances" value={profile.tags} />
+          <>
+            <InfoItem label="Tags" value={profile.tags.join(", ")} />
+            <InfoItem
+              label="associated instances"
+              value={`${profile.num_computers} ${pluralize(profile.num_computers, "instance")}`}
+            />
+          </>
         )}
       </div>
 

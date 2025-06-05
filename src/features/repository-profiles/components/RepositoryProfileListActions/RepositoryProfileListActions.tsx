@@ -52,14 +52,14 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
         name: profile.name,
       });
 
-      closeModal();
-
       notify.success({
         message: `Repository profile "${profile.title}" removed successfully`,
         title: "Repository profile removed",
       });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
   };
 

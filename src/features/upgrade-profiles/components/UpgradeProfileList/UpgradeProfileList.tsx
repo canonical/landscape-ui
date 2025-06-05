@@ -11,7 +11,9 @@ import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { UpgradeProfile } from "../../types";
 import UpgradeProfileListActions from "../UpgradeProfileListActions";
-import classes from "./UpgradeProfileList.module.scss";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { getCellProps, getRowProps } from "./helpers";
 
 const UpgradeProfileDetails = lazy(
   async () => import("../UpgradeProfileDetails"),
@@ -25,6 +27,8 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
   const { search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
+  const { expandedRowIndex, handleExpand, getTableRowsRef } =
+    useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -87,13 +91,24 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
       },
       {
         accessor: "tags",
-        className: classes.truncated,
         Header: "Tags",
-        Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
-          <>
-            {original.tags.length > 0 ? original.tags.join(", ") : <NoData />}
-          </>
-        ),
+        Cell: ({ row: { original, index } }: CellProps<UpgradeProfile>) =>
+          original.tags.length > 0 ? (
+            <TruncatedCell
+              content={original.tags.map((tag) => (
+                <span className="truncatedItem" key={tag}>
+                  {tag}
+                </span>
+              ))}
+              isExpanded={index == expandedRowIndex}
+              onExpand={() => {
+                handleExpand(index);
+              }}
+              showCount
+            />
+          ) : (
+            <NoData />
+          ),
       },
       {
         accessor: "associated",
@@ -106,15 +121,19 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [filteredProfiles, accessGroupOptions.length],
+    [accessGroupOptions.length, expandedRowIndex],
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={filteredProfiles}
-      emptyMsg={`No upgrade profiles found with the search: "${search}"`}
-    />
+    <div ref={getTableRowsRef}>
+      <ModularTable
+        columns={columns}
+        data={filteredProfiles}
+        emptyMsg={`No upgrade profiles found with the search: "${search}"`}
+        getCellProps={getCellProps(expandedRowIndex)}
+        getRowProps={getRowProps(expandedRowIndex)}
+      />
+    </div>
   );
 };
 

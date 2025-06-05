@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import classNames from "classnames";
+import { pluralize } from "@/utils/_helpers";
 
 interface PackagesUpgradeInfoProps {
   readonly packageCount: number;
@@ -35,9 +36,7 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
               <b>{securityUpgradePackageCount}</b>
             </span>
             <span>
-              {securityUpgradePackageCount === 1
-                ? " security upgrade"
-                : " security upgrades"}
+              security {pluralize(securityUpgradePackageCount, "upgrade")}
             </span>
           </li>
         )}
@@ -48,9 +47,7 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
               <b>{regularUpgradePackageCount}</b>
             </span>
             <span>
-              {regularUpgradePackageCount === 1
-                ? " regular upgrade"
-                : " regular upgrades"}
+              regular {pluralize(regularUpgradePackageCount, "upgrade")}
             </span>
           </li>
         )}
@@ -61,11 +58,7 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
           <span>
             <b>{noUpgradePackageCount}</b>
           </span>
-          <span>
-            {noUpgradePackageCount === 1
-              ? " package needed."
-              : " packages needed."}
-          </span>
+          <span>{pluralize(noUpgradePackageCount, "package")} needed.</span>
         </p>
       )}
     </div>

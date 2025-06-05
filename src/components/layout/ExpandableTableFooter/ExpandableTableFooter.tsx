@@ -2,6 +2,7 @@ import type { FC, ReactNode } from "react";
 import { Button } from "@canonical/react-components";
 import classes from "./ExpandableTableFooter.module.scss";
 import classNames from "classnames";
+import { pluralize } from "@/utils/_helpers";
 
 interface ExpandableTableFooterProps {
   readonly itemCount: number;
@@ -39,7 +40,7 @@ const ExpandableTableFooter: FC<ExpandableTableFooterProps> = ({
           <span className="p-text--small u-text--muted">{`Showing ${Math.min(
             actualTotalCount,
             itemCount,
-          )} of ${actualTotalCount} ${actualTotalCount !== 1 ? itemNames.plural : itemNames.singular}.`}</span>
+          )} of ${actualTotalCount} ${pluralize(actualTotalCount, itemNames.singular, itemNames.plural)}.`}</span>
         )}
         {itemCount < actualTotalCount && (
           <Button

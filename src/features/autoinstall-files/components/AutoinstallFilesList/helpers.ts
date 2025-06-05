@@ -1,10 +1,9 @@
-import type { HTMLProps, MutableRefObject } from "react";
+import type { HTMLProps, RefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { AutoinstallFile, WithGroups } from "../../types";
-import classes from "./AutoinstallFilesList.module.scss";
 
 export const getTableRowsRef = (
-  tableRowsRef: MutableRefObject<HTMLTableRowElement[]>,
+  tableRowsRef: RefObject<HTMLTableRowElement[]>,
 ) => {
   return (instance: HTMLDivElement | null): void => {
     if (!instance) {
@@ -35,7 +34,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
         cellProps["aria-label"] = "employee groups";
 
         if (expandedRowIndex === index) {
-          cellProps.className = classes.expandedCell;
+          cellProps.className = "expandedCell";
         }
         break;
       case "last_modified_at":
@@ -60,7 +59,7 @@ export const getRowProps = (expandedRowIndex: number | null) => {
       {};
 
     if (expandedRowIndex === index) {
-      rowProps.className = classes.expandedRow;
+      rowProps.className = "expandedRow";
     }
 
     return rowProps;

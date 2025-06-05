@@ -9,6 +9,7 @@ import { useParams } from "react-router";
 import { useSnaps } from "../../hooks";
 import type { SelectedSnaps } from "../../types";
 import SnapDropdownSearch from "../SnapDropdownSearch";
+import { pluralize } from "@/utils/_helpers";
 
 const InstallSnaps: FC = () => {
   const [selectedSnaps, setSelectedSnaps] = useState<SelectedSnaps[]>([]);
@@ -37,7 +38,7 @@ const InstallSnaps: FC = () => {
       });
       closeSidePanel();
       notify.success({
-        message: `You queued ${selectedSnaps.length === 1 ? `snap ${selectedSnaps[0].name}` : `${selectedSnaps.length} snaps`} to be installed.`,
+        message: `You queued ${pluralize(selectedSnaps.length, `snap ${selectedSnaps[0].name}`, `${selectedSnaps.length} snaps`)} to be installed.`,
       });
       setSelectedSnaps([]);
     } catch (error) {

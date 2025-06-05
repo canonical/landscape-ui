@@ -4,9 +4,12 @@ import moment from "moment";
 export const getStatusTooltipMessage = (type: string, expiryDate: string) => {
   switch (type) {
     case "Fully patched":
-      return "All available kernel security patches have been applied. You have no pending patches";
-    case "Kernel upgrade available":
-      return `A new kernel version is available. The current version is covered by Livepatch until ${moment(expiryDate).format(DISPLAY_DATE_FORMAT)}`;
+      return "All available kernel security patches have been applied. You have no pending patches.";
+    case "Kernel upgrade available": {
+      const date = moment(expiryDate);
+
+      return `A new kernel version is available.${date.isValid() ? ` The current version is covered by Livepatch until ${date.format(DISPLAY_DATE_FORMAT)}` : ""}`;
+    }
     case "Restart required":
       return "Low and/or medium patches have been installed. You must restart to complete patching.";
     case "End of life":
@@ -14,7 +17,7 @@ export const getStatusTooltipMessage = (type: string, expiryDate: string) => {
     case "Livepatch disabled":
       return "Livepatch is disabled. Kernel patches will not be applied automatically until you enabled Livepatch.";
     default:
-      return "There was an error getting the status";
+      return "There was an error getting the status.";
   }
 };
 

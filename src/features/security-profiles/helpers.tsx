@@ -9,6 +9,7 @@ import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "./constants";
 import classes from "./helpers.module.scss";
 import type { SecurityProfile } from "./types";
 import type { SecurityProfileFormValues } from "./types/SecurityProfileAddFormValues";
+import { pluralize } from "@/utils/_helpers";
 
 export const phrase = (strings: string[] = []) => {
   return `${strings.slice(0, -1).join(", ")}${strings.length > 2 ? "," : ""}${strings.length > 1 ? " and " : ""}${strings.slice(-1)}`;
@@ -50,7 +51,7 @@ export const getAssociatedInstancesLink = (profile: SecurityProfile) => {
       }}
     >
       {profile.associated_instances ?? 0}{" "}
-      {profile.associated_instances === 1 ? "instance" : "instances"}
+      {pluralize(profile.associated_instances, "instance")}
     </Link>
   ) : (
     <NoData />

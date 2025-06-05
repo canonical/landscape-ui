@@ -3,6 +3,7 @@ import { accessGroups } from "@/tests/mocks/accessGroup";
 import { renderWithProviders } from "@/tests/render";
 import WslProfileDetails from "./WslProfileDetails";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
+import { pluralize } from "@/utils/_helpers";
 
 describe("WslProfileDetails", () => {
   const testProfile =
@@ -33,15 +34,15 @@ describe("WslProfileDetails", () => {
     },
     {
       label: "associated",
-      value: `${testProfile.computers.constrained.length} instances`,
+      value: `${testProfile.computers.constrained.length} ${pluralize(testProfile.computers.constrained.length, "instance")}`,
     },
     {
       label: "not compliant",
-      value: `${testProfile.computers["non-compliant"].length} instances`,
+      value: `${testProfile.computers["non-compliant"].length} ${pluralize(testProfile.computers["non-compliant"].length, "instance")}`,
     },
     {
       label: "pending",
-      value: `${testProfile.computers.pending?.length ?? 0} instances`,
+      value: `${testProfile.computers.pending?.length ?? 0} ${pluralize(Number(testProfile.computers.pending?.length), "instance")}`,
     },
   ];
 

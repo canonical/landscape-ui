@@ -26,8 +26,6 @@ const SecurityProfileArchiveModal: FC<SecurityProfileArchiveModalProps> = ({
         id: profile.id,
       });
 
-      close();
-
       notify.success({
         title: `You have archived "${profile.title}" profile`,
         message:
@@ -35,6 +33,8 @@ const SecurityProfileArchiveModal: FC<SecurityProfileArchiveModalProps> = ({
       });
     } catch (error) {
       debug(error);
+    } finally {
+      close();
     }
   };
 

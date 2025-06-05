@@ -7,11 +7,12 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
 import classes from "./PackageActions.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
 const InstalledPackagesActionForm = lazy(
-  () => import("../InstalledPackagesActionForm"),
+  async () => import("../InstalledPackagesActionForm"),
 );
-const PackagesInstallForm = lazy(() => import("../PackagesInstallForm"));
+const PackagesInstallForm = lazy(async () => import("../PackagesInstallForm"));
 
 interface PackageActionsProps {
   readonly selectedPackages: InstancePackage[];
@@ -23,10 +24,11 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
   const handleExistingPackages = (
     action: Exclude<InstalledPackageAction, "downgrade">,
   ) => {
-    const titleEnding =
-      selectedPackages.length === 1
-        ? selectedPackages[0].name
-        : `${selectedPackages.length} selected packages`;
+    const titleEnding = pluralize(
+      selectedPackages.length,
+      selectedPackages[0].name,
+      `${selectedPackages.length} selected packages`,
+    );
 
     setSidePanelContent(
       `${INSTALLED_PACKAGE_ACTIONS[action].label} ${titleEnding}`,
@@ -95,7 +97,9 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
               type="button"
               className="p-segmented-control__button has-icon u-no-margin--bottom"
               disabled={actionDisabledCondition[packageAction]}
-              onClick={() => handleExistingPackages(packageAction)}
+              onClick={() => {
+                handleExistingPackages(packageAction);
+              }}
             >
               <Icon name={INSTALLED_PACKAGE_ACTIONS[packageAction].icon} />
               <span>{INSTALLED_PACKAGE_ACTIONS[packageAction].label}</span>

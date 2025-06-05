@@ -4,6 +4,7 @@ import useInstances from "@/hooks/useInstances";
 import { Button, Notification } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
+import { pluralize } from "@/utils/_helpers";
 
 const PendingInstanceList = lazy(
   async () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -36,7 +37,7 @@ const PendingInstancesNotification: FC = () => {
     <Notification severity="information" title="Pending instances">
       <span>
         {`You currently have ${getPendingInstancesQueryResult.data.length} pending
-          	${getPendingInstancesQueryResult.data.length === 1 ? "instance" : "instances"}
+          	${pluralize(getPendingInstancesQueryResult.data.length, "instance")}
           	awaiting your review and approval. `}
       </span>
       <Button

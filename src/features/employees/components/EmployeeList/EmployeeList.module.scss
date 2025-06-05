@@ -1,25 +1,4 @@
-@import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
-
-.expandedCell {
-  overflow: visible;
-  padding: 0;
-}
-
-.expandedRow {
-  background-color: $color-x-light;
-  filter: drop-shadow(0 4px 8px $color-mid-light);
-}
-
-.truncatedItem {
-  &:not(:last-child)::after {
-    content: ", ";
-  }
-
-  &:visited {
-    color: $color-link;
-  }
-}
 
 .autoinstallFileHeaderTitle {
   margin-right: $sph--x-small;

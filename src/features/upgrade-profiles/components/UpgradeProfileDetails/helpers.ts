@@ -2,6 +2,7 @@ import moment from "moment";
 import type { UpgradeProfile, UpgradeProfileDay } from "../../types";
 import { DAY_OPTIONS } from "../../constants";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { pluralize } from "@/utils/_helpers";
 
 const getScheduledDays = (onDays: UpgradeProfileDay[]) => {
   return DAY_OPTIONS.filter(({ value }) => onDays.includes(value))
@@ -25,7 +26,7 @@ export const getScheduleInfo = (profile: UpgradeProfile) => {
   const atMinute = parseInt(profile.at_minute);
 
   if (every === "hour") {
-    scheduleMessage += `hour at ${atMinute} ${atMinute !== 1 ? "minutes" : "minute"}`;
+    scheduleMessage += `hour at ${atMinute} ${pluralize(atMinute, "minute")}`;
 
     if (on_days) {
       scheduleMessage += ` on ${getScheduledDays(on_days)}`;

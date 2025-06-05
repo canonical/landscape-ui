@@ -17,20 +17,23 @@ import { lazy, Suspense } from "react";
 import { currentInstanceCan, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
-const RunInstanceScriptForm = lazy(() =>
+const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
     default: module.RunInstanceScriptForm,
   })),
 );
-const Upgrades = lazy(() =>
+const Upgrades = lazy(async () =>
   import("@/features/upgrades").then((module) => ({
     default: module.Upgrades,
   })),
 );
-const ReportView = lazy(() => import("@/pages/dashboard/instances/ReportView"));
-const AccessGroupChange = lazy(() => import("../AccessGroupChange"));
-const TagsAddForm = lazy(() => import("../TagsAddForm"));
+const ReportView = lazy(
+  async () => import("@/pages/dashboard/instances/ReportView"),
+);
+const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
+const TagsAddForm = lazy(async () => import("../TagsAddForm"));
 
 interface InstancesPageActionsProps {
   readonly selected: Instance[];
@@ -54,7 +57,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
   const createInstanceCountString = (instances: Instance[]) => {
     return (
       <>
-        <b>{instances.length}</b> instance{instances.length === 1 ? "" : "s"}
+        <b>{instances.length}</b> {pluralize(instances.length, "instance")}
       </>
     );
   };
@@ -105,7 +108,9 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
       notify.success(
         getNotificationArgs({
           action: "shutdown",
-          onDetailsClick: () => openActivityDetails(shutdownActivity),
+          onDetailsClick: () => {
+            openActivityDetails(shutdownActivity);
+          },
           selected,
         }),
       );
@@ -123,7 +128,9 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
       notify.success(
         getNotificationArgs({
           action: "reboot",
-          onDetailsClick: () => openActivityDetails(rebootActivity),
+          onDetailsClick: () => {
+            openActivityDetails(rebootActivity);
+          },
           selected,
         }),
       );
@@ -144,7 +151,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${selected.length === 1 ? selected[0].title : `${selected.length} instances`}`,
+      `Report for ${pluralize(selected.length, selected[0].title, `${selected.length} instances`)}`,
       <Suspense fallback={<LoadingState />}>
         <ReportView instanceIds={selected.map(({ id }) => id)} />
       </Suspense>,
@@ -182,8 +189,8 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
               title: "Shutting down selected instances",
               children: (
                 <p>
-                  Are you sure you want to shutdown {selected.length} instance
-                  {selected.length === 1 ? "" : "s"}?
+                  Are you sure you want to shutdown {selected.length}
+                  {pluralize(selected.length, "instance")}?
                 </p>
               ),
               confirmButtonLabel: "Shutdown",
@@ -204,8 +211,8 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
               title: "Restarting selected instances",
               children: (
                 <p>
-                  Are you sure you want to restart {selected.length} instance
-                  {selected.length === 1 ? "" : "s"}?
+                  Are you sure you want to restart {selected.length}
+                  {pluralize(selected.length, "instance")}?
                 </p>
               ),
               confirmButtonLabel: "Restart",

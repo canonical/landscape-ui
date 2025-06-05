@@ -29,9 +29,9 @@ const APTSourcesListActions: FC<APTSourcesListActionsProps> = ({
       await remove({ name: aptSource.name });
     } catch (error) {
       debug(error);
+    } finally {
+      closeModal();
     }
-
-    closeModal();
   };
 
   return (

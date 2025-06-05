@@ -12,6 +12,7 @@ import { lazy, Suspense, useState } from "react";
 import { useWsl } from "../../hooks";
 import classes from "./WslInstancesHeader.module.scss";
 import useNotify from "@/hooks/useNotify";
+import { pluralize } from "@/utils/_helpers";
 
 const WslInstanceInstallForm = lazy(
   async () => import("../WslInstanceInstallForm"),
@@ -51,14 +52,14 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         computer_ids: selectedInstances.map(({ id }) => id),
       });
 
-      handleCloseModal();
-
       notify.success({
-        title: `You queued ${selectedInstances.length} instance${selectedInstances.length === 1 ? "" : "s"} to be deleted.`,
-        message: `${selectedInstances.length} instance${selectedInstances.length === 1 ? "" : "s"} will be deleted.`,
+        title: `You queued ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")} to be deleted.`,
+        message: `${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")} will be deleted.`,
       });
     } catch (error) {
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 
@@ -68,17 +69,18 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         computer_ids: selectedInstances.map(({ id }) => id),
       });
 
-      handleCloseModal();
-
       notify.success({
-        title: `You have successfully removed ${selectedInstances.length} instance${selectedInstances.length === 1 ? "" : "s"}.`,
-        message:
-          selectedInstances.length === 1
-            ? `${selectedInstances.length} instance has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`
-            : `${selectedInstances.length} instances have been removed from Landscape. To manage them again, you will need to re-register them in Landscape.`,
+        title: `You have successfully removed ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}.`,
+        message: pluralize(
+          selectedInstances.length,
+          `${selectedInstances.length} instance has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
+          `${selectedInstances.length} instances have been removed from Landscape. To manage them again, you will need to re-register them in Landscape.`,
+        ),
       });
     } catch (error) {
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 
@@ -134,20 +136,16 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         isOpen={modalOpen === "remove"}
         close={handleCloseModal}
         onConfirm={handleRemoveInstances}
-        title={
-          selectedInstances.length !== 1
-            ? "Remove instances from Landscape"
-            : "Remove instance from Landscape"
-        }
+        title={`Remove ${pluralize(selectedInstances.length, "instance")} from Landscape`}
         confirmButtonLabel="Remove"
         confirmButtonAppearance="negative"
         confirmButtonDisabled={isRemoving}
         confirmButtonLoading={isRemoving}
-        confirmationText={
-          selectedInstances.length !== 1
-            ? "remove instances"
-            : `remove ${selectedInstances[0].title}`
-        }
+        confirmationText={pluralize(
+          selectedInstances.length,
+          `remove ${selectedInstances[0].title}`,
+          "remove instances",
+        )}
       >
         {selectedInstances.length !== 1 ? (
           <p>
@@ -168,20 +166,16 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         isOpen={modalOpen === "delete"}
         close={handleCloseModal}
         onConfirm={handleDeleteChildInstances}
-        title={
-          selectedInstances.length !== 1
-            ? "Delete instances"
-            : "Delete instance"
-        }
+        title={`Delete ${pluralize(selectedInstances.length, "instance")}`}
         confirmButtonLabel="Delete"
         confirmButtonAppearance="negative"
         confirmButtonDisabled={isDeleting}
         confirmButtonLoading={isDeleting}
-        confirmationText={
-          selectedInstances.length !== 1
-            ? "delete instances"
-            : `delete ${selectedInstances[0].title}`
-        }
+        confirmationText={pluralize(
+          selectedInstances.length,
+          `delete ${selectedInstances[0].title}`,
+          "delete instances",
+        )}
       >
         {selectedInstances.length !== 1 ? (
           <p>

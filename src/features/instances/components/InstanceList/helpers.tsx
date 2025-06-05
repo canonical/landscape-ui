@@ -13,6 +13,7 @@ import {
 } from "../../helpers";
 import classes from "./InstanceList.module.scss";
 import type { GetUpgradesResult, InstanceColumn } from "./types";
+import { pluralize } from "@/utils/_helpers";
 
 export const getColumnFilterOptions = (
   columns: InstanceColumn[],
@@ -174,17 +175,13 @@ const getUpgradesFromUpgrades = (
     regular: upgrades.regular
       ? {
           icon: STATUSES.PackageUpgradesAlert.icon.color ?? "",
-          label: `${upgrades.regular} regular ${
-            upgrades.regular === 1 ? "upgrade" : "upgrades"
-          }`,
+          label: `${upgrades.regular} regular ${pluralize(upgrades.regular, "upgrade")}`,
         }
       : false,
     security: upgrades.security
       ? {
           icon: STATUSES.SecurityUpgradesAlert.icon.color ?? "",
-          label: `${upgrades.security} security ${
-            upgrades.security === 1 ? "upgrade" : "upgrades"
-          }`,
+          label: `${upgrades.security} security ${pluralize(upgrades.security, "upgrade")}`,
         }
       : false,
   };

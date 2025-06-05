@@ -30,6 +30,7 @@ import {
   VALIDATION_SCHEMA,
 } from "./constants";
 import type { FormProps } from "./types";
+import { pluralize } from "@/utils/_helpers";
 
 interface AssignAutoInstallFileFormProps {
   readonly employeeGroups: EmployeeGroup[];
@@ -58,16 +59,16 @@ const AssignAutoInstallFileForm: FC<AssignAutoInstallFileFormProps> = ({
 
   const notifySuccess = (filename: string) => {
     notify.success({
-      title: `Successfully reassigned ${filename} to ${
-        employeeGroups.length === 1
-          ? `${employeeGroups[0].name} group`
-          : `${employeeGroups.length} groups`
-      }.`,
-      message: `Autoinstall file assigned to ${affectedEmployeesAmount} employees${
-        employeeGroups.length === 1
-          ? ` in ${employeeGroups[0].name} group`
-          : ` across ${employeeGroups.length} groups`
-      }.`,
+      title: `Successfully reassigned ${filename} to ${pluralize(
+        employeeGroups.length,
+        `${employeeGroups[0].name} group`,
+        `${employeeGroups.length} groups`,
+      )}.`,
+      message: `Autoinstall file assigned to ${affectedEmployeesAmount} employees${pluralize(
+        employeeGroups.length,
+        ` in ${employeeGroups[0].name} group`,
+        ` across ${employeeGroups.length} groups`,
+      )}.`,
     });
   };
 

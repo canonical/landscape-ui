@@ -5,6 +5,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import AlertNotificationsList from "./AlertNotificationsList";
+import { pluralize } from "@/utils/_helpers";
 
 const alertsWithoutPending = alertsSummary.filter(
   (alert) => alert.alert_type !== "PendingComputersAlert",
@@ -64,7 +65,11 @@ describe("AlertNotificationsList", () => {
       />,
     );
     const button = screen.getByRole("button", {
-      name: `${pendingInstances.length} pending computer${pendingInstances.length > 1 ? "s" : ""} need${pendingInstances.length > 1 ? "" : "s"} authorization`,
+      name: `${pendingInstances.length} pending ${pluralize(
+        pendingInstances.length,
+        "computer needs",
+        "computers need",
+      )} authorization`,
     });
     expect(button).toBeInTheDocument();
   });

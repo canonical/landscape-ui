@@ -9,6 +9,7 @@ import { lazy, Suspense } from "react";
 import { Link } from "react-router";
 import type { AlertSummary } from "../../types";
 import classes from "./AlertNotificationsList.module.scss";
+import { pluralize } from "@/utils/_helpers";
 
 const PendingInstancesForm = lazy(
   () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -49,9 +50,11 @@ const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
             onClick={handlePendingInstancesReview}
           >
             {`${pendingInstances.length} pending `}
-            {pendingInstances.length !== 1
-              ? "computers need "
-              : "computer needs "}
+            {pluralize(
+              pendingInstances.length,
+              "computer needs",
+              "computers need",
+            )}{" "}
             authorization
           </Button>
         ) : (

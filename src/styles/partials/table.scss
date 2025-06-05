@@ -3,3 +3,25 @@ thead {
     vertical-align: middle;
   }
 }
+
+.expandedCell {
+  overflow: visible;
+  padding: 0;
+}
+
+.expandedRow {
+  background-color: $color-x-light;
+  filter: drop-shadow(0 4px 8px $color-mid-light);
+  position: relative;
+  z-index: 20;
+}
+
+.truncatedItem {
+  &:not(:last-child)::after {
+    content: ", ";
+  }
+
+  &:visited {
+    color: $color-link !important;
+  }
+}

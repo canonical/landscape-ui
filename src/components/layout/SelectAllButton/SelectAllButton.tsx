@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { Button, Icon } from "@canonical/react-components";
+import { pluralize } from "@/utils/_helpers";
 
 interface SelectAllButtonProps {
   readonly count: number;
@@ -20,7 +21,7 @@ const SelectAllButton: FC<SelectAllButtonProps> = ({
   return (
     <div>
       <Icon name="information" />
-      <span className="u-text--muted">{` Selected ${count} ${count !== 1 ? plural : singular} currently. `}</span>
+      <span className="u-text--muted">{` Selected ${count} ${pluralize(count, singular, plural)} currently. `}</span>
       <Button
         type="button"
         appearance="link"
