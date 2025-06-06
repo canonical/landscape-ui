@@ -36,10 +36,12 @@ const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const TagsAddForm = lazy(async () => import("../TagsAddForm"));
 
 interface InstancesPageActionsProps {
+  readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
 }
 
 const InstancesPageActions = memo(function InstancesPageActions({
+  isGettingInstances,
   selectedInstances,
 }: InstancesPageActionsProps) {
   const debug = useDebug();
@@ -195,7 +197,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
             className="has-icon"
             type="button"
             disabled={
-              shutdownInstancesLoading || 0 === selectedInstances.length
+              shutdownInstancesLoading ||
+              0 === selectedInstances.length ||
+              isGettingInstances
             }
             onClick={() => {
               setShutdownModalOpen(true);
@@ -208,7 +212,11 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="reboot-instances"
             hasIcon
             type="button"
-            disabled={rebootInstancesLoading || 0 === selectedInstances.length}
+            disabled={
+              rebootInstancesLoading ||
+              0 === selectedInstances.length ||
+              isGettingInstances
+            }
             onClick={() => {
               setRebootModalOpen(true);
             }}
@@ -232,9 +240,11 @@ const InstancesPageActions = memo(function InstancesPageActions({
             type="button"
             hasIcon
             onClick={handleRunScript}
-            disabled={selectedInstances.every((instance) => {
-              return !currentInstanceCan("runScripts", instance);
-            })}
+            disabled={
+              selectedInstances.every((instance) => {
+                return !currentInstanceCan("runScripts", instance);
+              }) || isGettingInstances
+            }
           >
             <Icon name="code" />
             <span>Run script</span>
@@ -244,9 +254,11 @@ const InstancesPageActions = memo(function InstancesPageActions({
             type="button"
             hasIcon
             onClick={handleUpgradesRequest}
-            disabled={selectedInstances.every(
-              (instance) => !hasUpgrades(instance.alerts),
-            )}
+            disabled={
+              selectedInstances.every(
+                (instance) => !hasUpgrades(instance.alerts),
+              ) || isGettingInstances
+            }
           >
             <Icon name="change-version" />
             <span>Upgrade</span>
