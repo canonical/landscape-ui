@@ -1,16 +1,29 @@
+import PageContent from "@/components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
+import { InstancesPageActions } from "@/features/instances";
 import useInstances from "@/hooks/useInstances";
 import usePageParams from "@/hooks/usePageParams";
+import useSelection from "@/hooks/useSelection";
 import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer/InstancesContainer";
-import type { FC } from "react";
+import type { Instance } from "@/types/Instance";
+import { type FC } from "react";
+import classes from "./InstancesPage.module.scss";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, groupBy, ...filters } = usePageParams();
+
   const { getInstancesQuery } = useInstances();
 
-  const { data: getInstancesQueryResult, isLoading: getInstancesQueryLoading } =
+  const {
+    selectedItems: selectedInstances,
+    setSelectedItems: setSelectedInstances,
+    validate: validateInstances,
+  } = useSelection<Instance>();
+
+  const { data: getInstancesQueryResult, isLoading: isGettingInstances } =
     getInstancesQuery({
       query: getQuery(filters),
       root_only: groupBy === "parent",
@@ -23,13 +36,31 @@ const InstancesPage: FC = () => {
 
   const instances = getInstancesQueryResult?.data.results ?? [];
 
+  validateInstances(instances, isGettingInstances);
+
   return (
     <PageMain>
-      <InstancesContainer
-        instanceCount={getInstancesQueryResult?.data.count}
-        instances={instances}
-        isGettingInstances={getInstancesQueryLoading}
+      <PageHeader
+        title="Instances"
+        className={classes.header}
+        actions={[
+          <InstancesPageActions
+            key="actions"
+            isGettingInstances={isGettingInstances}
+            selectedInstances={selectedInstances}
+          />,
+        ]}
+        sticky
       />
+      <PageContent>
+        <InstancesContainer
+          instanceCount={getInstancesQueryResult?.data.count}
+          instances={instances}
+          isGettingInstances={isGettingInstances}
+          selectedInstances={selectedInstances}
+          setSelectedInstances={setSelectedInstances}
+        />
+      </PageContent>
     </PageMain>
   );
 };
