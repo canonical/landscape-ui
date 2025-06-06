@@ -9,3 +9,7 @@
 .pause {
   @include vf-icon-pause($color-mid-dark);
 }
+
+.monospace {
+  font-family: monospace;
+}

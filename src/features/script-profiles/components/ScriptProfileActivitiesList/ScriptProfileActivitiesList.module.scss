@@ -1,6 +1,8 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .link {
+  font-family: monospace;
+
   &:visited {
     color: $color-link;
   }

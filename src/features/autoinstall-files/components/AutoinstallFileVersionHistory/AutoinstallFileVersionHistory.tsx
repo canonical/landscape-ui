@@ -10,6 +10,7 @@ import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
 import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
 import AutoinstallFileSidePanelTitle from "../AutoinstallFileSidePanelTitle";
+import classes from "./AutoinstallFileVersionHistory.module.scss";
 
 const AutoinstallFileVersion = lazy(
   async () => import("../AutoinstallFileVersion"),
@@ -77,7 +78,9 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
             original: { created_at },
           },
         }: CellProps<AutoinstallFileVersionInfo>): ReactNode => (
-          <div>{moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
+          <div className={classes.monospace}>
+            {moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+          </div>
         ),
       },
     ],

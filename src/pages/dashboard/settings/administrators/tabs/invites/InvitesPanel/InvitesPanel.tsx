@@ -8,6 +8,7 @@ import moment from "moment";
 import type { FC, HTMLProps } from "react";
 import { useMemo } from "react";
 import type { Cell, CellProps, Column, TableCellProps } from "react-table";
+import classes from "./InvitesPanel.module.scss";
 
 const InvitesPanel: FC = () => {
   const debug = useDebug();
@@ -69,16 +70,24 @@ const InvitesPanel: FC = () => {
       {
         accessor: "creation_time",
         Header: "Invited",
-        Cell: ({ row }: CellProps<Invitation>) =>
-          moment(row.original.creation_time).format(DISPLAY_DATE_TIME_FORMAT),
+        Cell: ({ row }: CellProps<Invitation>) => (
+          <span className={classes.monospace}>
+            {moment(row.original.creation_time).format(
+              DISPLAY_DATE_TIME_FORMAT,
+            )}
+          </span>
+        ),
       },
       {
         accessor: "expiration_time",
         Header: "Expires",
-        Cell: ({ row }: CellProps<Invitation>) =>
-          moment(row.original.creation_time)
-            .add(14, "days")
-            .format(DISPLAY_DATE_TIME_FORMAT),
+        Cell: ({ row }: CellProps<Invitation>) => (
+          <span className={classes.monospace}>
+            {moment(row.original.creation_time)
+              .add(14, "days")
+              .format(DISPLAY_DATE_TIME_FORMAT)}
+          </span>
+        ),
       },
       {
         accessor: "actions",

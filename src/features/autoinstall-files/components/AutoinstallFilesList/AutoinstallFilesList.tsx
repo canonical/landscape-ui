@@ -259,7 +259,9 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             original: { last_modified_at },
           },
         }: CellProps<WithGroups<AutoinstallFile>>): ReactNode => (
-          <div>{moment(last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
+          <div className={classes.monospace}>
+            {moment(last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}
+          </div>
         ),
       },
       {
@@ -270,7 +272,9 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
             original: { created_at },
           },
         }: CellProps<WithGroups<AutoinstallFile>>): ReactNode => (
-          <div>{moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
+          <div className={classes.monospace}>
+            {moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+          </div>
         ),
       },
       {

@@ -24,11 +24,11 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
         accessor: "creation_time",
         Header: "creation time",
         Cell: ({ row }: CellProps<EventLog>) => (
-          <>
+          <span className={classes.monospace}>
             {moment(row.original.creation_time).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
-          </>
+          </span>
         ),
       },
       {

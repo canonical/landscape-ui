@@ -186,9 +186,11 @@ const InstanceList: FC<InstanceListProps> = ({
           <>
             {row.original.ubuntu_pro_info &&
             moment(row.original.ubuntu_pro_info.expires).isValid() ? (
-              `${moment(row.original.ubuntu_pro_info.expires).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )}`
+              <span className={classes.monospace}>
+                {moment(row.original.ubuntu_pro_info.expires).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              </span>
             ) : (
               <NoData />
             )}
@@ -203,9 +205,11 @@ const InstanceList: FC<InstanceListProps> = ({
         Cell: ({ row }: CellProps<Instance>) => (
           <>
             {moment(row.original.last_ping_time).isValid() ? (
-              moment(row.original.last_ping_time).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )
+              <span className={classes.monospace}>
+                {moment(row.original.last_ping_time).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              </span>
             ) : (
               <NoData />
             )}

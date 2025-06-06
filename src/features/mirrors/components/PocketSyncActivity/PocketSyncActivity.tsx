@@ -53,7 +53,11 @@ const PocketSyncActivity: FC<PocketSyncActivityProps> = ({
   }
 
   if (pocket.last_sync_status === "synced") {
-    return moment(pocket.last_sync_time).format(DISPLAY_DATE_TIME_FORMAT);
+    return (
+      <span className={classes.monospace}>
+        {moment(pocket.last_sync_time).format(DISPLAY_DATE_TIME_FORMAT)};
+      </span>
+    );
   }
 
   if (pocket.last_sync_status === "in progress") {

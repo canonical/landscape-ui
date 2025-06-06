@@ -16,6 +16,7 @@ import RebootProfilesListActions from "../RebootProfilesListActions";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { getCellProps, getRowProps } from "./helpers";
+import classes from "./RebootProfilesList.module.scss";
 
 const RebootProfileDetails = lazy(
   async () => import("../RebootProfileDetails"),
@@ -128,9 +129,9 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
         Header: "scheduled reboot",
         Cell: ({ row }: CellProps<RebootProfile>) => {
           return (
-            <>
+            <span className={classes.monospace}>
               {moment(row.original.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
-            </>
+            </span>
           );
         },
       },

@@ -319,7 +319,11 @@ const InfoTablesContainer: FC = () => {
         accessor: "creation_time",
         Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => {
           const date = moment(row.original.creation_time);
-          return <>{date.local().format(DISPLAY_DATE_TIME_FORMAT)}</>;
+          return (
+            <span className={classes.monospace}>
+              {date.local().format(DISPLAY_DATE_TIME_FORMAT)}
+            </span>
+          );
         },
       },
     ],

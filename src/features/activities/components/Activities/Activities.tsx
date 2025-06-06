@@ -182,11 +182,11 @@ const Activities: FC<ActivitiesProps> = ({
           accessor: "creation_time",
           Header: "Created at",
           Cell: ({ row }: CellProps<ActivityCommon>) => (
-            <>
+            <span className={classes.monospace}>
               {moment(row.original.creation_time).format(
                 DISPLAY_DATE_TIME_FORMAT,
               )}
-            </>
+            </span>
           ),
         },
         {
