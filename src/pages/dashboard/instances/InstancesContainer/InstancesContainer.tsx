@@ -6,8 +6,7 @@ import { InstanceList, InstancesHeader } from "@/features/instances";
 import useInstances from "@/hooks/useInstances";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import type { FC } from "react";
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { getQuery } from "./helpers";
 
 interface InstancesContainerProps {
@@ -15,10 +14,10 @@ interface InstancesContainerProps {
   readonly setSelectedInstances: (instances: Instance[]) => void;
 }
 
-const InstancesContainer: FC<InstancesContainerProps> = ({
+const InstancesContainer = memo(function InstancesContainer({
   selectedInstances,
   setSelectedInstances,
-}) => {
+}: InstancesContainerProps) {
   const [columnFilterOptions, setColumnFilterOptions] = useState<
     ColumnFilterOption[]
   >([]);
@@ -38,9 +37,9 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
 
   const instances = getInstancesQueryResult?.data.results ?? [];
 
-  const handleClearSelection = () => {
+  const handleClearSelection = useCallback(() => {
     setSelectedInstances([]);
-  };
+  }, []);
 
   return (
     <>
@@ -52,12 +51,8 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
         <InstanceList
           instances={instances}
           selectedInstances={selectedInstances}
-          setColumnFilterOptions={(options) => {
-            setColumnFilterOptions(options);
-          }}
-          setSelectedInstances={(newInstances) => {
-            setSelectedInstances(newInstances);
-          }}
+          setColumnFilterOptions={setColumnFilterOptions}
+          setSelectedInstances={setSelectedInstances}
         />
       )}
       <TablePagination
@@ -67,6 +62,6 @@ const InstancesContainer: FC<InstancesContainerProps> = ({
       />
     </>
   );
-};
+});
 
 export default InstancesContainer;

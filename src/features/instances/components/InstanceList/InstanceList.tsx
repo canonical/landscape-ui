@@ -6,8 +6,7 @@ import type { Instance } from "@/types/Instance";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
-import type { FC } from "react";
-import { useEffect, useMemo } from "react";
+import { memo, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column, Row } from "react-table";
 import {
@@ -28,12 +27,12 @@ interface InstanceListProps {
   readonly setSelectedInstances: (instances: Instance[]) => void;
 }
 
-const InstanceList: FC<InstanceListProps> = ({
+const InstanceList = memo(function InstanceList({
   instances,
   selectedInstances,
   setColumnFilterOptions,
   setSelectedInstances,
-}) => {
+}: InstanceListProps) {
   const { disabledColumns, groupBy, ...filters } = usePageParams();
 
   const isFilteringInstances = Object.values(filters).some((filter) => {
@@ -247,6 +246,6 @@ const InstanceList: FC<InstanceListProps> = ({
       getHeaderProps={handleHeaderProps}
     />
   );
-};
+});
 
 export default InstanceList;
