@@ -105,7 +105,10 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           promises.push(
             addUserToGroupMutation({
               computer_id: instanceId,
-              groupnames: groupsToBeAdded,
+              groupnames: groupsData
+                .filter((g) => groupsToBeAdded.includes(String(g.gid)))
+                .map((g) => g.name),
+
               usernames: [values.username],
               action: "add",
             }),
@@ -115,7 +118,10 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           promises.push(
             removeUserFromGroupMutation({
               computer_id: instanceId,
-              groupnames: groupsToBeRemoved,
+              groupnames: groupsData
+                .filter((g) => groupsToBeRemoved.includes(String(g.gid)))
+                .map((g) => g.name),
+
               usernames: [values.username],
               action: "remove",
             }),
