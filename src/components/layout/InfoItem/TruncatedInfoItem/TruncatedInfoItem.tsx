@@ -1,65 +1,43 @@
-import { Button } from "@canonical/react-components";
 import classNames from "classnames";
-import type { FC, Ref } from "react";
-import { useBoolean } from "usehooks-ts";
+import { useRef, type FC } from "react";
+import { useBoolean, useOnClickOutside } from "usehooks-ts";
+import TruncatedCell from "../../TruncatedCell";
 import type { RegularInfoItemProps } from "../RegularInfoItem";
 import RegularInfoItem from "../RegularInfoItem";
 import classes from "./TruncatedInfoItem.module.scss";
 
 export type TruncatedInfoItemProps = RegularInfoItemProps;
 
-const TruncatedInfoItem: FC<TruncatedInfoItemProps> = ({
-  className,
-  value,
-  ...props
-}) => {
-  const { value: isShowingTruncation, setValue: setIsShowingTruncation } =
-    useBoolean();
-  const { value: isExpanded, toggle } = useBoolean();
+const TruncatedInfoItem: FC<TruncatedInfoItemProps> = ({ value, ...props }) => {
+  const {
+    value: isExpanded,
+    setTrue: expand,
+    setFalse: collapse,
+  } = useBoolean();
 
-  const checkTruncation: Ref<Element> = (element) => {
-    if (isExpanded || !element?.firstChild) {
-      return;
-    }
+  const ref = useRef(null);
 
-    const range = document.createRange();
-    range.selectNodeContents(element.firstChild);
-
-    setIsShowingTruncation(
-      range.getBoundingClientRect().bottom >
-        element.getBoundingClientRect().bottom,
-    );
-  };
+  useOnClickOutside(ref, collapse);
 
   return (
-    <>
-      <RegularInfoItem
-        className={classNames(className, {
-          [classes.truncated]: isShowingTruncation,
-        })}
-        value={
-          <span
-            ref={checkTruncation}
-            className={isExpanded ? undefined : classes.truncatedContent}
-          >
-            {value}
-          </span>
-        }
-        {...props}
-      />
-
-      {isShowingTruncation && (
-        <Button
-          type="button"
-          appearance="base"
-          small
-          className={classNames("u-no-margin--right", classes.showMore)}
-          onClick={toggle}
+    <RegularInfoItem
+      value={
+        <div
+          className={classNames({
+            [classes.expandedCell]: isExpanded,
+            [classes.expandedRow]: isExpanded,
+          })}
+          ref={ref}
         >
-          {isExpanded ? "Show less" : "Show more"}
-        </Button>
-      )}
-    </>
+          <TruncatedCell
+            content={value}
+            isExpanded={isExpanded}
+            onExpand={expand}
+          />
+        </div>
+      }
+      {...props}
+    />
   );
 };
 

@@ -1,18 +1,13 @@
 @import "vanilla-framework/scss/settings_colors";
 
-.truncated {
-  border-bottom: 1px solid $color-mid-light;
+.expandedCell {
+  overflow: visible;
+  padding: 0;
 }
 
-.truncatedContent {
-  -webkit-box-orient: vertical;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-}
-
-.showMore {
-  align-self: flex-end;
-  width: fit-content;
+.expandedRow {
+  background-color: $color-x-light;
+  filter: drop-shadow(0 4px 8px $color-mid-light);
+  position: relative;
+  z-index: 20;
 }
