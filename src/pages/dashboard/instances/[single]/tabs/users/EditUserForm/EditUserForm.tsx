@@ -119,9 +119,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
           promises.push(
             removeUserFromGroupMutation({
               computer_id: instanceId,
-              groupnames: groupsData
-                .filter((g) => groupsToBeRemoved.includes(String(g.gid)))
-                .map((g) => g.name),
+              groupnames: groupNames,
 
               usernames: [values.username],
               action: "remove",
