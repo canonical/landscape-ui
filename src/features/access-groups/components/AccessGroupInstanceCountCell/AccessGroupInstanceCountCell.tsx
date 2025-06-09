@@ -1,7 +1,7 @@
 import useInstances from "@/hooks/useInstances";
 import { pluralize } from "@/utils/_helpers";
 import { Spinner } from "@canonical/react-components";
-import type { FC } from "react";
+import { type FC } from "react";
 import { Link } from "react-router";
 import type { AccessGroupWithInstancesCount } from "../../types/AccessGroup";
 import classes from "./AccessGroupInstanceCountCell.module.scss";
@@ -22,13 +22,6 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
     with_upgrades: true,
     limit: 1,
   });
-
-  if (
-    getInstancesQueryResult?.data &&
-    accessGroup.instancesCount !== getInstancesQueryResult.data.count
-  ) {
-    accessGroup.instancesCount = getInstancesQueryResult.data.count || 0;
-  }
 
   if (isPending) {
     return (

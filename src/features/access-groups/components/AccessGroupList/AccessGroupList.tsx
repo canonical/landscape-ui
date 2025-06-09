@@ -112,7 +112,16 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
             return null;
           }
 
-          return <AccessGroupListActions accessGroup={row.original} />;
+          const parentTitle =
+            accessGroups.find((group) => group.name === row.original.parent)
+              ?.title || row.original.parent;
+
+          return (
+            <AccessGroupListActions
+              accessGroup={row.original}
+              parentAccessGroupTitle={parentTitle}
+            />
+          );
         },
       },
     ],

@@ -1,70 +1,14 @@
-import type { FC } from "react";
-import { useState } from "react";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import type { ActivityCommon } from "@/features/activities";
-import { Activities, useActivities } from "@/features/activities";
-import { ConfirmationButton } from "@canonical/react-components";
-import useDebug from "@/hooks/useDebug";
+import { Activities, ActivitiesActions } from "@/features/activities";
+import type { FC } from "react";
+import { useState } from "react";
 import classes from "./ActivitiesPage.module.scss";
-import { pluralize } from "@/utils/_helpers";
 
 const ActivitiesPage: FC = () => {
   const [selected, setSelected] = useState<ActivityCommon[]>([]);
-
-  const debug = useDebug();
-  const {
-    approveActivitiesQuery,
-    cancelActivitiesQuery,
-    redoActivitiesQuery,
-    undoActivitiesQuery,
-  } = useActivities();
-
-  const {
-    mutateAsync: approveActivities,
-    isPending: approveActivitiesLoading,
-  } = approveActivitiesQuery;
-  const { mutateAsync: cancelActivities, isPending: cancelActivitiesLoading } =
-    cancelActivitiesQuery;
-  const { mutateAsync: redoActivities, isPending: redoActivitiesLoading } =
-    redoActivitiesQuery;
-  const { mutateAsync: undoActivities, isPending: undoActivitiesLoading } =
-    undoActivitiesQuery;
-
-  const selectedIds = selected.map((activity) => activity.id);
-
-  const handleApproveActivities = async () => {
-    try {
-      await approveActivities({ query: `id:${selectedIds.join(" OR id:")}` });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleCancelActivities = async () => {
-    try {
-      await cancelActivities({ query: `id:${selectedIds.join(" OR id:")}` });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleRedoActivities = async () => {
-    try {
-      await redoActivities({ activity_ids: selectedIds });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleUndoActivities = async () => {
-    try {
-      await undoActivities({ activity_ids: selectedIds });
-    } catch (error) {
-      debug(error);
-    }
-  };
 
   return (
     <PageMain>
@@ -72,110 +16,7 @@ const ActivitiesPage: FC = () => {
         title="Activities"
         className={classes.header}
         actions={[
-          <div key="buttons" className="p-segmented-control">
-            <div className="p-segmented-control__list">
-              <ConfirmationButton
-                className="p-segmented-control__button"
-                type="button"
-                disabled={
-                  !selected.length ||
-                  approveActivitiesLoading ||
-                  selected.some((activity) => !activity.actions?.approvable)
-                }
-                confirmationModalProps={{
-                  title: `Approve ${pluralize(selected.length, "activity", "activities")}`,
-                  children: (
-                    <p>
-                      Are you sure you want to approve selected{" "}
-                      {pluralize(selected.length, "activity", "activities")}?
-                    </p>
-                  ),
-                  confirmButtonLabel: "Approve",
-                  confirmButtonAppearance: "positive",
-                  confirmButtonDisabled: approveActivitiesLoading,
-                  confirmButtonLoading: approveActivitiesLoading,
-                  onConfirm: handleApproveActivities,
-                }}
-              >
-                Approve
-              </ConfirmationButton>
-              <ConfirmationButton
-                className="p-segmented-control__button"
-                type="button"
-                disabled={
-                  !selected.length ||
-                  cancelActivitiesLoading ||
-                  selected.some((activity) => !activity.actions?.cancelable)
-                }
-                confirmationModalProps={{
-                  title: `Cancel ${pluralize(selected.length, "activity", "activities")}`,
-                  children: (
-                    <p>
-                      Are you sure you want to cancel selected{" "}
-                      {pluralize(selected.length, "activity", "activities")}?
-                    </p>
-                  ),
-                  confirmButtonLabel: "Apply",
-                  confirmButtonAppearance: "positive",
-                  confirmButtonDisabled: cancelActivitiesLoading,
-                  confirmButtonLoading: cancelActivitiesLoading,
-                  onConfirm: handleCancelActivities,
-                }}
-              >
-                Cancel
-              </ConfirmationButton>
-              <ConfirmationButton
-                className="p-segmented-control__button"
-                type="button"
-                disabled={
-                  !selected.length ||
-                  undoActivitiesLoading ||
-                  selected.some((activity) => !activity.actions?.revertable)
-                }
-                confirmationModalProps={{
-                  title: `Undo ${pluralize(selected.length, "activity", "activities")}`,
-                  children: (
-                    <p>
-                      Are you sure you want to undo selected{" "}
-                      {pluralize(selected.length, "activity", "activities")}?
-                    </p>
-                  ),
-                  confirmButtonLabel: "Undo",
-                  confirmButtonAppearance: "positive",
-                  confirmButtonDisabled: undoActivitiesLoading,
-                  confirmButtonLoading: undoActivitiesLoading,
-                  onConfirm: handleUndoActivities,
-                }}
-              >
-                Undo
-              </ConfirmationButton>
-              <ConfirmationButton
-                className="p-segmented-control__button"
-                type="button"
-                disabled={
-                  !selected.length ||
-                  redoActivitiesLoading ||
-                  selected.some((activity) => !activity.actions?.reappliable)
-                }
-                confirmationModalProps={{
-                  title: `Redo ${pluralize(selected.length, "activity", "activities")}`,
-                  children: (
-                    <p>
-                      Are you sure you want to redo selected{" "}
-                      {pluralize(selected.length, "activity", "activities")}?
-                    </p>
-                  ),
-                  confirmButtonLabel: "Redo",
-                  confirmButtonAppearance: "positive",
-                  confirmButtonDisabled: redoActivitiesLoading,
-                  confirmButtonLoading: redoActivitiesLoading,
-                  onConfirm: handleRedoActivities,
-                }}
-              >
-                Redo
-              </ConfirmationButton>
-            </div>
-          </div>,
+          <ActivitiesActions selected={selected} key="activities-actions" />,
         ]}
       />
       <PageContent>

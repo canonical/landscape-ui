@@ -29,7 +29,9 @@ const SecurityIssueList: FC<SecurityIssueListProps> = ({
         tableType="paginated"
         instances={[instance]}
         isUsnsLoading={isUsnsLoading}
-        onSelectedUsnsChange={(usns) => setSelectedUsns(usns)}
+        onSelectedUsnsChange={(newUsns) => {
+          setSelectedUsns(newUsns);
+        }}
         search={search}
         selectedUsns={selectedUsns}
         totalUsnCount={totalUsnCount}
