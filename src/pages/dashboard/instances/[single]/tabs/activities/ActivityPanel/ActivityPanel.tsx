@@ -1,29 +1,35 @@
 import type { ActivityCommon } from "@/features/activities";
-import { Activities } from "@/features/activities";
-import usePageParams from "@/hooks/usePageParams";
+import { Activities, useGetActivities } from "@/features/activities";
+import useSelection from "@/hooks/useSelection";
 import type { FC } from "react";
-import { useState } from "react";
 
 interface ActivityPanelProps {
   readonly instanceId?: number;
 }
 
-const ActivityPanelBase: FC<ActivityPanelProps> = ({ instanceId }) => {
-  const [selected, setSelected] = useState<ActivityCommon[]>([]);
+const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
+  const {
+    selectedItems: selectedActivities,
+    setSelectedItems: setSelectedActivities,
+    validate: validateActivities,
+  } = useSelection<ActivityCommon>();
+
+  const { activities, activitiesCount, isGettingActivities } = useGetActivities(
+    { query: `computer:id:${instanceId}` },
+  );
+
+  validateActivities(activities, isGettingActivities);
 
   return (
     <Activities
+      activities={activities}
+      activitiesCount={activitiesCount}
+      isGettingActivities={isGettingActivities}
       instanceId={instanceId}
-      selected={selected}
-      setSelected={setSelected}
+      selectedActivities={selectedActivities}
+      setSelectedActivities={setSelectedActivities}
     />
   );
-};
-
-const ActivityPanel: FC<ActivityPanelProps> = (props) => {
-  const pageParams = usePageParams();
-
-  return <ActivityPanelBase key={JSON.stringify(pageParams)} {...props} />;
 };
 
 export default ActivityPanel;

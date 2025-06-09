@@ -2,14 +2,26 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import type { ActivityCommon } from "@/features/activities";
-import { Activities, ActivitiesActions } from "@/features/activities";
-import usePageParams from "@/hooks/usePageParams";
+import {
+  Activities,
+  ActivitiesActions,
+  useGetActivities,
+} from "@/features/activities";
+import useSelection from "@/hooks/useSelection";
 import type { FC } from "react";
-import { useState } from "react";
 import classes from "./ActivitiesPage.module.scss";
 
-const ActivitiesPageBase: FC = () => {
-  const [selected, setSelected] = useState<ActivityCommon[]>([]);
+const ActivitiesPage: FC = () => {
+  const {
+    selectedItems: selectedActivities,
+    setSelectedItems: setSelectedActivities,
+    validate: validateActivities,
+  } = useSelection<ActivityCommon>();
+
+  const { activities, activitiesCount, isGettingActivities } =
+    useGetActivities();
+
+  validateActivities(activities, isGettingActivities);
 
   return (
     <PageMain>
@@ -17,20 +29,23 @@ const ActivitiesPageBase: FC = () => {
         title="Activities"
         className={classes.header}
         actions={[
-          <ActivitiesActions selected={selected} key="activities-actions" />,
+          <ActivitiesActions
+            selected={selectedActivities}
+            key="activities-actions"
+          />,
         ]}
       />
       <PageContent>
-        <Activities selected={selected} setSelected={setSelected} />
+        <Activities
+          activities={activities}
+          activitiesCount={activitiesCount}
+          isGettingActivities={isGettingActivities}
+          selectedActivities={selectedActivities}
+          setSelectedActivities={setSelectedActivities}
+        />
       </PageContent>
     </PageMain>
   );
-};
-
-const ActivitiesPage: FC = () => {
-  const pageParams = usePageParams();
-
-  return <ActivitiesPageBase key={JSON.stringify(pageParams)} />;
 };
 
 export default ActivitiesPage;

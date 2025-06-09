@@ -1,6 +1,6 @@
+import LoadingState from "@/components/layout/LoadingState";
 import type { ComponentProps, FC } from "react";
 import { lazy, Suspense } from "react";
-import LoadingState from "@/components/layout/LoadingState";
 
 const ActivityDetailsComponent = lazy(
   () => import("./components/ActivityDetails"),
@@ -16,6 +16,7 @@ export const ActivityDetails: FC<
   );
 };
 
+export { useGetActivities } from "./api";
 export { default as Activities } from "./components/Activities";
 export { default as ActivitiesActions } from "./components/ActivitiesActions";
 export { ACTIVITY_STATUSES } from "./constants";
