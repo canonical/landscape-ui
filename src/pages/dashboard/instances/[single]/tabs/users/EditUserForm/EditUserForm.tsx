@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -99,15 +100,16 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       const groupsToBeRemoved = initialUserAdditionalGroups.filter(
         (group) => !values.additionalGroupValue.includes(group),
       );
+      const groupNames = groupsData
+        .filter((g) => groupsToBeAdded.includes(String(g.gid)))
+        .map((g) => g.name);
       try {
         const promises = [];
         if (groupsToBeAdded.length) {
           promises.push(
             addUserToGroupMutation({
               computer_id: instanceId,
-              groupnames: groupsData
-                .filter((g) => groupsToBeAdded.includes(String(g.gid)))
-                .map((g) => g.name),
+              groupnames: groupNames,
 
               usernames: [values.username],
               action: "add",
