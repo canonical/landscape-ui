@@ -7,14 +7,18 @@ import {
   usePackages,
 } from "@/features/packages";
 import usePageParams from "@/hooks/usePageParams";
+import useSelection from "@/hooks/useSelection";
 import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
-import { useState } from "react";
 import { useLocation, useParams } from "react-router";
 import { getEmptyMessage } from "./helpers";
 
-const PackagesPanelBase: FC = () => {
-  const [selected, setSelected] = useState<InstancePackage[]>([]);
+const PackagesPanel: FC = () => {
+  const {
+    selectedItems: selected,
+    setSelectedItems: setSelected,
+    validate,
+  } = useSelection<InstancePackage>();
 
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { status, search, currentPage, pageSize } = usePageParams();
@@ -29,19 +33,21 @@ const PackagesPanelBase: FC = () => {
     setSelected([]);
   };
 
-  const {
-    data: { data: instancePackages } = { data: { count: 0, results: [] } },
-    isLoading: getInstancePackagesQueryLoading,
-  } = getInstancePackagesQuery({
-    instance_id: instanceId,
-    search: search,
-    limit: pageSize,
-    offset: currentPage * pageSize - pageSize,
-    installed: !status || undefined,
-    upgrade: status === "upgrade" || undefined,
-    held: status === "held" || undefined,
-    security: status === "security" || undefined,
-  });
+  const { data: packagesResponse, isLoading: isGettingPackages } =
+    getInstancePackagesQuery({
+      instance_id: instanceId,
+      search: search,
+      limit: pageSize,
+      offset: currentPage * pageSize - pageSize,
+      installed: !status || undefined,
+      upgrade: status === "upgrade" || undefined,
+      held: status === "held" || undefined,
+      security: status === "security" || undefined,
+    });
+
+  const packages = packagesResponse?.data.results ?? [];
+
+  validate(packages, isGettingPackages);
 
   return (
     <>
@@ -49,7 +55,7 @@ const PackagesPanelBase: FC = () => {
       !status &&
       currentPage === 1 &&
       pageSize === 20 &&
-      getInstancePackagesQueryLoading ? (
+      isGettingPackages ? (
         <LoadingState />
       ) : (
         <>
@@ -58,8 +64,8 @@ const PackagesPanelBase: FC = () => {
             handleClearSelection={handleClearSelection}
           />
           <PackageList
-            packages={instancePackages.results}
-            packagesLoading={getInstancePackagesQueryLoading}
+            packages={packages}
+            packagesLoading={isGettingPackages}
             selectedPackages={selected}
             onPackagesSelect={(packageNames) => {
               setSelected(packageNames);
@@ -72,17 +78,11 @@ const PackagesPanelBase: FC = () => {
 
       <TablePagination
         handleClearSelection={handleClearSelection}
-        totalItems={instancePackages.count}
-        currentItemCount={instancePackages.results.length}
+        totalItems={packagesResponse?.data.count}
+        currentItemCount={packages.length}
       />
     </>
   );
-};
-
-const PackagesPanel: FC = () => {
-  const pageParams = usePageParams();
-
-  return <PackagesPanelBase key={JSON.stringify(pageParams)} />;
 };
 
 export default PackagesPanel;
