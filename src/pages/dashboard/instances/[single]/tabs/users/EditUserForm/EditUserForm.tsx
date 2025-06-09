@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
