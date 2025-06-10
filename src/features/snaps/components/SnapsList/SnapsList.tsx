@@ -120,7 +120,12 @@ const SnapsList: FC<SnapsListProps> = ({
         Cell: ({ row }: CellProps<InstalledSnap>) => (
           <>
             {moment(row.original.held_until).isValid() ? (
-              moment(row.original.held_until).format(DISPLAY_DATE_TIME_FORMAT)
+              <span className="font-monospace">
+                {" "}
+                {moment(row.original.held_until).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              </span>
             ) : (
               <NoData />
             )}
