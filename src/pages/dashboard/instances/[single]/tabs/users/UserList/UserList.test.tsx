@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import UserList from "./UserList";
 import NoData from "@/components/layout/NoData";
-import { expectLoadingState } from "@/tests/helpers";
+import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 
 const userIds = users.map((user) => user.uid);
 const unlockedUser = users.find((user) => user.enabled);
@@ -84,6 +84,7 @@ describe("UserList", () => {
   describe("User details sidepanel", () => {
     beforeEach(() => {
       renderWithProviders(<UserList {...props} />);
+      setScreenSize("lg");
     });
     it("should open side panel when user in table is clicked", async () => {
       const user = await screen.findByRole("button", {

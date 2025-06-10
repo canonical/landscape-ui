@@ -17,7 +17,9 @@ const Sidebar: FC = () => {
       <div className="l-navigation-bar">
         <div className="p-panel is-dark">
           <MobileHeader
-            toggleMenu={() => setMenuClosed((prevValue) => !prevValue)}
+            toggleMenu={() => {
+              setMenuClosed((prevValue) => !prevValue);
+            }}
           />
         </div>
       </div>
@@ -27,7 +29,12 @@ const Sidebar: FC = () => {
         <div className="l-navigation__drawer">
           <div className="p-panel is-dark">
             <div className={classes.container}>
-              <DesktopHeader closeMenu={() => setMenuClosed(true)} />
+              <DesktopHeader
+                closeMenu={() => {
+                  setMenuClosed(true);
+                }}
+              />
+
               <div className={classes.navigation}>
                 <OrganisationSwitch />
                 <Navigation />

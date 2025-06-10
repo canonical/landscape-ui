@@ -8,6 +8,11 @@
   height: 100%;
   justify-content: space-between;
   width: 100%;
+
+  @media (width >= 1300px) and (width < 1550px) {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 .legendItem__icon {
@@ -37,5 +42,12 @@
   @media (min-width: $breakpoint-large) {
     border-right: 1px solid $color-mid-light;
     padding-right: $sp-x-large;
+  }
+
+  @media (width >= 1300px) and (width < 1550px) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: $sp-large;
+    padding-right: 0;
   }
 }

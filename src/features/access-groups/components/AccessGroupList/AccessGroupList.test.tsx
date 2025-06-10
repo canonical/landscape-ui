@@ -35,9 +35,7 @@ describe("AccessGroupList", () => {
       );
       expect(confirmationTitle).toBeInTheDocument();
 
-      const confirmationMessage = screen.getByText(
-        /removing this access group will affect/i,
-      );
+      const confirmationMessage = screen.getByText(/irreversible/i);
       expect(confirmationMessage).toBeInTheDocument();
 
       const confirmButton = screen.getByRole("button", { name: /delete/i });

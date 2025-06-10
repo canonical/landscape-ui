@@ -7,6 +7,7 @@ import SnapsList from "./SnapsList";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import NoData from "@/components/layout/NoData";
+import { setScreenSize } from "@/tests/helpers";
 
 async function findSnapByName(name: string) {
   return await screen.findByRole("button", {
@@ -125,6 +126,8 @@ describe("SnapsList", () => {
       renderWithProviders(<SnapsList {...props} />);
 
       await clickSnapOnTable(selectedSnap.snap.name);
+
+      setScreenSize("lg");
     });
 
     it("should open side panel when snap in table is clicked", async () => {

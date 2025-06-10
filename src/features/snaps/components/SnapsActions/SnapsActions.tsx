@@ -14,6 +14,7 @@ import EditSnap from "../EditSnap";
 import InstallSnaps from "../InstallSnaps";
 import classes from "./SnapActions.module.scss";
 import { pluralize } from "@/utils/_helpers";
+import { ResponsiveButtons } from "@/components/ui";
 
 interface SnapsActionProps {
   readonly selectedSnapIds: string[];
@@ -69,75 +70,77 @@ const SnapsActions: FC<SnapsActionProps> = ({
           <span>Install</span>
         </Button>
       )}
-      <div
-        key="buttons"
-        className={classNames(
-          "p-segmented-control is-small u-no-margin--bottom",
-          classes.noWrap,
-        )}
-      >
-        {singleSnap && sidePanel && (
+      <ResponsiveButtons
+        collapseFrom="lg"
+        buttons={[
+          singleSnap && sidePanel && (
+            <Button
+              key="switch-channel"
+              type="button"
+              className="p-segmented-control__button has-icon u-no-margin--bottom"
+              disabled={0 === selectedSnapIds.length}
+              onClick={() => {
+                handleEditSnap(EditSnapType.Switch);
+              }}
+            >
+              <Icon name="fork" />
+              <span>Switch channel</span>
+            </Button>
+          ),
           <Button
+            type="button"
+            key="uninstall"
+            className="p-segmented-control__button has-icon u-no-margin--bottom"
+            disabled={0 === selectedSnapIds.length}
+            onClick={() => {
+              handleEditSnap(EditSnapType.Uninstall);
+            }}
+          >
+            <Icon name={ICONS.delete} />
+            <span>Uninstall</span>
+          </Button>,
+          (singleSnap?.held_until === null || !sidePanel) && (
+            <Button
+              key="hold"
+              type="button"
+              className="p-segmented-control__button has-icon u-no-margin--bottom"
+              disabled={0 === unheld}
+              onClick={() => {
+                handleEditSnap(EditSnapType.Hold);
+              }}
+            >
+              <Icon name="pause" />
+              <span>Hold</span>
+            </Button>
+          ),
+          (singleSnap?.held_until !== null || !sidePanel) && (
+            <Button
+              key="unhold"
+              type="button"
+              className="p-segmented-control__button has-icon u-no-margin--bottom"
+              disabled={0 === held}
+              onClick={() => {
+                handleEditSnap(EditSnapType.Unhold);
+              }}
+            >
+              <Icon name="play" />
+              <span>Unhold</span>
+            </Button>
+          ),
+          <Button
+            key="refresh"
             type="button"
             className="p-segmented-control__button has-icon u-no-margin--bottom"
             disabled={0 === selectedSnapIds.length}
             onClick={() => {
-              handleEditSnap(EditSnapType.Switch);
+              handleEditSnap(EditSnapType.Refresh);
             }}
           >
-            <Icon name="fork" />
-            <span>Switch channel</span>
-          </Button>
-        )}
-        <Button
-          type="button"
-          className="p-segmented-control__button has-icon u-no-margin--bottom"
-          disabled={0 === selectedSnapIds.length}
-          onClick={() => {
-            handleEditSnap(EditSnapType.Uninstall);
-          }}
-        >
-          <Icon name={ICONS.delete} />
-          <span>Uninstall</span>
-        </Button>
-        {(singleSnap?.held_until === null || !sidePanel) && (
-          <Button
-            type="button"
-            className="p-segmented-control__button has-icon u-no-margin--bottom"
-            disabled={0 === unheld}
-            onClick={() => {
-              handleEditSnap(EditSnapType.Hold);
-            }}
-          >
-            <Icon name="pause" />
-            <span>Hold</span>
-          </Button>
-        )}
-        {(singleSnap?.held_until !== null || !sidePanel) && (
-          <Button
-            type="button"
-            className="p-segmented-control__button has-icon u-no-margin--bottom"
-            disabled={0 === held}
-            onClick={() => {
-              handleEditSnap(EditSnapType.Unhold);
-            }}
-          >
-            <Icon name="play" />
-            <span>Unhold</span>
-          </Button>
-        )}
-        <Button
-          type="button"
-          className="p-segmented-control__button has-icon u-no-margin--bottom"
-          disabled={0 === selectedSnapIds.length}
-          onClick={() => {
-            handleEditSnap(EditSnapType.Refresh);
-          }}
-        >
-          <Icon name="change-version" />
-          <span>Refresh</span>
-        </Button>
-      </div>
+            <Icon name="change-version" />
+            <span>Refresh</span>
+          </Button>,
+        ]}
+      />
     </div>
   );
 };

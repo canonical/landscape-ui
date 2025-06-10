@@ -13,11 +13,13 @@ const ChartContainer: FC = () => {
     limit: 1,
     root_only: false,
   });
+
   const { data: packageUpgrades } = getInstancesQuery({
     query: "alert:package-upgrades",
     limit: 1,
     root_only: false,
   });
+
   const { data: upToDateInstances } = getInstancesQuery({
     query: "NOT alert:package-upgrades",
     limit: 1,
@@ -55,9 +57,9 @@ const ChartContainer: FC = () => {
   };
 
   const data = getChartData({
-    chartData: chartData.map((data, index) => ({
+    chartData: chartData.map((info, index) => ({
       backgroundColors: [chartColors[index], Colors.WHITE],
-      ...data,
+      ...info,
     })),
     totalInstances: totalInstances,
   });

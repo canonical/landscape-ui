@@ -31,3 +31,11 @@ export const COMMON_NUMBERS = {
 };
 export const HOMEPAGE_PATH = "/overview";
 export const DEFAULT_ACCESS_GROUP_NAME = "global";
+export const BREAKPOINT_PX = {
+  xs: 460,
+  sm: 620,
+  md: 768,
+  lg: 1036,
+  xl: 1280,
+  xxl: 1400,
+};

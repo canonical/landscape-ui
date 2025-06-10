@@ -5,6 +5,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 const selected = instances.slice(0, 2);
 
@@ -20,6 +21,11 @@ const BUTTON_LABELS = [
 describe("InstancesPageActions", () => {
   beforeEach(() => {
     vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
+    setScreenSize("xxl");
+  });
+
+  afterEach(() => {
+    resetScreenSize();
   });
 
   it("should render correctly", () => {

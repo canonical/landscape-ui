@@ -1,4 +1,5 @@
 @import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_breakpoints";
 
 .container {
   display: flex;
@@ -15,4 +16,14 @@
 
 .footer {
   margin-top: auto;
+}
+
+:global(.l-navigation) {
+  z-index: 450;
+}
+
+@media (width >= $breakpoint-small) and (width < $breakpoint-large) {
+  :global(.l-navigation.is-collapsed:not(:hover, :focus-within, .is-pinned)) {
+    width: 3rem;
+  }
 }

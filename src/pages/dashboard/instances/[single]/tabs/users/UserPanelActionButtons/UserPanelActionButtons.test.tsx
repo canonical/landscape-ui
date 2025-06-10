@@ -5,6 +5,7 @@ import { renderWithProviders } from "@/tests/render";
 import UserPanelActionButtons from "./UserPanelActionButtons";
 import { users } from "@/tests/mocks/user";
 import { getSelectedUsers } from "../UserPanelHeader/helpers";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 const userData = {
   empty: [],
@@ -28,6 +29,14 @@ const formLockedUserButtons = ["Unlock", "Edit", "Delete"];
 const formUnlockedUserButtons = ["Lock", "Edit", "Delete"];
 
 describe("UserPanelActionButtons", () => {
+  beforeEach(() => {
+    setScreenSize("lg");
+  });
+
+  afterEach(() => {
+    resetScreenSize();
+  });
+
   describe("User buttons in table", () => {
     it("renders table buttons", () => {
       const { container } = renderWithProviders(
@@ -51,9 +60,9 @@ describe("UserPanelActionButtons", () => {
         for (const button of tableUserButtons) {
           const actionButton = screen.getByRole("button", { name: button });
           if (button !== "Add user") {
-            expect(actionButton).toBeDisabled();
+            expect(actionButton).toHaveAttribute("aria-disabled");
           } else {
-            expect(actionButton).not.toBeDisabled();
+            expect(actionButton).not.toHaveAttribute("aria-disabled");
           }
         }
       });
@@ -69,7 +78,7 @@ describe("UserPanelActionButtons", () => {
           />,
         );
         const unlockButton = screen.getByRole("button", { name: "Unlock" });
-        expect(unlockButton).toBeDisabled();
+        expect(unlockButton).toHaveAttribute("aria-disabled");
       });
 
       it("Lock button disabled when only locked users are selected", () => {
@@ -83,7 +92,7 @@ describe("UserPanelActionButtons", () => {
           />,
         );
         const lockButton = screen.getByRole("button", { name: "Lock" });
-        expect(lockButton).toBeDisabled();
+        expect(lockButton).toHaveAttribute("aria-disabled");
       });
 
       it("Lock and Unlock enabled when only locked and unlocked users are selected", () => {

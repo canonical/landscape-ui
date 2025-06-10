@@ -18,7 +18,7 @@ describe("AlertsTable", () => {
   });
 
   it("renders the table in desktop view", () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <AlertsTable
@@ -38,7 +38,7 @@ describe("AlertsTable", () => {
   });
 
   it("renders the mobile view when screen is small", () => {
-    setScreenSize("small");
+    setScreenSize("xs");
 
     renderWithProviders(
       <AlertsTable
@@ -57,7 +57,7 @@ describe("AlertsTable", () => {
   });
 
   it("handles alert subscription action", async () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <AlertsTable
@@ -70,7 +70,7 @@ describe("AlertsTable", () => {
       name: /no/i,
     });
 
-    const disabledSwitch = disabledSwitches[0];
+    const [disabledSwitch] = disabledSwitches;
 
     expect(disabledSwitch).not.toBeChecked();
 
@@ -79,7 +79,7 @@ describe("AlertsTable", () => {
   });
 
   it("handles alert unsubscribe action", async () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <AlertsTable
@@ -101,7 +101,7 @@ describe("AlertsTable", () => {
   });
 
   it('displays "No data available" when there are no alerts', () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <AlertsTable alerts={[]} availableTagOptions={mockAvailableTagOptions} />,
