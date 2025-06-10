@@ -1,4 +1,3 @@
-import { expectLoadingState } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -54,8 +53,6 @@ describe("InstancesContainer", () => {
     const { container } = renderWithProviders(
       <InstancesContainer {...props} setSelectedInstances={() => undefined} />,
     );
-
-    await expectLoadingState();
 
     expect(container).toHaveTexts([
       "Group by",
