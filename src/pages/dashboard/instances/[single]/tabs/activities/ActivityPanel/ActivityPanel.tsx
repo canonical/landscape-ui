@@ -8,17 +8,13 @@ interface ActivityPanelProps {
 }
 
 const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
-  const {
-    selectedItems: selectedActivities,
-    setSelectedItems: setSelectedActivities,
-    validate: validateActivities,
-  } = useSelection<ActivityCommon>();
-
   const { activities, activitiesCount, isGettingActivities } = useGetActivities(
     { query: `computer:id:${instanceId}` },
   );
-
-  validateActivities(activities, isGettingActivities);
+  const {
+    selectedItems: selectedActivities,
+    setSelectedItems: setSelectedActivities,
+  } = useSelection<ActivityCommon>(activities, isGettingActivities);
 
   return (
     <Activities

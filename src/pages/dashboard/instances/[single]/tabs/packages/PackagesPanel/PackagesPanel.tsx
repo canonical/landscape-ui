@@ -14,12 +14,6 @@ import { useLocation, useParams } from "react-router";
 import { getEmptyMessage } from "./helpers";
 
 const PackagesPanel: FC = () => {
-  const {
-    selectedItems: selected,
-    setSelectedItems: setSelected,
-    validate,
-  } = useSelection<InstancePackage>();
-
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { status, search, currentPage, pageSize } = usePageParams();
   const { getInstancePackagesQuery } = usePackages();
@@ -28,10 +22,6 @@ const PackagesPanel: FC = () => {
   };
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
-
-  const handleClearSelection = (): void => {
-    setSelected([]);
-  };
 
   const { data: packagesResponse, isLoading: isGettingPackages } =
     getInstancePackagesQuery({
@@ -47,7 +37,12 @@ const PackagesPanel: FC = () => {
 
   const packages = packagesResponse?.data.results ?? [];
 
-  validate(packages, isGettingPackages);
+  const { selectedItems: selected, setSelectedItems: setSelected } =
+    useSelection<InstancePackage>(packages, isGettingPackages);
+
+  const handleClearSelection = (): void => {
+    setSelected([]);
+  };
 
   return (
     <>

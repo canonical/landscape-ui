@@ -13,7 +13,9 @@ export const getEmptyMessage = (filter: string, packageSearch: string) => {
     message = "No held packages found";
   }
 
-  return packageSearch
+  message = packageSearch
     ? `${message} with the search "${packageSearch}"`
     : message;
+
+  return `${message}.`;
 };

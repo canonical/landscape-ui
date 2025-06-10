@@ -3,6 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import {
   Button,
   CheckboxInput,
@@ -45,10 +46,14 @@ const Activities: FC<ActivitiesProps> = ({
   const { setSidePanelContent } = useSidePanel();
 
   const {
-    activitiesCount: unfilitedActivitiesCount,
+    activitiesCount: unfilteredActivitiesCount,
     isGettingActivities: isGettingUnfilteredActivities,
   } = useGetActivities(
-    { limit: 1, query: `computer:id:${instanceId}` },
+    {
+      limit: DEFAULT_PAGE_SIZE,
+      offset: 0,
+      query: instanceId ? `computer:id:${instanceId}` : undefined,
+    },
     { listenToUrlParams: false },
   );
 
@@ -191,7 +196,7 @@ const Activities: FC<ActivitiesProps> = ({
     return <LoadingState />;
   }
 
-  if (!unfilitedActivitiesCount) {
+  if (!unfilteredActivitiesCount) {
     return <ActivitiesEmptyState />;
   }
 

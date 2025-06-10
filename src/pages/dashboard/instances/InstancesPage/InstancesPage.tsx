@@ -17,12 +17,6 @@ const InstancesPage: FC = () => {
 
   const { getInstancesQuery } = useInstances();
 
-  const {
-    selectedItems: selectedInstances,
-    setSelectedItems: setSelectedInstances,
-    validate: validateInstances,
-  } = useSelection<Instance>();
-
   const { data: getInstancesQueryResult, isLoading: isGettingInstances } =
     getInstancesQuery({
       query: getQuery(filters),
@@ -36,7 +30,10 @@ const InstancesPage: FC = () => {
 
   const instances = getInstancesQueryResult?.data.results ?? [];
 
-  validateInstances(instances, isGettingInstances);
+  const {
+    selectedItems: selectedInstances,
+    setSelectedItems: setSelectedInstances,
+  } = useSelection<Instance>(instances, isGettingInstances);
 
   return (
     <PageMain>

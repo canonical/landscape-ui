@@ -1,25 +1,22 @@
 import { useState } from "react";
 import useSidePanel from "./useSidePanel";
 
-const useSelection = <T>() => {
+const useSelection = <T>(items: T[], isGettingItems: boolean) => {
   const { closeSidePanel } = useSidePanel();
 
   const [previousItems, setPreviousItems] = useState<T[]>([]);
   const [selectedItems, setSelectedItems] = useState<T[]>([]);
 
-  const validate = (items: T[], isGettingItems: boolean) => {
-    if (items != previousItems) {
-      closeSidePanel();
+  if (items != previousItems) {
+    closeSidePanel();
 
-      if (!isGettingItems) {
-        setSelectedItems([]);
-        setPreviousItems(items);
-      }
+    if (!isGettingItems) {
+      setSelectedItems([]);
+      setPreviousItems(items);
     }
-  };
+  }
 
   return {
-    validate,
     selectedItems,
     setSelectedItems,
   };
