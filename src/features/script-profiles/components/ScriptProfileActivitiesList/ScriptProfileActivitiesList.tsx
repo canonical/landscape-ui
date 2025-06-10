@@ -20,7 +20,7 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
         Header: "Run",
         Cell: ({ row: { original: activity } }: CellProps<Activity>) => (
           <Link
-            className={classes.link}
+            className={`${classes.link} font-monospace`}
             to={`/activities?query=parent-id%3A${activity.id}`}
           >
             {moment(activity.creation_time)

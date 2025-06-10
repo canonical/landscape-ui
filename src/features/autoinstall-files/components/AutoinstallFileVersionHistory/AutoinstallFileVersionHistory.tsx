@@ -77,7 +77,9 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
             original: { created_at },
           },
         }: CellProps<AutoinstallFileVersionInfo>): ReactNode => (
-          <div>{moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}</div>
+          <div className="font-monospace">
+            {moment(created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+          </div>
         ),
       },
     ],

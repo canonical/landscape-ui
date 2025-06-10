@@ -246,7 +246,9 @@ const UsnList: FC<UsnListProps> = ({
           Cell: ({ row }: CellProps<Usn>) => (
             <>
               {moment(row.original.date).isValid() ? (
-                moment(row.original.date).format(DISPLAY_DATE_TIME_FORMAT)
+                <span className="font-monospace">
+                  {moment(row.original.date).format(DISPLAY_DATE_TIME_FORMAT)}
+                </span>
               ) : (
                 <NoData />
               )}

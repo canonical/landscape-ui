@@ -134,7 +134,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
           row: { original },
         }: CellProps<Script>): ReactElement<Element> => (
           <div>
-            <div>
+            <div className="font-monospace">
               {moment(original.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
             </div>
             <div className="u-text--muted p-text--small u-no-margin--bottom">
@@ -150,7 +150,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
           row: { original },
         }: CellProps<Script>): ReactElement<Element> => (
           <div>
-            <div>
+            <div className="font-monospace">
               {moment(original.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
             </div>
             <div className="u-text--muted p-text--small u-no-margin--bottom">

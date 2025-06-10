@@ -487,7 +487,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
               message={tooltipMessage}
             >
               <div className={classes.truncated}>
-                {lastRun}
+                <span className="font-monospace">{lastRun}</span>
                 <br />
                 <span className={classes.ellipsis}>
                   {getSchedule(row.original)}

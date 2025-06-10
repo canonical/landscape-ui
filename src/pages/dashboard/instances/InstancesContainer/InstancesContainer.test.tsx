@@ -31,7 +31,7 @@ const columns = [
     canBeHidden: true,
   },
   {
-    label: "Ubuntu pro",
+    label: "Ubuntu pro expiration",
     checkboxLabel: "Ubuntu pro",
     canBeHidden: true,
   },

@@ -181,19 +181,21 @@ const InstanceList: FC<InstanceListProps> = ({
         accessor: "ubuntu_pro",
         canBeHidden: true,
         optionLabel: "Ubuntu pro",
-        Header: "Ubuntu pro",
-        Cell: ({ row }: CellProps<Instance>) => {
-          if (
-            row.original.ubuntu_pro_info?.result === "success" &&
-            moment(row.original.ubuntu_pro_info.expires).isValid()
-          ) {
-            return `Exp. ${moment(row.original.ubuntu_pro_info.expires).format(
-              DISPLAY_DATE_TIME_FORMAT,
-            )}`;
-          }
-
-          return <NoData />;
-        },
+        Header: "Ubuntu pro expiration",
+        Cell: ({ row }: CellProps<Instance>) => (
+          <>
+            {row.original.ubuntu_pro_info &&
+            moment(row.original.ubuntu_pro_info.expires).isValid() ? (
+              <span className="font-monospace">
+                {moment(row.original.ubuntu_pro_info.expires).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              </span>
+            ) : (
+              <NoData />
+            )}
+          </>
+        ),
       },
       {
         accessor: "last_ping",
@@ -203,9 +205,11 @@ const InstanceList: FC<InstanceListProps> = ({
         Cell: ({ row }: CellProps<Instance>) => (
           <>
             {moment(row.original.last_ping_time).isValid() ? (
-              moment(row.original.last_ping_time).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )
+              <span className="font-monospace">
+                {moment(row.original.last_ping_time).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              </span>
             ) : (
               <NoData />
             )}

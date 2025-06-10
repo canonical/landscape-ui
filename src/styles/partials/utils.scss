@@ -22,3 +22,8 @@ $semantic-colors: (
     color: $color;
   }
 }
+
+.font-monospace,
+.font-monospace a {
+  font-family: monospace;
+}
