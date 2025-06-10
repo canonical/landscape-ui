@@ -36,22 +36,26 @@ export const handleParams = ({
     const param = Object.keys(requestParams)[i];
     const value = requestParams[param];
 
+    console.log(value);
+
     if ("string" === typeof value && "" !== value) {
       paramsToPass[param] = value;
-    } else if (Array.isArray(value) && 0 !== value.length) {
-      if (isOld) {
-        value.forEach((data, index) => {
-          if ("string" === typeof data && "" !== data) {
-            paramsToPass[`${param}.${index + 1}`] = data;
-          } else if ("number" === typeof data) {
-            paramsToPass[`${param}.${index + 1}`] = `${data}`;
-          }
-        });
-      } else {
-        if (["put", "post", "patch"].includes(config.method ?? "get")) {
-          paramsToPass[param] = value;
+    } else if (Array.isArray(value)) {
+      if (0 !== value.length) {
+        if (isOld) {
+          value.forEach((data, index) => {
+            if ("string" === typeof data && "" !== data) {
+              paramsToPass[`${param}.${index + 1}`] = data;
+            } else if ("number" === typeof data) {
+              paramsToPass[`${param}.${index + 1}`] = `${data}`;
+            }
+          });
         } else {
-          paramsToPass[param] = value.toString();
+          if (["put", "post", "patch"].includes(config.method ?? "get")) {
+            paramsToPass[param] = value;
+          } else {
+            paramsToPass[param] = value.toString();
+          }
         }
       }
     } else if (["number", "boolean"].includes(typeof value)) {
