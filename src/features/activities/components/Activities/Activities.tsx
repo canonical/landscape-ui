@@ -3,7 +3,6 @@ import NoData from "@/components/layout/NoData";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import {
   Button,
   CheckboxInput,
@@ -14,11 +13,9 @@ import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import { useGetActivities } from "../../api";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useOpenActivityDetails } from "../../hooks";
 import type { ActivityCommon } from "../../types";
-import ActivitiesEmptyState from "../ActivitiesEmptyState";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
 
@@ -44,18 +41,6 @@ const Activities: FC<ActivitiesProps> = ({
   setSelectedActivities,
 }) => {
   const { setSidePanelContent } = useSidePanel();
-
-  const {
-    activitiesCount: unfilteredActivitiesCount,
-    isGettingActivities: isGettingUnfilteredActivities,
-  } = useGetActivities(
-    {
-      limit: DEFAULT_PAGE_SIZE,
-      offset: 0,
-      query: instanceId ? `computer:id:${instanceId}` : undefined,
-    },
-    { listenToUrlParams: false },
-  );
 
   const handleActivityDetailsOpen = (activity: ActivityCommon) => {
     setSidePanelContent(
@@ -191,14 +176,6 @@ const Activities: FC<ActivitiesProps> = ({
       ].filter((col) => !instanceId || col.accessor !== "computer_id"),
     [activities, selectedActivities],
   );
-
-  if (isGettingUnfilteredActivities) {
-    return <LoadingState />;
-  }
-
-  if (!unfilteredActivitiesCount) {
-    return <ActivitiesEmptyState />;
-  }
 
   return (
     <>

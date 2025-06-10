@@ -19,6 +19,7 @@ export const ActivityDetails: FC<
 export { useGetActivities } from "./api";
 export { default as Activities } from "./components/Activities";
 export { default as ActivitiesActions } from "./components/ActivitiesActions";
+export { default as ActivitiesEmptyState } from "./components/ActivitiesEmptyState";
 export { ACTIVITY_STATUSES } from "./constants";
 export { useActivities } from "./hooks";
 export type { Activity, ActivityCommon, GetActivitiesParams } from "./types";
