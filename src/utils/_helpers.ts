@@ -36,8 +36,6 @@ export const handleParams = ({
     const param = Object.keys(requestParams)[i];
     const value = requestParams[param];
 
-    console.log(value);
-
     if ("string" === typeof value && "" !== value) {
       paramsToPass[param] = value;
     } else if (Array.isArray(value)) {

@@ -54,7 +54,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
   };
 
   const handleInstallSnap = () => {
-    setSidePanelContent("Install snap", <InstallSnaps />);
+    setSidePanelContent("Install snaps", <InstallSnaps />);
   };
 
   return (
