@@ -13,7 +13,7 @@
     padding-right: 0;
   }
 
-  @media (min-width: $breakpoint-small) {
+  @media (width >= 1300px) {
     flex-direction: column;
     width: 45%;
   }
@@ -30,11 +30,11 @@
   flex-direction: column;
   height: 100%;
 
-  @media (min-width: $breakpoint-large) {
+  @media (width >= 1300px) {
     flex-direction: row;
   }
 
-  @media (width <= calc(#{$breakpoint-small} - 1px)) {
+  @media (width < 1300px) {
     flex-direction: row;
     width: 100%;
   }

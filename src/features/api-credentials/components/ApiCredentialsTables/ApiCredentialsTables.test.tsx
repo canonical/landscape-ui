@@ -56,7 +56,7 @@ describe("ApiCredentialsTables", () => {
   });
 
   it("renders the table in desktop view", () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
@@ -70,7 +70,7 @@ describe("ApiCredentialsTables", () => {
   });
 
   it("renders the mobile view when screen is small", () => {
-    setScreenSize("small");
+    setScreenSize("xs");
 
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
@@ -86,7 +86,7 @@ describe("ApiCredentialsTables", () => {
   });
 
   it("displays 'Generate API credentials' button when no credentials exist", () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
@@ -97,7 +97,7 @@ describe("ApiCredentialsTables", () => {
   });
 
   it("displays 'Regenerate API credentials' button when credentials exist", () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
@@ -108,7 +108,7 @@ describe("ApiCredentialsTables", () => {
   });
 
   it("handles generate/regenerate button click", async () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,

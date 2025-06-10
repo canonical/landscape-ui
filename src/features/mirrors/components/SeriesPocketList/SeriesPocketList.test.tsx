@@ -19,8 +19,9 @@ describe("SeriesPocketList", () => {
   afterEach(() => {
     resetScreenSize();
   });
+
   it("renders table series pocket list for big screens", () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     const { container } = renderWithProviders(<SeriesPocketList {...props} />);
 
@@ -31,7 +32,7 @@ describe("SeriesPocketList", () => {
   });
 
   it("renders table series pocket list for small screens", () => {
-    setScreenSize("small");
+    setScreenSize("xs");
 
     renderWithProviders(<SeriesPocketList {...props} />);
 

@@ -82,11 +82,14 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
           onConfirm={tryRemove}
           close={closeModal}
         >
+          {count > 0 && (
+            <p>
+              Removing this access group will affect {count}{" "}
+              {pluralize(count, "instance")}. They will now belong to &quot;
+              {parentAccessGroupTitle}&quot;.
+            </p>
+          )}
           <p>
-            Removing this access group will affect {count}{" "}
-            {pluralize(count, "instance")}. They will now belong to &quot;
-            {parentAccessGroupTitle}&quot;.
-            <br />
             This action is <b>irreversible</b>
           </p>
         </ConfirmationModal>

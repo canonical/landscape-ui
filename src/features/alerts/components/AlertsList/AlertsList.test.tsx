@@ -48,7 +48,7 @@ describe("AlertsList", () => {
   });
 
   it("renders AlertsTable component", () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <AlertsList
@@ -65,7 +65,7 @@ describe("AlertsList", () => {
       ...authProps,
       user: { ...authUser, current_account: "non-existent" },
     });
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <AlertsList
@@ -78,7 +78,7 @@ describe("AlertsList", () => {
   });
 
   it("renders correctly when there are no alerts", () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(
       <AlertsList alerts={[]} availableTagOptions={mockAvailableTagOptions} />,
@@ -88,7 +88,7 @@ describe("AlertsList", () => {
   });
 
   it("renders mobile view when screen is small", () => {
-    setScreenSize("small");
+    setScreenSize("xs");
 
     renderWithProviders(
       <AlertsList

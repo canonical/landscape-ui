@@ -23,6 +23,7 @@ import {
   CheckboxInput,
   Col,
   ConfirmationButton,
+  ConfirmationModal,
   Form,
   Icon,
   ICONS,
@@ -38,6 +39,7 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
+import { ResponsiveButtons } from "@/components/ui";
 
 const EditInstance = lazy(
   async () =>
@@ -60,6 +62,8 @@ interface InfoPanelProps {
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const [instanceTags, setInstanceTags] = useState([...instance.tags]);
   const [isModalVisible, setIsModalVisible] = useState<string>("");
+  const [rebootModalOpen, setRebootModalOpen] = useState(false);
+  const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
 
   const addedTags = instanceTags.filter((tag) => !instance.tags.includes(tag));
 
@@ -312,20 +316,21 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               Delete instance
             </ConfirmationButton>
           )}
-          <div key="buttons" className="p-segmented-control">
-            <div className="p-segmented-control__list">
+          <ResponsiveButtons
+            collapseFrom="xxl"
+            buttons={[
               <Button
-                className="p-segmented-control__button u-no-margin--bottom"
+                key="edit-instance"
                 type="button"
                 onClick={handleEditInstance}
                 hasIcon
               >
                 <Icon name="edit" />
                 <span>Edit</span>
-              </Button>
-              {currentInstanceCan("runScripts", instance) && (
+              </Button>,
+              currentInstanceCan("runScripts", instance) && (
                 <Button
-                  className="p-segmented-control__button u-no-margin--bottom"
+                  key="run-script"
                   type="button"
                   onClick={handleRunScript}
                   hasIcon
@@ -333,10 +338,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                   <Icon name="code" />
                   <span>Run script</span>
                 </Button>
-              )}
-
+              ),
               <Button
-                className="p-segmented-control__button u-no-margin--bottom has-icon"
+                key="remove-instance"
+                hasIcon
                 type="button"
                 disabled={isRemoving}
                 onClick={() => {
@@ -346,9 +351,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               >
                 <Icon name={ICONS.delete} />
                 <span>Remove from Landscape</span>
-              </Button>
+              </Button>,
               <Button
-                className="p-segmented-control__button u-no-margin--bottom has-icon"
+                key="sanitize-instance"
+                hasIcon
                 type="button"
                 disabled={isSanitizing}
                 onClick={() => {
@@ -358,52 +364,22 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               >
                 <Icon name="tidy" />
                 <span>Sanitize</span>
-              </Button>
-
-              <ConfirmationButton
-                className="p-segmented-control__button u-no-margin--bottom has-icon"
+              </Button>,
+              <Button
+                key="reboot-instance"
+                hasIcon
                 type="button"
                 disabled={isRemoving}
-                confirmationModalProps={{
-                  title: "Restart instance",
-                  children: (
-                    <Form
-                      onSubmit={async () => handleFormSubmit("reboot")}
-                      noValidate
-                    >
-                      <CheckboxInput
-                        label="Deliver as soon as possible"
-                        {...formik.getFieldProps("deliverImmediately")}
-                        checked={formik.values.deliverImmediately}
-                      />
-                      <Input
-                        type="datetime-local"
-                        label="Schedule time"
-                        labelClassName="u-off-screen"
-                        className={classes.input}
-                        placeholder="Scheduled time"
-                        {...formik.getFieldProps("deliver_after")}
-                        disabled={formik.values.deliverImmediately}
-                        error={getFormikError(formik, "deliver_after")}
-                      />
-                      <p>
-                        This will restart &quot;{instance.title}&quot; instance.
-                      </p>
-                    </Form>
-                  ),
-                  confirmButtonLabel: "Restart",
-                  confirmButtonAppearance: "negative",
-                  confirmButtonDisabled: isRebooting,
-                  confirmButtonLoading: isRebooting,
-                  onConfirm: async () => handleFormSubmit("reboot"),
+                onClick={() => {
+                  setRebootModalOpen(true);
                 }}
               >
                 <Icon name="restart" />
                 <span>Restart</span>
-              </ConfirmationButton>
-              {isFeatureEnabled("employee-management") && (
+              </Button>,
+              isFeatureEnabled("employee-management") && (
                 <Button
-                  className="p-segmented-control__button u-no-margin--bottom"
+                  key="associate-employee"
                   type="button"
                   hasIcon
                   onClick={handleAssociateEmployee}
@@ -411,51 +387,21 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                   <Icon name={ICONS.user} />
                   <span>Associate employee</span>
                 </Button>
-              )}
-              <ConfirmationButton
-                className="p-segmented-control__button u-no-margin--bottom has-icon"
+              ),
+              <Button
+                key="shutdown-instance"
+                hasIcon
                 type="button"
                 disabled={isRemoving}
-                confirmationModalProps={{
-                  title: "Shut down instance",
-                  children: (
-                    <Form
-                      onSubmit={async () => handleFormSubmit("shutdown")}
-                      noValidate
-                    >
-                      <CheckboxInput
-                        label="Deliver as soon as possible"
-                        {...formik.getFieldProps("deliverImmediately")}
-                        checked={formik.values.deliverImmediately}
-                      />
-                      <Input
-                        type="datetime-local"
-                        label="Schedule time"
-                        labelClassName="u-off-screen"
-                        className={classes.input}
-                        placeholder="Scheduled time"
-                        {...formik.getFieldProps("deliver_after")}
-                        disabled={formik.values.deliverImmediately}
-                        error={getFormikError(formik, "deliver_after")}
-                      />
-                      <p>
-                        This will shut down &quot;{instance.title}&quot;
-                        instance.
-                      </p>
-                    </Form>
-                  ),
-                  confirmButtonLabel: "Shutdown",
-                  confirmButtonAppearance: "negative",
-                  confirmButtonDisabled: isShuttingDown,
-                  confirmButtonLoading: isShuttingDown,
-                  onConfirm: async () => handleFormSubmit("shutdown"),
+                onClick={() => {
+                  setShutdownModalOpen(true);
                 }}
               >
                 <Icon name="power-off" />
                 <span>Shutdown</span>
-              </ConfirmationButton>
-            </div>
-          </div>
+              </Button>,
+            ]}
+          />
         </div>
       </div>
       <div className={classes.infoRow}>
@@ -537,6 +483,72 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           action cannot be undone. Please confirm your wish to proceed.
         </p>
       </TextConfirmationModal>
+
+      {rebootModalOpen && (
+        <ConfirmationModal
+          close={() => {
+            setRebootModalOpen(false);
+          }}
+          title="Restart instance"
+          confirmButtonLabel="Restart"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={isRebooting}
+          confirmButtonLoading={isRebooting}
+          onConfirm={async () => handleFormSubmit("reboot")}
+        >
+          <Form onSubmit={async () => handleFormSubmit("reboot")} noValidate>
+            <CheckboxInput
+              label="Deliver as soon as possible"
+              {...formik.getFieldProps("deliverImmediately")}
+              checked={formik.values.deliverImmediately}
+            />
+            <Input
+              type="datetime-local"
+              label="Schedule time"
+              labelClassName="u-off-screen"
+              className={classes.input}
+              placeholder="Scheduled time"
+              {...formik.getFieldProps("deliver_after")}
+              disabled={formik.values.deliverImmediately}
+              error={getFormikError(formik, "deliver_after")}
+            />
+            <p>This will restart &quot;{instance.title}&quot; instance.</p>
+          </Form>
+        </ConfirmationModal>
+      )}
+
+      {shutdownModalOpen && (
+        <ConfirmationModal
+          close={() => {
+            setShutdownModalOpen(false);
+          }}
+          title="Shut down instance"
+          confirmButtonLabel="Shutdown"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={isShuttingDown}
+          confirmButtonLoading={isShuttingDown}
+          onConfirm={async () => handleFormSubmit("shutdown")}
+        >
+          <Form onSubmit={async () => handleFormSubmit("shutdown")} noValidate>
+            <CheckboxInput
+              label="Deliver as soon as possible"
+              {...formik.getFieldProps("deliverImmediately")}
+              checked={formik.values.deliverImmediately}
+            />
+            <Input
+              type="datetime-local"
+              label="Schedule time"
+              labelClassName="u-off-screen"
+              className={classes.input}
+              placeholder="Scheduled time"
+              {...formik.getFieldProps("deliver_after")}
+              disabled={formik.values.deliverImmediately}
+              error={getFormikError(formik, "deliver_after")}
+            />
+            <p>This will shut down &quot;{instance.title}&quot; instance.</p>
+          </Form>
+        </ConfirmationModal>
+      )}
     </>
   );
 };

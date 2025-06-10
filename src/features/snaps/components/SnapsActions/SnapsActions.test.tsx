@@ -5,6 +5,7 @@ import SnapsActions from "./SnapsActions";
 import { renderWithProviders } from "@/tests/render";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { getSelectedSnaps } from "../../helpers";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 const snapData = {
   empty: [],
@@ -44,6 +45,14 @@ const formUnheldSnapButtons = [
 ];
 
 describe("SnapsActions", () => {
+  beforeEach(() => {
+    setScreenSize("lg");
+  });
+
+  afterEach(() => {
+    resetScreenSize();
+  });
+
   describe("Snap buttons in table", () => {
     it("renders table buttons", () => {
       const { container } = renderWithProviders(

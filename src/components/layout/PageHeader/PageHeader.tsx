@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type FC, type ReactNode } from "react";
+import { type FC, type ReactNode, useLayoutEffect, useRef } from "react";
 import classes from "./PageHeader.module.scss";
 import classNames from "classnames";
 import { Link } from "react-router";
@@ -34,7 +34,7 @@ const PageHeader: FC<PageHeaderProps> = ({
       return;
     }
 
-    const height = headerRef.current.getBoundingClientRect().height;
+    const { height } = headerRef.current.getBoundingClientRect();
     document.documentElement.style.setProperty(
       "--pageheader-height",
       `${height}px`,

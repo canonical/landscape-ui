@@ -143,7 +143,7 @@ describe("SeriesCard", () => {
   });
 
   it("renders series card buttons", async () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(<SeriesCard {...propsWithoutSnapshotDate} />);
     expect(
@@ -158,7 +158,7 @@ describe("SeriesCard", () => {
   });
 
   it("renders series card contextual buttons", async () => {
-    setScreenSize("small");
+    setScreenSize("xs");
 
     renderWithProviders(<SeriesCard {...propsWithoutSnapshotDate} />);
 
@@ -174,7 +174,7 @@ describe("SeriesCard", () => {
   });
 
   it("renders series card with snapshot date and only remove button", () => {
-    setScreenSize("small");
+    setScreenSize("xs");
 
     renderWithProviders(<SeriesCard {...propsWithSnapshotDate} />);
 
@@ -194,7 +194,7 @@ describe("SeriesCard", () => {
   });
 
   it("renders only remove button on smaller screen", async () => {
-    setScreenSize("small");
+    setScreenSize("xs");
 
     renderWithProviders(<SeriesCard {...propsWithSnapshotDate} />);
 

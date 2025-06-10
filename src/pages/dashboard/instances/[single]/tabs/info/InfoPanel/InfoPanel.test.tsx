@@ -9,6 +9,7 @@ import useAuth from "@/hooks/useAuth";
 import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import type { FeatureKey } from "@/types/FeatureKey";
+import { setScreenSize } from "@/tests/helpers";
 
 const PROPS_TO_CHECK: (keyof Instance)[] = [
   "title",
@@ -37,6 +38,7 @@ describe("InfoPanel", () => {
     beforeEach(() => {
       vi.mocked(useAuth).mockReturnValue(authProps);
       renderWithProviders(<InfoPanel instance={instances[0]} />);
+      setScreenSize("xxl");
     });
 
     it("should render instance info", () => {

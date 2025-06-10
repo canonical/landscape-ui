@@ -1,6 +1,6 @@
 import {
   Button,
-  ConfirmationButton,
+  ConfirmationModal,
   Icon,
   ICONS,
   Input,
@@ -23,6 +23,7 @@ import {
 import LoadingState from "@/components/layout/LoadingState";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
+import { ResponsiveButtons } from "@/components/ui";
 
 const EditUserForm = lazy(
   async () =>
@@ -48,6 +49,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   const { notify } = useNotify();
   const { setSidePanelContent, closeSidePanel } = useSidePanel();
   const { removeUserQuery, lockUserQuery, unlockUserQuery } = useUsers();
+  const [lockOpen, setLockOpen] = useState(false);
+  const [unlockOpen, setUnlockOpen] = useState(false);
+  const [removeOpen, setRemoveOpen] = useState(false);
 
   const { mutateAsync: removeUserMutation, isPending: isRemoving } =
     removeUserQuery;
@@ -115,138 +119,156 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   };
 
   return (
-    <div
-      className={classNames("p-panel__controls u-no-padding--top", {
-        "u-no-margin--left": sidePanel,
-      })}
-    >
-      {!sidePanel && (
-        <Button
-          className={classNames("u-no-margin--right", {
-            "u-no-margin--bottom": !sidePanel,
-          })}
-          type="button"
-          hasIcon
-          onClick={handleAddUser}
-        >
-          <Icon name={ICONS.plus} />
-          <span>Add user</span>
-        </Button>
-      )}
-      <div className="p-segmented-control">
-        <div className="p-segmented-control__list">
-          {(user?.enabled || !sidePanel) && (
-            <ConfirmationButton
-              className={classNames("p-segmented-control__button has-icon", {
-                "u-no-margin--bottom": !sidePanel,
-              })}
-              type="button"
-              disabled={unlockedUsersCount === 0}
-              aria-disabled={unlockedUsersCount === 0}
-              confirmationModalProps={{
-                title: `Lock ${
-                  user
-                    ? `user ${user.username}`
-                    : `${selectedUsers.length} users`
-                }`,
-                children: renderModalBody({
-                  user: user,
-                  selectedUsers: selectedUsers,
-                  userAction: UserAction.Lock,
-                }),
-                confirmButtonLabel: "Lock",
-                confirmButtonAppearance: "positive",
-                confirmButtonLoading: isLocking,
-                confirmButtonDisabled: isLocking,
-                onConfirm: lockUser,
-              }}
-            >
-              <Icon name="lock-locked" />
-              <span>Lock</span>
-            </ConfirmationButton>
-          )}
-          {(!user?.enabled || !sidePanel) && (
-            <ConfirmationButton
-              className={classNames("p-segmented-control__button has-icon", {
-                "u-no-margin--bottom": !sidePanel,
-              })}
-              type="button"
-              disabled={lockedUsersCount === 0}
-              aria-disabled={lockedUsersCount === 0}
-              confirmationModalProps={{
-                title: `Unlock ${
-                  user
-                    ? `user ${user.username}`
-                    : `${selectedUsers.length} users`
-                }`,
-                children: renderModalBody({
-                  user: user,
-                  selectedUsers: selectedUsers,
-                  userAction: UserAction.Unlock,
-                }),
-                confirmButtonLabel: "Unlock",
-                confirmButtonAppearance: "positive",
-                confirmButtonLoading: isUnlocking,
-                confirmButtonDisabled: isUnlocking,
-                onConfirm: unlockUser,
-              }}
-            >
-              <Icon name="lock-unlock" />
-              <span>Unlock</span>
-            </ConfirmationButton>
-          )}
-          {sidePanel && user && (
-            <Button
-              className={classNames("p-segmented-control__button has-icon", {
-                "u-no-margin--bottom": !sidePanel,
-              })}
-              type="button"
-              onClick={() => {
-                handleEditUser(user);
-              }}
-            >
-              <Icon name="edit" />
-              <span>Edit</span>
-            </Button>
-          )}
-
-          <ConfirmationButton
-            className={classNames("p-segmented-control__button has-icon", {
+    <>
+      <div
+        className={classNames("p-panel__controls u-no-padding--top", {
+          "u-no-margin--left": sidePanel,
+        })}
+      >
+        {!sidePanel && (
+          <Button
+            className={classNames("u-no-margin--right", {
               "u-no-margin--bottom": !sidePanel,
             })}
             type="button"
-            disabled={0 === selectedUsers.length}
-            aria-disabled={0 === selectedUsers.length}
-            confirmationModalProps={{
-              title: `Delete ${user ? user.username : "users"}`,
-              children: (
-                <div>
-                  <p className="u-no-margin--bottom">
-                    {user
-                      ? `This will delete user ${user.username}. You can delete this user's home folders at the same time.`
-                      : "This will delete selected users. You can delete their home folders as well."}
-                  </p>
-                  <Input
-                    label="Delete the home folders as well"
-                    type="checkbox"
-                    checked={confirmDeleteHomeFolders}
-                    onChange={handleToggleDeleteUserHomeFolders}
-                  />
-                </div>
-              ),
-              confirmButtonLabel: "Delete",
-              confirmButtonAppearance: "negative",
-              confirmButtonLoading: isRemoving,
-              confirmButtonDisabled: isRemoving,
-              onConfirm: removeUser,
-            }}
+            hasIcon
+            onClick={handleAddUser}
           >
-            <Icon name={ICONS.delete} />
-            <span>Delete</span>
-          </ConfirmationButton>
-        </div>
+            <Icon name={ICONS.plus} />
+            <span>Add user</span>
+          </Button>
+        )}
+        <ResponsiveButtons
+          collapseFrom="lg"
+          buttons={[
+            (user?.enabled || !sidePanel) && (
+              <Button
+                key="lock"
+                hasIcon
+                type="button"
+                disabled={unlockedUsersCount === 0}
+                onClick={() => {
+                  setLockOpen(true);
+                }}
+              >
+                <Icon name="lock-locked" />
+                <span>Lock</span>
+              </Button>
+            ),
+            (!user?.enabled || !sidePanel) && (
+              <Button
+                key="unlock"
+                hasIcon
+                type="button"
+                disabled={lockedUsersCount === 0}
+                onClick={() => {
+                  setUnlockOpen(true);
+                }}
+              >
+                <Icon name="lock-unlock" />
+                <span>Unlock</span>
+              </Button>
+            ),
+            sidePanel && user && (
+              <Button
+                key="edit"
+                className={classNames("p-segmented-control__button has-icon", {
+                  "u-no-margin--bottom": !sidePanel,
+                })}
+                type="button"
+                onClick={() => {
+                  handleEditUser(user);
+                }}
+              >
+                <Icon name="edit" />
+                <span>Edit</span>
+              </Button>
+            ),
+            <Button
+              key="delete"
+              hasIcon
+              type="button"
+              disabled={0 === selectedUsers.length}
+              onClick={() => {
+                setRemoveOpen(true);
+              }}
+            >
+              <Icon name={ICONS.delete} />
+              <span>Delete</span>
+            </Button>,
+          ]}
+        />
       </div>
-    </div>
+      {lockOpen && (
+        <ConfirmationModal
+          title={`Lock ${
+            user ? `user ${user.username}` : `${selectedUsers.length} users`
+          }`}
+          close={() => {
+            setLockOpen(false);
+          }}
+          confirmButtonLabel="Lock"
+          confirmButtonAppearance="positive"
+          confirmButtonLoading={isLocking}
+          confirmButtonDisabled={isLocking}
+          onConfirm={lockUser}
+        >
+          {renderModalBody({
+            user: user,
+            selectedUsers: selectedUsers,
+            userAction: UserAction.Lock,
+          })}
+        </ConfirmationModal>
+      )}
+      {unlockOpen && (
+        <ConfirmationModal
+          title={`Unlock ${
+            user ? `user ${user.username}` : `${selectedUsers.length} users`
+          }`}
+          close={() => {
+            setUnlockOpen(false);
+          }}
+          confirmButtonLabel="Unlock"
+          confirmButtonAppearance="positive"
+          confirmButtonLoading={isUnlocking}
+          confirmButtonDisabled={isUnlocking}
+          onConfirm={unlockUser}
+        >
+          {renderModalBody({
+            user: user,
+            selectedUsers: selectedUsers,
+            userAction: UserAction.Unlock,
+          })}
+        </ConfirmationModal>
+      )}
+      {removeOpen && (
+        <ConfirmationModal
+          title={`Delete ${user ? user.username : "users"}`}
+          close={() => {
+            setRemoveOpen(false);
+          }}
+          confirmButtonLabel="Delete"
+          confirmButtonAppearance="negative"
+          confirmButtonLoading={isRemoving}
+          confirmButtonDisabled={isRemoving}
+          onConfirm={removeUser}
+        >
+          <div>
+            <p className="u-no-margin--bottom">
+              {user
+                ? `This will delete user ${user.username}. You can delete this user's home folders at the same time.`
+                : "This will delete selected users. You can delete their home folders as well."}
+            </p>
+            <Input
+              label="Delete the home folders as well"
+              type="checkbox"
+              checked={confirmDeleteHomeFolders}
+              onChange={handleToggleDeleteUserHomeFolders}
+            />
+          </div>
+        </ConfirmationModal>
+      )}
+    </>
   );
 };
 
