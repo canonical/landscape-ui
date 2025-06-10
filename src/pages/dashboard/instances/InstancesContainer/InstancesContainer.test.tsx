@@ -1,8 +1,15 @@
-import { renderWithProviders } from "@/tests/render";
-import InstancesContainer from "./InstancesContainer";
-import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
 import { expectLoadingState } from "@/tests/helpers";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import InstancesContainer from "./InstancesContainer";
+
+const props = {
+  instances: [],
+  instanceCount: 0,
+  isGettingInstances: false,
+  selectedInstances: [],
+};
 
 const columns = [
   {
@@ -45,10 +52,7 @@ const columns = [
 describe("InstancesContainer", () => {
   it("should ", async () => {
     const { container } = renderWithProviders(
-      <InstancesContainer
-        selectedInstances={[]}
-        setSelectedInstances={() => undefined}
-      />,
+      <InstancesContainer {...props} setSelectedInstances={() => undefined} />,
     );
 
     await expectLoadingState();

@@ -1,9 +1,5 @@
 import useFetch from "@/hooks/useFetch";
 import usePageParams from "@/hooks/usePageParams";
-import {
-  DEFAULT_CURRENT_PAGE,
-  DEFAULT_PAGE_SIZE,
-} from "@/libs/pageParamsManager/constants";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { PaginatedGetHookParams } from "@/types/api/PaginatedGetHookParams";
@@ -74,7 +70,12 @@ const useGetActivities = (
         }
       : params;
 
-  const { data: response, isPending } = useQuery<
+  const {
+    data: response,
+    isFetching,
+    isPending,
+    refetch,
+  } = useQuery<
     AxiosResponse<ApiPaginatedResponse<Activity>>,
     AxiosError<ApiError>
   >({
@@ -89,11 +90,9 @@ const useGetActivities = (
   return {
     activities: response?.data.results ?? [],
     activitiesCount: response?.data.count,
+    isFetchingActivities: isFetching,
     isGettingActivities: isPending,
-    isFilteredActivities:
-      !!queryParts.length ||
-      currentPage !== DEFAULT_CURRENT_PAGE ||
-      pageSize !== DEFAULT_PAGE_SIZE,
+    refetchActivities: refetch,
   };
 };
 

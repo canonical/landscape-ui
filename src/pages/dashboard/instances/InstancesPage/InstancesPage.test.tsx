@@ -1,9 +1,16 @@
+import { ubuntuInstance } from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { renderWithProviders } from "@/tests/render";
-import InstancesPage from "./InstancesPage";
 import InstancesContainer from "../InstancesContainer";
-import { ubuntuInstance } from "@/tests/mocks/instance";
+import InstancesPage from "./InstancesPage";
+
+const props = {
+  instances: [],
+  instanceCount: 0,
+  isGettingInstances: false,
+  selectedInstances: [],
+};
 
 describe("InstancesPage", () => {
   it("should render the InstancesPage component", () => {
@@ -15,7 +22,7 @@ describe("InstancesPage", () => {
     const setSelectedInstances = vi.fn();
     renderWithProviders(
       <InstancesContainer
-        selectedInstances={[]}
+        {...props}
         setSelectedInstances={setSelectedInstances}
       />,
     );
@@ -29,7 +36,7 @@ describe("InstancesPage", () => {
 
     renderWithProviders(
       <InstancesContainer
-        selectedInstances={[]}
+        {...props}
         setSelectedInstances={setSelectedInstances}
       />,
     );
