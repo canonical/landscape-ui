@@ -1,3 +1,5 @@
+import type { Instance } from "@/types/Instance";
+
 const DISTRIBUTORS = {
   ubuntu: "Ubuntu",
   ubuntuCore: "Ubuntu Core",
@@ -7,7 +9,7 @@ const DISTRIBUTORS = {
 export const TAB_LINKS: {
   label: string;
   id: string;
-  condition: (distributor: string) => boolean;
+  condition: (instance: Instance) => boolean;
 }[] = [
   {
     label: "Info",
@@ -17,7 +19,8 @@ export const TAB_LINKS: {
   {
     label: "WSL",
     id: "tab-link-wsl",
-    condition: (distributor) => distributor === DISTRIBUTORS.windows,
+    condition: (instance) =>
+      instance.distribution_info?.distributor === DISTRIBUTORS.windows,
   },
   {
     label: "Activities",
@@ -27,47 +30,55 @@ export const TAB_LINKS: {
   {
     label: "Kernel",
     id: "tab-link-kernel",
-    condition: (distributor) => distributor === DISTRIBUTORS.ubuntu,
+    condition: (instance) =>
+      instance.distribution_info?.distributor === DISTRIBUTORS.ubuntu,
   },
   {
     label: "Security issues",
     id: "tab-link-security-issues",
-    condition: (distributor) => distributor === DISTRIBUTORS.ubuntu,
+    condition: (instance) =>
+      instance.distribution_info?.distributor === DISTRIBUTORS.ubuntu,
   },
   {
     label: "Packages",
     id: "tab-link-packages",
-    condition: (distributor) => distributor === DISTRIBUTORS.ubuntu,
+    condition: (instance) =>
+      instance.distribution_info?.distributor === DISTRIBUTORS.ubuntu,
   },
   {
     label: "Snaps",
     id: "tab-link-snaps",
-    condition: (distributor) => distributor !== DISTRIBUTORS.windows,
+    condition: (instance) =>
+      instance.distribution_info?.distributor !== DISTRIBUTORS.windows,
   },
   {
     label: "Processes",
     id: "tab-link-processes",
-    condition: (distributor) => distributor !== DISTRIBUTORS.windows,
+    condition: (instance) =>
+      instance.distribution_info?.distributor !== DISTRIBUTORS.windows,
   },
   {
     label: "Ubuntu Pro",
     id: "tab-link-ubuntu-pro",
-    condition: (distributor) =>
+    condition: (instance) =>
       [
         DISTRIBUTORS.ubuntu,
         DISTRIBUTORS.ubuntuCore,
         DISTRIBUTORS.windows,
-      ].includes(distributor),
+      ].includes(instance.distribution_info?.distributor ?? ""),
   },
   {
     label: "Users",
     id: "tab-link-users",
-    condition: (distributor) =>
-      ![DISTRIBUTORS.ubuntuCore, DISTRIBUTORS.windows].includes(distributor),
+    condition: (instance) =>
+      ![DISTRIBUTORS.ubuntuCore, DISTRIBUTORS.windows].includes(
+        instance.distribution_info?.distributor ?? "",
+      ),
   },
   {
     label: "Hardware",
     id: "tab-link-hardware",
-    condition: (distributor) => distributor !== DISTRIBUTORS.windows,
+    condition: (instance) =>
+      instance.distribution_info?.distributor !== DISTRIBUTORS.windows,
   },
 ];

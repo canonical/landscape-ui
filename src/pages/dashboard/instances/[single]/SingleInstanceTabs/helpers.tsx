@@ -89,24 +89,24 @@ export const getTabLinks = ({
   kernelCount,
   kernelLoading,
 }: GetTabLinksProps) => {
-  return TAB_LINKS.filter((link) =>
-    link.condition(instance.distribution_info?.distributor ?? ""),
-  ).map(({ label, id }) => ({
-    label: getTabLabel({
-      label,
+  return TAB_LINKS.filter((link) => link.condition(instance)).map(
+    ({ label, id }) => ({
+      label: getTabLabel({
+        label,
+        id,
+        packageCount,
+        packagesLoading,
+        usnCount,
+        usnLoading,
+        kernelCount,
+        kernelLoading,
+      }),
       id,
-      packageCount,
-      packagesLoading,
-      usnCount,
-      usnLoading,
-      kernelCount,
-      kernelLoading,
+      role: "tab",
+      active: id === activeTabId,
+      onClick: () => {
+        onActiveTabChange(id);
+      },
     }),
-    id,
-    role: "tab",
-    active: id === activeTabId,
-    onClick: () => {
-      onActiveTabChange(id);
-    },
-  }));
+  );
 };
