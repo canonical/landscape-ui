@@ -39,7 +39,7 @@ export const ubuntuInstance: Instance = {
   distribution_info: {
     code_name: "lucid",
     description: "Ubuntu 10.04 LTS",
-    distributor: "Canonical",
+    distributor: "Ubuntu",
     release: "10.04",
   },
   employee_id: null,
@@ -205,6 +205,66 @@ export const windowsInstance = {
   },
   employee_id: null,
   archived: false,
+};
+
+export const debianInstance: Instance = {
+  id: 61,
+  title: "intent-ram",
+  comment: "",
+  hostname: "intent-ram",
+  total_memory: 31592,
+  total_swap: 0,
+  reboot_required_flag: false,
+  update_manager_prompt: "normal",
+  clone_id: null,
+  secrets_name: null,
+  last_exchange_time: "2025-05-21T21:57:10Z",
+  last_ping_time: "2025-05-21T22:05:47Z",
+  tags: [],
+  access_group: "global",
+  distribution: "12",
+  distribution_info: {
+    description: "Debian GNU/Linux 12 (bookworm)",
+    distributor: "Debian GNU/Linux",
+    release: "12",
+    code_name: "bookworm",
+  },
+  cloud_instance_metadata: {},
+  vm_info: "",
+  container_info: "",
+  default_child: null,
+  ubuntu_pro_info: null,
+  livepatch_info: {
+    humane: {
+      error: "[Errno 2] No such file or directory: 'canonical-livepatch'",
+      output: "",
+      return_code: -1,
+    },
+    json: {
+      error: "[Errno 2] No such file or directory: 'canonical-livepatch'",
+      output: "",
+      return_code: -1,
+    },
+  },
+  ubuntu_pro_reboot_required_info: {
+    error: "No module named 'uaclient'",
+    output: {},
+  },
+  num_child: 0,
+  cloud_init: {},
+  archived: false,
+  employee_id: null,
+  is_wsl_instance: false,
+  children: [],
+  is_default_child: null,
+  parent: null,
+  alerts: [
+    {
+      type: "PackageReporterAlert",
+      summary: "Package reporting failed",
+      severity: "danger",
+    },
+  ],
 };
 
 export const instances: Instance[] = [

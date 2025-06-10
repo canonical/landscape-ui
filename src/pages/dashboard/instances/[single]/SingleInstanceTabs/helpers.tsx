@@ -1,6 +1,5 @@
 import type { Instance } from "@/types/Instance";
 import { Badge, Spinner } from "@canonical/react-components";
-import { currentInstanceIs } from "../../../../../features/instances/helpers";
 import { TAB_LINKS } from "./constants";
 
 interface GetTabLabelProps {
@@ -90,29 +89,24 @@ export const getTabLinks = ({
   kernelCount,
   kernelLoading,
 }: GetTabLinksProps) => {
-  return TAB_LINKS.filter(({ id }) =>
-    !instance.distribution || currentInstanceIs("ubuntu", instance)
-      ? id !== "tab-link-wsl"
-      : [
-          "tab-link-info",
-          "tab-link-wsl",
-          "tab-link-activities",
-          "tab-link-hardware",
-        ].includes(id),
-  ).map(({ label, id }) => ({
-    label: getTabLabel({
-      label,
+  return TAB_LINKS.filter((link) => link.condition(instance)).map(
+    ({ label, id }) => ({
+      label: getTabLabel({
+        label,
+        id,
+        packageCount,
+        packagesLoading,
+        usnCount,
+        usnLoading,
+        kernelCount,
+        kernelLoading,
+      }),
       id,
-      packageCount,
-      packagesLoading,
-      usnCount,
-      usnLoading,
-      kernelCount,
-      kernelLoading,
+      role: "tab",
+      active: id === activeTabId,
+      onClick: () => {
+        onActiveTabChange(id);
+      },
     }),
-    id,
-    role: "tab",
-    active: id === activeTabId,
-    onClick: () => onActiveTabChange(id),
-  }));
+  );
 };
