@@ -1,24 +1,81 @@
-import { ubuntuCoreInstance } from "@/tests/mocks/instance";
+import {
+  debianInstance,
+  ubuntuCoreInstance,
+  ubuntuInstance,
+  windowsInstance,
+} from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
+import type { Instance } from "@/types/Instance";
+import { screen } from "@testing-library/react";
 import { describe } from "vitest";
-import { TAB_LINKS } from "./constants";
-import { getTabLinks } from "./helpers";
+import SingleInstanceTabs from "./SingleInstanceTabs";
+
+const validateTabs = (instance: Instance, tabNames: string[]) => {
+  renderWithProviders(
+    <SingleInstanceTabs
+      instance={instance}
+      kernelCount={0}
+      kernelLoading={false}
+      packageCount={0}
+      packagesLoading={false}
+      usnCount={0}
+      usnLoading={false}
+    />,
+  );
+
+  const tabs = screen.getByRole("list");
+
+  for (const index in [...tabs.childNodes]) {
+    expect(tabs.childNodes[index]).toHaveTextContent(tabNames[index]);
+  }
+};
 
 describe("SingleInstanceTabs", () => {
   describe("getTabLinks", () => {
-    it("should use ubuntu tabs for an ubuntu core instance", () => {
-      expect(
-        getTabLinks({
-          activeTabId: "",
-          instance: ubuntuCoreInstance,
-          onActiveTabChange: () => undefined,
-          packageCount: 0,
-          packagesLoading: false,
-          usnCount: 0,
-          usnLoading: false,
-          kernelCount: 0,
-          kernelLoading: false,
-        }),
-      ).not.toContain(TAB_LINKS.find((link) => link.id === "tab-link-wsl"));
+    it("should use the correct tabs for ubuntu", () => {
+      validateTabs(ubuntuInstance, [
+        "Info",
+        "Activities",
+        "Kernel",
+        "Security issues",
+        "Packages",
+        "Snaps",
+        "Processes",
+        "Ubuntu Pro",
+        "Users",
+        "Hardware",
+      ]);
+    });
+
+    it("should use the correct tabs for ubuntu core", () => {
+      validateTabs(ubuntuCoreInstance, [
+        "Info",
+        "Activities",
+        "Snaps",
+        "Processes",
+        "Ubuntu Pro",
+        "Hardware",
+      ]);
+    });
+
+    it("should use the correct tabs for windows", () => {
+      validateTabs(windowsInstance, [
+        "Info",
+        "WSL",
+        "Activities",
+        "Ubuntu Pro",
+      ]);
+    });
+
+    it("should use the correct tabs for other linux", () => {
+      validateTabs(debianInstance, [
+        "Info",
+        "Activities",
+        "Snaps",
+        "Processes",
+        "Users",
+        "Hardware",
+      ]);
     });
   });
 });
