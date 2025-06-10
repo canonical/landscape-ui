@@ -67,6 +67,11 @@ const useSecurityProfileForm = ({
               .required("This field is required.")
               .positive("Enter a positive number.")
               .integer("Enter an integer.")
+              .when("unit_of_time", ([unit_of_time]) =>
+                unit_of_time === "DAILY"
+                  ? schema.min(7, "Enter an interval of at least 7 days.")
+                  : schema,
+              )
           : schema,
       ),
 

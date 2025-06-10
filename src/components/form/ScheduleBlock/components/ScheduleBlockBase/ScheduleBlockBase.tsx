@@ -46,7 +46,7 @@ const ScheduleBlockBase = <T extends ScheduleBlockFormProps>({
                 {...formik.getFieldProps("every")}
                 type="number"
                 label="Repeat every"
-                min={1}
+                min={formik.values.unit_of_time === "DAILY" ? 7 : 1}
                 error={getFormikError(formik, "every")}
                 required
               />

@@ -1,9 +1,9 @@
 import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
-import type { ComponentProps } from "react";
+import { type ComponentProps } from "react";
 import { describe, it } from "vitest";
 import SecurityProfileForm from "./SecurityProfileForm";
 
@@ -69,5 +69,33 @@ describe("SecurityProfileForm", () => {
     );
 
     expect(onSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it("should require a minimum interval of 7 days", async () => {
+    renderWithProviders(<SecurityProfileForm {...props} />);
+
+    await userEvent.selectOptions(
+      screen.getByRole("combobox", { name: "Schedule" }),
+      "recurring",
+    );
+
+    const everyField = screen.getByRole("spinbutton", {
+      name: "Repeat every",
+    });
+
+    await userEvent.clear(everyField);
+    await userEvent.type(everyField, "6");
+
+    act(() => {
+      everyField.blur();
+    });
+
+    expect(
+      await screen.findByText("Enter an interval of at least 7 days."),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByRole("button", { name: "Submit" }),
+    ).toBeDisabled();
   });
 });
