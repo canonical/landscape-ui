@@ -9,7 +9,6 @@ import useSelection from "@/hooks/useSelection";
 import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer/InstancesContainer";
 import type { Instance } from "@/types/Instance";
 import { type FC } from "react";
-import classes from "./InstancesPage.module.scss";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
@@ -39,7 +38,6 @@ const InstancesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Instances"
-        className={classes.header}
         actions={[
           <InstancesPageActions
             key="actions"
