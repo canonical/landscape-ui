@@ -5,14 +5,20 @@ import { screen } from "@testing-library/react";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import NoData from "@/components/layout/NoData";
+import type { UbuntuProInfo } from "@/types/Instance";
 
-const ubuntuProDataWithAccountInfo = instances.find(
-  (instance) => instance.ubuntu_pro_info && instance.ubuntu_pro_info?.account,
-)?.ubuntu_pro_info;
+const getUbuntuProInfo = (hasAccount: boolean): UbuntuProInfo | undefined => {
+  for (const instance of instances) {
+    const info = instance.ubuntu_pro_info;
+    if (info?.result === "success" && !!info.account === hasAccount) {
+      return info;
+    }
+  }
+  return undefined;
+};
 
-const ubuntuProDataWithoutAccountInfo = instances.find(
-  (instance) => instance.ubuntu_pro_info && !instance.ubuntu_pro_info?.account,
-)?.ubuntu_pro_info;
+const ubuntuProDataWithAccountInfo = getUbuntuProInfo(true);
+const ubuntuProDataWithoutAccountInfo = getUbuntuProInfo(false);
 
 describe("renders Ubuntu Pro Panel", () => {
   it.each([ubuntuProDataWithAccountInfo, ubuntuProDataWithoutAccountInfo])(
