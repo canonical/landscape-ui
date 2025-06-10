@@ -214,28 +214,31 @@ const UsnList: FC<UsnListProps> = ({
         {
           accessor: "cves",
           Header: "CVE(s)",
-          Cell: ({ row: { original, index } }: CellProps<Usn>) => (
-            <TruncatedCell
-              content={original.cves.map(({ cve, cve_link }) => (
-                <span key={cve} className={classes.cve}>
-                  <a
-                    href={cve_link}
-                    target="_blank"
-                    rel="nofollow noopener noreferrer"
-                    className={classes.cveLink}
-                  >
-                    {cve}
-                  </a>
-                </span>
-              ))}
-              isExpanded={
-                expandedCell?.column === "cves" && expandedCell.row === index
-              }
-              onExpand={() => {
-                handleExpandCellClick("cves", index);
-              }}
-            />
-          ),
+          Cell: ({ row: { original, index } }: CellProps<Usn>) =>
+            original.cves.length > 0 ? (
+              <TruncatedCell
+                content={original.cves.map(({ cve, cve_link }) => (
+                  <span key={cve} className={classes.cve}>
+                    <a
+                      href={cve_link}
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                      className={classes.cveLink}
+                    >
+                      {cve}
+                    </a>
+                  </span>
+                ))}
+                isExpanded={
+                  expandedCell?.column === "cves" && expandedCell.row === index
+                }
+                onExpand={() => {
+                  handleExpandCellClick("cves", index);
+                }}
+              />
+            ) : (
+              <NoData />
+            ),
         },
         {
           accessor: "date",
@@ -303,7 +306,7 @@ const UsnList: FC<UsnListProps> = ({
   );
 
   return (
-    <div ref={getTableRows(tableRowsRef)}>
+    <div ref={getTableRows(tableRowsRef)} className={classes.wrapper}>
       {otherProps.tableType === "expandable" ? (
         <ExpandableTable
           columns={securityIssueColumns}
@@ -329,15 +332,13 @@ const UsnList: FC<UsnListProps> = ({
             getRowProps={handleRowProps(expandedCell)}
             emptyMsg={`No security issues found with the search "${otherProps.search}"`}
           />
-          {usns.length > 0 && (
-            <TablePagination
-              handleClearSelection={() => {
-                onSelectedUsnsChange([]);
-              }}
-              totalItems={totalUsnCount}
-              currentItemCount={usns.length}
-            />
-          )}
+          <TablePagination
+            handleClearSelection={() => {
+              onSelectedUsnsChange([]);
+            }}
+            totalItems={totalUsnCount}
+            currentItemCount={usns.length}
+          />
         </>
       )}
     </div>

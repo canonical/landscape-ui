@@ -8,16 +8,17 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import {
   Button,
-  ConfirmationButton,
+  ConfirmationModal,
   ContextualMenu,
   Icon,
 } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { currentInstanceCan, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
 import { pluralize } from "@/utils/_helpers";
+import { ResponsiveButtons } from "@/components/ui";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -44,6 +45,9 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
   const { notify } = useNotify();
   const { openActivityDetails } = useActivities();
   const { setSidePanelContent } = useSidePanel();
+
+  const [rebootModalOpen, setRebootModalOpen] = useState(false);
+  const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
 
   const { rebootInstancesQuery, shutdownInstancesQuery } = useInstances();
 
@@ -179,55 +183,36 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
 
   return (
     <>
-      <div className="p-segmented-control">
-        <div className="p-segmented-control__list">
-          <ConfirmationButton
-            className="p-segmented-control__button has-icon"
+      <ResponsiveButtons
+        collapseFrom="xl"
+        buttons={[
+          <Button
+            key="shutdown-instances"
+            className="has-icon"
             type="button"
             disabled={shutdownInstancesLoading || 0 === selected.length}
-            confirmationModalProps={{
-              title: "Shutting down selected instances",
-              children: (
-                <p>
-                  Are you sure you want to shutdown {selected.length}
-                  {pluralize(selected.length, "instance")}?
-                </p>
-              ),
-              confirmButtonLabel: "Shutdown",
-              confirmButtonAppearance: "negative",
-              confirmButtonLoading: shutdownInstancesLoading,
-              confirmButtonDisabled: shutdownInstancesLoading,
-              onConfirm: handleShutdownInstance,
+            onClick={() => {
+              setShutdownModalOpen(true);
             }}
           >
             <Icon name="power-off" />
             <span>Shutdown</span>
-          </ConfirmationButton>
-          <ConfirmationButton
-            className="p-segmented-control__button has-icon"
+          </Button>,
+          <Button
+            key="reboot-instances"
+            hasIcon
             type="button"
             disabled={rebootInstancesLoading || 0 === selected.length}
-            confirmationModalProps={{
-              title: "Restarting selected instances",
-              children: (
-                <p>
-                  Are you sure you want to restart {selected.length}
-                  {pluralize(selected.length, "instance")}?
-                </p>
-              ),
-              confirmButtonLabel: "Restart",
-              confirmButtonAppearance: "negative",
-              confirmButtonLoading: rebootInstancesLoading,
-              confirmButtonDisabled: rebootInstancesLoading,
-              onConfirm: handleRebootInstance,
+            onClick={() => {
+              setRebootModalOpen(true);
             }}
           >
             <Icon name="restart" />
             <span>Restart</span>
-          </ConfirmationButton>
-          {REPORT_VIEW_ENABLED && (
+          </Button>,
+          REPORT_VIEW_ENABLED && (
             <Button
-              className="p-segmented-control__button"
+              key="report-view"
               type="button"
               onClick={handleReportView}
               disabled={0 === selected.length}
@@ -235,10 +220,11 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
               <Icon name="status" />
               <span>View report</span>
             </Button>
-          )}
+          ),
           <Button
-            className="p-segmented-control__button"
+            key="run-script"
             type="button"
+            hasIcon
             onClick={handleRunScript}
             disabled={selected.every((instance) => {
               return !currentInstanceCan("runScripts", instance);
@@ -246,10 +232,11 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           >
             <Icon name="code" />
             <span>Run script</span>
-          </Button>
+          </Button>,
           <Button
-            className="p-segmented-control__button"
+            key="upgrade-instances"
             type="button"
+            hasIcon
             onClick={handleUpgradesRequest}
             disabled={selected.every(
               (instance) => !hasUpgrades(instance.alerts),
@@ -257,10 +244,9 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           >
             <Icon name="change-version" />
             <span>Upgrade</span>
-          </Button>
-        </div>
-      </div>
-
+          </Button>,
+        ]}
+      />
       <ContextualMenu
         hasToggleIcon
         links={[
@@ -280,9 +266,46 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
             <span>Assign</span>
           </>
         }
+        toggleClassName="u-no-margin--bottom"
         toggleDisabled={0 === selected.length}
         dropdownProps={{ style: { zIndex: 10 } }}
       />
+      {rebootModalOpen && (
+        <ConfirmationModal
+          close={() => {
+            setRebootModalOpen(false);
+          }}
+          title="Restarting selected instances"
+          confirmButtonLabel="Restart"
+          confirmButtonAppearance="negative"
+          confirmButtonLoading={rebootInstancesLoading}
+          confirmButtonDisabled={rebootInstancesLoading}
+          onConfirm={handleRebootInstance}
+        >
+          <p>
+            Are you sure you want to restart {selected.length}
+            {pluralize(selected.length, "instance")}?
+          </p>
+        </ConfirmationModal>
+      )}
+      {shutdownModalOpen && (
+        <ConfirmationModal
+          close={() => {
+            setShutdownModalOpen(false);
+          }}
+          title="Shutting down selected instances"
+          confirmButtonLabel="Shutdown"
+          confirmButtonAppearance="negative"
+          confirmButtonLoading={shutdownInstancesLoading}
+          confirmButtonDisabled={shutdownInstancesLoading}
+          onConfirm={handleShutdownInstance}
+        >
+          <p>
+            Are you sure you want to shutdown {selected.length}
+            {pluralize(selected.length, "instance")}?
+          </p>
+        </ConfirmationModal>
+      )}
     </>
   );
 };

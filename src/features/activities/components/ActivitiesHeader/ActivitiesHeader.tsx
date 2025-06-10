@@ -15,18 +15,24 @@ import {
   ACTIVITY_SEARCH_HELP_TERMS,
   ACTIVITY_STATUS_OPTIONS,
 } from "./constants";
+import ActivitiesActions from "../ActivitiesActions";
+import type { ActivityCommon } from "../../types";
 
 interface ActivitiesHeaderProps {
+  readonly selected: ActivityCommon[];
   readonly resetSelectedIds: () => void;
 }
 
-const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
+const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
+  resetSelectedIds,
+  selected,
+}) => {
+  const [searchText, setSearchText] = useState<string>("");
+  const [showSearchHelp, setShowSearchHelp] = useState(false);
+
   const { query, setPageParams } = usePageParams();
   const { instanceId } = useParams<UrlParams>();
   const { getActivityTypesQuery } = useActivities();
-
-  const [searchText, setSearchText] = useState<string>("");
-  const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const { data: activityTypesQueryData } = getActivityTypesQuery();
 
@@ -42,7 +48,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
     ...activityResultOptions,
   ];
 
-  const IS_STICKY = !!instanceId;
+  const IS_PANEL = !!instanceId;
 
   const handleSearch = () => {
     if (!searchText) {
@@ -64,7 +70,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
     <>
       <div
         className={classNames(classes.top, {
-          [classes.sticky]: !IS_STICKY,
+          [classes.sticky]: !IS_PANEL,
         })}
       >
         <SearchBoxWithDescriptionButton
@@ -78,11 +84,14 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({ resetSelectedIds }) => {
           }}
           onClear={handleClear}
         />
+        <div className={classes.actions}>
+          <div className={classes.filters}>
+            <StatusFilter options={ACTIVITY_STATUS_OPTIONS} />
+            <ActivityTypeFilter options={ACTIVITY_TYPE_OPTIONS} />
+            <ActivitiesDateFilter />
+          </div>
 
-        <div className={classes.filters}>
-          <StatusFilter options={ACTIVITY_STATUS_OPTIONS} />
-          <ActivityTypeFilter options={ACTIVITY_TYPE_OPTIONS} />
-          <ActivitiesDateFilter />
+          {IS_PANEL && <ActivitiesActions selected={selected} />}
         </div>
       </div>
       <SearchHelpPopup

@@ -20,7 +20,14 @@ import type { ActivityCommon } from "../../types";
 import ActivitiesEmptyState from "../ActivitiesEmptyState";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
-import { getDateQuery, getStatusQuery, getTypeQuery } from "./helpers";
+import {
+  getDateQuery,
+  getStatusQuery,
+  getTypeQuery,
+  isActivitiesEmptyState,
+  isActivitiesLoadedState,
+  isActivitiesLoadingState,
+} from "./helpers";
 
 const ActivityDetails = lazy(
   async () => import("@/features/activities/components/ActivityDetails"),
@@ -202,27 +209,33 @@ const Activities: FC<ActivitiesProps> = ({
 
   return (
     <>
-      {!searchQuery &&
-        currentPage === 1 &&
-        pageSize === 20 &&
-        getActivitiesQueryLoading && <LoadingState />}
+      {isActivitiesLoadingState({
+        currentPage,
+        getActivitiesQueryLoading,
+        pageSize,
+        searchQuery,
+      }) && <LoadingState />}
 
-      {!searchQuery &&
-        currentPage === 1 &&
-        pageSize === 20 &&
-        !getActivitiesQueryLoading &&
-        (!getActivitiesQueryResult || !getActivitiesQueryResult.data.count) && (
-          <ActivitiesEmptyState />
-        )}
+      {isActivitiesEmptyState({
+        currentPage,
+        getActivitiesQueryLoading,
+        getActivitiesQueryResult,
+        pageSize,
+        searchQuery,
+      }) && <ActivitiesEmptyState />}
 
-      {(!!searchQuery ||
-        currentPage !== 1 ||
-        pageSize !== 20 ||
-        (!getActivitiesQueryLoading &&
-          getActivitiesQueryResult &&
-          getActivitiesQueryResult.data.count > 0)) && (
+      {isActivitiesLoadedState({
+        currentPage,
+        getActivitiesQueryLoading,
+        getActivitiesQueryResult,
+        pageSize,
+        searchQuery,
+      }) && (
         <>
-          <ActivitiesHeader resetSelectedIds={handleClearSelection} />
+          <ActivitiesHeader
+            resetSelectedIds={handleClearSelection}
+            selected={selected}
+          />
           {getActivitiesQueryLoading ? (
             <LoadingState />
           ) : (

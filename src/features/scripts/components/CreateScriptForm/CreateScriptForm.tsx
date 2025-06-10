@@ -34,15 +34,12 @@ const CreateScript: FC = () => {
 
   const accessGroupsData = accessGroupsResults?.data ?? [];
 
-  const accessGroups: SelectOption[] = accessGroupsData.map((accessGroup) => ({
-    label: accessGroup.title,
-    value: accessGroup.name,
-  }));
-
-  const accessGroupOptions: SelectOption[] = [
-    { label: "Select access group", value: "" },
-    ...accessGroups,
-  ];
+  const accessGroupOptions: SelectOption[] = accessGroupsData.map(
+    (accessGroup) => ({
+      label: accessGroup.title,
+      value: accessGroup.name,
+    }),
+  );
 
   const handleSubmit = async (values: ScriptFormValues) => {
     const newAttachments = Object.values(values.attachments).filter(

@@ -1,6 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import type { ComponentProps } from "react";
 import KernelHeader from "./KernelHeader";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 const props: ComponentProps<typeof KernelHeader> = {
   hasTableData: false,
@@ -20,6 +21,14 @@ const props: ComponentProps<typeof KernelHeader> = {
 };
 
 describe("KernelHeader", () => {
+  beforeEach(() => {
+    setScreenSize("lg");
+  });
+
+  afterEach(() => {
+    resetScreenSize();
+  });
+
   it("renders KernelHeader", () => {
     const { container } = renderWithProviders(<KernelHeader {...props} />);
     expect(container).toHaveTexts([

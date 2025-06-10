@@ -3,8 +3,8 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import type { KernelOverviewInfo } from "@/features/kernel";
 import {
-  KernelOverview,
   KernelHeader,
+  KernelOverview,
   KernelTableList,
   useKernel,
 } from "@/features/kernel";
@@ -69,7 +69,7 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
       {isLoadingKernelStatuses && <LoadingState />}
       {!isLoadingKernelStatuses && !kernelStatuses?.data.installed && (
         <EmptyState
-          title="Kernel Information Unavailable"
+          title="Kernel information unavailable"
           body={
             kernelStatuses?.data.message || "No kernel information available"
           }

@@ -17,12 +17,28 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
   if (childInstanceId) {
     return (
       <EmptyState
-        title="Information not available"
+        title="Hardware information unavailable"
         icon="connected"
         body={
           <>
             <p className="u-no-margin--bottom">
               Hardware information is not available for WSL instances.
+            </p>
+          </>
+        }
+      />
+    );
+  }
+
+  if (!groupedHardware) {
+    return (
+      <EmptyState
+        title="Hardware information unavailable"
+        icon="connected"
+        body={
+          <>
+            <p className="u-no-margin--bottom">
+              Your hardware reporting monitor may be turned off.
             </p>
           </>
         }

@@ -1,4 +1,4 @@
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
+import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -10,7 +10,7 @@ import SecurityProfileForm from "./SecurityProfileForm";
 describe("SecurityProfileForm", () => {
   const props: ComponentProps<typeof SecurityProfileForm> = {
     initialValues: {
-      access_group: "global",
+      access_group: DEFAULT_ACCESS_GROUP_NAME,
       all_computers: false,
       benchmark: "cis_level1_server",
       day_of_month_type: "day-of-month",

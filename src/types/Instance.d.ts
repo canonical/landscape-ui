@@ -176,6 +176,17 @@ interface UbuntuProInfo {
   effective?: string;
   contract?: UbuntuProContract;
   account?: UbuntuProAccount;
+  result: "success";
+}
+
+interface FailedUbuntuProInfo {
+  errors: {
+    message: string;
+    message_code: string;
+    service: string | null;
+    type: string;
+  }[];
+  result: "failure";
 }
 
 interface DistributionInfo {
@@ -201,7 +212,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   last_ping_time: string | null;
   tags: string[];
   title: string;
-  ubuntu_pro_info: UbuntuProInfo | null;
+  ubuntu_pro_info: UbuntuProInfo | FailedUbuntuProInfo | null;
   annotations?: Record<string, string>;
   grouped_hardware?: GroupedHardware;
   alerts?: InstanceAlert[];

@@ -5,6 +5,7 @@ import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useAPTSources } from "../../hooks";
 import type { APTSource } from "../../types";
+import useNotify from "@/hooks/useNotify";
 
 interface APTSourcesListActionsProps {
   readonly aptSource: APTSource;
@@ -15,7 +16,7 @@ const APTSourcesListActions: FC<APTSourcesListActionsProps> = ({
 }) => {
   const { removeAPTSourceQuery } = useAPTSources();
   const debug = useDebug();
-
+  const { notify } = useNotify();
   const {
     value: isModalOpen,
     setTrue: openModal,
@@ -27,6 +28,11 @@ const APTSourcesListActions: FC<APTSourcesListActionsProps> = ({
   const tryRemove = async () => {
     try {
       await remove({ name: aptSource.name });
+
+      notify.success({
+        title: "Successfully deleted APT source",
+        message: `You have successfully deleted the ${aptSource.name} APT source`,
+      });
     } catch (error) {
       debug(error);
     } finally {

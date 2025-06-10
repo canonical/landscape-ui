@@ -1,5 +1,6 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { useWsl } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
@@ -9,10 +10,9 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import { useWslProfiles } from "../../hooks";
 import type { WslProfile } from "../../types";
+import { CLOUD_INIT_OPTIONS } from "../constants";
 import { getValidationSchema } from "./helpers";
 import classes from "./WslProfileEditForm.module.scss";
-import { useWsl } from "@/features/wsl";
-import { CLOUD_INIT_OPTIONS } from "../constants";
 
 interface FormProps {
   title: string;
@@ -60,11 +60,6 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       label: title,
       value: name,
     })) ?? [];
-
-  const ACCESS_GROUP_OPTIONS = [
-    { label: "Select access group", value: "" },
-    ...accessGroupResultOptions,
-  ];
 
   const handleSubmit = async (values: FormProps) => {
     try {
@@ -132,7 +127,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       <Select
         label="Access group"
         aria-label="Access group"
-        options={ACCESS_GROUP_OPTIONS}
+        options={accessGroupResultOptions}
         required
         {...formik.getFieldProps("access_group")}
         error={

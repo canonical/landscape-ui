@@ -23,6 +23,7 @@ import {
   isDisabledConfirmationButton,
 } from "./helpers";
 import { useDeactivateEmployee } from "../../api";
+import useDebug from "@/hooks/useDebug";
 
 interface DeactivateEmployeeModalProps {
   readonly employee: Employee;
@@ -34,7 +35,7 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
   handleClose,
 }) => {
   const { notify } = useNotify();
-
+  const debug = useDebug();
   const { deactivateEmployee, isDeactivating } = useDeactivateEmployee();
 
   const formik = useFormik({
@@ -49,26 +50,30 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
       ) {
         return;
       }
+      try {
+        await deactivateEmployee({
+          id: employee.id,
+          remove_instances: formik.values.removeFromLandscape,
+          sanitize_instances: formik.values.sanitizeInstances,
+        });
 
-      await deactivateEmployee({
-        id: employee.id,
-        remove_instances: formik.values.removeFromLandscape,
-        sanitize_instances: formik.values.sanitizeInstances,
-      });
+        formik.resetForm();
+        handleClose();
 
-      formik.resetForm();
-      handleClose();
+        const { notificationMessage, notificationTitle } =
+          getDeactivationMessage(
+            employee.name,
+            formik.values.sanitizeInstances,
+            formik.values.removeFromLandscape,
+          );
 
-      const { notificationMessage, notificationTitle } = getDeactivationMessage(
-        employee.name,
-        formik.values.sanitizeInstances,
-        formik.values.removeFromLandscape,
-      );
-
-      notify.success({
-        title: notificationTitle,
-        message: notificationMessage,
-      });
+        notify.success({
+          title: notificationTitle,
+          message: notificationMessage,
+        });
+      } catch (error) {
+        debug(error);
+      }
 
       // need multiple notification popups for this feature
       // notify.success({

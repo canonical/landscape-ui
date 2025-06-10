@@ -33,7 +33,7 @@ const SnapsPanel: FC = () => {
   });
 
   const handleEmptyStateInstall = () => {
-    setSidePanelContent("Install snap", <InstallSnaps />);
+    setSidePanelContent("Install snaps", <InstallSnaps />);
   };
 
   const installedSnaps = useMemo(
@@ -55,12 +55,7 @@ const SnapsPanel: FC = () => {
         (!getSnapsQueryResult ||
           getSnapsQueryResult.data.results.length === 0) && (
           <EmptyState
-            title="You haven't installed any snaps yet."
-            body={
-              <p className="u-no-margin--bottom">
-                Install snaps by clicking the button below.
-              </p>
-            }
+            title="You haven't installed any snaps yet"
             cta={[
               <Button
                 type="button"
@@ -68,7 +63,7 @@ const SnapsPanel: FC = () => {
                 key="empty-state-install-snap"
                 onClick={handleEmptyStateInstall}
               >
-                Install snap
+                Install snaps
               </Button>,
             ]}
           />

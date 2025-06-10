@@ -6,6 +6,7 @@ import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
 import type { Administrator } from "@/types/Administrator";
 import type { SelectOption } from "@/types/SelectOption";
 import {
@@ -37,6 +38,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
 
   const { notify } = useNotify();
   const debug = useDebug();
+  const { closeSidePanel } = useSidePanel();
   const { disableAdministratorQuery, editAdministratorQuery } =
     useAdministrators();
   const { getRolesQuery } = useRoles();
@@ -57,6 +59,13 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   const handleDisableAdministrator = async () => {
     try {
       await disableAdministrator({ email: currentAdministrator.email });
+
+      notify.success({
+        title: "Administrator removed",
+        message: `Administrator "${administrator.name}" has been removed successfully.`,
+      });
+
+      closeSidePanel();
     } catch (error) {
       debug(error);
     }

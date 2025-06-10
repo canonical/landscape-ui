@@ -3,20 +3,22 @@ import UbuntuProList from "./UbuntuProList";
 import { instances } from "@/tests/mocks/instance";
 import { screen, within } from "@testing-library/react";
 
-const instanceWithUbuntuPro = instances.find(
-  (instance) =>
-    instance.ubuntu_pro_info &&
-    instance.ubuntu_pro_info.services.some(
-      (service) => service.status === "enabled",
-    ) &&
-    instance.ubuntu_pro_info.services.some(
-      (service) => service.status === "disabled",
-    ),
-);
+const getInstanceWithMixedServiceStatus = () => {
+  return instances.find(
+    (instance) =>
+      instance.ubuntu_pro_info?.result === "success" &&
+      instance.ubuntu_pro_info.services.some((s) => s.status === "enabled") &&
+      instance.ubuntu_pro_info.services.some((s) => s.status === "disabled"),
+  );
+};
 
-const ubuntuProServices = instanceWithUbuntuPro?.ubuntu_pro_info
-  ? instanceWithUbuntuPro.ubuntu_pro_info.services
-  : [];
+const instanceWithUbuntuPro = getInstanceWithMixedServiceStatus();
+
+const ubuntuProServices =
+  instanceWithUbuntuPro?.ubuntu_pro_info?.result === "success" &&
+  instanceWithUbuntuPro?.ubuntu_pro_info
+    ? instanceWithUbuntuPro.ubuntu_pro_info.services
+    : [];
 
 describe("Ubuntu Pro List", () => {
   it("renders Ubuntu Pro List", () => {

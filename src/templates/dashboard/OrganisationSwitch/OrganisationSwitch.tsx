@@ -17,11 +17,13 @@ const OrganisationSwitch = () => {
 
   if (isOnSubdomain || options.length === 1) {
     return (
-      <InfoItem
-        label="Organization"
-        value={currentAccount.title}
-        className={classes.organisation}
-      />
+      <div className={classes.container}>
+        <InfoItem
+          label="Organization"
+          value={currentAccount.title}
+          className={classes.organisation}
+        />
+      </div>
     );
   }
 

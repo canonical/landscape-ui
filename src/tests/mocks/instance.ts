@@ -46,7 +46,7 @@ export const ubuntuInstance: Instance = {
   archived: false,
 };
 
-export const ubuntuCoreInstance = {
+export const ubuntuCoreInstance: Instance = {
   id: 33,
   title: "vehement-krill",
   comment: "",
@@ -74,8 +74,7 @@ export const ubuntuCoreInstance = {
   default_child: null,
   employee_id: null,
   ubuntu_pro_info: {
-    _doc: "Content provided in json response is currently considered Experimental and may change",
-    _schema_version: "0.1",
+    result: "success",
     account: {
       created_at: "",
       external_account_ids: [],
@@ -83,26 +82,6 @@ export const ubuntuCoreInstance = {
       name: "",
     },
     attached: false,
-    config: {
-      contract_url: "https://contracts.canonical.com",
-      data_dir: "/var/lib/ubuntu-advantage",
-      log_file: "/var/log/ubuntu-advantage.log",
-      log_level: "debug",
-      security_url: "https://ubuntu.com/security",
-      ua_config: {
-        apt_news: false,
-        apt_news_url: "https://motd.ubuntu.com/aptnews.json",
-        global_apt_http_proxy: null,
-        global_apt_https_proxy: null,
-        http_proxy: null,
-        https_proxy: null,
-        metering_timer: 14400,
-        ua_apt_http_proxy: null,
-        ua_apt_https_proxy: null,
-        update_messaging_timer: 21600,
-      },
-    },
-    config_path: "/etc/ubuntu-advantage/uaclient.conf",
     contract: {
       created_at: "",
       id: "",
@@ -111,15 +90,7 @@ export const ubuntuCoreInstance = {
       tech_support_level: "n/a",
     },
     effective: "2024-12-03T01:16:35.908058+00:00",
-    environment_vars: [],
-    errors: [],
-    execution_details: "No Ubuntu Pro operations are running",
-    execution_status: "inactive",
     expires: "2025-01-02T01:16:35.908058+00:00",
-    features: {},
-    machine_id: null,
-    notices: [],
-    result: "success",
     services: [
       {
         available: "yes",
@@ -128,9 +99,6 @@ export const ubuntuCoreInstance = {
         name: "landscape",
       },
     ],
-    simulated: false,
-    version: "31.1",
-    warnings: [],
   },
   livepatch_info: {
     humane: {
@@ -621,6 +589,7 @@ export const instances: Instance[] = [
     vm_info: "",
     container_info: "lxc",
     ubuntu_pro_info: {
+      result: "success",
       account: {
         created_at: "2019-10-11T13:55:56+00:00",
         external_account_ids: [
@@ -796,6 +765,7 @@ export const instances: Instance[] = [
     vm_info: "",
     container_info: "lxc",
     ubuntu_pro_info: {
+      result: "success",
       attached: false,
       expires: "n/a",
       services: [

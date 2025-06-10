@@ -75,7 +75,7 @@ describe("DistributionCard", () => {
   });
 
   it("renders menu buttons", async () => {
-    setScreenSize("large");
+    setScreenSize("lg");
 
     renderWithProviders(<DistributionCard {...commonProps} />);
 
@@ -86,7 +86,7 @@ describe("DistributionCard", () => {
   });
 
   it("renders contextual menu buttons", async () => {
-    setScreenSize("small");
+    setScreenSize("xs");
 
     renderWithProviders(<DistributionCard {...commonProps} />);
 

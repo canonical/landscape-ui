@@ -8,6 +8,7 @@ import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
 import classes from "./PackageActions.module.scss";
 import { pluralize } from "@/utils/_helpers";
+import { ResponsiveButtons } from "@/components/ui";
 
 const InstalledPackagesActionForm = lazy(
   async () => import("../InstalledPackagesActionForm"),
@@ -79,11 +80,9 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
         <i className="p-icon--plus" />
         <span>Install</span>
       </Button>
-      <div
-        key="buttons"
-        className={classNames("p-segmented-control is-small", classes.noWrap)}
-      >
-        {Object.keys(INSTALLED_PACKAGE_ACTIONS)
+      <ResponsiveButtons
+        collapseFrom="lg"
+        buttons={Object.keys(INSTALLED_PACKAGE_ACTIONS)
           .filter((packageAction) => packageAction !== "downgrade")
           .map((key) => key as Exclude<InstalledPackageAction, "downgrade">)
           .sort(
@@ -105,7 +104,7 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
               <span>{INSTALLED_PACKAGE_ACTIONS[packageAction].label}</span>
             </Button>
           ))}
-      </div>
+      />
     </div>
   );
 };

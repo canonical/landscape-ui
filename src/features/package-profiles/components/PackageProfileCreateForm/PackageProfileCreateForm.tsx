@@ -1,18 +1,18 @@
+import AssociationBlock from "@/components/form/AssociationBlock";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { SelectOption } from "@/types/SelectOption";
+import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { Form, Input, Select } from "@canonical/react-components";
-import useDebug from "@/hooks/useDebug";
 import type { CreatePackageProfileParams } from "../../hooks";
 import { usePackageProfiles } from "../../hooks";
-import useSidePanel from "@/hooks/useSidePanel";
-import PackageProfileConstraintsTypeBlock from "../PackageProfileConstraintsTypeBlock";
 import type { AddFormProps, PackageProfileConstraintType } from "../../types";
-import useRoles from "@/hooks/useRoles";
-import type { SelectOption } from "@/types/SelectOption";
-import AssociationBlock from "@/components/form/AssociationBlock";
+import PackageProfileConstraintsTypeBlock from "../PackageProfileConstraintsTypeBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import useNotify from "@/hooks/useNotify";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 
 const PackageProfileCreateForm: FC = () => {
   const debug = useDebug();
@@ -28,8 +28,6 @@ const PackageProfileCreateForm: FC = () => {
       label: title,
       value: name,
     })) ?? [];
-
-  accessGroupOptions.unshift({ label: "Select access group", value: "" });
 
   const { mutateAsync: createPackageProfile } = createPackageProfileQuery;
 

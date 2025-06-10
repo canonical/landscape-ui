@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { COMMON_NUMBERS } from "@/constants";
+import { BREAKPOINT_PX, COMMON_NUMBERS } from "@/constants";
 
 export const expectLoadingState = async (): Promise<void> => {
   const loadingSpinner = await screen.findByRole("status");
@@ -66,12 +66,19 @@ export const restoreRangeBoundingClientRect = (): void => {
   }
 };
 
-export const setScreenSize = (size: "small" | "large"): void => {
-  if (size === "small") {
-    mockMatchMedia([{ query: "(min-width: 620px)", matches: false }]);
-  } else {
-    mockMatchMedia([{ query: "(min-width: 620px)", matches: true }]);
+export const setScreenSize = (bp: keyof typeof BREAKPOINT_PX): void => {
+  const currentWidth = BREAKPOINT_PX[bp];
+
+  if (currentWidth === undefined) {
+    throw new Error(`Unknown breakpoint "${bp}"`);
   }
+
+  const mediaConfig = Object.entries(BREAKPOINT_PX).map(([_, px]) => ({
+    query: `(min-width: ${px}px)`,
+    matches: currentWidth >= px,
+  }));
+
+  mockMatchMedia(mediaConfig);
 };
 
 export function resetScreenSize(): void {

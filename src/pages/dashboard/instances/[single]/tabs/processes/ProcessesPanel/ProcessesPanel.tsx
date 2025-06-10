@@ -60,7 +60,9 @@ const ProcessesPanel: FC = () => {
           />
           <ProcessesList
             processes={processes}
-            setSelectedPids={(pids) => setSelectedPids(pids)}
+            setSelectedPids={(pids) => {
+              setSelectedPids(pids);
+            }}
             selectedPids={selectedPids}
           />
         </>

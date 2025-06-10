@@ -49,7 +49,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
     })) ?? [];
 
   const formik = useFormik<FormProps>({
-    initialValues: getInitialValues(props, accessGroupOptions),
+    initialValues: getInitialValues(props),
     enableReinitialize: true,
     onSubmit: async (values) => {
       try {
@@ -140,6 +140,8 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
                 items.map(({ value }) => value),
               )
             }
+            isSortedAlphabetically={false}
+            hasSelectedItemsFirst={false}
             error={
               formik.touched.on_days &&
               typeof formik.errors.on_days === "string"

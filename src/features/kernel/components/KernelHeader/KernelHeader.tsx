@@ -5,10 +5,11 @@ import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import type { KernelManagementInfo } from "../../types";
 import classes from "./KernelHeader.module.scss";
+import { ResponsiveButtons } from "@/components/ui";
 
-const DowngradeKernelForm = lazy(() => import("../DowngradeKernelForm"));
-const UpgradeKernelForm = lazy(() => import("../UpgradeKernelForm"));
-const RestartInstanceForm = lazy(() => import("../RestartInstanceForm"));
+const DowngradeKernelForm = lazy(async () => import("../DowngradeKernelForm"));
+const UpgradeKernelForm = lazy(async () => import("../UpgradeKernelForm"));
+const RestartInstanceForm = lazy(async () => import("../RestartInstanceForm"));
 
 interface KernelHeaderProps {
   readonly instanceName: string;
@@ -71,18 +72,21 @@ const KernelHeader: FC<KernelHeaderProps> = ({
       <h2 className="p-heading--4 u-no-padding--top u-no-margin--bottom">
         Kernel overview
       </h2>
-      <div key="buttons" className="p-segmented-control">
-        <div className="p-segmented-control__list">
+      <ResponsiveButtons
+        collapseFrom="lg"
+        buttons={[
           <Button
+            key="restart-instance"
             hasIcon
             className="p-segmented-control__button"
             onClick={handleRestartInstance}
           >
             <Icon name="restart" />
             <span>Restart instance</span>
-          </Button>
+          </Button>,
 
           <Button
+            key="downgrade-kernel"
             hasIcon
             className="p-segmented-control__button"
             type="button"
@@ -91,9 +95,10 @@ const KernelHeader: FC<KernelHeaderProps> = ({
           >
             <Icon name="begin-downloading" />
             <span>Downgrade kernel</span>
-          </Button>
+          </Button>,
 
           <Button
+            key="upgrade-kernel"
             hasIcon
             className="p-segmented-control__button"
             type="button"
@@ -102,9 +107,9 @@ const KernelHeader: FC<KernelHeaderProps> = ({
           >
             <Icon name="change-version" />
             <span>Upgrade kernel</span>
-          </Button>
-        </div>
-      </div>
+          </Button>,
+        ]}
+      />
     </div>
   );
 };
