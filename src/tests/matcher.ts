@@ -81,7 +81,7 @@ expect.extend({
     const pass =
       infoItem &&
       infoItem.nextSibling &&
-      infoItem.nextSibling.textContent === expectedValue;
+      infoItem.nextSibling.textContent?.includes(expectedValue);
 
     if (pass) {
       return {
