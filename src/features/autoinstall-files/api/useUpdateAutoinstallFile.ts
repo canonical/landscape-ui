@@ -26,8 +26,12 @@ export const useUpdateAutoinstallFile = (): {
   >({
     mutationFn: async ({ id, ...params }) =>
       authFetch.patch(`autoinstall/${id}`, params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["autoinstallFiles"] }),
+    onSuccess: async (autoinstallFile) => {
+      await queryClient.invalidateQueries({ queryKey: ["autoinstallFiles"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["autoinstallFile", autoinstallFile.id],
+      });
+    },
   });
 
   return {

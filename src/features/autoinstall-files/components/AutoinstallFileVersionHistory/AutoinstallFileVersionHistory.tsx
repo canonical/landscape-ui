@@ -29,13 +29,13 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
 
   const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
     id: file.id,
-    with_versions: true,
+    with_metadata: true,
   });
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
 
-  const versions = autoinstallFile ? autoinstallFile.versions : [];
+  const versions = autoinstallFile ? autoinstallFile.metadata.versions : [];
 
   const currentVersions = versions.slice(
     currentPage - 1,

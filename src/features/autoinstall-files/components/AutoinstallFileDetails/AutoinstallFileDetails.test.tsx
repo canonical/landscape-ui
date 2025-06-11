@@ -9,11 +9,7 @@ describe("AutoinstallFileDetails", () => {
   const [file] = autoinstallFiles;
 
   const props: ComponentProps<typeof AutoinstallFileDetails> = {
-    edit: vi.fn(),
-    file,
-    remove: vi.fn(),
-    setAsDefault: vi.fn(),
-    viewVersionHistory: vi.fn(),
+    autoinstallFile: file,
   };
 
   it("should not render buttons for default file", async () => {
@@ -32,7 +28,7 @@ describe("AutoinstallFileDetails", () => {
     renderWithProviders(
       <AutoinstallFileDetails
         {...props}
-        file={{ ...file, is_default: false }}
+        autoinstallFile={{ ...file, is_default: false }}
       />,
     );
 
