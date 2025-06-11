@@ -120,7 +120,7 @@ const Navigation: FC = () => {
                     {item.items
                       .filter(
                         ({ path }) =>
-                          isOidcAvailable ||
+                          !isOidcAvailable ||
                           !path.includes("identity-providers"),
                       )
                       .filter(({ requiresFeature }) =>
