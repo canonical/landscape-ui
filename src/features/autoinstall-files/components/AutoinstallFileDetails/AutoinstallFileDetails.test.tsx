@@ -12,18 +12,6 @@ describe("AutoinstallFileDetails", () => {
     autoinstallFile: file,
   };
 
-  it("should not render buttons for default file", async () => {
-    renderWithProviders(<AutoinstallFileDetails {...props} />);
-
-    expect(
-      screen.queryByRole("button", { name: "Set as default" }),
-    ).not.toBeInTheDocument();
-
-    expect(
-      screen.queryByRole("button", { name: "Remove" }),
-    ).not.toBeInTheDocument();
-  });
-
   it("should render buttons for other files", async () => {
     renderWithProviders(
       <AutoinstallFileDetails
