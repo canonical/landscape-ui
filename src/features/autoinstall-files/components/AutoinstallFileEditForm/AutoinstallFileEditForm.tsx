@@ -1,7 +1,7 @@
-import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
 import LoadingState from "@/components/layout/LoadingState";
+import { pluralize } from "@/utils/_helpers";
+import { Notification } from "@canonical/react-components";
 import type { FC } from "react";
-import { useBoolean } from "usehooks-ts";
 import { useGetAutoinstallFile, useUpdateAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
 import AutoinstallFileForm from "../AutoinstallFileForm";
@@ -23,9 +23,6 @@ const AutoinstallFileEditForm: FC<AutoinstallFileEditFormProps> = ({
   });
   const { updateAutoinstallFile } = useUpdateAutoinstallFile();
 
-  const { value: isNotificationIgnored, setTrue: ignoreNotifification } =
-    useBoolean(false);
-
   if (isAutoinstallWithMetadataFileLoading || !autoinstallFileWithMetadata) {
     return <LoadingState />;
   }
@@ -33,35 +30,30 @@ const AutoinstallFileEditForm: FC<AutoinstallFileEditFormProps> = ({
   return (
     <>
       {autoinstallFileWithMetadata.metadata.max_versions <=
-        autoinstallFileWithMetadata.version &&
-        !isNotificationIgnored && (
-          <IgnorableNotifcation
-            inline
-            title="Edit history limit reached:"
-            severity="caution"
-            hide={ignoreNotifification}
-            storageKey="_landscape_isAuditModalIgnored"
-            modalProps={{
-              title: "Dismiss edit history limit acknowledgment",
-              confirmButtonAppearance: "positive",
-              confirmButtonLabel: "Dismiss",
-              checkboxProps: {
-                label:
-                  "I understand and acknowledge this policy. Don't show this message again.",
-              },
-            }}
-          >
-            <p>
-              You&apos;ve reached the maximum of{" "}
-              {autoinstallFileWithMetadata.metadata.max_versions} saved edits
-              for this file. To continue editing, the system will remove the
-              oldest version to make space for your new changes. This ensures
-              that the most recent{" "}
-              {autoinstallFileWithMetadata.metadata.max_versions}
-              versions are always retained in the history.
-            </p>
-          </IgnorableNotifcation>
-        )}
+        autoinstallFileWithMetadata.version && (
+        <Notification
+          inline
+          title="Edit history limit reached:"
+          severity="caution"
+        >
+          <p>
+            You&apos;ve reached the limit of{" "}
+            {autoinstallFileWithMetadata.metadata.max_versions} saved{" "}
+            {pluralize(
+              autoinstallFileWithMetadata.metadata.max_versions,
+              "edit",
+            )}
+            . To save your new change, the oldest version will be automatically
+            removed, keeping the most recent{" "}
+            {autoinstallFileWithMetadata.metadata.max_versions}{" "}
+            {pluralize(
+              autoinstallFileWithMetadata.metadata.max_versions,
+              "version",
+            )}{" "}
+            in history.
+          </p>
+        </Notification>
+      )}
 
       <AutoinstallFileForm
         buttonText="Save changes"
