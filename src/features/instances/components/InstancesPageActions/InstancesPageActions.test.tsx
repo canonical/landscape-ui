@@ -1,11 +1,11 @@
 import * as Constants from "@/constants";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { instances, ubuntuInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 const selected = instances.slice(0, 2);
 
@@ -30,7 +30,10 @@ describe("InstancesPageActions", () => {
 
   it("should render correctly", () => {
     const { container } = renderWithProviders(
-      <InstancesPageActions selected={selected} />,
+      <InstancesPageActions
+        isGettingInstances={false}
+        selectedInstances={selected}
+      />,
     );
 
     const buttons = screen.getAllByRole("button");
@@ -45,7 +48,12 @@ describe("InstancesPageActions", () => {
   });
 
   it("should disable buttons", () => {
-    renderWithProviders(<InstancesPageActions selected={[]} />);
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        selectedInstances={[]}
+      />,
+    );
 
     const buttons = screen.getAllByRole("button");
 
@@ -57,7 +65,12 @@ describe("InstancesPageActions", () => {
   });
 
   it("'View report' button should be visible when feature enabled", () => {
-    renderWithProviders(<InstancesPageActions selected={selected} />);
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        selectedInstances={selected}
+      />,
+    );
 
     const button = screen.queryByRole("button", { name: /view report/i });
     expect(button).toBeInTheDocument();
@@ -66,14 +79,24 @@ describe("InstancesPageActions", () => {
   it("'View report' button should not be visible when feature disabled", () => {
     vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
 
-    renderWithProviders(<InstancesPageActions selected={selected} />);
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        selectedInstances={selected}
+      />,
+    );
 
     const button = screen.queryByRole("button", { name: /view report/i });
     expect(button).not.toBeInTheDocument();
   });
 
   test("'View report' button should be visible when feature enabled", async () => {
-    renderWithProviders(<InstancesPageActions selected={selected} />);
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        selectedInstances={selected}
+      />,
+    );
 
     const button = screen.queryByRole("button", { name: /view report/i });
     expect(button).toBeInTheDocument();
@@ -82,7 +105,12 @@ describe("InstancesPageActions", () => {
   test("'View report' button should not be visible when feature disabled", async () => {
     vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
 
-    renderWithProviders(<InstancesPageActions selected={selected} />);
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        selectedInstances={selected}
+      />,
+    );
 
     const button = screen.queryByRole("button", { name: /view report/i });
     expect(button).not.toBeInTheDocument();
@@ -91,7 +119,8 @@ describe("InstancesPageActions", () => {
   it("'Upgrade' button should be enabled without upgrades info", async () => {
     renderWithProviders(
       <InstancesPageActions
-        selected={[
+        isGettingInstances={false}
+        selectedInstances={[
           {
             ...ubuntuInstance,
             upgrades: undefined,
@@ -106,7 +135,12 @@ describe("InstancesPageActions", () => {
 
   describe("should proper handle button clicks", () => {
     beforeEach(() => {
-      renderWithProviders(<InstancesPageActions selected={selected} />);
+      renderWithProviders(
+        <InstancesPageActions
+          isGettingInstances={false}
+          selectedInstances={selected}
+        />,
+      );
     });
 
     it("'Shutdown' button", async () => {
@@ -206,7 +240,10 @@ describe("InstancesPageActions", () => {
   describe("Run script form warning", () => {
     it("should appear when some invalid instances are selected", async () => {
       renderWithProviders(
-        <InstancesPageActions selected={instances.slice(9, 12)} />,
+        <InstancesPageActions
+          isGettingInstances={false}
+          selectedInstances={instances.slice(9, 12)}
+        />,
       );
 
       await userEvent.click(

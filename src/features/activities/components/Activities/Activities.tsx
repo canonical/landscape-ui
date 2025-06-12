@@ -2,7 +2,6 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
   Button,
@@ -15,52 +14,33 @@ import { lazy, Suspense, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { ACTIVITY_STATUSES } from "../../constants";
-import { useActivities, useOpenActivityDetails } from "../../hooks";
+import { useOpenActivityDetails } from "../../hooks";
 import type { ActivityCommon } from "../../types";
-import ActivitiesEmptyState from "../ActivitiesEmptyState";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
-import {
-  getDateQuery,
-  getStatusQuery,
-  getTypeQuery,
-  isActivitiesEmptyState,
-  isActivitiesLoadedState,
-  isActivitiesLoadingState,
-} from "./helpers";
 
 const ActivityDetails = lazy(
   async () => import("@/features/activities/components/ActivityDetails"),
 );
 
 interface ActivitiesProps {
-  readonly selected: ActivityCommon[];
-  readonly setSelected: (activities: ActivityCommon[]) => void;
+  readonly activities: ActivityCommon[];
+  readonly activitiesCount: number | undefined;
+  readonly isGettingActivities: boolean;
+  readonly selectedActivities: ActivityCommon[];
+  readonly setSelectedActivities: (activities: ActivityCommon[]) => void;
   readonly instanceId?: number;
 }
 
 const Activities: FC<ActivitiesProps> = ({
+  activities,
+  activitiesCount: activityCount,
   instanceId,
-  selected,
-  setSelected,
+  isGettingActivities,
+  selectedActivities,
+  setSelectedActivities,
 }) => {
-  const {
-    query,
-    search,
-    status,
-    fromDate,
-    toDate,
-    type,
-    currentPage,
-    pageSize,
-  } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
-  const { getActivitiesQuery } = useActivities();
-
-  const dateQuery = getDateQuery(fromDate, toDate);
-  const typeQuery = getTypeQuery(type);
-  const statusQuery = getStatusQuery(status);
-  const searchQuery = `${search} ${query}${statusQuery}${dateQuery}${typeQuery}`;
 
   const handleActivityDetailsOpen = (activity: ActivityCommon) => {
     setSidePanelContent(
@@ -74,33 +54,20 @@ const Activities: FC<ActivitiesProps> = ({
   useOpenActivityDetails(handleActivityDetailsOpen);
 
   const handleClearSelection = () => {
-    setSelected([]);
+    setSelectedActivities([]);
   };
 
-  const {
-    data: getActivitiesQueryResult,
-    isPending: getActivitiesQueryLoading,
-  } = getActivitiesQuery({
-    query:
-      `${instanceId ? `computer:id:${instanceId}` : ""} ${searchQuery ?? ""}`.trim(),
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-  });
-
-  const activities = useMemo(
-    () => getActivitiesQueryResult?.data.results ?? [],
-    [getActivitiesQueryResult],
-  );
-
   const toggleAll = () => {
-    setSelected(selected.length !== 0 ? [] : activities);
+    setSelectedActivities(selectedActivities.length !== 0 ? [] : activities);
   };
 
   const handleToggleActivity = (activity: ActivityCommon) => {
-    setSelected(
-      selected.includes(activity)
-        ? selected.filter((selectedActivity) => selectedActivity !== activity)
-        : [...selected, activity],
+    setSelectedActivities(
+      selectedActivities.includes(activity)
+        ? selectedActivities.filter(
+            (selectedActivity) => selectedActivity !== activity,
+          )
+        : [...selectedActivities, activity],
     );
   };
 
@@ -116,11 +83,14 @@ const Activities: FC<ActivitiesProps> = ({
               inline
               onChange={toggleAll}
               checked={
-                activities.length > 0 && selected.length === activities.length
+                activities.length > 0 &&
+                selectedActivities.length === activities.length
               }
               indeterminate={
-                selected.length > 0 && selected.length < activities.length
+                selectedActivities.length > 0 &&
+                selectedActivities.length < activities.length
               }
+              disabled={!activities.length}
             />
           ),
           Cell: ({ row }: CellProps<ActivityCommon>) => (
@@ -130,7 +100,7 @@ const Activities: FC<ActivitiesProps> = ({
               }
               inline
               labelClassName="u-no-margin--bottom u-no-padding--top"
-              checked={selected.includes(row.original)}
+              checked={selectedActivities.includes(row.original)}
               onChange={() => {
                 handleToggleActivity(row.original);
               }}
@@ -204,54 +174,29 @@ const Activities: FC<ActivitiesProps> = ({
           ),
         },
       ].filter((col) => !instanceId || col.accessor !== "computer_id"),
-    [activities, selected],
+    [activities, selectedActivities],
   );
 
   return (
     <>
-      {isActivitiesLoadingState({
-        currentPage,
-        getActivitiesQueryLoading,
-        pageSize,
-        searchQuery,
-      }) && <LoadingState />}
-
-      {isActivitiesEmptyState({
-        currentPage,
-        getActivitiesQueryLoading,
-        getActivitiesQueryResult,
-        pageSize,
-        searchQuery,
-      }) && <ActivitiesEmptyState />}
-
-      {isActivitiesLoadedState({
-        currentPage,
-        getActivitiesQueryLoading,
-        getActivitiesQueryResult,
-        pageSize,
-        searchQuery,
-      }) && (
-        <>
-          <ActivitiesHeader
-            resetSelectedIds={handleClearSelection}
-            selected={selected}
-          />
-          {getActivitiesQueryLoading ? (
-            <LoadingState />
-          ) : (
-            <ModularTable
-              emptyMsg="No activities found according to your search parameters."
-              columns={columns}
-              data={activities}
-            />
-          )}
-          <TablePagination
-            totalItems={getActivitiesQueryResult?.data.count}
-            currentItemCount={activities.length}
-            handleClearSelection={handleClearSelection}
-          />
-        </>
+      <ActivitiesHeader
+        resetSelectedIds={handleClearSelection}
+        selected={selectedActivities}
+      />
+      {isGettingActivities ? (
+        <LoadingState />
+      ) : (
+        <ModularTable
+          emptyMsg="No activities found according to your search parameters."
+          columns={columns}
+          data={activities}
+        />
       )}
+      <TablePagination
+        totalItems={activityCount}
+        currentItemCount={activities.length}
+        handleClearSelection={handleClearSelection}
+      />
     </>
   );
 };

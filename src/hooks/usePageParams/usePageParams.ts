@@ -16,7 +16,7 @@ const usePageParams = (): UsePageParamsReturnType => {
     if (sanitizedParams.toString() !== searchParams.toString()) {
       setSearchParams(sanitizedParams, { replace: true });
     }
-  }, [searchParams, setSearchParams, pageParamsManager]);
+  }, [searchParams, setSearchParams]);
 
   const parsedSearchParams = pageParamsManager.getParsedParams(searchParams);
 

@@ -1,72 +1,55 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { InstanceList, InstancesHeader } from "@/features/instances";
-import useInstances from "@/hooks/useInstances";
-import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import type { FC } from "react";
-import { useState } from "react";
-import { getQuery } from "./helpers";
+import { memo, useCallback, useState } from "react";
 
 interface InstancesContainerProps {
+  readonly instanceCount: number | undefined;
+  readonly instances: Instance[];
+  readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
   readonly setSelectedInstances: (instances: Instance[]) => void;
 }
 
-const InstancesContainer: FC<InstancesContainerProps> = ({
+const InstancesContainer = memo(function InstancesContainer({
+  instanceCount,
+  instances,
+  isGettingInstances,
   selectedInstances,
   setSelectedInstances,
-}) => {
+}: InstancesContainerProps) {
   const [columnFilterOptions, setColumnFilterOptions] = useState<
     ColumnFilterOption[]
   >([]);
-  const { currentPage, pageSize, groupBy, ...filters } = usePageParams();
-  const { getInstancesQuery } = useInstances();
 
-  const { data: getInstancesQueryResult, isLoading: getInstancesQueryLoading } =
-    getInstancesQuery({
-      query: getQuery(filters),
-      root_only: groupBy === "parent",
-      archived_only: filters.status === "archived",
-      with_alerts: true,
-      with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
-    });
-
-  const instances = getInstancesQueryResult?.data.results ?? [];
-
-  const handleClearSelection = () => {
+  const handleClearSelection = useCallback(() => {
     setSelectedInstances([]);
-  };
+  }, []);
 
   return (
     <>
       <InstancesHeader columnFilterOptions={columnFilterOptions} />
 
-      {getInstancesQueryLoading ? (
+      {isGettingInstances ? (
         <LoadingState />
       ) : (
         <InstanceList
           instances={instances}
           selectedInstances={selectedInstances}
-          setColumnFilterOptions={(options) => {
-            setColumnFilterOptions(options);
-          }}
-          setSelectedInstances={(newInstances) => {
-            setSelectedInstances(newInstances);
-          }}
+          setColumnFilterOptions={setColumnFilterOptions}
+          setSelectedInstances={setSelectedInstances}
         />
       )}
+
       <TablePagination
-        totalItems={getInstancesQueryResult?.data.count}
+        totalItems={instanceCount}
         handleClearSelection={handleClearSelection}
         currentItemCount={instances.length}
       />
     </>
   );
-};
+});
 
 export default InstancesContainer;

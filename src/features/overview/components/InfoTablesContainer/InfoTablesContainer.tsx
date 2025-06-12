@@ -4,7 +4,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
-import { useActivities } from "@/features/activities";
+import { useActivities, useGetActivities } from "@/features/activities";
 import type { Package } from "@/features/packages";
 import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
@@ -14,6 +14,7 @@ import useNotify from "@/hooks/useNotify";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   Col,
@@ -36,7 +37,6 @@ import {
   MAX_USN_COUNT,
 } from "./constants";
 import classes from "./InfoTablesContainer.module.scss";
-import { pluralize } from "@/utils/_helpers";
 
 const InfoTablesContainer: FC = () => {
   const [currentUpgradesTab, setCurrentUpgradesTab] = useState<
@@ -52,7 +52,7 @@ const InfoTablesContainer: FC = () => {
   const { getInstancesQuery } = useInstances();
   const { getPackagesQuery, upgradePackagesQuery } = usePackages();
   const { getUsnsQuery } = useUsns();
-  const { getActivitiesQuery, approveActivitiesQuery } = useActivities();
+  const { approveActivitiesQuery } = useActivities();
 
   const { mutateAsync: upgradePackages, isPending: isUpgrading } =
     upgradePackagesQuery;
@@ -63,27 +63,30 @@ const InfoTablesContainer: FC = () => {
   const [usnsLimit, setUsnsLimit] = useState(MAX_USN_COUNT);
 
   const {
-    data: unapprovedActivitiesRes = {
-      data: { results: [] as Activity[], count: 0 },
-    } as AxiosResponse<ApiPaginatedResponse<Activity>>,
-    refetch: refetchUnapprovedActivities,
-    isFetching: isFetchingUnapprovedActivitiesData,
-  } = getActivitiesQuery({
-    query: "status:unapproved",
-    limit: MAX_ACTIVITY_COUNT,
-  });
+    activities: unapprovedActivities,
+    activitiesCount: unapprovedActivitiesCount,
+    refetchActivities: refetchUnapprovedActivities,
+    isFetchingActivities: isFetchingUnapprovedActivities,
+  } = useGetActivities(
+    {
+      query: "status:unapproved",
+      limit: MAX_ACTIVITY_COUNT,
+    },
+    { listenToUrlParams: false },
+    { enabled: currentActivitiesTab === "unapproved" },
+  );
 
   const {
-    data: inProgressActivitiesRes = {
-      data: { results: [] as Activity[], count: 0 },
-    } as AxiosResponse<ApiPaginatedResponse<Activity>>,
-    refetch: refetchInProgressActivities,
-    isFetching: isFetchingInProgressActivitiesData,
-  } = getActivitiesQuery(
+    activities: inProgressActivities,
+    activitiesCount: inProgressActivitiesCount,
+    refetchActivities: refetchInProgressActivities,
+    isFetchingActivities: isFetchingInProgressActivities,
+  } = useGetActivities(
     {
       query: "status:delivered",
       limit: MAX_ACTIVITY_COUNT,
     },
+    { listenToUrlParams: false },
     {
       enabled: currentActivitiesTab === "inProgress",
     },
@@ -137,8 +140,6 @@ const InfoTablesContainer: FC = () => {
 
   const packagesData = packageDataRes.data.results;
   const usnsUpgradesData = usnsData.data.results;
-  const unapprovedActivitiesData = unapprovedActivitiesRes.data.results;
-  const inProgressActivitiesData = inProgressActivitiesRes.data.results;
 
   const getTotalTableItemsCount = (
     table: "activities" | "upgrades",
@@ -155,9 +156,9 @@ const InfoTablesContainer: FC = () => {
     } else {
       switch (currentActivitiesTab) {
         case "unapproved":
-          return unapprovedActivitiesRes.data.count;
+          return unapprovedActivitiesCount ?? 0;
         case "inProgress":
-          return inProgressActivitiesRes.data.count;
+          return inProgressActivitiesCount ?? 0;
       }
     }
   };
@@ -267,9 +268,9 @@ const InfoTablesContainer: FC = () => {
   const getActivitiesTableData = (): Activity[] => {
     switch (currentActivitiesTab) {
       case "unapproved":
-        return unapprovedActivitiesData;
+        return unapprovedActivities;
       case "inProgress":
-        return inProgressActivitiesData;
+        return inProgressActivities;
       default:
         return [];
     }
@@ -277,15 +278,15 @@ const InfoTablesContainer: FC = () => {
 
   const activitiesTableData = useMemo(
     () => getActivitiesTableData(),
-    [currentActivitiesTab, unapprovedActivitiesData, inProgressActivitiesData],
+    [currentActivitiesTab, unapprovedActivities, inProgressActivities],
   );
 
   const getIsLoadingActivities = (): boolean => {
     switch (currentActivitiesTab) {
       case "unapproved":
-        return isFetchingUnapprovedActivitiesData;
+        return isFetchingUnapprovedActivities;
       case "inProgress":
-        return isFetchingInProgressActivitiesData;
+        return isFetchingInProgressActivities;
       default:
         return false;
     }

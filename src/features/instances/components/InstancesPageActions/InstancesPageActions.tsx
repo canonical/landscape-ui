@@ -1,4 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { ResponsiveButtons } from "@/components/ui";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
@@ -6,19 +7,17 @@ import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationModal,
   ContextualMenu,
   Icon,
 } from "@canonical/react-components";
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
+import { lazy, memo, Suspense, useState } from "react";
 import { currentInstanceCan, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
-import { pluralize } from "@/utils/_helpers";
-import { ResponsiveButtons } from "@/components/ui";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -37,10 +36,14 @@ const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const TagsAddForm = lazy(async () => import("../TagsAddForm"));
 
 interface InstancesPageActionsProps {
-  readonly selected: Instance[];
+  readonly isGettingInstances: boolean;
+  readonly selectedInstances: Instance[];
 }
 
-const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
+const InstancesPageActions = memo(function InstancesPageActions({
+  isGettingInstances,
+  selectedInstances,
+}: InstancesPageActionsProps) {
   const debug = useDebug();
   const { notify } = useNotify();
   const { openActivityDetails } = useActivities();
@@ -70,17 +73,20 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
-        {selected.some(
+        {selectedInstances.some(
           (instance) => !currentInstanceCan("runScripts", instance),
         ) ? (
           <div className={classes.warning}>
-            <p>You selected {selected.length} instances. This script will:</p>
+            <p>
+              You selected {selectedInstances.length} instances. This script
+              will:
+            </p>
 
             <ul>
               <li>
                 run on{" "}
                 {createInstanceCountString(
-                  selected.filter((instance) =>
+                  selectedInstances.filter((instance) =>
                     currentInstanceCan("runScripts", instance),
                   ),
                 )}
@@ -88,7 +94,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
               <li>
                 not run on{" "}
                 {createInstanceCountString(
-                  selected.filter(
+                  selectedInstances.filter(
                     (instance) => !currentInstanceCan("runScripts", instance),
                   ),
                 )}
@@ -97,7 +103,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           </div>
         ) : null}
         <RunInstanceScriptForm
-          query={selected.map(({ id }) => `id:${id}`).join(" OR ")}
+          query={selectedInstances.map(({ id }) => `id:${id}`).join(" OR ")}
         />
       </Suspense>,
     );
@@ -106,7 +112,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
   const handleShutdownInstance = async () => {
     try {
       const { data: shutdownActivity } = await shutdownInstances({
-        computer_ids: selected.map(({ id }) => id),
+        computer_ids: selectedInstances.map(({ id }) => id),
       });
 
       notify.success(
@@ -115,7 +121,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           onDetailsClick: () => {
             openActivityDetails(shutdownActivity);
           },
-          selected,
+          selected: selectedInstances,
         }),
       );
     } catch (error) {
@@ -126,7 +132,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
   const handleRebootInstance = async () => {
     try {
       const { data: rebootActivity } = await rebootInstances({
-        computer_ids: selected.map(({ id }) => id),
+        computer_ids: selectedInstances.map(({ id }) => id),
       });
 
       notify.success(
@@ -135,7 +141,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           onDetailsClick: () => {
             openActivityDetails(rebootActivity);
           },
-          selected,
+          selected: selectedInstances,
         }),
       );
     } catch (error) {
@@ -147,7 +153,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
     setSidePanelContent(
       "Upgrades",
       <Suspense fallback={<LoadingState />}>
-        <Upgrades selectedInstances={selected} />
+        <Upgrades selectedInstances={selectedInstances} />
       </Suspense>,
       "large",
     );
@@ -155,9 +161,9 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${pluralize(selected.length, selected[0].title, `${selected.length} instances`)}`,
+      `Report for ${pluralize(selectedInstances.length, selectedInstances[0].title, `${selectedInstances.length} instances`)}`,
       <Suspense fallback={<LoadingState />}>
-        <ReportView instanceIds={selected.map(({ id }) => id)} />
+        <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
       </Suspense>,
       "medium",
     );
@@ -167,7 +173,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
     setSidePanelContent(
       "Assign access group",
       <Suspense fallback={<LoadingState />}>
-        <AccessGroupChange selected={selected} />
+        <AccessGroupChange selected={selectedInstances} />
       </Suspense>,
     );
   };
@@ -176,7 +182,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
     setSidePanelContent(
       "Assign tags",
       <Suspense fallback={<LoadingState />}>
-        <TagsAddForm selected={selected} />
+        <TagsAddForm selected={selectedInstances} />
       </Suspense>,
     );
   };
@@ -190,7 +196,11 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
             key="shutdown-instances"
             className="has-icon"
             type="button"
-            disabled={shutdownInstancesLoading || 0 === selected.length}
+            disabled={
+              shutdownInstancesLoading ||
+              0 === selectedInstances.length ||
+              isGettingInstances
+            }
             onClick={() => {
               setShutdownModalOpen(true);
             }}
@@ -202,7 +212,11 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
             key="reboot-instances"
             hasIcon
             type="button"
-            disabled={rebootInstancesLoading || 0 === selected.length}
+            disabled={
+              rebootInstancesLoading ||
+              0 === selectedInstances.length ||
+              isGettingInstances
+            }
             onClick={() => {
               setRebootModalOpen(true);
             }}
@@ -215,7 +229,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
               key="report-view"
               type="button"
               onClick={handleReportView}
-              disabled={0 === selected.length}
+              disabled={0 === selectedInstances.length}
             >
               <Icon name="status" />
               <span>View report</span>
@@ -226,9 +240,11 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
             type="button"
             hasIcon
             onClick={handleRunScript}
-            disabled={selected.every((instance) => {
-              return !currentInstanceCan("runScripts", instance);
-            })}
+            disabled={
+              selectedInstances.every((instance) => {
+                return !currentInstanceCan("runScripts", instance);
+              }) || isGettingInstances
+            }
           >
             <Icon name="code" />
             <span>Run script</span>
@@ -238,9 +254,11 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
             type="button"
             hasIcon
             onClick={handleUpgradesRequest}
-            disabled={selected.every(
-              (instance) => !hasUpgrades(instance.alerts),
-            )}
+            disabled={
+              selectedInstances.every(
+                (instance) => !hasUpgrades(instance.alerts),
+              ) || isGettingInstances
+            }
           >
             <Icon name="change-version" />
             <span>Upgrade</span>
@@ -267,7 +285,7 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           </>
         }
         toggleClassName="u-no-margin--bottom"
-        toggleDisabled={0 === selected.length}
+        toggleDisabled={0 === selectedInstances.length}
         dropdownProps={{ style: { zIndex: 10 } }}
       />
       {rebootModalOpen && (
@@ -283,8 +301,8 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           onConfirm={handleRebootInstance}
         >
           <p>
-            Are you sure you want to restart {selected.length}
-            {pluralize(selected.length, "instance")}?
+            Are you sure you want to restart {selectedInstances.length}
+            {pluralize(selectedInstances.length, "instance")}?
           </p>
         </ConfirmationModal>
       )}
@@ -301,13 +319,13 @@ const InstancesPageActions: FC<InstancesPageActionsProps> = ({ selected }) => {
           onConfirm={handleShutdownInstance}
         >
           <p>
-            Are you sure you want to shutdown {selected.length}
-            {pluralize(selected.length, "instance")}?
+            Are you sure you want to shutdown {selectedInstances.length}
+            {pluralize(selectedInstances.length, "instance")}?
           </p>
         </ConfirmationModal>
       )}
     </>
   );
-};
+});
 
 export default InstancesPageActions;

@@ -1,7 +1,7 @@
 import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { useActivities } from "@/features/activities";
+import { useGetActivities } from "@/features/activities";
 import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security-profiles";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -74,13 +74,13 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
     ),
   );
 
-  const { getActivitiesQuery } = useActivities();
-  const { data: getActivitiesQueryResponse } = getActivitiesQuery(
+  const { activities } = useGetActivities(
     {
-      query: pendingReports
+      query: `status:succeeded ${pendingReports
         .map((report) => `id:${report.activityId}`)
-        .join(" OR "),
+        .join(" OR ")}`,
     },
+    { listenToUrlParams: false },
     { enabled: !!pendingReports.length },
   );
 
@@ -132,11 +132,6 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
       </Suspense>,
     );
   };
-
-  const activities =
-    getActivitiesQueryResponse?.data.results.filter(
-      (activity) => activity.activity_status == "succeeded",
-    ) ?? [];
 
   return (
     <>
