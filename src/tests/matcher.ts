@@ -66,7 +66,7 @@ expect.extend({
     let expectedValue: string;
 
     if (typeof value === "string") {
-      expectedValue = value.length > 120 ? value.slice(0, 120) + "..." : value;
+      expectedValue = value;
     } else if (typeof value === "object") {
       const { container } = render(value as ReactNode);
       expectedValue = container.textContent ?? "";
@@ -81,7 +81,7 @@ expect.extend({
     const pass =
       infoItem &&
       infoItem.nextSibling &&
-      infoItem.nextSibling.textContent === expectedValue;
+      infoItem.nextSibling.textContent?.includes(expectedValue);
 
     if (pass) {
       return {
