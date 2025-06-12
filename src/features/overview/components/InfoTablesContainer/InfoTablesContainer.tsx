@@ -72,7 +72,7 @@ const InfoTablesContainer: FC = () => {
       query: "status:unapproved",
       limit: MAX_ACTIVITY_COUNT,
     },
-    undefined,
+    { listenToUrlParams: false },
     { enabled: currentActivitiesTab === "unapproved" },
   );
 
@@ -86,7 +86,7 @@ const InfoTablesContainer: FC = () => {
       query: "status:delivered",
       limit: MAX_ACTIVITY_COUNT,
     },
-    undefined,
+    { listenToUrlParams: false },
     {
       enabled: currentActivitiesTab === "inProgress",
     },
