@@ -11,6 +11,7 @@ import type { FC } from "react";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getAccessGroupOptions } from "./helpers";
 import type { AccessGroupChangeFormValues } from "./types";
+import { pluralize } from "@/utils/_helpers";
 
 interface AccessGroupChangeProps {
   readonly selected: Instance[];
@@ -44,7 +45,7 @@ const AccessGroupChange: FC<AccessGroupChangeProps> = ({ selected }) => {
 
       notify.success({
         title: "Access group changed",
-        message: `Access group for ${selected.length > 1 ? `${selected.length} instances` : `"${selected[0].title}" instance`} successfully changed to ${accessGroupOptions.find(({ value }) => value === access_group)?.label ?? ""}`,
+        message: `Access group for ${pluralize(selected.length, `"${selected[0]?.title ?? ""}" instance`, `${selected.length} instances`)} successfully changed to ${accessGroupOptions.find(({ value }) => value === access_group)?.label ?? ""}`,
       });
     } catch (error) {
       debug(error);

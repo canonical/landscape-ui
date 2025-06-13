@@ -55,7 +55,7 @@ const PocketSyncActivity: FC<PocketSyncActivityProps> = ({
   if (pocket.last_sync_status === "synced") {
     return (
       <span className="font-monospace">
-        {moment(pocket.last_sync_time).format(DISPLAY_DATE_TIME_FORMAT)};
+        {moment(pocket.last_sync_time).format(DISPLAY_DATE_TIME_FORMAT)}
       </span>
     );
   }

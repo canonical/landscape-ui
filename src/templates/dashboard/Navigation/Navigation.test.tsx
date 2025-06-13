@@ -70,6 +70,7 @@ const testMenuItem = (item: MenuItem, parentItem?: MenuItem) => {
     it(`should render ${item.label} page with ${item.requiresFeature} enabled${parentItem ? " under " + parentItem?.label : ""}`, () => {
       vi.mocked(useAuth, { partial: true }).mockReturnValue({
         ...authProps,
+        isOidcAvailable: false,
         isFeatureEnabled: (feature: FeatureKey) =>
           feature === item.requiresFeature,
       });

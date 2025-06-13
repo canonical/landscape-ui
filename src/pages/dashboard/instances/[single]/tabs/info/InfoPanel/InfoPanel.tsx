@@ -110,6 +110,11 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { mutateAsync: sanitizeInstance, isPending: isSanitizing } =
     sanitizeInstanceQuery;
 
+  const tagsChanged =
+    instanceTags.length !== instance.tags.length ||
+    instanceTags.some((tag) => !instance.tags.includes(tag)) ||
+    instance.tags.some((tag) => !instanceTags.includes(tag));
+
   const handleSubmit = async (values: ModalConfirmationFormProps) => {
     if (!values.action) {
       return;
@@ -430,7 +435,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               type="button"
               className="u-no-margin--bottom"
               onClick={handleTagsUpdate}
-              disabled={isSecurityProfilesLoading}
+              disabled={isSecurityProfilesLoading || !tagsChanged}
             >
               Update
             </Button>

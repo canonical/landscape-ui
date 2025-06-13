@@ -61,12 +61,12 @@ const AssignAutoInstallFileForm: FC<AssignAutoInstallFileFormProps> = ({
     notify.success({
       title: `Successfully reassigned ${filename} to ${pluralize(
         employeeGroups.length,
-        `${employeeGroups[0].name} group`,
+        `${employeeGroups[0]?.name ?? "1"} group`,
         `${employeeGroups.length} groups`,
       )}.`,
       message: `Autoinstall file assigned to ${affectedEmployeesAmount} employees${pluralize(
         employeeGroups.length,
-        ` in ${employeeGroups[0].name} group`,
+        ` in ${employeeGroups[0]?.name ?? "1"} group`,
         ` across ${employeeGroups.length} groups`,
       )}.`,
     });
