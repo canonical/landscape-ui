@@ -1,6 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import NoData from "@/components/layout/NoData";
-import { Link, ModularTable } from "@canonical/react-components";
+import { Link } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -8,6 +8,7 @@ import type { Fix } from "../../types";
 import { EMPTY_TABLE_MESSAGE } from "./constants";
 import { generateCveLink, handleCellProps } from "./helpers";
 import classes from "./KernelTableList.module.scss";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface KernelTableListProps {
   readonly kernelData: Fix[];
@@ -75,7 +76,7 @@ const KernelTableList: FC<KernelTableListProps> = ({ kernelData }) => {
             Patches discovered since last restart
           </h3>
 
-          <ModularTable
+          <ResponsiveTable
             columns={columns}
             data={kernelData}
             getCellProps={handleCellProps}

@@ -6,7 +6,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { Button, ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
@@ -16,6 +16,7 @@ import RebootProfilesListActions from "../RebootProfilesListActions";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { getCellProps, getRowProps } from "./helpers";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const RebootProfileDetails = lazy(
   async () => import("../RebootProfileDetails"),
@@ -146,7 +147,7 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
 
   return (
     <div ref={getTableRowsRef}>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={filteredProfiles}
         emptyMsg={`No profiles found with the search: "${search}"`}

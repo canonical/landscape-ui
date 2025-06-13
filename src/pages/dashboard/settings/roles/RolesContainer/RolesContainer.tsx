@@ -44,14 +44,14 @@ const RolesContainer: FC = () => {
                 type="button"
                 key="add"
                 appearance="positive"
-                onClick={() =>
+                onClick={() => {
                   setSidePanelContent(
                     "Add role",
                     <Suspense fallback={<LoadingState />}>
                       <AddRoleForm />
                     </Suspense>,
-                  )
-                }
+                  );
+                }}
               >
                 Add role
               </Button>,

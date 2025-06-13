@@ -6,7 +6,7 @@ import { useUpdateSecurityProfile } from "@/features/security-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, ModularTable, Tooltip } from "@canonical/react-components";
+import { Button, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
@@ -30,6 +30,7 @@ import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
 import SecurityProfileListActions from "../SecurityProfileListActions";
 import { getInitialValues, getNotificationMessage } from "./helpers";
 import classes from "./SecurityProfilesList.module.scss";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const SecurityProfileRunFixForm = lazy(
   async () => import("../SecurityProfileRunFixForm"),
@@ -515,10 +516,11 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
 
   return (
     <>
-      <ModularTable
+      <ResponsiveTable
         emptyMsg="No security profiles found according to your search parameters."
         columns={columns}
         data={securityProfiles}
+        minWidth={1200}
       />
 
       {modalProfile && (

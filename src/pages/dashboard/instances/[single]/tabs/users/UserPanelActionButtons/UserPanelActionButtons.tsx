@@ -139,7 +139,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           </Button>
         )}
         <ResponsiveButtons
-          collapseFrom="lg"
+          collapseFrom={!sidePanel ? "lg" : undefined}
           buttons={[
             (user?.enabled || !sidePanel) && (
               <Button

@@ -1,8 +1,9 @@
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import { CheckboxInput } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { Process } from "../../types";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface ProcessesListProps {
   readonly processes: Process[];
@@ -100,7 +101,7 @@ const ProcessesList: FC<ProcessesListProps> = ({
   );
 
   return (
-    <ModularTable
+    <ResponsiveTable
       columns={columns}
       data={processes}
       emptyMsg="No processes found"

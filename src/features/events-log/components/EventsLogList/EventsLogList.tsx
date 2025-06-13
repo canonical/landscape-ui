@@ -1,7 +1,6 @@
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
-import { ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -9,6 +8,7 @@ import type { CellProps, Column } from "react-table";
 import type { EventLog } from "../../types";
 import classes from "./EventsLogList.module.scss";
 import { getCellProps, getRowProps } from "./helpers";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface EventsLogListProps {
   readonly eventsLog: EventLog[];
@@ -66,12 +66,13 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
 
   return (
     <div ref={getTableRowsRef}>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={eventsLog}
         emptyMsg="No events found according to your search parameters."
         getCellProps={getCellProps(expandedRowIndex)}
         getRowProps={getRowProps(expandedRowIndex)}
+        minWidth={1200}
       />
     </div>
   );

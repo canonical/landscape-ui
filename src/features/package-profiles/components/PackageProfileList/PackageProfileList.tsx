@@ -4,12 +4,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import {
-  Button,
-  Icon,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
+import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -22,6 +17,7 @@ import classes from "./PackageProfileList.module.scss";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { pluralize } from "@/utils/_helpers";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface PackageProfileListProps {
   readonly packageProfiles: PackageProfile[];
@@ -175,12 +171,13 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
 
   return (
     <div ref={getTableRowsRef}>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={profiles}
         emptyMsg={`No package profiles found with the search "${search}"`}
         getCellProps={getCellProps(expandedRowIndex)}
         getRowProps={getRowProps(expandedRowIndex)}
+        minWidth={1200}
       />
     </div>
   );

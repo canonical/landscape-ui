@@ -31,9 +31,8 @@ const propsWithSyncedLastSyncStatus: ComponentProps<typeof PocketSyncActivity> =
   {
     ...commonProps,
     pocket:
-      pockets.find(
-        (p) => p.mode !== "upload" && p.last_sync_status === "synced",
-      ) ?? pockets[0],
+      pockets.find((p) => p.mode !== "upload" && Boolean(p.last_sync_time)) ??
+      pockets[0],
   };
 
 const propsWithInProgressLastSyncStatus: ComponentProps<

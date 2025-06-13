@@ -9,7 +9,6 @@ import {
   Button,
   CheckboxInput,
   ConfirmationModal,
-  ModularTable,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
@@ -32,6 +31,7 @@ import {
 } from "./constants";
 import { getCellProps, getRowProps } from "./helpers";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const AutoinstallFileDetails = lazy(
   async () => import("../AutoinstallFileDetails"),
@@ -305,7 +305,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   return (
     <>
       <div ref={getTableRowsRef}>
-        <ModularTable
+        <ResponsiveTable
           columns={columns}
           data={autoinstallFiles}
           emptyMsg="No autoinstall files found according to your search parameters."

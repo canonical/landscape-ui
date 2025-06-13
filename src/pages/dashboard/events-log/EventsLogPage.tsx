@@ -47,12 +47,12 @@ const EventsLogPage: FC = () => {
           <Button
             type="button"
             key="download-as-cv"
-            onClick={() =>
+            onClick={() => {
               downloadCSV(
                 eventsLog,
                 `Event Log - ${user.current_account}-${moment().format("YYYY-MM-DDTHH mm ss[Z]")}.csv`,
-              )
-            }
+              );
+            }}
           >
             Download as CSV
           </Button>,

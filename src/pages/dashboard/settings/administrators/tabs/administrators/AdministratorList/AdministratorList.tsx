@@ -5,12 +5,13 @@ import EditAdministratorForm from "@/pages/dashboard/settings/administrators/tab
 import type { Administrator } from "@/types/Administrator";
 import type { Role } from "@/types/Role";
 import type { SelectOption } from "@/types/SelectOption";
-import { Button, ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import type { FC, HTMLProps } from "react";
 import { useMemo } from "react";
 import type { Cell, CellProps, Column, TableCellProps } from "react-table";
 import AdministratorListActions from "../AdministratorListActions";
 import classes from "./AdministratorList.module.scss";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface AdministratorListProps {
   readonly administrators: Administrator[];
@@ -104,7 +105,7 @@ const AdministratorList: FC<AdministratorListProps> = ({
   };
 
   return (
-    <ModularTable
+    <ResponsiveTable
       columns={columns}
       data={administratorsData}
       getCellProps={handleCellProps}

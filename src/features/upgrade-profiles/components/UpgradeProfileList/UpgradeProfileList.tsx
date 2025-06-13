@@ -5,7 +5,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { Button, ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -14,6 +14,7 @@ import UpgradeProfileListActions from "../UpgradeProfileListActions";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { getCellProps, getRowProps } from "./helpers";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const UpgradeProfileDetails = lazy(
   async () => import("../UpgradeProfileDetails"),
@@ -126,7 +127,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
 
   return (
     <div ref={getTableRowsRef}>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={filteredProfiles}
         emptyMsg={`No upgrade profiles found with the search: "${search}"`}

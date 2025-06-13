@@ -4,12 +4,7 @@ import NoData from "@/components/layout/NoData";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { ExpandedCell } from "@/types/ExpandedCell";
-import {
-  Button,
-  Icon,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
+import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
@@ -20,6 +15,7 @@ import type { Employee } from "../../types";
 import EmployeeListActions from "../EmployeeListActions";
 import classes from "./EmployeeList.module.scss";
 import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const EmployeeDetails = lazy(async () => import("../EmployeeDetails"));
 
@@ -195,12 +191,13 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
 
   return (
     <div ref={getTableRows(tableRowsRef)}>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={employees}
         getCellProps={handleCellProps(expandedCell)}
         getRowProps={handleRowProps(expandedCell)}
         emptyMsg="No employees found according to your search parameters."
+        minWidth={1200}
       />
     </div>
   );

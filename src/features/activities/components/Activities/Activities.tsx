@@ -3,11 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import {
-  Button,
-  CheckboxInput,
-  ModularTable,
-} from "@canonical/react-components";
+import { Button, CheckboxInput } from "@canonical/react-components";
 import moment from "moment/moment";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
@@ -18,6 +14,7 @@ import { useOpenActivityDetails } from "../../hooks";
 import type { ActivityCommon } from "../../types";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const ActivityDetails = lazy(
   async () => import("@/features/activities/components/ActivityDetails"),
@@ -186,7 +183,7 @@ const Activities: FC<ActivitiesProps> = ({
       {isGettingActivities ? (
         <LoadingState />
       ) : (
-        <ModularTable
+        <ResponsiveTable
           emptyMsg="No activities found according to your search parameters."
           columns={columns}
           data={activities}

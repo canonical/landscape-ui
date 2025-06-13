@@ -4,7 +4,7 @@ import NoData from "@/components/layout/NoData";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -13,6 +13,7 @@ import RemovalProfileListActions from "../RemovalProfileListActions";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import { getCellProps, getRowProps } from "./helpers";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const RemovalProfileDetails = lazy(
   async () => import("../RemovalProfileDetails"),
@@ -126,7 +127,7 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
 
   return (
     <div ref={getTableRowsRef}>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={filteredProfiles}
         emptyMsg={`No removal profiles found with the search: "${search}"`}

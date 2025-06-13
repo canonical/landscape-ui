@@ -3,11 +3,12 @@ import useInvitations from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Invitation } from "@/types/Invitation";
-import { ConfirmationButton, ModularTable } from "@canonical/react-components";
+import { ConfirmationButton } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, HTMLProps } from "react";
 import { useMemo } from "react";
 import type { Cell, CellProps, Column, TableCellProps } from "react-table";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const InvitesPanel: FC = () => {
   const debug = useDebug();
@@ -162,7 +163,7 @@ const InvitesPanel: FC = () => {
       <p className="u-text--muted p-text--small">
         Unclaimed invitations expire after 14 days.
       </p>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={invitations}
         getCellProps={handleCellProps}

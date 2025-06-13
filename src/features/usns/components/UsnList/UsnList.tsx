@@ -4,11 +4,7 @@ import type { FC } from "react";
 import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
-import {
-  Button,
-  CheckboxInput,
-  ModularTable,
-} from "@canonical/react-components";
+import { Button, CheckboxInput } from "@canonical/react-components";
 import ExpandableTable from "@/components/layout/ExpandableTable";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
@@ -27,6 +23,7 @@ import {
 } from "./helpers";
 import type { ExpandedCell } from "@/types/ExpandedCell";
 import classes from "./UsnList.module.scss";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 type UsnListProps = {
   readonly instances: Instance[];
@@ -325,7 +322,7 @@ const UsnList: FC<UsnListProps> = ({
         />
       ) : (
         <>
-          <ModularTable
+          <ResponsiveTable
             columns={securityIssueColumns}
             data={securityIssues}
             getCellProps={handleCellProps({ expandedCell, isUsnsLoading })}
