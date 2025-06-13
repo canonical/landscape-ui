@@ -8,12 +8,9 @@ import { Col, Row } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { Link } from "react-router";
-import {
-  getAssociatedInstancesLink,
-  getStatusText,
-  getTriggerLongText,
-} from "../../helpers";
+import { getStatusText, getTriggerLongText } from "../../helpers";
 import type { ScriptProfile } from "../../types";
+import ScriptProfileAssociatedInstancesLink from "../ScriptProfileAssociatedInstancesLink";
 import classes from "./ScriptProfileInfo.module.scss";
 
 interface ScriptProfileInfoProps {
@@ -133,7 +130,9 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
       <Row className="u-no-padding">
         <InfoItem
           label="Associated instances"
-          value={getAssociatedInstancesLink(profile)}
+          value={
+            <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
+          }
         />
       </Row>
 

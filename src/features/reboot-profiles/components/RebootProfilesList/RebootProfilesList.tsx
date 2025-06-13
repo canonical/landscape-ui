@@ -1,7 +1,9 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -12,9 +14,8 @@ import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RebootProfile } from "../../types";
+import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import RebootProfilesListActions from "../RebootProfilesListActions";
-import { useExpandableRow } from "@/hooks/useExpandableRow";
-import TruncatedCell from "@/components/layout/TruncatedCell";
 import { getCellProps, getRowProps } from "./helpers";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
@@ -117,12 +118,11 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       {
         accessor: "associated",
         Header: "associated",
-        Cell: ({ row }: CellProps<RebootProfile>) =>
-          row.original.num_computers ? (
-            <>{row.original.num_computers} instances</>
-          ) : (
-            <NoData />
-          ),
+        Cell: ({
+          row: { original: rebootProfile },
+        }: CellProps<RebootProfile>) => (
+          <RebootProfileAssociatedInstancesLink rebootProfile={rebootProfile} />
+        ),
       },
       {
         accessor: "scheduled_reboot",

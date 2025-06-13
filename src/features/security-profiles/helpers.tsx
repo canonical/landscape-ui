@@ -4,12 +4,10 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { NotificationHelper } from "@/types/Notification";
 import { Icon, Tooltip } from "@canonical/react-components";
 import moment from "moment";
-import { Link } from "react-router";
 import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "./constants";
 import classes from "./helpers.module.scss";
 import type { SecurityProfile } from "./types";
 import type { SecurityProfileFormValues } from "./types/SecurityProfileAddFormValues";
-import { pluralize } from "@/utils/_helpers";
 
 export const phrase = (strings: string[] = []) => {
   return `${strings.slice(0, -1).join(", ")}${strings.length > 2 ? "," : ""}${strings.length > 1 ? " and " : ""}${strings.slice(-1)}`;
@@ -37,25 +35,6 @@ export const notifyCreation = (
     title: `You have successfully created ${values.title} security profile.`,
     message: `This profile will ${phrase(notificationMessageParts)}.`,
   });
-};
-
-export const getAssociatedInstancesLink = (profile: SecurityProfile) => {
-  const search = [`query=security-profile%3A${profile.id}`];
-
-  return profile.tags.length || profile.all_computers ? (
-    <Link
-      className={classes.link}
-      to={{
-        pathname: "/instances",
-        search: `?${search.join("&")}`,
-      }}
-    >
-      {profile.associated_instances ?? 0}{" "}
-      {pluralize(profile.associated_instances, "instance")}
-    </Link>
-  ) : (
-    <NoData />
-  );
 };
 
 export const getTags = (profile: SecurityProfile) =>

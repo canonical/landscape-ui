@@ -18,15 +18,10 @@ import {
   useRunSecurityProfile,
 } from "../../api";
 import { SECURITY_PROFILE_MODE_LABELS } from "../../constants";
-import {
-  getAssociatedInstancesLink,
-  getSchedule,
-  getStatus,
-  getTags,
-  notifyCreation,
-} from "../../helpers";
+import { getSchedule, getStatus, getTags, notifyCreation } from "../../helpers";
 import type { SecurityProfile, SecurityProfileActions } from "../../types";
 import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
+import SecurityProfileAssociatedInstancesLink from "../SecurityProfileAssociatedInstancesLink";
 import SecurityProfileListActions from "../SecurityProfileListActions";
 import { getInitialValues, getNotificationMessage } from "./helpers";
 import classes from "./SecurityProfilesList.module.scss";
@@ -428,7 +423,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <>
             <div className={classes.ellipsis}>
-              {getAssociatedInstancesLink(profile)}
+              <SecurityProfileAssociatedInstancesLink
+                securityProfile={profile}
+              />
               <br />
               {getTags(profile)}
             </div>

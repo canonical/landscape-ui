@@ -1,23 +1,24 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { PackageProfile } from "../../types";
+import PackageProfileAssociatedInstancesLink from "../PackageProfileAssociatedInstancesLink";
 import PackageProfileDetails from "../PackageProfileDetails";
 import PackageProfileListActions from "../PackageProfileListActions";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./PackageProfileList.module.scss";
-import { useExpandableRow } from "@/hooks/useExpandableRow";
-import TruncatedCell from "@/components/layout/TruncatedCell";
-import { pluralize } from "@/utils/_helpers";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface PackageProfileListProps {
   readonly packageProfiles: PackageProfile[];
@@ -153,10 +154,12 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       {
         accessor: "computers['constrained']",
         Header: "Associated",
-        Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
-          <>
-            {`${original.computers["constrained"].length} ${pluralize(original.computers["constrained"].length, "instance")}`}
-          </>
+        Cell: ({
+          row: { original: packageProfile },
+        }: CellProps<PackageProfile>) => (
+          <PackageProfileAssociatedInstancesLink
+            packageProfile={packageProfile}
+          />
         ),
       },
       {

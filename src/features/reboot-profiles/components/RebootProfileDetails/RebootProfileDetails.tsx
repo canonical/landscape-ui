@@ -12,9 +12,9 @@ import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { useRemoveRebootProfileQuery } from "../../api";
 import type { RebootProfile } from "../../types";
+import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import { formatWeeklyRebootSchedule } from "./helpers";
 import classes from "./RebootProfileDetails.module.scss";
-import { pluralize } from "@/utils/_helpers";
 
 const RebootProfilesForm = lazy(async () => import("../RebootProfilesForm"));
 
@@ -158,7 +158,9 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
             <InfoItem label="Tags" value={profile.tags.join(", ")} />
             <InfoItem
               label="associated instances"
-              value={`${profile.num_computers} ${pluralize(profile.num_computers, "instance")}`}
+              value={
+                <RebootProfileAssociatedInstancesLink rebootProfile={profile} />
+              }
             />
           </>
         )}

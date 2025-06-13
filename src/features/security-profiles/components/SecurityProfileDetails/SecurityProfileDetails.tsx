@@ -3,6 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useRoles from "@/hooks/useRoles";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Col, Icon, Row } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -11,7 +12,6 @@ import {
   SECURITY_PROFILE_MODE_LABELS,
 } from "../../constants";
 import {
-  getAssociatedInstancesLink,
   getSchedule,
   getStatus,
   getTags,
@@ -19,7 +19,7 @@ import {
 } from "../../helpers";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
-import { pluralize } from "@/utils/_helpers";
+import SecurityProfileAssociatedInstancesLink from "../SecurityProfileAssociatedInstancesLink";
 
 interface SecurityProfileDetailsProps {
   readonly actions: SecurityProfileActions;
@@ -205,7 +205,9 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
       <Row className="u-no-padding">
         <InfoItem
           label="Associated instances"
-          value={getAssociatedInstancesLink(profile)}
+          value={
+            <SecurityProfileAssociatedInstancesLink securityProfile={profile} />
+          }
         />
       </Row>
 
