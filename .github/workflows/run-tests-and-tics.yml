@@ -98,6 +98,6 @@ jobs:
         with:
           project: landscape-dashboard
           viewerUrl: https://canonical.tiobe.com/tiobeweb/TICS/api/cfg?name=default
-          ticsAuthToken: ${{ secrets.TICS_AUTH_TOKEN }}
+          ticsAuthToken: ${{ secrets.TICSAUTHTOKEN }}
           installTics: true
 

@@ -50,7 +50,7 @@ jobs:
           path: ${{ github.workspace }}/coverage
       - name: TICS report
         env:
-          TICSAUTHTOKEN: ${{ secrets.TICS_AUTH_TOKEN }}
+          TICSAUTHTOKEN: ${{ secrets.TICSAUTHTOKEN }}
         run: |
           set -x
           . ui/.venv-gh/bin/activate
