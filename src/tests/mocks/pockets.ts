@@ -237,7 +237,7 @@ export const pockets: Pocket[] = [
       summary: "",
       type: "sync",
     },
-    last_sync_time: "",
+    last_sync_time: "2024-12-01T14:30:00Z",
     last_sync_status: "synced",
     last_sync_status_message: "",
     mirror_suite: "",

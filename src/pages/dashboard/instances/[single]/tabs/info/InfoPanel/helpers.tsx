@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import moment from "moment/moment";
 import type { InfoItemProps } from "@/components/layout/InfoItem";
 import NoData from "@/components/layout/NoData";
@@ -69,10 +70,10 @@ export const getInstanceInfoItems = (
       value: instance.annotations ? (
         Object.entries(instance.annotations).map(
           ([key, value], index, array) => (
-            <>
+            <Fragment key={key}>
               <span>{`${key}: ${value}`}</span>
               {index < array.length - 1 && <br />}
-            </>
+            </Fragment>
           ),
         )
       ) : (

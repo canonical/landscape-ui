@@ -1,6 +1,7 @@
 import moment from "moment/moment";
 import * as Yup from "yup";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
+import { pluralize } from "@/utils/_helpers";
 
 export const getValidationSchema = (action: InstalledPackageAction) =>
   Yup.object({
@@ -32,8 +33,11 @@ export const getActionInfo = (
   packages: InstancePackage[],
   action: "hold" | "unhold",
 ) => {
-  const title =
-    packages.length > 1 ? "selected packages" : `${packages[0].name} Package`;
+  const title = pluralize(
+    packages.length,
+    `${packages[0]?.name ?? ""} Package`,
+    "selected packages",
+  );
 
   return `This will ${action === "hold" ? "disable" : "enable"} upgrades for the ${title}. It will ${action === "hold" ? "not " : ""}be eligible to upgrade to the latest available version.`;
 };
@@ -43,10 +47,11 @@ export const getActionSuccessNotificationProps = (
   packages: InstancePackage[],
   version: string,
 ) => {
-  const itemTitle =
-    packages.length > 1
-      ? `${packages.length} packages`
-      : `${packages[0].name} Package`;
+  const itemTitle = pluralize(
+    packages.length,
+    `${packages[0]?.name ?? ""} Package`,
+    "selected packages",
+  );
 
   const titleEnding: Record<InstalledPackageAction, string> = {
     downgrade: "downgrade",

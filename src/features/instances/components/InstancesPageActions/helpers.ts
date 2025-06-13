@@ -1,5 +1,6 @@
 import type { NotificationMethodArgs } from "@/types/Notification";
 import type { Instance } from "@/types/Instance";
+import { pluralize } from "@/utils/_helpers";
 
 type GetNotificationArgsFn = (params: {
   action: "reboot" | "shutdown";
@@ -13,8 +14,8 @@ export const getNotificationArgs: GetNotificationArgsFn = ({
   selected,
 }) => {
   return {
-    title: `Selected ${selected.length > 1 ? "instances have" : "instance has"} been queued for ${action}.`,
-    message: `${selected.length > 1 ? `${selected.length} instances have` : `"${selected[0].title}" instance has`} been queued in Activities for ${action}.`,
+    title: `Selected ${pluralize(selected.length, "instance has", "instances have")} been queued for ${action}.`,
+    message: `${pluralize(selected.length, `"${selected[0]?.title ?? ""}" instance has`, `${selected.length} instances have`)} been queued in Activities for ${action}.`,
     actions: [
       {
         label: "View details",

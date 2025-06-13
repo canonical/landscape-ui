@@ -40,7 +40,7 @@ const PermissionBlock: FC<PermissionBlockProps> = ({
     return (
       option.values.view === "" ||
       permissions.includes(
-        options.filter(({ label }) => label === option.label)[0].values.manage,
+        options.filter(({ label }) => label === option.label)[0]?.values.manage,
       )
     );
   };
@@ -101,7 +101,9 @@ const PermissionBlock: FC<PermissionBlockProps> = ({
               row.original.values.view === "" ||
               permissions.includes(row.original.values.view)
             }
-            onChange={() => handlePermissionChange(row.original, "view")}
+            onChange={() => {
+              handlePermissionChange(row.original, "view");
+            }}
           />
         ),
       },
@@ -119,7 +121,9 @@ const PermissionBlock: FC<PermissionBlockProps> = ({
             value={row.original.values.manage}
             disabled={row.original.values.manage === ""}
             checked={permissions.includes(row.original.values.manage)}
-            onChange={() => handlePermissionChange(row.original, "manage")}
+            onChange={() => {
+              handlePermissionChange(row.original, "manage");
+            }}
           />
         ),
       },

@@ -27,7 +27,7 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
   ) => {
     const titleEnding = pluralize(
       selectedPackages.length,
-      selectedPackages[0].name,
+      selectedPackages[0]?.name ?? "",
       `${selectedPackages.length} selected packages`,
     );
 

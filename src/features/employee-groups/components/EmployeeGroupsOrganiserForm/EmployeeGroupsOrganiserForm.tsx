@@ -51,7 +51,7 @@ const EmployeeGroupsOrganiserForm: FC<EmployeeGroupsOrganiserFormProps> = ({
 
       const message = pluralize(
         updatedGroups.length,
-        `You've successfully updated priority for the ${updatedGroups[0].name} group.`,
+        `You've successfully updated priority for the ${updatedGroups[0]?.name ?? ""} group.`,
         `You've successfully updated priorities for ${updatedGroups.length} ${pluralize(updatedGroups.length, "group")}.`,
       );
 

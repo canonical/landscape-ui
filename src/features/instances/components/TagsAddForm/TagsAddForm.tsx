@@ -15,6 +15,7 @@ import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useTaggedSecurityProfiles } from "../../hooks";
 import TagsAddConfirmationModal from "../TagsAddConfirmationModal";
+import { pluralize } from "@/utils/_helpers";
 
 interface TagsAddFormProps {
   readonly selected: Instance[];
@@ -53,11 +54,11 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
       notify.success({
         title: "Tags assigned",
-        message: `Tags successfully assigned to ${
-          selected.length > 1
-            ? `${selected.length} instances`
-            : `"${selected[0].title}" instance`
-        }`,
+        message: `Tags successfully assigned to ${pluralize(
+          selected.length,
+          `"${selected[0]?.title ?? ""}" instance`,
+          `${selected.length} instances`,
+        )}`,
       });
     } catch (error) {
       debug(error);

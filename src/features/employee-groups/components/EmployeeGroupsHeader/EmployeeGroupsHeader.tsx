@@ -76,7 +76,7 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
   const handleAssignAutoinstallFile = () => {
     const formTitle = pluralize(
       selectedGroups.length,
-      `Reassign autoinstall file to ${selectedGroups[0].name}`,
+      `Reassign autoinstall file to ${selectedGroups[0]?.name ?? "employee group"}`,
       `Reassign autoinstall files to ${selectedGroups.length} employee groups`,
     );
 

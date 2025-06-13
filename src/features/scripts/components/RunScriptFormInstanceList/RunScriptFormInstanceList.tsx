@@ -36,11 +36,7 @@ const RunScriptFormInstanceList: FC<RunScriptFormInstanceListProps> = ({
 
   return (
     <>
-      <ModularTable
-        columns={columns}
-        data={currentInstances}
-        className={classes.table}
-      />
+      <ModularTable columns={columns} data={currentInstances} />
 
       <TablePaginationBase
         className={classes.pagination}

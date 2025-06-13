@@ -98,7 +98,11 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       <HeaderWithSearch
         actions={
           <div className={classes.cta}>
-            <Button type="button" onClick={handleWslInstanceInstall}>
+            <Button
+              type="button"
+              onClick={handleWslInstanceInstall}
+              className="u-no-margin--bottom"
+            >
               <span>Create new instance</span>
             </Button>
 
@@ -106,7 +110,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
               <div className="p-segmented-control__list">
                 <Button
                   type="button"
-                  className="p-segmented-control__button"
+                  className="p-segmented-control__button u-no-margin--bottom"
                   disabled={selectedInstances.length === 0}
                   onClick={() => {
                     handleOpenModal("delete");
@@ -117,7 +121,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
 
                 <Button
                   type="button"
-                  className="p-segmented-control__button"
+                  className="p-segmented-control__button u-no-margin--bottom"
                   disabled={selectedInstances.length === 0}
                   onClick={() => {
                     handleOpenModal("remove");
@@ -143,7 +147,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         confirmButtonLoading={isRemoving}
         confirmationText={pluralize(
           selectedInstances.length,
-          `remove ${selectedInstances[0].title}`,
+          `remove ${selectedInstances[0]?.title ?? "instance"}`,
           "remove instances",
         )}
       >
@@ -155,7 +159,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
           </p>
         ) : (
           <p>
-            This will remove the instance <b>{selectedInstances[0].title}</b>{" "}
+            This will remove the instance <b>{selectedInstances[0]?.title}</b>{" "}
             from Landscape. It will remain on the parent machine. You can
             re-register it to Landscape at any time.
           </p>
@@ -173,7 +177,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         confirmButtonLoading={isDeleting}
         confirmationText={pluralize(
           selectedInstances.length,
-          `delete ${selectedInstances[0].title}`,
+          `delete ${selectedInstances[0]?.title ?? ""}`,
           "delete instances",
         )}
       >
@@ -185,8 +189,8 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         ) : (
           <p>
             This will permanently delete the instance{" "}
-            <b>{selectedInstances[0].title}</b> from both the Windows host
-            machine and Landscape.
+            <b>{selectedInstances[0]?.title ?? ""}</b> from both the Windows
+            host machine and Landscape.
           </p>
         )}
       </TextConfirmationModal>

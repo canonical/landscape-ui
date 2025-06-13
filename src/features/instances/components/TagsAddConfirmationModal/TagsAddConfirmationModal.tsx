@@ -77,19 +77,24 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
 
   return (
     <ConfirmationModal
-      title={`Add ${tags.length > 1 ? `${tags.length} tags` : `${tags[0]} tag`} to ${instances.length > 1 ? `${instances.length} instances` : `${instances[0].title} instance`}`}
+      title={`Add ${pluralize(tags.length, `${tags[0]} tag`, `${tags.length} tags`)} to ${pluralize(instances.length, `${instances[0]?.title ?? "this"} instance`, `${instances.length} instances`)}`}
       confirmButtonLabel="Add tags"
       {...props}
     >
       <p>Adding tags could trigger irreversible changes to your instances.</p>
-
       <p>
         Adding{" "}
-        {tags.length > 1 ? `these ${tags.length} tags` : `the ${tags[0]} tag`}{" "}
+        {pluralize(
+          tags.length,
+          `the ${tags[0]} tag`,
+          `these ${tags.length} tags`,
+        )}{" "}
         to{" "}
-        {instances.length > 1
-          ? `${instances.length} instances`
-          : `the ${instances[0].title} instance`}{" "}
+        {pluralize(
+          instances.length,
+          `the ${instances[0]?.title ?? "this"} instance`,
+          `${instances.length} instances`,
+        )}{" "}
         will associate the {pluralize(instances.length, "instance")} with the
         following profiles.
         {securityProfiles.some((profile) =>

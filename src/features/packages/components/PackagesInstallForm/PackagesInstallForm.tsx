@@ -40,8 +40,8 @@ const PackagesInstallForm: FC = () => {
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralize(selected.length, `package ${selected[0].name}`, `${selected.length} packages`)} to be installed.`,
-        message: `${pluralize(selected.length, `${selected[0].name} package`, `${selected.length} selected packages`)} will be installed and ${pluralize(selected.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralize(selected.length, `package ${selected[0]?.name ?? ""}`, `${selected.length} packages`)} to be installed.`,
+        message: `${pluralize(selected.length, `${selected[0]?.name ?? ""} package`, `${selected.length} selected packages`)} will be installed and ${pluralize(selected.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",
