@@ -16,7 +16,7 @@ const useAutoinstallFileActions = (
   autoinstallFile: WithGroups<AutoinstallFile>,
 ) => {
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const { closeSidePanel, setSidePanelContent } = useSidePanel();
 
   const { updateAutoinstallFile } = useUpdateAutoinstallFile();
 
@@ -40,8 +40,9 @@ const useAutoinstallFileActions = (
       await updateAutoinstallFile({
         id: autoinstallFile.id,
         is_default: true,
-        contents: autoinstallFile.contents,
       });
+
+      closeSidePanel();
 
       notify.success({
         message:
