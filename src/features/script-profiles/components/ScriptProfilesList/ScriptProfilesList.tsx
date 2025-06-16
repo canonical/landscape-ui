@@ -4,6 +4,7 @@ import ListActions, {
 } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -24,7 +25,6 @@ import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const ScriptProfileDetails = lazy(
   async () => import("../ScriptProfileDetails"),
@@ -51,7 +51,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
     edit: () => {
       const handleSubmit = async (values: ScriptProfileFormSubmitValues) => {
-        editScriptProfile({
+        await editScriptProfile({
           id: profile.id,
           all_computers: values.all_computers,
           tags: values.tags,
