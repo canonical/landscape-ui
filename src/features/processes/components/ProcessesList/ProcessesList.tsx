@@ -5,6 +5,8 @@ import { useMemo } from "react";
 import type { Process } from "../../types";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import classes from "./ProcessesList.module.scss";
+import moment from "moment";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 interface ProcessesListProps {
   readonly processes: Process[];
@@ -90,6 +92,11 @@ const ProcessesList: FC<ProcessesListProps> = ({
         accessor: "start_time",
         Header: "Started at",
         className: "date-cell",
+        Cell: ({ row }: CellProps<Process>) => (
+          <span className="font-monospace">
+            {moment(row.original.start_time).format(DISPLAY_DATE_TIME_FORMAT)}
+          </span>
+        ),
       },
       {
         accessor: "gid",
