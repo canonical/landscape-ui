@@ -31,7 +31,7 @@ export const useGetAutoinstallFile = <T extends GetAutoinstallFileParams>({
     AxiosResponse<GetAutoinstallFileResult<T>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["autoinstallFile", id, { ...params }],
+    queryKey: ["autoinstallFiles", id, { ...params }],
     queryFn: async () =>
       authFetch.get(`autoinstall/${id}`, {
         params,
