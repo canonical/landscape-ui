@@ -1,18 +1,19 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { usePackageProfiles } from "../../hooks";
-import useRoles from "@/hooks/useRoles";
 import type { PackageProfile } from "../../types";
+import PackageProfileAssociatedInstancesLink from "../PackageProfileAssociatedInstancesLink";
 import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraints";
-import NoData from "@/components/layout/NoData";
-import { pluralize } from "@/utils/_helpers";
 
 const PackageProfileDuplicateForm = lazy(
   async () => import("../PackageProfileDuplicateForm"),
@@ -147,7 +148,9 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         <Col size={3}>
           <InfoItem
             label="Associated to"
-            value={`${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`}
+            value={
+              <PackageProfileAssociatedInstancesLink packageProfile={profile} />
+            }
           />
         </Col>
         <Col size={3}>

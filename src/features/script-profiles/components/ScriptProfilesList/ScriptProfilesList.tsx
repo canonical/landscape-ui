@@ -14,14 +14,11 @@ import { lazy, Suspense, useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useEditScriptProfile } from "../../api";
-import {
-  getAssociatedInstancesLink,
-  getStatusText,
-  getTriggerText,
-} from "../../helpers";
+import { getStatusText, getTriggerText } from "../../helpers";
 import { useOpenScriptProfileDetails } from "../../hooks";
 import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
+import ScriptProfileAssociatedInstancesLink from "../ScriptProfileAssociatedInstancesLink";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
@@ -145,8 +142,9 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
       {
         Header: "Associated instances",
-        Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
-          getAssociatedInstancesLink(profile),
+        Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => (
+          <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
+        ),
       },
 
       {
