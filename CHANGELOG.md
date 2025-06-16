@@ -1,3 +1,29 @@
+## [1.13.2](https://github.com/canonical/landscape-dashboard/compare/v1.13.1...v1.13.2) (2025-06-16)
+
+
+### Bug Fixes
+
+* add missing toast notifications, add actions to activities panel ([#265](https://github.com/canonical/landscape-dashboard/issues/265)) ([77d2ffa](https://github.com/canonical/landscape-dashboard/commit/77d2ffa8c8ae38dc56d379c7271309d3473181df))
+* align custom table filters action functionalities ([#257](https://github.com/canonical/landscape-dashboard/issues/257)) ([91fe46a](https://github.com/canonical/landscape-dashboard/commit/91fe46a20df71741ab2fa873e567d8d5e1952371))
+* allow empty array params in legacy API ([4d28411](https://github.com/canonical/landscape-dashboard/commit/4d28411b33985fbcd521bcec0efb58a3b5f928db))
+* applying monospacing to table column dates ([#269](https://github.com/canonical/landscape-dashboard/issues/269)) ([1c7b748](https://github.com/canonical/landscape-dashboard/commit/1c7b7480973d03013ffc979aea3ce44f003c92af))
+* change instance tabs depending on distributor [LNDENG-2513] ([#272](https://github.com/canonical/landscape-dashboard/issues/272)) ([4ec5881](https://github.com/canonical/landscape-dashboard/commit/4ec5881440eabcbafce78ac7c3c681197ceccf34))
+* clear selection on filter change ([#271](https://github.com/canonical/landscape-dashboard/issues/271)) ([ab8602b](https://github.com/canonical/landscape-dashboard/commit/ab8602b15337cbf9549c9b90aa45fec797ebb5f4))
+* close single filter when clicking any option ([e50c565](https://github.com/canonical/landscape-dashboard/commit/e50c565715bdb3d3c1427361d5939257eb783933))
+* disable invalid activity actions ([#248](https://github.com/canonical/landscape-dashboard/issues/248)) ([6ee0fa9](https://github.com/canonical/landscape-dashboard/commit/6ee0fa9b4a31e6cdecef0b681f15e0fdd7216eac))
+* invalid livepatch expiry date ([#267](https://github.com/canonical/landscape-dashboard/issues/267)) ([e60eecc](https://github.com/canonical/landscape-dashboard/commit/e60eecc4886ecfc2399ef32d63475cf678e4ad2c))
+* last audit's passrate bar ([#266](https://github.com/canonical/landscape-dashboard/issues/266)) ([11a5c72](https://github.com/canonical/landscape-dashboard/commit/11a5c724e94b04e061c4dd5735747b3a97af9f67))
+* make tables responsive ([#280](https://github.com/canonical/landscape-dashboard/issues/280)) ([89ea1d9](https://github.com/canonical/landscape-dashboard/commit/89ea1d9db8541220b1435448891b44f2ccbb7a11))
+* make tags cell expandable for each profile ([#261](https://github.com/canonical/landscape-dashboard/issues/261)) ([89c8ae1](https://github.com/canonical/landscape-dashboard/commit/89c8ae1eb031b2a8d6237dfe40229aed8d80612d))
+* overview buttons ([#255](https://github.com/canonical/landscape-dashboard/issues/255)) ([7925995](https://github.com/canonical/landscape-dashboard/commit/7925995f5e722254984015e68b9d58b2f654c374))
+* remove errors when logging in ([#246](https://github.com/canonical/landscape-dashboard/issues/246)) ([0b34ab8](https://github.com/canonical/landscape-dashboard/commit/0b34ab8a1cb2a925c7465aac8342a78dde319d8b))
+* responsive issues with button groups, sidebar and overview page ([#277](https://github.com/canonical/landscape-dashboard/issues/277)) ([6eee676](https://github.com/canonical/landscape-dashboard/commit/6eee676be8cd41f67683a822e7ce9d3d210607b9))
+* set minimum interval for security profile ([#274](https://github.com/canonical/landscape-dashboard/issues/274)) ([ba8107b](https://github.com/canonical/landscape-dashboard/commit/ba8107b06b72f631d68cc8a565de6d3ffd1d675c))
+* show correct status for archived instances ([#247](https://github.com/canonical/landscape-dashboard/issues/247)) ([d9b7251](https://github.com/canonical/landscape-dashboard/commit/d9b7251c257fa015367c6748a9b50648b7ccd6cb))
+* show Identity Providers in sidebar when OIDC is available ([4bfa6de](https://github.com/canonical/landscape-dashboard/commit/4bfa6dee96ca1220f7367a031a7bc7d264c95134))
+* truncated cell shows count when it shouldn't, adjust truncated info item ([#270](https://github.com/canonical/landscape-dashboard/issues/270)) ([81ce636](https://github.com/canonical/landscape-dashboard/commit/81ce6365de52f8578ba560adaca768394bdb989d))
+* wrong ubuntu pro info date showing on non-ubuntu linux instances ([#275](https://github.com/canonical/landscape-dashboard/issues/275)) ([13e091b](https://github.com/canonical/landscape-dashboard/commit/13e091bab316adcb0fc872ad00e090397faf9ba7))
+
 ## [1.13.1](https://github.com/canonical/landscape-dashboard/compare/v1.13.0...v1.13.1) (2025-05-15)
 
 
