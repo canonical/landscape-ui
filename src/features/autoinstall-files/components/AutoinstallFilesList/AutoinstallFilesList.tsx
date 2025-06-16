@@ -4,13 +4,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
-import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
-import {
-  Button,
-  CheckboxInput,
-  ConfirmationModal,
-} from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
