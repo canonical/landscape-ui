@@ -1,10 +1,11 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
@@ -28,10 +29,18 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
 
   const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
     id: file.id,
-    with_versions: true,
+    with_metadata: true,
   });
 
-  const versions = autoinstallFile?.versions.toReversed() ?? [];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
+  const versions = autoinstallFile ? autoinstallFile.metadata.versions : [];
+
+  const currentVersions = versions.slice(
+    currentPage - 1,
+    currentPage * pageSize,
+  );
 
   const columns = useMemo<Column<AutoinstallFileVersionInfo>[]>(
     () => [
@@ -83,14 +92,27 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
         ),
       },
     ],
-    [versions],
+    [],
   );
 
   if (isAutoinstallFileLoading) {
     return <LoadingState />;
   }
 
-  return <ModularTable columns={columns} data={versions} />;
+  return (
+    <>
+      <ModularTable columns={columns} data={currentVersions} />
+
+      <SidePanelTablePagination
+        currentItemCount={currentVersions.length}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        paginate={setCurrentPage}
+        setPageSize={setPageSize}
+        totalItems={versions.length}
+      />
+    </>
+  );
 };
 
 export default AutoinstallFileVersionHistory;

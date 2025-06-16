@@ -1,48 +1,52 @@
 import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
+import { useAutoinstallFileActions } from "../../hooks";
 import type { AutoinstallFile, WithGroups } from "../../types";
+import AutoinstallFileDeleteModal from "../AutoinstallFileDeleteModal";
 
 interface AutoinstallFilesListActionsProps {
-  readonly edit: (file: AutoinstallFile) => void;
-  readonly file: WithGroups<AutoinstallFile>;
-  readonly remove: (file: AutoinstallFile) => void;
-  readonly setAsDefault: (file: AutoinstallFile) => void;
-  readonly viewDetails: (file: WithGroups<AutoinstallFile>) => void;
+  readonly autoinstallFile: WithGroups<AutoinstallFile>;
 }
 
 const AutoinstallFilesListActions: FC<AutoinstallFilesListActionsProps> = ({
-  edit,
-  file,
-  remove,
-  setAsDefault,
-  viewDetails,
+  autoinstallFile,
 }) => {
+  const {
+    value: isDeleteModalVisible,
+    setTrue: openDeleteModal,
+    setFalse: closeDeleteModal,
+  } = useBoolean();
+  const {
+    openAutoinstallFileDetails,
+    openAutoinstallFileEditForm,
+    setAutoinstallFileAsDefault,
+  } = useAutoinstallFileActions(autoinstallFile);
+
+  const handleViewDetailsButtonClick = () => {
+    openAutoinstallFileDetails();
+  };
+
   const actions: ListAction[] = [
     {
       icon: "topic",
       label: "View details",
-      "aria-label": `View ${file.filename} details`,
-      onClick: (): void => {
-        viewDetails(file);
-      },
+      "aria-label": `View ${autoinstallFile.filename} details`,
+      onClick: handleViewDetailsButtonClick,
     },
     {
       icon: "edit",
       label: "Edit",
-      "aria-label": `Edit ${file.filename}`,
-      onClick: (): void => {
-        edit(file);
-      },
+      "aria-label": `Edit ${autoinstallFile.filename}`,
+      onClick: openAutoinstallFileEditForm,
     },
     {
       icon: "starred",
       label: "Set as default",
-      "aria-label": `Set ${file.filename} as default`,
-      onClick: (): void => {
-        setAsDefault(file);
-      },
-      disabled: file.is_default,
+      "aria-label": `Set ${autoinstallFile.filename} as default`,
+      onClick: setAutoinstallFileAsDefault,
+      disabled: autoinstallFile.is_default,
     },
   ];
 
@@ -50,21 +54,26 @@ const AutoinstallFilesListActions: FC<AutoinstallFilesListActionsProps> = ({
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove ${file.filename}`,
-      onClick: (): void => {
-        remove(file);
-      },
-      disabled: file.is_default,
+      "aria-label": `Remove ${autoinstallFile.filename}`,
+      onClick: openDeleteModal,
+      disabled: autoinstallFile.is_default,
     },
   ];
 
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${file.filename} actions`}
+        toggleAriaLabel={`${autoinstallFile.filename} actions`}
         actions={actions}
         destructiveActions={destructiveActions}
       />
+
+      {isDeleteModalVisible && (
+        <AutoinstallFileDeleteModal
+          autoinstallFile={autoinstallFile}
+          close={closeDeleteModal}
+        />
+      )}
     </>
   );
 };

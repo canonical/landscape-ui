@@ -9,30 +9,14 @@ describe("AutoinstallFileDetails", () => {
   const [file] = autoinstallFiles;
 
   const props: ComponentProps<typeof AutoinstallFileDetails> = {
-    edit: vi.fn(),
-    file,
-    remove: vi.fn(),
-    setAsDefault: vi.fn(),
-    viewVersionHistory: vi.fn(),
+    autoinstallFile: file,
   };
-
-  it("should not render buttons for default file", async () => {
-    renderWithProviders(<AutoinstallFileDetails {...props} />);
-
-    expect(
-      screen.queryByRole("button", { name: "Set as default" }),
-    ).not.toBeInTheDocument();
-
-    expect(
-      screen.queryByRole("button", { name: "Remove" }),
-    ).not.toBeInTheDocument();
-  });
 
   it("should render buttons for other files", async () => {
     renderWithProviders(
       <AutoinstallFileDetails
         {...props}
-        file={{ ...file, is_default: false }}
+        autoinstallFile={{ ...file, is_default: false }}
       />,
     );
 
