@@ -1,33 +1,27 @@
-import type { ForwardedRef, JSX, Ref } from "react";
-import { forwardRef } from "react";
-import type { ModularTableProps } from "@canonical/react-components";
-import { ModularTable } from "@canonical/react-components";
+import type { JSX } from "react";
+import {
+  ModularTable,
+  type ModularTableProps,
+} from "@canonical/react-components";
 import classes from "./ResponsiveTable.module.scss";
 
-interface ResponsiveTableProps<D extends Record<string, unknown>>
-  extends ModularTableProps<D> {
+export interface ResponsiveTableProps<
+  Row extends Record<string, unknown> = Record<string, unknown>,
+> extends ModularTableProps<Row> {
   readonly minWidth?: number;
 }
 
-function ResponsiveTableInner<Row extends Record<string, unknown>>(
-  { minWidth = 1024, style, ...tableProps }: ResponsiveTableProps<Row>,
-  ref: ForwardedRef<HTMLTableElement>,
-) {
+export default function ResponsiveTable<
+  Row extends Record<string, unknown> = Record<string, unknown>,
+>({
+  ref,
+  style,
+  minWidth = 1024,
+  ...tableProps
+}: ResponsiveTableProps<Row>): JSX.Element {
   return (
     <div className={classes.responsiveTable} style={style}>
       <ModularTable ref={ref} style={{ minWidth }} {...tableProps} />
     </div>
   );
 }
-
-type ResponsiveTableComponent = <
-  Row extends Record<string, unknown> = Record<string, unknown>,
->(
-  props: ResponsiveTableProps<Row> & { ref?: Ref<HTMLTableElement> },
-) => JSX.Element;
-
-const ResponsiveTable = forwardRef(
-  ResponsiveTableInner,
-) as ResponsiveTableComponent;
-
-export default ResponsiveTable;

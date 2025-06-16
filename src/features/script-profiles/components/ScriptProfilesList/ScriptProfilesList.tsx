@@ -7,7 +7,7 @@ import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
@@ -24,6 +24,7 @@ import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const ScriptProfileDetails = lazy(
   async () => import("../ScriptProfileDetails"),
@@ -164,6 +165,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
       {
         Header: "Last run",
+        className: "date-cell",
         Cell: ({
           row: {
             original: {
@@ -233,10 +235,11 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
   return (
     <>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={profiles}
         emptyMsg="No script profiles found according to your search parameters."
+        minWidth={1200}
       />
       {modalProfile && (
         <ScriptProfileArchiveModal

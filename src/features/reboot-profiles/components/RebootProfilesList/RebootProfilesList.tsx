@@ -127,6 +127,7 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       {
         accessor: "scheduled_reboot",
         Header: "scheduled reboot",
+        className: "date-cell",
         Cell: ({ row }: CellProps<RebootProfile>) => {
           return (
             <span className="font-monospace">

@@ -23,6 +23,7 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
       {
         accessor: "creation_time",
         Header: "creation time",
+        className: "date-cell",
         Cell: ({ row }: CellProps<EventLog>) => (
           <span className="font-monospace">
             {moment(row.original.creation_time).format(

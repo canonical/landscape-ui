@@ -7,7 +7,7 @@ import useAuth from "@/hooks/useAuth";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { Button, ModularTable } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactElement } from "react";
 import { lazy, Suspense, useMemo } from "react";
@@ -20,6 +20,7 @@ import ScriptListActions from "../ScriptListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
@@ -130,6 +131,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
       {
         Header: "Created",
         id: "created_at",
+        className: "date-cell",
         Cell: ({
           row: { original },
         }: CellProps<Script>): ReactElement<Element> => (
@@ -146,6 +148,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
       {
         Header: "Last modified",
         id: "last_modified_at",
+        className: "date-cell",
         Cell: ({
           row: { original },
         }: CellProps<Script>): ReactElement<Element> => (
@@ -174,11 +177,12 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
 
   return (
     <div ref={getTableRowsRef}>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={scripts}
         getCellProps={getCellProps(expandedRowIndex)}
         getRowProps={getRowProps(expandedRowIndex)}
+        minWidth={1200}
       />
     </div>
   );

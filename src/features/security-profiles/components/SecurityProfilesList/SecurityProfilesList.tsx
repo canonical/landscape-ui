@@ -448,7 +448,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "schedule",
         Header: LAST_RUN_HEADER,
-
+        className: "date-cell",
         Cell: ({ row }: CellProps<SecurityProfile>) => {
           const lastRun = !row.original.last_run_results.timestamp ? (
             <NoData />

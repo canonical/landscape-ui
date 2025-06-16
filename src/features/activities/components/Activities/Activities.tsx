@@ -155,6 +155,7 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "creation_time",
           Header: "Created at",
+          className: "date-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) => (
             <span className="font-monospace">
               {moment(row.original.creation_time).format(

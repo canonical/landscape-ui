@@ -182,6 +182,7 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "Ubuntu pro",
         Header: "Ubuntu pro expiration",
+        className: "date-cell",
         Cell: ({ row }: CellProps<Instance>) => {
           if (
             row.original.ubuntu_pro_info?.result === "success" &&
@@ -204,6 +205,7 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "Last ping",
         Header: "Last ping time",
+        className: "date-cell",
         Cell: ({ row }: CellProps<Instance>) => (
           <>
             {moment(row.original.last_ping_time).isValid() ? (
@@ -245,7 +247,7 @@ const InstanceList = memo(function InstanceList({
       columns={filteredColumns}
       data={instancesData}
       getHeaderProps={handleHeaderProps}
-      minWidth={1200}
+      minWidth={1400}
     />
   );
 });
