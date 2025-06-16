@@ -3,14 +3,7 @@ import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import { boolToLabel } from "@/utils/output";
 import type { MultiSelectItem } from "@canonical/react-components";
-import {
-  Col,
-  Icon,
-  ModularTable,
-  Row,
-  Switch,
-  Tooltip,
-} from "@canonical/react-components";
+import { Col, Icon, Row, Switch, Tooltip } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -21,6 +14,7 @@ import type { Alert } from "../../types";
 import AlertTagsCell from "../AlertTagsCell";
 import classes from "./AlertsTable.module.scss";
 import { handleCellProps } from "./helpers";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface AlertsTableProps {
   readonly alerts: Alert[];
@@ -107,7 +101,7 @@ const AlertsTable: FC<AlertsTableProps> = ({ alerts, availableTagOptions }) => {
   );
 
   return isLargerScreen ? (
-    <ModularTable
+    <ResponsiveTable
       columns={columns}
       data={alerts}
       getCellProps={handleCellProps}

@@ -3,7 +3,6 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import useRoles from "@/hooks/useRoles";
 import { getPermissionOptions } from "@/pages/dashboard/settings/roles/helpers";
 import type { Role } from "@/types/Role";
-import { ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
@@ -17,6 +16,7 @@ import {
 } from "./helpers";
 import classes from "./RoleList.module.scss";
 import type { CellCoordinates } from "./types";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface RoleListProps {
   readonly roleList: Role[];
@@ -118,7 +118,7 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
 
   return (
     <div ref={getTableRows(tableRowsRef)}>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={roles}
         getCellProps={handleCellProps(expandedCell)}

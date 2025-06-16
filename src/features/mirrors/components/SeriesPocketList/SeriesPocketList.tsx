@@ -1,19 +1,15 @@
-import InfoItem from "@/components/layout/InfoItem";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import { pluralize } from "@/utils/_helpers";
-import { Col, ModularTable, Row } from "@canonical/react-components";
-import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import { useMediaQuery } from "usehooks-ts";
 import type { Distribution, Pocket, Series, SyncPocketRef } from "../../types";
 import PocketSyncActivity from "../PocketSyncActivity";
 import SeriesPocketDetailsButton from "../SeriesPocketDetailsButton";
 import SeriesPocketListActions from "../SeriesPocketListActions";
 import { getCellProps } from "./helpers";
-import classes from "./SeriesPocketList.module.scss";
 import type { CommonPocket } from "./types";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface SeriesPocketListProps {
   readonly distributionName: Distribution["name"];
@@ -28,8 +24,6 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
   syncPocketRefAdd,
   syncPocketRefs,
 }) => {
-  const isLargerScreen = useMediaQuery("(min-width: 620px)");
-
   const pockets = useMemo<CommonPocket[]>(
     () => series.pockets as CommonPocket[],
     [series.pockets],
@@ -55,6 +49,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
       {
         accessor: "last_sync",
         Header: "Last synced",
+        className: "date-cell",
         Cell: ({ row: { original } }: CellProps<CommonPocket>): ReactNode => (
           <PocketSyncActivity
             pocket={original as Pocket}
@@ -88,67 +83,13 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
     [pockets, syncPocketRefs],
   );
 
-  return isLargerScreen ? (
-    <ModularTable
+  return (
+    <ResponsiveTable
       columns={columns}
       data={pockets}
       getCellProps={getCellProps}
       emptyMsg="No pockets yet"
     />
-  ) : (
-    series.pockets.map((pocket, index) => (
-      <Row
-        key={index}
-        className={classNames(
-          "u-no-padding--left u-no-padding--right",
-          classes.pocketWrapper,
-        )}
-      >
-        <Col size={2} small={2}>
-          <InfoItem
-            label="Pocket"
-            value={
-              <SeriesPocketDetailsButton
-                distributionName={distributionName}
-                pocket={pocket}
-                seriesName={series.name}
-              />
-            }
-          />
-        </Col>
-        <Col size={2} small={2}>
-          <InfoItem
-            label="Last synced"
-            value={
-              <PocketSyncActivity
-                pocket={pocket}
-                syncPocketRefAdd={syncPocketRefAdd}
-                syncPocketRefs={syncPocketRefs}
-              />
-            }
-          />
-        </Col>
-        <Col size={2} small={2}>
-          <InfoItem label="Mode" value={pocket.mode} />
-        </Col>
-        <Col size={2} small={2}>
-          <InfoItem
-            label="Content"
-            value={
-              <>{`${pocket.package_count} ${pluralize(pocket.package_count, "package")}`}</>
-            }
-          />
-        </Col>
-        <div className={classes.ctaRow}>
-          <SeriesPocketListActions
-            distributionName={distributionName}
-            pocket={pocket}
-            seriesName={series.name}
-            syncPocketRefs={syncPocketRefs}
-          />
-        </div>
-      </Row>
-    ))
   );
 };
 

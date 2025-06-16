@@ -3,7 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import { CheckboxInput } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
 import { memo, useEffect, useMemo } from "react";
@@ -19,6 +19,7 @@ import {
 } from "./helpers";
 import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface InstanceListProps {
   readonly instances: Instance[];
@@ -181,6 +182,7 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "Ubuntu pro",
         Header: "Ubuntu pro expiration",
+        className: "date-cell",
         Cell: ({ row }: CellProps<Instance>) => {
           if (
             row.original.ubuntu_pro_info?.result === "success" &&
@@ -203,6 +205,7 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "Last ping",
         Header: "Last ping time",
+        className: "date-cell",
         Cell: ({ row }: CellProps<Instance>) => (
           <>
             {moment(row.original.last_ping_time).isValid() ? (
@@ -235,7 +238,7 @@ const InstanceList = memo(function InstanceList({
   );
 
   return (
-    <ModularTable
+    <ResponsiveTable
       emptyMsg={
         isFilteringInstances
           ? "No instances found according to your search parameters."
@@ -244,6 +247,7 @@ const InstanceList = memo(function InstanceList({
       columns={filteredColumns}
       data={instancesData}
       getHeaderProps={handleHeaderProps}
+      minWidth={1400}
     />
   );
 });

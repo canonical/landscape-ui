@@ -2,7 +2,6 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
-import { ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column, Row } from "react-table";
@@ -10,6 +9,7 @@ import type { AccessGroup, AccessGroupWithInstancesCount } from "../../types";
 import AccessGroupInstanceCountCell from "../AccessGroupInstanceCountCell";
 import AccessGroupListActions from "../AccessGroupListActions";
 import { buildHierarchy, findAncestors, handleCellProps } from "./helpers";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface AccessGroupListProps {
   readonly accessGroups: AccessGroup[];
@@ -129,15 +129,13 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
   );
 
   return (
-    <>
-      <ModularTable
-        columns={columns}
-        data={accessGroupsData}
-        sortable
-        getCellProps={handleCellProps}
-        emptyMsg="No access groups found according to your search parameters."
-      />
-    </>
+    <ResponsiveTable
+      columns={columns}
+      data={accessGroupsData}
+      sortable
+      getCellProps={handleCellProps}
+      emptyMsg="No access groups found according to your search parameters."
+    />
   );
 };
 

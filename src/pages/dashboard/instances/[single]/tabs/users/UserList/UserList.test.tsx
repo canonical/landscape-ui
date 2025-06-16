@@ -37,11 +37,11 @@ describe("UserList", () => {
     it("shows locked and unlocked user icon in the user table", async () => {
       renderWithProviders(<UserList {...props} />);
 
-      const unlockedStatuses = screen.getAllByRole("gridcell", {
+      const unlockedStatuses = screen.getAllByRole("cell", {
         name: "Unlocked",
       });
 
-      const lockedStatuses = screen.getAllByRole("gridcell", {
+      const lockedStatuses = screen.getAllByRole("cell", {
         name: "Locked",
       });
 
@@ -119,11 +119,10 @@ describe("UserList", () => {
 
     it("should show correct unlocked user side panel action buttons", async () => {
       assert(unlockedUser);
-      const user = unlockedUser;
-
       const userTableButton = await screen.findByRole("button", {
-        name: `Show details of user ${user.username}`,
+        name: `Show details of user ${unlockedUser.username}`,
       });
+
       await userEvent.click(userTableButton);
       const form = await screen.findByRole("complementary");
       const buttonsNames = ["Lock", "Edit", "Delete"];

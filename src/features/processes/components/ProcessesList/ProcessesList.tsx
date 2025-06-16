@@ -1,8 +1,12 @@
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import { CheckboxInput } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { Process } from "../../types";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import classes from "./ProcessesList.module.scss";
+import moment from "moment";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 interface ProcessesListProps {
   readonly processes: Process[];
@@ -24,49 +28,46 @@ const ProcessesList: FC<ProcessesListProps> = ({
   const columns = useMemo<Column<Process>[]>(
     () => [
       {
-        accessor: "name",
+        accessor: "selected",
+        className: "checkbox-cell",
         Header: (
-          <>
-            <CheckboxInput
-              inline
-              label={<span className="u-off-screen">Toggle all processes</span>}
-              checked={
-                selectedPids.length > 0 &&
-                selectedPids.length === processes.length
-              }
-              disabled={processes.length === 0}
-              onChange={toggleAll}
-              indeterminate={
-                selectedPids.length > 0 &&
-                selectedPids.length < processes.length
-              }
-            />
-            <span>Command</span>
-          </>
+          <CheckboxInput
+            inline
+            label={<span className="u-off-screen">Toggle all processes</span>}
+            checked={
+              selectedPids.length > 0 &&
+              selectedPids.length === processes.length
+            }
+            disabled={processes.length === 0}
+            onChange={toggleAll}
+            indeterminate={
+              selectedPids.length > 0 && selectedPids.length < processes.length
+            }
+          />
         ),
-        Cell: ({ row }: CellProps<Process>) => {
-          return (
-            <>
-              <CheckboxInput
-                inline
-                label={
-                  <span className="u-off-screen">{`Select process ${row.original.name}`}</span>
-                }
-                checked={selectedPids.includes(row.original.pid)}
-                onChange={() => {
-                  setSelectedPids(
-                    selectedPids.includes(row.original.pid)
-                      ? selectedPids.filter(
-                          (prevStatePid) => prevStatePid !== row.original.pid,
-                        )
-                      : [...selectedPids, row.original.pid],
-                  );
-                }}
-              />
-              <span>{row.original.name}</span>
-            </>
-          );
-        },
+        Cell: ({ row }: CellProps<Process>) => (
+          <CheckboxInput
+            inline
+            label={
+              <span className="u-off-screen">{`Select process ${row.original.name}`}</span>
+            }
+            checked={selectedPids.includes(row.original.pid)}
+            onChange={() => {
+              setSelectedPids(
+                selectedPids.includes(row.original.pid)
+                  ? selectedPids.filter(
+                      (prevStatePid) => prevStatePid !== row.original.pid,
+                    )
+                  : [...selectedPids, row.original.pid],
+              );
+            }}
+          />
+        ),
+      },
+      {
+        accessor: "name",
+        Header: "Command",
+        className: classes.nameColumn,
       },
       {
         accessor: "state",
@@ -90,6 +91,12 @@ const ProcessesList: FC<ProcessesListProps> = ({
       {
         accessor: "start_time",
         Header: "Started at",
+        className: "date-cell",
+        Cell: ({ row }: CellProps<Process>) => (
+          <span className="font-monospace">
+            {moment(row.original.start_time).format(DISPLAY_DATE_TIME_FORMAT)}
+          </span>
+        ),
       },
       {
         accessor: "gid",
@@ -100,7 +107,7 @@ const ProcessesList: FC<ProcessesListProps> = ({
   );
 
   return (
-    <ModularTable
+    <ResponsiveTable
       columns={columns}
       data={processes}
       emptyMsg="No processes found"

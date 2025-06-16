@@ -1,11 +1,3 @@
-@import "vanilla-framework/scss/settings_spacing";
-
-.header {
-  column-gap: $sph--large;
-  display: flex;
-  margin-top: $spv--x-large;
-}
-
-.search {
-  flex-basis: 30rem;
+.nameColumn {
+  width: 10rem;
 }

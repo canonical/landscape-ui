@@ -3,7 +3,6 @@ import NoData from "@/components/layout/NoData";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { SelectOption } from "@/types/SelectOption";
-import { ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -11,6 +10,7 @@ import type { RepositoryProfile } from "../../types";
 import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { handleCellProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface RepositoryProfileListProps {
   readonly repositoryProfiles: RepositoryProfile[];
@@ -73,7 +73,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
   );
 
   return (
-    <ModularTable
+    <ResponsiveTable
       columns={columns}
       data={profiles}
       getCellProps={handleCellProps}
