@@ -88,7 +88,7 @@ const ScriptProfilesPanel: FC = () => {
             script: null,
           }}
           onSubmit={async (values) => {
-            addScriptProfile({
+            await addScriptProfile({
               all_computers: values.all_computers,
               script_id: values.script_id,
               tags: values.tags,
