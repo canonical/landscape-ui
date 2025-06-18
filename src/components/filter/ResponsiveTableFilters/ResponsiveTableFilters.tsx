@@ -45,7 +45,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
         >
           <div className={classes.menuContainer}>
             {filters.map((node, i) => {
-              if (node.type.name === "ResponsiveTableFilterDivider") {
+              if (!node.type.name) {
                 return node;
               }
 
