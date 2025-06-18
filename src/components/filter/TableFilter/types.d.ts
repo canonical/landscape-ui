@@ -6,7 +6,7 @@ export interface GroupedOption extends SelectOption {
   group?: string;
 }
 
-interface BaseFilterProps {
+export interface BaseFilterProps {
   label: ReactNode;
   options: GroupedOption[];
   disabledOptions?: SelectOption[];

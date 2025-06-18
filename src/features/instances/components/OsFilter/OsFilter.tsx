@@ -1,16 +1,10 @@
 import type { FC } from "react";
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
-import type { SelectOption } from "@/types/SelectOption";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import type { FilterProps } from "@/components/filter/types";
 
-interface OsFilterProps {
-  readonly options: SelectOption[];
-  readonly label: string;
-  readonly inline?: boolean;
-}
-
-const OsFilter: FC<OsFilterProps> = ({ options, label, inline = false }) => {
+const OsFilter: FC<FilterProps> = ({ options, label, inline = false }) => {
   const { os, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation(

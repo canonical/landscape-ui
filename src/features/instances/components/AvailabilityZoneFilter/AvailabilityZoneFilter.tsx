@@ -4,14 +4,9 @@ import type { GroupedOption } from "@/components/filter";
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import type { FilterProps } from "@/components/filter/types";
 
-interface AvailabilityZoneFilterProps {
-  readonly options: GroupedOption[];
-  readonly label: string;
-  readonly inline?: boolean;
-}
-
-const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
+const AvailabilityZoneFilter: FC<FilterProps<GroupedOption>> = ({
   options,
   label,
   inline = false,

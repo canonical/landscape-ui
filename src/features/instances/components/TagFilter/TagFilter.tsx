@@ -2,16 +2,10 @@ import type { FC } from "react";
 import { useState } from "react";
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
-import type { SelectOption } from "@/types/SelectOption";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import type { FilterProps } from "@/components/filter/types";
 
-interface TagFilterProps {
-  readonly options: SelectOption[];
-  readonly label: string;
-  readonly inline?: boolean;
-}
-
-const TagFilter: FC<TagFilterProps> = ({ options, label, inline = false }) => {
+const TagFilter: FC<FilterProps> = ({ options, label, inline = false }) => {
   const [searchText, setSearchText] = useState("");
 
   const { tags, setPageParams } = usePageParams();

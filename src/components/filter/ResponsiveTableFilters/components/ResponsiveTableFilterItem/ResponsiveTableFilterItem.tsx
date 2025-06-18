@@ -1,12 +1,15 @@
 import classes from "./ResponsiveTableFilterItem.module.scss";
-import type { FC, ReactElement } from "react";
+import type { FC, JSXElementConstructor, ReactElement } from "react";
 import { cloneElement, useRef, useState } from "react";
-import type { TableFilterProps } from "@/components/filter/TableFilter/types";
 import { useOnClickOutside } from "usehooks-ts";
 import { Button, Icon } from "@canonical/react-components";
+import type { FilterProps } from "@/components/filter/types";
 
 interface ResponsiveTableFilterItemProps {
-  readonly el: ReactElement<TableFilterProps>;
+  readonly el: ReactElement<
+    FilterProps,
+    JSXElementConstructor<{ name: string }>
+  >;
 }
 
 const ResponsiveTableFilterItem: FC<ResponsiveTableFilterItemProps> = ({

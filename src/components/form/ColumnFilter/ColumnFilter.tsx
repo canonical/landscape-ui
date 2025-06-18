@@ -5,14 +5,9 @@ import usePageParams from "@/hooks/usePageParams";
 import type { ColumnFilterOption } from "./types";
 import classes from "./ColumnFilter.module.scss";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import type { FilterProps } from "@/components/filter/types";
 
-interface ColumnFilterProps {
-  readonly options: ColumnFilterOption[];
-  readonly label: string;
-  readonly inline?: boolean;
-}
-
-const ColumnFilter: FC<ColumnFilterProps> = ({
+const ColumnFilter: FC<FilterProps<ColumnFilterOption>> = ({
   options,
   label,
   inline = false,

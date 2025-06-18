@@ -4,14 +4,9 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
+import type { FilterProps } from "@/components/filter/types";
 
-interface AutoinstallFilesFilterProps {
-  readonly options: GroupedOption[];
-  readonly label: string;
-  readonly inline?: boolean;
-}
-
-const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
+const AutoinstallFilesFilter: FC<FilterProps<GroupedOption>> = ({
   options,
   label,
   inline = false,

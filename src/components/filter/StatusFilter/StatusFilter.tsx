@@ -1,20 +1,10 @@
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import type { SelectOption } from "@/types/SelectOption";
 import type { FC } from "react";
 import TableFilter from "../TableFilter";
+import type { FilterProps } from "@/components/filter/types";
 
-interface StatusFilterProps {
-  readonly options: SelectOption[];
-  readonly label: string;
-  readonly inline?: boolean;
-}
-
-const StatusFilter: FC<StatusFilterProps> = ({
-  options,
-  label,
-  inline = false,
-}) => {
+const StatusFilter: FC<FilterProps> = ({ options, label, inline = false }) => {
   const { setPageParams, status } = usePageParams();
 
   useSetDynamicFilterValidation(

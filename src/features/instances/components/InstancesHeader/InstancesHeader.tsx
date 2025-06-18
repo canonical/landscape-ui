@@ -18,6 +18,7 @@ import TagFilter from "../TagFilter";
 import { INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesHeader.module.scss";
 import ResponsiveTableFilters from "@/components/filter/ResponsiveTableFilters";
+import ResponsiveTableFilterDivider from "@/components/filter/ResponsiveTableFilters/components/ResponsiveTableFilterDivider";
 
 interface InstancesHeaderProps {
   readonly columnFilterOptions: ColumnFilterOption[];
@@ -81,7 +82,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           collapseFrom="xxl"
           filters={[
             <GroupFilter key="group" label="Group by" options={groupOptions} />,
-            <span key="divider-1" className={classes.divider} />,
+            <ResponsiveTableFilterDivider key="divider-1" />,
             <StatusFilter
               key="status"
               label="Status"
@@ -99,7 +100,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
               options={accessGroupOptions}
             />,
             <TagFilter key="tag" label="Tags" options={tagOptions} />,
-            <span key="divider-1" className={classes.divider} />,
+            <ResponsiveTableFilterDivider key="divider-2" />,
             <ColumnFilter
               key="column"
               label="Columns"

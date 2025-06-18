@@ -1,5 +1,4 @@
-import type { FC, ReactElement, ReactNode } from "react";
-import { isValidElement, useMemo } from "react";
+import type { FC, JSXElementConstructor, ReactElement } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classNames from "classnames";
 import type { Position } from "@canonical/react-components";
@@ -8,11 +7,14 @@ import { ContextualMenu } from "@canonical/react-components";
 import { BREAKPOINT_PX } from "@/constants";
 
 import classes from "./ResponsiveTableFilters.module.scss";
-import type { TableFilterProps } from "@/components/filter/TableFilter/types";
 import ResponsiveTableFilterItem from "@/components/filter/ResponsiveTableFilters/components/ResponsiveTableFilterItem";
+import type { FilterProps } from "@/components/filter/types";
 
 export interface ResponsiveTableFiltersProps {
-  readonly filters: ReactNode[];
+  readonly filters: ReactElement<
+    FilterProps,
+    JSXElementConstructor<{ name: string }>
+  >[];
   readonly collapseFrom?: keyof typeof BREAKPOINT_PX;
   readonly menuLabel?: string;
   readonly className?: string;
@@ -30,19 +32,11 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
   );
 
-  const { inlineFilters, collapsedFilters } = useMemo(() => {
-    return isLarge
-      ? { inlineFilters: filters, collapsedFilters: [] }
-      : { inlineFilters: [], collapsedFilters: filters };
-  }, [filters, isLarge]);
-
   return (
     <div className={classNames(classes.wrapper, className)}>
-      {inlineFilters.map((node, i) => (
-        <span key={i}>{node}</span>
-      ))}
-
-      {collapsedFilters.length > 0 && (
+      {isLarge ? (
+        filters.map((node, i) => <span key={i}>{node}</span>)
+      ) : (
         <ContextualMenu
           position={menuPosition}
           hasToggleIcon
@@ -50,21 +44,12 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
           toggleClassName="u-no-margin--bottom"
         >
           <div className={classes.menuContainer}>
-            {collapsedFilters.map((node, i) => {
-              if (!isValidElement(node)) {
-                console.warn(
-                  "ResponsiveTableFilters: Filter node is not a valid React element.",
-                );
-                return;
+            {filters.map((node, i) => {
+              if (node.type.name === "ResponsiveTableFilterDivider") {
+                return node;
               }
 
-              const el = node as ReactElement<TableFilterProps>;
-
-              if (el.key?.includes("divider")) {
-                return <hr key={i} className={classes.divider} />;
-              }
-
-              return <ResponsiveTableFilterItem key={i} el={el} />;
+              return <ResponsiveTableFilterItem key={i} el={node} />;
             })}
           </div>
         </ContextualMenu>
