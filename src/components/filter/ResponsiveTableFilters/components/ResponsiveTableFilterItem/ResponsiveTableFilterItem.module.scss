@@ -1,0 +1,30 @@
+.root {
+  position: relative;
+}
+
+.label {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0;
+  margin-right: 0;
+  min-width: 12rem;
+  padding-left: 0.5rem;
+  place-items: center flex-start;
+  text-align: left;
+  width: 100%;
+
+  .text {
+    flex-grow: 1;
+  }
+}
+
+.icon {
+  rotate: 90deg;
+}
+
+.content {
+  display: block;
+  min-width: 15rem;
+  right: 100%;
+  top: 0;
+}

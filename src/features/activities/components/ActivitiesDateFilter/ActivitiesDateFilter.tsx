@@ -63,7 +63,7 @@ const ActivitiesDateFilter: FC = () => {
             onSubmit={(e) => {
               e.preventDefault();
               formik.handleSubmit();
-              closeMenu();
+              closeMenu?.();
             }}
             noValidate
             className={classes.container}
@@ -92,7 +92,7 @@ const ActivitiesDateFilter: FC = () => {
                     fromDate: "",
                     toDate: "",
                   });
-                  closeMenu();
+                  closeMenu?.();
                 }}
               >
                 Reset

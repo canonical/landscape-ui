@@ -4,13 +4,12 @@ import type { GroupedOption } from "@/components/filter";
 import { TableFilter } from "@/components/filter";
 import usePageParams from "@/hooks/usePageParams";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import type { FilterProps } from "@/components/filter/types";
 
-interface AvailabilityZoneFilterProps {
-  readonly options: GroupedOption[];
-}
-
-const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
+const AvailabilityZoneFilter: FC<FilterProps<GroupedOption>> = ({
   options,
+  label,
+  inline = false,
 }) => {
   const [searchText, setSearchText] = useState("");
 
@@ -42,7 +41,7 @@ const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
   return (
     <TableFilter
       type="multiple"
-      label="Availability zone"
+      label={label}
       hasToggleIcon
       hasBadge
       onSearch={
@@ -55,6 +54,7 @@ const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
       options={filteredOptions}
       onItemsSelect={handleItemsSelect}
       selectedItems={availabilityZones}
+      inline={inline}
     />
   );
 };

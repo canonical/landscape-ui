@@ -5,12 +5,13 @@ import usePageParams from "@/hooks/usePageParams";
 import type { ColumnFilterOption } from "./types";
 import classes from "./ColumnFilter.module.scss";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import type { FilterProps } from "@/components/filter/types";
 
-interface ColumnFilterProps {
-  readonly options: ColumnFilterOption[];
-}
-
-const ColumnFilter: FC<ColumnFilterProps> = ({ options }) => {
+const ColumnFilter: FC<FilterProps<ColumnFilterOption>> = ({
+  options,
+  label,
+  inline = false,
+}) => {
   const { disabledColumns, setPageParams } = usePageParams();
 
   const getValues = (disabledValues: string[]) => {
@@ -31,7 +32,7 @@ const ColumnFilter: FC<ColumnFilterProps> = ({ options }) => {
       label={
         <>
           <Icon name="settings" />
-          <span className={classes.label}>Columns</span>
+          <span className={classes.label}>{label}</span>
         </>
       }
       onItemsSelect={(items) => {
@@ -40,6 +41,7 @@ const ColumnFilter: FC<ColumnFilterProps> = ({ options }) => {
       options={options}
       disabledOptions={options.filter(({ canBeHidden }) => !canBeHidden)}
       selectedItems={getValues(disabledColumns)}
+      inline={inline}
     />
   );
 };

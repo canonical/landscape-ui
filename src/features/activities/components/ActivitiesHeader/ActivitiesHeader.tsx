@@ -86,7 +86,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
         />
         <div className={classes.actions}>
           <div className={classes.filters}>
-            <StatusFilter options={ACTIVITY_STATUS_OPTIONS} />
+            <StatusFilter label="Status" options={ACTIVITY_STATUS_OPTIONS} />
             <ActivityTypeFilter options={ACTIVITY_TYPE_OPTIONS} />
             <ActivitiesDateFilter />
           </div>

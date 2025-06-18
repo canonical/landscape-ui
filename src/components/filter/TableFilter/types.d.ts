@@ -6,7 +6,7 @@ export interface GroupedOption extends SelectOption {
   group?: string;
 }
 
-interface BaseFilterProps {
+export interface BaseFilterProps {
   label: ReactNode;
   options: GroupedOption[];
   disabledOptions?: SelectOption[];
@@ -14,6 +14,7 @@ interface BaseFilterProps {
   hasToggleIcon?: boolean;
   onSearch?: (search: string) => void;
   position?: Position;
+  inline?: boolean;
 }
 
 export interface SingleFilterProps extends BaseFilterProps {
@@ -32,7 +33,7 @@ export interface MultipleFilterProps extends BaseFilterProps {
 }
 
 export interface CustomFilterComponentProps {
-  closeMenu: () => void;
+  closeMenu?: () => void;
 }
 
 export interface CustomFilterProps

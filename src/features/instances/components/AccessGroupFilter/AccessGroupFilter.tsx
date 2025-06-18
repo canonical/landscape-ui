@@ -6,9 +6,15 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface AccessGroupFilterProps {
   readonly options: GroupedOption[];
+  readonly label: string;
+  readonly inline?: boolean;
 }
 
-const AccessGroupFilter: FC<AccessGroupFilterProps> = ({ options }) => {
+const AccessGroupFilter: FC<AccessGroupFilterProps> = ({
+  options,
+  label,
+  inline = false,
+}) => {
   const { accessGroups, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation(
@@ -19,7 +25,7 @@ const AccessGroupFilter: FC<AccessGroupFilterProps> = ({ options }) => {
   return (
     <TableFilter
       type="multiple"
-      label="Access group"
+      label={label}
       hasToggleIcon
       hasBadge
       options={options}
@@ -27,6 +33,7 @@ const AccessGroupFilter: FC<AccessGroupFilterProps> = ({ options }) => {
         setPageParams({ accessGroups: items });
       }}
       selectedItems={accessGroups}
+      inline={inline}
     />
   );
 };

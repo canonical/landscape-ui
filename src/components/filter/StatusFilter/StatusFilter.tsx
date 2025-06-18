@@ -1,14 +1,10 @@
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import type { SelectOption } from "@/types/SelectOption";
 import type { FC } from "react";
 import TableFilter from "../TableFilter";
+import type { FilterProps } from "@/components/filter/types";
 
-interface StatusFilterProps {
-  readonly options: SelectOption[];
-}
-
-const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
+const StatusFilter: FC<FilterProps> = ({ options, label, inline = false }) => {
   const { setPageParams, status } = usePageParams();
 
   useSetDynamicFilterValidation(
@@ -19,7 +15,7 @@ const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
   return (
     <TableFilter
       type="single"
-      label="Status"
+      label={label}
       hasToggleIcon
       hasBadge
       options={options}
@@ -27,6 +23,7 @@ const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
         setPageParams({ status: item });
       }}
       selectedItem={status}
+      inline={inline}
     />
   );
 };

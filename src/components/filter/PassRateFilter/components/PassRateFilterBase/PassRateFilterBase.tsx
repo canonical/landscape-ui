@@ -39,7 +39,7 @@ const PassRateFilterBase: FC<CustomFilterComponentProps> = ({ closeMenu }) => {
         passRateFrom: values.passRateFrom,
         passRateTo: values.passRateTo,
       });
-      closeMenu();
+      closeMenu?.();
     },
   });
 
@@ -86,7 +86,7 @@ const PassRateFilterBase: FC<CustomFilterComponentProps> = ({ closeMenu }) => {
               passRateFrom: 0,
               passRateTo: 100,
             });
-            closeMenu();
+            closeMenu?.();
           }}
         >
           Reset

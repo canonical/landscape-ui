@@ -17,6 +17,7 @@ import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
 import { INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesHeader.module.scss";
+import ResponsiveTableFilters from "@/components/filter/ResponsiveTableFilters";
 
 interface InstancesHeaderProps {
   readonly columnFilterOptions: ColumnFilterOption[];
@@ -76,17 +77,36 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
             }}
           />
         </div>
-        <div className={classes.filters}>
-          <GroupFilter options={groupOptions} />
-          <span className={classes.divider} />
-          <StatusFilter options={statusOptions} />
-          <OsFilter options={osOptions} />
-          <AvailabilityZoneFilter options={availabilityZoneOptions} />
-          <AccessGroupFilter options={accessGroupOptions} />
-          <TagFilter options={tagOptions} />
-          <span className={classes.divider} />
-          <ColumnFilter options={columnFilterOptions} />
-        </div>
+        <ResponsiveTableFilters
+          collapseFrom="xxl"
+          filters={[
+            <GroupFilter key="group" label="Group by" options={groupOptions} />,
+            <span key="divider-1" className={classes.divider} />,
+            <StatusFilter
+              key="status"
+              label="Status"
+              options={statusOptions}
+            />,
+            <OsFilter key="os" label="OS" options={osOptions} />,
+            <AvailabilityZoneFilter
+              key="availability-zone"
+              label="Availability zones"
+              options={availabilityZoneOptions}
+            />,
+            <AccessGroupFilter
+              key="access-group"
+              label="Access groups"
+              options={accessGroupOptions}
+            />,
+            <TagFilter key="tag" label="Tags" options={tagOptions} />,
+            <span key="divider-2" className={classes.divider} />,
+            <ColumnFilter
+              key="column"
+              label="Columns"
+              options={columnFilterOptions}
+            />,
+          ]}
+        />
       </div>
 
       <TableFilterChips

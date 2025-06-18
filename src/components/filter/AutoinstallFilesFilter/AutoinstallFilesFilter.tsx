@@ -4,13 +4,12 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
+import type { FilterProps } from "@/components/filter/types";
 
-interface AutoinstallFilesFilterProps {
-  readonly options: GroupedOption[];
-}
-
-const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
+const AutoinstallFilesFilter: FC<FilterProps<GroupedOption>> = ({
   options,
+  label,
+  inline = false,
 }) => {
   const [searchText, setSearchText] = useState("");
 
@@ -31,7 +30,7 @@ const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
     <TableFilter
       type="multiple"
       hasBadge
-      label="Autoinstall file"
+      label={label}
       hasToggleIcon
       options={filteredOptions}
       onItemsSelect={(items) => {
@@ -42,6 +41,7 @@ const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
       }}
       selectedItems={autoinstallFiles}
       hideSelectAllButton
+      inline={inline}
     />
   );
 };

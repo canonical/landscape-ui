@@ -10,7 +10,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, Notification } from "@canonical/react-components";
 import moment from "moment";
-import { lazy, Suspense, type FC } from "react";
+import { type FC, lazy, Suspense } from "react";
 import {
   useAddScriptProfile,
   useGetScriptProfileLimits,
@@ -142,7 +142,7 @@ const ScriptProfilesPanel: FC = () => {
         <HeaderWithSearch
           actions={
             <div className={classes.actions}>
-              <StatusFilter options={STATUS_OPTIONS} />
+              <StatusFilter label="Status" options={STATUS_OPTIONS} />
               {addProfileButton}
             </div>
           }

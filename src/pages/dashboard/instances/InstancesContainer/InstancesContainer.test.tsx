@@ -2,6 +2,8 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import InstancesContainer from "./InstancesContainer";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
+import { afterEach } from "vitest";
 
 const props = {
   instances: [],
@@ -49,7 +51,13 @@ const columns = [
 ];
 
 describe("InstancesContainer", () => {
-  it("should ", async () => {
+  afterEach(() => {
+    resetScreenSize();
+  });
+
+  it("should manage table columns", async () => {
+    setScreenSize("xxl");
+
     const { container } = renderWithProviders(
       <InstancesContainer {...props} setSelectedInstances={() => undefined} />,
     );

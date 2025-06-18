@@ -1,14 +1,10 @@
 import { TableFilter } from "@/components/filter";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import type { SelectOption } from "@/types/SelectOption";
 import type { FC } from "react";
+import type { FilterProps } from "@/components/filter/types";
 
-interface GroupFilterProps {
-  readonly options: SelectOption[];
-}
-
-const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
+const GroupFilter: FC<FilterProps> = ({ options, label, inline = false }) => {
   const { groupBy, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation(
@@ -19,7 +15,7 @@ const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
   return (
     <TableFilter
       type="single"
-      label="Group by"
+      label={label}
       hasToggleIcon
       hasBadge
       options={options}
@@ -27,6 +23,7 @@ const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
         setPageParams({ groupBy: item });
       }}
       selectedItem={groupBy}
+      inline={inline}
     />
   );
 };

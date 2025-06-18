@@ -2,7 +2,7 @@ import type { FC, ReactElement, ReactNode } from "react";
 import { isValidElement, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classNames from "classnames";
-import type { MenuLink } from "@canonical/react-components";
+import type { MenuLink, Position } from "@canonical/react-components";
 import { ContextualMenu } from "@canonical/react-components";
 import { BREAKPOINT_PX } from "@/constants";
 import classes from "./ResponsiveButtons.module.scss";
@@ -18,7 +18,7 @@ export interface ResponsiveButtonGroupProps {
   readonly alwaysVisible?: number;
   readonly menuLabel?: string;
   readonly className?: string;
-  readonly menuPosition?: "left" | "right";
+  readonly menuPosition?: Position;
   readonly grouped?: boolean;
 }
 
