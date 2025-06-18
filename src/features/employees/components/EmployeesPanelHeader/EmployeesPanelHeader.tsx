@@ -13,7 +13,7 @@ import {
   getEmployeeGroupOptions,
   useGetEmployeeGroups,
 } from "@/features/employee-groups";
-import { useMemo, type FC } from "react";
+import { type FC, useMemo } from "react";
 import { STATUS_OPTIONS } from "./constants";
 import classes from "./EmployeesPanelHeader.module.scss";
 
@@ -43,8 +43,11 @@ const EmployeesPanelHeader: FC = () => {
         actions={
           <div className={classes.filters}>
             <EmployeeGroupsFilter options={employeeGroupOptions} />
-            <AutoinstallFilesFilter options={autoinstallFileOptions} />
-            <StatusFilter options={STATUS_OPTIONS} />
+            <AutoinstallFilesFilter
+              label="Autoinstall files"
+              options={autoinstallFileOptions}
+            />
+            <StatusFilter label="Status" options={STATUS_OPTIONS} />
           </div>
         }
       />

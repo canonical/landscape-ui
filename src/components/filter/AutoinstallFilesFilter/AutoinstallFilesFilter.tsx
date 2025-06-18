@@ -7,10 +7,14 @@ import { useMemo, useState } from "react";
 
 interface AutoinstallFilesFilterProps {
   readonly options: GroupedOption[];
+  readonly label: string;
+  readonly inline?: boolean;
 }
 
 const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
   options,
+  label,
+  inline = false,
 }) => {
   const [searchText, setSearchText] = useState("");
 
@@ -31,7 +35,7 @@ const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
     <TableFilter
       type="multiple"
       hasBadge
-      label="Autoinstall file"
+      label={label}
       hasToggleIcon
       options={filteredOptions}
       onItemsSelect={(items) => {
@@ -42,6 +46,7 @@ const AutoinstallFilesFilter: FC<AutoinstallFilesFilterProps> = ({
       }}
       selectedItems={autoinstallFiles}
       hideSelectAllButton
+      inline={inline}
     />
   );
 };

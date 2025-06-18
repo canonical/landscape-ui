@@ -1,0 +1,15 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.menuContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper {
+  column-gap: $sph--small;
+  display: flex;
+}
+
+.divider {
+  margin-bottom: 0;
+}

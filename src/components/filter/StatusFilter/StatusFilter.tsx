@@ -6,9 +6,15 @@ import TableFilter from "../TableFilter";
 
 interface StatusFilterProps {
   readonly options: SelectOption[];
+  readonly label: string;
+  readonly inline?: boolean;
 }
 
-const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
+const StatusFilter: FC<StatusFilterProps> = ({
+  options,
+  label,
+  inline = false,
+}) => {
   const { setPageParams, status } = usePageParams();
 
   useSetDynamicFilterValidation(
@@ -19,7 +25,7 @@ const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
   return (
     <TableFilter
       type="single"
-      label="Status"
+      label={label}
       hasToggleIcon
       hasBadge
       options={options}
@@ -27,6 +33,7 @@ const StatusFilter: FC<StatusFilterProps> = ({ options }) => {
         setPageParams({ status: item });
       }}
       selectedItem={status}
+      inline={inline}
     />
   );
 };

@@ -114,7 +114,10 @@ const EmployeeGroupsHeader: FC<EmployeeGroupsHeaderProps> = ({
       <HeaderWithSearch
         actions={
           <div className={classes.container}>
-            <AutoinstallFilesFilter options={autoinstallFileOptions} />
+            <AutoinstallFilesFilter
+              options={autoinstallFileOptions}
+              label="Autoinstall files"
+            />
             <div className={classes.buttons}>
               <Button
                 className="p-segmented-control__button u-no-margin--bottom"

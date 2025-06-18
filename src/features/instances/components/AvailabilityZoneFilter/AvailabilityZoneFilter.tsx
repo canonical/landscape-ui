@@ -7,10 +7,14 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface AvailabilityZoneFilterProps {
   readonly options: GroupedOption[];
+  readonly label: string;
+  readonly inline?: boolean;
 }
 
 const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
   options,
+  label,
+  inline = false,
 }) => {
   const [searchText, setSearchText] = useState("");
 
@@ -42,7 +46,7 @@ const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
   return (
     <TableFilter
       type="multiple"
-      label="Availability zone"
+      label={label}
       hasToggleIcon
       hasBadge
       onSearch={
@@ -55,6 +59,7 @@ const AvailabilityZoneFilter: FC<AvailabilityZoneFilterProps> = ({
       options={filteredOptions}
       onItemsSelect={handleItemsSelect}
       selectedItems={availabilityZones}
+      inline={inline}
     />
   );
 };

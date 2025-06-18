@@ -6,9 +6,15 @@ import type { FC } from "react";
 
 interface GroupFilterProps {
   readonly options: SelectOption[];
+  readonly label: string;
+  readonly inline?: boolean;
 }
 
-const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
+const GroupFilter: FC<GroupFilterProps> = ({
+  options,
+  label,
+  inline = false,
+}) => {
   const { groupBy, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation(
@@ -19,7 +25,7 @@ const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
   return (
     <TableFilter
       type="single"
-      label="Group by"
+      label={label}
       hasToggleIcon
       hasBadge
       options={options}
@@ -27,6 +33,7 @@ const GroupFilter: FC<GroupFilterProps> = ({ options }) => {
         setPageParams({ groupBy: item });
       }}
       selectedItem={groupBy}
+      inline={inline}
     />
   );
 };

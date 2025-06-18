@@ -7,9 +7,11 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface TagFilterProps {
   readonly options: SelectOption[];
+  readonly label: string;
+  readonly inline?: boolean;
 }
 
-const TagFilter: FC<TagFilterProps> = ({ options }) => {
+const TagFilter: FC<TagFilterProps> = ({ options, label, inline = false }) => {
   const [searchText, setSearchText] = useState("");
 
   const { tags, setPageParams } = usePageParams();
@@ -26,7 +28,7 @@ const TagFilter: FC<TagFilterProps> = ({ options }) => {
   return (
     <TableFilter
       type="multiple"
-      label="Tag"
+      label={label}
       hasToggleIcon
       hasBadge
       options={filteredOptions}
@@ -37,6 +39,7 @@ const TagFilter: FC<TagFilterProps> = ({ options }) => {
         setSearchText(search);
       }}
       selectedItems={tags}
+      inline={inline}
     />
   );
 };

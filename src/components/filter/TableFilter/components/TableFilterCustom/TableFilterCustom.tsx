@@ -3,18 +3,20 @@ import type { CustomFilterProps } from "../../types";
 import { useCloseTableFilterMenu } from "@/hooks/useCloseTableFilterMenu";
 import { ContextualMenu } from "@canonical/react-components";
 import { getCommonContextualMenuProps } from "../../helpers";
-import classes from "./TableFilterCustom.module.scss";
+import { renderCustomBody } from "@/components/filter/TableFilter/components/helpers";
 
 const TableFilterCustom: FC<CustomFilterProps> = (props) => {
   const { rootRef, handleCloseMenu } = useCloseTableFilterMenu();
-  const { customComponent: CustomFilter, label } = props;
+  const { label } = props;
+
+  if (props.inline) {
+    return renderCustomBody({ ...props });
+  }
 
   return (
     <div ref={rootRef}>
       <ContextualMenu {...getCommonContextualMenuProps()} toggleLabel={label}>
-        <div className={classes.container}>
-          <CustomFilter closeMenu={handleCloseMenu} />
-        </div>
+        {renderCustomBody({ ...props, handleCloseMenu })}
       </ContextualMenu>
     </div>
   );

@@ -2,7 +2,7 @@ import { StatusFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
-import { lazy, Suspense, type FC } from "react";
+import { type FC, lazy, Suspense } from "react";
 import classes from "./ScriptsHeader.module.scss";
 import { STATUS_OPTIONS } from "./constants";
 import LoadingState from "@/components/layout/LoadingState";
@@ -26,7 +26,7 @@ const ScriptsHeader: FC = () => {
       <HeaderWithSearch
         actions={
           <div className={classes.actions}>
-            <StatusFilter options={STATUS_OPTIONS} />
+            <StatusFilter options={STATUS_OPTIONS} label="Status" />
             <Button
               type="button"
               appearance="positive"

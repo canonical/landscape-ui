@@ -8,9 +8,15 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 
 interface ColumnFilterProps {
   readonly options: ColumnFilterOption[];
+  readonly label: string;
+  readonly inline?: boolean;
 }
 
-const ColumnFilter: FC<ColumnFilterProps> = ({ options }) => {
+const ColumnFilter: FC<ColumnFilterProps> = ({
+  options,
+  label,
+  inline = false,
+}) => {
   const { disabledColumns, setPageParams } = usePageParams();
 
   const getValues = (disabledValues: string[]) => {
@@ -31,7 +37,7 @@ const ColumnFilter: FC<ColumnFilterProps> = ({ options }) => {
       label={
         <>
           <Icon name="settings" />
-          <span className={classes.label}>Columns</span>
+          <span className={classes.label}>{label}</span>
         </>
       }
       onItemsSelect={(items) => {
@@ -40,6 +46,7 @@ const ColumnFilter: FC<ColumnFilterProps> = ({ options }) => {
       options={options}
       disabledOptions={options.filter(({ canBeHidden }) => !canBeHidden)}
       selectedItems={getValues(disabledColumns)}
+      inline={inline}
     />
   );
 };

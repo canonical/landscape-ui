@@ -54,7 +54,11 @@ const AccessGroupHeader: FC = () => {
             />
           </Form>
         </div>
-        <GroupFilter options={groupOptions} key="group-by-filter" />
+        <GroupFilter
+          label="Group by"
+          options={groupOptions}
+          key="group-by-filter"
+        />
       </div>
       <TableFilterChips filtersToDisplay={["search"]} />
     </>

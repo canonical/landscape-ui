@@ -11,7 +11,7 @@ const SecurityProfilesHeader: FC = () => {
       <HeaderWithSearch
         actions={
           <div className={classes.filters}>
-            <StatusFilter options={SECURITY_STATUSES} />
+            <StatusFilter options={SECURITY_STATUSES} label="Status" />
             <PassRateFilter />
           </div>
         }
