@@ -1,3 +1,16 @@
+# [1.14.0](https://github.com/canonical/landscape-dashboard/compare/v1.13.2...v1.14.0) (2025-06-19)
+
+
+### Bug Fixes
+
+* make instance table filters responsive ([#283](https://github.com/canonical/landscape-dashboard/issues/283)) ([9996c1e](https://github.com/canonical/landscape-dashboard/commit/9996c1e5decd8b9f6280095039d2bf834399377c))
+* script profile forms can show errors ([#282](https://github.com/canonical/landscape-dashboard/issues/282)) ([f01b673](https://github.com/canonical/landscape-dashboard/commit/f01b67312523a6adfaf0e96c7bd1e985b222a314))
+
+
+### Features
+
+* add associated instances links for profiles ([#281](https://github.com/canonical/landscape-dashboard/issues/281)) ([2d1be1b](https://github.com/canonical/landscape-dashboard/commit/2d1be1bade6e6c9c0c34167abd3fa174944e9a7a))
+
 ## [1.13.2](https://github.com/canonical/landscape-dashboard/compare/v1.13.1...v1.13.2) (2025-06-16)
 
 
