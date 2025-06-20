@@ -2,7 +2,11 @@ import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import StaticLink from "@/components/layout/StaticLink";
 import { WindowsInstanceMakeCompliantModal } from "@/features/wsl";
 import useSelection from "@/hooks/useSelection";
-import { type Instance } from "@/types/Instance";
+import type {
+  InstanceWithoutRelation,
+  WindowsInstanceWithoutRelation,
+  WslInstanceWithoutRelation,
+} from "@/types/Instance";
 import {
   Button,
   CheckboxInput,
@@ -13,19 +17,21 @@ import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
 import classes from "./WslProfileNonCompliantInstancesList.module.scss";
+import WindowsInstanceActions from "./components/WindowsInstanceActions";
+import WslInstanceActions from "./components/WslInstanceActions";
 
 const WslProfileNonCompliantInstancesList: FC = () => {
+  const [instances] = useState([]);
+
+  const { selectedItems: selectedInstances } = useSelection(instances, true);
+
   const {
     value: isMakeCompliantModalOpen,
     setTrue: openMakeCompliantModal,
     setFalse: closeMakeCompliantModal,
   } = useBoolean();
 
-  const [instances] = useState([]);
-
-  const { selectedItems: selectedInstances } = useSelection(instances, true);
-
-  const columns = useMemo<Column<Instance>[]>(
+  const columns = useMemo<Column<InstanceWithoutRelation>[]>(
     () => [
       {
         accessor: "title",
@@ -39,19 +45,23 @@ const WslProfileNonCompliantInstancesList: FC = () => {
             Instance name
           </>
         ),
-        Cell: ({ row: { original: instance } }: CellProps<Instance>) => (
-          <>
-            <CheckboxInput
-              label={
-                <span className="u-off-screen">Select {instance.title}</span>
-              }
-            />
+        Cell: ({
+          row: { original: instance },
+        }: CellProps<InstanceWithoutRelation>) => {
+          return (
+            <>
+              <CheckboxInput
+                label={
+                  <span className="u-off-screen">Select {instance.title}</span>
+                }
+              />
 
-            <StaticLink to={`/instances/${instance.id}`}>
-              {instance.title}
-            </StaticLink>
-          </>
-        ),
+              <StaticLink to={`/instances/${instance.id}`}>
+                {instance.title}
+              </StaticLink>
+            </>
+          );
+        },
       },
       {
         Header: "Compliance",
@@ -67,6 +77,23 @@ const WslProfileNonCompliantInstancesList: FC = () => {
       },
       {
         Header: "Actions",
+        Cell: ({
+          row: { original: instance },
+        }: CellProps<InstanceWithoutRelation>) => {
+          if (instance.is_wsl_instance) {
+            return (
+              <WslInstanceActions
+                instance={instance as WslInstanceWithoutRelation}
+              />
+            );
+          } else {
+            return (
+              <WindowsInstanceActions
+                instance={instance as WindowsInstanceWithoutRelation}
+              />
+            );
+          }
+        },
       },
     ],
     [],
