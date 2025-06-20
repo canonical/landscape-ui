@@ -9,7 +9,7 @@ import {
   TagsAddConfirmationModal,
 } from "@/features/instances";
 import { useGetProfileChanges } from "@/features/tags";
-import { useWsl } from "@/features/wsl";
+import { useUninstallWslInstances } from "@/features/wsl";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -80,7 +80,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     sanitizeInstanceQuery,
     shutdownInstancesQuery,
   } = useInstances();
-  const { deleteChildInstancesQuery } = useWsl();
   const { editInstanceQuery } = useInstances();
   const { isFeatureEnabled } = useAuth();
 
@@ -116,8 +115,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     rebootInstancesQuery;
   const { mutateAsync: shutdownInstances, isPending: isShuttingDown } =
     shutdownInstancesQuery;
-  const { mutateAsync: deleteChildInstances, isPending: isDeleting } =
-    deleteChildInstancesQuery;
+  const { isUninstallingWslInstances, uninstallWslInstances } =
+    useUninstallWslInstances();
   const { mutateAsync: sanitizeInstance, isPending: isSanitizing } =
     sanitizeInstanceQuery;
 
@@ -283,7 +282,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   const handleDeleteChildInstances = async () => {
     try {
-      await deleteChildInstances({
+      await uninstallWslInstances({
         computer_ids: [instance.id],
       });
 
@@ -332,8 +331,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 ),
                 confirmButtonLabel: "Delete",
                 confirmButtonAppearance: "negative",
-                confirmButtonDisabled: isDeleting,
-                confirmButtonLoading: isDeleting,
+                confirmButtonDisabled: isUninstallingWslInstances,
+                confirmButtonLoading: isUninstallingWslInstances,
                 onConfirm: handleDeleteChildInstances,
               }}
             >

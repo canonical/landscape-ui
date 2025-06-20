@@ -1,12 +1,12 @@
+import LoadingState from "@/components/layout/LoadingState";
 import type { ComponentProps, FC } from "react";
 import { lazy, Suspense } from "react";
-import LoadingState from "@/components/layout/LoadingState";
 
+export { useGetWslProfiles } from "./api";
 export { default as WslProfilesEmptyState } from "./components/WslProfilesEmptyState";
-export { default as WslProfilesList } from "./components/WslProfilesList";
 export { default as WslProfilesHeader } from "./components/WslProfilesHeader";
+export { default as WslProfilesList } from "./components/WslProfilesList";
 export type { WslProfile } from "./types";
-export { useWslProfiles } from "./hooks";
 
 const WslProfileInstallFormComponent = lazy(
   () => import("./components/WslProfileInstallForm"),

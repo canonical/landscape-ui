@@ -1,1 +1,1 @@
-export { default } from "./sdc";
+export * from "./WslInstanceType";

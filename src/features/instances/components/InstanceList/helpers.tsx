@@ -2,7 +2,8 @@ import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import NoData from "@/components/layout/NoData";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { STATUSES } from "@/features/instances";
-import type { Instance } from "@/types/Instance";
+import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
+import { pluralize } from "@/utils/_helpers";
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { HTMLProps, ReactNode } from "react";
 import type { HeaderGroup, TableHeaderProps } from "react-table";
@@ -13,7 +14,6 @@ import {
 } from "../../helpers";
 import classes from "./InstanceList.module.scss";
 import type { GetUpgradesResult, InstanceColumn } from "./types";
-import { pluralize } from "@/utils/_helpers";
 
 export const getColumnFilterOptions = (
   columns: InstanceColumn[],
@@ -99,7 +99,7 @@ export const handleCheckboxChange = ({
 };
 
 export const getStatusCellIconAndLabel = (
-  instance: Instance,
+  instance: InstanceWithoutRelation,
 ): { label: ReactNode; icon?: string } => {
   if (instance.archived) {
     return {

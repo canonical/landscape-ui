@@ -42,7 +42,7 @@ const EmployeeListActions: FC<EmployeeDetailsActionsProps> = ({ employee }) => {
 
   const actions: ListAction[] = [
     {
-      icon: "file",
+      icon: "show",
       label: "View details",
       "aria-label": `View ${employee.name} employee details`,
       onClick: handleViewDetails,

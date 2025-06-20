@@ -3,22 +3,30 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import {
-  useWslProfiles,
+  useGetWslProfiles,
   WslProfileInstallForm,
   WslProfilesEmptyState,
   WslProfilesHeader,
   WslProfilesList,
 } from "@/features/wsl-profiles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 
 const WslProfilesPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
-  const { getWslProfilesQuery } = useWslProfiles();
 
-  const { data: getWslProfilesQueryResult, isLoading: isLoading } =
-    getWslProfilesQuery();
+  const {
+    isGettingWslProfiles: isGettingUnfilteredWslProfiles,
+    wslProfilesCount: unfilteredWslProfilesCount,
+  } = useGetWslProfiles(
+    {
+      limit: DEFAULT_PAGE_SIZE,
+      offset: 0,
+    },
+    { listenToUrlParams: false },
+  );
 
   const handleAddWslProfile = () => {
     setSidePanelContent(
@@ -42,24 +50,18 @@ const WslProfilesPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
-        {isLoading && <LoadingState />}
-        {!isLoading &&
-          (!getWslProfilesQueryResult ||
-            getWslProfilesQueryResult.data.results.length === 0) && (
-            <WslProfilesEmptyState />
-          )}
 
-        {!isLoading &&
-          getWslProfilesQueryResult &&
-          getWslProfilesQueryResult.data.results.length > 0 && (
-            <>
-              <WslProfilesHeader />
-              <WslProfilesList
-                wslProfiles={getWslProfilesQueryResult.data.results}
-              />
-            </>
-          )}
+      <PageContent>
+        {isGettingUnfilteredWslProfiles ? (
+          <LoadingState />
+        ) : !unfilteredWslProfilesCount ? (
+          <WslProfilesEmptyState />
+        ) : (
+          <>
+            <WslProfilesHeader />
+            <WslProfilesList />
+          </>
+        )}
       </PageContent>
     </PageMain>
   );

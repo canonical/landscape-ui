@@ -1,14 +1,11 @@
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions, { type ListAction } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import { useWslProfiles } from "../../hooks";
 import type { WslProfile } from "../../types";
+import WslProfileRemoveModal from "../WslProfileRemoveModal";
 
 const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
 const WslProfileInstallForm = lazy(
@@ -22,20 +19,13 @@ interface WslProfilesListActionsProps {
 const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
   profile,
 }) => {
-  const debug = useDebug();
-  const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
-  const { removeWslProfileQuery } = useWslProfiles();
-
   const {
-    value: isModalOpen,
-    setTrue: openModal,
-    setFalse: closeModal,
+    value: isRemoveModalOpen,
+    setTrue: openRemoveModal,
+    setFalse: closeRemoveModal,
   } = useBoolean();
-
-  const { mutateAsync: removeWslProfile, isPending: isRemoving } =
-    removeWslProfileQuery;
 
   const handleWslProfileEdit = () => {
     setSidePanelContent(
@@ -53,21 +43,6 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
         <WslProfileInstallForm action="duplicate" profile={profile} />
       </Suspense>,
     );
-  };
-
-  const handleRemoveWslProfile = async () => {
-    try {
-      await removeWslProfile({ name: profile.name });
-
-      notify.success({
-        message: `WSL profile "${profile.title}" removed successfully.`,
-        title: "WSL profile removed",
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      closeModal();
-    }
   };
 
   const actions: ListAction[] = [
@@ -90,7 +65,7 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
       icon: "delete",
       label: "Remove",
       "aria-label": `Remove ${profile.title} profile`,
-      onClick: openModal,
+      onClick: openRemoveModal,
     },
   ];
 
@@ -102,23 +77,11 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
         destructiveActions={destructiveActions}
       />
 
-      <TextConfirmationModal
-        isOpen={isModalOpen}
-        title="Remove WSL profile"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        onConfirm={handleRemoveWslProfile}
-        close={closeModal}
-        confirmationText={`remove ${profile.title}`}
-      >
-        <p>
-          Removing this profile will affect{" "}
-          <b>{profile.computers.constrained.length} instances</b>. This action
-          is <b>irreversible</b>.
-        </p>
-      </TextConfirmationModal>
+      <WslProfileRemoveModal
+        isOpen={isRemoveModalOpen}
+        close={closeRemoveModal}
+        wslProfile={profile}
+      />
     </>
   );
 };

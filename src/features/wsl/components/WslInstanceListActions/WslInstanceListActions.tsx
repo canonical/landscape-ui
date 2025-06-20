@@ -1,14 +1,14 @@
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions, { type ListAction } from "@/components/layout/ListActions";
-import { useWsl } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import type { WslInstanceWithoutRelation } from "@/types/Instance";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import { useState } from "react";
-import type { Action } from "./types";
+import { useBoolean } from "usehooks-ts";
+import { useSetWslInstanceAsDefault } from "../../api/useSetWslInstanceAsDefault";
+import WslInstanceReinstallModal from "../WslInstanceReinstallModal";
+import WslInstanceRemoveFromLandscapeModal from "../WslInstanceRemoveFromLandscapeModal";
+import WslInstanceUninstallModal from "../WslInstanceUninstallModal";
 
 interface WslInstanceListActionsProps {
   readonly instance: WslInstanceWithoutRelation;
@@ -22,27 +22,36 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   const { notify } = useNotify();
   const debug = useDebug();
 
-  const { setDefaultChildInstanceQuery, deleteChildInstancesQuery } = useWsl();
-  const { removeInstancesQuery } = useInstances();
-
-  const [action, setAction] = useState<Action>(null);
+  const {
+    value: isSetAsDefaultModalOpen,
+    setTrue: openSetAsDefaultModal,
+    setFalse: closeSetAsDefaultModal,
+  } = useBoolean();
 
   const {
-    mutateAsync: setDefaultChildInstance,
-    isPending: isSettingDefaultChildInstance,
-  } = setDefaultChildInstanceQuery;
-  const { mutateAsync: deleteChildInstances, isPending: isDeleting } =
-    deleteChildInstancesQuery;
-  const { mutateAsync: removeInstances, isPending: isRemoving } =
-    removeInstancesQuery;
+    value: isReinstallModalOpen,
+    setTrue: openReinstallModal,
+    setFalse: closeReinstallModal,
+  } = useBoolean();
 
-  const handleCloseModal = () => {
-    setAction(null);
-  };
+  const {
+    value: isUninstallModalOpen,
+    setTrue: openUninstallModal,
+    setFalse: closeUninstallModal,
+  } = useBoolean();
 
-  const handleSetDefaultChildInstance = async () => {
+  const {
+    value: isRemoveFromLandscapeModalOpen,
+    setTrue: openRemoveFromLandscapeModal,
+    setFalse: closeRemoveFromLandscapeModal,
+  } = useBoolean();
+
+  const { isSettingWslInstanceAsDefault, setWslInstanceAsDefault } =
+    useSetWslInstanceAsDefault();
+
+  const setAsDefault = async () => {
     try {
-      await setDefaultChildInstance({
+      await setWslInstanceAsDefault({
         child_id: instance.id,
         parent_id: parentId,
       });
@@ -54,73 +63,44 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     } catch (error) {
       debug(error);
     } finally {
-      handleCloseModal();
-    }
-  };
-
-  const handleDeleteChildInstance = async () => {
-    try {
-      await deleteChildInstances({
-        computer_ids: [instance.id],
-      });
-
-      notify.success({
-        title: `You queued ${instance.title} to be deleted.`,
-        message: `${instance.title} will be deleted.`,
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
-
-  const handleRemoveInstanceFromLandscape = async () => {
-    try {
-      await removeInstances({
-        computer_ids: [instance.id],
-      });
-
-      notify.success({
-        title: `You have successfully removed ${instance.title}`,
-        message: `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
+      closeSetAsDefaultModal();
     }
   };
 
   const actions: ListAction[] | undefined = !instance.is_default_child
     ? [
         {
+          icon: "show",
+          label: "View details",
+        },
+        {
           icon: "starred",
-          label: "Set default instance",
-          "aria-label": `Set ${instance.title} as default instance`,
-          onClick: () => {
-            setAction("setDefault");
-          },
+          label: "Set as default",
+          "aria-label": `Set ${instance.title} as default`,
+          onClick: openSetAsDefaultModal,
         },
       ]
     : undefined;
 
   const destructiveActions: ListAction[] = [
     {
-      icon: "delete",
-      label: "Remove instance from Landscape",
-      "aria-label": `Remove ${instance.title} instance from Landscape`,
-      onClick: () => {
-        setAction("remove");
-      },
+      icon: "restart",
+      label: "Reinstall",
+      "aria-label": `Reinstall ${instance.title}`,
+
+      onClick: openReinstallModal,
+    },
+    {
+      icon: "close",
+      label: "Uninstall",
+      "aria-label": `Uninstall ${instance.title}`,
+      onClick: openUninstallModal,
     },
     {
       icon: "delete",
-      label: "Delete instance",
-      "aria-label": `Delete ${instance.title} instance`,
-      onClick: () => {
-        setAction("delete");
-      },
+      label: "Remove from Landscape",
+      "aria-label": `Remove ${instance.title} from Landscape`,
+      onClick: openRemoveFromLandscapeModal,
     },
   ];
 
@@ -131,54 +111,40 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
         actions={actions}
         destructiveActions={destructiveActions}
       />
-      {action === "setDefault" && (
+
+      {isSetAsDefaultModalOpen && (
         <ConfirmationModal
-          title="Set default instance"
-          confirmButtonLabel="Set default"
+          title={`Set ${instance.title} as default`}
+          confirmButtonLabel="Set as default"
           confirmButtonAppearance="positive"
-          confirmButtonDisabled={isSettingDefaultChildInstance}
-          confirmButtonLoading={isSettingDefaultChildInstance}
-          onConfirm={handleSetDefaultChildInstance}
-          close={handleCloseModal}
+          confirmButtonDisabled={isSettingWslInstanceAsDefault}
+          confirmButtonLoading={isSettingWslInstanceAsDefault}
+          onConfirm={setAsDefault}
+          close={closeSetAsDefaultModal}
         >
           <p>
             Are you sure you want to set {instance.title} as default instance?
           </p>
         </ConfirmationModal>
       )}
-      <TextConfirmationModal
-        isOpen={action === "delete"}
-        close={handleCloseModal}
-        title="Delete instance"
-        confirmButtonLabel="Delete"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isDeleting}
-        confirmButtonLoading={isDeleting}
-        confirmationText={`delete ${instance.title}`}
-        onConfirm={handleDeleteChildInstance}
-      >
-        <p>
-          This will permanently delete the instance <b>{instance.title}</b> from
-          both the Windows host machine and Landscape.
-        </p>
-      </TextConfirmationModal>
-      <TextConfirmationModal
-        isOpen={action === "remove"}
-        close={handleCloseModal}
-        title="Remove instance from Landscape"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        confirmationText={`remove ${instance.title}`}
-        onConfirm={handleRemoveInstanceFromLandscape}
-      >
-        <p>
-          This will remove the instance <b>{instance.title}</b> from Landscape.
-          It will remain on the parent machine. You can re-register it to
-          Landscape at any time.
-        </p>
-      </TextConfirmationModal>
+
+      <WslInstanceReinstallModal
+        close={closeReinstallModal}
+        instances={[instance]}
+        isOpen={isReinstallModalOpen}
+      />
+
+      <WslInstanceUninstallModal
+        close={closeUninstallModal}
+        instances={[instance]}
+        isOpen={isUninstallModalOpen}
+      />
+
+      <WslInstanceRemoveFromLandscapeModal
+        close={closeRemoveFromLandscapeModal}
+        instances={[instance]}
+        isOpen={isRemoveFromLandscapeModalOpen}
+      />
     </>
   );
 };

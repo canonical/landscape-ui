@@ -1,16 +1,17 @@
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { useWslProfiles } from "../../hooks";
+import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 import type { WslProfile } from "../../types";
+import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink";
+import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
+import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
+import WslProfileRemoveModal from "../WslProfileRemoveModal";
 import classes from "./WslProfileDetails.module.scss";
 
 const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
@@ -27,40 +28,13 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
   profile,
   accessGroupOptions,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const { setSidePanelContent } = useSidePanel();
 
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelContent } = useSidePanel();
-  const { removeWslProfileQuery } = useWslProfiles();
-
-  const { mutateAsync: removeWslProfile, isPending: isRemoving } =
-    removeWslProfileQuery;
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
-  const handleRemoveWslProfile = async () => {
-    try {
-      await removeWslProfile({ name: profile.name });
-
-      handleCloseModal();
-      closeSidePanel();
-
-      notify.success({
-        message: `WSL profile "${profile.title}" removed successfully.`,
-        title: "WSL profile removed",
-      });
-    } catch (error) {
-      handleCloseModal();
-      debug(error);
-    }
-  };
+  const {
+    value: isRemoveModalOpen,
+    setTrue: openRemoveModal,
+    setFalse: closeRemoveModal,
+  } = useBoolean();
 
   const handleWslProfileEdit = () => {
     setSidePanelContent(
@@ -106,7 +80,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
           hasIcon
           className="p-segmented-control__button"
           aria-label={`Remove ${profile.title} profile`}
-          onClick={handleOpenModal}
+          onClick={openRemoveModal}
         >
           <Icon name={ICONS.delete} />
           <span>Remove</span>
@@ -158,41 +132,29 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
 
         <Col size={12}>
           <InfoItem
-            label="associated"
-            value={`${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`}
+            label="Associated parents"
+            value={<WslProfileAssociatedParentsLink wslProfile={profile} />}
           />
         </Col>
         <Col size={6}>
           <InfoItem
-            label="not compliant"
-            value={`${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`}
+            label="Not compliant"
+            value={<WslProfileNonCompliantParentsLink wslProfile={profile} />}
           />
         </Col>
         <Col size={6}>
           <InfoItem
-            label="pending"
-            value={`${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`}
+            label="Compliant"
+            value={<WslProfileCompliantParentsLink wslProfile={profile} />}
           />
         </Col>
       </Row>
 
-      <TextConfirmationModal
-        isOpen={modalOpen}
-        close={handleCloseModal}
-        onConfirm={handleRemoveWslProfile}
-        title="Remove WSL profile"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        confirmationText={`remove ${profile.title}`}
-      >
-        <p>
-          Removing this profile will affect{" "}
-          <b>{profile.computers.constrained.length} instances</b>. This action
-          is <b>irreversible</b>.
-        </p>
-      </TextConfirmationModal>
+      <WslProfileRemoveModal
+        isOpen={isRemoveModalOpen}
+        close={closeRemoveModal}
+        wslProfile={profile}
+      />
     </>
   );
 };

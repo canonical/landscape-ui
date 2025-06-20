@@ -30,7 +30,7 @@ const AutoinstallFilesListActions: FC<AutoinstallFilesListActionsProps> = ({
 
   const actions: ListAction[] = [
     {
-      icon: "topic",
+      icon: "show",
       label: "View details",
       "aria-label": `View ${autoinstallFile.filename} details`,
       onClick: handleViewDetailsButtonClick,

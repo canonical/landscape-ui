@@ -1,4 +1,5 @@
-export { default as WslInstancesEmptyState } from "./components/WslInstancesEmptyState";
+export { useGetWslInstanceTypes, useUninstallWslInstances } from "./api";
+export { default as WindowsInstanceMakeCompliantModal } from "./components/WindowsInstanceMakeCompliantModal";
 export { default as WslInstanceList } from "./components/WslInstanceList";
-export { useWsl } from "./hooks";
-export type { WslInstanceName } from "./hooks";
+export { default as WslInstancesEmptyState } from "./components/WslInstancesEmptyState";
+export type { WslInstanceType } from "./types";

@@ -222,7 +222,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => {
           const nondestructiveActions: ListAction[] = [
             {
-              icon: "switcher-environments",
+              icon: "show",
               label: "View details",
               onClick: actions(profile).viewDetails,
             },

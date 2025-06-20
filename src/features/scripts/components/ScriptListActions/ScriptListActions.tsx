@@ -85,7 +85,7 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
 
   const nondestructiveActions: ListAction[] = [
     {
-      icon: "switcher-environments",
+      icon: "show",
       label: "View details",
       "aria-label": `View details for ${script.title} script`,
       onClick: handleViewScriptDetails,

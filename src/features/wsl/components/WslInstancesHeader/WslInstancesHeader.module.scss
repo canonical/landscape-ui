@@ -1,4 +1,7 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .cta {
   display: flex;
+  gap: $sph--small;
   justify-content: flex-end;
 }

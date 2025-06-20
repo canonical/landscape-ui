@@ -18,7 +18,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
 
   const nondestructiveActions: ListAction[] = [
     {
-      icon: "switcher-environments",
+      icon: "show",
       label: "View details",
       "aria-label": `View "${profile.title}" security profile details`,
       onClick: actions.viewDetails,

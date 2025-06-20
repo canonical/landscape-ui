@@ -1,3 +1,5 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .description,
 .noWrap {
   white-space: nowrap;
@@ -7,4 +9,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   width: 20%;
+}
+
+.header {
+  display: flex;
+  gap: $sph--x-small;
 }

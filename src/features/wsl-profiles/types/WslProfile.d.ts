@@ -2,6 +2,7 @@ export interface WslProfile extends Record<string, unknown> {
   access_group: string;
   all_computers: boolean;
   computers: {
+    compliant: number[];
     constrained: number[];
     "non-compliant": number[];
     pending: number[];

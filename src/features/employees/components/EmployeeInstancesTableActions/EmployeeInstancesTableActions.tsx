@@ -81,7 +81,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
 
   const actions: ListAction[] = [
     {
-      icon: "machines",
+      icon: "show",
       label: "View details",
       "aria-label": `View ${instance.title} instance details`,
       onClick: async () => navigate(`${ROOT_PATH}instances/${instance.id}`),

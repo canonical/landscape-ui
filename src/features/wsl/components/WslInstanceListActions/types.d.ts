@@ -1,1 +1,6 @@
-export type Action = "setDefault" | "remove" | "delete" | null;
+export type Action =
+  | "setAsDefault"
+  | "reinstall"
+  | "uninstall"
+  | "removeFromLandscape"
+  | null;

@@ -1,5 +1,5 @@
 import { ConfirmationModal, Form, Input } from "@canonical/react-components";
-import { useState, type ComponentProps, type FC } from "react";
+import { type ComponentProps, type FC, useState } from "react";
 import classes from "./TextConfirmationModal.module.scss";
 
 interface TextConfirmationModalProps
@@ -48,7 +48,7 @@ const TextConfirmationModal: FC<TextConfirmationModalProps> = ({
     <ConfirmationModal
       {...props}
       confirmButtonDisabled={
-        inputText !== confirmationText ||
+        inputText.toLowerCase() !== confirmationText.toLowerCase() ||
         confirmButtonLoading ||
         confirmButtonDisabled
       }
