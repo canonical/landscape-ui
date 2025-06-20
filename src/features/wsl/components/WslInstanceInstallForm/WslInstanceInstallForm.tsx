@@ -1,18 +1,18 @@
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { useParams } from "react-router";
-import * as Yup from "yup";
-import { Form, Input, Select } from "@canonical/react-components";
 import FileInput from "@/components/form/FileInput";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { useWsl } from "../../hooks";
+import type { UrlParams } from "@/types/UrlParams";
+import { Form, Input, Select } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useParams } from "react-router";
+import * as Yup from "yup";
+import { useCreateWslInstance, useGetWslInstanceTypes } from "../../api";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
 import { fileToBase64 } from "./helpers";
-import type { UrlParams } from "@/types/UrlParams";
 
 interface FormProps {
   instanceType: string;
@@ -26,15 +26,12 @@ const WslInstanceInstallForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
-  const { createChildInstanceQuery, getWslInstanceNamesQuery } = useWsl();
   const { openActivityDetails } = useActivities();
 
-  const {
-    data: getWslInstanceNamesQueryResult,
-    isLoading: isLoadingWslInstanceNames,
-  } = getWslInstanceNamesQuery();
+  const { isGettingWslInstanceTypes, wslInstanceTypes } =
+    useGetWslInstanceTypes();
 
-  const { mutateAsync: createChildInstance } = createChildInstanceQuery;
+  const { createWslInstance } = useCreateWslInstance();
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -87,7 +84,7 @@ const WslInstanceInstallForm: FC = () => {
           ? cloudInitBase64.split(",")[1]
           : undefined;
 
-        const { data: activity } = await createChildInstance({
+        const { data: activity } = await createWslInstance({
           parent_id: parseInt(instanceId ?? ""),
           computer_name:
             values.instanceType === "custom"
@@ -101,11 +98,14 @@ const WslInstanceInstallForm: FC = () => {
         closeSidePanel();
 
         notify.success({
-          message: "You queued a new WSL instance to be installed",
+          title: `You have successfully marked ${values.instanceName} to be installed.`,
+          message: "An activity has been queued to install it.",
           actions: [
             {
               label: "View details",
-              onClick: () => openActivityDetails(activity),
+              onClick: () => {
+                openActivityDetails(activity);
+              },
             },
           ],
         });
@@ -116,7 +116,7 @@ const WslInstanceInstallForm: FC = () => {
   });
 
   const instanceQueryResultOptions =
-    (getWslInstanceNamesQueryResult?.data ?? []).map(({ label, name }) => ({
+    wslInstanceTypes.map(({ label, name }) => ({
       label,
       value: name,
     })) || [];
@@ -139,7 +139,7 @@ const WslInstanceInstallForm: FC = () => {
       <Select
         label="Instance type"
         required
-        disabled={isLoadingWslInstanceNames}
+        disabled={isGettingWslInstanceTypes}
         options={instanceOptions}
         {...formik.getFieldProps("instanceType")}
         error={

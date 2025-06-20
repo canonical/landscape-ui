@@ -1,4 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import type { WslInstanceWithoutRelation } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
@@ -14,6 +16,9 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
   instances,
   isOpen,
 }) => {
+  const debug = useDebug();
+  const { notify } = useNotify();
+
   const [instance] = instances;
 
   if (!instance) {
@@ -26,6 +31,25 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
     `${instances.length} instances`,
   );
 
+  const reinstall = async () => {
+    try {
+      throw new Error("This feature has not been implemented yet.");
+
+      notify.success({
+        title: `You have successfully marked ${title} to be reinstalled.`,
+        message: pluralize(
+          instances.length,
+          "An activity has been queued to reinstall it.",
+          "Activities have been queued to reinstall them.",
+        ),
+      });
+    } catch (error) {
+      debug(error);
+    } finally {
+      close();
+    }
+  };
+
   return (
     <TextConfirmationModal
       isOpen={isOpen}
@@ -36,7 +60,7 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
       confirmButtonDisabled={false}
       confirmButtonLoading={false}
       confirmationText={`reinstall ${title}`}
-      onConfirm={async () => undefined}
+      onConfirm={reinstall}
     >
       <p>
         {pluralize(

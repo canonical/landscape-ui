@@ -57,8 +57,8 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
       });
 
       notify.success({
-        title: `You queued ${instance.title} to be set as the default instance`,
-        message: `${instance.title} will be the default instance.`,
+        title: `You have successfully marked ${instance.title} to be set as the default instance`,
+        message: `An activity has been queued to set it as the default instance.`,
       });
     } catch (error) {
       debug(error);

@@ -42,8 +42,12 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
       });
 
       notify.success({
-        title: `You queued ${title} to be uninstalled.`,
-        message: `${title} will be uninstalled.`,
+        title: `You have successfully marked ${title} to be uninstalled.`,
+        message: pluralize(
+          instances.length,
+          "An activity has been queued to uninstall it.",
+          "Activities have been queued to uninstall them.",
+        ),
       });
     } catch (error) {
       debug(error);

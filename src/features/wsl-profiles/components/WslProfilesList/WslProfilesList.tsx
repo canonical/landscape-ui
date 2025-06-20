@@ -21,7 +21,7 @@ import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink"
 import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
 import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfilesListActions from "../WslProfilesListActions";
-import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
+import { COMPLIANT_TOOLTIP, NON_COMPLIANT_TOOLTIP } from "./constants";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
 
@@ -176,7 +176,7 @@ const WslProfilesList: FC = () => {
         Header: (
           <div className={classes.header}>
             Compliant
-            <Tooltip position="btm-left" message={PENDING_TOOLTIP}>
+            <Tooltip position="btm-left" message={COMPLIANT_TOOLTIP}>
               <Icon name="help" />
             </Tooltip>
           </div>

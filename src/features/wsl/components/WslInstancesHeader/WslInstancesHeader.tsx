@@ -2,11 +2,14 @@ import { TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type {
   WindowsInstanceWithoutRelation,
   WslInstanceWithoutRelation,
 } from "@/types/Instance";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -30,6 +33,8 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
   windowsInstance,
   wslInstances,
 }) => {
+  const debug = useDebug();
+  const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
   const {
@@ -56,13 +61,39 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
     setFalse: closeRemoveFromLandscapeModal,
   } = useBoolean();
 
-  const handleWslInstanceInstall = () => {
+  const openInstallForm = () => {
     setSidePanelContent(
       "Install new WSL instance",
       <Suspense fallback={<LoadingState />}>
         <WslInstanceInstallForm />
       </Suspense>,
     );
+  };
+
+  const install = async () => {
+    try {
+      throw new Error("This feature has not been implemented yet.");
+
+      notify.success({
+        title: `You have successfully marked ${pluralize(wslInstances.length, wslInstances[0].title, `${wslInstances.length} instances`)} to be installed.`,
+        message: pluralize(
+          wslInstances.length,
+          "An activity has been queued to install it.",
+          "Activities have been queued to install them.",
+        ),
+        actions:
+          wslInstances.length === 1
+            ? [
+                {
+                  label: "View details",
+                  onClick: () => undefined,
+                },
+              ]
+            : undefined,
+      });
+    } catch (error) {
+      debug(error);
+    }
   };
 
   return (
@@ -74,12 +105,12 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
               <div className="p-segmented-control__list">
                 <Button
                   type="button"
-                  onClick={handleWslInstanceInstall}
+                  onClick={openInstallForm}
                   className="p-segmented-control__button u-no-margin--bottom"
                   hasIcon
                 >
                   <Icon name="plus" />
-                  <span>Create new instance</span>
+                  <span>Install new instance</span>
                 </Button>
 
                 <Button
@@ -103,7 +134,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
                   className="p-segmented-control__button u-no-margin--bottom"
                   disabled={wslInstances.length === 0}
                   hasIcon
-                  onClick={() => undefined}
+                  onClick={install}
                 >
                   <Icon name="begin-downloading" />
                   <span>Install</span>
