@@ -1,4 +1,10 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .header {
   display: flex;
   justify-content: flex-end;
+}
+
+.arrow {
+  margin: 0 $sph--small 0 32px;
 }

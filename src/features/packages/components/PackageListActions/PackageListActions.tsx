@@ -1,7 +1,7 @@
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
@@ -36,7 +36,7 @@ const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {
     );
   };
 
-  const actions: ListAction[] = Object.keys(INSTALLED_PACKAGE_ACTIONS)
+  const actions: Action[] = Object.keys(INSTALLED_PACKAGE_ACTIONS)
     .map((key) => key as InstalledPackageAction)
     .filter(
       (packageAction) =>
@@ -58,9 +58,7 @@ const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {
       };
     });
 
-  const destructiveActions: ListAction[] = Object.keys(
-    INSTALLED_PACKAGE_ACTIONS,
-  )
+  const destructiveActions: Action[] = Object.keys(INSTALLED_PACKAGE_ACTIONS)
     .map((key) => key as InstalledPackageAction)
     .filter(
       (packageAction) =>

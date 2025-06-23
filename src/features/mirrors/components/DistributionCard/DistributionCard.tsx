@@ -1,8 +1,8 @@
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { Action } from "@/types/Action";
 import {
   Button,
   ConfirmationButton,
@@ -115,7 +115,7 @@ const DistributionCard: FC<DistributionCardProps> = ({
     </ConfirmationButton>,
   ];
 
-  const actions: ListAction[] = [
+  const actions: Action[] = [
     {
       icon: "plus",
       label: addSeriesButton.label,
@@ -124,7 +124,7 @@ const DistributionCard: FC<DistributionCardProps> = ({
     },
   ];
 
-  const destructiveActions: ListAction[] = [
+  const destructiveActions: Action[] = [
     {
       icon: "delete",
       label: removeDistributionButton.label,

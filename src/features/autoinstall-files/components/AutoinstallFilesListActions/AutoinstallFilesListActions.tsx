@@ -1,5 +1,5 @@
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
+import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useAutoinstallFileActions } from "../../hooks";
@@ -28,7 +28,7 @@ const AutoinstallFilesListActions: FC<AutoinstallFilesListActionsProps> = ({
     openAutoinstallFileDetails();
   };
 
-  const actions: ListAction[] = [
+  const actions: Action[] = [
     {
       icon: "show",
       label: "View details",
@@ -50,7 +50,7 @@ const AutoinstallFilesListActions: FC<AutoinstallFilesListActionsProps> = ({
     },
   ];
 
-  const destructiveActions: ListAction[] = [
+  const destructiveActions: Action[] = [
     {
       icon: "delete",
       label: "Remove",

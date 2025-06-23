@@ -9,10 +9,10 @@
 
 .rowHeader {
   display: flex;
+}
 
-  &.nested {
-    padding-left: $sp-x-large;
-  }
+.arrow {
+  margin-right: $sph--small;
 }
 
 .restartError {

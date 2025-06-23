@@ -1,0 +1,15 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  display: flex;
+  gap: $sph--large;
+  min-width: 0;
+}
+
+.innerContainer {
+  min-width: 0;
+}
+
+.button {
+  min-width: max-content;
+}

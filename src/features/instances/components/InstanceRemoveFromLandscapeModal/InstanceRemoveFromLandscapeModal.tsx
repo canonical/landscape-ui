@@ -2,19 +2,20 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
-import type { WslInstanceWithoutRelation } from "@/types/Instance";
+import type { InstanceWithoutRelation } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 
-interface WslInstanceRemoveFromLandscapeModalProps {
+interface InstanceRemoveFromLandscapeModalProps {
   readonly close: () => void;
-  readonly instances: WslInstanceWithoutRelation[];
+  readonly instances: InstanceWithoutRelation[];
   readonly isOpen: boolean;
+  readonly onSuccess?: () => void;
 }
 
-const WslInstanceRemoveFromLandscapeModal: FC<
-  WslInstanceRemoveFromLandscapeModalProps
-> = ({ close, instances, isOpen }) => {
+const InstanceRemoveFromLandscapeModal: FC<
+  InstanceRemoveFromLandscapeModalProps
+> = ({ close, instances, isOpen, onSuccess }) => {
   const debug = useDebug();
   const { notify } = useNotify();
 
@@ -49,6 +50,8 @@ const WslInstanceRemoveFromLandscapeModal: FC<
           `${title} have been removed from Landscape. To manage them again, you will need to re-register them in Landscape.`,
         )}`,
       });
+
+      onSuccess?.();
     } catch (error) {
       debug(error);
     } finally {
@@ -71,12 +74,12 @@ const WslInstanceRemoveFromLandscapeModal: FC<
       <p>
         {pluralize(
           instances.length,
-          "This will remove this instance from Landscape. It will remain on the parent machine. You can re-register it to Landscape at any time.",
-          "This will remove the selected instances from Landscape. They will remain on the parent machine. You can re-register them to Landscape at any time.",
+          `This will delete all associated data and free up one license slot for another computer to be registered. ${instance.is_wsl_instance ? "It will remain on the parent machine. " : ""}You can re-register it to Landscape at any time.`,
+          `This will delete all associated data and free up license slots for other computers to be registered. ${instance.is_wsl_instance ? "They will remain on the parent machine. " : ""}You can re-register them to Landscape at any time.`,
         )}
       </p>
     </TextConfirmationModal>
   );
 };
 
-export default WslInstanceRemoveFromLandscapeModal;
+export default InstanceRemoveFromLandscapeModal;

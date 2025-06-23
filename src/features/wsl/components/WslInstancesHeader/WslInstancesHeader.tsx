@@ -14,9 +14,9 @@ import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
+import WslInstanceRemoveFromLandscapeModal from "../../../instances/components/InstanceRemoveFromLandscapeModal";
 import WindowsInstanceMakeCompliantModal from "../WindowsInstanceMakeCompliantModal";
 import WslInstanceReinstallModal from "../WslInstanceReinstallModal";
-import WslInstanceRemoveFromLandscapeModal from "../WslInstanceRemoveFromLandscapeModal";
 import WslInstanceUninstallModal from "../WslInstanceUninstallModal";
 import classes from "./WslInstancesHeader.module.scss";
 

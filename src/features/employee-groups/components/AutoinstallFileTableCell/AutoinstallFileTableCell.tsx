@@ -1,6 +1,6 @@
+import Chip from "@/components/layout/Chip";
 import NoData from "@/components/layout/NoData";
 import { Tooltip } from "@canonical/react-components";
-import classNames from "classnames";
 import type { FC } from "react";
 import classes from "./AutoinstallFileTableCell.module.scss";
 
@@ -30,14 +30,7 @@ const AutoinstallFileTableCell: FC<AutoinstallFileTableCellProps> = ({
           positionElementClassName={classes.position}
           message="This group will inherit default autoinstall file since none has been assigned."
         >
-          <span
-            className={classNames(
-              "p-chip is-dense u-no-margin--bottom",
-              classes.chip,
-            )}
-          >
-            <span className="p-chip__value">default</span>
-          </span>
+          <Chip value="Default" />
         </Tooltip>
       )}
     </div>

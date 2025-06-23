@@ -2,13 +2,27 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .titleRow {
+  align-items: center;
   display: flex;
+  gap: $sph--x-large;
   justify-content: space-between;
+  white-space: nowrap;
 }
 
-.flexContainer {
+.buttons {
   column-gap: $sph--large;
   display: flex;
+}
+
+.headerContainer {
+  column-gap: $sph--small;
+  display: flex;
+}
+
+.status {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
 }
 
 .italic {
@@ -36,4 +50,8 @@
 
 .tagsButton {
   padding-top: 31.11px;
+}
+
+.heading {
+  margin-bottom: 0;
 }

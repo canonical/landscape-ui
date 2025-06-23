@@ -34,6 +34,8 @@ const InstancesPage: FC = () => {
     setSelectedItems: setSelectedInstances,
   } = useSelection<Instance>(instances, isGettingInstances);
 
+  console.log(selectedInstances);
+
   return (
     <PageMain>
       <PageHeader

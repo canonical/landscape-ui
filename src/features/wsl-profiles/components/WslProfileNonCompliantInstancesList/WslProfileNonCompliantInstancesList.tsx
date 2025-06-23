@@ -1,10 +1,13 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import NoData from "@/components/layout/NoData";
 import StaticLink from "@/components/layout/StaticLink";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { WindowsInstanceMakeCompliantModal } from "@/features/wsl";
 import useSelection from "@/hooks/useSelection";
 import type {
-  InstanceWithoutRelation,
+  Instance,
   WindowsInstanceWithoutRelation,
+  WslInstance,
   WslInstanceWithoutRelation,
 } from "@/types/Instance";
 import {
@@ -13,6 +16,7 @@ import {
   Icon,
   ModularTable,
 } from "@canonical/react-components";
+import moment from "moment";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
@@ -22,6 +26,7 @@ import WslInstanceActions from "./components/WslInstanceActions";
 
 const WslProfileNonCompliantInstancesList: FC = () => {
   const [instances] = useState([]);
+  const [, setSearch] = useState("");
 
   const { selectedItems: selectedInstances } = useSelection(instances, true);
 
@@ -31,7 +36,7 @@ const WslProfileNonCompliantInstancesList: FC = () => {
     setFalse: closeMakeCompliantModal,
   } = useBoolean();
 
-  const columns = useMemo<Column<InstanceWithoutRelation>[]>(
+  const columns = useMemo<Column<Instance>[]>(
     () => [
       {
         accessor: "title",
@@ -45,22 +50,38 @@ const WslProfileNonCompliantInstancesList: FC = () => {
             Instance name
           </>
         ),
-        Cell: ({
-          row: { original: instance },
-        }: CellProps<InstanceWithoutRelation>) => {
-          return (
-            <>
-              <CheckboxInput
-                label={
-                  <span className="u-off-screen">Select {instance.title}</span>
-                }
-              />
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
+          if (instance.is_wsl_instance) {
+            return (
+              <>
+                <span>
+                  <Icon className={classes.arrow} name="arrow-down-right" />
+                </span>
 
-              <StaticLink to={`/instances/${instance.id}`}>
-                {instance.title}
-              </StaticLink>
-            </>
-          );
+                <StaticLink
+                  to={`/instances/${(instance as WslInstance).parent.id}/${instance.id}`}
+                >
+                  {instance.title}
+                </StaticLink>
+              </>
+            );
+          } else {
+            return (
+              <>
+                <CheckboxInput
+                  label={
+                    <span className="u-off-screen">
+                      Select {instance.title}
+                    </span>
+                  }
+                />
+
+                <StaticLink to={`/instances/${instance.id}`}>
+                  {instance.title}
+                </StaticLink>
+              </>
+            );
+          }
         },
       },
       {
@@ -68,18 +89,32 @@ const WslProfileNonCompliantInstancesList: FC = () => {
       },
       {
         Header: "OS",
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) =>
+          instance.distribution_info?.description,
       },
       {
         Header: "Profiles",
+        Cell: <NoData />,
       },
       {
         Header: "Last ping",
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
+          const dateTime = moment(instance.last_ping_time);
+
+          if (dateTime.isValid()) {
+            return (
+              <span className="font-monospace">
+                {dateTime.format(DISPLAY_DATE_TIME_FORMAT)}
+              </span>
+            );
+          } else {
+            return <NoData />;
+          }
+        },
       },
       {
         Header: "Actions",
-        Cell: ({
-          row: { original: instance },
-        }: CellProps<InstanceWithoutRelation>) => {
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
           if (instance.is_wsl_instance) {
             return (
               <WslInstanceActions
@@ -102,6 +137,7 @@ const WslProfileNonCompliantInstancesList: FC = () => {
   return (
     <>
       <HeaderWithSearch
+        onSearch={setSearch}
         actions={
           <div className={classes.header}>
             <Button

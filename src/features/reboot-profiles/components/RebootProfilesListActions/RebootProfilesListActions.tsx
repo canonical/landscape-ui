@@ -1,10 +1,10 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { Action } from "@/types/Action";
 import { lazy, Suspense, type FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useRemoveRebootProfileQuery } from "../../api";
@@ -66,7 +66,7 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
     );
   };
 
-  const actions: ListAction[] = [
+  const actions: Action[] = [
     {
       icon: "edit",
       label: "Edit",
@@ -81,7 +81,7 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
     },
   ];
 
-  const destructiveActions: ListAction[] = [
+  const destructiveActions: Action[] = [
     {
       icon: "delete",
       label: "Remove",

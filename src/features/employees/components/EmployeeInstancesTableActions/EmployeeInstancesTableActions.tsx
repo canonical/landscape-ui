@@ -1,11 +1,11 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import { ROOT_PATH } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
+import type { Action } from "@/types/Action";
 import type { Instance } from "@/types/Instance";
 import { ICONS } from "@canonical/react-components";
 import { useState, type FC } from "react";
@@ -79,7 +79,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     }
   };
 
-  const actions: ListAction[] = [
+  const actions: Action[] = [
     {
       icon: "show",
       label: "View details",
@@ -88,7 +88,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     },
   ];
 
-  const destructiveActions: ListAction[] = [
+  const destructiveActions: Action[] = [
     {
       icon: "tidy",
       label: "Sanitize",

@@ -10,12 +10,14 @@ interface WslInstanceUninstallModalProps {
   readonly close: () => void;
   readonly instances: WslInstanceWithoutRelation[];
   readonly isOpen: boolean;
+  readonly onSuccess?: () => void;
 }
 
 const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
   close,
   instances,
   isOpen,
+  onSuccess,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -49,6 +51,8 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
           "Activities have been queued to uninstall them.",
         ),
       });
+
+      onSuccess?.();
     } catch (error) {
       debug(error);
     } finally {

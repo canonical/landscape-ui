@@ -1,3 +1,4 @@
+import Chip from "@/components/layout/Chip";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
@@ -5,7 +6,6 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import { Button } from "@canonical/react-components";
-import classNames from "classnames";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
@@ -47,16 +47,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
               {`${original.filename}, v${original.version}`}
             </Button>
 
-            {original.is_default && (
-              <span
-                className={classNames(
-                  "p-chip is-dense u-no-margin--bottom",
-                  classes.chip,
-                )}
-              >
-                <span className="p-chip__value">default</span>
-              </span>
-            )}
+            {original.is_default && <Chip value="Default" />}
           </div>
         ),
       },

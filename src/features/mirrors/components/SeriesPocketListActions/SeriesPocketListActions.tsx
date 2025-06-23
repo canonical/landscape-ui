@@ -1,8 +1,8 @@
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { Action } from "@/types/Action";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC, MouseEvent as ReactMouseEvent } from "react";
 import { lazy, Suspense } from "react";
@@ -121,7 +121,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     (ref) => ref.distributionName === distributionName,
   );
 
-  const actions: ListAction[] = [];
+  const actions: Action[] = [];
 
   switch (pocket.mode) {
     case "mirror": {
@@ -157,7 +157,7 @@ const SeriesPocketListActions: FC<SeriesPocketListActionsProps> = ({
     disabled,
   });
 
-  const destructiveActions: ListAction[] = [
+  const destructiveActions: Action[] = [
     {
       icon: "delete",
       label: "Remove",

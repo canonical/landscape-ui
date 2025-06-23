@@ -1,13 +1,13 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { CheckboxInput } from "@canonical/react-components";
-import classNames from "classnames";
+import { CheckboxInput, Icon } from "@canonical/react-components";
 import moment from "moment";
 import { memo, useEffect, useMemo } from "react";
-import { Link } from "react-router";
 import type { CellProps, Column, Row } from "react-table";
 import {
   getCheckboxState,
@@ -19,7 +19,6 @@ import {
 } from "./helpers";
 import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface InstanceListProps {
   readonly instances: Instance[];
@@ -86,50 +85,57 @@ const InstanceList = memo(function InstanceList({
             <span id="column-1-label">Name</span>
           </>
         ),
-        Cell: ({ row }: CellProps<Instance>) => (
-          <div
-            className={classNames(classes.rowHeader, {
-              [classes.nested]:
-                (row as Row<Instance> & { depth: number }).depth > 0,
-            })}
-          >
-            <CheckboxInput
-              label={<span className="u-off-screen">{row.original.title}</span>}
-              labelClassName="u-no-margin--bottom u-no-padding--top"
-              checked={
-                getCheckboxState({
-                  groupBy,
-                  instance: row.original,
-                  selectedInstances,
-                }) === "checked"
-              }
-              indeterminate={
-                getCheckboxState({
-                  groupBy,
-                  instance: row.original,
-                  selectedInstances,
-                }) === "indeterminate"
-              }
-              onChange={() => {
-                handleCheckboxChange({
-                  groupBy,
-                  instance: row.original,
-                  selectedInstances,
-                  setSelectedInstances,
-                });
-              }}
-            />
-            <Link
-              to={
-                row.original.parent
-                  ? `/instances/${row.original.parent.id}/${row.original.id}`
-                  : `/instances/${row.original.id}`
-              }
-            >
-              {row.original.title}
-            </Link>
-          </div>
-        ),
+        Cell: ({ row }: CellProps<Instance>) => {
+          const hasDepth = (row as Row<Instance> & { depth: number }).depth > 0;
+          return (
+            <div className={classes.rowHeader}>
+              <CheckboxInput
+                label={
+                  <span className="u-off-screen">{row.original.title}</span>
+                }
+                labelClassName="u-no-margin--bottom u-no-padding--top"
+                checked={
+                  getCheckboxState({
+                    groupBy,
+                    instance: row.original,
+                    selectedInstances,
+                  }) === "checked"
+                }
+                indeterminate={
+                  getCheckboxState({
+                    groupBy,
+                    instance: row.original,
+                    selectedInstances,
+                  }) === "indeterminate"
+                }
+                onChange={() => {
+                  handleCheckboxChange({
+                    groupBy,
+                    instance: row.original,
+                    selectedInstances,
+                    setSelectedInstances,
+                  });
+                }}
+              />
+
+              {hasDepth && (
+                <span>
+                  <Icon className={classes.arrow} name="arrow-down-right" />
+                </span>
+              )}
+
+              <StaticLink
+                to={
+                  row.original.parent
+                    ? `/instances/${row.original.parent.id}/${row.original.id}`
+                    : `/instances/${row.original.id}`
+                }
+              >
+                {row.original.title}
+              </StaticLink>
+            </div>
+          );
+        },
       },
       {
         accessor: "status",

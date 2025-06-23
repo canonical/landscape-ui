@@ -1,13 +1,14 @@
-import ListActions, { type ListAction } from "@/components/layout/ListActions";
+import ListActions from "@/components/layout/ListActions";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import type { Action } from "@/types/Action";
 import type { WslInstanceWithoutRelation } from "@/types/Instance";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
+import WslInstanceRemoveFromLandscapeModal from "../../../instances/components/InstanceRemoveFromLandscapeModal";
 import { useSetWslInstanceAsDefault } from "../../api/useSetWslInstanceAsDefault";
 import WslInstanceReinstallModal from "../WslInstanceReinstallModal";
-import WslInstanceRemoveFromLandscapeModal from "../WslInstanceRemoveFromLandscapeModal";
 import WslInstanceUninstallModal from "../WslInstanceUninstallModal";
 
 interface WslInstanceListActionsProps {
@@ -67,7 +68,7 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     }
   };
 
-  const actions: ListAction[] | undefined = !instance.is_default_child
+  const actions: Action[] | undefined = !instance.is_default_child
     ? [
         {
           icon: "show",
@@ -82,7 +83,7 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
       ]
     : undefined;
 
-  const destructiveActions: ListAction[] = [
+  const destructiveActions: Action[] = [
     {
       icon: "restart",
       label: "Reinstall",

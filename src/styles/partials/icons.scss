@@ -288,3 +288,9 @@
   @extend %icon;
   @include vf-icon-close($color-negative);
 }
+
+.p-icon--arrow-down-right {
+  @extend %icon;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='13' viewBox='0 0 12 13' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M8.17788 8.79752L5.44157 11.5338L6.50223 12.5944L11.0495 8.04723L6.50223 3.5L5.44157 4.56066L8.17838 7.29752H1.5V0H0V8.79752H8.17788Z' fill='black' fill-opacity='0.6'/%3E%3C/svg%3E");
+}

@@ -1,30 +1,33 @@
-import TagMultiSelect from "@/components/form/TagMultiSelect";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import Chip from "@/components/layout/Chip";
+import HeaderActions from "@/components/layout/HeaderActions";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import { ResponsiveButtons } from "@/components/ui";
+import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import {
   currentInstanceCan,
+  getStatusCellIconAndLabel,
+  InstanceRemoveFromLandscapeModal,
   TagsAddConfirmationModal,
 } from "@/features/instances";
 import { useGetProfileChanges } from "@/features/tags";
-import { useUninstallWslInstances } from "@/features/wsl";
+import {
+  WslInstanceReinstallModal,
+  WslInstanceUninstallModal,
+} from "@/features/wsl";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { Instance } from "@/types/Instance";
-import type { SelectOption } from "@/types/SelectOption";
+import type { Instance, WslInstance } from "@/types/Instance";
 import { getFormikError } from "@/utils/formikErrors";
 import {
-  ActionButton,
-  Button,
   CheckboxInput,
   Col,
-  ConfirmationButton,
   ConfirmationModal,
   Form,
   Icon,
@@ -34,11 +37,12 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
+import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useBoolean } from "usehooks-ts";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
 
@@ -62,9 +66,6 @@ interface InfoPanelProps {
 
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const [instanceTags, setInstanceTags] = useState([...instance.tags]);
-  const [isModalVisible, setIsModalVisible] = useState<string>("");
-  const [rebootModalOpen, setRebootModalOpen] = useState(false);
-  const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
 
   const addedTags = instanceTags.filter((tag) => !instance.tags.includes(tag));
 
@@ -75,7 +76,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
   const {
-    removeInstancesQuery,
     rebootInstancesQuery,
     sanitizeInstanceQuery,
     shutdownInstancesQuery,
@@ -96,34 +96,59 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     { enabled: false },
   );
 
+  const {
+    value: isRestartModalOpen,
+    setTrue: openRestartModal,
+    setFalse: closeRestartModal,
+  } = useBoolean();
+
+  const {
+    value: isShutDownModalOpen,
+    setTrue: openShutDownModal,
+    setFalse: closeShutDownModal,
+  } = useBoolean();
+
+  const {
+    value: isReinstallModalOpen,
+    setTrue: openReinstallModal,
+    setFalse: closeReinstallModal,
+  } = useBoolean();
+
+  const {
+    value: isUninstallModalOpen,
+    setTrue: openUninstallModal,
+    setFalse: closeUninstallModal,
+  } = useBoolean();
+
+  const {
+    value: isRemoveFromLandscapeModalOpen,
+    setTrue: openRemoveFromLandscapeModal,
+    setFalse: closeRemoveFromLandscapeModal,
+  } = useBoolean();
+
+  const {
+    value: isSanitizeModalOpen,
+    setTrue: openSanitizeModal,
+    setFalse: closeSanitizeModal,
+  } = useBoolean();
+
+  const { value: isTagModalOpen, setFalse: closeTagModal } = useBoolean();
+
   useEffect(() => {
     setInstanceTags([...instance.tags]);
   }, [instance.tags]);
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
-  const accessGroupOptions: SelectOption[] =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
+  const accessGroups = getAccessGroupQueryResult?.data ?? [];
 
   const { mutateAsync: editInstance, isPending: isEditing } = editInstanceQuery;
-  const { mutateAsync: removeInstances, isPending: isRemoving } =
-    removeInstancesQuery;
   const { mutateAsync: rebootInstances, isPending: isRebooting } =
     rebootInstancesQuery;
   const { mutateAsync: shutdownInstances, isPending: isShuttingDown } =
     shutdownInstancesQuery;
-  const { isUninstallingWslInstances, uninstallWslInstances } =
-    useUninstallWslInstances();
   const { mutateAsync: sanitizeInstance, isPending: isSanitizing } =
     sanitizeInstanceQuery;
-
-  const tagsChanged =
-    instanceTags.length !== instance.tags.length ||
-    instanceTags.some((tag) => !instance.tags.includes(tag)) ||
-    instance.tags.some((tag) => !instanceTags.includes(tag));
 
   const handleSubmit = async (values: ModalConfirmationFormProps) => {
     if (!values.action) {
@@ -169,24 +194,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     onSubmit: handleSubmit,
   });
 
-  const closeModal = () => {
-    setIsModalVisible("");
-  };
-
-  const handleRemoveInstance = async () => {
-    try {
-      await removeInstances({
-        computer_ids: [instance.id],
-      });
-
-      navigate("/instances", { replace: true });
-    } catch (error) {
-      debug(error);
-    } finally {
-      closeModal();
-    }
-  };
-
   const handleSanitizeInstance = async () => {
     try {
       const { data: sanitizeActivity } = await sanitizeInstance({
@@ -195,8 +202,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       });
 
       notify.success({
-        title: `You have successfully initiated Sanitization for ${instance.title}`,
-        message: `Sanitizing for ${instance.title} has been queued in Activities. The data will be permanently irrecoverable once complete.`,
+        title: `You have successfully marked ${instance.title} to be sanitized.`,
+        message: `An activity has been queued to sanitize it. The data will be permanently irrecoverable once complete.`,
         actions: [
           {
             label: "View details",
@@ -209,7 +216,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     } catch (error) {
       debug(error);
     } finally {
-      closeModal();
+      closeSanitizeModal();
     }
   };
 
@@ -227,7 +234,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     } catch (error) {
       debug(error);
     } finally {
-      closeModal();
+      closeTagModal();
     }
   };
 
@@ -247,16 +254,16 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     }
   };
 
-  const handleEditInstance = () => {
+  const openEditForm = () => {
     setSidePanelContent(
-      "Edit Instance",
+      "Edit instance",
       <Suspense fallback={<LoadingState />}>
         <EditInstance instance={instance} />
       </Suspense>,
     );
   };
 
-  const handleRunScript = () => {
+  const openRunScriptForm = () => {
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
@@ -268,7 +275,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     );
   };
 
-  const handleAssociateEmployee = () => {
+  const openAssociateEmployeeForm = () => {
     setSidePanelContent(
       `Associate employee with ${instance.title}`,
       <Suspense fallback={<LoadingState />}>
@@ -280,224 +287,207 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     );
   };
 
-  const handleDeleteChildInstances = async () => {
-    try {
-      await uninstallWslInstances({
-        computer_ids: [instance.id],
-      });
-
-      navigate("/instances", { replace: true });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
   const handleFormSubmit = async (action: "reboot" | "shutdown") => {
     await formik.setFieldValue("action", action);
     formik.handleSubmit();
   };
 
+  const goBack = () => {
+    navigate("/instances", { replace: true });
+  };
+
   return (
     <>
       <div className={classes.titleRow}>
-        <div className={classes.flexContainer}>
-          <h2 className="p-heading--4 u-no-padding--top u-no-margin--bottom">
+        <div className={classes.headerContainer}>
+          <h2
+            className={classNames(
+              "p-heading--4 u-no-padding--top",
+              classes.heading,
+            )}
+          >
             {instance.title}
           </h2>
-          {instance.is_wsl_instance && (
-            <p
-              className={classNames(
-                "u-text--muted u-no-margin--bottom",
-                classes.italic,
-              )}
-            >
-              WSL Instance
-            </p>
-          )}
+
+          {instance.is_wsl_instance && <Chip value="WSL instance" />}
         </div>
-        <div className={classes.flexContainer}>
-          {instance.is_wsl_instance && (
-            <ConfirmationButton
-              className="u-no-margin--bottom u-no-margin--right"
-              type="button"
-              confirmationModalProps={{
-                title: "Delete instance",
-                children: (
-                  <p>
-                    This will permanently delete the instance{" "}
-                    <b>{instance.title}</b> from both the Windows host machine
-                    and Landscape.
-                  </p>
-                ),
-                confirmButtonLabel: "Delete",
-                confirmButtonAppearance: "negative",
-                confirmButtonDisabled: isUninstallingWslInstances,
-                confirmButtonLoading: isUninstallingWslInstances,
-                onConfirm: handleDeleteChildInstances,
-              }}
-            >
-              Delete instance
-            </ConfirmationButton>
-          )}
-          <ResponsiveButtons
-            collapseFrom="xxl"
-            buttons={[
-              <Button
-                key="edit-instance"
-                type="button"
-                onClick={handleEditInstance}
-                hasIcon
-              >
-                <Icon name="edit" />
-                <span>Edit</span>
-              </Button>,
-              currentInstanceCan("runScripts", instance) && (
-                <Button
-                  key="run-script"
-                  type="button"
-                  onClick={handleRunScript}
-                  hasIcon
-                >
-                  <Icon name="code" />
-                  <span>Run script</span>
-                </Button>
-              ),
-              <Button
-                key="remove-instance"
-                hasIcon
-                type="button"
-                disabled={isRemoving}
-                onClick={() => {
-                  setIsModalVisible("remove");
-                }}
-                aria-label={`Remove ${instance.title} instance`}
-              >
-                <Icon name={ICONS.delete} />
-                <span>Remove from Landscape</span>
-              </Button>,
-              <Button
-                key="sanitize-instance"
-                hasIcon
-                type="button"
-                disabled={isSanitizing}
-                onClick={() => {
-                  setIsModalVisible("sanitize");
-                }}
-                aria-label={`Sanitize ${instance.title} instance`}
-              >
-                <Icon name="tidy" />
-                <span>Sanitize</span>
-              </Button>,
-              <Button
-                key="reboot-instance"
-                hasIcon
-                type="button"
-                disabled={isRemoving}
-                onClick={() => {
-                  setRebootModalOpen(true);
-                }}
-              >
-                <Icon name="restart" />
-                <span>Restart</span>
-              </Button>,
-              isFeatureEnabled("employee-management") && (
-                <Button
-                  key="associate-employee"
-                  type="button"
-                  hasIcon
-                  onClick={handleAssociateEmployee}
-                >
-                  <Icon name={ICONS.user} />
-                  <span>Associate employee</span>
-                </Button>
-              ),
-              <Button
-                key="shutdown-instance"
-                hasIcon
-                type="button"
-                disabled={isRemoving}
-                onClick={() => {
-                  setShutdownModalOpen(true);
-                }}
-              >
-                <Icon name="power-off" />
-                <span>Shutdown</span>
-              </Button>,
-            ]}
+
+        <HeaderActions
+          actions={{
+            nondestructive: [
+              { icon: "edit", label: "Edit", onClick: openEditForm },
+              {
+                icon: "restart",
+                label: "Restart",
+                onClick: openRestartModal,
+              },
+              {
+                icon: "power-off",
+                label: "Shut down",
+                onClick: openShutDownModal,
+              },
+              {
+                icon: "code",
+                label: "Run script",
+                onClick: openRunScriptForm,
+                excluded: !currentInstanceCan("runScripts", instance),
+              },
+              {
+                icon: ICONS.user,
+                label: "Associate employee",
+                onClick: openAssociateEmployeeForm,
+                excluded: !isFeatureEnabled("employee-management"),
+              },
+            ],
+            destructive: [
+              {
+                icon: "restart",
+                label: "Reinstall",
+                onClick: openReinstallModal,
+                excluded: !instance.is_wsl_instance,
+              },
+              {
+                icon: "close",
+                label: "Uninstall",
+                onClick: openUninstallModal,
+                excluded: !instance.is_wsl_instance,
+              },
+              {
+                icon: ICONS.delete,
+                label: "Remove from Landscape",
+                onClick: openRemoveFromLandscapeModal,
+              },
+              {
+                icon: "tidy",
+                label: "Sanitize",
+                onClick: openSanitizeModal,
+              },
+            ],
+          }}
+        />
+      </div>
+
+      <h5 className="u-no-margin--bottom">Instance status</h5>
+
+      <Row className="u-no-padding">
+        <Col size={3}>
+          <InfoItem
+            label="Status"
+            value={
+              <div className={classes.status}>
+                <Icon name={getStatusCellIconAndLabel(instance).icon ?? ""} />
+                <span>{getStatusCellIconAndLabel(instance).label}</span>
+              </div>
+            }
           />
-        </div>
-      </div>
-      <div className={classes.infoRow}>
-        <Row className="u-no-padding--left u-no-padding--right u-no-max-width">
-          {getInstanceInfoItems(instance, accessGroupOptions).map((item) => (
-            <Col size={4} key={item.label}>
-              <InfoItem {...item} />
-            </Col>
-          ))}
-        </Row>
-      </div>
+        </Col>
 
-      <div className={classes.tagSection}>
-        <Row className={classes.tagsRow}>
-          <Col size={4}>
-            <TagMultiSelect
-              labelClassName="p-text--small p-text--small-caps u-text--muted"
-              onTagsChange={(value) => {
-                setInstanceTags(value);
-              }}
-              tags={instanceTags}
-            />
-          </Col>
-          <Col size={2} className={classes.tagsButton}>
-            <ActionButton
-              type="button"
-              className="u-no-margin--bottom"
-              onClick={handleTagsUpdate}
-              disabled={!tagsChanged}
-              loading={isFetchingProfileChanges}
-            >
-              Update
-            </ActionButton>
-          </Col>
-        </Row>
-      </div>
+        <Col size={3}>
+          <InfoItem
+            label="Last ping time"
+            value={
+              instance.last_ping_time &&
+              moment(instance.last_ping_time).isValid() ? (
+                moment(instance.last_ping_time).format(DISPLAY_DATE_TIME_FORMAT)
+              ) : (
+                <NoData />
+              )
+            }
+          />
+        </Col>
 
-      {isModalVisible === "tags" && (
+        <Col size={3}>
+          <InfoItem
+            label="Access group"
+            value={
+              accessGroups.find(
+                (accessGroup) => accessGroup.name === instance.access_group,
+              )?.title || instance.access_group
+            }
+          />
+        </Col>
+      </Row>
+
+      <Row className="u-no-padding">
+        <Col size={3}>
+          <InfoItem label="Profiles" value={<NoData />} />
+        </Col>
+
+        <Col size={3}>
+          <InfoItem label="Associated employee" value={<NoData />} />
+        </Col>
+      </Row>
+
+      <hr />
+      <h5>Registration details</h5>
+
+      <Row className="u-no-padding">
+        <Col size={3}>
+          <InfoItem label="Hostname" value={instance.hostname} />
+        </Col>
+
+        <Col size={3}>
+          <InfoItem label="Instance ID" value={instance.id} />
+        </Col>
+
+        <Col size={3}>
+          <InfoItem label="Serial number" value={<NoData />} />
+        </Col>
+
+        <Col size={3}>
+          <InfoItem label="Product identifier" value={<NoData />} />
+        </Col>
+      </Row>
+
+      <Row className="u-no-padding">
+        <Col size={3}>
+          <InfoItem
+            label="OS"
+            value={instance.distribution_info?.description}
+          />
+        </Col>
+
+        <Col size={3}>
+          <InfoItem label="IP address" value={<NoData />} />
+        </Col>
+
+        <Col size={3}>
+          <InfoItem label="Registered" value={<NoData />} />
+        </Col>
+      </Row>
+
+      <hr />
+      <h5>Other</h5>
+
+      <Row className="u-no-padding">
+        <Col size={3}>
+          <InfoItem label="Annotations" value={<NoData />} />
+        </Col>
+
+        <Col size={3}>
+          <InfoItem label="Comment" value={instance.comment || <NoData />} />
+        </Col>
+      </Row>
+
+      {isTagModalOpen && (
         <TagsAddConfirmationModal
           instances={[instance]}
           tags={addedTags}
           onConfirm={updateTags}
           confirmButtonDisabled={isEditing}
-          close={closeModal}
+          close={closeTagModal}
           profileChangesCount={profileChangesCount}
         />
       )}
 
       <TextConfirmationModal
-        isOpen={isModalVisible === "remove"}
-        title="Remove instance from Landscape"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        onConfirm={handleRemoveInstance}
-        close={closeModal}
-        confirmationText={`remove ${instance.title}`}
-      >
-        <p>
-          Removing this {instance.title} will delete all associated data and
-          free up one license slot for another computer to be registered.
-        </p>
-      </TextConfirmationModal>
-
-      <TextConfirmationModal
-        isOpen={isModalVisible === "sanitize"}
+        isOpen={isSanitizeModalOpen}
         confirmButtonLabel="Sanitize"
         confirmButtonAppearance="negative"
         confirmButtonDisabled={isSanitizing}
         confirmButtonLoading={isSanitizing}
         onConfirm={handleSanitizeInstance}
-        close={closeModal}
+        close={closeSanitizeModal}
         confirmationText={`sanitize ${instance.title}`}
         title="Sanitize instance"
       >
@@ -508,14 +498,12 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </p>
       </TextConfirmationModal>
 
-      {rebootModalOpen && (
+      {isRestartModalOpen && (
         <ConfirmationModal
-          close={() => {
-            setRebootModalOpen(false);
-          }}
+          close={closeRestartModal}
           title="Restart instance"
           confirmButtonLabel="Restart"
-          confirmButtonAppearance="negative"
+          confirmButtonAppearance="positive"
           confirmButtonDisabled={isRebooting}
           confirmButtonLoading={isRebooting}
           onConfirm={async () => handleFormSubmit("reboot")}
@@ -541,14 +529,12 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </ConfirmationModal>
       )}
 
-      {shutdownModalOpen && (
+      {isShutDownModalOpen && (
         <ConfirmationModal
-          close={() => {
-            setShutdownModalOpen(false);
-          }}
+          close={closeShutDownModal}
           title="Shut down instance"
           confirmButtonLabel="Shutdown"
-          confirmButtonAppearance="negative"
+          confirmButtonAppearance="positive"
           confirmButtonDisabled={isShuttingDown}
           confirmButtonLoading={isShuttingDown}
           onConfirm={async () => handleFormSubmit("shutdown")}
@@ -573,6 +559,30 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           </Form>
         </ConfirmationModal>
       )}
+
+      {instance.is_wsl_instance && (
+        <>
+          <WslInstanceReinstallModal
+            close={closeReinstallModal}
+            instances={[instance as WslInstance]}
+            isOpen={isReinstallModalOpen}
+          />
+
+          <WslInstanceUninstallModal
+            close={closeUninstallModal}
+            instances={[instance as WslInstance]}
+            isOpen={isUninstallModalOpen}
+            onSuccess={goBack}
+          />
+        </>
+      )}
+
+      <InstanceRemoveFromLandscapeModal
+        close={closeRemoveFromLandscapeModal}
+        instances={[instance]}
+        isOpen={isRemoveFromLandscapeModalOpen}
+        onSuccess={goBack}
+      />
     </>
   );
 };
