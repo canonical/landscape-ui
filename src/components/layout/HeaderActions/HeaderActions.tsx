@@ -45,12 +45,9 @@ const HeaderActions: FC<HeaderActionsProps> = ({
   const [isCollapsedButtonVisible, setIsCollapsedButtonVisible] =
     useState(false);
 
-  const [previousWidths, setPreviousWidths] = useState({
-    element: 0,
-    buttonsElement: 0,
-  });
+  const [previousWidth, setPreviousWidth] = useState(0);
 
-  const visibleCheck = (element: HTMLElement, buttonsElement: HTMLElement) => {
+  const visibleCheck = (element: HTMLElement, parentElement: HTMLElement) => {
     if (
       collapsedActions.destructive.length ||
       collapsedActions.nondestructive.length
@@ -61,7 +58,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
     if (
       !element.lastElementChild ||
       element.lastElementChild.getBoundingClientRect().right <=
-        buttonsElement.getBoundingClientRect().right
+        parentElement.getBoundingClientRect().right
     ) {
       setIsCollapsedButtonVisible(false);
       return;
@@ -78,7 +75,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
     for (const index in nondestructiveActions) {
       if (
         element.children[index].getBoundingClientRect().right >
-        buttonsElement.getBoundingClientRect().right
+        element.getBoundingClientRect().right
       ) {
         newCollapsedActions.nondestructive.push(nondestructiveActions[index]);
       } else {
@@ -90,8 +87,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
       if (
         element.children[
           parseInt(index) + nondestructiveActions.length
-        ].getBoundingClientRect().right >
-        buttonsElement.getBoundingClientRect().right
+        ].getBoundingClientRect().right > element.getBoundingClientRect().right
       ) {
         newCollapsedActions.destructive.push(destructiveActions[index]);
       } else {
@@ -104,33 +100,25 @@ const HeaderActions: FC<HeaderActionsProps> = ({
   };
 
   const initialVisibleCheck: Ref<HTMLElement> = (element) => {
-    const buttonsElement = element?.parentElement;
+    const parentElement = element?.parentElement?.parentElement;
 
-    if (!buttonsElement) {
+    if (!parentElement) {
       return;
     }
 
-    visibleCheck(element, buttonsElement);
+    visibleCheck(element, parentElement);
 
     const observer = new ResizeObserver(() => {
-      const elementWidth = element.getBoundingClientRect().width;
-      const buttonsElementWidth = buttonsElement.getBoundingClientRect().width;
+      const { width } = parentElement.getBoundingClientRect();
 
-      if (
-        elementWidth !== previousWidths.element ||
-        buttonsElementWidth !== previousWidths.buttonsElement
-      ) {
+      if (width !== previousWidth) {
         setVisibleActions(initialVisibleActions);
         setCollapsedActions(initialCollapsedActions);
-        setPreviousWidths({
-          element: elementWidth,
-          buttonsElement: buttonsElementWidth,
-        });
+        setPreviousWidth(width);
       }
     });
 
-    observer.observe(element);
-    observer.observe(buttonsElement);
+    observer.observe(parentElement);
 
     return () => {
       observer.disconnect();
@@ -139,32 +127,30 @@ const HeaderActions: FC<HeaderActionsProps> = ({
 
   return (
     <div className={classes.container}>
-      {!!visibleActions.length && (
-        <div
-          className={classNames(classes.innerContainer, "p-segmented-control")}
-        >
-          <div ref={initialVisibleCheck} className="p-segmented-control__list">
-            {visibleActions.map(({ excluded: _, icon, label, ...action }) => (
-              <Button
-                className={classNames(
-                  classes.button,
-                  "u-no-margin--bottom p-segmented-control__button",
-                )}
-                key={label}
-                {...action}
-              >
-                <Icon name={icon} />
-                <span>{label}</span>
-              </Button>
-            ))}
-          </div>
+      <div
+        className={classNames(classes.innerContainer, "p-segmented-control")}
+      >
+        <div ref={initialVisibleCheck} className="p-segmented-control__list">
+          {visibleActions.map(({ excluded: _, icon, label, ...action }) => (
+            <Button
+              className={classNames(
+                classes.button,
+                "u-no-margin--bottom p-segmented-control__button",
+              )}
+              key={label}
+              {...action}
+            >
+              <Icon name={icon} />
+              <span>{label}</span>
+            </Button>
+          ))}
         </div>
-      )}
+      </div>
 
       {isCollapsedButtonVisible && (
         <ActionsMenu
           hasToggleIcon
-          toggleLabel="More actions"
+          toggleLabel={visibleActions.length ? "More actions" : "Actions"}
           toggleClassName="u-no-margin--bottom"
           toggleDisabled={[
             ...destructiveActions,

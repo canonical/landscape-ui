@@ -205,7 +205,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   distribution: string | null;
   distribution_info: DistributionInfo | null;
   employee_id: number | null;
-  hostname: string;
+  hostname: string | null;
   id: number;
   is_default_child: boolean | null;
   is_wsl_instance: boolean;

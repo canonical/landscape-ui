@@ -6,13 +6,12 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
+import { useGetEmployee } from "@/features/employees";
 import {
   currentInstanceCan,
   getStatusCellIconAndLabel,
   InstanceRemoveFromLandscapeModal,
-  TagsAddConfirmationModal,
 } from "@/features/instances";
-import { useGetProfileChanges } from "@/features/tags";
 import {
   WslInstanceReinstallModal,
   WslInstanceUninstallModal,
@@ -39,7 +38,7 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
 import type { FC } from "react";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense } from "react";
 import { useNavigate } from "react-router";
 import { useBoolean } from "usehooks-ts";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
@@ -65,36 +64,23 @@ interface InfoPanelProps {
 }
 
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
-  const [instanceTags, setInstanceTags] = useState([...instance.tags]);
-
-  const addedTags = instanceTags.filter((tag) => !instance.tags.includes(tag));
-
-  const navigate = useNavigate();
+  const { isFeatureEnabled } = useAuth();
   const debug = useDebug();
-  const { openActivityDetails } = useActivities();
+  const navigate = useNavigate();
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
-  const { getAccessGroupQuery } = useRoles();
+
+  const { openActivityDetails } = useActivities();
+  const { employee, isPending: isGettingEmployee } = useGetEmployee(
+    { id: instance.employee_id as number },
+    { enabled: !!instance.employee_id },
+  );
   const {
     rebootInstancesQuery,
     sanitizeInstanceQuery,
     shutdownInstancesQuery,
   } = useInstances();
-  const { editInstanceQuery } = useInstances();
-  const { isFeatureEnabled } = useAuth();
-
-  const {
-    isFetchingProfileChanges,
-    profileChangesCount,
-    refetchProfileChanges,
-  } = useGetProfileChanges(
-    {
-      instance_ids: [instance.id],
-      tags: addedTags,
-      limit: 10,
-    },
-    { enabled: false },
-  );
+  const { getAccessGroupQuery } = useRoles();
 
   const {
     value: isRestartModalOpen,
@@ -132,17 +118,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     setFalse: closeSanitizeModal,
   } = useBoolean();
 
-  const { value: isTagModalOpen, setFalse: closeTagModal } = useBoolean();
-
-  useEffect(() => {
-    setInstanceTags([...instance.tags]);
-  }, [instance.tags]);
-
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroups = getAccessGroupQueryResult?.data ?? [];
-
-  const { mutateAsync: editInstance, isPending: isEditing } = editInstanceQuery;
+  const { data: getAccessGroupQueryResult, isPending: isGettingAccessGroups } =
+    getAccessGroupQuery();
   const { mutateAsync: rebootInstances, isPending: isRebooting } =
     rebootInstancesQuery;
   const { mutateAsync: shutdownInstances, isPending: isShuttingDown } =
@@ -194,6 +171,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     onSubmit: handleSubmit,
   });
 
+  if (isGettingAccessGroups || isGettingEmployee) {
+    return <LoadingState />;
+  }
+
   const handleSanitizeInstance = async () => {
     try {
       const { data: sanitizeActivity } = await sanitizeInstance({
@@ -217,40 +198,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       debug(error);
     } finally {
       closeSanitizeModal();
-    }
-  };
-
-  const updateTags = async () => {
-    try {
-      await editInstance({
-        instanceId: instance.id,
-        tags: instanceTags,
-      });
-
-      notify.success({
-        title: "Tags updated",
-        message: `"${instance.title}" instance tags have been updated successfully`,
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      closeTagModal();
-    }
-  };
-
-  const handleTagsUpdate = async () => {
-    if (addedTags.length) {
-      const getProfileChangesResponse = await refetchProfileChanges();
-
-      if (!getProfileChangesResponse.isSuccess) {
-        debug(getProfileChangesResponse.error);
-      } else if (getProfileChangesResponse.data.data.count) {
-        setIsModalVisible("tags");
-      } else {
-        await updateTags();
-      }
-    } else {
-      await updateTags();
     }
   };
 
@@ -295,6 +242,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const goBack = () => {
     navigate("/instances", { replace: true });
   };
+
+  const accessGroups = getAccessGroupQueryResult
+    ? getAccessGroupQueryResult.data
+    : [];
 
   return (
     <>
@@ -386,7 +337,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           <InfoItem
             label="Last ping time"
             value={
-              instance.last_ping_time &&
               moment(instance.last_ping_time).isValid() ? (
                 moment(instance.last_ping_time).format(DISPLAY_DATE_TIME_FORMAT)
               ) : (
@@ -414,7 +364,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </Col>
 
         <Col size={3}>
-          <InfoItem label="Associated employee" value={<NoData />} />
+          <InfoItem
+            label="Associated employee"
+            value={employee ? employee.name : <NoData />}
+          />
         </Col>
       </Row>
 
@@ -423,7 +376,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
       <Row className="u-no-padding">
         <Col size={3}>
-          <InfoItem label="Hostname" value={instance.hostname} />
+          <InfoItem label="Hostname" value={instance.hostname ?? <NoData />} />
         </Col>
 
         <Col size={3}>
@@ -431,7 +384,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </Col>
 
         <Col size={3}>
-          <InfoItem label="Serial number" value={<NoData />} />
+          <InfoItem
+            label="Serial number"
+            value={instance.grouped_hardware?.system.serial ?? <NoData />}
+          />
         </Col>
 
         <Col size={3}>
@@ -443,12 +399,14 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         <Col size={3}>
           <InfoItem
             label="OS"
-            value={instance.distribution_info?.description}
+            value={
+              instance.distribution_info ? (
+                instance.distribution_info.description
+              ) : (
+                <NoData />
+              )
+            }
           />
-        </Col>
-
-        <Col size={3}>
-          <InfoItem label="IP address" value={<NoData />} />
         </Col>
 
         <Col size={3}>
@@ -468,17 +426,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           <InfoItem label="Comment" value={instance.comment || <NoData />} />
         </Col>
       </Row>
-
-      {isTagModalOpen && (
-        <TagsAddConfirmationModal
-          instances={[instance]}
-          tags={addedTags}
-          onConfirm={updateTags}
-          confirmButtonDisabled={isEditing}
-          close={closeTagModal}
-          profileChangesCount={profileChangesCount}
-        />
-      )}
 
       <TextConfirmationModal
         isOpen={isSanitizeModalOpen}
@@ -533,7 +480,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         <ConfirmationModal
           close={closeShutDownModal}
           title="Shut down instance"
-          confirmButtonLabel="Shutdown"
+          confirmButtonLabel="Shut down"
           confirmButtonAppearance="positive"
           confirmButtonDisabled={isShuttingDown}
           confirmButtonLoading={isShuttingDown}

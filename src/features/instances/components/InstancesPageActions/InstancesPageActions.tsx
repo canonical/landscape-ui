@@ -206,7 +206,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             }}
           >
             <Icon name="power-off" />
-            <span>Shutdown</span>
+            <span>Shut down</span>
           </Button>,
           <Button
             key="reboot-instances"
@@ -312,14 +312,14 @@ const InstancesPageActions = memo(function InstancesPageActions({
             setShutdownModalOpen(false);
           }}
           title="Shutting down selected instances"
-          confirmButtonLabel="Shutdown"
+          confirmButtonLabel="Shut down"
           confirmButtonAppearance="negative"
           confirmButtonLoading={shutdownInstancesLoading}
           confirmButtonDisabled={shutdownInstancesLoading}
           onConfirm={handleShutdownInstance}
         >
           <p>
-            Are you sure you want to shutdown {selectedInstances.length}
+            Are you sure you want to shut down {selectedInstances.length}
             {pluralize(selectedInstances.length, "instance")}?
           </p>
         </ConfirmationModal>

@@ -14,7 +14,7 @@ const useGetEmployee = (
 ) => {
   const authFetch = useFetch();
   const { id, ...params } = queryParams;
-  const { data, isPending } = useQuery<
+  const { data, isLoading } = useQuery<
     AxiosResponse<Employee>,
     AxiosError<ApiError>
   >({
@@ -25,7 +25,7 @@ const useGetEmployee = (
 
   return {
     employee: data?.data,
-    isPending,
+    isPending: isLoading,
   };
 };
 

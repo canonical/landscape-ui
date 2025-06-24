@@ -1,6 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import { ROOT_PATH } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
@@ -84,7 +83,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
       icon: "show",
       label: "View details",
       "aria-label": `View ${instance.title} instance details`,
-      onClick: async () => navigate(`${ROOT_PATH}instances/${instance.id}`),
+      onClick: async () => navigate(`instances/${instance.id}`),
     },
   ];
 
