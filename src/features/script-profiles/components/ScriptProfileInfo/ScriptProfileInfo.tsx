@@ -85,7 +85,10 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
 
       <hr />
 
-      <InfoItem label="Trigger" value={getTriggerLongText(profile)} />
+      <InfoItem
+        label="Trigger"
+        value={getTriggerLongText(profile) || <NoData />}
+      />
 
       <Row className="u-no-padding">
         {profile.trigger.trigger_type != "event" && (
@@ -114,7 +117,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
                 >
                   {moment(activity.creation_time)
                     .utc()
-                    .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
+                    .format(DISPLAY_DATE_TIME_FORMAT)}
                 </Link>
               ) : (
                 <NoData />

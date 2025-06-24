@@ -22,6 +22,9 @@ import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 import ScriptProfileAssociatedInstancesLink from "../ScriptProfileAssociatedInstancesLink";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import classes from "./ScriptProfilesList.module.scss";
+import { getCellProps, getRowProps } from "./helpers";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
+import TruncatedCell from "@/components/layout/TruncatedCell";
 
 const ScriptProfileDetails = lazy(
   async () => import("../ScriptProfileDetails"),
@@ -36,6 +39,8 @@ interface ScriptProfilesListProps {
 const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
+  const { expandedRowIndex, handleExpand, getTableRowsRef } =
+    useExpandableRow();
 
   const { editScriptProfile, isEditingScriptProfile } = useEditScriptProfile();
 
@@ -116,6 +121,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
     () => [
       {
         Header: "Name",
+        accessor: "title",
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => (
           <Button
             type="button"
@@ -130,6 +136,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
       {
         Header: "Status",
+        accessor: "archived",
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
           getStatusText(profile),
         getCellIcon: ({
@@ -142,6 +149,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
       {
         Header: "Associated instances",
+        accessor: "all_computers",
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => (
           <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
         ),
@@ -149,20 +157,45 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
 
       {
         Header: "Tags",
-        Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
-          profile.all_computers
-            ? "All instances"
-            : profile.tags.join(", ") || <NoData />,
+        accessor: "tags",
+        Cell: ({
+          row: { original: profile, index },
+        }: CellProps<ScriptProfile>) => {
+          if (profile.all_computers) {
+            return "All instances";
+          }
+
+          if (profile.tags.length === 0) {
+            return <NoData />;
+          }
+
+          return (
+            <TruncatedCell
+              content={profile.tags.map((tag) => (
+                <span className="truncatedItem" key={tag}>
+                  {tag}
+                </span>
+              ))}
+              isExpanded={index == expandedRowIndex}
+              onExpand={() => {
+                handleExpand(index);
+              }}
+              showCount
+            />
+          );
+        },
       },
 
       {
         Header: "Trigger",
+        accessor: "trigger",
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) =>
           getTriggerText(profile),
       },
 
       {
         Header: "Last run",
+        accessor: "activities.last_activity.creation_time",
         className: "date-cell",
         Cell: ({
           row: {
@@ -224,7 +257,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         },
       },
     ],
-    [],
+    [expandedRowIndex],
   );
 
   const removeModalProfile = () => {
@@ -232,11 +265,13 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
   };
 
   return (
-    <>
+    <div ref={getTableRowsRef}>
       <ResponsiveTable
         columns={columns}
         data={profiles}
         emptyMsg="No script profiles found according to your search parameters."
+        getCellProps={getCellProps(expandedRowIndex)}
+        getRowProps={getRowProps(expandedRowIndex)}
         minWidth={1200}
       />
       {modalProfile && (
@@ -245,7 +280,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
           removeProfile={removeModalProfile}
         />
       )}
-    </>
+    </div>
   );
 };
 

@@ -3,10 +3,12 @@ import type { Activity } from "@/features/activities";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse } from "./_helpers";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
   http.get(`${API_URL}script-profiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
+    const endpointStatus = getEndpointStatus();
 
     const search = searchParams.get("search") || "";
     const limit = parseInt(searchParams.get("limit") || "20");
@@ -21,6 +23,24 @@ export default [
       );
     });
 
+    if (
+      !endpointStatus.path ||
+      (endpointStatus.path && endpointStatus.path.includes("script-profiles"))
+    ) {
+      if (endpointStatus.status === "error") {
+        throw new HttpResponse(null, { status: 500 });
+      }
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json({
+          results: [],
+          count: 0,
+          next: null,
+          previous: null,
+        });
+      }
+    }
+
     return HttpResponse.json(
       generatePaginatedResponse({
         data: filteredProfiles,
@@ -32,9 +52,29 @@ export default [
 
   http.get(`${API_URL}script-profiles/:profileId/activities`, ({ request }) => {
     const { searchParams } = new URL(request.url);
+    const endpointStatus = getEndpointStatus();
 
     const limit = parseInt(searchParams.get("limit") || "20");
     const offset = parseInt(searchParams.get("offset") || "0");
+
+    if (
+      !endpointStatus.path ||
+      (endpointStatus.path &&
+        endpointStatus.path.includes("script-profiles/:profileId/activities"))
+    ) {
+      if (endpointStatus.status === "error") {
+        throw new HttpResponse(null, { status: 500 });
+      }
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json({
+          results: [],
+          count: 0,
+          next: null,
+          previous: null,
+        });
+      }
+    }
 
     const activities: Activity[] = [
       {

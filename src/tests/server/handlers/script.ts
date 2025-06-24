@@ -12,15 +12,33 @@ import { http, HttpResponse } from "msw";
 
 export default [
   http.get(`${API_URL}scripts`, async ({ request }) => {
-    const { status } = getEndpointStatus();
+    const endpointStatus = getEndpointStatus();
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit")) || 20;
     const offset = Number(url.searchParams.get("offset")) || 0;
     const search = url.searchParams.get("search") || "";
 
+    if (
+      !endpointStatus.path ||
+      (endpointStatus.path && endpointStatus.path.includes("scripts"))
+    ) {
+      if (endpointStatus.status === "error") {
+        throw new HttpResponse(null, { status: 500 });
+      }
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json({
+          results: [],
+          count: 0,
+          next: null,
+          previous: null,
+        });
+      }
+    }
+
     return HttpResponse.json(
       generatePaginatedResponse({
-        data: status === "empty" ? [] : scripts,
+        data: scripts,
         limit: limit,
         offset: offset,
         search: search,
