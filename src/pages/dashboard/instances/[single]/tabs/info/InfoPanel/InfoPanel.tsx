@@ -71,7 +71,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { setSidePanelContent } = useSidePanel();
 
   const { openActivityDetails } = useActivities();
-  const { employee, isPending: isGettingEmployee } = useGetEmployee(
+  const { employee, isLoading: isGettingEmployee } = useGetEmployee(
     { id: instance.employee_id as number },
     { enabled: !!instance.employee_id },
   );
