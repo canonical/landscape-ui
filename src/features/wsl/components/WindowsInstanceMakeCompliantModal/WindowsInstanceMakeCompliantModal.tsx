@@ -60,19 +60,17 @@ const WindowsInstanceMakeCompliantModal: FC<
       confirmationText={`make ${title} compliant`}
       onConfirm={makeCompliant}
     >
-      <p>
-        This will:
-        <ol>
-          <li>
-            Remove all child instances that haven’t been created by Landscape
-          </li>
-          <li>
-            Install the instances according to the profiles the parent is
-            associated with
-          </li>
-          <li>Reinstall instances that already exist but aren’t compliant</li>
-        </ol>
-      </p>
+      <p>This will:</p>
+      <ol>
+        <li>
+          Remove all child instances that haven’t been created by Landscape
+        </li>
+        <li>
+          Install the instances according to the profiles the parent is
+          associated with
+        </li>
+        <li>Reinstall instances that already exist but aren’t compliant</li>
+      </ol>
     </TextConfirmationModal>
   );
 };

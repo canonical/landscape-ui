@@ -31,8 +31,11 @@ const TextConfirmationModal: FC<TextConfirmationModalProps> = ({
     setInputText("");
   };
 
+  const isTextValid =
+    inputText.toLowerCase() === confirmationText.toLowerCase();
+
   const handleSubmit = async () => {
-    if (inputText === confirmationText) {
+    if (isTextValid) {
       await onConfirm();
       setInputText("");
     }
@@ -48,9 +51,7 @@ const TextConfirmationModal: FC<TextConfirmationModalProps> = ({
     <ConfirmationModal
       {...props}
       confirmButtonDisabled={
-        inputText.toLowerCase() !== confirmationText.toLowerCase() ||
-        confirmButtonLoading ||
-        confirmButtonDisabled
+        !isTextValid || confirmButtonLoading || confirmButtonDisabled
       }
       confirmButtonProps={{ type: "submit" }}
       confirmButtonLoading={confirmButtonLoading}

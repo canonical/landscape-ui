@@ -136,19 +136,27 @@ const HeaderActions: FC<HeaderActionsProps> = ({
         className={classNames(classes.innerContainer, "p-segmented-control")}
       >
         <div ref={initialVisibleCheck} className="p-segmented-control__list">
-          {visibleActions.map(({ excluded: _, icon, label, ...action }) => (
-            <Button
-              className={classNames(
-                classes.button,
-                "u-no-margin--bottom p-segmented-control__button",
-              )}
-              key={label}
-              {...action}
-            >
-              <Icon name={icon} />
-              <span>{label}</span>
-            </Button>
-          ))}
+          {visibleActions.map(
+            ({
+              collapsed: _collapsed,
+              excluded: _excluded,
+              icon,
+              label,
+              ...action
+            }) => (
+              <Button
+                className={classNames(
+                  classes.button,
+                  "u-no-margin--bottom p-segmented-control__button",
+                )}
+                key={label}
+                {...action}
+              >
+                <Icon name={icon} />
+                <span>{label}</span>
+              </Button>
+            ),
+          )}
         </div>
       </div>
 
