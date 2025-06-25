@@ -1,15 +1,16 @@
 import type { Activity } from "@/features/activities";
-import useFetchOld from "@/hooks/useFetchOld";
+import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 interface UninstallWslInstancesParams {
-  computer_ids: number[];
+  parent_id: number;
+  child_names: string[];
 }
 
 export const useUninstallWslInstances = () => {
-  const authFetchOld = useFetchOld();
+  const authFetch = useFetch();
   const queryClient = useQueryClient();
 
   const { isPending, mutateAsync } = useMutation<
@@ -17,8 +18,8 @@ export const useUninstallWslInstances = () => {
     AxiosError<ApiError>,
     UninstallWslInstancesParams
   >({
-    mutationFn: async (params) =>
-      authFetchOld.get("DeleteChildComputers", { params }),
+    mutationFn: async ({ parent_id, ...params }) =>
+      authFetch.post(`computers/${parent_id}/delete-children`, { params }),
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),

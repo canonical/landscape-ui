@@ -118,7 +118,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
           original.distribution_info.description,
       },
       {
-        Header: "WSL profiles",
+        Header: "WSL profile",
         Cell: <NoData />,
       },
       {
@@ -133,8 +133,8 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
           row: { original },
         }: CellProps<WslInstanceWithoutRelation>) => (
           <WslInstanceListActions
-            instance={original}
-            parentId={windowsInstance.id}
+            windowsInstance={windowsInstance}
+            wslInstance={original}
           />
         ),
       },

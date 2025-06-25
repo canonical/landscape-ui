@@ -1,39 +1,29 @@
-import { IS_DEV_ENV } from "@/constants";
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import type { SecurityProfile } from "../security-profiles";
 
-export function currentInstanceIs(
-  distribution: "ubuntu",
-  instance: InstanceWithoutRelation,
-): boolean {
-  if (!instance.distribution_info) {
-    return false;
-  }
+export function getFeatures(instance: InstanceWithoutRelation) {
+  const isUbuntu = instance.distribution_info?.distributor === "Ubuntu";
+  const isUbuntuCore =
+    instance.distribution_info?.distributor === "Ubuntu Core";
+  const isWindows = instance.distribution_info?.distributor === "Microsoft";
+  const isLinux = !isWindows && !!instance.distribution_info?.distributor;
+  const isNonUbuntuLinux = isLinux && !isUbuntu && !isUbuntuCore;
 
-  if (distribution === "ubuntu") {
-    return instance.distribution_info.description.includes("Ubuntu");
-  }
-
-  if (IS_DEV_ENV) {
-    console.error(`Error: The distribution "${distribution}" does not exist.`);
-  }
-
-  return false;
-}
-
-export function currentInstanceCan(
-  capability: "runScripts",
-  instance: InstanceWithoutRelation,
-): boolean {
-  if (capability === "runScripts") {
-    return currentInstanceIs("ubuntu", instance);
-  }
-
-  if (IS_DEV_ENV) {
-    console.error(`Error: The capability "${capability}" does not exist.`);
-  }
-
-  return false;
+  return {
+    employees: isUbuntu,
+    hardware: isLinux,
+    packages: isUbuntu,
+    power: isLinux,
+    pro: !isNonUbuntuLinux,
+    processes: isLinux,
+    sanitization: isLinux && !isUbuntuCore && !instance.is_wsl_instance,
+    scripts: isLinux,
+    snaps: isLinux,
+    users: isLinux && !isUbuntuCore,
+    uninstallation: instance.is_wsl_instance,
+    usg: isUbuntu,
+    wsl: isWindows,
+  };
 }
 
 export const hasRegularUpgrades = (

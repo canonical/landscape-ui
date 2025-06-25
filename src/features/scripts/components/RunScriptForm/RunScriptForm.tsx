@@ -1,7 +1,7 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
-import { currentInstanceCan } from "@/features/instances";
+import { getFeatures } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
@@ -128,7 +128,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
 
   const instances =
     getInstancesQueryResult?.data.results.filter((instance) => {
-      return currentInstanceCan("runScripts", instance);
+      return getFeatures(instance).scripts;
     }) ?? [];
 
   const instanceOptions: MultiSelectItem[] = instances.map(({ title, id }) => ({
@@ -138,7 +138,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
 
   const taggedInstances =
     getTaggedInstancesQueryResult?.data.results.filter((instance) => {
-      return currentInstanceCan("runScripts", instance);
+      return getFeatures(instance).scripts;
     }) ?? [];
 
   const trySubmit = () => {

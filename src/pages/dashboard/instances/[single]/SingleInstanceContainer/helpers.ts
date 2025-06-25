@@ -1,7 +1,7 @@
+import { getFeatures } from "@/features/instances";
 import type { KernelStatus } from "@/features/kernel";
 import type { Breadcrumb } from "@/types/Breadcrumb";
 import type { Instance } from "@/types/Instance";
-import { currentInstanceIs } from "../../../../../features/instances/helpers";
 
 export const getBreadcrumbs = (
   instance: Instance | null,
@@ -71,7 +71,7 @@ export const isInstancePackagesQueryEnabled = (
   childInstanceId: string | undefined,
 ) =>
   !!instance &&
-  currentInstanceIs("ubuntu", instance) &&
+  getFeatures(instance).packages &&
   (!childInstanceId || instance.parent?.id === parseInt(instanceId ?? ""));
 
 export const isLivepatchInfoQueryEnabled = (
@@ -80,7 +80,7 @@ export const isLivepatchInfoQueryEnabled = (
   childInstanceId: string | undefined,
 ) =>
   !!instance &&
-  currentInstanceIs("ubuntu", instance) &&
+  getFeatures(instance).packages &&
   (!childInstanceId || instance.parent?.id === parseInt(instanceId ?? ""));
 
 export const isUsnQueryEnabled = (
@@ -89,7 +89,7 @@ export const isUsnQueryEnabled = (
   childInstanceId: string | undefined,
 ) =>
   !!instance &&
-  currentInstanceIs("ubuntu", instance) &&
+  getFeatures(instance).packages &&
   (!childInstanceId || instance.parent?.id === parseInt(instanceId ?? ""));
 
 export const getQueryComputerIdsParam = (instance: Instance | null) =>

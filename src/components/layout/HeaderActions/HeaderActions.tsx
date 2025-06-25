@@ -56,9 +56,11 @@ const HeaderActions: FC<HeaderActionsProps> = ({
     }
 
     if (
-      !element.lastElementChild ||
-      element.lastElementChild.getBoundingClientRect().right <=
-        parentElement.getBoundingClientRect().right
+      (!element.lastElementChild ||
+        element.lastElementChild.getBoundingClientRect().right <=
+          parentElement.getBoundingClientRect().right) &&
+      nondestructiveActions.every((action) => !action.collapsed) &&
+      destructiveActions.every((action) => !action.collapsed)
     ) {
       setIsCollapsedButtonVisible(false);
       return;
@@ -66,34 +68,37 @@ const HeaderActions: FC<HeaderActionsProps> = ({
 
     setIsCollapsedButtonVisible(true);
 
-    const newVisibleActions = [];
+    const newVisibleActions: Action[] = [];
     const newCollapsedActions: {
       destructive: Action[];
       nondestructive: Action[];
     } = { nondestructive: [], destructive: [] };
 
-    for (const index in nondestructiveActions) {
+    nondestructiveActions.forEach((action, index) => {
       if (
         element.children[index].getBoundingClientRect().right >
-        element.getBoundingClientRect().right
+          element.getBoundingClientRect().right ||
+        action.collapsed
       ) {
-        newCollapsedActions.nondestructive.push(nondestructiveActions[index]);
+        newCollapsedActions.nondestructive.push(action);
       } else {
-        newVisibleActions.push(nondestructiveActions[index]);
+        newVisibleActions.push(action);
       }
-    }
+    });
 
-    for (const index in destructiveActions) {
+    destructiveActions.forEach((action, index) => {
+      index += nondestructiveActions.length;
+
       if (
-        element.children[
-          parseInt(index) + nondestructiveActions.length
-        ].getBoundingClientRect().right > element.getBoundingClientRect().right
+        element.children[index].getBoundingClientRect().right >
+          element.getBoundingClientRect().right ||
+        action.collapsed
       ) {
-        newCollapsedActions.destructive.push(destructiveActions[index]);
+        newCollapsedActions.destructive.push(action);
       } else {
-        newVisibleActions.push(destructiveActions[index]);
+        newVisibleActions.push(action);
       }
-    }
+    });
 
     setVisibleActions(newVisibleActions);
     setCollapsedActions(newCollapsedActions);

@@ -6,7 +6,7 @@ export { default as InstancesPageActions } from "./components/InstancesPageActio
 export { default as TagsAddConfirmationModal } from "./components/TagsAddConfirmationModal";
 export { FILTERS, STATUSES } from "./constants";
 export {
-  currentInstanceCan,
+  getFeatures,
   hasRegularUpgrades,
   hasSecurityUpgrades,
   hasUpgrades,

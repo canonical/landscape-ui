@@ -8,7 +8,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import { useGetEmployee } from "@/features/employees";
 import {
-  currentInstanceCan,
+  getFeatures,
   getStatusCellIconAndLabel,
   InstanceRemoveFromLandscapeModal,
 } from "@/features/instances";
@@ -271,23 +271,28 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 icon: "restart",
                 label: "Restart",
                 onClick: openRestartModal,
+                excluded: !getFeatures(instance).power,
               },
               {
                 icon: "power-off",
                 label: "Shut down",
                 onClick: openShutDownModal,
+                excluded: !getFeatures(instance).power,
               },
               {
                 icon: "code",
                 label: "Run script",
                 onClick: openRunScriptForm,
-                excluded: !currentInstanceCan("runScripts", instance),
+                excluded: !getFeatures(instance).scripts,
               },
               {
                 icon: ICONS.user,
                 label: "Associate employee",
                 onClick: openAssociateEmployeeForm,
-                excluded: !isFeatureEnabled("employee-management"),
+                collapsed: true,
+                excluded:
+                  !isFeatureEnabled("employee-management") ||
+                  !getFeatures(instance).employees,
               },
             ],
             destructive: [
@@ -295,23 +300,28 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 icon: "restart",
                 label: "Reinstall",
                 onClick: openReinstallModal,
-                excluded: !instance.is_wsl_instance,
+                collapsed: true,
+                excluded: !getFeatures(instance).uninstallation,
               },
               {
                 icon: "close",
                 label: "Uninstall",
                 onClick: openUninstallModal,
-                excluded: !instance.is_wsl_instance,
+                collapsed: true,
+                excluded: !getFeatures(instance).uninstallation,
               },
               {
                 icon: ICONS.delete,
                 label: "Remove from Landscape",
                 onClick: openRemoveFromLandscapeModal,
+                collapsed: true,
               },
               {
                 icon: "tidy",
                 label: "Sanitize",
                 onClick: openSanitizeModal,
+                collapsed: true,
+                excluded: !getFeatures(instance).sanitization,
               },
             ],
           }}
@@ -363,12 +373,15 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           <InfoItem label="Profiles" value={<NoData />} />
         </Col>
 
-        <Col size={3}>
-          <InfoItem
-            label="Associated employee"
-            value={employee ? employee.name : <NoData />}
-          />
-        </Col>
+        {getFeatures(instance).employees &&
+          isFeatureEnabled("employee-management") && (
+            <Col size={3}>
+              <InfoItem
+                label="Associated employee"
+                value={employee ? employee.name : <NoData />}
+              />
+            </Col>
+          )}
       </Row>
 
       <hr />
@@ -383,16 +396,23 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           <InfoItem label="Instance ID" value={instance.id} />
         </Col>
 
-        <Col size={3}>
-          <InfoItem
-            label="Serial number"
-            value={instance.grouped_hardware?.system.serial ?? <NoData />}
-          />
-        </Col>
+        {getFeatures(instance).hardware && (
+          <>
+            <Col size={3}>
+              <InfoItem
+                label="Serial number"
+                value={instance.grouped_hardware?.system.serial ?? <NoData />}
+              />
+            </Col>
 
-        <Col size={3}>
-          <InfoItem label="Product identifier" value={<NoData />} />
-        </Col>
+            <Col size={3}>
+              <InfoItem
+                label="Product identifier"
+                value={instance.grouped_hardware?.system.model ?? <NoData />}
+              />
+            </Col>
+          </>
+        )}
       </Row>
 
       <Row className="u-no-padding">
@@ -408,6 +428,24 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             }
           />
         </Col>
+
+        {getFeatures(instance).hardware && (
+          <Col size={3}>
+            <InfoItem
+              label="IP addresses"
+              type="truncated"
+              value={
+                Array.isArray(instance.grouped_hardware?.network) ? (
+                  instance.grouped_hardware.network
+                    .map((network) => network.ip)
+                    .join(", ")
+                ) : (
+                  <NoData />
+                )
+              }
+            />
+          </Col>
+        )}
 
         <Col size={3}>
           <InfoItem label="Registered" value={<NoData />} />
@@ -426,24 +464,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           <InfoItem label="Comment" value={instance.comment || <NoData />} />
         </Col>
       </Row>
-
-      <TextConfirmationModal
-        isOpen={isSanitizeModalOpen}
-        confirmButtonLabel="Sanitize"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isSanitizing}
-        confirmButtonLoading={isSanitizing}
-        onConfirm={handleSanitizeInstance}
-        close={closeSanitizeModal}
-        confirmationText={`sanitize ${instance.title}`}
-        title="Sanitize instance"
-      >
-        <p>
-          Sanitization will permanently delete the encryption keys for{" "}
-          {instance.title}, making its data completely irrecoverable. This
-          action cannot be undone. Please confirm your wish to proceed.
-        </p>
-      </TextConfirmationModal>
 
       {isRestartModalOpen && (
         <ConfirmationModal
@@ -520,6 +540,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             instances={[instance as WslInstance]}
             isOpen={isUninstallModalOpen}
             onSuccess={goBack}
+            parentId={(instance as WslInstance).parent.id}
           />
         </>
       )}
@@ -530,6 +551,24 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         isOpen={isRemoveFromLandscapeModalOpen}
         onSuccess={goBack}
       />
+
+      <TextConfirmationModal
+        isOpen={isSanitizeModalOpen}
+        confirmButtonLabel="Sanitize"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isSanitizing}
+        confirmButtonLoading={isSanitizing}
+        onConfirm={handleSanitizeInstance}
+        close={closeSanitizeModal}
+        confirmationText={`sanitize ${instance.title}`}
+        title="Sanitize instance"
+      >
+        <p>
+          Sanitization will permanently delete the encryption keys for{" "}
+          {instance.title}, making its data completely irrecoverable. This
+          action cannot be undone. Please confirm your wish to proceed.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

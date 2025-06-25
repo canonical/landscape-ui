@@ -15,7 +15,7 @@ import {
   Icon,
 } from "@canonical/react-components";
 import { lazy, memo, Suspense, useState } from "react";
-import { currentInstanceCan, hasUpgrades } from "../../helpers";
+import { getFeatures, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
 
@@ -74,7 +74,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       "Run script",
       <Suspense fallback={<LoadingState />}>
         {selectedInstances.some(
-          (instance) => !currentInstanceCan("runScripts", instance),
+          (instance) => !getFeatures(instance).scripts,
         ) ? (
           <div className={classes.warning}>
             <p>
@@ -86,8 +86,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
               <li>
                 run on{" "}
                 {createInstanceCountString(
-                  selectedInstances.filter((instance) =>
-                    currentInstanceCan("runScripts", instance),
+                  selectedInstances.filter(
+                    (instance) => getFeatures(instance).scripts,
                   ),
                 )}
               </li>
@@ -95,7 +95,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
                 not run on{" "}
                 {createInstanceCountString(
                   selectedInstances.filter(
-                    (instance) => !currentInstanceCan("runScripts", instance),
+                    (instance) => !getFeatures(instance).scripts,
                   ),
                 )}
               </li>
@@ -242,7 +242,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             onClick={handleRunScript}
             disabled={
               selectedInstances.every((instance) => {
-                return !currentInstanceCan("runScripts", instance);
+                return !getFeatures(instance).scripts;
               }) || isGettingInstances
             }
           >

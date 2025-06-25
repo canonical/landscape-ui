@@ -10,6 +10,7 @@ interface WslInstanceUninstallModalProps {
   readonly close: () => void;
   readonly instances: WslInstanceWithoutRelation[];
   readonly isOpen: boolean;
+  readonly parentId: number;
   readonly onSuccess?: () => void;
 }
 
@@ -18,6 +19,7 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
   instances,
   isOpen,
   onSuccess,
+  parentId,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -40,7 +42,8 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
   const uninstall = async () => {
     try {
       await uninstallWslInstances({
-        computer_ids: instances.map(({ id }) => id),
+        parent_id: parentId,
+        child_names: instances.map(({ title }) => title),
       });
 
       notify.success({

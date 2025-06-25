@@ -8,7 +8,7 @@ import { Icon, Tooltip } from "@canonical/react-components";
 import type { HTMLProps, ReactNode } from "react";
 import type { HeaderGroup, TableHeaderProps } from "react-table";
 import {
-  currentInstanceIs,
+  getFeatures,
   hasRegularUpgrades,
   hasSecurityUpgrades,
 } from "../../helpers";
@@ -188,7 +188,7 @@ const getUpgradesFromUpgrades = (
 };
 
 export const getUpgradesCellIconAndLabel = (instance: Instance) => {
-  if (!currentInstanceIs("ubuntu", instance)) {
+  if (!getFeatures(instance).packages) {
     return {
       icon: "",
       label: <NoData />,

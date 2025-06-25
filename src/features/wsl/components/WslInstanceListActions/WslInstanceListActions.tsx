@@ -2,7 +2,10 @@ import ListActions from "@/components/layout/ListActions";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Action } from "@/types/Action";
-import type { WslInstanceWithoutRelation } from "@/types/Instance";
+import type {
+  WindowsInstanceWithoutRelation,
+  WslInstanceWithoutRelation,
+} from "@/types/Instance";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -12,13 +15,13 @@ import WslInstanceReinstallModal from "../WslInstanceReinstallModal";
 import WslInstanceUninstallModal from "../WslInstanceUninstallModal";
 
 interface WslInstanceListActionsProps {
-  readonly instance: WslInstanceWithoutRelation;
-  readonly parentId: number;
+  readonly windowsInstance: WindowsInstanceWithoutRelation;
+  readonly wslInstance: WslInstanceWithoutRelation;
 }
 
 const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
-  instance,
-  parentId,
+  windowsInstance,
+  wslInstance,
 }) => {
   const { notify } = useNotify();
   const debug = useDebug();
@@ -53,12 +56,12 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   const setAsDefault = async () => {
     try {
       await setWslInstanceAsDefault({
-        child_id: instance.id,
-        parent_id: parentId,
+        child_id: wslInstance.id,
+        parent_id: windowsInstance.id,
       });
 
       notify.success({
-        title: `You have successfully marked ${instance.title} to be set as the default instance`,
+        title: `You have successfully marked ${wslInstance.title} to be set as the default instance`,
         message: `An activity has been queued to set it as the default instance.`,
       });
     } catch (error) {
@@ -68,7 +71,7 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     }
   };
 
-  const actions: Action[] | undefined = !instance.is_default_child
+  const actions: Action[] | undefined = !wslInstance.is_default_child
     ? [
         {
           icon: "show",
@@ -77,7 +80,7 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
         {
           icon: "starred",
           label: "Set as default",
-          "aria-label": `Set ${instance.title} as default`,
+          "aria-label": `Set ${wslInstance.title} as default`,
           onClick: openSetAsDefaultModal,
         },
       ]
@@ -87,20 +90,20 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     {
       icon: "restart",
       label: "Reinstall",
-      "aria-label": `Reinstall ${instance.title}`,
+      "aria-label": `Reinstall ${wslInstance.title}`,
 
       onClick: openReinstallModal,
     },
     {
       icon: "close",
       label: "Uninstall",
-      "aria-label": `Uninstall ${instance.title}`,
+      "aria-label": `Uninstall ${wslInstance.title}`,
       onClick: openUninstallModal,
     },
     {
       icon: "delete",
       label: "Remove from Landscape",
-      "aria-label": `Remove ${instance.title} from Landscape`,
+      "aria-label": `Remove ${wslInstance.title} from Landscape`,
       onClick: openRemoveFromLandscapeModal,
     },
   ];
@@ -108,14 +111,14 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${instance.title} instance actions`}
+        toggleAriaLabel={`${wslInstance.title} instance actions`}
         actions={actions}
         destructiveActions={destructiveActions}
       />
 
       {isSetAsDefaultModalOpen && (
         <ConfirmationModal
-          title={`Set ${instance.title} as default`}
+          title={`Set ${wslInstance.title} as default`}
           confirmButtonLabel="Set as default"
           confirmButtonAppearance="positive"
           confirmButtonDisabled={isSettingWslInstanceAsDefault}
@@ -124,26 +127,28 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
           close={closeSetAsDefaultModal}
         >
           <p>
-            Are you sure you want to set {instance.title} as default instance?
+            Are you sure you want to set {wslInstance.title} as default
+            instance?
           </p>
         </ConfirmationModal>
       )}
 
       <WslInstanceReinstallModal
         close={closeReinstallModal}
-        instances={[instance]}
+        instances={[wslInstance]}
         isOpen={isReinstallModalOpen}
       />
 
       <WslInstanceUninstallModal
         close={closeUninstallModal}
-        instances={[instance]}
+        instances={[wslInstance]}
         isOpen={isUninstallModalOpen}
+        parentId={windowsInstance.id}
       />
 
       <WslInstanceRemoveFromLandscapeModal
         close={closeRemoveFromLandscapeModal}
-        instances={[instance]}
+        instances={[wslInstance]}
         isOpen={isRemoveFromLandscapeModalOpen}
       />
     </>

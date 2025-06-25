@@ -198,6 +198,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         close={closeUninstallModal}
         instances={wslInstances}
         isOpen={isUninstallModalOpen}
+        parentId={windowsInstance.id}
       />
 
       <WslInstanceRemoveFromLandscapeModal

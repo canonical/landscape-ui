@@ -119,6 +119,7 @@ const WslProfileNonCompliantInstancesList: FC = () => {
             return (
               <WslInstanceActions
                 instance={instance as WslInstanceWithoutRelation}
+                parentId={0}
               />
             );
           } else {

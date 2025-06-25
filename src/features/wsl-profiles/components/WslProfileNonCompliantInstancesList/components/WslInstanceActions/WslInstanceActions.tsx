@@ -9,9 +9,13 @@ import { useBoolean } from "usehooks-ts";
 
 interface WslInstanceActionsProps {
   readonly instance: WslInstanceWithoutRelation;
+  readonly parentId: number;
 }
 
-const WslInstanceActions: FC<WslInstanceActionsProps> = ({ instance }) => {
+const WslInstanceActions: FC<WslInstanceActionsProps> = ({
+  instance,
+  parentId,
+}) => {
   const {
     value: isReinstallModalOpen,
     setTrue: openReinstallModal,
@@ -53,6 +57,7 @@ const WslInstanceActions: FC<WslInstanceActionsProps> = ({ instance }) => {
         close={closeUninstallModal}
         instances={[instance]}
         isOpen={isUninstallModalOpen}
+        parentId={parentId}
       />
     </>
   );
