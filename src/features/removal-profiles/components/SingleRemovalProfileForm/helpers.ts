@@ -9,7 +9,8 @@ export const getValidationSchema = (action: "add" | "edit") => {
         name: "required",
         message: "This field is required.",
         params: { action },
-        test: (value) => !!value || !["add", "add"].includes(action),
+        test: (value) =>
+          (value !== undefined && value !== null) || action !== "add",
       })
       .integer("Timeframe must be an integer value.")
       .min(1, "Timeframe must be at least 1.")
@@ -19,7 +20,7 @@ export const getValidationSchema = (action: "add" | "edit") => {
       name: "required",
       message: "This field is required.",
       params: { action },
-      test: (value) => !!value || !["add", "add"].includes(action),
+      test: (value) => !!value || action !== "add",
     }),
   });
 };

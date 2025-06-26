@@ -31,6 +31,7 @@ import employees from "./employees";
 import autoinstallFiles from "./autoinstallFiles";
 import features from "./features";
 import rebootProfiles from "./rebootProfiles";
+import removalProfiles from "./removalProfiles";
 
 export default [
   ...accessGroup,
@@ -53,6 +54,7 @@ export default [
   ...pockets,
   ...process,
   ...rebootProfiles,
+  ...removalProfiles,
   ...repo,
   ...savedSearches,
   ...securityProfiles,
