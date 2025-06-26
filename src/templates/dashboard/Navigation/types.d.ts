@@ -1,3 +1,5 @@
+import type { FeatureKey } from "@/types/FeatureKey";
+
 type Environment = "saas" | "selfHosted";
 
 export interface MenuItem {

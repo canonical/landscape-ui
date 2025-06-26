@@ -1,12 +1,14 @@
 import AppNotification from "@/components/layout/AppNotification";
 import LoadingState from "@/components/layout/LoadingState";
 import Redirecting from "@/components/layout/Redirecting";
+import { HOMEPAGE_PATH } from "@/constants";
 import FetchProvider from "@/context/fetch";
 import FetchOldProvider from "@/context/fetchOld";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
 import DashboardPage from "@/pages/dashboard";
+import type { FeatureKey } from "@/types/FeatureKey";
 import { useQueryClient } from "@tanstack/react-query";
 import type { FC, ReactNode } from "react";
 import { lazy, Suspense, useEffect } from "react";
@@ -19,8 +21,6 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router";
-import type { FeatureKey } from "@/types/FeatureKey";
-import { HOMEPAGE_PATH } from "@/constants";
 
 const OidcAuthPage = lazy(async () => import("@/pages/auth/handle/oidc"));
 const UbuntuOneAuthPage = lazy(
@@ -309,7 +309,11 @@ const App: FC = () => {
                 />
                 <Route
                   path="profiles/security"
-                  element={<SecurityProfilesPage />}
+                  element={
+                    <FeatureRoute feature="usg-profiles">
+                      <SecurityProfilesPage />
+                    </FeatureRoute>
+                  }
                 />
                 <Route
                   path="profiles/reboot"

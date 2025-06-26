@@ -59,6 +59,7 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "Security profiles",
         path: "/profiles/security",
+        requiresFeature: "usg-profiles",
       },
     ],
   },
