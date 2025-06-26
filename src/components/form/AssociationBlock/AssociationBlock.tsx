@@ -1,5 +1,5 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
-import useInstances from "@/hooks/useInstances";
+import { useGetTags } from "@/features/instances";
 import type { SelectOption } from "@/types/SelectOption";
 import { CheckboxInput, Chip } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
@@ -13,12 +13,10 @@ interface AssociationBlockProps<T extends AssociationBlockFormProps> {
 const AssociationBlock = <T extends AssociationBlockFormProps>({
   formik,
 }: AssociationBlockProps<T>) => {
-  const { getAllInstanceTagsQuery } = useInstances();
-
-  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
+  const { tags } = useGetTags();
 
   const tagOptions: SelectOption[] =
-    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
+    tags.map((tag) => ({
       label: tag,
       value: tag,
     })) ?? [];

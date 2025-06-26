@@ -1,6 +1,6 @@
 import type { AssociationBlockFormProps } from "@/components/form/AssociationBlock";
 import AssociationBlock from "@/components/form/AssociationBlock";
-import useInstances from "@/hooks/useInstances";
+import { useGetInstances } from "@/features/instances";
 import { Notification } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import { useEffect, useState } from "react";
@@ -9,21 +9,18 @@ import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "../constants";
 export default function useSecurityProfileFormAssociationStep<
   T extends AssociationBlockFormProps,
 >(formik: FormikContextType<T>) {
-  const { getInstancesQuery } = useInstances();
-
-  const { data: getInstancesQueryResult, isLoading: isInstancesPending } =
-    getInstancesQuery({
-      query: formik.values.all_computers
-        ? undefined
-        : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR "),
-      limit: 1,
-    });
+  const { instancesCount, isGettingInstances } = useGetInstances({
+    query: formik.values.all_computers
+      ? undefined
+      : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR "),
+    limit: 1,
+  });
 
   const [isAssociationLimitReached, setIsAssociationLimitReached] =
     useState(false);
 
   useEffect(() => {
-    if (!getInstancesQueryResult) {
+    if (instancesCount === undefined) {
       return;
     }
 
@@ -33,13 +30,12 @@ export default function useSecurityProfileFormAssociationStep<
     }
 
     setIsAssociationLimitReached(
-      getInstancesQueryResult.data.count >
-        SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
+      instancesCount > SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
     );
-  }, [getInstancesQueryResult]);
+  }, [instancesCount]);
 
   return {
-    isLoading: isInstancesPending,
+    isLoading: isGettingInstances,
     isValid: !isAssociationLimitReached,
     description:
       "Associate the security profile. Apply it to all instances or limit it to specific instances using a tag.",

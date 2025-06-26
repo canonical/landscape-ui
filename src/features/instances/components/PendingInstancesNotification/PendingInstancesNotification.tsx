@@ -1,10 +1,10 @@
+import LoadingState from "@/components/layout/LoadingState";
+import useSidePanel from "@/hooks/useSidePanel";
+import { pluralize } from "@/utils/_helpers";
+import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import useInstances from "@/hooks/useInstances";
-import { Button, Notification } from "@canonical/react-components";
-import useSidePanel from "@/hooks/useSidePanel";
-import LoadingState from "@/components/layout/LoadingState";
-import { pluralize } from "@/utils/_helpers";
+import { useGetPendingInstances } from "../../api";
 
 const PendingInstanceList = lazy(
   async () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -12,14 +12,10 @@ const PendingInstanceList = lazy(
 
 const PendingInstancesNotification: FC = () => {
   const { setSidePanelContent } = useSidePanel();
-  const { getPendingInstancesQuery } = useInstances();
 
-  const { data: getPendingInstancesQueryResult } = getPendingInstancesQuery();
+  const { pendingInstances } = useGetPendingInstances();
 
-  if (
-    !getPendingInstancesQueryResult ||
-    !getPendingInstancesQueryResult.data.length
-  ) {
+  if (!pendingInstances.length) {
     return null;
   }
 
@@ -27,7 +23,7 @@ const PendingInstancesNotification: FC = () => {
     setSidePanelContent(
       "Review Pending Instances",
       <Suspense fallback={<LoadingState />}>
-        <PendingInstanceList instances={getPendingInstancesQueryResult.data} />
+        <PendingInstanceList instances={pendingInstances} />
       </Suspense>,
       "large",
     );
@@ -36,8 +32,8 @@ const PendingInstancesNotification: FC = () => {
   return (
     <Notification severity="information" title="Pending instances">
       <span>
-        {`You currently have ${getPendingInstancesQueryResult.data.length} pending
-          	${pluralize(getPendingInstancesQueryResult.data.length, "instance")}
+        {`You currently have ${pendingInstances.length} pending
+          	${pluralize(pendingInstances.length, "instance")}
           	awaiting your review and approval. `}
       </span>
       <Button

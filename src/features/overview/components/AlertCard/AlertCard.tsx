@@ -1,13 +1,16 @@
+import LoadingState from "@/components/layout/LoadingState";
+import {
+  useGetInstances,
+  useGetPendingInstances,
+  type Status,
+} from "@/features/instances";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import classes from "./AlertCard.module.scss";
-import useInstances from "@/hooks/useInstances";
-import type { Status } from "@/features/instances";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-import { Icon } from "@canonical/react-components";
-import EmptyAlertCount from "./components/EmptyAlertCount";
 import AlertLink from "./components/AlertLink";
+import EmptyAlertCount from "./components/EmptyAlertCount";
 
 const PendingInstancesForm = lazy(
   () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -21,55 +24,46 @@ const AlertCard: FC<Status> = ({
   label,
   query,
 }) => {
-  const { getInstancesQuery, getPendingInstancesQuery } = useInstances();
   const { setSidePanelContent } = useSidePanel();
 
   const isPendingComputersAlert = alertType === "PendingComputersAlert";
 
   const {
-    data: getAlertsQueryResult,
-    isLoading: getAlertsQueryLoading,
-    isError: getAlertsQueryError,
-  } = getInstancesQuery(
+    instances: instancesWithAlert,
+    instancesCount: instancesWithAlertCount,
+    isGettingInstances: isGettingInstancesWithAlert,
+    isErrorInstances: isErrorInstancesWithAlert,
+  } = useGetInstances(
     {
       query,
       limit: 1,
       root_only: false,
     },
+    undefined,
     {
       enabled: !isPendingComputersAlert,
     },
   );
 
-  const {
-    data: getPendingInstancesQueryResult,
-    isLoading: getPendingInstancesQueryLoading,
-    error: getPendingInstancesQueryError,
-  } = getPendingInstancesQuery(undefined, {
-    enabled: isPendingComputersAlert,
-  });
+  const { pendingInstances, isGettingPendingInstances, pendingInstancesError } =
+    useGetPendingInstances(undefined, {
+      enabled: isPendingComputersAlert,
+    });
 
-  const alertData =
-    getAlertsQueryResult?.data.results ||
-    getPendingInstancesQueryResult?.data ||
-    [];
-
+  const alertData = isPendingComputersAlert
+    ? pendingInstances
+    : instancesWithAlert;
   const alertCount = Number(
-    isPendingComputersAlert
-      ? getPendingInstancesQueryResult?.data.length
-      : getAlertsQueryResult?.data.count,
+    isPendingComputersAlert ? pendingInstances.length : instancesWithAlertCount,
   );
-
-  const isLoading = getAlertsQueryLoading || getPendingInstancesQueryLoading;
-  const isError = getAlertsQueryError || getPendingInstancesQueryError;
+  const isLoading = isGettingInstancesWithAlert || isGettingPendingInstances;
+  const isError = isErrorInstancesWithAlert || pendingInstancesError;
 
   const handlePendingInstancesReview = () => {
     setSidePanelContent(
       "Review Pending Instances",
       <Suspense fallback={<LoadingState />}>
-        <PendingInstancesForm
-          instances={getPendingInstancesQueryResult?.data ?? []}
-        />
+        <PendingInstancesForm instances={pendingInstances} />
       </Suspense>,
       "large",
     );

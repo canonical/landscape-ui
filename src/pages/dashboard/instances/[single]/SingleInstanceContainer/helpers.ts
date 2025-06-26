@@ -4,7 +4,7 @@ import type { Breadcrumb } from "@/types/Breadcrumb";
 import type { Instance } from "@/types/Instance";
 
 export const getBreadcrumbs = (
-  instance: Instance | null,
+  instance?: Instance,
 ): Breadcrumb[] | undefined => {
   if (!instance) {
     return;
@@ -51,8 +51,7 @@ export const getPackageCount = (instance: Instance, requestResult: number) =>
 export const getUsnCount = (instance: Instance, requestResult: number) =>
   !instance.distribution ? 0 : requestResult;
 
-export const getInstanceTitle = (instance: Instance | null) =>
-  instance?.title ?? "";
+export const getInstanceTitle = (instance?: Instance) => instance?.title ?? "";
 
 export const getInstanceRequestId = (
   instanceId: string | undefined,
@@ -66,7 +65,7 @@ export const isInstanceQueryEnabled = (
 ) => !!instanceId && (!savedUserAccount || savedUserAccount === userAccount);
 
 export const isInstancePackagesQueryEnabled = (
-  instance: Instance | null,
+  instance: Instance | undefined,
   instanceId: string | undefined,
   childInstanceId: string | undefined,
 ) =>
@@ -75,7 +74,7 @@ export const isInstancePackagesQueryEnabled = (
   (!childInstanceId || instance.parent?.id === parseInt(instanceId ?? ""));
 
 export const isLivepatchInfoQueryEnabled = (
-  instance: Instance | null,
+  instance: Instance | undefined,
   instanceId: string | undefined,
   childInstanceId: string | undefined,
 ) =>
@@ -84,7 +83,7 @@ export const isLivepatchInfoQueryEnabled = (
   (!childInstanceId || instance.parent?.id === parseInt(instanceId ?? ""));
 
 export const isUsnQueryEnabled = (
-  instance: Instance | null,
+  instance: Instance | undefined,
   instanceId: string | undefined,
   childInstanceId: string | undefined,
 ) =>
@@ -92,14 +91,14 @@ export const isUsnQueryEnabled = (
   getFeatures(instance).packages &&
   (!childInstanceId || instance.parent?.id === parseInt(instanceId ?? ""));
 
-export const getQueryComputerIdsParam = (instance: Instance | null) =>
+export const getQueryComputerIdsParam = (instance?: Instance) =>
   instance ? [instance.id] : [];
 
-export const getQueryInstanceIdParam = (instance: Instance | null) =>
+export const getQueryInstanceIdParam = (instance?: Instance) =>
   instance ? instance.id : 0;
 
 export const isInstanceFound = (
-  instance: Instance | null,
+  instance: Instance | undefined,
   instanceId: string | undefined,
   childInstanceId: string | undefined,
 ) =>

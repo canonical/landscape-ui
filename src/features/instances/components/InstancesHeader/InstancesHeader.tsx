@@ -1,14 +1,15 @@
 import type { GroupedOption } from "@/components/filter";
 import { StatusFilter, TableFilterChips } from "@/components/filter";
+import ResponsiveTableFilters from "@/components/filter/ResponsiveTableFilters";
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import ColumnFilter from "@/components/form/ColumnFilter";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import { SearchBoxWithSavedSearches } from "@/features/saved-searches";
-import useInstances from "@/hooks/useInstances";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
 import { useState } from "react";
 import GroupFilter from "../../../../components/filter/GroupFilter";
+import { useGetAvailabilityZones, useGetTags } from "../../api";
 import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
@@ -17,7 +18,6 @@ import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
 import { INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesHeader.module.scss";
-import ResponsiveTableFilters from "@/components/filter/ResponsiveTableFilters";
 
 interface InstancesHeaderProps {
   readonly columnFilterOptions: ColumnFilterOption[];
@@ -27,21 +27,18 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
   const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const { getAccessGroupQuery } = useRoles();
-  const { getAllInstanceTagsQuery, getAvailabilityZonesQuery } = useInstances();
 
-  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
+  const { tags } = useGetTags();
 
   const tagOptions =
-    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
+    tags.map((tag) => ({
       label: tag,
       value: tag,
     })) ?? [];
 
-  const { data: getAvailabilityZonesQueryResult } = getAvailabilityZonesQuery();
+  const { availabilityZones } = useGetAvailabilityZones();
 
-  const availabilityZoneOptions = (
-    getAvailabilityZonesQueryResult?.data.values ?? []
-  ).reduce(
+  const availabilityZoneOptions = availabilityZones.reduce(
     (acc, zone) => {
       acc.push({
         label: zone,

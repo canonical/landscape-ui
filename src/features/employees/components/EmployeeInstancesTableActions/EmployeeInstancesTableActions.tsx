@@ -1,8 +1,8 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
 import { useActivities } from "@/features/activities";
+import { useRemoveInstances, useSanitizeInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import type { Action } from "@/types/Action";
 import type { Instance } from "@/types/Instance";
@@ -23,13 +23,10 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
   const { notify } = useNotify();
   const navigate = useNavigate();
   const { openActivityDetails } = useActivities();
-  const { removeInstancesQuery, sanitizeInstanceQuery } = useInstances();
 
-  const { mutateAsync: removeInstances, isPending: isRemoving } =
-    removeInstancesQuery;
+  const { removeInstances, isRemovingInstances } = useRemoveInstances();
 
-  const { mutateAsync: sanitizeInstanceMutation, isPending: isSanitizing } =
-    sanitizeInstanceQuery;
+  const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
 
   const handleCloseModal = () => {
     setSelectedAction("");
@@ -37,7 +34,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
 
   const handleSanitizeInstance = async () => {
     try {
-      const { data: sanitizeActivity } = await sanitizeInstanceMutation({
+      const { data: sanitizeActivity } = await sanitizeInstance({
         computer_id: instance.id,
         computer_title: instance.title,
       });
@@ -118,7 +115,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
         title={`Remove ${instance.title} instance`}
         confirmButtonLabel="Remove"
         confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
+        confirmButtonDisabled={isRemovingInstances}
         onConfirm={handleRemoveInstances}
         close={handleCloseModal}
         confirmationText={`remove ${instance.title}`}
@@ -133,7 +130,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
         title={`Sanitize "${instance.title}" instance`}
         confirmButtonLabel="Sanitize"
         confirmButtonAppearance="negative"
-        confirmButtonDisabled={isSanitizing}
+        confirmButtonDisabled={isSanitizingInstance}
         onConfirm={handleSanitizeInstance}
         close={handleCloseModal}
         confirmationText={`sanitize ${instance.title}`}

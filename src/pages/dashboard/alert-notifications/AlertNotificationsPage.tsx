@@ -7,7 +7,7 @@ import {
   AlertNotificationsList,
   useAlertsSummary,
 } from "@/features/alert-notifications";
-import useInstances from "@/hooks/useInstances";
+import { useGetPendingInstances } from "@/features/instances";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useNavigate } from "react-router";
@@ -15,37 +15,32 @@ import { useNavigate } from "react-router";
 const AlertNotificationsPage: FC = () => {
   const navigate = useNavigate();
   const { getAlertsSummaryQuery } = useAlertsSummary();
-  const { getPendingInstancesQuery } = useInstances();
 
   const {
     data: getAlertsSummaryQueryResult,
     isLoading: getAlertsSummaryQueryLoading,
   } = getAlertsSummaryQuery();
 
-  const {
-    data: getPendingInstancesQueryResult,
-    isLoading: getPendingInstancesQueryLoading,
-  } = getPendingInstancesQuery(undefined, {
-    enabled: !!getAlertsSummaryQueryResult?.data.alerts_summary.find(
-      (alert) => alert.alert_type === "PendingComputersAlert",
-    ),
-  });
+  const { pendingInstances, isGettingPendingInstances } =
+    useGetPendingInstances(undefined, {
+      enabled: !!getAlertsSummaryQueryResult?.data.alerts_summary.find(
+        (alert) => alert.alert_type === "PendingComputersAlert",
+      ),
+    });
 
   const alerts = getAlertsSummaryQueryResult?.data.alerts_summary || [];
-  const pendingInstances = getPendingInstancesQueryResult?.data || [];
-  const isLoading =
-    getAlertsSummaryQueryLoading || getPendingInstancesQueryLoading;
 
   return (
     <PageMain>
       <PageHeader title="Alerts" />
       <PageContent>
-        {isLoading && <LoadingState />}
-        {!isLoading && alerts.length === 0 && (
+        {getAlertsSummaryQueryLoading || isGettingPendingInstances ? (
+          <LoadingState />
+        ) : !alerts.length ? (
           <EmptyState
             title="No subscribed alerts found"
             icon="connected"
-            body={<p>You are not subscribed to any alerts yet</p>}
+            body={<p>You are not subscribed to any alerts yet.</p>}
             cta={[
               <Button
                 appearance="positive"
@@ -60,8 +55,7 @@ const AlertNotificationsPage: FC = () => {
               </Button>,
             ]}
           />
-        )}
-        {!isLoading && alerts.length > 0 && (
+        ) : (
           <AlertNotificationsList
             alerts={alerts}
             pendingInstances={pendingInstances}

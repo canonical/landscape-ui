@@ -1,11 +1,11 @@
+import FileInput from "@/components/form/FileInput";
+import { useGetInstances } from "@/features/instances";
+import type { SelectOption } from "@/types/SelectOption";
+import { Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { FC } from "react";
-import { Select } from "@canonical/react-components";
-import FileInput from "@/components/form/FileInput";
-import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
 import type { AddFormProps } from "../../types";
-import useInstances from "@/hooks/useInstances";
-import type { SelectOption } from "@/types/SelectOption";
+import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
 import { CONSTRAINTS_TYPE_OPTIONS } from "./constants";
 import classes from "./PackageProfileConstraintsTypeBlock.module.scss";
 
@@ -16,12 +16,10 @@ interface PackageProfileConstraintsTypeBlockProps {
 const PackageProfileConstraintsTypeBlock: FC<
   PackageProfileConstraintsTypeBlockProps
 > = ({ formik }) => {
-  const { getInstancesQuery } = useInstances();
-
-  const { data: getInstancesQueryResult } = getInstancesQuery();
+  const { instances } = useGetInstances();
 
   const instanceOptions: SelectOption[] =
-    getInstancesQueryResult?.data.results.map(({ id, title }) => ({
+    instances.map(({ id, title }) => ({
       label: title,
       value: `${id}`,
     })) ?? [];

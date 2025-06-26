@@ -3,16 +3,15 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { AlertsList, useAlerts } from "@/features/alerts";
-import useInstances from "@/hooks/useInstances";
+import { useGetTags } from "@/features/instances";
 import type { MultiSelectItem } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 
 const AlertsPage: FC = () => {
   const { getAlertsQuery } = useAlerts();
-  const { getAllInstanceTagsQuery } = useInstances();
 
-  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
+  const { tags } = useGetTags();
 
   const { data: getAlertsQueryResult, isLoading } = getAlertsQuery();
 
@@ -25,7 +24,7 @@ const AlertsPage: FC = () => {
   );
 
   const tagOptions: MultiSelectItem[] =
-    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
+    tags.map((tag) => ({
       label: tag,
       value: tag,
       group: "Tags",

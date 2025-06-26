@@ -2,8 +2,7 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { InstancesPageActions } from "@/features/instances";
-import useInstances from "@/hooks/useInstances";
+import { InstancesPageActions, useGetInstances } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import useSelection from "@/hooks/useSelection";
 import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer/InstancesContainer";
@@ -14,20 +13,15 @@ import { getQuery } from "./helpers";
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, groupBy, ...filters } = usePageParams();
 
-  const { getInstancesQuery } = useInstances();
-
-  const { data: getInstancesQueryResult, isLoading: isGettingInstances } =
-    getInstancesQuery({
-      query: getQuery(filters),
-      root_only: groupBy === "parent",
-      archived_only: filters.status === "archived",
-      with_alerts: true,
-      with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
-    });
-
-  const instances = getInstancesQueryResult?.data.results ?? [];
+  const { instances, instancesCount, isGettingInstances } = useGetInstances({
+    query: getQuery(filters),
+    root_only: groupBy === "parent",
+    archived_only: filters.status === "archived",
+    with_alerts: true,
+    with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+  });
 
   const {
     selectedItems: selectedInstances,
@@ -49,7 +43,7 @@ const InstancesPage: FC = () => {
       />
       <PageContent>
         <InstancesContainer
-          instanceCount={getInstancesQueryResult?.data.count}
+          instanceCount={instancesCount}
           instances={instances}
           isGettingInstances={isGettingInstances}
           selectedInstances={selectedInstances}

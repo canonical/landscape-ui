@@ -4,9 +4,9 @@ import { toCronPhrase } from "@/components/form/CronSchedule/components/CronSche
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
+import { useGetInstances } from "@/features/instances";
 import { ScriptDropdown, type Script } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
 import {
@@ -79,7 +79,6 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   const { closeSidePanel } = useSidePanel();
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
-  const { getInstancesQuery } = useInstances();
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,
@@ -192,19 +191,18 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     },
   });
 
-  const { data: getInstancesQueryResult, isLoading: isInstancesPending } =
-    getInstancesQuery({
-      query: formik.values.all_computers
-        ? undefined
-        : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR "),
-      limit: 1,
-    });
+  const { instancesCount, isGettingInstances } = useGetInstances({
+    query: formik.values.all_computers
+      ? undefined
+      : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR "),
+    limit: 1,
+  });
 
   const [isAssociationLimitReached, setIsAssociationLimitReached] =
     useState(false);
 
   useEffect(() => {
-    if (!getInstancesQueryResult || !scriptProfileLimits) {
+    if (instancesCount === undefined || !scriptProfileLimits) {
       return;
     }
 
@@ -214,10 +212,9 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     }
 
     setIsAssociationLimitReached(
-      getInstancesQueryResult.data.count >=
-        scriptProfileLimits.max_num_computers,
+      instancesCount >= scriptProfileLimits.max_num_computers,
     );
-  }, [getInstancesQueryResult]);
+  }, [instancesCount]);
 
   if (isGettingScriptProfileLimits) {
     return <LoadingState />;
@@ -403,7 +400,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
 
       <SidePanelFormButtons
         submitButtonDisabled={
-          submitting || isAssociationLimitReached || isInstancesPending
+          submitting || isAssociationLimitReached || isGettingInstances
         }
         submitButtonLoading={submitting}
         submitButtonText={submitButtonText}

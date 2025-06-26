@@ -1,3 +1,4 @@
+export * from "./api";
 export { default as InstanceList } from "./components/InstanceList";
 export { getStatusCellIconAndLabel } from "./components/InstanceList/helpers";
 export { default as InstanceRemoveFromLandscapeModal } from "./components/InstanceRemoveFromLandscapeModal";

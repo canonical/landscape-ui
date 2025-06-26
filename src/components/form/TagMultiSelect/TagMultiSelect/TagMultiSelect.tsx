@@ -1,14 +1,14 @@
-import classNames from "classnames";
-import type { ChangeEvent, CSSProperties, FC, KeyboardEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useOnClickOutside, useWindowSize } from "usehooks-ts";
-import { Input } from "@canonical/react-components";
 import InfoBox from "@/components/form/TagMultiSelect/InfoBox";
 import TagChips from "@/components/form/TagMultiSelect/TagChips";
 import TagList from "@/components/form/TagMultiSelect/TagList";
 import TagPrompt from "@/components/form/TagMultiSelect/TagPrompt";
 import LoadingState from "@/components/layout/LoadingState";
-import useInstances from "@/hooks/useInstances";
+import { useGetTags } from "@/features/instances";
+import { Input } from "@canonical/react-components";
+import classNames from "classnames";
+import type { ChangeEvent, CSSProperties, FC, KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useOnClickOutside, useWindowSize } from "usehooks-ts";
 import { validationSchema } from "./constants";
 import classes from "./TagMultiSelect.module.scss";
 
@@ -22,7 +22,7 @@ interface TagMultiSelectProps {
 
 const TagMultiSelect: FC<TagMultiSelectProps> = ({
   onTagsChange,
-  tags,
+  tags: selectedTags,
   label,
   labelClassName,
   required,
@@ -38,8 +38,6 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
     top: "100%",
     bottom: "auto",
   });
-
-  const { getAllInstanceTagsQuery } = useInstances();
 
   const clickContainerRef = useRef<HTMLDivElement>(null);
   const chipsContainerRef = useRef<HTMLDivElement>(null);
@@ -99,32 +97,25 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
   useOnClickOutside(clickContainerRef, handleDropdownClose);
 
   const handleChipDismiss = (chipValue: string) => {
-    onTagsChange(tags.filter((tag) => tag !== chipValue));
+    onTagsChange(selectedTags.filter((tag) => tag !== chipValue));
   };
 
-  const {
-    data: getAllInstanceTagsQueryResult,
-    isLoading: getAllInstanceTagsQueryLoading,
-  } = getAllInstanceTagsQuery();
+  const { tags, isGettingTags } = useGetTags();
 
   const filteredTags = useMemo(() => {
-    if (!getAllInstanceTagsQueryResult) {
-      return [];
+    if (!inputText && !selectedTags.length) {
+      return tags;
     }
 
-    if (!inputText && !tags.length) {
-      return getAllInstanceTagsQueryResult.data.results;
-    }
-
-    return getAllInstanceTagsQueryResult.data.results
-      .filter((tag) => !tags.includes(tag))
+    return tags
+      .filter((tag) => !selectedTags.includes(tag))
       .filter((tag) =>
         tag.toLowerCase().includes(inputText.trim().toLowerCase()),
       );
-  }, [getAllInstanceTagsQueryResult, inputText, tags]);
+  }, [tags, inputText, selectedTags]);
 
   const handleTagAdd = (tag: string) => {
-    onTagsChange([...tags, tag]);
+    onTagsChange([...selectedTags, tag]);
   };
 
   const handleTagCreate = () => {
@@ -210,7 +201,7 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
             onOverflowingItemsAmountChange={(amount) => {
               setOverflowingChipsAmount(amount);
             }}
-            tagData={tags}
+            tagData={selectedTags}
           />
           <div className={classNames("p-search-and-filter__box", classes.box)}>
             <div className={classes.inputContainer}>
@@ -250,8 +241,8 @@ const TagMultiSelect: FC<TagMultiSelectProps> = ({
             overflowingChipsAmount={overflowingChipsAmount}
           />
         </div>
-        {showDropdown && getAllInstanceTagsQueryLoading && <LoadingState />}
-        {showDropdown && !getAllInstanceTagsQueryLoading && (
+        {showDropdown && isGettingTags && <LoadingState />}
+        {showDropdown && !isGettingTags && (
           <div className="p-search-and-filter__panel" style={dropdownStyles}>
             <TagPrompt onTagAdd={handleTagCreate} search={inputText} />
 

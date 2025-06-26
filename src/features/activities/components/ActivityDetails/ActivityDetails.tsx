@@ -1,8 +1,10 @@
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { useGetInstances } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
 import {
   CodeSnippet,
   Col,
@@ -16,8 +18,6 @@ import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities } from "../../hooks";
 import type { Activity } from "../../types";
 import classes from "./ActivityDetails.module.scss";
-import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
 
 interface ActivityDetailsProps {
   readonly activityId: number;
@@ -34,7 +34,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
     redoActivitiesQuery,
     undoActivitiesQuery,
   } = useActivities();
-  const { getInstancesQuery } = useInstances();
 
   const {
     mutateAsync: approveActivities,
@@ -54,20 +53,18 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const activity = getSingleActivityQueryResult?.data;
 
-  const { data: getInstancesQueryResult } = getInstancesQuery(
+  const { instances } = useGetInstances(
     {
       query: `id:${activity?.computer_id}`,
       root_only: false,
     },
+    undefined,
     {
       enabled: !!activity?.computer_id,
     },
   );
 
-  const instanceTitle =
-    getInstancesQueryResult && getInstancesQueryResult.data.results.length > 0
-      ? getInstancesQueryResult.data.results[0].title
-      : "";
+  const instanceTitle = instances.length > 0 ? instances[0].title : "";
 
   const handleApproveActivity = async (a: Activity) => {
     try {

@@ -1,10 +1,10 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import type { InstanceWithoutRelation } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
+import { useRemoveInstances } from "../../api";
 
 interface InstanceRemoveFromLandscapeModalProps {
   readonly close: () => void;
@@ -19,10 +19,7 @@ const InstanceRemoveFromLandscapeModal: FC<
   const debug = useDebug();
   const { notify } = useNotify();
 
-  const { removeInstancesQuery } = useInstances();
-
-  const { mutateAsync: removeInstances, isPending: isRemoving } =
-    removeInstancesQuery;
+  const { removeInstances, isRemovingInstances } = useRemoveInstances();
 
   const [instance] = instances;
 
@@ -66,8 +63,8 @@ const InstanceRemoveFromLandscapeModal: FC<
       title={`Remove ${title} from Landscape`}
       confirmButtonLabel="Remove"
       confirmButtonAppearance="negative"
-      confirmButtonDisabled={isRemoving}
-      confirmButtonLoading={isRemoving}
+      confirmButtonDisabled={isRemovingInstances}
+      confirmButtonLoading={isRemovingInstances}
       confirmationText={`remove ${title}`}
       onConfirm={removeFromLandscape}
     >

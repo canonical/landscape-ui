@@ -11,6 +11,9 @@ import {
   getFeatures,
   getStatusCellIconAndLabel,
   InstanceRemoveFromLandscapeModal,
+  useRestartInstances,
+  useSanitizeInstance,
+  useShutDownInstances,
 } from "@/features/instances";
 import {
   WslInstanceReinstallModal,
@@ -18,7 +21,6 @@ import {
 } from "@/features/wsl";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -75,12 +77,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     { id: instance.employee_id as number },
     { enabled: !!instance.employee_id },
   );
-  const {
-    rebootInstancesQuery,
-    sanitizeInstanceQuery,
-    shutdownInstancesQuery,
-  } = useInstances();
+  const { restartInstances, isRestartingInstances } = useRestartInstances();
   const { getAccessGroupQuery } = useRoles();
+  const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
+  const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
 
   const {
     value: isRestartModalOpen,
@@ -120,12 +120,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   const { data: getAccessGroupQueryResult, isPending: isGettingAccessGroups } =
     getAccessGroupQuery();
-  const { mutateAsync: rebootInstances, isPending: isRebooting } =
-    rebootInstancesQuery;
-  const { mutateAsync: shutdownInstances, isPending: isShuttingDown } =
-    shutdownInstancesQuery;
-  const { mutateAsync: sanitizeInstance, isPending: isSanitizing } =
-    sanitizeInstanceQuery;
 
   const handleSubmit = async (values: ModalConfirmationFormProps) => {
     if (!values.action) {
@@ -142,8 +136,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     try {
       const { data: activity } =
         values.action === "reboot"
-          ? await rebootInstances(valuesToSubmit)
-          : await shutdownInstances(valuesToSubmit);
+          ? await restartInstances(valuesToSubmit)
+          : await shutDownInstances(valuesToSubmit);
 
       const notificationVerb =
         values.action === "reboot" ? "restarted" : "shut down";
@@ -471,8 +465,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           title="Restart instance"
           confirmButtonLabel="Restart"
           confirmButtonAppearance="positive"
-          confirmButtonDisabled={isRebooting}
-          confirmButtonLoading={isRebooting}
+          confirmButtonDisabled={isRestartingInstances}
+          confirmButtonLoading={isRestartingInstances}
           onConfirm={async () => handleFormSubmit("reboot")}
         >
           <Form onSubmit={async () => handleFormSubmit("reboot")} noValidate>
@@ -502,8 +496,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           title="Shut down instance"
           confirmButtonLabel="Shut down"
           confirmButtonAppearance="positive"
-          confirmButtonDisabled={isShuttingDown}
-          confirmButtonLoading={isShuttingDown}
+          confirmButtonDisabled={isShuttingDownInstances}
+          confirmButtonLoading={isShuttingDownInstances}
           onConfirm={async () => handleFormSubmit("shutdown")}
         >
           <Form onSubmit={async () => handleFormSubmit("shutdown")} noValidate>
@@ -556,8 +550,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         isOpen={isSanitizeModalOpen}
         confirmButtonLabel="Sanitize"
         confirmButtonAppearance="negative"
-        confirmButtonDisabled={isSanitizing}
-        confirmButtonLoading={isSanitizing}
+        confirmButtonDisabled={isSanitizingInstance}
+        confirmButtonLoading={isSanitizingInstance}
         onConfirm={handleSanitizeInstance}
         close={closeSanitizeModal}
         confirmationText={`sanitize ${instance.title}`}

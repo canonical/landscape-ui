@@ -1,37 +1,34 @@
-import useInstances from "@/hooks/useInstances";
-import type { FC } from "react";
-import type { Color } from "../../types";
-import { colorMap } from "../../constants";
-import { getChartData } from "./helpers";
-import PieChart from "../PieChart";
-import { STATUSES } from "@/features/instances";
 import { useTheme } from "@/context/theme";
+import { STATUSES, useGetInstances } from "@/features/instances";
+import type { FC } from "react";
+import { colorMap } from "../../constants";
+import type { Color } from "../../types";
+import PieChart from "../PieChart";
+import { getChartData } from "./helpers";
 
 const ChartContainer: FC = () => {
-  const { getInstancesQuery } = useInstances();
   const { isDarkMode } = useTheme();
 
-  const { data: securityUpgrades } = getInstancesQuery({
-    query: "alert:security-upgrades",
-    limit: 1,
-    root_only: false,
-  });
+  const { instancesCount: instancesWithSecurityUpgradesCount = 0 } =
+    useGetInstances({
+      query: "alert:security-upgrades",
+      limit: 1,
+      root_only: false,
+    });
 
-  const { data: packageUpgrades } = getInstancesQuery({
-    query: "alert:package-upgrades",
-    limit: 1,
-    root_only: false,
-  });
+  const { instancesCount: instancesWithPackageUpgradesCount = 0 } =
+    useGetInstances({
+      query: "alert:package-upgrades",
+      limit: 1,
+      root_only: false,
+    });
 
-  const { data: upToDateInstances } = getInstancesQuery({
+  const { instancesCount: upToDateInstancesCount = 0 } = useGetInstances({
     query: "NOT alert:package-upgrades",
     limit: 1,
     root_only: false,
   });
 
-  const upToDateInstancesCount = upToDateInstances?.data.count ?? 0;
-  const packageUpgradesCount = packageUpgrades?.data.count ?? 0;
-  const securityUpgradesCount = securityUpgrades?.data.count ?? 0;
   const chartData = [
     {
       count: upToDateInstancesCount,
@@ -39,14 +36,14 @@ const ChartContainer: FC = () => {
       colorKey: "green",
     },
     {
-      count: packageUpgradesCount,
+      count: instancesWithPackageUpgradesCount,
       title:
         STATUSES["PackageUpgradesAlert"].alternateLabel ??
         STATUSES["PackageUpgradesAlert"].label,
       colorKey: "orange",
     },
     {
-      count: securityUpgradesCount,
+      count: instancesWithSecurityUpgradesCount,
       title:
         STATUSES["SecurityUpgradesAlert"].alternateLabel ??
         STATUSES["SecurityUpgradesAlert"].label,
@@ -54,7 +51,8 @@ const ChartContainer: FC = () => {
     },
   ];
 
-  const totalInstances = upToDateInstancesCount + packageUpgradesCount;
+  const totalInstances =
+    upToDateInstancesCount + instancesWithPackageUpgradesCount;
 
   const data = getChartData({
     chartData: chartData.map((info) => {

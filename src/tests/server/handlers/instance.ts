@@ -2,9 +2,9 @@ import { API_URL, API_URL_OLD, COMMON_NUMBERS } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
   GetInstancesParams,
-  RemoveInstances,
-  SanitizeInstancesParams,
-} from "@/hooks/useInstances";
+  RemoveInstancesParams,
+  SanitizeInstanceParams,
+} from "@/features/instances";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
@@ -72,14 +72,14 @@ export default [
     return HttpResponse.json(activities[COMMON_NUMBERS.ZERO]);
   }),
 
-  http.post<never, SanitizeInstancesParams, Activity>(
+  http.post<never, SanitizeInstanceParams, Activity>(
     `${API_URL}computers/:computerId/sanitize`,
     async () => {
       return HttpResponse.json(activities[COMMON_NUMBERS.ZERO]);
     },
   ),
 
-  http.get<never, RemoveInstances, Instance[]>(
+  http.get<never, RemoveInstancesParams, Instance[]>(
     API_URL_OLD,
     async ({ request }) => {
       if (!isAction(request, ["RemoveComputers"])) {

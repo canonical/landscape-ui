@@ -1,7 +1,8 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import LoadingState from "@/components/layout/LoadingState";
+import { useEditInstance, useGetTags } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -30,11 +31,11 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
-  const { editInstanceQuery, getAllInstanceTagsQuery } = useInstances();
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
-  const { mutateAsync: editInstance } = editInstanceQuery;
+  const { data: getAccessGroupQueryResult, isPending: isGettingAccessGroups } =
+    getAccessGroupQuery();
+  const { tags, isGettingTags } = useGetTags();
+  const { editInstance } = useEditInstance();
 
   const handleSubmit = async (values: FormProps) => {
     try {
@@ -65,6 +66,10 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
     validationSchema: VALIDATION_SCHEMA,
   });
 
+  if (isGettingAccessGroups || isGettingTags) {
+    return <LoadingState />;
+  }
+
   const accessGroupOptions: SelectOption[] =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({
       label: title,
@@ -72,7 +77,7 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
     })) ?? [];
 
   const tagOptions: SelectOption[] =
-    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
+    tags.map((tag) => ({
       label: tag,
       value: tag,
     })) ?? [];
