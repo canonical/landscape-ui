@@ -85,7 +85,7 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove "${profile.title}" upgrade profile`,
+      "aria-label": `Remove "${profile.title}" profile`,
       onClick: openModal,
     },
   ];

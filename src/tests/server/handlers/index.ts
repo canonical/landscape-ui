@@ -30,6 +30,7 @@ import wsl from "./wsl";
 import employees from "./employees";
 import autoinstallFiles from "./autoinstallFiles";
 import features from "./features";
+import rebootProfiles from "./rebootProfiles";
 
 export default [
   ...accessGroup,
@@ -51,6 +52,7 @@ export default [
   ...packages,
   ...pockets,
   ...process,
+  ...rebootProfiles,
   ...repo,
   ...savedSearches,
   ...securityProfiles,
