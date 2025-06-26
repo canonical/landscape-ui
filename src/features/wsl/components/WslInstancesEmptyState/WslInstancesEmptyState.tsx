@@ -1,9 +1,9 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 
 const WslInstanceInstallForm = lazy(() => import("../WslInstanceInstallForm"));
 
@@ -12,7 +12,7 @@ const WslInstancesEmptyState: FC = () => {
 
   const handleWslInstanceInstall = () => {
     setSidePanelContent(
-      "Install new WSL instance",
+      "Create new WSL instance",
       <Suspense fallback={<LoadingState />}>
         <WslInstanceInstallForm />
       </Suspense>,
@@ -44,7 +44,7 @@ const WslInstancesEmptyState: FC = () => {
           type="button"
           onClick={handleWslInstanceInstall}
         >
-          Install new WSL instance
+          Create new WSL instance
         </Button>,
       ]}
     />

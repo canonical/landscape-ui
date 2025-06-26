@@ -1,5 +1,7 @@
+import { TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { WindowsInstanceMakeCompliantModal } from "@/features/wsl";
@@ -10,12 +12,7 @@ import type {
   WslInstance,
   WslInstanceWithoutRelation,
 } from "@/types/Instance";
-import {
-  Button,
-  CheckboxInput,
-  Icon,
-  ModularTable,
-} from "@canonical/react-components";
+import { Button, CheckboxInput, Icon } from "@canonical/react-components";
 import moment from "moment";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
@@ -93,7 +90,7 @@ const WslProfileNonCompliantInstancesList: FC = () => {
           instance.distribution_info?.description,
       },
       {
-        Header: "Profiles",
+        Header: "WSL profiles",
         Cell: <NoData />,
       },
       {
@@ -155,7 +152,13 @@ const WslProfileNonCompliantInstancesList: FC = () => {
         }
       />
 
-      <ModularTable columns={columns} data={[]} />
+      <TableFilterChips filtersToDisplay={["search"]} />
+
+      <ResponsiveTable
+        columns={columns}
+        data={[]}
+        emptyMsg="No instances found according to your search parameters."
+      />
 
       <WindowsInstanceMakeCompliantModal
         close={closeMakeCompliantModal}

@@ -1,5 +1,6 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import { getStatusCellIconAndLabel } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
@@ -8,7 +9,7 @@ import type {
   WindowsInstance,
   WslInstanceWithoutRelation,
 } from "@/types/Instance";
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
+import { CheckboxInput } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -148,10 +149,11 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
         windowsInstance={windowsInstance}
         wslInstances={selectedWslInstances}
       />
-      <ModularTable
+
+      <ResponsiveTable
         columns={columns}
         data={wslInstances}
-        emptyMsg="No WSL instances found"
+        emptyMsg="No WSL instances found according to your search parameters."
       />
     </>
   );

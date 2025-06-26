@@ -34,7 +34,7 @@ const WslProfilesList: FC = () => {
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
 
-  const { isGettingWslProfiles, wslProfiles } = useGetWslProfiles();
+  const { isGettingWslProfiles, wslProfiles } = useGetWslProfiles({ search });
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -43,16 +43,6 @@ const WslProfilesList: FC = () => {
       label: title,
       value: name,
     })) ?? [];
-
-  const filteredWslProfiles = useMemo(() => {
-    if (!search) {
-      return wslProfiles;
-    }
-
-    return wslProfiles.filter((profile) => {
-      return profile.title.toLowerCase().includes(search.toLowerCase());
-    });
-  }, [wslProfiles, search]);
 
   const columns = useMemo<Column<WslProfile>[]>(
     () => [
@@ -203,8 +193,8 @@ const WslProfilesList: FC = () => {
     <div ref={getTableRowsRef}>
       <ResponsiveTable
         columns={columns}
-        data={filteredWslProfiles}
-        emptyMsg={`No WSL profiles found with the search "${search}"`}
+        data={wslProfiles}
+        emptyMsg={`No WSL profiles found according to your search parameters.`}
         getCellProps={getCellProps(expandedRowIndex)}
         getRowProps={getRowProps(expandedRowIndex)}
         minWidth={1200}

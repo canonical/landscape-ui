@@ -10,6 +10,7 @@ import type { WslProfile } from "../types";
 interface GetWslProfilesParams {
   limit?: number;
   offset?: number;
+  search?: string;
 }
 
 export const useGetWslProfiles = (

@@ -63,7 +63,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
 
   const openInstallForm = () => {
     setSidePanelContent(
-      "Install new WSL instance",
+      "Create new WSL instance",
       <Suspense fallback={<LoadingState />}>
         <WslInstanceInstallForm />
       </Suspense>,
@@ -110,7 +110,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
                   hasIcon
                 >
                   <Icon name="plus" />
-                  <span>Install new instance</span>
+                  <span>Create new instance</span>
                 </Button>
 
                 <Button

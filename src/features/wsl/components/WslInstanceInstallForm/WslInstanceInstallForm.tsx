@@ -192,8 +192,8 @@ const WslInstanceInstallForm: FC = () => {
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Install"
-        submitButtonAriaLabel="Install new WSL instance"
+        submitButtonText="Create"
+        submitButtonAriaLabel="Create new WSL instance"
       />
     </Form>
   );
