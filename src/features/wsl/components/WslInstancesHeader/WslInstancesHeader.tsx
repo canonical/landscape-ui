@@ -127,6 +127,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
 
             <ResponsiveButtons
               collapseFrom="xxl"
+              menuLabel="More actions"
               buttons={[
                 <Button
                   type="button"
