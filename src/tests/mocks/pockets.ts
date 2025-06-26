@@ -73,7 +73,7 @@ export const pockets: Pocket[] = [
       key_id: "",
       name: "GPG key",
     },
-    id: 12,
+    id: 129,
     include_udeb: false,
     last_sync_activity: {
       id: 1,
@@ -116,7 +116,7 @@ export const pockets: Pocket[] = [
       key_id: "",
       name: "GPG key 2",
     },
-    id: 12,
+    id: 13,
     include_udeb: false,
     last_sync_activity: null,
     last_sync_time: null,
@@ -150,7 +150,7 @@ export const pockets: Pocket[] = [
       key_id: "",
       name: "GPG key 3",
     },
-    id: 12,
+    id: 112,
     include_udeb: false,
     last_sync_activity: {
       id: 1,
@@ -198,7 +198,7 @@ export const pockets: Pocket[] = [
       key_id: "",
       name: "GPG key 4",
     },
-    id: 12,
+    id: 172,
     include_udeb: false,
     package_count: 0,
     series: {
@@ -226,7 +226,7 @@ export const pockets: Pocket[] = [
       key_id: "",
       name: "GPG key",
     },
-    id: 12,
+    id: 125,
     include_udeb: false,
     last_sync_activity: {
       id: 1,
@@ -267,7 +267,7 @@ export const pockets: Pocket[] = [
       key_id: "",
       name: "GPG key",
     },
-    id: 12,
+    id: 32,
     include_udeb: false,
     last_sync_activity: {
       id: 1,

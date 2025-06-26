@@ -26,7 +26,9 @@ const RepositoryProfileFormPocketsPanel: FC<
     <>
       <RepositoryProfileFormSearch
         label="Search for pockets"
-        onSearchChange={(searchText) => setSearch(searchText)}
+        onSearchChange={(searchText) => {
+          setSearch(searchText);
+        }}
       />
 
       <fieldset

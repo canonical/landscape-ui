@@ -32,6 +32,7 @@ import autoinstallFiles from "./autoinstallFiles";
 import features from "./features";
 import rebootProfiles from "./rebootProfiles";
 import removalProfiles from "./removalProfiles";
+import repositoryProfiles from "./repositoryProfiles";
 
 export default [
   ...accessGroup,
@@ -56,6 +57,7 @@ export default [
   ...rebootProfiles,
   ...removalProfiles,
   ...repo,
+  ...repositoryProfiles,
   ...savedSearches,
   ...securityProfiles,
   ...script,

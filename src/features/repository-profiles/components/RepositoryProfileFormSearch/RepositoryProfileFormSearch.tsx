@@ -36,7 +36,9 @@ const RepositoryProfileFormSearch: FC<RepositoryProfileFormSearchProps> = ({
         name="search"
         placeholder="Search"
         value={inputText}
-        onChange={(event) => setInputText(event.target.value)}
+        onChange={(event) => {
+          setInputText(event.target.value);
+        }}
         onKeyDown={(event) => {
           if (event.key === "Enter") {
             event.preventDefault();
@@ -61,7 +63,9 @@ const RepositoryProfileFormSearch: FC<RepositoryProfileFormSearchProps> = ({
       <Button
         type="button"
         className="p-search-box__button"
-        onClick={() => onSearchChange(inputText)}
+        onClick={() => {
+          onSearchChange(inputText);
+        }}
         aria-label={label}
       >
         <Icon name={ICONS.search} />
