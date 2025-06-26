@@ -39,6 +39,7 @@ const WslProfileNonCompliantParentsLink: FC<
 
   return (
     <Button
+      className="u-no-padding--top u-no-margin--bottom"
       type="button"
       appearance="link"
       onClick={openNonCompliantInstancesList}
