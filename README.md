@@ -1,4 +1,4 @@
-# Landscape Dashboard Debian Build Branch
+# Landscape UI Debian Build Branch
 
 This branch is intended for use when building the `landscape-dashboard` package for distribution. The basic steps are as follows:
 
