@@ -24,7 +24,9 @@ const RepositoryProfileFormAptSourcesPanel: FC<
     <>
       <RepositoryProfileFormSearch
         label="Search for APT sources"
-        onSearchChange={(searchText) => setSearch(searchText)}
+        onSearchChange={(searchText) => {
+          setSearch(searchText);
+        }}
       />
       <fieldset
         className={classNames("checkbox-group", {

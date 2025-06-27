@@ -4,6 +4,7 @@ import { Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import type { RepositoryProfileFormValues } from "../../types";
 import type { AccessGroup } from "@/features/access-groups";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface RepositoryProfileFormDetailsPanelProps {
   readonly accessGroups: AccessGroup[];
@@ -26,32 +27,20 @@ const RepositoryProfileFormDetailsPanel: FC<
         label="Title"
         required={isTitleRequired}
         autoComplete="off"
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
         {...formik.getFieldProps("title")}
       />
       <Input
         type="text"
         label="Description"
         autoComplete="off"
-        error={
-          formik.touched.description && formik.errors.description
-            ? formik.errors.description
-            : undefined
-        }
+        error={getFormikError(formik, "description")}
         {...formik.getFieldProps("description")}
       />
       <Select
         label="Access group"
         options={accessGroupOptions}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
         {...formik.getFieldProps("access_group")}
       />
       <AssociationBlock formik={formik} />

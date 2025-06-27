@@ -114,7 +114,9 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     <Form onSubmit={formik.handleSubmit} noValidate>
       <RepositoryProfileFormTabs
         currentTab={currentTab}
-        onCurrentTabChange={(tab) => setCurrentTab(tab)}
+        onCurrentTabChange={(tab) => {
+          setCurrentTab(tab);
+        }}
       />
 
       <AppErrorBoundary>
