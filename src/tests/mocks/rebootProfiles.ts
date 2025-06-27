@@ -10,7 +10,7 @@ export const rebootProfiles: RebootProfile[] = [
     access_group: "global",
     tags: ["world"],
     all_computers: false,
-    num_computers: 0,
+    num_computers: 5,
     schedule: "FREQ=WEEKLY;BYDAY=mo,tu;BYHOUR=15;BYMINUTE=30",
   },
   {
@@ -21,7 +21,7 @@ export const rebootProfiles: RebootProfile[] = [
     deliver_delay_window: 5,
     access_group: "global",
     tags: [],
-    all_computers: false,
+    all_computers: true,
     num_computers: 0,
     schedule: "FREQ=WEEKLY;BYDAY=mo,tu;BYHOUR=18;BYMINUTE=35",
   },
