@@ -33,9 +33,10 @@ const AdministratorsPage: FC = () => {
         title="Administrators"
         actions={[
           <Button
+            appearance="positive"
             key="invite-administrator"
-            type="button"
             onClick={handleInviteAdministrator}
+            type="button"
           >
             Invite administrator
           </Button>,

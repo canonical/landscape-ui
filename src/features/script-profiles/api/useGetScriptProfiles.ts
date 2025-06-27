@@ -42,7 +42,7 @@ export const useGetScriptProfiles = (
       : params),
   };
 
-  const { data: response, isLoading } = useQuery<
+  const { data: response, isPending } = useQuery<
     AxiosResponse<ApiPaginatedResponse<ScriptProfile>>,
     AxiosError<ApiError>
   >({
@@ -53,7 +53,7 @@ export const useGetScriptProfiles = (
 
   return {
     scriptProfiles: response?.data.results ?? [],
-    scriptProfilesCount: response?.data.count ?? 0,
-    isGettingScriptProfiles: isLoading,
+    scriptProfilesCount: response?.data.count,
+    isGettingScriptProfiles: isPending,
   };
 };

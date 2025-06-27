@@ -1,5 +1,5 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { ACTIVITY_STATUSES, type Activity } from "@/features/activities";
+import { ACTIVITY_STATUSES, type ActivityCommon } from "@/features/activities";
 import { ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import { useMemo, type FC } from "react";
@@ -8,33 +8,36 @@ import type { CellProps, Column } from "react-table";
 import classes from "./ScriptProfileActivitiesList.module.scss";
 
 interface ScriptProfileActivitiesListProps {
-  readonly activities: Activity[];
+  readonly activities: ActivityCommon[];
 }
 
 const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
   activities,
 }) => {
-  const columns = useMemo<Column<Activity>[]>(
+  const columns = useMemo<Column<ActivityCommon>[]>(
     () => [
       {
         Header: "Run",
-        Cell: ({ row: { original: activity } }: CellProps<Activity>) => (
+        accessor: "creation_time",
+        Cell: ({ row: { original: activity } }: CellProps<ActivityCommon>) => (
           <Link
             className={`${classes.link} font-monospace`}
             to={`/activities?query=parent-id%3A${activity.id}`}
           >
             {moment(activity.creation_time)
               .utc()
-              .format(DISPLAY_DATE_TIME_FORMAT)}{" "}
+              .format(DISPLAY_DATE_TIME_FORMAT)}
           </Link>
         ),
       },
-
       {
         Header: "Status",
-        Cell: ({ row: { original: activity } }: CellProps<Activity>) =>
+        accessor: "activity_status",
+        Cell: ({ row: { original: activity } }: CellProps<ActivityCommon>) =>
           ACTIVITY_STATUSES[activity.activity_status].label,
-        getCellIcon: ({ row: { original: activity } }: CellProps<Activity>) =>
+        getCellIcon: ({
+          row: { original: activity },
+        }: CellProps<ActivityCommon>) =>
           ACTIVITY_STATUSES[activity.activity_status].icon,
       },
     ],

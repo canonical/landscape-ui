@@ -29,12 +29,11 @@ const ScriptsHeader: FC = () => {
             <StatusFilter options={STATUS_OPTIONS} label="Status" />
             <Button
               type="button"
-              appearance="positive"
               onClick={handleScriptCreate}
               className="u-no-margin--bottom"
               hasIcon
             >
-              <Icon name="plus" light />
+              <Icon name="plus" />
               <span>Add script</span>
             </Button>
           </div>
