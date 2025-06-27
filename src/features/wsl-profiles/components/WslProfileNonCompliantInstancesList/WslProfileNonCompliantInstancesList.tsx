@@ -1,5 +1,4 @@
-import { TableFilterChips } from "@/components/filter";
-import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import SidePanelTableFilterChips from "@/components/filter/TableFilterChips/components/SidePanelTableFilterChips";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
@@ -12,7 +11,13 @@ import type {
   WslInstance,
   WslInstanceWithoutRelation,
 } from "@/types/Instance";
-import { Button, CheckboxInput, Icon } from "@canonical/react-components";
+import {
+  Button,
+  CheckboxInput,
+  Icon,
+  SearchBox,
+} from "@canonical/react-components";
+import classNames from "classnames";
 import moment from "moment";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
@@ -23,7 +28,8 @@ import WslInstanceActions from "./components/WslInstanceActions";
 
 const WslProfileNonCompliantInstancesList: FC = () => {
   const [instances] = useState([]);
-  const [, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [search, setSearch] = useState("");
 
   const { selectedItems: selectedInstances } = useSelection(instances, true);
 
@@ -132,27 +138,45 @@ const WslProfileNonCompliantInstancesList: FC = () => {
     [],
   );
 
+  const clear = () => {
+    setInputValue("");
+    setSearch("");
+  };
+
   return (
     <>
-      <HeaderWithSearch
-        onSearch={setSearch}
-        actions={
-          <div className={classes.header}>
-            <Button
-              type="button"
-              className="u-no-margin"
-              hasIcon
-              onClick={openMakeCompliantModal}
-              disabled={!selectedInstances.length}
-            >
-              <Icon name="security-tick" />
-              <span>Make compliant</span>
-            </Button>
-          </div>
-        }
-      />
+      <div className={classes.header}>
+        <SearchBox
+          className={classNames("u-no-margin--bottom", classes.search)}
+          externallyControlled
+          value={inputValue}
+          onChange={setInputValue}
+          onClear={clear}
+          onSearch={setSearch}
+          autoComplete="off"
+        />
 
-      <TableFilterChips filtersToDisplay={["search"]} />
+        <Button
+          type="button"
+          className="u-no-margin"
+          hasIcon
+          onClick={openMakeCompliantModal}
+          disabled={!selectedInstances.length}
+        >
+          <Icon name="security-tick" />
+          <span>Make compliant</span>
+        </Button>
+      </div>
+
+      <SidePanelTableFilterChips
+        filters={[
+          {
+            label: "Search",
+            value: search || undefined,
+            clear,
+          },
+        ]}
+      />
 
       <ResponsiveTable
         columns={columns}

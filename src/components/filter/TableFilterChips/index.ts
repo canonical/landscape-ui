@@ -1,1 +1,1 @@
-export { default } from "./TableFilterChips";
+export { default } from "./components/TableFilterChips";

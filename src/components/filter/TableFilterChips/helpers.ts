@@ -1,11 +1,11 @@
 import { PARAMS_CONFIG } from "@/libs/pageParamsManager/constants";
+import type { SelectOption } from "@/types/SelectOption";
 import type {
   CheckRenderConditions,
   CheckRenderConditionsReturn,
   PluralChipsKey,
   SingularChipKey,
 } from "./types";
-import type { SelectOption } from "@/types/SelectOption";
 
 export const parseSearchQuery = (searchQuery: string) => {
   if (!searchQuery) {
@@ -40,6 +40,10 @@ export const getChipLabel = (
   options: SelectOption[] | undefined,
   valueToFind: string,
 ) => {
+  if (!valueToFind) {
+    return undefined;
+  }
+
   return (
     options?.find((option) => option.value === valueToFind)?.label ??
     valueToFind
