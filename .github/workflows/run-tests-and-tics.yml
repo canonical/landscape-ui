@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: npm install
         env:
-          npm_config_cache: /home/ubuntu/landscape-dashboard/.npm
+          npm_config_cache: /home/ubuntu/landscape-ui/.npm
       - name: Build the project
         run: npm run build
       - name: Install Playwright browsers
@@ -68,7 +68,7 @@ jobs:
       - name: Install dependencies
         run: npm install
         env:
-          npm_config_cache: /home/ubuntu/landscape-dashboard/.npm
+          npm_config_cache: /home/ubuntu/landscape-ui/.npm
       - name: Check memory usage
         run: free -m
       - name: Run tests
