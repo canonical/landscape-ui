@@ -33,7 +33,7 @@ jobs:
         if: always()
         with:
           name: vitest-report
-          path: ${{ github.workspace }}/coverage
+          path: ${{ github.workspace }}/reports
           retention-days: 30
 
   tics-report:
@@ -47,7 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: vitest-report
-          path: ${{ github.workspace }}/coverage
+          path: ${{ github.workspace }}/reports
       - name: TICS report
         uses: tiobe/tics-github-action@v3
         with:
