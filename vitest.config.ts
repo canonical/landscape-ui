@@ -29,6 +29,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["cobertura", "json-summary", "html"],
       reportOnFailure: true,
+      reportsDirectory: resolve(__dirname, "reports"),
       exclude: [
         "**/tests/**",
         "**/*.config.*",
@@ -36,6 +37,7 @@ export default defineConfig({
         "src/**/index.ts",
         "src/**/_data.{ts,tsx}",
         "coverage/**",
+        "reports/**",
         "dist/**",
         "**/[.]**",
         "packages/*/test?(s)/**",
