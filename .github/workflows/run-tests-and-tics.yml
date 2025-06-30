@@ -96,7 +96,7 @@ jobs:
       - name: TICS report
         uses: tiobe/tics-github-action@v3
         with:
-          project: landscape-dashboard
+          project: landscape-ui
           viewerUrl: https://canonical.tiobe.com/tiobeweb/TICS/api/cfg?name=default
           ticsAuthToken: ${{ secrets.TICSAUTHTOKEN }}
           installTics: true
