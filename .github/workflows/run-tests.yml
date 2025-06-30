@@ -78,6 +78,6 @@ jobs:
         if: always()
         with:
           name: coverage-report
-          path: ${{ github.workspace }}/coverage
+          path: ${{ github.workspace }}/reports
           retention-days: 30
 

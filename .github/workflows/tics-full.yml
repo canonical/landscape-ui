@@ -3,8 +3,8 @@ name: Full TICS report
 on: workflow_dispatch
 
 env:
-  VITE_API_URL: http://onward.landscape.yuriy.works:9091/api/v2/
-  VITE_API_URL_OLD: http://onward.landscape.yuriy.works:9091/api/
+  VITE_API_URL: https://landscape.yuriy.works/api/v2/
+  VITE_API_URL_OLD: https://landscape.yuriy.works/api/
   VITE_APP_TITLE: Landscape
   VITE_ROOT_PATH: /new_dashboard/
   VITE_SELF_HOSTED_ENV: true
@@ -33,7 +33,7 @@ jobs:
         if: always()
         with:
           name: vitest-report
-          path: ${{ github.workspace }}/coverage
+          path: ${{ github.workspace }}/reports
           retention-days: 30
 
   tics-report:
@@ -47,11 +47,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: vitest-report
-          path: ${{ github.workspace }}/coverage
+          path: ${{ github.workspace }}/reports
       - name: TICS report
-        env:
-          TICSAUTHTOKEN: ${{ secrets.TICSAUTHTOKEN }}
-        run: |
-          set -x
-          . ui/.venv-gh/bin/activate
-          TICSQServer -project landscape-dashboard -tmpdir /tmp/tics
+        uses: tiobe/tics-github-action@v3
+        with:
+          mode: qserver
+          project: landscape-dashboard
+          viewerUrl: https://canonical.tiobe.com/tiobeweb/TICS/api/cfg?name=default
+          ticsAuthToken: ${{ secrets.TICSAUTHTOKEN }}
+          installTics: true
