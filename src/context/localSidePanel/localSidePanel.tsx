@@ -4,6 +4,7 @@ import type { FC, ReactNode } from "react";
 import { createContext, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
+import classes from "./LocalSidePanelProvider.module.scss";
 
 interface LocalSidePanelProps {
   children: ReactNode;
@@ -44,7 +45,7 @@ const LocalSidePanelProvider: FC<LocalSidePanelProviderProps> = ({
         return ref.current
           ? createPortal(
               <>
-                <div className="p-panel__header">
+                <div className={classNames("p-panel__header", classes.header)}>
                   <h3 className="p-panel__title">{title}</h3>
                   <div className="p-panel__controls">
                     <Button
@@ -57,8 +58,14 @@ const LocalSidePanelProvider: FC<LocalSidePanelProviderProps> = ({
                     </Button>
                   </div>
                 </div>
-                <div className="p-panel__content">
-                  <div className="p-panel__inner">{content}</div>
+                <div
+                  className={classNames("p-panel__content", classes.outerDiv)}
+                >
+                  <div
+                    className={classNames("p-panel__inner", classes.innerDiv)}
+                  >
+                    {content}
+                  </div>
                 </div>
               </>,
               ref.current,
@@ -70,6 +77,7 @@ const LocalSidePanelProvider: FC<LocalSidePanelProviderProps> = ({
       <aside
         className={classNames("l-aside", {
           "is-collapsed": isCollapsed,
+          [classes.container]: !isCollapsed,
         })}
         ref={ref}
       />
