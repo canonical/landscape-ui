@@ -38,9 +38,9 @@ const PackageProfileConstraintsEditForm: FC<
     setCurrentPage(page);
   };
 
-  const handlePageSizeChange = (pageSize: number) => {
+  const handlePageSizeChange = (newPageSize: number) => {
     setSelectedIds([]);
-    setPageSize(pageSize);
+    setPageSize(newPageSize);
   };
 
   const debug = useDebug();
@@ -115,13 +115,19 @@ const PackageProfileConstraintsEditForm: FC<
               <PackageProfileConstraintsEditFormActions
                 filter={constraintType}
                 formik={formik}
-                onFilterChange={(value) => setConstraintType(value)}
+                onFilterChange={(value) => {
+                  setConstraintType(value);
+                }}
                 profile={profile}
                 selectedIds={selectedIds}
-                setSelectedIds={(value) => setSelectedIds(value)}
+                setSelectedIds={(value) => {
+                  setSelectedIds(value);
+                }}
               />
             }
-            onSearch={(searchText) => setSearch(searchText)}
+            onSearch={(searchText) => {
+              setSearch(searchText);
+            }}
             disabled={formik.values.id !== 0}
           />
 
@@ -129,7 +135,9 @@ const PackageProfileConstraintsEditForm: FC<
             filter={constraintType}
             formik={formik}
             isConstraintsLoading={getPackageProfileConstraintsQueryLoading}
-            onSelectedIdsChange={(value) => setSelectedIds(value)}
+            onSelectedIdsChange={(value) => {
+              setSelectedIds(value);
+            }}
             pageSize={pageSize}
             profileConstraints={
               getPackageProfileConstraintsQueryResult?.data.results

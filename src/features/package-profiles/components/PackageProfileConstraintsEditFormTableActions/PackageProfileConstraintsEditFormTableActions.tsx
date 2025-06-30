@@ -23,7 +23,10 @@ const PackageProfileConstraintsEditFormTableActions: FC<
           "u-no-margin--bottom u-no-padding",
           classes.actionButton,
         )}
-        onClick={() => formik.handleSubmit()}
+        onClick={() => {
+          formik.handleSubmit();
+        }}
+        aria-label={`Save changes for ${constraint.package} constraint`}
       >
         <Tooltip tooltipClassName={classes.tooltip} message="Save changes">
           <Icon
@@ -37,7 +40,9 @@ const PackageProfileConstraintsEditFormTableActions: FC<
         appearance="base"
         hasIcon
         className="u-no-margin--bottom u-no-padding"
-        onClick={() => formik.resetForm()}
+        onClick={() => {
+          formik.resetForm();
+        }}
         aria-label={`Cancel editing ${constraint.package} constraint`}
       >
         <Tooltip tooltipClassName={classes.tooltip} message="Cancel">

@@ -135,4 +135,30 @@ export const packageProfiles: PackageProfile[] = [
     all_computers: false,
     access_group: "global",
   },
+  {
+    id: 2,
+    name: "test-profile",
+    title: "Test Profile",
+    description: "This is a test profile",
+    creation_time: "2023-11-29T18:30:57Z",
+    modification_time: "2023-11-29T18:30:57Z",
+    version: "1",
+    constraints: [
+      {
+        id: 5,
+        constraint: "depends",
+        package: "test-package",
+        rule: "",
+        version: "",
+      },
+    ],
+    computers: {
+      constrained: [7, 8],
+      "non-compliant": [],
+      pending: [7, 8],
+    },
+    tags: [],
+    all_computers: false,
+    access_group: "global",
+  },
 ];

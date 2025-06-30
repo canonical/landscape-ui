@@ -13,6 +13,7 @@ import { usePackageProfiles } from "../../hooks";
 import type { AddFormProps, PackageProfileConstraintType } from "../../types";
 import PackageProfileConstraintsTypeBlock from "../PackageProfileConstraintsTypeBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import { getFormikError } from "@/utils/formikErrors";
 
 const PackageProfileCreateForm: FC = () => {
   const debug = useDebug();
@@ -86,11 +87,7 @@ const PackageProfileCreateForm: FC = () => {
         label="Name"
         required
         {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
       />
 
       <Input
@@ -99,22 +96,14 @@ const PackageProfileCreateForm: FC = () => {
         required
         autoComplete="off"
         {...formik.getFieldProps("description")}
-        error={
-          formik.touched.description && formik.errors.description
-            ? formik.errors.description
-            : undefined
-        }
+        error={getFormikError(formik, "description")}
       />
 
       <Select
         label="Access group"
         {...formik.getFieldProps("access_group")}
         options={accessGroupOptions}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
       />
 
       <AssociationBlock formik={formik} />

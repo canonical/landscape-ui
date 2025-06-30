@@ -13,6 +13,7 @@ import type { CopyPackageProfileParams } from "../../hooks";
 import { usePackageProfiles } from "../../hooks";
 import type { DuplicateFormProps, PackageProfile } from "../../types";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface PackageProfileDuplicateFormProps {
   readonly profile: PackageProfile;
@@ -91,11 +92,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
         label="Name"
         required
         {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
       />
 
       <Input
@@ -104,22 +101,14 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
         required
         autoComplete="off"
         {...formik.getFieldProps("description")}
-        error={
-          formik.touched.description && formik.errors.description
-            ? formik.errors.description
-            : undefined
-        }
+        error={getFormikError(formik, "description")}
       />
 
       <Select
         label="Access group"
         {...formik.getFieldProps("access_group")}
         options={accessGroupOptions}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
       />
 
       <AssociationBlock formik={formik} />

@@ -6,7 +6,7 @@ export default [
   http.get(
     `${API_URL}packageprofiles/:profileName/constraints`,
     ({ params, request }) => {
-      const searchParams = new URL(request.url).searchParams;
+      const { searchParams } = new URL(request.url);
 
       const search = searchParams.get("search");
       const limit = parseInt(searchParams.get("limit") || "20");
