@@ -17,8 +17,8 @@ const ScriptsPage: FC = () => {
       <PageHeader title="Scripts" />
       <PageContent>
         <Notification severity="caution">
-          <strong>This page only displays v2 scripts.</strong> To access older
-          (v1) scripts, go to{" "}
+          <strong>This page only displays v2 scripts.</strong> Older (v1)
+          scripts can be found in{" "}
           <Button
             appearance="link"
             onClick={async () => {
