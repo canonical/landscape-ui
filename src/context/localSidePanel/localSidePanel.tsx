@@ -1,9 +1,8 @@
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
-import { createContext, useEffect, useRef } from "react";
+import { createContext, useRef } from "react";
 import { createPortal } from "react-dom";
-import { useBoolean } from "usehooks-ts";
 import classes from "./LocalSidePanelProvider.module.scss";
 
 interface LocalSidePanelProps {
@@ -25,23 +24,9 @@ const LocalSidePanelProvider: FC<LocalSidePanelProviderProps> = ({
 }) => {
   const ref = useRef<HTMLElement>(null);
 
-  const {
-    value: isCollapsed,
-    setTrue: collapse,
-    setFalse: open,
-  } = useBoolean(true);
-
   return (
     <LocalSidePanelContext
       value={({ children: content, close, title }) => {
-        useEffect(() => {
-          open();
-
-          return () => {
-            collapse();
-          };
-        }, []);
-
         return ref.current
           ? createPortal(
               <>
@@ -74,13 +59,7 @@ const LocalSidePanelProvider: FC<LocalSidePanelProviderProps> = ({
       }}
     >
       {children}
-      <aside
-        className={classNames("l-aside", {
-          "is-collapsed": isCollapsed,
-          [classes.container]: !isCollapsed,
-        })}
-        ref={ref}
-      />
+      <aside className={classNames("l-aside", classes.container)} ref={ref} />
     </LocalSidePanelContext>
   );
 };
