@@ -1,0 +1,19 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.header {
+  align-items: baseline;
+  column-gap: $sph--large;
+}
+
+.outerDiv {
+  display: flex;
+  flex-grow: 1;
+  overflow: visible !important;
+}
+
+.innerDiv {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-width: 100%;
+}
