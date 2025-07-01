@@ -22,7 +22,7 @@ const WindowsInstanceActions: FC<WindowsInstanceActionsProps> = ({
       <ListActions
         destructiveActions={[
           {
-            icon: "security-ticked",
+            icon: "security-tick",
             label: "Make compliant",
             onClick: openMakeCompliantModal,
           },

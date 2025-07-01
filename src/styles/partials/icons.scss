@@ -289,6 +289,11 @@
   @include vf-icon-close($color-negative);
 }
 
+.p-icon--security-tick--negative {
+  @extend %icon;
+  @include vf-icon-security-tick($color-negative);
+}
+
 .p-icon--arrow-down-right {
   @extend %icon;
 

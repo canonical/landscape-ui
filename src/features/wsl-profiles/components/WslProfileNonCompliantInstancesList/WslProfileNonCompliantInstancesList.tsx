@@ -1,13 +1,20 @@
 import SidePanelTableFilterChips from "@/components/filter/TableFilterChips/components/SidePanelTableFilterChips";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { useGetInstances } from "@/features/instances";
 import { WindowsInstanceMakeCompliantModal } from "@/features/wsl";
 import useSelection from "@/hooks/useSelection";
+import {
+  DEFAULT_CURRENT_PAGE,
+  DEFAULT_PAGE_SIZE,
+} from "@/libs/pageParamsManager/constants";
 import type {
   Instance,
-  WindowsInstanceWithoutRelation,
+  WindowsInstance,
   WslInstance,
   WslInstanceWithoutRelation,
 } from "@/types/Instance";
@@ -22,16 +29,34 @@ import moment from "moment";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
+import type { WslProfile } from "../../types";
 import classes from "./WslProfileNonCompliantInstancesList.module.scss";
 import WindowsInstanceActions from "./components/WindowsInstanceActions";
 import WslInstanceActions from "./components/WslInstanceActions";
 
-const WslProfileNonCompliantInstancesList: FC = () => {
-  const [instances] = useState([]);
+interface WslProfileNonCompliantInstancesListProps {
+  readonly wslProfile: WslProfile;
+}
+
+const WslProfileNonCompliantInstancesList: FC<
+  WslProfileNonCompliantInstancesListProps
+> = ({ wslProfile }) => {
   const [inputValue, setInputValue] = useState("");
+  const [currentPage] = useState(DEFAULT_CURRENT_PAGE);
+  const [pageSize] = useState(DEFAULT_PAGE_SIZE);
   const [search, setSearch] = useState("");
 
-  const { selectedItems: selectedInstances } = useSelection(instances, true);
+  const { instances, isGettingInstances } = useGetInstances({
+    query: `${search} profile:wsl:${wslProfile.id}:noncompliant`.trim(),
+    root_only: true,
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+  });
+
+  const {
+    selectedItems: selectedInstances,
+    setSelectedItems: setSelectedInstances,
+  } = useSelection(instances, isGettingInstances);
 
   const {
     value: isMakeCompliantModalOpen,
@@ -49,6 +74,17 @@ const WslProfileNonCompliantInstancesList: FC = () => {
               label={<span className="u-off-screen">Toggle all instances</span>}
               inline
               disabled={!instances.length}
+              indeterminate={
+                !!selectedInstances.length &&
+                selectedInstances.length < instances.length
+              }
+              checked={
+                !!instances.length &&
+                selectedInstances.length === instances.length
+              }
+              onChange={({ currentTarget: { checked } }) => {
+                setSelectedInstances(checked ? instances : []);
+              }}
             />
             Instance name
           </>
@@ -72,11 +108,20 @@ const WslProfileNonCompliantInstancesList: FC = () => {
             return (
               <>
                 <CheckboxInput
+                  inline
                   label={
                     <span className="u-off-screen">
                       Select {instance.title}
                     </span>
                   }
+                  checked={selectedInstances.includes(instance)}
+                  onChange={({ currentTarget: { checked } }) => {
+                    setSelectedInstances(
+                      checked
+                        ? [...selectedInstances, instance]
+                        : selectedInstances.filter((i) => i !== instance),
+                    );
+                  }}
                 />
 
                 <StaticLink to={`/instances/${instance.id}`}>
@@ -89,6 +134,8 @@ const WslProfileNonCompliantInstancesList: FC = () => {
       },
       {
         Header: "Compliance",
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) =>
+          instance.is_wsl_instance ? <NoData /> : "Not compliant",
       },
       {
         Header: "OS",
@@ -114,28 +161,27 @@ const WslProfileNonCompliantInstancesList: FC = () => {
             return <NoData />;
           }
         },
+        className: classes.date,
       },
       {
-        Header: "Actions",
+        ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
           if (instance.is_wsl_instance) {
             return (
               <WslInstanceActions
-                instance={instance as WslInstanceWithoutRelation}
-                parentId={0}
+                instance={instance as WslInstance}
+                parentId={(instance as WslInstance).parent.id}
               />
             );
           } else {
             return (
-              <WindowsInstanceActions
-                instance={instance as WindowsInstanceWithoutRelation}
-              />
+              <WindowsInstanceActions instance={instance as WindowsInstance} />
             );
           }
         },
       },
     ],
-    [],
+    [instances, selectedInstances],
   );
 
   const clear = () => {
@@ -178,15 +224,27 @@ const WslProfileNonCompliantInstancesList: FC = () => {
         ]}
       />
 
-      <ResponsiveTable
-        columns={columns}
-        data={[]}
-        emptyMsg="No instances found according to your search parameters."
-      />
+      {isGettingInstances ? (
+        <LoadingState />
+      ) : (
+        <ResponsiveTable
+          columns={columns}
+          data={instances.flatMap((instance) => [
+            instance,
+            ...instance.children.map<WslInstance>((child) => ({
+              ...(child as WslInstanceWithoutRelation),
+              parent: instance as WindowsInstance,
+              children: [],
+            })),
+          ])}
+          emptyMsg="No Windows instances found according to your search parameters."
+          minWidth={1200}
+        />
+      )}
 
       <WindowsInstanceMakeCompliantModal
         close={closeMakeCompliantModal}
-        instances={selectedInstances}
+        instances={selectedInstances as WindowsInstance[]}
         isOpen={isMakeCompliantModalOpen}
       />
     </>

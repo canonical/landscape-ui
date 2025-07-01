@@ -15,7 +15,11 @@ const WslProfileCompliantParentsLink: FC<
     return <NoData />;
   }
 
-  if (!wslProfile.computers.compliant?.length) {
+  const compliantInstanceCount =
+    wslProfile.computers.constrained.length -
+    wslProfile.computers["non-compliant"].length;
+
+  if (!compliantInstanceCount) {
     return "0 instances";
   }
 
@@ -26,8 +30,7 @@ const WslProfileCompliantParentsLink: FC<
         search: `query=${encodeURIComponent(`profile:wsl:${wslProfile.id}:compliant`)}`,
       }}
     >
-      {wslProfile.computers.compliant?.length}{" "}
-      {pluralize(wslProfile.computers.compliant?.length, "instance")}
+      {compliantInstanceCount} {pluralize(compliantInstanceCount, "instance")}
     </StaticLink>
   );
 };

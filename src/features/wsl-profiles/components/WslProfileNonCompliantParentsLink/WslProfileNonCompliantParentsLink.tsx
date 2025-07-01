@@ -31,7 +31,7 @@ const WslProfileNonCompliantParentsLink: FC<
     setSidePanelContent(
       `Instances not compliant with ${wslProfile.title}`,
       <Suspense fallback={<LoadingState />}>
-        <WslProfileNonCompliantInstancesList />
+        <WslProfileNonCompliantInstancesList wslProfile={wslProfile} />
       </Suspense>,
       "large",
     );
