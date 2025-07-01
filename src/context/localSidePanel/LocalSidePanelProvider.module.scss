@@ -5,28 +5,6 @@
   flex-direction: column;
 }
 
-.medium {
-  max-width: 43rem !important;
-}
-
-.header {
-  align-items: baseline;
-  column-gap: $sph--large;
-}
-
-.outerDiv {
-  display: flex;
-  flex-grow: 1;
-  overflow: visible !important;
-}
-
-.innerDiv {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  max-width: 100%;
-}
-
 .container:empty {
   box-shadow: 0 0 0 0 transparent;
   transform: translateX(100%);
