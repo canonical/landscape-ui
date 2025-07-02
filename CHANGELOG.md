@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/canonical/landscape-ui/compare/v1.14.0...v1.14.1) (2025-07-01)
+
+
+### Bug Fixes
+
+* show scripts warning ([#293](https://github.com/canonical/landscape-ui/issues/293)) ([6a96a14](https://github.com/canonical/landscape-ui/commit/6a96a141320b2dd95a32a7fe0291ddf11a7336b3))
+
 # [1.14.0](https://github.com/canonical/landscape-dashboard/compare/v1.13.2...v1.14.0) (2025-06-19)
 
 
