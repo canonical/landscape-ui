@@ -1,0 +1,22 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.outerDiv {
+  display: flex;
+  flex-grow: 1;
+  overflow: visible;
+}
+
+.innerDiv {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-width: 100%;
+}
+
+.alignCenter {
+  align-items: center;
+}
+
+.alignLeft {
+  align-items: flex-start;
+}

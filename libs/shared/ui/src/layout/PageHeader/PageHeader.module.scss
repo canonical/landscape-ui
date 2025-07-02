@@ -1,0 +1,18 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.breadcrumbs {
+  margin-top: $spv--large;
+}
+
+.controls,
+.visualTitle {
+  flex-shrink: 0;
+}
+
+.sticky {
+  background-color: $color-x-light;
+  position: sticky;
+  top: 0;
+  z-index: 350;
+}
