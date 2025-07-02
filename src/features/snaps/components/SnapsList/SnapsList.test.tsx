@@ -1,13 +1,13 @@
+import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { setScreenSize } from "@/tests/helpers";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import moment from "moment";
 import { describe, expect, vi } from "vitest";
 import SnapsList from "./SnapsList";
-import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import NoData from "@/components/layout/NoData";
-import { setScreenSize } from "@/tests/helpers";
 
 async function findSnapByName(name: string) {
   return await screen.findByRole("button", {
@@ -131,7 +131,7 @@ describe("SnapsList", () => {
     });
 
     it("should open side panel when snap in table is clicked", async () => {
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByTestId("globalSidePanel");
       const heading = within(form).getByText(
         `${selectedSnap.snap.name} details`,
       );
@@ -140,7 +140,7 @@ describe("SnapsList", () => {
 
     it("should show side panel action buttons", async () => {
       const buttonsNames = ["Switch channel", "Uninstall", "Hold", "Refresh"];
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByTestId("globalSidePanel");
 
       buttonsNames.forEach((buttonName) => {
         const button = within(form).getByText(buttonName);
@@ -171,7 +171,7 @@ describe("SnapsList", () => {
           value: selectedSnap.snap.publisher.username,
         },
       ];
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByTestId("globalSidePanel");
       fieldsToCheck.forEach((field) => {
         expect(form).toHaveInfoItem(field.label, field.value);
       });
