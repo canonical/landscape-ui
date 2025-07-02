@@ -3,9 +3,10 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import classNames from "classnames";
 import { useContext, type FC, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import classes from "./LocalSidePanel.module.scss";
+import { AppErrorBoundary } from "../AppErrorBoundary";
+import classes from "./SidePanel.module.scss";
 
-interface LocalSidePanelProps {
+interface SidePanelProps {
   children: ReactNode;
   onClose: () => void;
   size: "small" | "medium" | "large";
@@ -14,7 +15,7 @@ interface LocalSidePanelProps {
   expanded?: boolean;
 }
 
-const LocalSidePanel: FC<LocalSidePanelProps> = ({
+const SidePanel: FC<SidePanelProps> = ({
   children,
   closeButtonAriaLabel = "Close side panel",
   expanded,
@@ -22,9 +23,9 @@ const LocalSidePanel: FC<LocalSidePanelProps> = ({
   size,
   title,
 }) => {
-  const applicationAside = useContext(LocalSidePanelContext);
+  const sidePanel = useContext(LocalSidePanelContext);
 
-  if (applicationAside && expanded) {
+  if (sidePanel && expanded) {
     return createPortal(
       <>
         <div className={classNames("p-panel__header", classes.header)}>
@@ -49,14 +50,14 @@ const LocalSidePanel: FC<LocalSidePanelProps> = ({
           })}
         >
           <div className={classNames("p-panel__inner", classes.innerDiv)}>
-            {children}
+            <AppErrorBoundary>{children}</AppErrorBoundary>
           </div>
         </div>
       </>,
 
-      applicationAside,
+      sidePanel,
     );
   }
 };
 
-export default LocalSidePanel;
+export default SidePanel;
