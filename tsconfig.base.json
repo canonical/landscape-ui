@@ -19,6 +19,7 @@
     "paths": {
       "@admin/*": ["apps/admin-ui/src/*"],
       "@employee/*": ["apps/employee-ui/src/*"],
+      "@landscape/types": ["libs/shared/types/src/index.ts"],
       "@landscape/ui": ["libs/shared/ui/src/index.ts"]
     },
     "types": ["vitest/globals", "vitest/jsdom"]

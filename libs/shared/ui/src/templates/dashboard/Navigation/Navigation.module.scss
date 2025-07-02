@@ -1,0 +1,84 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/base_icon-definitions";
+@import "vanilla-framework/scss/settings_animations";
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/global_functions";
+
+.label {
+  color: $color-x-light;
+}
+
+.badge {
+  margin-right: 0.3rem;
+}
+
+.hasBadge {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.link {
+  padding-bottom: 0.7 * $sp-unit !important;
+  padding-left: 4.5 * $sp-unit !important;
+  padding-top: 0.7 * $sp-unit !important;
+
+  &::before {
+    width: 1px !important;
+  }
+
+  &::after {
+    margin-top: $spv--x-small !important;
+  }
+
+  &:focus,
+  &:hover {
+    background-color: #373737 !important;
+  }
+}
+
+.accordionButton {
+  padding-bottom: 0.7 * $sp-unit !important;
+  padding-left: 4.5 * $sp-unit !important;
+  padding-top: 0.7 * $sp-unit !important;
+
+  &::before {
+    content: none !important;
+  }
+
+  &::after {
+    @include vf-icon-chevron($color-mid);
+    @include vf-transition($property: transform, $duration: fast);
+
+    align-self: center;
+    content: "";
+    flex-shrink: 0;
+    height: $spv--large;
+    margin-left: auto;
+    width: $sph--large;
+  }
+
+  &[aria-expanded="false"] {
+    &::after {
+      transform: rotate(-90deg);
+    }
+  }
+
+  &:focus,
+  &:hover {
+    background-color: #373737 !important;
+  }
+}
+
+.icon {
+  left: $sph--small !important;
+  top: 1.1 * $sp-unit !important;
+}
+
+.helpContainer {
+  border-top: 1px solid $colors--dark-theme--border-default;
+  margin-bottom: $spv--small;
+  margin-top: $spv--small;
+  padding-top: $spv--small;
+}

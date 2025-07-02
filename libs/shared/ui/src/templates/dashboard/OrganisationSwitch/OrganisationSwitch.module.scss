@@ -1,0 +1,28 @@
+@import "vanilla-framework/scss/settings_breakpoints";
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.organisation {
+  padding-left: $sph--small !important;
+}
+
+.container {
+  opacity: 0;
+
+  :global(.l-navigation:not(.is-collapsed)) & {
+    opacity: 1;
+  }
+
+  @media screen and (min-width: $breakpoint-large) {
+    opacity: 1;
+  }
+}
+
+:global(.l-navigation) {
+  &:hover,
+  &:focus-within {
+    .container {
+      opacity: 1;
+    }
+  }
+}

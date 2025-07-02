@@ -1,0 +1,28 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.root {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+
+  :global(.p-card) {
+    --vf-color-background-default: #{$colors--light-theme--background-default};
+    --vf-color-background-inputs: #{$colors--light-theme--background-inputs};
+    --vf-color-background-hover: #{$colors--light-theme--background-hover};
+
+    border: 0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    width: 500px;
+  }
+
+  :global(.p-card__inner) {
+    padding-bottom: $spv--x-large;
+    padding-left: $sph--x-large;
+    padding-right: $sph--x-large;
+  }
+}

@@ -16,8 +16,7 @@
       "executor": "@nx/vite:dev-server",
       "options": {
         "configFile": "apps/admin-ui/vite.config.ts",
-        "buildTarget": "admin-ui:build",
-        "open": true
+        "buildTarget": "admin-ui:build"
       }
     },
     "test": {

@@ -1,0 +1,43 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_breakpoints";
+@import "vanilla-framework/scss/layouts_application";
+
+.secondaryNavigation {
+  background-color: #373737 !important;
+  overflow-y: auto;
+  transition-duration: 0.165s;
+  transition-property: width, box-shadow, background;
+  transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  width: 100%;
+
+  @media (min-width: $breakpoint-small) {
+    width: $application-layout--side-nav-width-expanded;
+  }
+}
+
+.secondaryNavigation__drawer {
+  max-width: 100%;
+  min-height: 100%;
+  position: static;
+  transform: none;
+}
+
+.secondaryNavigation__title {
+  margin-top: $spv--large !important;
+  padding-left: $sph--x-large;
+}
+
+.secondaryNavigation__link {
+  &:hover {
+    background-color: #262626 !important;
+  }
+}
+
+.secondaryNavigation__label {
+  color: $color-x-light;
+}
+
+.isActive {
+  background-color: #262626 !important;
+}
