@@ -8,6 +8,7 @@ import classes from "./LocalSidePanel.module.scss";
 interface LocalSidePanelProps {
   children: ReactNode;
   onClose: () => void;
+  size: "small" | "medium" | "large";
   title: ReactNode;
   closeButtonAriaLabel?: string;
   expanded?: boolean;
@@ -18,6 +19,7 @@ const LocalSidePanel: FC<LocalSidePanelProps> = ({
   closeButtonAriaLabel = "Close side panel",
   expanded,
   onClose,
+  size,
   title,
 }) => {
   const applicationAside = useContext(LocalSidePanelContext);
@@ -40,7 +42,12 @@ const LocalSidePanel: FC<LocalSidePanelProps> = ({
           </div>
         </div>
 
-        <div className={classNames("p-panel__content", classes.outerDiv)}>
+        <div
+          className={classNames("p-panel__content", classes.outerDiv, {
+            [classes.medium]: size === "medium",
+            [classes.large]: size === "large",
+          })}
+        >
           <div className={classNames("p-panel__inner", classes.innerDiv)}>
             {children}
           </div>

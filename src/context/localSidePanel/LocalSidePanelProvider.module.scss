@@ -3,6 +3,7 @@
 .container:not(:empty) {
   display: flex;
   flex-direction: column;
+  width: fit-content;
 }
 
 .container:empty {
