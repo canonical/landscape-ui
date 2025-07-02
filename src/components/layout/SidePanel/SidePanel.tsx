@@ -44,10 +44,11 @@ const SidePanel: FC<SidePanelProps> = ({
         </div>
 
         <div
-          className={classNames("p-panel__content", classes.outerDiv, {
-            [classes.medium]: size === "medium",
-            [classes.large]: size === "large",
-          })}
+          className={classNames(
+            "p-panel__content",
+            classes.outerDiv,
+            classes[size],
+          )}
         >
           <div className={classNames("p-panel__inner", classes.innerDiv)}>
             <AppErrorBoundary>{children}</AppErrorBoundary>
