@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
-import { createContext, useRef } from "react";
+import { createContext, useState } from "react";
 import classes from "./LocalSidePanelProvider.module.scss";
 
 export const LocalSidePanelContext = createContext<HTMLElement | null>(null);
@@ -12,12 +12,15 @@ interface LocalSidePanelProviderProps {
 const LocalSidePanelProvider: FC<LocalSidePanelProviderProps> = ({
   children,
 }) => {
-  const ref = useRef<HTMLElement>(null);
+  const [sidePanel, setSidePanel] = useState<HTMLElement | null>(null);
 
   return (
-    <LocalSidePanelContext value={ref.current}>
+    <LocalSidePanelContext value={sidePanel}>
       {children}
-      <aside className={classNames("l-aside", classes.container)} ref={ref} />
+      <aside
+        className={classNames("l-aside", classes.container)}
+        ref={setSidePanel}
+      />
     </LocalSidePanelContext>
   );
 };
