@@ -196,8 +196,22 @@ interface DistributionInfo {
   release: string;
 }
 
+interface Profile {
+  id: number;
+  name: string;
+  type:
+    | "package"
+    | "removal"
+    | "repository"
+    | "security"
+    | "script"
+    | "upgrade"
+    | "wsl";
+}
+
 export interface InstanceWithoutRelation extends Record<string, unknown> {
   access_group: AccessGroup["name"];
+  archived: boolean;
   cloud_init: {
     availability_zone?: string | null;
   };
@@ -213,11 +227,11 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   tags: string[];
   title: string;
   ubuntu_pro_info: UbuntuProInfo | FailedUbuntuProInfo | null;
+  alerts?: InstanceAlert[];
   annotations?: Record<string, string>;
   grouped_hardware?: GroupedHardware;
-  alerts?: InstanceAlert[];
+  profiles?: Profile[];
   upgrades?: InstanceUpgrades;
-  archived: boolean;
 }
 
 interface WithRelation<Type extends InstanceWithoutRelation> extends Type {

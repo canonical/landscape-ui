@@ -11,6 +11,7 @@ export interface GetInstanceParams {
   with_grouped_hardware?: boolean;
   with_hardware?: boolean;
   with_network?: boolean;
+  with_profiles?: boolean;
 }
 
 export const useGetInstance = (

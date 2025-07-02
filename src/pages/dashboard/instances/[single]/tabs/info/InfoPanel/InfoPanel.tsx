@@ -4,6 +4,7 @@ import HeaderActions from "@/components/layout/HeaderActions";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import { useGetEmployee } from "@/features/employees";
@@ -324,7 +325,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
       <h5 className="u-no-margin--bottom">Instance status</h5>
 
-      <Row className="u-no-padding">
+      <Row className="u-no-padding u-no-margin">
         <Col size={3}>
           <InfoItem
             label="Status"
@@ -362,9 +363,28 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </Col>
       </Row>
 
-      <Row className="u-no-padding">
+      <Row className="u-no-padding u-no-margin">
         <Col size={3}>
-          <InfoItem label="Profiles" value={<NoData />} />
+          <InfoItem
+            type="truncated"
+            label="Profiles"
+            value={
+              instance.profiles ? (
+                instance.profiles.map((profile, index, profiles) => (
+                  <span key={`${profile.type}${profile.id}`}>
+                    <StaticLink
+                      to={`/${{ package: `profiles/package?profile=${profile.id}`, removal: `profiles/removal?profile=${profile.id}`, repository: `profiles/repositories?profile=${profile.id}`, security: `profiles/security?profile=${profile.id}`, script: `scripts?tab=profiles&profile=${profile.id}`, upgrade: `profiles/upgrade?profile=${profile.id}`, wsl: `profiles/wsl?profile=${profile.name}` }[profile.type]}`}
+                    >
+                      {profile.name}
+                    </StaticLink>
+                    {index < profiles.length - 1 ? ", " : ""}
+                  </span>
+                ))
+              ) : (
+                <NoData />
+              )
+            }
+          />
         </Col>
 
         {getFeatures(instance).employees &&
@@ -381,7 +401,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       <hr />
       <h5>Registration details</h5>
 
-      <Row className="u-no-padding">
+      <Row className="u-no-padding u-no-margin">
         <Col size={3}>
           <InfoItem label="Hostname" value={instance.hostname ?? <NoData />} />
         </Col>
@@ -409,7 +429,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         )}
       </Row>
 
-      <Row className="u-no-padding">
+      <Row className="u-no-padding u-no-margin">
         <Col size={3}>
           <InfoItem
             label="OS"
@@ -449,7 +469,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       <hr />
       <h5>Other</h5>
 
-      <Row className="u-no-padding">
+      <Row className="u-no-padding u-no-margin">
         <Col size={3}>
           <InfoItem label="Annotations" value={<NoData />} />
         </Col>

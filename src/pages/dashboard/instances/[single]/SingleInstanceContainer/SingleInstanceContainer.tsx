@@ -60,6 +60,7 @@ const SingleInstanceContainer: FC = () => {
       instanceId: getInstanceRequestId(instanceId, childInstanceId),
       with_annotations: true,
       with_grouped_hardware: true,
+      with_profiles: true,
     },
     {
       enabled: isInstanceQueryEnabled(
