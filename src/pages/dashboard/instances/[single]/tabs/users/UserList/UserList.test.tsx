@@ -1,3 +1,5 @@
+import NoData from "@/components/layout/NoData";
+import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
@@ -6,8 +8,6 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import UserList from "./UserList";
-import NoData from "@/components/layout/NoData";
-import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 
 const userIds = users.map((user) => user.uid);
 const unlockedUser = users.find((user) => user.enabled);
@@ -92,7 +92,7 @@ describe("UserList", () => {
       });
       await userEvent.click(user);
 
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByTestId("globalSidePanel");
       const heading = within(form).getByText("User details");
       expect(heading).toBeVisible();
     });
@@ -107,7 +107,7 @@ describe("UserList", () => {
       });
       await userEvent.click(userTableButton);
 
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByTestId("globalSidePanel");
 
       await expectLoadingState();
 
@@ -124,7 +124,7 @@ describe("UserList", () => {
       });
 
       await userEvent.click(userTableButton);
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByTestId("globalSidePanel");
       const buttonsNames = ["Lock", "Edit", "Delete"];
 
       buttonsNames.forEach((buttonName) => {
@@ -142,7 +142,7 @@ describe("UserList", () => {
       });
       await userEvent.click(tableUserButton);
 
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByTestId("globalSidePanel");
       const primaryGroup =
         userGroups.find((group) => group.gid === user.primary_gid)?.name ?? "";
 

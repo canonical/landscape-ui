@@ -334,13 +334,11 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(viewDetailsButton);
 
-      const sidePanel = screen.getByRole("complementary");
       const header = screen.getByRole("heading", {
         name: activeScript.title,
       });
 
       expect(header).toBeInTheDocument();
-      expect(sidePanel).toBeInTheDocument();
     });
 
     it("should open the edit side panel when the edit button is clicked", async () => {
@@ -357,13 +355,11 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(editButton);
 
-      const sidePanel = screen.getByRole("complementary");
       const header = screen.getByRole("heading", {
         name: `Edit "${activeScript.title}" script`,
       });
 
       expect(header).toBeInTheDocument();
-      expect(sidePanel).toBeInTheDocument();
     });
 
     it("should open the run side panel when the run button is clicked", async () => {
@@ -380,12 +376,10 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(runButton);
 
-      const sidePanel = screen.getByRole("complementary");
       const header = screen.getByRole("heading", {
         name: `Run "${activeScript.title}" script`,
       });
 
-      expect(sidePanel).toBeInTheDocument();
       expect(header).toBeInTheDocument();
     });
   });

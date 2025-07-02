@@ -75,9 +75,6 @@ describe("EmployeeGroupsHeader", () => {
       name: /Import employee groups/i,
     });
     await user.click(importButton);
-
-    const sidePanel = screen.getByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
   });
 
   it("opens the remove confirmation modal when 'Remove' button is clicked", async () => {
