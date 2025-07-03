@@ -1,0 +1,1 @@
+import{j as r,o as x}from"./index-gc_gETRV.js";const l=({currentPage:a,pageSize:e,paginate:n,setPageSize:o,totalItems:s,className:t="",currentItemCount:i=0})=>r.jsx(x,{className:t,currentItemCount:i,currentPage:a,pageSize:e,paginate:n,setPageSize:o,totalItems:s});export{l as S};

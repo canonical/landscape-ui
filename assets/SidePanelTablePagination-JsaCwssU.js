@@ -1,1 +1,0 @@
-import{j as r,m}from"./index-B1w7_YBY.js";const j=({currentPage:a,pageSize:e,paginate:n,setPageSize:s,totalItems:t,className:i="",currentItemCount:o=0})=>r.jsx(m,{className:i,currentItemCount:o,currentPage:a,pageSize:e,paginate:n,setPageSize:s,totalItems:t});export{j as S};

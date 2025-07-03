@@ -1,0 +1,1 @@
+import{r as l,n as o}from"./index-gc_gETRV.js";function d(){const[n,t]=l.useState(null),u=l.useRef([]),r=l.useCallback(e=>{e&&(u.current=[...e.querySelectorAll("tbody tr")])},[]);o({current:n==null?null:u.current[n]},()=>{t(null)});const s=l.useCallback(e=>{t(a=>a===e?null:e)},[]);return{expandedRowIndex:n,getTableRowsRef:r,handleExpand:s}}export{d as u};

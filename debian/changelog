@@ -1,3 +1,9 @@
+landscape-dashboard (1.14.1-0landscape0) jammy; urgency=medium
+
+  * Release 1.14.1 for jammy
+
+ -- David McLain <david.mclain@canonical.com>  Wed, 02 Jul 2025 10:35:00 -0500
+
 landscape-dashboard (1.14.0-0landscape0) jammy; urgency=medium
 
   * Release 1.14.0 for jammy

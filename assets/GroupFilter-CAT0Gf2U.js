@@ -1,1 +1,0 @@
-import{c as l,d as u,j as g,T as m}from"./index-B1w7_YBY.js";const n=({options:a,label:s,inline:t=!1})=>{const{groupBy:r,setPageParams:o}=l();return u("groupBy",a.map(e=>e.value)),g.jsx(m,{type:"single",label:s,hasToggleIcon:!0,hasBadge:!0,options:a,onItemSelect:e=>{o({groupBy:e})},selectedItem:r,inline:t})};export{n as G};
