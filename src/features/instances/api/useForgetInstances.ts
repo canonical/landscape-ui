@@ -8,7 +8,7 @@ export interface RemoveInstancesParams {
   computer_ids: number[];
 }
 
-export const useRemoveInstances = () => {
+export const useForgetInstances = () => {
   const authFetchOld = useFetchOld();
   const queryClient = useQueryClient();
 
@@ -24,7 +24,7 @@ export const useRemoveInstances = () => {
   });
 
   return {
-    removeInstances: mutateAsync,
-    isRemovingInstances: isPending,
+    forgetInstances: mutateAsync,
+    isForgettingInstances: isPending,
   };
 };

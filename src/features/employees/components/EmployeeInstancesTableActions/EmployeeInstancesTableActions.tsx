@@ -1,7 +1,7 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
 import { useActivities } from "@/features/activities";
-import { useRemoveInstances, useSanitizeInstance } from "@/features/instances";
+import { InstanceForgetModal, useSanitizeInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Action } from "@/types/Action";
@@ -23,8 +23,6 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
   const { notify } = useNotify();
   const navigate = useNavigate();
   const { openActivityDetails } = useActivities();
-
-  const { removeInstances, isRemovingInstances } = useRemoveInstances();
 
   const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
 
@@ -58,23 +56,6 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     }
   };
 
-  const handleRemoveInstances = async () => {
-    try {
-      await removeInstances({
-        computer_ids: [instance.id],
-      });
-
-      notify.success({
-        title: `You have successfully removed ${instance.title}`,
-        message: `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
-
   const actions: Action[] = [
     {
       icon: "show",
@@ -95,10 +76,10 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     },
     {
       icon: ICONS.delete,
-      label: "Remove from Landscape",
-      "aria-label": `Remove from Landscape`,
+      label: "Forget",
+      "aria-label": `Forget`,
       onClick: () => {
-        setSelectedAction("remove");
+        setSelectedAction("forget");
       },
     },
   ];
@@ -110,21 +91,15 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
         actions={actions}
         destructiveActions={destructiveActions}
       />
-      <TextConfirmationModal
-        isOpen={selectedAction === "remove"}
-        title={`Remove ${instance.title} instance`}
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemovingInstances}
-        onConfirm={handleRemoveInstances}
-        close={handleCloseModal}
-        confirmationText={`remove ${instance.title}`}
-      >
-        <p>
-          Removing this {instance.title} will delete all associated data and
-          free up one license slot for another computer to be registered.
-        </p>
-      </TextConfirmationModal>
+
+      <InstanceForgetModal
+        close={() => {
+          setSelectedAction("");
+        }}
+        instances={[instance]}
+        isOpen={selectedAction === "forget"}
+      />
+
       <TextConfirmationModal
         isOpen={selectedAction === "sanitize"}
         title={`Sanitize "${instance.title}" instance`}

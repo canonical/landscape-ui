@@ -1,4 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import { useMakeWindowsInstancesCompliant } from "@/features/wsl-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { WindowsInstanceWithoutRelation } from "@/types/Instance";
@@ -17,6 +18,8 @@ const WindowsInstanceMakeCompliantModal: FC<
   const debug = useDebug();
   const { notify } = useNotify();
 
+  const { makeWindowsInstancesCompliant } = useMakeWindowsInstancesCompliant();
+
   const [instance] = instances;
 
   if (!instance) {
@@ -31,7 +34,9 @@ const WindowsInstanceMakeCompliantModal: FC<
 
   const makeCompliant = async () => {
     try {
-      throw new Error("This feature has not been implemented yet.");
+      await makeWindowsInstancesCompliant({
+        host_computer_ids: instances.map(({ id }) => id),
+      });
 
       notify.success({
         title: `You have successfully marked ${title} to be compliant.`,

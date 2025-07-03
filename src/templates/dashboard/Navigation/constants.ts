@@ -54,7 +54,7 @@ export const MENU_ITEMS: MenuItem[] = [
       {
         label: "WSL profiles",
         path: "/profiles/wsl",
-        env: "selfHosted",
+        requiresFeature: "wsl-child-instance-profiles",
       },
       {
         label: "Security profiles",

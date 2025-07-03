@@ -7,7 +7,7 @@ export * from "./useGetInstances";
 export * from "./useGetPendingInstances";
 export * from "./useGetTags";
 export * from "./useRejectPendingInstances";
-export * from "./useRemoveInstances";
+export * from "./useForgetInstances";
 export * from "./useRestartInstance";
 export * from "./useRestartInstances";
 export * from "./useSanitizeInstance";

@@ -2,6 +2,7 @@ import { TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
+import { InstanceForgetModal } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -14,7 +15,6 @@ import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import WslInstanceRemoveFromLandscapeModal from "../../../instances/components/InstanceRemoveFromLandscapeModal";
 import WindowsInstanceMakeCompliantModal from "../WindowsInstanceMakeCompliantModal";
 import WslInstanceReinstallModal from "../WslInstanceReinstallModal";
 import WslInstanceUninstallModal from "../WslInstanceUninstallModal";
@@ -56,9 +56,9 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
   } = useBoolean();
 
   const {
-    value: isRemoveFromLandscapeModalOpen,
-    setTrue: openRemoveFromLandscapeModal,
-    setFalse: closeRemoveFromLandscapeModal,
+    value: isForgetModalOpen,
+    setTrue: openForgetModal,
+    setFalse: closeForgetModal,
   } = useBoolean();
 
   const openInstallForm = () => {
@@ -167,13 +167,13 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
 
                 <Button
                   type="button"
-                  key="removeFromLandscape"
+                  key="forget"
                   className="p-segmented-control__button u-no-margin--bottom"
                   disabled={wslInstances.length === 0}
-                  onClick={openRemoveFromLandscapeModal}
+                  onClick={openForgetModal}
                 >
                   <Icon name="delete" />
-                  <span>Remove from Landscape</span>
+                  <span>Forget</span>
                 </Button>,
               ]}
             />
@@ -202,10 +202,10 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         parentId={windowsInstance.id}
       />
 
-      <WslInstanceRemoveFromLandscapeModal
-        close={closeRemoveFromLandscapeModal}
+      <InstanceForgetModal
+        close={closeForgetModal}
         instances={wslInstances}
-        isOpen={isRemoveFromLandscapeModalOpen}
+        isOpen={isForgetModalOpen}
       />
     </>
   );

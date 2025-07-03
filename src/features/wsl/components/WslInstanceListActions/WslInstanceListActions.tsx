@@ -1,4 +1,5 @@
 import ListActions from "@/components/layout/ListActions";
+import { InstanceForgetModal } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Action } from "@/types/Action";
@@ -9,7 +10,6 @@ import type {
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import WslInstanceRemoveFromLandscapeModal from "../../../instances/components/InstanceRemoveFromLandscapeModal";
 import { useSetWslInstanceAsDefault } from "../../api/useSetWslInstanceAsDefault";
 import WslInstanceReinstallModal from "../WslInstanceReinstallModal";
 import WslInstanceUninstallModal from "../WslInstanceUninstallModal";
@@ -45,9 +45,9 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
   } = useBoolean();
 
   const {
-    value: isRemoveFromLandscapeModalOpen,
-    setTrue: openRemoveFromLandscapeModal,
-    setFalse: closeRemoveFromLandscapeModal,
+    value: isForgetModalOpen,
+    setTrue: openForgetModal,
+    setFalse: closeForgetModal,
   } = useBoolean();
 
   const { isSettingWslInstanceAsDefault, setWslInstanceAsDefault } =
@@ -102,9 +102,9 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     },
     {
       icon: "delete",
-      label: "Remove from Landscape",
-      "aria-label": `Remove ${wslInstance.title} from Landscape`,
-      onClick: openRemoveFromLandscapeModal,
+      label: "Forget",
+      "aria-label": `Forget ${wslInstance.title}`,
+      onClick: openForgetModal,
     },
   ];
 
@@ -146,10 +146,10 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
         parentId={windowsInstance.id}
       />
 
-      <WslInstanceRemoveFromLandscapeModal
-        close={closeRemoveFromLandscapeModal}
+      <InstanceForgetModal
+        close={closeForgetModal}
         instances={[wslInstance]}
-        isOpen={isRemoveFromLandscapeModalOpen}
+        isOpen={isForgetModalOpen}
       />
     </>
   );

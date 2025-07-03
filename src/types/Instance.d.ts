@@ -198,9 +198,11 @@ interface DistributionInfo {
 
 interface Profile {
   id: number;
-  name: string;
+  name: string | null;
+  title: string;
   type:
     | "package"
+    | "reboot"
     | "removal"
     | "repository"
     | "security"

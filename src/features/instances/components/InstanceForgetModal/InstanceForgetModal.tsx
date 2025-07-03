@@ -4,22 +4,25 @@ import useNotify from "@/hooks/useNotify";
 import type { InstanceWithoutRelation } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
-import { useRemoveInstances } from "../../api";
+import { useForgetInstances } from "../../api";
 
-interface InstanceRemoveFromLandscapeModalProps {
+interface InstanceForgetModalProps {
   readonly close: () => void;
   readonly instances: InstanceWithoutRelation[];
   readonly isOpen: boolean;
   readonly onSuccess?: () => void;
 }
 
-const InstanceRemoveFromLandscapeModal: FC<
-  InstanceRemoveFromLandscapeModalProps
-> = ({ close, instances, isOpen, onSuccess }) => {
+const InstanceForgetModal: FC<InstanceForgetModalProps> = ({
+  close,
+  instances,
+  isOpen,
+  onSuccess,
+}) => {
   const debug = useDebug();
   const { notify } = useNotify();
 
-  const { removeInstances, isRemovingInstances } = useRemoveInstances();
+  const { forgetInstances, isForgettingInstances } = useForgetInstances();
 
   const [instance] = instances;
 
@@ -33,18 +36,18 @@ const InstanceRemoveFromLandscapeModal: FC<
     `${instances.length} instances`,
   );
 
-  const removeFromLandscape = async () => {
+  const forget = async () => {
     try {
-      await removeInstances({
+      await forgetInstances({
         computer_ids: instances.map(({ id }) => id),
       });
 
       notify.success({
-        title: `You have successfully removed ${pluralize(instances.length, instances[0].title, `${instances.length} instances`)}`,
+        title: `You have successfully forgotten ${pluralize(instances.length, instances[0].title, `${instances.length} instances`)}`,
         message: `${pluralize(
           instances.length,
-          `${title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
-          `${title} have been removed from Landscape. To manage them again, you will need to re-register them in Landscape.`,
+          `${title} has been forgotten. To manage it again, you will need to re-register it in Landscape.`,
+          `${title} have been forgotten. To manage them again, you will need to re-register them in Landscape.`,
         )}`,
       });
 
@@ -60,13 +63,13 @@ const InstanceRemoveFromLandscapeModal: FC<
     <TextConfirmationModal
       isOpen={isOpen}
       close={close}
-      title={`Remove ${title} from Landscape`}
-      confirmButtonLabel="Remove"
+      title={`Forget ${title}`}
+      confirmButtonLabel="Forget"
       confirmButtonAppearance="negative"
-      confirmButtonDisabled={isRemovingInstances}
-      confirmButtonLoading={isRemovingInstances}
-      confirmationText={`remove ${title}`}
-      onConfirm={removeFromLandscape}
+      confirmButtonDisabled={isForgettingInstances}
+      confirmButtonLoading={isForgettingInstances}
+      confirmationText={`forget ${title}`}
+      onConfirm={forget}
     >
       <p>
         {pluralize(
@@ -79,4 +82,4 @@ const InstanceRemoveFromLandscapeModal: FC<
   );
 };
 
-export default InstanceRemoveFromLandscapeModal;
+export default InstanceForgetModal;

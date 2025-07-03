@@ -21,7 +21,7 @@ const WslInstancesEmptyState: FC = () => {
 
   return (
     <EmptyState
-      title="No WSL Instances found"
+      title="No WSL instances found"
       body={
         <>
           <p>

@@ -323,11 +323,11 @@ const App: FC = () => {
                 <Route
                   path="wsl"
                   element={
-                    <SelfHostedRoute>
+                    <FeatureRoute feature="wsl-child-instance-profiles">
                       <Suspense key="profiles/wsl" fallback={<LoadingState />}>
                         <WslProfilesPage />
                       </Suspense>
-                    </SelfHostedRoute>
+                    </FeatureRoute>
                   }
                 />
                 <Route

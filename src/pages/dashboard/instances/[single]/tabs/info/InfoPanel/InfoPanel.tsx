@@ -11,7 +11,7 @@ import { useGetEmployee } from "@/features/employees";
 import {
   getFeatures,
   getStatusCellIconAndLabel,
-  InstanceRemoveFromLandscapeModal,
+  InstanceForgetModal,
   useRestartInstances,
   useSanitizeInstance,
   useShutDownInstances,
@@ -108,9 +108,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   } = useBoolean();
 
   const {
-    value: isRemoveFromLandscapeModalOpen,
-    setTrue: openRemoveFromLandscapeModal,
-    setFalse: closeRemoveFromLandscapeModal,
+    value: isForgetModalOpen,
+    setTrue: openForgetModal,
+    setFalse: closeForgetModal,
   } = useBoolean();
 
   const {
@@ -307,8 +307,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               },
               {
                 icon: ICONS.delete,
-                label: "Remove from Landscape",
-                onClick: openRemoveFromLandscapeModal,
+                label: "Forget",
+                onClick: openForgetModal,
                 collapsed: true,
               },
               {
@@ -370,12 +370,28 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             label="Profiles"
             value={
               instance.profiles ? (
-                instance.profiles.map((profile, index, profiles) => (
+                (isFeatureEnabled("wsl-child-instance-profiles")
+                  ? instance.profiles
+                  : instance.profiles.filter(
+                      (profile) => profile.type !== "wsl",
+                    )
+                ).map((profile, index, profiles) => (
                   <span key={`${profile.type}${profile.id}`}>
                     <StaticLink
-                      to={`/${{ package: `profiles/package?profile=${profile.id}`, removal: `profiles/removal?profile=${profile.id}`, repository: `profiles/repositories?profile=${profile.id}`, security: `profiles/security?profile=${profile.id}`, script: `scripts?tab=profiles&profile=${profile.id}`, upgrade: `profiles/upgrade?profile=${profile.id}`, wsl: `profiles/wsl?profile=${profile.name}` }[profile.type]}`}
+                      to={`/${
+                        {
+                          package: `profiles/package?package-profile=${profile.id}`,
+                          reboot: `profiles/reboot?reboot-profile=${profile.id}`,
+                          removal: `profiles/removal?removal-profile=${profile.id}`,
+                          repository: `profiles/repositories?repository-profile=${profile.id}`,
+                          security: `profiles/security?security-profile=${profile.id}`,
+                          script: `scripts?tab=profiles&script-profile=${profile.id}`,
+                          upgrade: `profiles/upgrade?upgrade-profile=${profile.id}`,
+                          wsl: `profiles/wsl?wsl-profile=${profile.name}`,
+                        }[profile.type]
+                      }`}
                     >
-                      {profile.name}
+                      {profile.title}
                     </StaticLink>
                     {index < profiles.length - 1 ? ", " : ""}
                   </span>
@@ -559,10 +575,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </>
       )}
 
-      <InstanceRemoveFromLandscapeModal
-        close={closeRemoveFromLandscapeModal}
+      <InstanceForgetModal
+        close={closeForgetModal}
         instances={[instance]}
-        isOpen={isRemoveFromLandscapeModalOpen}
+        isOpen={isForgetModalOpen}
         onSuccess={goBack}
       />
 
