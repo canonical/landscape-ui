@@ -29,6 +29,7 @@ const UbuntuOneAuthPage = lazy(
 const EnvError = lazy(async () => import("@/pages/EnvError"));
 const PageNotFound = lazy(async () => import("@/pages/PageNotFound"));
 const LoginPage = lazy(async () => import("@/pages/auth/login"));
+const SupportLoginPage = lazy(async () => import("@/pages/auth/support-login"));
 const DistributionsPage = lazy(
   async () => import("@/pages/dashboard/repositories/mirrors"),
 );
@@ -342,6 +343,15 @@ const App: FC = () => {
             }
           >
             <Route path={"/login"} element={<LoginPage />} />
+            <Route
+              path={"/support/login"}
+              element={
+                <FeatureRoute feature="support-provider-login">
+                  <SupportLoginPage />
+                </FeatureRoute>
+              }
+            />
+
             <Route path={"/handle-auth/oidc"} element={<OidcAuthPage />} />
             <Route
               path={"/handle-auth/ubuntu-one"}

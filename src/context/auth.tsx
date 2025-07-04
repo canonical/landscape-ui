@@ -14,6 +14,7 @@ import type { AuthUser } from "@/features/auth";
 import { redirectToExternalUrl, useUnsigned } from "@/features/auth";
 import Redirecting from "@/components/layout/Redirecting";
 import type { FeatureKey } from "@/types/FeatureKey";
+import useFeatures from "@/hooks/useFeatures";
 
 export interface AuthContextProps {
   authLoading: boolean;
@@ -54,6 +55,9 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const { pathname } = useLocation();
   const { notify } = useNotify();
   const { getLoginMethodsQuery, getAuthStateQuery } = useUnsigned();
+  const { isFeatureEnabled, isFeaturesLoading } = useFeatures(
+    user?.email ?? null,
+  );
 
   const { data: getLoginMethodsQueryResult } = getLoginMethodsQuery();
 
@@ -131,26 +135,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     setLoading(newState);
   }, []);
 
-  const isFeatureEnabled = useCallback(
-    (featureKey: FeatureKey) => {
-      if (!user) {
-        return false;
-      }
-
-      const match = user.features.find((feature) => feature.key === featureKey);
-
-      if (!match) {
-        console.warn(
-          `Feature ${featureKey} not found in the features response.`,
-        );
-        return false;
-      }
-
-      return match.enabled;
-    },
-    [user],
-  );
-
   if (isRedirecting) {
     return <Redirecting />;
   }
@@ -160,7 +144,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       value={{
         isFeatureEnabled,
         user,
-        authLoading: loading,
+        authLoading: loading || isFeaturesLoading,
         authorized: null !== user,
         isOidcAvailable: !!getLoginMethodsQueryResult?.data.oidc.available,
         logout: handleLogout,
