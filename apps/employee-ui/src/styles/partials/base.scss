@@ -1,0 +1,15 @@
+a[target="_blank"] {
+  &::after {
+    content: "";
+    position: initial;
+
+    @extend %icon;
+    @include vf-icon-external-link($color-link);
+  }
+
+  .is-dark & {
+    &::after {
+      @include vf-icon-external-link($color-x-light);
+    }
+  }
+}

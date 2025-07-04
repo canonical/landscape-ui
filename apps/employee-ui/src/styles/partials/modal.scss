@@ -1,0 +1,19 @@
+.p-modal {
+  z-index: 350;
+
+  &__footer {
+    & > button {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  table {
+    width: 40rem;
+  }
+}
+
+.p-modal__dialog {
+  @media (min-width: $breakpoint-large) {
+    min-width: 40rem;
+  }
+}

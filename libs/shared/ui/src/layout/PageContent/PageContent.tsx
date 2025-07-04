@@ -3,7 +3,7 @@ import React from "react";
 import classNames from "classnames";
 import classes from "./PageContent.module.scss";
 import type { PageContentProps } from "./types";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
+import { AppErrorBoundary } from "../AppErrorBoundary";
 
 const PageContent: FC<PageContentProps> = ({
   children,

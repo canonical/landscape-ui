@@ -1,18 +1,22 @@
 import type { FC, ReactNode } from "react";
-import Sidebar from "../Sidebar/Sidebar";
-import SidePanelProvider from "../../context/sidePanel";
+import Sidebar from "../Sidebar";
 import { matchPath, useLocation } from "react-router";
 import SecondaryNavigation from "../SecondaryNavigation";
 import classes from "./DashboardTemplate.module.scss";
 import classNames from "classnames";
 import { useMediaQuery } from "usehooks-ts";
-import WelcomePopup from "@/features/welcome-banner";
+import { SidePanelProvider } from "@landscape/context";
+import { MenuItem } from "../Navigation/types";
 
 interface DashboardTemplateProps {
   readonly children: ReactNode;
+  readonly menuItems: MenuItem[]; // TODO CHANGE
 }
 
-const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
+const DashboardTemplate: FC<DashboardTemplateProps> = ({
+  children,
+  menuItems,
+}) => {
   const { pathname } = useLocation();
   const hasSecondaryNav = matchPath("/account/*", pathname);
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
@@ -20,7 +24,7 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
   return (
     <div className="l-application" role="presentation">
       <SidePanelProvider>
-        <Sidebar />
+        <Sidebar menuItems={menuItems} />
         <main className={classNames("l-main", classes.wrapper)}>
           {hasSecondaryNav && isLargeScreen && (
             <div
@@ -35,7 +39,7 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
           <div className={classes.pageContent}>{children}</div>
         </main>
       </SidePanelProvider>
-      <WelcomePopup />
+      {/* <WelcomePopup /> */}
     </div>
   );
 };

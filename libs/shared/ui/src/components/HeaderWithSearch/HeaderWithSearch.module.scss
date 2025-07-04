@@ -1,0 +1,18 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  align-items: flex-end;
+  column-gap: $sph--x-large;
+  display: flex;
+  margin-bottom: $spv--x-large;
+}
+
+.search {
+  flex-basis: 30rem;
+  flex-shrink: 1;
+}
+
+.noShrink {
+  flex-grow: 1;
+  flex-shrink: 0;
+}

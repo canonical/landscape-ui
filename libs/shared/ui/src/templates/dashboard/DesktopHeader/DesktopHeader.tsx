@@ -1,11 +1,9 @@
 import type { FC } from "react";
 import { Button, Icon } from "@canonical/react-components";
 import { Link } from "react-router";
-import Logo from "../../assets/images/logo-white-full.svg";
-import LogoIcon from "../../assets/images/logo-white-icon.svg";
-import { APP_TITLE } from "@/constants";
 import classes from "./DesktopHeader.module.scss";
 import classNames from "classnames";
+import { logoWhite, logoWhiteIcon } from "@landscape/assets";
 
 interface DesktopHeaderProps {
   readonly closeMenu: () => void;
@@ -22,14 +20,14 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
       <Link to="/" className={classes.link}>
         <img
           className={classNames("is-fading-when-collapsed", classes.logoImg)}
-          src={Logo}
-          alt={APP_TITLE}
+          src={logoWhite}
+          alt={"Landscape"}
           width={9 * 16}
         />
         <img
           className={classes.logoIcon}
-          src={LogoIcon}
-          alt={APP_TITLE}
+          src={logoWhiteIcon}
+          alt={"Landscape"}
           width={1.6 * 16}
         />
       </Link>

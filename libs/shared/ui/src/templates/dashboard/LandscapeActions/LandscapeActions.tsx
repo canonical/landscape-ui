@@ -2,10 +2,10 @@ import type { FC } from "react";
 import { useEffect } from "react";
 import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
 import classes from "./LandscapeActions.module.scss";
-import { redirectToExternalUrl, useAuthHandle } from "@/features/auth";
-import { APP_VERSION, FEEDBACK_LINK } from "@/constants";
+import { APP_VERSION, FEEDBACK_LINK } from "../../../constants";
 import classNames from "classnames";
 import { TOOLTIP_MESSAGE } from "./constants";
+import { redirectToExternalUrl, useAuthHandle } from "@landscape/context";
 
 const LandscapeActions: FC = () => {
   const { getClassicDashboardUrlQuery } = useAuthHandle();

@@ -1,0 +1,35 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_breakpoints";
+@import "vanilla-framework/scss/settings_colors";
+
+.wrapper {
+  display: flex;
+
+  &:not(:first-child) {
+    border-top: 1px solid $colors--light-theme--border-default;
+  }
+
+  @media (max-width: #{$breakpoint-small - 1px}) {
+    flex-direction: column;
+  }
+}
+
+.blockTitle {
+  display: block;
+  min-width: 24 * $sp-unit;
+  padding-right: $sph--large;
+  padding-top: $spv--large;
+}
+
+.infoRows {
+  flex-grow: 1;
+}
+
+.infoRow {
+  padding-bottom: $spv--large;
+  padding-top: $spv--large;
+
+  &:not(:first-child) {
+    border-top: 1px solid $colors--light-theme--border-default;
+  }
+}

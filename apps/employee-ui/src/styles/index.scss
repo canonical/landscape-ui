@@ -1,0 +1,15 @@
+// Overridden Vanilla variables
+@import "partials/vanilla-config";
+
+// Vanilla
+@import "vanilla-framework";
+@include vanilla;
+
+// Custom styles
+@import "partials/base";
+@import "partials/layout";
+@import "partials/utils";
+@import "partials/form";
+@import "partials/icons";
+@import "partials/modal";
+@import "partials/table";

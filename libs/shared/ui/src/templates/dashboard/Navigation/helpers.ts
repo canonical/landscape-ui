@@ -1,5 +1,4 @@
 import type { MenuItem } from "./types";
-import { MENU_ITEMS } from "./constants";
 
 const getFilteredByEnvItems = ({
   isSaas,
@@ -32,19 +31,21 @@ const getFilteredByEnvItems = ({
 export const getFilteredByEnvMenuItems = ({
   isSaas,
   isSelfHosted,
+  menuItems,
 }: {
   isSaas: boolean;
   isSelfHosted: boolean;
+  menuItems: MenuItem[];
 }) => {
   return getFilteredByEnvItems({
     isSaas,
     isSelfHosted,
-    items: MENU_ITEMS,
+    items: menuItems,
   });
 };
 
-export const getPathToExpand = (pathname: string) => {
-  return MENU_ITEMS.filter(({ items }) => items && items.length > 0).find(
-    ({ path }) => pathname.startsWith(path),
-  )?.path;
+export const getPathToExpand = (pathname: string, menuItems: MenuItem[]) => {
+  return menuItems
+    .filter(({ items }) => items && items.length > 0)
+    .find(({ path }) => pathname.startsWith(path))?.path;
 };

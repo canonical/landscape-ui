@@ -1,0 +1,15 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "rootDir": "../../",
+    "baseUrl": "./",
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["src/*"],
+      "@landscape/types": ["../../shared/types/src"],
+      "@landscape/ui": ["../../shared/ui/src"]
+    }
+  },
+  "include": ["src", "../../shared"]
+}

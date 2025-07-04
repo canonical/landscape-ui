@@ -1,7 +1,3 @@
-import { IS_DEV_ENV } from "@/constants";
-import { useGetOverLimitSecurityProfiles } from "@/features/security-profiles";
-import useAuth from "@/hooks/useAuth";
-import useEnv from "@/hooks/useEnv";
 import { Badge, Button } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -9,30 +5,36 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { getFilteredByEnvMenuItems, getPathToExpand } from "./helpers";
 import classes from "./Navigation.module.scss";
+import { useAuth, useEnv } from "@landscape/context";
+import { MenuItem } from "./types";
 
-const INSURANCE_LIMIT = 20;
+// const INSURANCE_LIMIT = 20;
 
-const Navigation: FC = () => {
+interface NavigationProps {
+  menuItems: MenuItem[];
+}
+
+const Navigation: FC<NavigationProps> = ({ menuItems }) => {
   const [expanded, setExpanded] = useState("");
 
   const { pathname } = useLocation();
   const { isSaas, isSelfHosted } = useEnv();
   const { isOidcAvailable, isFeatureEnabled } = useAuth();
 
-  const { hasOverLimitSecurityProfiles, overLimitSecurityProfilesCount } =
-    useGetOverLimitSecurityProfiles({
-      limit: INSURANCE_LIMIT,
-      offset: 0,
-    });
+  // const { hasOverLimitSecurityProfiles, overLimitSecurityProfilesCount } =
+  //   useGetOverLimitSecurityProfiles({
+  //     limit: INSURANCE_LIMIT,
+  //     offset: 0,
+  //   });
 
-  if (IS_DEV_ENV && overLimitSecurityProfilesCount >= INSURANCE_LIMIT) {
-    console.warn(
-      `There are ${INSURANCE_LIMIT} or more over-limit security profiles, so the navigation badge will be inaccurate`,
-    );
-  }
+  // if (IS_DEV_ENV && overLimitSecurityProfilesCount >= INSURANCE_LIMIT) {
+  //   console.warn(
+  //     `There are ${INSURANCE_LIMIT} or more over-limit security profiles, so the navigation badge will be inaccurate`,
+  //   );
+  // }
 
   useEffect(() => {
-    const shouldBeExpandedPath = getPathToExpand(pathname);
+    const shouldBeExpandedPath = getPathToExpand(pathname, menuItems);
 
     if (shouldBeExpandedPath) {
       setExpanded(shouldBeExpandedPath);
@@ -43,7 +45,7 @@ const Navigation: FC = () => {
     <div className="p-side-navigation--icons is-dark">
       <nav aria-label="Main">
         <ul className="u-no-margin--bottom u-no-margin--left u-no-padding--left">
-          {getFilteredByEnvMenuItems({ isSaas, isSelfHosted })
+          {getFilteredByEnvMenuItems({ isSaas, isSelfHosted, menuItems })
             .filter(({ requiresFeature }) =>
               requiresFeature ? isFeatureEnabled(requiresFeature) : true,
             )
@@ -174,13 +176,12 @@ const Navigation: FC = () => {
                                   classes.label,
                                   {
                                     [classes.hasBadge]:
-                                      subItem.label === "Security profiles" &&
-                                      hasOverLimitSecurityProfiles,
+                                      subItem.label === "Security profiles",
                                   },
                                 )}
                               >
                                 {subItem.label}
-                                {subItem.label === "Security profiles" &&
+                                {/* {subItem.label === "Security profiles" &&
                                   hasOverLimitSecurityProfiles && (
                                     <div className={classes.badge}>
                                       <Badge
@@ -188,7 +189,7 @@ const Navigation: FC = () => {
                                         isNegative
                                       />
                                     </div>
-                                  )}
+                                  )} */}
                               </span>
                             </Link>
                           )}

@@ -1,0 +1,45 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  height: 100%;
+  position: relative;
+}
+
+.collapsed {
+  column-gap: $sph--small;
+  display: flex;
+}
+
+.expanded {
+  background-color: white;
+  left: 0;
+  padding: calc($spv--small - 1px) $sph--small $spv--small;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.expandedContent {
+  display: block;
+  max-height: 8rem;
+  overflow: auto;
+}
+
+.truncated {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.button {
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: none;
+
+    .buttonText {
+      color: $colors--light-theme--text-inactive;
+    }
+  }
+}

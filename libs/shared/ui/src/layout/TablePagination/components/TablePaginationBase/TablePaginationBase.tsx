@@ -1,11 +1,11 @@
-import { Button, Icon, Select } from "@canonical/react-components";
-import classNames from "classnames";
-import type { FC } from "react";
-import { useTotalPages } from "../../hooks";
-import PageNumberInput from "../PageNumberInput";
-import classes from "./TablePaginationBase.module.scss";
-import { PAGE_SIZE_OPTIONS } from "./constants";
-import { pluralize } from "@/utils/_helpers";
+import { Button, Icon, Select } from '@canonical/react-components';
+import classNames from 'classnames';
+import type { FC } from 'react';
+import { useTotalPages } from '../../hooks';
+import PageNumberInput from '../PageNumberInput';
+import classes from './TablePaginationBase.module.scss';
+import { PAGE_SIZE_OPTIONS } from './constants';
+// import { pluralize } from "@/utils/_helpers";
 
 interface TablePaginationBaseProps {
   readonly className?: string;
@@ -55,12 +55,12 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
       {hasItems && (
         <p
           className={classNames(
-            "p-heading--5 u-no-margin--bottom u-no-padding--top",
+            'p-heading--5 u-no-margin--bottom u-no-padding--top',
             classes.description,
           )}
         >
           {`Showing ${currentItemCount} of ${totalItems} 
-          ${pluralize(totalItems, "result")}`}
+          ${'todo change this'}`}
         </p>
       )}
 
@@ -79,7 +79,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
           <nav aria-label="Table pagination" className="p-pagination">
             <span
               className={classNames(
-                "p-pagination__items",
+                'p-pagination__items',
                 classes.paginationWrapper,
               )}
             >

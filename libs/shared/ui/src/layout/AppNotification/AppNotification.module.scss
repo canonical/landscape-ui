@@ -1,0 +1,27 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  bottom: $spv--medium;
+  box-shadow: 0 0 10px 0 rgb(0 0 0 / 15%);
+  margin-bottom: 0;
+  position: fixed;
+  right: $sph--large;
+  width: 26rem;
+  z-index: 1000;
+}
+
+.baseNotificationStyle {
+  background-color: $color-x-light;
+  word-break: break-word;
+}
+
+.notification {
+  height: 100%;
+  margin-bottom: 0 !important;
+  width: 100%;
+
+  :global(.p-notification__content) {
+    padding-right: 2.5rem !important;
+  }
+}

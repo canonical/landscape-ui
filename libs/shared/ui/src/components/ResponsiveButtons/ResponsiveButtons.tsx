@@ -4,13 +4,10 @@ import { useMediaQuery } from "usehooks-ts";
 import classNames from "classnames";
 import type { MenuLink, Position } from "@canonical/react-components";
 import { ContextualMenu } from "@canonical/react-components";
-import { BREAKPOINT_PX } from "@/constants";
 import classes from "./ResponsiveButtons.module.scss";
 import type { ButtonLikeProps } from "./types";
-import {
-  decorateNode,
-  textFromNode,
-} from "@/components/ui/ResponsiveButtons/helpers";
+import { decorateNode, textFromNode } from "./helpers";
+import { BREAKPOINT_PX } from "../../constants";
 
 export interface ResponsiveButtonGroupProps {
   readonly buttons: ReactNode[];

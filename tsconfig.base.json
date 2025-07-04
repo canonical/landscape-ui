@@ -19,6 +19,9 @@
     "paths": {
       "@admin/*": ["apps/admin-ui/src/*"],
       "@employee/*": ["apps/employee-ui/src/*"],
+      "@landscape/assets": ["libs/shared/assets/src/index.ts"],
+      "@landscape/context": ["libs/shared/context/src/index.ts"],
+      "@landscape/hooks": ["libs/shared/hooks/src/index.ts"],
       "@landscape/types": ["libs/shared/types/src/index.ts"],
       "@landscape/ui": ["libs/shared/ui/src/index.ts"]
     },

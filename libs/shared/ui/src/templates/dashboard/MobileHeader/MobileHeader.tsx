@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@canonical/react-components';
-import Logo from '../../assets/images/logo-white-full.svg';
+import { logoWhite } from '@landscape/assets';
 
 interface MobileHeaderProps {
   readonly toggleMenu: () => void;
@@ -14,7 +14,7 @@ const MobileHeader: FC<MobileHeaderProps> = ({ toggleMenu, appTitle }) => {
       <Link to="/">
         <img
           className="p-panel__logo-name is-fading-when-collapsed"
-          src={Logo}
+          src={logoWhite}
           alt={appTitle}
           width={9 * 16}
         />

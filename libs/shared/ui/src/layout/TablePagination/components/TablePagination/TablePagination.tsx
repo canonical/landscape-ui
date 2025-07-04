@@ -1,9 +1,9 @@
-import usePageParams from "@/hooks/usePageParams";
-import type { FC } from "react";
-import TablePaginationBase from "../TablePaginationBase";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
-import { PAGE_SIZE_OPTIONS } from "../TablePaginationBase/constants";
-import { useTotalPages } from "../../hooks";
+// import usePageParams from "@/hooks/usePageParams";
+import type { FC } from 'react';
+import TablePaginationBase from '../TablePaginationBase';
+// import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import { PAGE_SIZE_OPTIONS } from '../TablePaginationBase/constants';
+import { useTotalPages } from '../../hooks';
 
 interface TablePaginationProps {
   readonly totalItems: number | undefined;
@@ -14,43 +14,45 @@ interface TablePaginationProps {
 
 const TablePagination: FC<TablePaginationProps> = ({
   totalItems,
-  className = "",
+  className = '',
   currentItemCount = 0,
   handleClearSelection,
 }) => {
-  const { currentPage, pageSize, setPageParams } = usePageParams();
-  const totalPages = useTotalPages(totalItems, pageSize);
+  // const { currentPage, pageSize, setPageParams } = usePageParams();
+  // const totalPages = useTotalPages(totalItems, pageSize);
 
-  useSetDynamicFilterValidation(
-    "pageSize",
-    PAGE_SIZE_OPTIONS.map((option) => option.value.toString()),
-  );
+  // useSetDynamicFilterValidation(
+  //   "pageSize",
+  //   PAGE_SIZE_OPTIONS.map((option) => option.value.toString()),
+  // );
 
-  useSetDynamicFilterValidation(
-    "currentPage",
-    Array.from({ length: totalPages }, (_, i) => (i + 1).toString()),
-  );
+  // useSetDynamicFilterValidation(
+  //   "currentPage",
+  //   Array.from({ length: totalPages }, (_, i) => (i + 1).toString()),
+  // );
 
   const paginate = (page: number) => {
-    setPageParams({ currentPage: page });
+    // setPageParams({ currentPage: page });
 
     if (handleClearSelection) {
       handleClearSelection();
     }
   };
 
-  const setPageSize = (pageSize: number) => {
-    setPageParams({ pageSize });
-  };
+  // const setPageSize = (pageSize: number) => {
+  //   setPageParams({ pageSize });
+  // };
 
   return (
     <TablePaginationBase
       className={className}
       currentItemCount={currentItemCount}
-      currentPage={currentPage}
-      pageSize={pageSize}
+      currentPage={1}
+      pageSize={10}
       paginate={paginate}
-      setPageSize={setPageSize}
+      setPageSize={() => {
+        // setPageSize();
+      }}
       totalItems={totalItems}
     />
   );

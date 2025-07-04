@@ -1,14 +1,12 @@
 import type { FC } from "react";
 import { useState } from "react";
-import useAuth from "../../../hooks/useAuth";
 import { Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router";
 import { useMediaQuery } from "usehooks-ts";
 import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
-import { useAuthHandle } from "@/features/auth";
-import useDebug from "@/hooks/useDebug";
+import { useAuth, useAuthHandle, useDebug } from "@landscape/context";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
@@ -40,7 +38,7 @@ const UserInfo: FC = () => {
     >
       <ul className="u-no-margin--bottom u-no-margin--left u-no-padding--left">
         <li className="p-side-navigation__item">
-          {isSmallerScreen && (
+          {/* {isSmallerScreen && (
             <>
               <Button
                 className={classNames(
@@ -127,16 +125,13 @@ const UserInfo: FC = () => {
                 {user?.name ?? "Unknown user"}
               </span>
             </Link>
-          )}
-        </li>
-        <li className="p-side-navigation__item">
-          <Link
-            className={classNames("p-side-navigation__link", classes.link)}
-            to="/alerts"
-            aria-current={pathname === "/alerts" ? "page" : undefined}
+          )} */}
+          <span
+            className={classNames(classes.link, classes.static)}
+            style={{ display: "flex" }}
           >
             <Icon
-              name="bell"
+              name="account"
               className={classNames(
                 "is-light p-side-navigation__icon",
                 classes.icon,
@@ -145,10 +140,30 @@ const UserInfo: FC = () => {
             <span
               className={classNames("p-side-navigation__label", classes.label)}
             >
+              {user?.name ?? "Unknown user"}
+            </span>
+          </span>
+        </li>
+        {/* <li className="p-side-navigation__item">
+          <Link
+            className={classNames('p-side-navigation__link', classes.link)}
+            to="/alerts"
+            aria-current={pathname === '/alerts' ? 'page' : undefined}
+          >
+            <Icon
+              name="bell"
+              className={classNames(
+                'is-light p-side-navigation__icon',
+                classes.icon,
+              )}
+            />
+            <span
+              className={classNames('p-side-navigation__label', classes.label)}
+            >
               Alerts
             </span>
           </Link>
-        </li>
+        </li> */}
         <li className="p-side-navigation__item">
           <Button
             type="button"

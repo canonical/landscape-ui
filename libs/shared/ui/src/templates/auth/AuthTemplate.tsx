@@ -1,9 +1,9 @@
 import type { FC, ReactNode } from "react";
 import { LoginPageLayout, Notification } from "@canonical/react-components";
-import Logo from "@/assets/images/logo-white-character.svg";
-import { APP_TITLE } from "@/constants";
+import { APP_TITLE } from "../../constants";
 import classes from "./AuthTemplate.module.scss";
-import { useInvitation } from "@/features/auth";
+import { logoWhite } from "@landscape/assets";
+import { useInvitation } from "@landscape/context";
 
 interface AuthTemplateProps {
   readonly children: ReactNode;
@@ -18,7 +18,7 @@ const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
       <LoginPageLayout
         title={title}
         logo={{
-          src: Logo,
+          src: logoWhite,
           title: APP_TITLE,
           url: "/",
         }}

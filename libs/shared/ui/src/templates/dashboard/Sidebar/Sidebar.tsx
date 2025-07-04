@@ -8,8 +8,13 @@ import classes from "./Sidebar.module.scss";
 import UserInfo from "../UserInfo";
 import OrganisationSwitch from "../OrganisationSwitch";
 import LandscapeActions from "../LandscapeActions";
+import { MenuItem } from "../Navigation/types";
 
-const Sidebar: FC = () => {
+interface SidebarProps {
+  menuItems: MenuItem[];
+}
+
+const Sidebar: FC<SidebarProps> = ({ menuItems }) => {
   const [menuClosed, setMenuClosed] = useState(true);
 
   return (
@@ -17,6 +22,7 @@ const Sidebar: FC = () => {
       <div className="l-navigation-bar">
         <div className="p-panel is-dark">
           <MobileHeader
+            appTitle="Landscape" // TODO CHANGE
             toggleMenu={() => {
               setMenuClosed((prevValue) => !prevValue);
             }}
@@ -37,10 +43,10 @@ const Sidebar: FC = () => {
 
               <div className={classes.navigation}>
                 <OrganisationSwitch />
-                <Navigation />
+                <Navigation menuItems={menuItems} />
               </div>
               <div className={classes.footer}>
-                <LandscapeActions />
+                {/* <LandscapeActions /> */}
                 <UserInfo />
               </div>
             </div>

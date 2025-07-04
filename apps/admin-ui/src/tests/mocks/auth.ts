@@ -4,7 +4,7 @@ import { features } from "@/tests/mocks/features";
 const testAccount = "test-account";
 
 export const authUser: AuthUser = {
-  features,
+  features: [],
   accounts: [
     {
       classic_dashboard_url: "",

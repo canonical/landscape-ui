@@ -1,21 +1,17 @@
 {
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "allowJs": false,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "types": ["vite/client", "vitest"]
-  },
-  "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.lib.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
+    "outDir": "../../dist/out-tsc",
+    "rootDir": "../../",
+    "baseUrl": "./",
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["src/*"],
+      "@landscape/types": ["../../shared/types/src"],
+      "@landscape/context": ["../../shared/context/src"],
+      "@landscape/assets": ["../../shared/assets/src"],
+      "@landscape/hooks": ["../../shared/hooks/src"]
     }
-  ],
-  "extends": "../../../tsconfig.base.json"
+  },
+  "include": ["src", "../../shared"]
 }

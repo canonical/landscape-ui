@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
 import { nxCopyAssetsPlugin } from "@nx/vite/plugins/nx-copy-assets.plugin";
+import packageJson from "../../../package.json";
 
 export default defineConfig(() => ({
   root: __dirname,
@@ -14,6 +15,17 @@ export default defineConfig(() => ({
   // },
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode
+  resolve: {
+    alias: {
+      "@": "src",
+      "@landscape/context": "../../../shared/context/src",
+      "@landscape/types": "../../../shared/types/src",
+      "@landscape/assets": "../../../shared/assets/src",
+    },
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(packageJson.version),
+  },
   build: {
     outDir: "../../../dist/libs/shared/ui",
     emptyOutDir: true,

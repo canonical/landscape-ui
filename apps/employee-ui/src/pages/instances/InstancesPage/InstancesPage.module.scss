@@ -1,0 +1,33 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/base_icon-definitions";
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/global_functions";
+
+.checkbox {
+  width: $sp-x-large;
+}
+
+.rowHeader {
+  display: flex;
+
+  &.nested {
+    padding-left: $sp-x-large;
+  }
+}
+
+.restartError {
+  @include vf-icon-restart($color-negative);
+}
+
+.restartWarning {
+  @include vf-icon-restart($color-caution);
+}
+
+.statusListItem {
+  margin-right: 0.75rem;
+}
+
+.statusContainer {
+  display: flex;
+  transform: translateX(-1.5rem);
+}
