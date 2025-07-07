@@ -196,7 +196,7 @@ interface DistributionInfo {
   release: string;
 }
 
-interface Profile {
+export interface Profile {
   id: number;
   name: string | null;
   title: string;

@@ -4,7 +4,6 @@ import HeaderActions from "@/components/layout/HeaderActions";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
-import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import { useGetEmployee } from "@/features/employees";
@@ -44,6 +43,7 @@ import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useNavigate } from "react-router";
 import { useBoolean } from "usehooks-ts";
+import Profiles from "./components/Profiles";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
@@ -369,33 +369,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             type="truncated"
             label="Profiles"
             value={
-              instance.profiles ? (
-                (isFeatureEnabled("wsl-child-instance-profiles")
-                  ? instance.profiles
-                  : instance.profiles.filter(
-                      (profile) => profile.type !== "wsl",
-                    )
-                ).map((profile, index, profiles) => (
-                  <span key={`${profile.type}${profile.id}`}>
-                    <StaticLink
-                      to={`/${
-                        {
-                          package: `profiles/package?package-profile=${profile.id}`,
-                          reboot: `profiles/reboot?reboot-profile=${profile.id}`,
-                          removal: `profiles/removal?removal-profile=${profile.id}`,
-                          repository: `profiles/repositories?repository-profile=${profile.id}`,
-                          security: `profiles/security?security-profile=${profile.id}`,
-                          script: `scripts?tab=profiles&script-profile=${profile.id}`,
-                          upgrade: `profiles/upgrade?upgrade-profile=${profile.id}`,
-                          wsl: `profiles/wsl?wsl-profile=${profile.name}`,
-                        }[profile.type]
-                      }`}
-                    >
-                      {profile.title}
-                    </StaticLink>
-                    {index < profiles.length - 1 ? ", " : ""}
-                  </span>
-                ))
+              instance.profiles?.length ? (
+                <Profiles profiles={instance.profiles} />
               ) : (
                 <NoData />
               )
