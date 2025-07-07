@@ -3,4 +3,6 @@ export type FeatureKey =
   | "spa-dashboard"
   | "employee-management"
   | "script-profiles"
-  | "usg-profiles";
+  | "usg-profiles"
+  | "support-provider-login"
+  | "wsl-child-instance-profiles";

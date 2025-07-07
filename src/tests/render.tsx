@@ -14,22 +14,34 @@ interface WrapperProps {
   readonly children: ReactNode;
 }
 
+const queryClientConfig = {
+  defaultOptions: {
+    queries: {
+      retry: false,
+      gcTime: 0,
+    },
+  },
+};
+
+export function renderHookWithProviders() {
+  const queryClient = new QueryClient(queryClientConfig);
+
+  return function Wrapper({ children }: { readonly children: ReactNode }) {
+    return (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+  };
+}
+
 export const renderWithProviders = (
   ui: ReactNode,
   options?: RenderOptions,
   routePath?: string,
   routePattern?: string,
 ) => {
-  const Wrapper: FC<WrapperProps> = ({ children }) => {
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-          gcTime: 0,
-        },
-      },
-    });
+  const queryClient = new QueryClient(queryClientConfig);
 
+  const Wrapper: FC<WrapperProps> = ({ children }) => {
     const initialEntries = routePath ? [routePath] : undefined;
 
     return (

@@ -44,4 +44,26 @@ export const features: Feature[] = [
       account: false,
     },
   },
+  {
+    name: "Support provider login",
+    description:
+      "Allows support providers to authenticate against subdomain accounts using Ubuntu One SSO. Does not affect RBAC or authorization.",
+    key: "support-provider-login",
+    database_key: 6,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
+  {
+    name: "WSL Child Instance Profiles",
+    description:
+      "Allows for profiles that specify configurations of Ubuntu WSL instances on registered Windows hosts.",
+    key: "wsl-child-instance-profiles",
+    database_key: 7,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
 ];
