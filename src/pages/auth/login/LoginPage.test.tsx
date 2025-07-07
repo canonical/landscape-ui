@@ -6,7 +6,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 import { expectLoadingState } from "@/tests/helpers";
 
-describe("SupportLoginPage", () => {
+describe("LoginPage", () => {
   it("should render", async () => {
     renderWithProviders(<LoginPage />);
 
