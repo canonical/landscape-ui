@@ -145,10 +145,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
 
   return (
     <>
-      <WslInstancesHeader
-        windowsInstance={windowsInstance}
-        wslInstances={selectedWslInstances}
-      />
+      <WslInstancesHeader windowsInstance={windowsInstance} />
 
       <ResponsiveTable
         columns={columns}
