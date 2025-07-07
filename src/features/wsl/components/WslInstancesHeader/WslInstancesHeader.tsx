@@ -8,6 +8,7 @@ import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import WindowsInstanceMakeCompliantModal from "../WindowsInstanceMakeCompliantModal";
+import classes from "./WslInstancesHeader.module.scss";
 
 const WslInstanceInstallForm = lazy(
   async () => import("../WslInstanceInstallForm"),
@@ -41,27 +42,33 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
     <>
       <HeaderWithSearch
         actions={
-          <div className="p-segmented-control">
-            <div className="p-segmented-control__list">
-              <Button
-                type="button"
-                onClick={openInstallForm}
-                className="p-segmented-control__button u-no-margin--bottom"
-                hasIcon
-              >
-                <Icon name="plus" />
-                <span>Create new instance</span>
-              </Button>
+          <div className={classes.cta}>
+            <div className="p-segmented-control">
+              <div className="p-segmented-control__list">
+                <Button
+                  type="button"
+                  onClick={openInstallForm}
+                  className="p-segmented-control__button u-no-margin--bottom"
+                  hasIcon
+                >
+                  <Icon name="plus" />
+                  <span>Create new instance</span>
+                </Button>
 
-              <Button
-                type="button"
-                className="p-segmented-control__button u-no-margin--bottom"
-                hasIcon
-                onClick={openMakeCompliantModal}
-              >
-                <Icon name="security-tick" />
-                <span>Make compliant</span>
-              </Button>
+                {windowsInstance.profiles?.some(
+                  (profile) => profile.type === "wsl",
+                ) && (
+                  <Button
+                    type="button"
+                    className="p-segmented-control__button u-no-margin--bottom"
+                    hasIcon
+                    onClick={openMakeCompliantModal}
+                  >
+                    <Icon name="security-tick" />
+                    <span>Make compliant</span>
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         }

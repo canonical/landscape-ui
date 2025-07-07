@@ -2,7 +2,6 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
-import { getStatusCellIconAndLabel } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import useSelection from "@/hooks/useSelection";
 import type {
@@ -51,95 +50,102 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
     );
   };
 
+  const hasWslProfiles = windowsInstance.profiles?.some(
+    (profile) => profile.type === "wsl",
+  );
+
   const columns = useMemo<Column<WslInstanceWithoutRelation>[]>(
-    () => [
-      {
-        accessor: "title",
-        Header: (
-          <>
-            <CheckboxInput
-              inline
-              label={<span className="u-off-screen">Toggle all instances</span>}
-              checked={
-                wslInstances.length > 0 &&
-                selectedWslInstances.length === wslInstances.length
-              }
-              indeterminate={
-                selectedWslInstances.length > 0 &&
-                selectedWslInstances.length < wslInstances.length
-              }
-              onChange={() => {
-                setSelectedWslInstances(
-                  selectedWslInstances.length > 0 ? [] : wslInstances,
-                );
-              }}
-            />
-            <span>Instance name</span>
-          </>
-        ),
-        Cell: ({ row }: CellProps<WslInstanceWithoutRelation>) => (
-          <div className={classes.title}>
-            <CheckboxInput
-              label={
-                <span className="u-off-screen">{`Toggle ${row.original.title} instance`}</span>
-              }
-              labelClassName="u-no-margin--bottom u-no-padding--top"
-              checked={selectedWslInstances.some(
-                ({ id }) => id === row.original.id,
-              )}
-              onChange={() => {
-                handleInstanceCheck(row.original);
-              }}
-            />
-            <StaticLink
-              to={`/instances/${windowsInstance.id}/${row.original.id}`}
-            >
-              {row.original.title}
-            </StaticLink>
-          </div>
-        ),
-      },
-      {
-        Header: "Status",
-        getCellIcon: ({
-          row: { original: wslInstance },
-        }: CellProps<WslInstanceWithoutRelation>) => {
-          return getStatusCellIconAndLabel(wslInstance).icon;
+    () =>
+      [
+        {
+          accessor: "title",
+          Header: (
+            <>
+              <CheckboxInput
+                inline
+                label={
+                  <span className="u-off-screen">Toggle all instances</span>
+                }
+                checked={
+                  wslInstances.length > 0 &&
+                  selectedWslInstances.length === wslInstances.length
+                }
+                indeterminate={
+                  selectedWslInstances.length > 0 &&
+                  selectedWslInstances.length < wslInstances.length
+                }
+                onChange={() => {
+                  setSelectedWslInstances(
+                    selectedWslInstances.length > 0 ? [] : wslInstances,
+                  );
+                }}
+              />
+              <span>Instance name</span>
+            </>
+          ),
+          Cell: ({ row }: CellProps<WslInstanceWithoutRelation>) => (
+            <div className={classes.title}>
+              <CheckboxInput
+                label={
+                  <span className="u-off-screen">{`Toggle ${row.original.title} instance`}</span>
+                }
+                labelClassName="u-no-margin--bottom u-no-padding--top"
+                checked={selectedWslInstances.some(
+                  ({ id }) => id === row.original.id,
+                )}
+                onChange={() => {
+                  handleInstanceCheck(row.original);
+                }}
+              />
+              <StaticLink
+                to={`/instances/${windowsInstance.id}/${row.original.id}`}
+              >
+                {row.original.title}
+              </StaticLink>
+            </div>
+          ),
         },
-        Cell: ({
-          row: { original: wslInstance },
-        }: CellProps<WslInstanceWithoutRelation>) => {
-          return getStatusCellIconAndLabel(wslInstance).label;
+        hasWslProfiles
+          ? {
+              Header: "Compliance",
+              getCellIcon: () => "success-grey",
+              Cell: "Compliant",
+            }
+          : null,
+        {
+          accessor: "distribution",
+          Header: "OS",
+          Cell: ({
+            row: { original },
+          }: CellProps<WslInstanceWithoutRelation>) =>
+            original.distribution_info.description,
         },
-      },
-      {
-        accessor: "distribution",
-        Header: "OS",
-        Cell: ({ row: { original } }: CellProps<WslInstanceWithoutRelation>) =>
-          original.distribution_info.description,
-      },
-      {
-        Header: "WSL profile",
-        Cell: <NoData />,
-      },
-      {
-        accessor: "default",
-        Header: "Default",
-        Cell: ({ row: { original } }: CellProps<WslInstanceWithoutRelation>) =>
-          original.is_default_child ? "Yes" : "No",
-      },
-      {
-        ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({
-          row: { original },
-        }: CellProps<WslInstanceWithoutRelation>) => (
-          <WslInstanceListActions
-            windowsInstance={windowsInstance}
-            wslInstance={original}
-          />
-        ),
-      },
-    ],
+        hasWslProfiles
+          ? {
+              Header: "WSL profile",
+              Cell: <NoData />,
+            }
+          : null,
+        {
+          accessor: "default",
+          Header: "Default",
+          Cell: ({
+            row: { original },
+          }: CellProps<WslInstanceWithoutRelation>) =>
+            original.is_default_child ? "Yes" : "No",
+        },
+        {
+          ...LIST_ACTIONS_COLUMN_PROPS,
+          Cell: ({
+            row: { original },
+          }: CellProps<WslInstanceWithoutRelation>) => (
+            <WslInstanceListActions
+              windowsInstance={windowsInstance}
+              wslInstance={original}
+            />
+          ),
+        },
+      ].filter((column) => column !== null),
     [wslInstances, selectedWslInstances],
   );
 
