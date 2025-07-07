@@ -212,7 +212,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("passRateFrom")) {
     filters.push({
       label: "From pass rate",
-      value: `${passRateFrom}%`,
+      value: passRateFrom === 0 ? undefined : `${passRateFrom}%`,
       clear: () => {
         setPageParams({ passRateFrom: 0 });
       },
@@ -222,7 +222,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("passRateTo")) {
     filters.push({
       label: "To",
-      value: `${passRateTo}%`,
+      value: passRateTo === 100 ? undefined : `${passRateTo}%`,
       clear: () => {
         setPageParams({ passRateTo: 100 });
       },

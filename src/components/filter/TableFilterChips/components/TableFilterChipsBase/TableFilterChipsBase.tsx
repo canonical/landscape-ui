@@ -99,9 +99,7 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
   const totalChipsToRenderCount = filters.reduce(
     (previousValue, filter) =>
       previousValue +
-      (filter.multiple
-        ? filter.values.length
-        : Number(filter.value !== undefined)),
+      (filter.multiple ? filter.values.length : Number(!!filter.value)),
     0,
   );
 
