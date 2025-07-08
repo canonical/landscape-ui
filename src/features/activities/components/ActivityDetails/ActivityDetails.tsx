@@ -1,7 +1,8 @@
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
+import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { useGetInstances } from "@/features/instances";
+import { useGetInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -53,18 +54,14 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const activity = getSingleActivityQueryResult?.data;
 
-  const { instances } = useGetInstances(
-    {
-      query: `id:${activity?.computer_id}`,
-      root_only: false,
-    },
-    undefined,
-    {
-      enabled: !!activity?.computer_id,
-    },
+  const { instance, isGettingInstance } = useGetInstance(
+    { instanceId: activity?.computer_id as number },
+    { enabled: !!activity?.computer_id },
   );
 
-  const instanceTitle = instances.length > 0 ? instances[0].title : "";
+  if (activity?.computer_id && isGettingInstance) {
+    return <LoadingState />;
+  }
 
   const handleApproveActivity = async (a: Activity) => {
     try {
@@ -238,9 +235,18 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
             <Col size={12}>
               <InfoItem label="Description" value={activity.summary} />
             </Col>
-            {instanceTitle && (
+            {instance && (
               <Col size={12}>
-                <InfoItem label="Instance" value={instanceTitle} />
+                <InfoItem
+                  label="Instance"
+                  value={
+                    <StaticLink
+                      to={`/instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`}
+                    >
+                      {instance.title}
+                    </StaticLink>
+                  }
+                />
               </Col>
             )}
             <Col size={6}>
