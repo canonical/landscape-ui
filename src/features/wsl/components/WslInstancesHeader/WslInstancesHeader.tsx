@@ -1,4 +1,4 @@
-import { TableFilterChips } from "@/components/filter";
+import { TableFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -43,6 +43,20 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       <HeaderWithSearch
         actions={
           <div className={classes.cta}>
+            <TableFilter
+              label="Compliance"
+              onItemSelect={() => undefined}
+              options={[
+                { label: "All", value: "" },
+                { label: "Compliant", value: "compliant" },
+                { label: "Not compliant", value: "noncompliant" },
+                { label: "Not created by Landscape", value: "unregistered" },
+                { label: "Not installed", value: "uninstalled" },
+              ]}
+              selectedItem=""
+              type="single"
+            />
+
             <div className="p-segmented-control">
               <div className="p-segmented-control__list">
                 <Button
