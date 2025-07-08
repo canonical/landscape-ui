@@ -11,11 +11,10 @@ import { type FC } from "react";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
-  const { currentPage, pageSize, groupBy, ...filters } = usePageParams();
+  const { currentPage, pageSize, ...filters } = usePageParams();
 
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
     query: getQuery(filters),
-    root_only: groupBy === "parent",
     archived_only: filters.status === "archived",
     with_alerts: true,
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,

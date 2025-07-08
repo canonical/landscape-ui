@@ -15,7 +15,6 @@ export const wslProfiles: WslProfile[] = [
     all_computers: true,
     access_group: "global",
     computers: {
-      compliant: [],
       constrained: [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22, 23, 24, 27, 28, 29, 30, 31,
         32,
@@ -38,7 +37,6 @@ export const wslProfiles: WslProfile[] = [
     all_computers: true,
     access_group: "global",
     computers: {
-      compliant: [],
       constrained: [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 21, 22, 23, 24, 27, 28, 29, 30, 31,
         32,

@@ -26,75 +26,35 @@ export const getColumnFilterOptions = (
 };
 
 interface FigureCheckboxStateParams {
-  groupBy: string;
   instance: Instance;
   selectedInstances: Instance[];
 }
 
 export const getCheckboxState = ({
-  groupBy,
   instance,
   selectedInstances,
 }: FigureCheckboxStateParams) => {
   const selectedInstancesIds = selectedInstances.map(({ id }) => id);
-
-  if (
-    groupBy === "parent" &&
-    !instance.is_wsl_instance &&
-    instance.children.length > 0
-  ) {
-    if (
-      instance.children.every(({ id }) => selectedInstancesIds.includes(id))
-    ) {
-      return "checked";
-    }
-
-    return instance.children.some(({ id }) => selectedInstancesIds.includes(id))
-      ? "indeterminate"
-      : "unchecked";
-  }
-
   return selectedInstancesIds.includes(instance.id) ? "checked" : "unchecked";
 };
 
 interface HandleCheckboxChangeParams {
-  groupBy: string;
   instance: Instance;
   selectedInstances: Instance[];
   setSelectedInstances: (instances: Instance[]) => void;
 }
 
 export const handleCheckboxChange = ({
-  groupBy,
   instance,
   selectedInstances,
   setSelectedInstances,
 }: HandleCheckboxChangeParams) => {
-  if (groupBy === "parent" && instance.children.length > 0) {
-    const childrenIds = instance.children.map(({ id }) => id);
-
-    if (selectedInstances.some(({ id }) => childrenIds.includes(id))) {
-      setSelectedInstances(
-        selectedInstances.filter(({ id }) => !childrenIds.includes(id)),
-      );
-    } else {
-      setSelectedInstances([
-        ...selectedInstances,
-        ...instance.children.map((child) => ({
-          ...child,
-          parent: instance,
-          children: [],
-        })),
-      ]);
-    }
+  if (selectedInstances.some(({ id }) => id === instance.id)) {
+    setSelectedInstances(
+      selectedInstances.filter(({ id }) => id !== instance.id),
+    );
   } else {
-    if (selectedInstances.some(({ id }) => id === instance.id)) {
-      setSelectedInstances(
-        selectedInstances.filter(({ id }) => id !== instance.id),
-      );
-    } else {
-      setSelectedInstances([...selectedInstances, instance]);
-    }
+    setSelectedInstances([...selectedInstances, instance]);
   }
 };
 

@@ -28,12 +28,12 @@ interface InstanceListProps {
 }
 
 const InstanceList = memo(function InstanceList({
-  instances,
+  instances: instancesData,
   selectedInstances,
   setColumnFilterOptions,
   setSelectedInstances,
 }: InstanceListProps) {
-  const { disabledColumns, groupBy, ...filters } = usePageParams();
+  const { disabledColumns, ...filters } = usePageParams();
 
   const isFilteringInstances = Object.values(filters).some((filter) => {
     if (typeof filter === "string") {
@@ -44,21 +44,8 @@ const InstanceList = memo(function InstanceList({
   });
 
   const toggleAll = () => {
-    setSelectedInstances(selectedInstances.length !== 0 ? [] : instances);
+    setSelectedInstances(selectedInstances.length !== 0 ? [] : instancesData);
   };
-
-  const instancesData = useMemo(() => {
-    return groupBy === "parent"
-      ? instances.map((instance) => ({
-          ...instance,
-          subRows: instance.children.map((child) => ({
-            ...child,
-            parent: instance,
-            children: [],
-          })),
-        }))
-      : instances;
-  }, [instances, groupBy]);
 
   const columns = useMemo<InstanceColumn[]>(
     () => [
@@ -72,14 +59,14 @@ const InstanceList = memo(function InstanceList({
               label={<span className="u-off-screen">Toggle all instances</span>}
               inline
               onChange={toggleAll}
-              disabled={instances.length === 0}
+              disabled={instancesData.length === 0}
               checked={
-                selectedInstances.length === instances.length &&
-                instances.length !== 0
+                selectedInstances.length === instancesData.length &&
+                instancesData.length !== 0
               }
               indeterminate={
                 selectedInstances.length !== 0 &&
-                selectedInstances.length < instances.length
+                selectedInstances.length < instancesData.length
               }
             />
             <span id="column-1-label">Name</span>
@@ -96,21 +83,12 @@ const InstanceList = memo(function InstanceList({
                 labelClassName="u-no-margin--bottom u-no-padding--top"
                 checked={
                   getCheckboxState({
-                    groupBy,
                     instance: row.original,
                     selectedInstances,
                   }) === "checked"
                 }
-                indeterminate={
-                  getCheckboxState({
-                    groupBy,
-                    instance: row.original,
-                    selectedInstances,
-                  }) === "indeterminate"
-                }
                 onChange={() => {
                   handleCheckboxChange({
-                    groupBy,
                     instance: row.original,
                     selectedInstances,
                     setSelectedInstances,
@@ -227,7 +205,7 @@ const InstanceList = memo(function InstanceList({
         ),
       },
     ],
-    [selectedInstances.length, instances, groupBy],
+    [selectedInstances.length, instancesData],
   );
 
   useEffect(() => {

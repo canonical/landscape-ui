@@ -37,7 +37,6 @@ const AlertCard: FC<Status> = ({
     {
       query,
       limit: 1,
-      root_only: false,
     },
     undefined,
     {

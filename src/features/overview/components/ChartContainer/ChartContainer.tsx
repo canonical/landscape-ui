@@ -13,20 +13,17 @@ const ChartContainer: FC = () => {
     useGetInstances({
       query: "alert:security-upgrades",
       limit: 1,
-      root_only: false,
     });
 
   const { instancesCount: instancesWithPackageUpgradesCount = 0 } =
     useGetInstances({
       query: "alert:package-upgrades",
       limit: 1,
-      root_only: false,
     });
 
   const { instancesCount: upToDateInstancesCount = 0 } = useGetInstances({
     query: "NOT alert:package-upgrades",
     limit: 1,
-    root_only: false,
   });
 
   const chartData = [

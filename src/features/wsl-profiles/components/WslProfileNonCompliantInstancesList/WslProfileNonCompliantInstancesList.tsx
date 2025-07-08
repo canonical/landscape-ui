@@ -48,7 +48,6 @@ const WslProfileNonCompliantInstancesList: FC<
 
   const { instances, isGettingInstances } = useGetInstances({
     query: `${search} profile:wsl:${wslProfile.id}:noncompliant`.trim(),
-    root_only: true,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
   });

@@ -53,11 +53,6 @@ export const PARAMS_CONFIG: ParamsConfig = [
     validator: (val: string) => moment(val, moment.ISO_8601, true).isValid(),
   },
   {
-    urlParam: "groupBy",
-    shouldResetPage: true,
-    defaultValue: DEFAULT_EMPTY_STRING,
-  },
-  {
     urlParam: "os",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,

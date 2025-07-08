@@ -17,7 +17,6 @@ export interface GetInstancesParams {
   with_hardware?: boolean;
   with_grouped_hardware?: boolean;
   with_annotations?: boolean;
-  root_only?: boolean;
   wsl_only?: boolean;
   with_alerts?: boolean;
   with_upgrades?: boolean;

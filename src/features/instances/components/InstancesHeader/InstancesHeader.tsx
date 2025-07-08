@@ -8,7 +8,6 @@ import { SearchBoxWithSavedSearches } from "@/features/saved-searches";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
 import { useState } from "react";
-import GroupFilter from "../../../../components/filter/GroupFilter";
 import { useGetAvailabilityZones, useGetTags } from "../../api";
 import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
@@ -58,8 +57,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
       label: title,
     })) ?? [];
 
-  const groupOptions =
-    FILTERS.groupBy.type === "select" ? FILTERS.groupBy.options : [];
   const statusOptions =
     FILTERS.status.type === "select" ? FILTERS.status.options : [];
   const osOptions = FILTERS.os.type === "select" ? FILTERS.os.options : [];
@@ -77,7 +74,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
         <ResponsiveTableFilters
           collapseFrom="xxl"
           filters={[
-            <GroupFilter key="group" label="Group by" options={groupOptions} />,
             <span key="divider-1" className={classes.divider} />,
             <StatusFilter
               key="status"

@@ -15,7 +15,6 @@ export interface PageParams {
   days: string;
   disabledColumns: string[];
   fromDate: string;
-  groupBy: string;
   os: string;
   pageSize: number;
   search: string;
