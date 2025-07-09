@@ -4,9 +4,11 @@ import { Colors } from "../../helpers";
 import { getChartData } from "./helpers";
 import PieChart from "../PieChart";
 import { STATUSES } from "@/features/instances";
+import { useTheme } from "@/context/theme";
 
 const ChartContainer: FC = () => {
   const { getInstancesQuery } = useInstances();
+  const { isDarkMode } = useTheme();
 
   const { data: securityUpgrades } = getInstancesQuery({
     query: "alert:security-upgrades",
@@ -58,7 +60,10 @@ const ChartContainer: FC = () => {
 
   const data = getChartData({
     chartData: chartData.map((info, index) => ({
-      backgroundColors: [chartColors[index], Colors.WHITE],
+      backgroundColors: [
+        chartColors[index],
+        isDarkMode ? Colors.DARK : Colors.WHITE,
+      ],
       ...info,
     })),
     totalInstances: totalInstances,

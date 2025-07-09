@@ -9,8 +9,8 @@
 }
 
 .lineContainer {
-  background-color: #d6e4ec;
-  border: 1px solid $colors--light-theme--border-default;
+  background-color: $colors--theme--background-default;
+  border: 1px solid $colors--theme--border-default;
   border-radius: 5px;
   margin-bottom: $spv--medium;
 }

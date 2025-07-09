@@ -2,7 +2,7 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .container {
-  border-top: 1px solid $color-mid-light;
+  border-top: 1px solid $colors--theme--border-default;
   margin-top: $spv--x-large;
   padding-top: $spv--x-large;
 }

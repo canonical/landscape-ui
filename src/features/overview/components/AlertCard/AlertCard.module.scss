@@ -2,7 +2,7 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .container {
-  border: 1px solid $color-mid-light;
+  border: 1px solid $colors--theme--border-default;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

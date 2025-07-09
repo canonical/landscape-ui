@@ -5,14 +5,14 @@
 @import "vanilla-framework/scss/global_functions";
 
 .container {
-  border-top: 1px solid $colors--dark-theme--border-default;
+  border-top: 1px solid $colors--theme--border-default;
   display: flex;
   flex-direction: column;
   padding-top: $spv--small;
 }
 
 .label {
-  color: $color-x-light;
+  color: $colors--theme--text-default;
 }
 
 .link {
@@ -30,7 +30,7 @@
 
   &:focus,
   &:hover {
-    background-color: #373737 !important;
+    background-color: $colors--theme--background-alt !important;
   }
 }
 
@@ -74,6 +74,6 @@
 
   &:focus,
   &:hover {
-    background-color: #373737 !important;
+    background-color: $colors--theme--background-alt !important;
   }
 }

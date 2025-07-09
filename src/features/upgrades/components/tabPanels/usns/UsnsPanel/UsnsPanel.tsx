@@ -65,11 +65,15 @@ const UsnsPanel: FC<UsnsPanelProps> = ({
   ) : (
     <UsnList
       tableType="expandable"
-      onNextPageFetch={() => setOffset((prevState) => prevState + 5)}
+      onNextPageFetch={() => {
+        setOffset((prevState) => prevState + 5);
+      }}
       instances={instances}
       isUsnsLoading={getUsnsQueryLoading}
       onSelectedUsnsChange={handleSelectedUsnsChange}
-      onSelectAllClick={() => onExcludedUsnsChange([])}
+      onSelectAllClick={() => {
+        onExcludedUsnsChange([]);
+      }}
       selectedUsns={selectedUsns}
       showSelectAllButton={showSelectAllButton}
       totalSelectedUsnCount={totalUsnCountRef.current - excludedUsns.length}

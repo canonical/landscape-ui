@@ -209,7 +209,9 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                   type="button"
                   appearance="link"
                   className="u-no-margin--bottom"
-                  onClick={() => handleDeleteSelectedItem(item.name)}
+                  onClick={() => {
+                    handleDeleteSelectedItem(item.name);
+                  }}
                 >
                   <Icon name={ICONS.delete} />
                 </Button>

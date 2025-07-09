@@ -1,17 +1,17 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .card {
-  border: 1px solid $color-mid-light;
+  border: 1px solid $colors--theme--border-default;
 }
 
 .header {
-  background-color: $colors--light-theme--background-alt;
-  border-bottom: 1px solid $color-mid-light;
+  background-color: $colors--theme--background-default;
+  border-bottom: 1px solid $colors--theme--border-default;
   padding: 0.5rem 1rem;
 }
 
 .title {
-  color: $color-x-dark;
+  color: $colors--theme--text-default;
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.5;

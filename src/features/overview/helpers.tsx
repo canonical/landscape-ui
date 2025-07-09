@@ -23,6 +23,7 @@ export enum Colors {
   RED = "#da0b0b",
   DISABLED_RED = "#ee9b9b",
   WHITE = "#fbfbfb",
+  DARK = "#202021", // Dark mode alt background color
 }
 
 export const chartLabelToColorLabel = (label: string): keyof IColors => {

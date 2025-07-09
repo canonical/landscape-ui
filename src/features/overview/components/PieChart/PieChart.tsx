@@ -1,6 +1,7 @@
 import type { ActiveElement, ChartData } from "chart.js";
 import { Chart, registerables } from "chart.js";
 import classNames from "classnames";
+import type { FC } from "react";
 import React, { useEffect, useRef, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import Legend from "../Legend";
@@ -14,7 +15,7 @@ interface PieChartProps {
   readonly data: ChartData<"pie">;
 }
 
-const PieChart: React.FC<PieChartProps> = ({ data }) => {
+const PieChart: FC<PieChartProps> = ({ data }) => {
   const chartRef = useRef<ChartJSOrUndefined<"pie"> | null>(undefined);
   const [chartInstance, setChartInstance] = useState<Chart | null>(null);
   const [selectedArc, setSelectedArc] = useState<number | null>(null);

@@ -134,7 +134,9 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
                 original,
               ) && checkIsPackageUpdateRequired(excludedPackages, original)
             }
-            onChange={() => handlePackageToggle(original)}
+            onChange={() => {
+              handlePackageToggle(original);
+            }}
           />
         ),
       },
@@ -148,14 +150,14 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
               <SelectAllButton
                 count={totalPackageCount - excludedPackageIdSet.size}
                 itemName={{ plural: "packages", singular: "package" }}
-                onClick={() =>
+                onClick={() => {
                   onExcludedPackagesChange(
                     excludedPackages.map(({ id }) => ({
                       id,
                       exclude_packages: [],
                     })),
-                  )
-                }
+                  );
+                }}
                 totalCount={totalPackageCount}
               />
             );
@@ -168,7 +170,9 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
                 excludedPackages={excludedPackages}
                 limit={limit}
                 onExcludedPackagesChange={onExcludedPackagesChange}
-                onLimitChange={() => setLimit((prevState) => prevState + 5)}
+                onLimitChange={() => {
+                  setLimit((prevState) => prevState + 5);
+                }}
                 selectedInstances={instances}
               />
             );
@@ -189,7 +193,9 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
             type="button"
             className={classNames("p-accordion__tab", classes.expandButton)}
             aria-expanded={expandedRow === index}
-            onClick={() => handleExpandCellClick(index)}
+            onClick={() => {
+              handleExpandCellClick(index);
+            }}
           >
             {new Set(original.computers.map(({ id }) => id)).size}
           </Button>

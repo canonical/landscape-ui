@@ -4,7 +4,10 @@
 @import "vanilla-framework/scss/layouts_application";
 
 .secondaryNavigation {
-  background-color: #373737 !important;
+  background-color: $colors--theme--background-alt !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   overflow-y: auto;
   transition-duration: 0.165s;
   transition-property: width, box-shadow, background;
@@ -40,4 +43,8 @@
 
 .isActive {
   background-color: #262626 !important;
+}
+
+.footer {
+  padding: $spv--x-small $sph--x-large;
 }

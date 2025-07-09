@@ -12,19 +12,19 @@
 }
 
 .description {
-  color: $colors--light-theme--text-muted;
+  color: $colors--theme--text-muted;
   white-space: normal;
 }
 
 .line {
-  border-left: 1.5px solid $colors--light-theme--border-default;
+  border-left: 1.5px solid $colors--theme--border-default;
   height: 1.5rem;
   margin: 0 auto;
   width: 0;
 }
 
 .smallCard {
-  border: 1.5px solid $colors--light-theme--border-default;
+  border: 1.5px solid $colors--theme--border-default;
   margin: 0 auto;
   padding: 0 $sph--small;
 }

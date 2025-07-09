@@ -6,7 +6,7 @@
 }
 
 .expanded {
-  @include vf-highlight-bar($colors--light-theme--text-default, bottom, false);
+  @include vf-highlight-bar($colors--theme--text-default, bottom, false);
 }
 
 .expandButton {
@@ -24,7 +24,7 @@
 }
 
 .innerTable {
-  background-color: $color-light;
+  background-color: $colors--theme--background-alt;
 }
 
 .row,

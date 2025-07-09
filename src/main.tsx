@@ -11,6 +11,7 @@ import { IS_DEV_ENV, IS_MSW_ENABLED, ROOT_PATH } from "@/constants";
 import AppErrorBoundary from "./components/layout/AppErrorBoundary/AppErrorBoundary";
 import AccountsProvider from "@/context/accounts";
 import * as Sentry from "@sentry/react";
+import ThemeProvider from "@/context/theme";
 
 if (IS_DEV_ENV && IS_MSW_ENABLED) {
   const { worker } = await import("@/tests/browser");
@@ -35,17 +36,19 @@ root.render(
   <StrictMode>
     <AppErrorBoundary>
       <BrowserRouter basename={ROOT_PATH}>
-        <EnvProvider>
-          <NotifyProvider>
-            <ReactQueryProvider>
-              <AuthProvider>
-                <AccountsProvider>
-                  <App />
-                </AccountsProvider>
-              </AuthProvider>
-            </ReactQueryProvider>
-          </NotifyProvider>
-        </EnvProvider>
+        <ThemeProvider>
+          <EnvProvider>
+            <NotifyProvider>
+              <ReactQueryProvider>
+                <AuthProvider>
+                  <AccountsProvider>
+                    <App />
+                  </AccountsProvider>
+                </AuthProvider>
+              </ReactQueryProvider>
+            </NotifyProvider>
+          </EnvProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </AppErrorBoundary>
   </StrictMode>,

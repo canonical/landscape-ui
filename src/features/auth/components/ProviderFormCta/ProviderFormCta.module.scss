@@ -2,9 +2,9 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .container {
-  background-color: $color-x-light;
+  background-color: $colors--theme--background-default;
   bottom: 0;
-  box-shadow: inset 0 1px 0 0 $colors--light-theme--border-default;
+  box-shadow: inset 0 1px 0 0 $colors--theme--border-default;
   display: flex;
   justify-content: flex-end;
   margin-bottom: -$spv--x-large;

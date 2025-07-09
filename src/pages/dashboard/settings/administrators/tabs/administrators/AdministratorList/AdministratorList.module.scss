@@ -4,7 +4,7 @@
   overflow: visible;
 
   tbody & {
-    border-color: $color-mid-x-light;
+    border-color: $colors--theme--border-default;
     border-style: solid;
     border-width: 0 1px;
     padding: 0;
@@ -12,5 +12,5 @@
 }
 
 .table {
-  border-bottom: 1px solid $colors--light-theme--border-default;
+  border-bottom: 1px solid $colors--theme--border-default;
 }

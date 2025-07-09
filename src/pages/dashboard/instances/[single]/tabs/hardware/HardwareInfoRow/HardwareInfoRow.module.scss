@@ -6,7 +6,7 @@
   display: flex;
 
   &:not(:first-child) {
-    border-top: 1px solid $colors--light-theme--border-default;
+    border-top: 1px solid $colors--theme--border-default;
   }
 
   @media (max-width: #{$breakpoint-small - 1px}) {
@@ -30,6 +30,6 @@
   padding-top: $spv--large;
 
   &:not(:first-child) {
-    border-top: 1px solid $colors--light-theme--border-default;
+    border-top: 1px solid $colors--theme--border-default;
   }
 }

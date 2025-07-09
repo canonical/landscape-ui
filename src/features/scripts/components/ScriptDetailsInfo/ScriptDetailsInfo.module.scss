@@ -11,9 +11,8 @@
   display: flex;
   justify-content: space-between;
   margin-top: $spv--small;
-  padding-right: 0;
-  padding-left: 0;
   padding-left: $spv--small;
+  padding-right: 0;
   text-decoration: none;
 }
 
@@ -24,10 +23,11 @@
 }
 
 .downloadButton {
-  padding-right: $sp-small;
   padding-left: $sp-small;
+  padding-right: $sp-small;
+
   &:focus,
   &:hover {
-    background-color: $color-mid-x-light;
+    background-color: $colors--theme--background-alt;
   }
 }

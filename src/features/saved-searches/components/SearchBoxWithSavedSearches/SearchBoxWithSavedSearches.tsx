@@ -113,7 +113,9 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
         )}
         aria-expanded={showDropdown}
         ref={chipsContainerRef}
-        onClick={() => setShowDropdown(true)}
+        onClick={() => {
+          setShowDropdown(true);
+        }}
       >
         <Form
           onSubmit={(event) => {
@@ -129,10 +131,16 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
               autocomplete="off"
               className={classes.input}
               value={inputText}
-              onChange={(inputValue) => setInputText(inputValue)}
-              onClear={() => setInputText("")}
+              onChange={(inputValue) => {
+                setInputText(inputValue);
+              }}
+              onClear={() => {
+                setInputText("");
+              }}
               onSearch={handleSearch}
-              onClick={() => setShowDropdown(true)}
+              onClick={() => {
+                setShowDropdown(true);
+              }}
               onKeyUp={handleKeysOnSearchBox}
             />
           </div>
@@ -143,13 +151,17 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
       {showDropdown && !getSavedSearchesQueryLoading && (
         <div className="p-search-and-filter__panel">
           <SearchPrompt
-            onSearchSave={() => setInputText("")}
+            onSearchSave={() => {
+              setInputText("");
+            }}
             search={inputText.trim()}
           />
 
           <SavedSearchList
             onSavedSearchClick={handleSavedSearchClick}
-            onSavedSearchRemove={() => setShowDropdown(true)}
+            onSavedSearchRemove={() => {
+              setShowDropdown(true);
+            }}
             savedSearches={filteredSearches}
           />
         </div>

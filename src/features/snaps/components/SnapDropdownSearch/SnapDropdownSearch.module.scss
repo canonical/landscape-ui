@@ -18,12 +18,12 @@
 }
 
 .highlighted {
-  background-color: $color-light;
+  background-color: $colors--theme--background-alt;
 }
 
 .selectedContainer {
   align-items: center;
-  background-color: $color-light;
+  background-color: $colors--theme--background-alt;
   display: flex;
   justify-content: space-between;
   margin-top: $spv--medium;

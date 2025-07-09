@@ -3,7 +3,7 @@
 
 .attachment {
   align-items: center;
-  background-color: $color-light;
+  background-color: $colors--theme--background-default;
   display: flex;
   justify-content: space-between;
   margin-top: $spv--small;
@@ -19,6 +19,6 @@
 .actionButton {
   &:focus,
   &:hover {
-    background-color: $color-mid-x-light;
+    background-color: $colors--theme--background-default;
   }
 }

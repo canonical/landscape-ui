@@ -1,4 +1,3 @@
-import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 import LoadingState from "@/components/layout/LoadingState";
 import useAuth from "@/hooks/useAuth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
@@ -194,7 +193,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
           error={getFormikError(formik, "preferred_account")}
         />
       )}
-      <div className={buttonClasses.buttons}>
+      <div className={classes.buttons}>
         <Button
           className="u-no-margin--bottom"
           appearance="positive"
