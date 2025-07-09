@@ -1,17 +1,19 @@
-import { describe, vi } from "vitest";
-import { screen } from "@testing-library/react";
-import { renderWithProviders } from "@/tests/render";
-import Navigation from "./Navigation";
+import type { AuthContextProps } from "@/context/auth";
+import { useGetOverLimitSecurityProfiles } from "@/features/security-profiles";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
-import type { FeatureKey } from "@/types/FeatureKey";
 import { MENU_ITEMS } from "@/templates/dashboard/Navigation/constants";
 import type { MenuItem } from "@/templates/dashboard/Navigation/types";
-import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
+import { renderWithProviders } from "@/tests/render";
+import type { FeatureKey } from "@/types/FeatureKey";
+import { screen } from "@testing-library/react";
+import { describe, vi } from "vitest";
+import Navigation from "./Navigation";
 
 vi.mock("@/hooks/useAuth");
 vi.mock("@/hooks/useEnv");
+vi.mock("@/features/security-profiles/api/useGetOverLimitSecurityProfiles");
 
 const authProps: AuthContextProps = {
   logout: vi.fn(),
@@ -113,5 +115,43 @@ describe("Navigation", () => {
         }
       });
     }
+  });
+
+  describe("security profiles badge", () => {
+    it("should render when there is an over-limit profile", () => {
+      vi.mocked(useGetOverLimitSecurityProfiles).mockReturnValue({
+        hasOverLimitSecurityProfiles: true,
+        isOverLimitSecurityProfilesLoading: false,
+        overLimitSecurityProfiles: [],
+        overLimitSecurityProfilesCount: 3,
+      });
+
+      vi.mocked(useAuth).mockReturnValue({
+        ...authProps,
+        isFeatureEnabled: () => true,
+      });
+
+      renderWithProviders(<Navigation />);
+
+      expect(screen.getByText(3)).toBeInTheDocument();
+    });
+
+    it("should not render when the feature is disabled", () => {
+      vi.mocked(useGetOverLimitSecurityProfiles).mockReturnValue({
+        hasOverLimitSecurityProfiles: true,
+        isOverLimitSecurityProfilesLoading: false,
+        overLimitSecurityProfiles: [],
+        overLimitSecurityProfilesCount: 3,
+      });
+
+      vi.mocked(useAuth).mockReturnValue({
+        ...authProps,
+        isFeatureEnabled: () => false,
+      });
+
+      renderWithProviders(<Navigation />);
+
+      expect(screen.queryByText(3)).not.toBeInTheDocument();
+    });
   });
 });
