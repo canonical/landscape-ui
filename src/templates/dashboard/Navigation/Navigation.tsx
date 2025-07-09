@@ -20,14 +20,17 @@ const Navigation: FC = () => {
   const { isOidcAvailable, isFeatureEnabled } = useAuth();
 
   const { hasOverLimitSecurityProfiles, overLimitSecurityProfilesCount } =
-    useGetOverLimitSecurityProfiles({
-      limit: INSURANCE_LIMIT,
-      offset: 0,
-    });
+    useGetOverLimitSecurityProfiles(
+      {
+        limit: INSURANCE_LIMIT,
+        offset: 0,
+      },
+      { enabled: isFeatureEnabled("usg-profiles") },
+    );
 
   if (IS_DEV_ENV && overLimitSecurityProfilesCount >= INSURANCE_LIMIT) {
     console.warn(
-      `There are ${INSURANCE_LIMIT} or more over-limit security profiles, so the navigation badge will be inaccurate`,
+      `There are ${INSURANCE_LIMIT} or more over-limit security profiles, so the navigation badge will be inaccurate.`,
     );
   }
 
