@@ -102,6 +102,12 @@ describe("Navigation", () => {
       isSaas: false,
       isSelfHosted: true,
     });
+    vi.mocked(useGetOverLimitSecurityProfiles).mockReturnValue({
+      hasOverLimitSecurityProfiles: true,
+      isOverLimitSecurityProfilesLoading: false,
+      overLimitSecurityProfiles: [],
+      overLimitSecurityProfilesCount: 3,
+    });
   });
 
   MENU_ITEMS.forEach((item) => {
@@ -119,13 +125,6 @@ describe("Navigation", () => {
 
   describe("security profiles badge", () => {
     it("should render when there is an over-limit profile", () => {
-      vi.mocked(useGetOverLimitSecurityProfiles).mockReturnValue({
-        hasOverLimitSecurityProfiles: true,
-        isOverLimitSecurityProfilesLoading: false,
-        overLimitSecurityProfiles: [],
-        overLimitSecurityProfilesCount: 3,
-      });
-
       vi.mocked(useAuth).mockReturnValue({
         ...authProps,
         isFeatureEnabled: () => true,
@@ -134,16 +133,11 @@ describe("Navigation", () => {
       renderWithProviders(<Navigation />);
 
       expect(screen.getByText(3)).toBeInTheDocument();
+
+      vi.resetAllMocks();
     });
 
     it("should not render when the feature is disabled", () => {
-      vi.mocked(useGetOverLimitSecurityProfiles).mockReturnValue({
-        hasOverLimitSecurityProfiles: true,
-        isOverLimitSecurityProfilesLoading: false,
-        overLimitSecurityProfiles: [],
-        overLimitSecurityProfilesCount: 3,
-      });
-
       vi.mocked(useAuth).mockReturnValue({
         ...authProps,
         isFeatureEnabled: () => false,
@@ -152,6 +146,8 @@ describe("Navigation", () => {
       renderWithProviders(<Navigation />);
 
       expect(screen.queryByText(3)).not.toBeInTheDocument();
+
+      vi.resetAllMocks();
     });
   });
 });
