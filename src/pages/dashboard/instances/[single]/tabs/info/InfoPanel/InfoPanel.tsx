@@ -453,7 +453,12 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         )}
 
         <Col size={3}>
-          <InfoItem label="Registered" value={<NoData />} />
+          <InfoItem
+            label="Registered"
+            value={moment(instance.registered_at).format(
+              DISPLAY_DATE_TIME_FORMAT,
+            )}
+          />
         </Col>
       </Row>
 

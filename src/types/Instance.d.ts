@@ -213,6 +213,7 @@ export interface Profile {
 
 export interface InstanceWithoutRelation extends Record<string, unknown> {
   access_group: AccessGroup["name"];
+  annotations: Record<string, string>;
   archived: boolean;
   cloud_init: {
     availability_zone?: string | null;
@@ -226,11 +227,11 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   is_default_child: boolean | null;
   is_wsl_instance: boolean;
   last_ping_time: string | null;
+  registered_at: string;
   tags: string[];
   title: string;
   ubuntu_pro_info: UbuntuProInfo | FailedUbuntuProInfo | null;
   alerts?: InstanceAlert[];
-  annotations?: Record<string, string>;
   grouped_hardware?: GroupedHardware;
   profiles?: Profile[];
   upgrades?: InstanceUpgrades;
