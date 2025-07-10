@@ -239,7 +239,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
           instances={selected}
           tags={tags}
           onConfirm={addTags}
-          confirmButtonDisabled={isAddingTags}
+          confirmButtonLoading={isAddingTags}
           close={closeModal}
           profileChangesCount={profileChangesCount}
         />
