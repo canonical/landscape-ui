@@ -235,6 +235,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   grouped_hardware?: GroupedHardware;
   profiles?: Profile[];
   upgrades?: InstanceUpgrades;
+  wsl_profiles?: Profile[];
 }
 
 interface WithRelation<Type extends InstanceWithoutRelation> extends Type {

@@ -4,20 +4,17 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
+import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetInstances } from "@/features/instances";
 import { WindowsInstanceMakeCompliantModal } from "@/features/wsl";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import useSelection from "@/hooks/useSelection";
 import {
   DEFAULT_CURRENT_PAGE,
   DEFAULT_PAGE_SIZE,
 } from "@/libs/pageParamsManager/constants";
-import type {
-  Instance,
-  WindowsInstance,
-  WslInstance,
-  WslInstanceWithoutRelation,
-} from "@/types/Instance";
+import type { WindowsInstance } from "@/types/Instance";
 import {
   Button,
   CheckboxInput,
@@ -32,7 +29,7 @@ import { useBoolean } from "usehooks-ts";
 import type { WslProfile } from "../../types";
 import classes from "./WslProfileNonCompliantInstancesList.module.scss";
 import WindowsInstanceActions from "./components/WindowsInstanceActions";
-import WslInstanceActions from "./components/WslInstanceActions";
+import { getCellProps, getRowProps } from "./helpers";
 
 interface WslProfileNonCompliantInstancesListProps {
   readonly wslProfile: WslProfile;
@@ -41,15 +38,20 @@ interface WslProfileNonCompliantInstancesListProps {
 const WslProfileNonCompliantInstancesList: FC<
   WslProfileNonCompliantInstancesListProps
 > = ({ wslProfile }) => {
+  const { expandedRowIndex, getTableRowsRef, handleExpand } =
+    useExpandableRow();
   const [inputValue, setInputValue] = useState("");
   const [currentPage] = useState(DEFAULT_CURRENT_PAGE);
   const [pageSize] = useState(DEFAULT_PAGE_SIZE);
   const [search, setSearch] = useState("");
 
   const { instances, isGettingInstances } = useGetInstances({
-    query: `${search} profile:wsl:${wslProfile.id}:noncompliant`.trim(),
+    query: [search, `profile:wsl:${wslProfile.id}:noncompliant`]
+      .filter(Boolean)
+      .join(" "),
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
+    with_wsl_profiles: true,
   });
 
   const {
@@ -63,7 +65,7 @@ const WslProfileNonCompliantInstancesList: FC<
     setFalse: closeMakeCompliantModal,
   } = useBoolean();
 
-  const columns = useMemo<Column<Instance>[]>(
+  const columns = useMemo<Column<WindowsInstance>[]>(
     () => [
       {
         accessor: "title",
@@ -88,66 +90,54 @@ const WslProfileNonCompliantInstancesList: FC<
             Instance name
           </>
         ),
-        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
-          if (instance.is_wsl_instance) {
-            return (
-              <>
-                <span>
-                  <Icon className={classes.arrow} name="arrow-down-right" />
-                </span>
+        Cell: ({ row: { original: instance } }: CellProps<WindowsInstance>) => (
+          <>
+            <CheckboxInput
+              inline
+              label={
+                <span className="u-off-screen">Select {instance.title}</span>
+              }
+              checked={selectedInstances.includes(instance)}
+              onChange={({ currentTarget: { checked } }) => {
+                setSelectedInstances(
+                  checked
+                    ? [...selectedInstances, instance]
+                    : selectedInstances.filter((i) => i !== instance),
+                );
+              }}
+            />
 
-                <StaticLink
-                  to={`/instances/${(instance as WslInstance).parent.id}/${instance.id}`}
-                >
-                  {instance.title}
-                </StaticLink>
-              </>
-            );
-          } else {
-            return (
-              <>
-                <CheckboxInput
-                  inline
-                  label={
-                    <span className="u-off-screen">
-                      Select {instance.title}
-                    </span>
-                  }
-                  checked={selectedInstances.includes(instance)}
-                  onChange={({ currentTarget: { checked } }) => {
-                    setSelectedInstances(
-                      checked
-                        ? [...selectedInstances, instance]
-                        : selectedInstances.filter((i) => i !== instance),
-                    );
-                  }}
-                />
-
-                <StaticLink to={`/instances/${instance.id}`}>
-                  {instance.title}
-                </StaticLink>
-              </>
-            );
-          }
-        },
-      },
-      {
-        Header: "Compliance",
-        Cell: ({ row: { original: instance } }: CellProps<Instance>) =>
-          instance.is_wsl_instance ? <NoData /> : "Not compliant",
+            <StaticLink to={`/instances/${instance.id}`}>
+              {instance.title}
+            </StaticLink>
+          </>
+        ),
       },
       {
         Header: "OS",
-        Cell: ({ row: { original: instance } }: CellProps<Instance>) =>
+        Cell: ({ row: { original: instance } }: CellProps<WindowsInstance>) =>
           instance.distribution_info?.description,
       },
       {
+        accessor: "profiles",
         Header: "WSL profiles",
-        Cell: <NoData />,
+        Cell: ({
+          row: { original: instance, index },
+        }: CellProps<WindowsInstance>) => (
+          <TruncatedCell
+            content={instance.wsl_profiles
+              ?.map((profile) => profile.title)
+              .join(", ")}
+            isExpanded={index === expandedRowIndex}
+            onExpand={() => {
+              handleExpand(index);
+            }}
+          />
+        ),
       },
       {
         Header: "Last ping",
-        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
+        Cell: ({ row: { original: instance } }: CellProps<WindowsInstance>) => {
           const dateTime = moment(instance.last_ping_time);
 
           if (dateTime.isValid()) {
@@ -164,23 +154,12 @@ const WslProfileNonCompliantInstancesList: FC<
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
-          if (instance.is_wsl_instance) {
-            return (
-              <WslInstanceActions
-                instance={instance as WslInstance}
-                parentId={(instance as WslInstance).parent.id}
-              />
-            );
-          } else {
-            return (
-              <WindowsInstanceActions instance={instance as WindowsInstance} />
-            );
-          }
-        },
+        Cell: ({ row: { original: instance } }: CellProps<WindowsInstance>) => (
+          <WindowsInstanceActions instance={instance as WindowsInstance} />
+        ),
       },
     ],
-    [instances, selectedInstances],
+    [instances, selectedInstances, expandedRowIndex],
   );
 
   const clear = () => {
@@ -226,19 +205,15 @@ const WslProfileNonCompliantInstancesList: FC<
       {isGettingInstances ? (
         <LoadingState />
       ) : (
-        <ResponsiveTable
-          columns={columns}
-          data={instances.flatMap((instance) => [
-            instance,
-            ...instance.children.map<WslInstance>((child) => ({
-              ...(child as WslInstanceWithoutRelation),
-              parent: instance as WindowsInstance,
-              children: [],
-            })),
-          ])}
-          emptyMsg="No Windows instances found according to your search parameters."
-          minWidth={1200}
-        />
+        <div ref={getTableRowsRef}>
+          <ResponsiveTable
+            columns={columns}
+            data={instances as WindowsInstance[]}
+            emptyMsg="No Windows instances found according to your search parameters."
+            getCellProps={getCellProps(expandedRowIndex)}
+            getRowProps={getRowProps(expandedRowIndex)}
+          />
+        </div>
       )}
 
       <WindowsInstanceMakeCompliantModal

@@ -20,6 +20,7 @@ export interface GetInstancesParams {
   wsl_only?: boolean;
   with_alerts?: boolean;
   with_upgrades?: boolean;
+  with_wsl_profiles?: boolean;
 }
 
 export const useGetInstances = (
