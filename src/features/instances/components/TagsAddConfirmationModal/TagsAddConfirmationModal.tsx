@@ -23,11 +23,13 @@ interface TagsAddConfirmationModalProps
     "children" | "confirmButtonLabel" | "title"
   > {
   readonly instances: Instance[];
+  readonly profileChangesCount: number;
   readonly tags: string[];
 }
 
 const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
   instances,
+  profileChangesCount,
   tags,
   ...props
 }) => {
@@ -37,13 +39,12 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
     increment: incrementCurrentPage,
   } = useCounter(DEFAULT_CURRENT_PAGE);
 
-  const { isPendingProfileChanges, profileChanges, profileChangesCount } =
-    useGetProfileChanges({
-      instance_ids: instances.map((instance) => instance.id),
-      tags,
-      limit: PAGE_SIZE,
-      offset: (currentPage - 1) * PAGE_SIZE,
-    });
+  const { isPendingProfileChanges, profileChanges } = useGetProfileChanges({
+    instance_ids: instances.map((instance) => instance.id),
+    tags,
+    limit: PAGE_SIZE,
+    offset: (currentPage - 1) * PAGE_SIZE,
+  });
 
   const modalColumns = useMemo<Column<ProfileChange>[]>(
     () =>
@@ -133,39 +134,37 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
       {isPendingProfileChanges ? (
         <LoadingState />
       ) : (
-        <>
-          <ModularTable
-            className="u-no-margin--bottom"
-            columns={modalColumns}
-            data={profileChanges}
-          />
-
-          <hr />
-
-          <div className={classes.pagination}>
-            <div>
-              <Button
-                className="u-no-margin--right"
-                appearance="base"
-                hasIcon
-                onClick={decrementCurrentPage}
-                disabled={currentPage <= DEFAULT_CURRENT_PAGE}
-              >
-                <Icon name="chevron-left" />
-              </Button>
-              Page {currentPage} of {maximumPage}
-              <Button
-                appearance="base"
-                hasIcon
-                onClick={incrementCurrentPage}
-                disabled={currentPage >= maximumPage}
-              >
-                <Icon name="chevron-right" />
-              </Button>
-            </div>
-          </div>
-        </>
+        <ModularTable
+          className="u-no-margin--bottom"
+          columns={modalColumns}
+          data={profileChanges}
+        />
       )}
+
+      <hr />
+
+      <div className={classes.pagination}>
+        <div>
+          <Button
+            className="u-no-margin--right"
+            appearance="base"
+            hasIcon
+            onClick={decrementCurrentPage}
+            disabled={currentPage <= DEFAULT_CURRENT_PAGE}
+          >
+            <Icon name="chevron-left" />
+          </Button>
+          Page {currentPage} of {maximumPage}
+          <Button
+            appearance="base"
+            hasIcon
+            onClick={incrementCurrentPage}
+            disabled={currentPage >= maximumPage}
+          >
+            <Icon name="chevron-right" />
+          </Button>
+        </div>
+      </div>
     </ConfirmationModal>
   );
 };
