@@ -43,7 +43,6 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
       instance_ids: selected.map((instance) => instance.id),
       tags,
       limit: 10,
-      offset: 0,
     },
     { enabled: false },
   );
