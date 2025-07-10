@@ -67,7 +67,17 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
           Header: "Profile type",
           Cell: ({
             row: { original: profileChange },
-          }: CellProps<ProfileChange>) => profileChange.profile.profile_type,
+          }: CellProps<ProfileChange>) =>
+            ({
+              ChildInstanceProfile: "WSL",
+              PackageProfile: "Package",
+              RebootProfile: "Reboot",
+              RemovalProfile: "Removal",
+              RepositoryProfile: "Repository",
+              ScriptProfile: "Script",
+              UpgradeProfile: "Upgrade",
+              UsgProfile: "Security",
+            })[profileChange.profile.profile_type],
         },
         {
           Header: "Associated instances",
