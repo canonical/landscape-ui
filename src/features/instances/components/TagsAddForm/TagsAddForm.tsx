@@ -1,10 +1,12 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
+import { useGetProfileChanges } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
 import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
+import { pluralize } from "@/utils/_helpers";
 import {
   CheckboxInput,
   ModularTable,
@@ -13,9 +15,7 @@ import {
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
-import { useTaggedSecurityProfiles } from "../../hooks";
 import TagsAddConfirmationModal from "../TagsAddConfirmationModal";
-import { pluralize } from "@/utils/_helpers";
 
 interface TagsAddFormProps {
   readonly selected: Instance[];
@@ -31,17 +31,27 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
   const { closeSidePanel } = useSidePanel();
 
   const { addTagsToInstancesQuery, getAllInstanceTagsQuery } = useInstances();
+
+  const [tags, setTags] = useState<string[]>([]);
+
+  const { isFetchingProfileChanges, refetchProfileChanges } =
+    useGetProfileChanges(
+      {
+        instance_ids: selected.map((instance) => instance.id),
+        tags,
+        limit: 10,
+        offset: 0,
+      },
+      { enabled: false },
+    );
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [search, setSearch] = useState("");
+
   const { mutateAsync: addTagsToInstances, isPending: isAddingTags } =
     addTagsToInstancesQuery;
   const { data: getAllInstanceTagsQueryResult, isLoading: isLoadingTags } =
     getAllInstanceTagsQuery();
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [search, setSearch] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
-
-  const { securityProfiles, isSecurityProfilesLoading } =
-    useTaggedSecurityProfiles(tags, selected);
 
   const addTags = async () => {
     try {
@@ -66,7 +76,14 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
   };
 
   const submit = async () => {
-    if (securityProfiles.length) {
+    const getProfileChangesResponse = await refetchProfileChanges();
+
+    if (!getProfileChangesResponse.isSuccess) {
+      debug(getProfileChangesResponse.error);
+      return;
+    }
+
+    if (getProfileChangesResponse.data.data.count) {
       setIsModalVisible(true);
     } else {
       await addTags();
@@ -209,16 +226,14 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
       <SidePanelFormButtons
         onSubmit={submit}
-        submitButtonDisabled={
-          !tags.length || isAddingTags || isSecurityProfilesLoading
-        }
+        submitButtonDisabled={!tags.length}
+        submitButtonLoading={isAddingTags || isFetchingProfileChanges}
         submitButtonText="Assign"
       />
 
       {isModalVisible && (
         <TagsAddConfirmationModal
           instances={selected}
-          securityProfiles={securityProfiles}
           tags={tags}
           onConfirm={addTags}
           confirmButtonDisabled={isAddingTags}
