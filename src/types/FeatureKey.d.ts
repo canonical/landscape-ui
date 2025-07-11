@@ -3,5 +3,6 @@ export type FeatureKey =
   | "oidc-configuration"
   | "script-profiles"
   | "spa-dashboard"
+  | "support-provider-login"
   | "usg-profiles"
   | "wsl-child-instance-profiles";
