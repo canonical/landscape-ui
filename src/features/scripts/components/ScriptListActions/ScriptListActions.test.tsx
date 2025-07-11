@@ -334,11 +334,13 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(viewDetailsButton);
 
+      const sidePanel = screen.getByRole("complementary");
       const header = screen.getByRole("heading", {
         name: activeScript.title,
       });
 
       expect(header).toBeInTheDocument();
+      expect(sidePanel).toBeInTheDocument();
     });
 
     it("should open the edit side panel when the edit button is clicked", async () => {

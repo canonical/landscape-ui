@@ -78,6 +78,9 @@ describe("ScriptList", () => {
     expect(script).toBeInTheDocument();
 
     await user.click(script);
+
+    const sidePanel = await screen.findByRole("complementary");
+    expect(sidePanel).toBeInTheDocument();
   });
 
   it("shows correct icons for script status", async () => {

@@ -1,11 +1,11 @@
-import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectLoadingState } from "@/tests/helpers";
-import { users } from "@/tests/mocks/user";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
 import UserPanel from "./UserPanel";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { users } from "@/tests/mocks/user";
+import { expectLoadingState } from "@/tests/helpers";
 
 describe("UserPanel", () => {
   it("renders UserPanel", async () => {
@@ -38,7 +38,7 @@ describe("UserPanel", () => {
     expect(addNewUserButton).toBeInTheDocument();
 
     await userEvent.click(addNewUserButton);
-    const form = await screen.findByTestId("globalSidePanel");
+    const form = await screen.findByRole("complementary");
     expect(form).toBeInTheDocument();
   });
 
