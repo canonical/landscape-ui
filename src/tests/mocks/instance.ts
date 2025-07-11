@@ -44,6 +44,7 @@ export const ubuntuInstance: Instance = {
   },
   employee_id: null,
   archived: false,
+  registered_at: "2023-11-29T18:29:25Z",
 };
 
 export const ubuntuCoreInstance: Instance = {
@@ -137,6 +138,7 @@ export const ubuntuCoreInstance: Instance = {
     security: 0,
   },
   archived: false,
+  registered_at: "2023-11-29T18:29:25Z",
 };
 
 export const windowsInstance = {
@@ -194,6 +196,7 @@ export const windowsInstance = {
       },
       employee_id: null,
       archived: false,
+      registered_at: "2023-11-29T18:29:25Z",
     },
   ],
   parent: null,
@@ -205,6 +208,7 @@ export const windowsInstance = {
   },
   employee_id: null,
   archived: false,
+  registered_at: "2023-11-29T18:29:25Z",
 };
 
 export const debianInstance: Instance = {
@@ -265,6 +269,7 @@ export const debianInstance: Instance = {
       severity: "danger",
     },
   ],
+  registered_at: "2023-11-29T18:29:25Z",
 };
 
 export const instances: Instance[] = [
@@ -306,6 +311,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 11,
@@ -368,9 +374,11 @@ export const instances: Instance[] = [
       },
       employee_id: null,
       archived: false,
+      registered_at: "2023-11-29T18:29:25Z",
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 7,
@@ -405,6 +413,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 3,
@@ -443,6 +452,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 8,
@@ -477,6 +487,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 5,
@@ -515,6 +526,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 4,
@@ -553,6 +565,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 9,
@@ -591,6 +604,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 10,
@@ -625,6 +639,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: true,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   windowsInstance,
   {
@@ -769,6 +784,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 12,
@@ -802,6 +818,7 @@ export const instances: Instance[] = [
     distribution_info: null,
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   {
     id: 21,
@@ -877,6 +894,7 @@ export const instances: Instance[] = [
     },
     employee_id: null,
     archived: false,
+    registered_at: "2023-11-29T18:29:25Z",
   },
   ubuntuCoreInstance,
 ];
