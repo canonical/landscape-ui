@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { ProfileChange } from "../types/ProfileChange";
 
-interface UseGetProfileChangesParams {
+export interface UseGetProfileChangesParams {
   instance_ids: number[];
   tags: string[];
   limit?: number;

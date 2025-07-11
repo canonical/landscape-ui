@@ -1,7 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import type { ProfileChange } from "@/features/tags";
 import { useGetProfileChanges } from "@/features/tags";
-import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import type { Instance } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import {
@@ -37,7 +36,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
     count: currentPage,
     decrement: decrementCurrentPage,
     increment: incrementCurrentPage,
-  } = useCounter(DEFAULT_CURRENT_PAGE);
+  } = useCounter(1);
 
   const { isPendingProfileChanges, profileChanges } = useGetProfileChanges({
     instance_ids: instances.map((instance) => instance.id),
@@ -160,7 +159,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
             appearance="base"
             hasIcon
             onClick={decrementCurrentPage}
-            disabled={currentPage <= DEFAULT_CURRENT_PAGE}
+            disabled={currentPage <= 1}
           >
             <Icon name="chevron-left" />
           </Button>

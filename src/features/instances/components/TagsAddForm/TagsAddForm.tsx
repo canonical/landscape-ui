@@ -15,6 +15,7 @@ import {
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
+import { useBoolean } from "usehooks-ts";
 import TagsAddConfirmationModal from "../TagsAddConfirmationModal";
 
 interface TagsAddFormProps {
@@ -47,7 +48,12 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
     { enabled: false },
   );
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const {
+    value: isModalVisible,
+    setFalse: closeModal,
+    setTrue: openModal,
+  } = useBoolean();
+
   const [search, setSearch] = useState("");
 
   const { mutateAsync: addTagsToInstances, isPending: isAddingTags } =
@@ -86,7 +92,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
     }
 
     if (getProfileChangesResponse.data.data.count) {
-      setIsModalVisible(true);
+      openModal();
     } else {
       await addTags();
     }
@@ -193,10 +199,6 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
   const filteredTagObjects = filteredTags.map<TagObject>((tag) => ({
     value: tag,
   }));
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
 
   return (
     <>
