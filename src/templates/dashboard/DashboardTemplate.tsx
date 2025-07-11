@@ -1,4 +1,3 @@
-import LocalSidePanelProvider from "@/context/localSidePanel";
 import WelcomePopup from "@/features/welcome-banner";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
@@ -21,22 +20,20 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
   return (
     <div className="l-application" role="presentation">
       <SidePanelProvider>
-        <LocalSidePanelProvider>
-          <Sidebar />
-          <main className={classNames("l-main", classes.wrapper)}>
-            {hasSecondaryNav && isLargeScreen && (
-              <div
-                className={classNames(
-                  "l-navigation__drawer",
-                  classes.secondaryNavigation,
-                )}
-              >
-                <SecondaryNavigation />
-              </div>
-            )}
-            <div className={classes.pageContent}>{children}</div>
-          </main>
-        </LocalSidePanelProvider>
+        <Sidebar />
+        <main className={classNames("l-main", classes.wrapper)}>
+          {hasSecondaryNav && isLargeScreen && (
+            <div
+              className={classNames(
+                "l-navigation__drawer",
+                classes.secondaryNavigation,
+              )}
+            >
+              <SecondaryNavigation />
+            </div>
+          )}
+          <div className={classes.pageContent}>{children}</div>
+        </main>
       </SidePanelProvider>
 
       <WelcomePopup />

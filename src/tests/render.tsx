@@ -2,7 +2,6 @@ import AppNotification from "@/components/layout/AppNotification";
 import AuthProvider from "@/context/auth";
 import FetchProvider from "@/context/fetch";
 import FetchOldProvider from "@/context/fetchOld";
-import LocalSidePanelProvider from "@/context/localSidePanel";
 import NotifyProvider, { NotifyContext } from "@/context/notify";
 import SidePanelProvider from "@/context/sidePanel";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -56,15 +55,13 @@ export const renderWithProviders = (
                     <FetchProvider>
                       <AppNotification notify={notify} />
                       <SidePanelProvider>
-                        <LocalSidePanelProvider>
-                          {routePattern ? (
-                            <Routes>
-                              <Route path={routePattern} element={children} />
-                            </Routes>
-                          ) : (
-                            children
-                          )}
-                        </LocalSidePanelProvider>
+                        {routePattern ? (
+                          <Routes>
+                            <Route path={routePattern} element={children} />
+                          </Routes>
+                        ) : (
+                          children
+                        )}
                       </SidePanelProvider>
                     </FetchProvider>
                   </FetchOldProvider>
