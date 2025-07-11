@@ -39,7 +39,7 @@ export const useGetWslProfiles = (
 
   return {
     wslProfiles: response?.data.results ?? [],
-    wslProfilesCount: response?.data.count,
+    wslProfilesCount: response?.data.count ?? 0,
     isGettingWslProfiles: isPending,
   };
 };
