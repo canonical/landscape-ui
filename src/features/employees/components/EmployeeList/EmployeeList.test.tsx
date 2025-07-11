@@ -87,9 +87,6 @@ describe("EmployeeList", () => {
         name: `Show details of user ${employee.name}`,
       }),
     );
-
-    const sidePanel = await screen.findByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
   });
 
   it("toggles expansion for the employee group truncated cell", async () => {

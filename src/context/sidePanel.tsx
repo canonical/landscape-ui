@@ -103,6 +103,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
           "is-wide": ["medium", "large"].includes(size),
           [classes.medium]: size === "medium",
         })}
+        data-testid="globalSidePanel"
       >
         {open && (
           <>
