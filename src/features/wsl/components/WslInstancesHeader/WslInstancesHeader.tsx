@@ -1,10 +1,10 @@
-import { TableFilter, TableFilterChips } from "@/components/filter";
+import { TableFilterChips } from "@/components/filter";
+import GroupFilter from "@/components/filter/GroupFilter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { useReapplyWslProfile } from "@/features/wsl-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type {
   InstanceChild,
@@ -37,7 +37,6 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { groupBy, setPageParams } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const { reapplyWslProfile } = useReapplyWslProfile();
@@ -95,17 +94,12 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         actions={
           <div className={classes.cta}>
             {hasWslProfiles && (
-              <TableFilter
+              <GroupFilter
                 label="Group by"
-                onItemSelect={(item) => {
-                  setPageParams({ groupBy: item });
-                }}
                 options={[
                   { label: "None", value: "" },
                   { label: "Compliance", value: "compliance" },
                 ]}
-                selectedItem={groupBy}
-                type="single"
               />
             )}
 

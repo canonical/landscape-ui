@@ -5,10 +5,10 @@ import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { CheckboxInput, Icon } from "@canonical/react-components";
+import { CheckboxInput } from "@canonical/react-components";
 import moment from "moment";
 import { memo, useEffect, useMemo } from "react";
-import type { CellProps, Column, Row } from "react-table";
+import type { CellProps, Column } from "react-table";
 import {
   getCheckboxState,
   getColumnFilterOptions,
@@ -73,7 +73,6 @@ const InstanceList = memo(function InstanceList({
           </>
         ),
         Cell: ({ row }: CellProps<Instance>) => {
-          const hasDepth = (row as Row<Instance> & { depth: number }).depth > 0;
           return (
             <div className={classes.rowHeader}>
               <CheckboxInput
@@ -95,12 +94,6 @@ const InstanceList = memo(function InstanceList({
                   });
                 }}
               />
-
-              {hasDepth && (
-                <span>
-                  <Icon className={classes.arrow} name="arrow-down-right" />
-                </span>
-              )}
 
               <StaticLink
                 to={

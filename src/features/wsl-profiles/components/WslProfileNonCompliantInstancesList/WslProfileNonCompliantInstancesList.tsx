@@ -1,4 +1,4 @@
-import SidePanelTableFilterChips from "@/components/filter/TableFilterChips/components/SidePanelTableFilterChips";
+import { SidePanelTableFilterChips } from "@/components/filter";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
