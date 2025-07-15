@@ -21,27 +21,31 @@ const ActionsMenu: FC<ActionsMenuProps> = ({
   toggleProps,
   ...props
 }) => {
-  const nondestructiveLinks = actions.map((action) => ({
-    ...action,
-    children: (
-      <>
-        <Icon name={action.icon} />
-        <span>{action.label}</span>
-      </>
-    ),
-  }));
+  const nondestructiveLinks = actions
+    .filter((action) => !action.excluded)
+    .map((action) => ({
+      ...action,
+      children: (
+        <>
+          <Icon name={action.icon} />
+          <span>{action.label}</span>
+        </>
+      ),
+    }));
 
-  const destructiveLinks = destructiveActions.map((action, i) => ({
-    ...action,
-    children: (
-      <>
-        <Icon name={`${action.icon}--negative`} />
-        <span className="u-text--negative">{action.label}</span>
-      </>
-    ),
-    className:
-      nondestructiveLinks.length && i === 0 ? classes.separator : undefined,
-  }));
+  const destructiveLinks = destructiveActions
+    .filter((action) => !action.excluded)
+    .map((action, i) => ({
+      ...action,
+      children: (
+        <>
+          <Icon name={`${action.icon}--negative`} />
+          <span className="u-text--negative">{action.label}</span>
+        </>
+      ),
+      className:
+        nondestructiveLinks.length && i === 0 ? classes.separator : undefined,
+    }));
 
   const links = [...nondestructiveLinks, ...destructiveLinks].map((link) => ({
     ...link,

@@ -1,14 +1,20 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import { useReapplyWslProfile } from "@/features/wsl-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import type { WslInstanceWithoutRelation } from "@/types/Instance";
+import { windowsInstance } from "@/tests/mocks/instance";
+import type {
+  InstanceChild,
+  WindowsInstanceWithoutRelation,
+} from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 
 interface WslInstanceReinstallModalProps {
   readonly close: () => void;
-  readonly instances: WslInstanceWithoutRelation[];
+  readonly instances: InstanceChild[];
   readonly isOpen: boolean;
+  readonly windowsInstance: WindowsInstanceWithoutRelation;
 }
 
 const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
@@ -19,6 +25,8 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
 
+  const { reapplyWslProfile } = useReapplyWslProfile();
+
   const [instance] = instances;
 
   if (!instance) {
@@ -27,13 +35,20 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
 
   const title = pluralize(
     instances.length,
-    instance.title,
+    instance.name,
     `${instances.length} instances`,
   );
 
   const reinstall = async () => {
     try {
-      throw new Error("This feature has not been implemented yet.");
+      await Promise.all(
+        instances.map((i) =>
+          reapplyWslProfile({
+            name: i.name,
+            computer_ids: [windowsInstance.id],
+          }),
+        ),
+      );
 
       notify.success({
         title: `You have successfully marked ${title} to be reinstalled.`,

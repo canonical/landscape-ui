@@ -239,7 +239,6 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
 }
 
 interface WithRelation<Type extends InstanceWithoutRelation> extends Type {
-  children: InstanceWithoutRelation[];
   parent: InstanceWithoutRelation | null;
 }
 
@@ -258,10 +257,7 @@ interface WithDistribution<Type extends InstanceWithoutRelation> extends Type {
 export type UbuntuInstanceWithoutRelation =
   WithDistribution<InstanceWithoutRelation>;
 
-export interface UbuntuInstance
-  extends WithRelation<UbuntuInstanceWithoutRelation> {
-  children: [];
-}
+export type UbuntuInstance = WithRelation<UbuntuInstanceWithoutRelation>;
 
 export interface WslInstanceWithoutRelation
   extends UbuntuInstanceWithoutRelation {
@@ -283,7 +279,6 @@ export interface WslInstance
 
 export interface WindowsInstance
   extends WithRelation<WindowsInstanceWithoutRelation> {
-  children: WslInstanceWithoutRelation[];
   parent: null;
 }
 
@@ -296,4 +291,16 @@ export interface PendingInstance extends Record<string, unknown> {
   id: number;
   title: string;
   vm_info: string | null;
+}
+
+export interface InstanceChild extends Record<string, unknown> {
+  name: string;
+  version_id: string;
+  compliance: "compliant" | "noncompliant" | "uninstalled" | "unregistered";
+  computer_id: number | null;
+  profile: string | null;
+  is_running: boolean;
+  installed: boolean;
+  registered: boolean;
+  default: boolean | null;
 }

@@ -1,7 +1,10 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
 import { useActivities } from "@/features/activities";
-import { InstanceForgetModal, useSanitizeInstance } from "@/features/instances";
+import {
+  InstanceRemoveFromLandscapeModal,
+  useSanitizeInstance,
+} from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Action } from "@/types/Action";
@@ -76,10 +79,10 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     },
     {
       icon: ICONS.delete,
-      label: "Forget",
-      "aria-label": `Forget`,
+      label: "Remove from Landscape",
+      "aria-label": `Remove ${instance.title} from Landscape`,
       onClick: () => {
-        setSelectedAction("forget");
+        setSelectedAction("removeFromLandscape");
       },
     },
   ];
@@ -92,12 +95,12 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
         destructiveActions={destructiveActions}
       />
 
-      <InstanceForgetModal
+      <InstanceRemoveFromLandscapeModal
         close={() => {
           setSelectedAction("");
         }}
         instances={[instance]}
-        isOpen={selectedAction === "forget"}
+        isOpen={selectedAction === "removeFromLandscape"}
       />
 
       <TextConfirmationModal

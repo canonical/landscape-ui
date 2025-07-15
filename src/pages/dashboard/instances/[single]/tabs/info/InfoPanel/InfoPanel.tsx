@@ -10,7 +10,7 @@ import { useGetEmployee } from "@/features/employees";
 import {
   getFeatures,
   getStatusCellIconAndLabel,
-  InstanceForgetModal,
+  InstanceRemoveFromLandscapeModal,
   useRestartInstances,
   useSanitizeInstance,
   useShutDownInstances,
@@ -24,7 +24,12 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
-import type { Instance, WslInstance } from "@/types/Instance";
+import type {
+  Instance,
+  InstanceChild,
+  WindowsInstance,
+  WslInstance,
+} from "@/types/Instance";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
@@ -108,9 +113,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   } = useBoolean();
 
   const {
-    value: isForgetModalOpen,
-    setTrue: openForgetModal,
-    setFalse: closeForgetModal,
+    value: isRemoveFromLandscapeModalOpen,
+    setTrue: openRemoveFromLandscapeModal,
+    setFalse: closeRemoveFromLandscapeModal,
   } = useBoolean();
 
   const {
@@ -307,8 +312,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               },
               {
                 icon: ICONS.delete,
-                label: "Forget",
-                onClick: openForgetModal,
+                label: "Remove from Landscape",
+                onClick: openRemoveFromLandscapeModal,
                 collapsed: true,
               },
               {
@@ -541,13 +546,24 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         <>
           <WslInstanceReinstallModal
             close={closeReinstallModal}
-            instances={[instance as WslInstance]}
+            instances={[
+              {
+                name: instance.title,
+                computer_id: instance.id,
+              } as InstanceChild,
+            ]}
             isOpen={isReinstallModalOpen}
+            windowsInstance={instance as WindowsInstance}
           />
 
           <WslInstanceUninstallModal
             close={closeUninstallModal}
-            instances={[instance as WslInstance]}
+            instances={[
+              {
+                name: instance.title,
+                computer_id: instance.id,
+              } as InstanceChild,
+            ]}
             isOpen={isUninstallModalOpen}
             onSuccess={goBack}
             parentId={(instance as WslInstance).parent.id}
@@ -555,10 +571,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </>
       )}
 
-      <InstanceForgetModal
-        close={closeForgetModal}
+      <InstanceRemoveFromLandscapeModal
+        close={closeRemoveFromLandscapeModal}
         instances={[instance]}
-        isOpen={isForgetModalOpen}
+        isOpen={isRemoveFromLandscapeModalOpen}
         onSuccess={goBack}
       />
 

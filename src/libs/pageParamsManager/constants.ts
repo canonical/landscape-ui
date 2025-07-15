@@ -129,4 +129,9 @@ export const PARAMS_CONFIG: ParamsConfig = [
     shouldResetPage: true,
     defaultValue: DEFAULT_RATE_TO,
   },
+  {
+    urlParam: "groupBy",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_EMPTY_STRING,
+  },
 ];

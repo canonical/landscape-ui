@@ -1,14 +1,14 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import type { WslInstanceWithoutRelation } from "@/types/Instance";
+import type { InstanceChild } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 import { useUninstallWslInstances } from "../../api";
 
 interface WslInstanceUninstallModalProps {
   readonly close: () => void;
-  readonly instances: WslInstanceWithoutRelation[];
+  readonly instances: InstanceChild[];
   readonly isOpen: boolean;
   readonly parentId: number;
   readonly onSuccess?: () => void;
@@ -35,7 +35,7 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
 
   const title = pluralize(
     instances.length,
-    instance.title,
+    instance.name,
     `${instances.length} instances`,
   );
 
@@ -43,7 +43,7 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
     try {
       await uninstallWslInstances({
         parent_id: parentId,
-        child_names: instances.map(({ title }) => title),
+        child_names: instances.map(({ name }) => name),
       });
 
       notify.success({
