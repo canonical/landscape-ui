@@ -1,8 +1,8 @@
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import AutoinstallFileTableCell from "./AutoinstallFileTableCell";
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 describe("AutoinstallFileTableCell", () => {
   it("renders NoData when fileName is missing", () => {
@@ -51,7 +51,7 @@ describe("AutoinstallFileTableCell", () => {
     );
 
     expect(screen.getByText("install.sh, v3")).toBeInTheDocument();
-    expect(screen.getByText("default")).toBeInTheDocument();
+    expect(screen.getByText("Default")).toBeInTheDocument();
   });
 
   it("does not render the default chip when isDefault is false", () => {

@@ -1,9 +1,10 @@
-import { screen } from "@testing-library/react";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { accessGroups } from "@/tests/mocks/accessGroup";
-import { renderWithProviders } from "@/tests/render";
-import WslProfileDetails from "./WslProfileDetails";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
+import { renderWithProviders } from "@/tests/render";
 import { pluralize } from "@/utils/_helpers";
+import { screen } from "@testing-library/react";
+import WslProfileDetails from "./WslProfileDetails";
 
 describe("WslProfileDetails", () => {
   const testProfile =
@@ -11,38 +12,38 @@ describe("WslProfileDetails", () => {
 
   const itemsToCheck = [
     {
-      label: "name",
+      label: "Name",
       value: testProfile.title,
     },
     {
-      label: "access group",
+      label: "Access group",
       value:
         accessGroups.find(({ name }) => name === testProfile.access_group)
           ?.title ?? testProfile.access_group,
     },
     {
-      label: "rootfs image name",
+      label: "RootFS image name",
       value: testProfile.image_name,
     },
     {
-      label: "rootfs image source",
-      value: testProfile.image_source || "N/A",
+      label: "RootFS image source",
+      value: testProfile.image_source || NO_DATA_TEXT,
     },
     {
-      label: "cloud init",
-      value: testProfile.cloud_init_contents || "N/A",
+      label: "Cloud-init",
+      value: testProfile.cloud_init_contents || NO_DATA_TEXT,
     },
     {
-      label: "associated",
+      label: "Associated parents",
       value: `${testProfile.computers.constrained.length} ${pluralize(testProfile.computers.constrained.length, "instance")}`,
     },
     {
-      label: "not compliant",
+      label: "Not compliant",
       value: `${testProfile.computers["non-compliant"].length} ${pluralize(testProfile.computers["non-compliant"].length, "instance")}`,
     },
     {
-      label: "pending",
-      value: `${testProfile.computers.pending?.length ?? 0} ${pluralize(Number(testProfile.computers.pending?.length), "instance")}`,
+      label: "Compliant",
+      value: `${testProfile.computers.constrained.length - testProfile.computers["non-compliant"].length} ${pluralize(testProfile.computers.constrained.length - testProfile.computers["non-compliant"].length, "instance")}`,
     },
   ];
 

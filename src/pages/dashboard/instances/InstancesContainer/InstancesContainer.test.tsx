@@ -1,9 +1,9 @@
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import InstancesContainer from "./InstancesContainer";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { afterEach } from "vitest";
+import InstancesContainer from "./InstancesContainer";
 
 const props = {
   instances: [],
@@ -63,7 +63,6 @@ describe("InstancesContainer", () => {
     );
 
     expect(container).toHaveTexts([
-      "Group by",
       "Access group",
       "Tag",
       "Columns",

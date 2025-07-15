@@ -145,7 +145,7 @@ const ARCHIVED_STATUS_OPTION: SelectOption = {
   value: "archived",
 };
 
-type FilterKey = "os" | "status";
+type FilterKey = "os" | "groupBy" | "status";
 
 export const FILTERS: Record<FilterKey, ListFilter> = {
   os: {
@@ -156,6 +156,15 @@ export const FILTERS: Record<FilterKey, ListFilter> = {
       { label: "All", value: "", query: "" },
       { label: "Ubuntu", value: "ubuntu", query: "NOT distribution:windows" },
       { label: "Windows", value: "windows", query: "distribution:windows" },
+    ],
+  },
+  groupBy: {
+    slug: "groupBy",
+    label: "Group by",
+    type: "select",
+    options: [
+      { label: "None", value: "" },
+      { label: "Parent", value: "parent" },
     ],
   },
   status: {

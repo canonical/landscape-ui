@@ -21,11 +21,14 @@ const AlertNotificationsPage: FC = () => {
     isLoading: getAlertsSummaryQueryLoading,
   } = getAlertsSummaryQuery();
 
+  const hasPendingInstancesAlert =
+    getAlertsSummaryQueryResult?.data.alerts_summary.some(
+      (alert) => alert.alert_type === "PendingComputersAlert",
+    );
+
   const { pendingInstances, isGettingPendingInstances } =
     useGetPendingInstances(undefined, {
-      enabled: !!getAlertsSummaryQueryResult?.data.alerts_summary.find(
-        (alert) => alert.alert_type === "PendingComputersAlert",
-      ),
+      enabled: hasPendingInstancesAlert,
     });
 
   const alerts = getAlertsSummaryQueryResult?.data.alerts_summary || [];
@@ -34,7 +37,8 @@ const AlertNotificationsPage: FC = () => {
     <PageMain>
       <PageHeader title="Alerts" />
       <PageContent>
-        {getAlertsSummaryQueryLoading || isGettingPendingInstances ? (
+        {getAlertsSummaryQueryLoading ||
+        (hasPendingInstancesAlert && isGettingPendingInstances) ? (
           <LoadingState />
         ) : !alerts.length ? (
           <EmptyState

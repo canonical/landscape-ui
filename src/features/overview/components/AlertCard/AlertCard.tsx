@@ -55,8 +55,12 @@ const AlertCard: FC<Status> = ({
   const alertCount = Number(
     isPendingComputersAlert ? pendingInstances.length : instancesWithAlertCount,
   );
-  const isLoading = isGettingInstancesWithAlert || isGettingPendingInstances;
-  const isError = isErrorInstancesWithAlert || pendingInstancesError;
+  const isLoading = isPendingComputersAlert
+    ? isGettingPendingInstances
+    : isGettingInstancesWithAlert;
+  const isError = isPendingComputersAlert
+    ? pendingInstancesError
+    : isErrorInstancesWithAlert;
 
   const handlePendingInstancesReview = () => {
     setSidePanelContent(

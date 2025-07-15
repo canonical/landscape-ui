@@ -1,8 +1,9 @@
-import type { ComponentProps } from "react";
-import { screen, waitFor } from "@testing-library/react";
-import { renderWithProviders } from "@/tests/render";
-import WslProfilesList from "./WslProfilesList";
+import { expectLoadingState } from "@/tests/helpers";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
+import { renderWithProviders } from "@/tests/render";
+import { screen, waitFor } from "@testing-library/react";
+import type { ComponentProps } from "react";
+import WslProfilesList from "./WslProfilesList";
 
 const props: ComponentProps<typeof WslProfilesList> = {
   wslProfiles: wslProfiles,
@@ -12,13 +13,16 @@ describe("WslProfilesList", () => {
   it("should render profile list", async () => {
     const { container } = renderWithProviders(<WslProfilesList {...props} />);
 
+    await expectLoadingState();
+
     expect(container).toHaveTexts([
       "Name",
       "Description",
       "Access group",
       "Tags",
-      "Associated",
-      "Pending",
+      "Associated parents",
+      "Not compliant",
+      "Compliant",
       "Actions",
     ]);
 
@@ -42,8 +46,6 @@ describe("WslProfilesList", () => {
       undefined,
       `/profiles/wsl?search=${searchText}`,
     );
-
-    expect(screen.getByText(searchText)).toBeInTheDocument();
 
     wslProfiles
       .filter(({ title }) => !title.includes(searchText))

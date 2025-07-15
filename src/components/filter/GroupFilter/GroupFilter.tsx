@@ -1,8 +1,8 @@
 import { TableFilter } from "@/components/filter";
-import type { FilterProps } from "@/components/filter/types";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
+import type { FilterProps } from "@/components/filter/types";
 
 const GroupFilter: FC<FilterProps> = ({ options, label, inline = false }) => {
   const { groupBy, setPageParams } = usePageParams();

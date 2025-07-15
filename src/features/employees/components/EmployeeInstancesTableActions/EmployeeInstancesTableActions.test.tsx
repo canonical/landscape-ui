@@ -31,7 +31,9 @@ describe("EmployeeInstancesTableContextualMenu", () => {
     expect(
       screen.getByLabelText(`Sanitize ${instance.title} instance`),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText(`Remove from Landscape`)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(`Remove ${instance.title} from Landscape`),
+    ).toBeInTheDocument();
   });
 
   it("opens and confirms the sanitize modal", async () => {
@@ -75,11 +77,13 @@ describe("EmployeeInstancesTableContextualMenu", () => {
     await user.click(
       screen.getByLabelText(`${instance.title} profile actions`),
     );
-    const removeButton = screen.getByLabelText("Remove from Landscape");
+    const removeButton = screen.getByLabelText(
+      `Remove ${instance.title} from Landscape`,
+    );
     await user.click(removeButton);
 
     const modal = screen.getByRole("dialog");
-    expect(modal).toHaveTextContent(`Remove ${instance.title} instance`);
+    expect(modal).toHaveTextContent(`Remove ${instance.title} from Landscape`);
 
     const confirmButton = within(modal).getByRole("button", {
       name: "Remove",

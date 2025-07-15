@@ -1,10 +1,10 @@
-import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
-import { features } from "@/tests/mocks/features";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { features } from "@/tests/mocks/features";
+import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import type { Feature } from "@/types/Feature";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { http, HttpResponse } from "msw";
 
 export default [
   http.get<never, never, ApiPaginatedResponse<Feature>>(

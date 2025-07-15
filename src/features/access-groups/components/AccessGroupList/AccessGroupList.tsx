@@ -1,6 +1,5 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
@@ -9,14 +8,15 @@ import type { CellProps, Column, Row } from "react-table";
 import type { AccessGroup, AccessGroupWithInstancesCount } from "../../types";
 import AccessGroupInstanceCountCell from "../AccessGroupInstanceCountCell";
 import AccessGroupListActions from "../AccessGroupListActions";
-import { handleCellProps } from "./helpers";
+import { buildHierarchy, findAncestors, handleCellProps } from "./helpers";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface AccessGroupListProps {
   readonly accessGroups: AccessGroup[];
 }
 
 const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
-  const { search } = usePageParams();
+  const { groupBy, search } = usePageParams();
 
   const accessGroupsData: AccessGroupWithInstancesCount[] = useMemo(() => {
     const filteredAccessGroups = search
@@ -27,11 +27,36 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
         )
       : accessGroups;
 
-    return filteredAccessGroups.map((group) => ({
-      ...group,
-      instancesCount: 0,
-    }));
-  }, [accessGroups, search]);
+    if (groupBy !== "parent") {
+      return filteredAccessGroups.map((group) => ({
+        ...group,
+        instancesCount: 0,
+      }));
+    }
+
+    const allRelevantGroups = Array.from(
+      new Set([
+        ...filteredAccessGroups,
+        ...filteredAccessGroups.flatMap((group) =>
+          findAncestors(group.parent || "", accessGroups),
+        ),
+      ]),
+    );
+
+    const childAccessGroupNames = new Set(
+      allRelevantGroups
+        .filter((group) => group.parent)
+        .map((group) => group.name),
+    );
+
+    return allRelevantGroups
+      .filter((accessGroup) => !childAccessGroupNames.has(accessGroup.name))
+      .map((accessGroup) => ({
+        ...accessGroup,
+        instancesCount: 0,
+        subRows: buildHierarchy(accessGroup.name, allRelevantGroups),
+      }));
+  }, [accessGroups, search, groupBy]);
 
   const columns = useMemo<Column<AccessGroupWithInstancesCount>[]>(
     () => [
@@ -100,7 +125,7 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
         },
       },
     ],
-    [accessGroups],
+    [groupBy, accessGroups],
   );
 
   return (

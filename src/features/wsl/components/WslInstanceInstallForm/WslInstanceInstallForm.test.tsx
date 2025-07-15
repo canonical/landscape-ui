@@ -1,6 +1,6 @@
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders } from "@/tests/render";
 import WslInstanceInstallForm from "./WslInstanceInstallForm";
 
 describe("WslInstanceInstallForm", () => {
@@ -10,7 +10,7 @@ describe("WslInstanceInstallForm", () => {
     expect(container).toHaveTexts(["Instance type", "Cloud-init"]);
 
     const installInstanceButton = screen.getByRole("button", {
-      name: /install/i,
+      name: /create/i,
     });
     expect(installInstanceButton).toBeInTheDocument();
     expect(installInstanceButton).toBeEnabled();
@@ -35,7 +35,7 @@ describe("WslInstanceInstallForm", () => {
     ]);
 
     const installInstanceButton = screen.getByRole("button", {
-      name: /install/i,
+      name: /create/i,
     });
 
     expect(installInstanceButton).toBeInTheDocument();

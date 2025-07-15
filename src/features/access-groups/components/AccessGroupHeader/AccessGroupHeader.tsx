@@ -1,10 +1,11 @@
-import { TableFilterChips } from "@/components/filter";
+import { GroupFilter, TableFilterChips } from "@/components/filter";
+import { FILTERS } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
-import { Form, SearchBox } from "@canonical/react-components";
-import { useFormik } from "formik";
 import type { FC } from "react";
-import * as Yup from "yup";
 import classes from "./AccessGroupHeader.module.scss";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { Form, SearchBox } from "@canonical/react-components";
 
 interface FormProps {
   searchText: string;
@@ -32,6 +33,9 @@ const AccessGroupHeader: FC = () => {
     onSubmit: handleSearch,
   });
 
+  const groupOptions =
+    FILTERS.groupBy.type === "select" ? FILTERS.groupBy.options : [];
+
   return (
     <>
       <div className={classes.container}>
@@ -50,6 +54,11 @@ const AccessGroupHeader: FC = () => {
             />
           </Form>
         </div>
+        <GroupFilter
+          label="Group by"
+          options={groupOptions}
+          key="group-by-filter"
+        />
       </div>
       <TableFilterChips filtersToDisplay={["search"]} />
     </>
