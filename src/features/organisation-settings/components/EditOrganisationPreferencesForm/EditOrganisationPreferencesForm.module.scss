@@ -8,3 +8,9 @@
   padding-left: $sph--large;
   padding-top: $sph--small;
 }
+
+.buttons {
+  :global(.is-dark) & {
+    background-color: $colors--theme--background-default;
+  }
+}

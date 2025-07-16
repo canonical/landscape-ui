@@ -1,6 +1,7 @@
 import useInstances from "@/hooks/useInstances";
 import type { FC } from "react";
-import { Colors } from "../../helpers";
+import type { Color } from "../../types";
+import { colorMap } from "../../constants";
 import { getChartData } from "./helpers";
 import PieChart from "../PieChart";
 import { STATUSES } from "@/features/instances";
@@ -35,37 +36,37 @@ const ChartContainer: FC = () => {
     {
       count: upToDateInstancesCount,
       title: STATUSES["UpToDate"].alternateLabel ?? STATUSES["UpToDate"].label,
+      colorKey: "green",
     },
     {
       count: packageUpgradesCount,
       title:
         STATUSES["PackageUpgradesAlert"].alternateLabel ??
         STATUSES["PackageUpgradesAlert"].label,
+      colorKey: "orange",
     },
     {
       count: securityUpgradesCount,
       title:
         STATUSES["SecurityUpgradesAlert"].alternateLabel ??
         STATUSES["SecurityUpgradesAlert"].label,
+      colorKey: "red",
     },
   ];
 
   const totalInstances = upToDateInstancesCount + packageUpgradesCount;
 
-  const chartColors: Record<number, Colors> = {
-    0: Colors.GREEN,
-    1: Colors.ORANGE,
-    2: Colors.RED,
-  };
-
   const data = getChartData({
-    chartData: chartData.map((info, index) => ({
-      backgroundColors: [
-        chartColors[index],
-        isDarkMode ? Colors.DARK : Colors.WHITE,
-      ],
-      ...info,
-    })),
+    chartData: chartData.map((info) => {
+      return {
+        backgroundColors: [
+          colorMap[info.colorKey as Color][isDarkMode ? "dark" : "light"]
+            .default,
+          colorMap.background[isDarkMode ? "dark" : "light"].default,
+        ],
+        ...info,
+      };
+    }),
     totalInstances: totalInstances,
   });
 

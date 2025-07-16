@@ -5,16 +5,16 @@
   align-items: center;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: $spv--small;
   width: 85%;
 }
 
 .lineContainer {
-  background-color: $colors--theme--border-default;
+  background-color: $colors--theme--background-alt;
   border: 1px solid $colors--theme--border-default;
   border-radius: 5px;
   display: flex;
-  margin-bottom: 8px;
+  margin-bottom: $spv--small;
   overflow: hidden;
   width: 85%;
 }
@@ -90,7 +90,7 @@
 }
 
 .ellipsis {
-  color: rgb(0 0 0 / 60%);
+  color: $colors--theme--text-muted;
   display: inline-block;
   max-width: 100%;
   overflow: hidden;

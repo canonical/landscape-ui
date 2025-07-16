@@ -22,6 +22,7 @@
         const shouldDark = saved === "true" || (!saved && systemDark);
         if (shouldDark) {
           document.body.classList.add("is-dark");
+          document.body.style.colorScheme = "dark";
         }
       })();
     </script>

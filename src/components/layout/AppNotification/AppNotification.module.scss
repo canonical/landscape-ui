@@ -12,7 +12,16 @@
 }
 
 .baseNotificationStyle {
-  background-color: $colors--theme--background-default;
+  :global(body:not(.is-dark)) & {
+    background-color: $colors--light-theme--background-default;
+    color: $colors--light-theme--text-default;
+  }
+
+  :global(body.is-dark) & {
+    background-color: $colors--dark-theme--background-alt;
+    color: $colors--dark-theme--text-default;
+  }
+
   word-break: break-word;
 }
 

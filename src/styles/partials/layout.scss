@@ -13,7 +13,8 @@
 .l-aside {
   background-color: $colors--light-theme--background-default;
 
-  .is-dark & {
+  .is-dark &,
+  .is-dark & fieldset {
     background-color: $colors--dark-theme--background-alt;
   }
 

@@ -143,7 +143,7 @@ const EditOrganisationPreferencesForm: FC<
         key that&apos;s defined in the field.
       </p>
 
-      <div className={buttonClasses.buttons}>
+      <div className={`${buttonClasses.buttons} ${classes.buttons}`}>
         <Button
           className="u-no-margin--bottom"
           appearance="positive"

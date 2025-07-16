@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./Legend.module.scss";
 import { STATUSES } from "@/features/instances";
+import { useTheme } from "@/context/theme";
 
 interface LegendProps {
   readonly data: ChartData<"pie">;
@@ -19,6 +20,8 @@ const Legend: FC<LegendProps> = ({
   selectedArc,
   setSelectedArc,
 }) => {
+  const { isDarkMode } = useTheme();
+
   const numberOfInstances =
     data?.datasets?.map((dataset) => {
       return dataset.data[0] as number;
@@ -29,7 +32,7 @@ const Legend: FC<LegendProps> = ({
       <div
         className={classes.container}
         onMouseLeave={() => {
-          handleChartMouseLeave(chartInstance, setSelectedArc);
+          handleChartMouseLeave(chartInstance, setSelectedArc, isDarkMode);
           chartInstance.update();
         }}
       >
@@ -51,7 +54,12 @@ const Legend: FC<LegendProps> = ({
                     selectedArc === index || selectedArc === null ? 1 : 0.3,
                 }}
                 onMouseEnter={() => {
-                  handleChartMouseOver(chartInstance, index, setSelectedArc);
+                  handleChartMouseOver(
+                    chartInstance,
+                    index,
+                    setSelectedArc,
+                    isDarkMode,
+                  );
                 }}
               >
                 <div className={classes.legendItem__label}>

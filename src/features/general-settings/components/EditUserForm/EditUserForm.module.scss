@@ -18,19 +18,7 @@
 }
 
 .buttons {
-  background-color: $colors--theme--background-default;
-  border-top: 1px solid $colors--theme--border-default;
-  bottom: 0;
-  display: flex;
-  margin-bottom: -3 * $sp-unit;
-  margin-top: $spv--x-large;
-  padding-bottom: $spv--x-large;
-  padding-top: $spv--x-large;
-  position: sticky;
-
-  .actionButtons {
-    display: flex;
-    flex-grow: 1;
-    justify-content: flex-end;
+  :global(.is-dark) & {
+    background-color: $colors--theme--background-default;
   }
 }

@@ -4,13 +4,21 @@ a[target="_blank"] {
     position: initial;
 
     @extend %icon;
-    @include vf-icon-external-link($color-link);
+    @include vf-icon-external-link($color-focus);
   }
 
   .is-dark & {
     &::after {
-      @include vf-icon-external-link($color-x-light);
+      @include vf-icon-external-link($color-focus-dark);
     }
+  }
+}
+
+a {
+  color: $color-link;
+
+  &:visited {
+    color: $color-link;
   }
 }
 
