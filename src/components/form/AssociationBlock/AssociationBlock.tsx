@@ -1,5 +1,5 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
-import { useGetTags } from "@/features/instances";
+import { useGetTags } from "@/features/tags";
 import type { SelectOption } from "@/types/SelectOption";
 import { CheckboxInput, Chip } from "@canonical/react-components";
 import type { FormikContextType } from "formik";

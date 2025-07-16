@@ -11,10 +11,6 @@
   display: flex;
 }
 
-.arrow {
-  margin-right: $sph--small;
-}
-
 .restartError {
   @include vf-icon-restart($color-negative);
 }

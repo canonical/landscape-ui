@@ -21,7 +21,6 @@ import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink"
 import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
 import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfilesListActions from "../WslProfilesListActions";
-import { COMPLIANT_TOOLTIP, NON_COMPLIANT_TOOLTIP } from "./constants";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
 
@@ -152,7 +151,10 @@ const WslProfilesList: FC = () => {
         Header: (
           <div className={classes.header}>
             Not compliant
-            <Tooltip position="btm-left" message={NON_COMPLIANT_TOOLTIP}>
+            <Tooltip
+              position="btm-left"
+              message="These instances are not compliant with the profile. They do not have a pending activity to become compliant."
+            >
               <Icon name="help" />
             </Tooltip>
           </div>
@@ -166,7 +168,10 @@ const WslProfilesList: FC = () => {
         Header: (
           <div className={classes.header}>
             Compliant
-            <Tooltip position="btm-left" message={COMPLIANT_TOOLTIP}>
+            <Tooltip
+              position="btm-left"
+              message="These instances are compliant with the profile."
+            >
               <Icon name="help" />
             </Tooltip>
           </div>

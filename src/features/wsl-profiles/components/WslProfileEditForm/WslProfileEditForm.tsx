@@ -37,7 +37,6 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
   const { notify } = useNotify();
 
   const { editWslProfile } = useEditWslProfile();
-
   const { wslInstanceTypes } = useGetWslInstanceTypes();
 
   const instanceQueryResultOptions =

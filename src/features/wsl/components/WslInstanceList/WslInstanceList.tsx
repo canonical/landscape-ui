@@ -54,7 +54,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
 
   const handleInstanceCheck = (instance: InstanceChild) => {
     setSelectedWslInstances((prevState) =>
-      prevState.some((i) => i === instance)
+      prevState.includes(instance)
         ? prevState.filter((i) => i !== instance)
         : [...prevState, instance],
     );
@@ -84,6 +84,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
                   selectedWslInstances.length > 0 &&
                   selectedWslInstances.length < wslInstances.length
                 }
+                disabled={wslInstances.length === 0}
                 onChange={() => {
                   setSelectedWslInstances(
                     selectedWslInstances.length < wslInstances.length
@@ -147,7 +148,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
               <span className="u-off-screen">{`Toggle ${wslInstance.name} instance`}</span>
             }
             labelClassName="u-no-margin--bottom u-no-padding--top"
-            checked={selectedWslInstances.some((i) => i === wslInstance)}
+            checked={selectedWslInstances.includes(wslInstance)}
             onChange={() => {
               handleInstanceCheck(wslInstance);
             }}
@@ -166,11 +167,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
       ),
       compliance: getCompliance(wslInstance),
       complianceIcon:
-        wslInstance.compliance === "compliant"
-          ? "success-grey"
-          : wslInstance.compliance
-            ? "warning"
-            : "",
+        wslInstance.compliance === "compliant" ? "success-grey" : "warning",
       os: wslInstance.version_id || <NoData />,
       profile: wslInstance.profile || <NoData />,
       default:
@@ -181,12 +178,6 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
         ) : (
           "No"
         ),
-      registered: (
-        <WslInstanceListActions
-          windowsInstance={windowsInstance}
-          wslInstance={wslInstance}
-        />
-      ),
       actions: (
         <WslInstanceListActions
           windowsInstance={windowsInstance}

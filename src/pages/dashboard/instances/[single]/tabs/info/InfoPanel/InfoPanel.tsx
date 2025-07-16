@@ -500,7 +500,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               type="datetime-local"
               label="Schedule time"
               labelClassName="u-off-screen"
-              className={classes.input}
               placeholder="Scheduled time"
               {...formik.getFieldProps("deliver_after")}
               disabled={formik.values.deliverImmediately}
@@ -531,7 +530,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               type="datetime-local"
               label="Schedule time"
               labelClassName="u-off-screen"
-              className={classes.input}
               placeholder="Scheduled time"
               {...formik.getFieldProps("deliver_after")}
               disabled={formik.values.deliverImmediately}

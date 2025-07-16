@@ -1,7 +1,8 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
-import { useEditInstance, useGetTags } from "@/features/instances";
+import { useEditInstance } from "@/features/instances";
+import { useGetTags } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";

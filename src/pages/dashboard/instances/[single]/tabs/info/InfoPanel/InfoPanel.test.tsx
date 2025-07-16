@@ -36,7 +36,7 @@ describe("InfoPanel", () => {
       await expectLoadingState();
     });
 
-    it("should render instance info", async () => {
+    it("should render instance info", () => {
       for (const prop of PROPS_TO_CHECK) {
         expect(
           screen.getByText((instances[0][prop] as string) || NO_DATA_TEXT),

@@ -45,7 +45,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
   const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
 
-  const { addWslProfile } = useAddWslProfile();
+  const { addWslProfile: addWslProfile } = useAddWslProfile();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
   const { isGettingWslInstanceTypes, wslInstanceTypes } =

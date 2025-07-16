@@ -3,7 +3,7 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { AlertsList, useAlerts } from "@/features/alerts";
-import { useGetTags } from "@/features/instances";
+import { useGetTags } from "@/features/tags";
 import type { MultiSelectItem } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";

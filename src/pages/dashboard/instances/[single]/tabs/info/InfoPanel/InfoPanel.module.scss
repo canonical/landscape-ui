@@ -9,11 +9,6 @@
   white-space: nowrap;
 }
 
-.buttons {
-  column-gap: $sph--large;
-  display: flex;
-}
-
 .headerContainer {
   column-gap: $sph--small;
   display: flex;
@@ -23,33 +18,6 @@
   align-items: center;
   display: flex;
   gap: $sph--small;
-}
-
-.italic {
-  font-style: italic;
-}
-
-.infoRow {
-  padding-bottom: $spv--large;
-  padding-top: $spv--large;
-}
-
-.tagSection {
-  box-shadow: inset 0 1px 0 0 $colors--theme--border-low-contrast;
-  padding-top: $spv--x-large;
-}
-
-.tagsRow {
-  align-items: flex-end;
-  gap: $sp-medium;
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.tagsButton {
-  padding-top: 31.11px;
 }
 
 .heading {

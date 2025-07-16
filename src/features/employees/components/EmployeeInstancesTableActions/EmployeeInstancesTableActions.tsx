@@ -82,7 +82,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
       label: "Remove from Landscape",
       "aria-label": `Remove ${instance.title} from Landscape`,
       onClick: () => {
-        setSelectedAction("removeFromLandscape");
+        setSelectedAction("remove");
       },
     },
   ];
@@ -96,11 +96,9 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
       />
 
       <InstanceRemoveFromLandscapeModal
-        close={() => {
-          setSelectedAction("");
-        }}
+        close={handleCloseModal}
         instances={[instance]}
-        isOpen={selectedAction === "removeFromLandscape"}
+        isOpen={selectedAction === "remove"}
       />
 
       <TextConfirmationModal

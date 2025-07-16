@@ -28,7 +28,7 @@ interface InstanceListProps {
 }
 
 const InstanceList = memo(function InstanceList({
-  instances: instancesData,
+  instances,
   selectedInstances,
   setColumnFilterOptions,
   setSelectedInstances,
@@ -44,7 +44,7 @@ const InstanceList = memo(function InstanceList({
   });
 
   const toggleAll = () => {
-    setSelectedInstances(selectedInstances.length !== 0 ? [] : instancesData);
+    setSelectedInstances(selectedInstances.length !== 0 ? [] : instances);
   };
 
   const columns = useMemo<InstanceColumn[]>(
@@ -59,14 +59,14 @@ const InstanceList = memo(function InstanceList({
               label={<span className="u-off-screen">Toggle all instances</span>}
               inline
               onChange={toggleAll}
-              disabled={instancesData.length === 0}
+              disabled={instances.length === 0}
               checked={
-                selectedInstances.length === instancesData.length &&
-                instancesData.length !== 0
+                selectedInstances.length === instances.length &&
+                instances.length !== 0
               }
               indeterminate={
                 selectedInstances.length !== 0 &&
-                selectedInstances.length < instancesData.length
+                selectedInstances.length < instances.length
               }
             />
             <span id="column-1-label">Name</span>
@@ -198,7 +198,7 @@ const InstanceList = memo(function InstanceList({
         ),
       },
     ],
-    [selectedInstances.length, instancesData],
+    [selectedInstances.length, instances],
   );
 
   useEffect(() => {
@@ -222,7 +222,7 @@ const InstanceList = memo(function InstanceList({
           : "No instances found"
       }
       columns={filteredColumns}
-      data={instancesData}
+      data={instances}
       getHeaderProps={handleHeaderProps}
       minWidth={1400}
     />

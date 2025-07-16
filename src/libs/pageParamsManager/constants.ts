@@ -52,6 +52,12 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_STRING,
     validator: (val: string) => moment(val, moment.ISO_8601, true).isValid(),
   },
+
+  {
+    urlParam: "groupBy",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_STRING,
+  },
   {
     urlParam: "os",
     shouldResetPage: true,
@@ -128,10 +134,5 @@ export const PARAMS_CONFIG: ParamsConfig = [
     urlParam: "passRateTo",
     shouldResetPage: true,
     defaultValue: DEFAULT_RATE_TO,
-  },
-  {
-    urlParam: "groupBy",
-    shouldResetPage: false,
-    defaultValue: DEFAULT_EMPTY_STRING,
   },
 ];

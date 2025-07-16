@@ -54,12 +54,14 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const activity = getSingleActivityQueryResult?.data;
 
+  const isActivityComputerIdDefined = activity?.computer_id !== undefined;
+
   const { instance, isGettingInstance } = useGetInstance(
     { instanceId: activity?.computer_id as number },
-    { enabled: !!activity?.computer_id },
+    { enabled: isActivityComputerIdDefined },
   );
 
-  if (activity?.computer_id && isGettingInstance) {
+  if (isActivityComputerIdDefined && isGettingInstance) {
     return <LoadingState />;
   }
 

@@ -1,6 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
-import { useGetProfileChanges } from "@/features/tags";
+import { useGetProfileChanges, useGetTags } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -15,7 +15,7 @@ import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
-import { useAddTagsToInstances, useGetTags } from "../../api";
+import { useAddTagsToInstances } from "../../api";
 import TagsAddConfirmationModal from "../TagsAddConfirmationModal";
 
 interface TagsAddFormProps {

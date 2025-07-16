@@ -150,7 +150,6 @@ const WslProfileNonCompliantInstancesList: FC<
             return <NoData />;
           }
         },
-        className: classes.date,
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
