@@ -9,4 +9,5 @@ export interface MenuItem {
   icon?: string;
   items?: MenuItem[];
   requiresFeature?: FeatureKey;
+  hasDivider?: boolean;
 }
