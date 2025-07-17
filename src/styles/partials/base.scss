@@ -4,12 +4,32 @@ a[target="_blank"] {
     position: initial;
 
     @extend %icon;
-    @include vf-icon-external-link($color-link);
+    @include vf-icon-external-link($color-focus);
   }
 
   .is-dark & {
     &::after {
-      @include vf-icon-external-link($color-x-light);
+      @include vf-icon-external-link($color-focus-dark);
     }
   }
+}
+
+body:not(.is-dark) {
+  --vf-color-link-visited: #06c;
+}
+
+body.is-dark {
+  --vf-color-link-default: #9cf;
+  --vf-color-link-visited: #9cf;
+}
+
+input:-webkit-autofill,
+input:focus,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  background-color: $colors--theme--background-inputs !important;
+  border-top-color: $colors--theme--background-inputs !important;
+  box-shadow: 0 0 0 30px $colors--theme--background-inputs inset !important;
+  -webkit-text-fill-color: $colors--theme--text-default !important;
 }

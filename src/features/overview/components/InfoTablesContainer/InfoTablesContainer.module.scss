@@ -7,7 +7,7 @@
 }
 
 .tableContainer {
-  border: 1px solid $color-mid-light;
+  border: 1px solid $colors--theme--border-default;
   padding: $sp-medium;
 }
 
@@ -19,12 +19,6 @@
 
 .lastCol {
   text-align: right;
-}
-
-.link {
-  &:visited {
-    color: $color-link;
-  }
 }
 
 .description {

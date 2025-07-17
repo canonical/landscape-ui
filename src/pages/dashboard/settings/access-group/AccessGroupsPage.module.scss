@@ -1,7 +1,7 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .header {
-  background-color: $color-x-light;
+  background-color: $colors--theme--background-default;
   position: sticky;
   top: 0;
   z-index: 10;

@@ -13,10 +13,10 @@
 }
 
 .hasBadge {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
   align-items: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .link {
@@ -34,7 +34,7 @@
 
   &:focus,
   &:hover {
-    background-color: #373737 !important;
+    background-color: $colors--theme--background-alt !important;
   }
 }
 
@@ -67,7 +67,7 @@
 
   &:focus,
   &:hover {
-    background-color: #373737 !important;
+    background-color: $colors--theme--background-alt !important;
   }
 }
 

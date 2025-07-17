@@ -1,12 +1,14 @@
 import type { ActiveElement, ChartData } from "chart.js";
 import { Chart, registerables } from "chart.js";
 import classNames from "classnames";
+import type { FC } from "react";
 import React, { useEffect, useRef, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import Legend from "../Legend";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./PieChart.module.scss";
 import type { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
+import { useTheme } from "@/context/theme";
 
 Chart.register(...registerables);
 
@@ -14,10 +16,11 @@ interface PieChartProps {
   readonly data: ChartData<"pie">;
 }
 
-const PieChart: React.FC<PieChartProps> = ({ data }) => {
+const PieChart: FC<PieChartProps> = ({ data }) => {
   const chartRef = useRef<ChartJSOrUndefined<"pie"> | null>(undefined);
   const [chartInstance, setChartInstance] = useState<Chart | null>(null);
   const [selectedArc, setSelectedArc] = useState<number | null>(null);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     if (chartRef.current) {
@@ -59,9 +62,10 @@ const PieChart: React.FC<PieChartProps> = ({ data }) => {
                     chart,
                     elements[0].datasetIndex,
                     setSelectedArc,
+                    isDarkMode,
                   );
                 } else {
-                  handleChartMouseLeave(chart, setSelectedArc);
+                  handleChartMouseLeave(chart, setSelectedArc, isDarkMode);
                 }
                 chart.update();
               },

@@ -2,7 +2,7 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .container {
-  box-shadow: inset 0 1px 0 0 $colors--light-theme--border-low-contrast;
+  box-shadow: inset 0 1px 0 0 $colors--theme--border-low-contrast;
   margin-top: $spv--small;
   padding-top: $spv--large;
 }
@@ -14,7 +14,7 @@
 }
 
 .timeContainer {
-  border-left: 1px solid $colors--light-theme--border-default;
+  border-left: 1px solid $colors--theme--border-default;
   margin-bottom: $spv--x-large;
   margin-left: $sph--small;
   margin-right: $sph--small;
@@ -49,7 +49,7 @@
 }
 
 .tooltip {
-  z-index: 102;
+  z-index: 400;
 }
 
 .expiration {

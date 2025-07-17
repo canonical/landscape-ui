@@ -2,10 +2,9 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ACTIVITY_STATUSES, type ActivityCommon } from "@/features/activities";
 import { ModularTable } from "@canonical/react-components";
 import moment from "moment";
-import { useMemo, type FC } from "react";
+import { type FC, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import classes from "./ScriptProfileActivitiesList.module.scss";
 
 interface ScriptProfileActivitiesListProps {
   readonly activities: ActivityCommon[];
@@ -21,7 +20,7 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
         accessor: "creation_time",
         Cell: ({ row: { original: activity } }: CellProps<ActivityCommon>) => (
           <Link
-            className={`${classes.link} font-monospace`}
+            className="font-monospace"
             to={`/activities?query=parent-id%3A${activity.id}`}
           >
             {moment(activity.creation_time)

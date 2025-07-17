@@ -2,7 +2,7 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .card {
-  border: 1px solid $color-mid-light;
+  border: 1px solid $colors--theme--border-default;
 
   &:not(:last-child) {
     margin-bottom: $spv--x-large;
@@ -11,15 +11,15 @@
 
 .header {
   align-items: center;
-  background-color: $colors--light-theme--background-alt;
-  border-bottom: 1px solid $color-mid-light;
+  background-color: $colors--theme--background-alt;
+  border-bottom: 1px solid $colors--theme--border-default;
   display: flex;
   justify-content: space-between;
   padding: $spv--small $sph--large;
 }
 
 .title {
-  color: $color-x-dark;
+  color: $colors--theme--text-default;
   font-size: $sp-medium;
   font-weight: 500;
   line-height: 1.5;
@@ -32,7 +32,7 @@
   margin-right: auto;
 
   &:not(:first-child)::before {
-    color: $color-mid-light;
+    color: $colors--theme--text-muted;
     content: "\007c";
     margin-right: $sph--small;
   }
@@ -57,7 +57,7 @@
   }
 
   thead tr {
-    border-bottom-color: $color-mid-light;
+    border-bottom-color: $colors--theme--border-default;
   }
 
   td,

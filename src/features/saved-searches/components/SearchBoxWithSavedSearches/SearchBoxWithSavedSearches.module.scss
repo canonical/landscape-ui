@@ -7,7 +7,11 @@
   ) !important;
 
   & + :global(.p-search-and-filter__panel) {
-    background-color: $color-x-light;
+    background-color: $colors--theme--background-default;
+  }
+
+  & + :global(.is-dark .p-search-and-filter__panel) {
+    background-color: $colors--theme--background-alt;
   }
 }
 

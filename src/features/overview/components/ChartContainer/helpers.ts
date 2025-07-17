@@ -1,11 +1,10 @@
 import type { ChartData } from "chart.js";
-import type { Colors } from "../../helpers";
 
 export const getChartData = ({
   chartData,
   totalInstances,
 }: {
-  chartData: { count: number; title: string; backgroundColors: Colors[] }[];
+  chartData: { count: number; title: string; backgroundColors: string[] }[];
   totalInstances: number;
 }): ChartData<"pie"> => {
   return {

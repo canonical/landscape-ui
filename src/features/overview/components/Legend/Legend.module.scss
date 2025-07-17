@@ -24,12 +24,6 @@
   display: flex;
 }
 
-.link {
-  &:visited {
-    color: $color-link;
-  }
-}
-
 .container {
   border-right: none;
   display: flex;
@@ -40,7 +34,7 @@
   width: 100%;
 
   @media (min-width: $breakpoint-large) {
-    border-right: 1px solid $color-mid-light;
+    border-right: 1px solid $colors--theme--border-default;
     padding-right: $sp-x-large;
   }
 

@@ -13,7 +13,7 @@
       border-bottom-width: 0;
 
       &:not(:hover, [aria-expanded="true"]) {
-        background-color: $color-x-light;
+        background-color: $colors--theme--background-default;
       }
     }
   }

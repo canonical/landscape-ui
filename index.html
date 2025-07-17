@@ -13,6 +13,19 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (() => {
+        const saved = localStorage.getItem("_landscape_dark_theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        const shouldDark = saved === "true" || (!saved && systemDark);
+        if (shouldDark) {
+          document.body.classList.add("is-dark");
+          document.body.style.colorScheme = "dark";
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

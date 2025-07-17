@@ -81,7 +81,7 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
         <span>Install</span>
       </Button>
       <ResponsiveButtons
-        collapseFrom="lg"
+        collapseFrom="xl"
         buttons={Object.keys(INSTALLED_PACKAGE_ACTIONS)
           .filter((packageAction) => packageAction !== "downgrade")
           .map((key) => key as Exclude<InstalledPackageAction, "downgrade">)

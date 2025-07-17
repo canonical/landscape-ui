@@ -12,7 +12,7 @@
 }
 
 .expanded {
-  background-color: white;
+  background-color: $colors--theme--background-alt;
   left: 0;
   padding: calc($spv--small - 1px) $sph--small $spv--small;
   position: absolute;
@@ -39,7 +39,7 @@
     text-decoration: none;
 
     .buttonText {
-      color: $colors--light-theme--text-inactive;
+      color: $colors--theme--text-inactive;
     }
   }
 }

@@ -19,7 +19,7 @@
 }
 
 :global(.l-navigation) {
-  z-index: 450;
+  z-index: 350;
 }
 
 @media (width >= $breakpoint-small) and (width < $breakpoint-large) {

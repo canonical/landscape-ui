@@ -3,7 +3,7 @@
 
 .top {
   align-items: flex-start;
-  background-color: $color-x-light;
+  background-color: $colors--theme--background-default;
   column-gap: $sph--x-large;
   display: flex;
   justify-content: space-between;
@@ -23,5 +23,5 @@
 }
 
 .divider {
-  border-left: 1px solid $colors--light-theme--border-low-contrast;
+  border-left: 1px solid $colors--theme--border-low-contrast;
 }

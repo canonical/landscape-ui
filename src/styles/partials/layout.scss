@@ -11,7 +11,16 @@
 }
 
 .l-aside {
-  background-color: $color-x-light;
+  background-color: $colors--light-theme--background-default;
+
+  .is-dark &,
+  .is-dark & fieldset {
+    background-color: $colors--dark-theme--background-alt;
+  }
+
+  .l-application & {
+    z-index: 350;
+  }
 }
 
 .divided-blocks {
@@ -43,5 +52,6 @@
 }
 
 .p-contextual-menu__dropdown {
+  background-color: $colors--theme--background-default;
   z-index: 15;
 }

@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { Link, matchPath, useLocation } from "react-router";
 import classes from "./SecondaryNavigation.module.scss";
 import { ACCOUNT_SETTINGS } from "./constants";
+import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components/DarkModeSwitch";
 
 export const SecondaryNavigation = () => {
   const location = useLocation();
@@ -57,6 +58,9 @@ export const SecondaryNavigation = () => {
           })}
         </ul>
       </nav>
+      <div className={classes.footer}>
+        <DarkModeSwitch />
+      </div>
     </div>
   );
 };

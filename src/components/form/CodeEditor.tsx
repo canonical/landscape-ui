@@ -3,6 +3,7 @@ import classNames from "classnames";
 import type { ComponentProps, FC, ReactNode } from "react";
 import LoadingState from "../layout/LoadingState";
 import classes from "./CodeEditor.module.scss";
+import { useTheme } from "@/context/theme";
 
 interface CodeEditorProps {
   readonly label: string;
@@ -31,6 +32,8 @@ const CodeEditor: FC<CodeEditorProps> = ({
   headerContent,
   options,
 }) => {
+  const { isDarkMode } = useTheme();
+
   return (
     <div
       className={classNames(
@@ -63,6 +66,7 @@ const CodeEditor: FC<CodeEditorProps> = ({
           language={language}
           loading={<LoadingState />}
           defaultValue={defaultValue}
+          theme={isDarkMode ? "vs-dark" : "vs-light"}
           className={classNames(
             classes.highlighter,
             {

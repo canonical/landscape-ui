@@ -16,7 +16,6 @@ import { SORT_FUNCTIONS } from "../constants";
 import NewUserForm from "../NewUserForm";
 import UserList from "../UserList";
 import { getFilteredUsers } from "./helpers";
-import classes from "./UserPanel.module.scss";
 import { MAX_USERS_LIMIT } from "./constants";
 
 const UserPanel: FC = () => {
@@ -97,10 +96,7 @@ const UserPanel: FC = () => {
               >
                 <span>
                   The number of requested users is too high. Please{" "}
-                  <Link
-                    to="https://support-portal.canonical.com/"
-                    className={classes.link}
-                  >
+                  <Link to="https://support-portal.canonical.com/">
                     contact our support team.
                   </Link>
                 </span>

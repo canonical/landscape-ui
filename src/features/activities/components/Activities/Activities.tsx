@@ -142,10 +142,7 @@ const Activities: FC<ActivitiesProps> = ({
           Header: "Instance",
           Cell: ({ row }: CellProps<ActivityCommon>) =>
             row.original.computer_id ? (
-              <Link
-                className={classes.link}
-                to={`/instances/${row.original.computer_id}`}
-              >
+              <Link to={`/instances/${row.original.computer_id}`}>
                 ID: {row.original.computer_id}
               </Link>
             ) : (

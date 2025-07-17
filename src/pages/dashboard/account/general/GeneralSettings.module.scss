@@ -6,12 +6,6 @@
   justify-content: center;
 }
 
-.link {
-  &:visited {
-    color: $color-link;
-  }
-}
-
 .helperContent {
   align-self: flex-end;
   font-size: 14px;

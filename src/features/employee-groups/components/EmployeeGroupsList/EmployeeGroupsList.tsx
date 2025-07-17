@@ -8,7 +8,6 @@ import type { CellProps, Column } from "react-table";
 import type { EmployeeGroup } from "../../types";
 import AutoinstallFileTableCell from "../AutoinstallFileTableCell";
 import EmployeeGroupsListActions from "../EmployeeGroupsListActions";
-import classes from "./EmployeeGroupsList.module.scss";
 import { handleCellProps } from "./helpers";
 
 interface EmployeeGroupsListProps {
@@ -97,7 +96,6 @@ const EmployeeGroupsList: FC<EmployeeGroupsListProps> = ({
           original.employee_count ? (
             <Link
               to={`/settings/employees?tab=employees&employeeGroups=${original.id}`}
-              className={classes.link}
             >
               {original.employee_count}
             </Link>

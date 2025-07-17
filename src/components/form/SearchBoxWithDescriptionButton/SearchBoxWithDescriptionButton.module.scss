@@ -18,7 +18,7 @@
   &:hover {
     background-color: $colors--theme--background-inputs;
     border-bottom: $input-border-thickness solid
-      $colors--light-theme--border-high-contrast;
+      $colors--theme--border-high-contrast;
     border-left: 0;
     border-right: 0;
     padding-left: calc($sph--large + $sph--x-small);

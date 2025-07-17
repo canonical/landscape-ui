@@ -120,15 +120,15 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
               <SelectAllButton
                 count={packagesCount - instanceExcludedPackages.length}
                 itemName={{ plural: "packages", singular: "package" }}
-                onClick={() =>
+                onClick={() => {
                   onExcludedPackagesChange(
                     excludedPackages.map(({ id, exclude_packages }) => ({
                       id,
                       exclude_packages:
                         id !== instance.id ? exclude_packages : [],
                     })),
-                  )
-                }
+                  );
+                }}
                 totalCount={packagesCount}
               />
             );
@@ -143,7 +143,9 @@ const AffectedPackages: FC<AffectedPackagesProps> = ({
                 </span>
               }
               checked={!instanceExcludedPackages.includes(original.id)}
-              onChange={() => togglePackage(original.id)}
+              onChange={() => {
+                togglePackage(original.id);
+              }}
             />
           );
         },

@@ -6,8 +6,8 @@
 }
 
 .expandedRow {
-  background-color: $color-x-light;
-  filter: drop-shadow(0 4px 8px $color-mid-light);
+  background-color: $colors--theme--background-alt;
+  filter: drop-shadow(0 4px 8px $colors--theme--background-alt);
   position: relative;
   z-index: 20;
 }

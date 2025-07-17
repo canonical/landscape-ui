@@ -3,7 +3,7 @@
 @import "vanilla-framework/scss/settings_breakpoints";
 
 .outerContainer {
-  border: 1px solid $color-mid-light;
+  border: 1px solid $colors--theme--border-default;
   display: flex;
   flex-direction: column;
   height: 100%;

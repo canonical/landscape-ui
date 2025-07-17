@@ -1,4 +1,3 @@
-import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 import LoadingState from "@/components/layout/LoadingState";
 import useAuth from "@/hooks/useAuth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
@@ -14,6 +13,7 @@ import { lazy, Suspense } from "react";
 import { useUserGeneralSettings } from "../../hooks";
 import type { UserDetails } from "../../types";
 import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
+import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 import classes from "./EditUserForm.module.scss";
 import { getAccountOptions } from "./helpers";
 import type { EditUserFormValues } from "./types";
@@ -105,7 +105,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                   <br />
                   To change or add an email, go to{" "}
                   <Link
-                    className={classes.link}
                     href="https://login.ubuntu.com/"
                     target="_blank"
                     rel="nofollow noopener noreferrer"
@@ -134,7 +133,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                   <br />
                   To change or add an email, go to{" "}
                   <Link
-                    className={classes.link}
                     href="https://login.ubuntu.com/"
                     target="_blank"
                     rel="nofollow noopener noreferrer"
@@ -162,7 +160,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
               <>
                 To change your passphrase, go to{" "}
                 <Link
-                  className={classes.link}
                   href="https://login.ubuntu.com/"
                   target="_blank"
                   rel="nofollow noopener noreferrer"
@@ -194,7 +191,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
           error={getFormikError(formik, "preferred_account")}
         />
       )}
-      <div className={buttonClasses.buttons}>
+      <div className={`${buttonClasses.buttons} ${classes.buttons}`}>
         <Button
           className="u-no-margin--bottom"
           appearance="positive"

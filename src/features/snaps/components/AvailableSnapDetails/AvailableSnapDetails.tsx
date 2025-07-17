@@ -101,9 +101,9 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
               required
               value={selectedChannel}
               options={CHANNEL_OPTIONS}
-              onChange={(event) =>
-                handleSelectChannel(event.currentTarget.value)
-              }
+              onChange={(event) => {
+                handleSelectChannel(event.currentTarget.value);
+              }}
               help={
                 item["channel-map"].find(
                   (channel) =>
@@ -129,7 +129,9 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
                 small
                 type="button"
                 appearance="base"
-                onClick={() => handleDeleteToBeConfirmedItem()}
+                onClick={() => {
+                  handleDeleteToBeConfirmedItem();
+                }}
               >
                 Cancel
               </Button>
