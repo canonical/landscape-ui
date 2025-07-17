@@ -1,4 +1,8 @@
-import type { Instance, PendingInstance } from "@/types/Instance";
+import type {
+  Instance,
+  PendingInstance,
+  WindowsInstance,
+} from "@/types/Instance";
 
 export const ubuntuInstance: Instance = {
   id: 1,
@@ -141,7 +145,7 @@ export const ubuntuCoreInstance: Instance = {
   registered_at: "2023-11-29T18:29:25Z",
 };
 
-export const windowsInstance = {
+export const windowsInstance: WindowsInstance = {
   id: 6,
   title: "Noel's Windows Laptop",
   comment: "",

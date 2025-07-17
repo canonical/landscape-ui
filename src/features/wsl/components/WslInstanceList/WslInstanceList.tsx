@@ -52,14 +52,6 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
     setSelectedItems: setSelectedWslInstances,
   } = useSelection(filteredWslInstances);
 
-  const handleInstanceCheck = (instance: InstanceChild) => {
-    setSelectedWslInstances((prevState) =>
-      prevState.includes(instance)
-        ? prevState.filter((i) => i !== instance)
-        : [...prevState, instance],
-    );
-  };
-
   const hasWslProfiles = wslInstances.some(
     (instanceChild) => instanceChild.profile,
   );
@@ -137,54 +129,64 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
   );
 
   const createRow = (instances: InstanceChild[]) => {
-    return instances.map((wslInstance) => ({
-      type: "instance",
-      name: (
-        <div
-          className={classNames(classes.title, { [classes.indented]: groupBy })}
-        >
-          <CheckboxInput
-            label={
-              <span className="u-off-screen">{`Toggle ${wslInstance.name} instance`}</span>
-            }
-            labelClassName="u-no-margin--bottom u-no-padding--top"
-            checked={selectedWslInstances.includes(wslInstance)}
-            onChange={() => {
-              handleInstanceCheck(wslInstance);
-            }}
-          />
+    return instances.map((wslInstance) => {
+      const change = () => {
+        setSelectedWslInstances((previousSelectedWslInstances) =>
+          previousSelectedWslInstances.includes(wslInstance)
+            ? previousSelectedWslInstances.filter((i) => i !== wslInstance)
+            : [...previousSelectedWslInstances, wslInstance],
+        );
+      };
 
-          {wslInstance.computer_id !== null ? (
-            <StaticLink
-              to={`/instances/${windowsInstance.id}/${wslInstance.computer_id}`}
-            >
-              {wslInstance.name}
-            </StaticLink>
-          ) : (
-            wslInstance.name
-          )}
-        </div>
-      ),
-      compliance: getCompliance(wslInstance),
-      complianceIcon:
-        wslInstance.compliance === "compliant" ? "success-grey" : "warning",
-      os: wslInstance.version_id || <NoData />,
-      profile: wslInstance.profile || <NoData />,
-      default:
-        wslInstance.computer_id === null ? (
-          <NoData />
-        ) : wslInstance.default ? (
-          "Yes"
-        ) : (
-          "No"
+      return {
+        type: "instance",
+        name: (
+          <div
+            className={classNames(classes.title, {
+              [classes.indented]: groupBy,
+            })}
+          >
+            <CheckboxInput
+              label={
+                <span className="u-off-screen">{`Toggle ${wslInstance.name} instance`}</span>
+              }
+              labelClassName="u-no-margin--bottom u-no-padding--top"
+              checked={selectedWslInstances.includes(wslInstance)}
+              onChange={change}
+            />
+
+            {wslInstance.computer_id !== null ? (
+              <StaticLink
+                to={`/instances/${windowsInstance.id}/${wslInstance.computer_id}`}
+              >
+                {wslInstance.name}
+              </StaticLink>
+            ) : (
+              wslInstance.name
+            )}
+          </div>
         ),
-      actions: (
-        <WslInstanceListActions
-          windowsInstance={windowsInstance}
-          wslInstance={wslInstance}
-        />
-      ),
-    }));
+        compliance: getCompliance(wslInstance),
+        complianceIcon:
+          wslInstance.compliance === "compliant" ? "success-grey" : "warning",
+        os: wslInstance.version_id || <NoData />,
+        profile: wslInstance.profile || <NoData />,
+        default:
+          wslInstance.computer_id === null ? (
+            <NoData />
+          ) : wslInstance.default ? (
+            "Yes"
+          ) : (
+            "No"
+          ),
+        actions: (
+          <WslInstanceListActions
+            windowsInstance={windowsInstance}
+            wslInstance={wslInstance}
+          />
+        ),
+      };
+    });
   };
 
   const noncompliantWslInstances = wslInstances.filter(
