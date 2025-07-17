@@ -30,7 +30,7 @@ describe("SnapsPanel", () => {
     expect(installSnapButton).toBeInTheDocument();
 
     await userEvent.click(installSnapButton);
-    const form = await screen.findByTestId("globalSidePanel");
+    const form = await screen.findByRole("complementary");
     expect(form).toBeInTheDocument();
   });
 

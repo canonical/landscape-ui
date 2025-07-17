@@ -72,5 +72,8 @@ describe("EmployeeGroupsListContextualMenu", () => {
       `Assign an autoinstall file to ${employeeGroup.name} employee group`,
     );
     await user.click(assignMenuItem);
+
+    const sidePanel = screen.getByRole("complementary");
+    expect(sidePanel).toBeInTheDocument();
   });
 });

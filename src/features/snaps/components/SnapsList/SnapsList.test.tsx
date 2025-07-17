@@ -131,7 +131,7 @@ describe("SnapsList", () => {
     });
 
     it("should open side panel when snap in table is clicked", async () => {
-      const form = await screen.findByTestId("globalSidePanel");
+      const form = await screen.findByRole("complementary");
       const heading = within(form).getByText(
         `${selectedSnap.snap.name} details`,
       );
@@ -140,7 +140,7 @@ describe("SnapsList", () => {
 
     it("should show side panel action buttons", async () => {
       const buttonsNames = ["Switch channel", "Uninstall", "Hold", "Refresh"];
-      const form = await screen.findByTestId("globalSidePanel");
+      const form = await screen.findByRole("complementary");
 
       buttonsNames.forEach((buttonName) => {
         const button = within(form).getByText(buttonName);
@@ -171,7 +171,7 @@ describe("SnapsList", () => {
           value: selectedSnap.snap.publisher.username,
         },
       ];
-      const form = await screen.findByTestId("globalSidePanel");
+      const form = await screen.findByRole("complementary");
       fieldsToCheck.forEach((field) => {
         expect(form).toHaveInfoItem(field.label, field.value);
       });
