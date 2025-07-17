@@ -7,24 +7,35 @@ interface AboutResponse {
   self_hosted: boolean;
   package_version: string;
   revision: string;
+  display_disa_stig_banner: boolean;
 }
 
-const initialState = {
+export interface EnvContextState {
+  envLoading: boolean;
+  isSaas: boolean;
+  isSelfHosted: boolean;
+  packageVersion: string;
+  revision: string;
+  displayDisaStigBanner: boolean;
+}
+
+const initialState: EnvContextState = {
   envLoading: true,
   isSaas: false,
   isSelfHosted: false,
   packageVersion: "",
   revision: "",
+  displayDisaStigBanner: false,
 };
 
-export const EnvContext = createContext(initialState);
+export const EnvContext = createContext<EnvContextState>(initialState);
 
 interface EnvProviderProps {
   readonly children: ReactNode;
 }
 
 const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState<EnvContextState>(initialState);
 
   useEffect(() => {
     (async () => {
@@ -41,6 +52,7 @@ const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
             : data.self_hosted,
         packageVersion: data.package_version,
         revision: data.revision,
+        displayDisaStigBanner: data.display_disa_stig_banner,
       });
     })();
   }, []);

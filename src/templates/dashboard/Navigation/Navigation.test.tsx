@@ -9,6 +9,7 @@ import type { MenuItem } from "@/templates/dashboard/Navigation/types";
 import { authUser } from "@/tests/mocks/auth";
 import type { FeatureKey } from "@/types/FeatureKey";
 import type { AuthContextProps } from "@/context/auth";
+import type { EnvContextState } from "@/context/env";
 
 vi.mock("@/hooks/useAuth");
 vi.mock("@/hooks/useEnv");
@@ -24,10 +25,11 @@ const authProps: AuthContextProps = {
   isFeatureEnabled: vi.fn(),
 };
 
-const envCommon = {
+const envCommon: Omit<EnvContextState, "isSaas" | "isSelfHosted"> = {
   envLoading: false,
   packageVersion: "",
   revision: "",
+  displayDisaStigBanner: false,
 };
 
 interface EnvOverride {
