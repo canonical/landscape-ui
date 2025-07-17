@@ -3,7 +3,7 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import { getStatusCellIconAndLabel } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { ModularTable } from "@canonical/react-components";
-import { useMemo, type FC } from "react";
+import { type FC, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import EmployeeInstancesTableActions from "../EmployeeInstancesTableActions";
@@ -25,7 +25,6 @@ const EmployeeInstancesTable: FC<EmployeeInstancesTableProps> = ({
         Header: "name",
         Cell: ({ row }: CellProps<Instance>) => (
           <Link
-            className={classes.link}
             to={
               row.original.parent
                 ? `/instances/${row.original.parent.id}/${row.original.id}`

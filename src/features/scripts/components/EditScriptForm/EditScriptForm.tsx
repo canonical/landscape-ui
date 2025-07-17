@@ -241,7 +241,6 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
                         to="/scripts?tab=profiles"
                         state={{ scriptProfileId: row.original.id }}
                         target="_blank"
-                        className={classes.link}
                       >
                         {row.original.title}
                       </Link>
@@ -265,7 +264,6 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
                         <Link
                           to={`/instances?tags=${associatedProfile?.tags.join(",")}`}
                           target="_blank"
-                          className={classes.link}
                         >
                           {associatedComputers} instance
                           {associatedComputers > 1 ? "s" : ""}

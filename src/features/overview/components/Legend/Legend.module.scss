@@ -24,12 +24,6 @@
   display: flex;
 }
 
-.link {
-  &:visited {
-    color: $color-link;
-  }
-}
-
 .container {
   border-right: none;
   display: flex;

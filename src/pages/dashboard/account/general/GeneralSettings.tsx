@@ -37,7 +37,6 @@ const GeneralSettings: FC = () => {
             >
               listed from{" "}
               <Link
-                className={classes.link}
                 href="https://login.ubuntu.com/"
                 target="_blank"
                 rel="nofollow noopener noreferrer"

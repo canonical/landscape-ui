@@ -91,7 +91,6 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
           script.script_profiles.length > 0 ? (
             script.script_profiles.map((profile, index) => (
               <Link
-                className={classes.link}
                 to="/scripts?tab=profiles"
                 state={{ scriptProfileId: profile.id }}
                 key={profile.id}

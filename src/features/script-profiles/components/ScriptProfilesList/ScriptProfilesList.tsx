@@ -21,7 +21,6 @@ import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 import ScriptProfileAssociatedInstancesLink from "../ScriptProfileAssociatedInstancesLink";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
-import classes from "./ScriptProfilesList.module.scss";
 import { getCellProps, getRowProps } from "./helpers";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import TruncatedCell from "@/components/layout/TruncatedCell";
@@ -206,7 +205,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         }: CellProps<ScriptProfile>) =>
           activity ? (
             <Link
-              className={`${classes.link} font-monospace`}
+              className="font-monospace"
               to={`/activities?query=parent-id%3A${activity.id}`}
             >
               {moment(activity.creation_time)

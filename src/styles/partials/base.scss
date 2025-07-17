@@ -14,12 +14,13 @@ a[target="_blank"] {
   }
 }
 
-a {
-  color: $color-link;
+body:not(.is-dark) {
+  --vf-color-link-visited: #06c;
+}
 
-  &:visited {
-    color: $color-link;
-  }
+body.is-dark {
+  --vf-color-link-default: #9cf;
+  --vf-color-link-visited: #9cf;
 }
 
 input:-webkit-autofill,

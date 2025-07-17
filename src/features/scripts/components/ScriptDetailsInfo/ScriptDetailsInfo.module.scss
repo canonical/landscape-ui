@@ -16,12 +16,6 @@
   text-decoration: none;
 }
 
-.link {
-  &:visited {
-    color: $color-link;
-  }
-}
-
 .downloadButton {
   padding-left: $sp-small;
   padding-right: $sp-small;

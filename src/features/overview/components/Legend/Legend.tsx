@@ -73,10 +73,7 @@ const Legend: FC<LegendProps> = ({
                 </div>
                 <Link
                   to={`/instances?status=${statusItem.filterValue}`}
-                  className={classNames(
-                    "u-no-margin u-no-padding",
-                    classes.link,
-                  )}
+                  className="u-no-margin u-no-padding"
                 >
                   {numberOfInstances[index]} instances
                 </Link>

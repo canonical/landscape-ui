@@ -105,7 +105,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                   <br />
                   To change or add an email, go to{" "}
                   <Link
-                    className={classes.link}
                     href="https://login.ubuntu.com/"
                     target="_blank"
                     rel="nofollow noopener noreferrer"
@@ -134,7 +133,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
                   <br />
                   To change or add an email, go to{" "}
                   <Link
-                    className={classes.link}
                     href="https://login.ubuntu.com/"
                     target="_blank"
                     rel="nofollow noopener noreferrer"
@@ -162,7 +160,6 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
               <>
                 To change your passphrase, go to{" "}
                 <Link
-                  className={classes.link}
                   href="https://login.ubuntu.com/"
                   target="_blank"
                   rel="nofollow noopener noreferrer"

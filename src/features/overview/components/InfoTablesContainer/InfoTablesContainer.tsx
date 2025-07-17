@@ -213,7 +213,7 @@ const InfoTablesContainer: FC = () => {
             Cell: ({ row }: CellProps<Instance>): ReactNode => (
               <Link
                 to={`/instances/${row.original.id}`}
-                className={classNames("u-no-margin--bottom", classes.link)}
+                className="u-no-margin--bottom"
               >
                 {row.original.title}
               </Link>
@@ -302,7 +302,7 @@ const InfoTablesContainer: FC = () => {
           <Link
             to="/activities"
             state={{ activity: row.original as Activity }}
-            className={classNames("u-no-margin--bottom", classes.link)}
+            className="u-no-margin--bottom"
           >
             {row.original.summary}
           </Link>

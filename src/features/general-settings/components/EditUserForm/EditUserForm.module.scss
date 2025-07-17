@@ -1,12 +1,6 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.link {
-  &:visited {
-    color: $color-link;
-  }
-}
-
 .passwordField {
   align-items: end;
   column-gap: $sph--large;
