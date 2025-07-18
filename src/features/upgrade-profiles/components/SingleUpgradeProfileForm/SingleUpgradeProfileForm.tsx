@@ -1,17 +1,17 @@
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { useEffect } from "react";
-import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import type { CreateUpgradeProfileParams } from "../../hooks";
-import { useUpgradeProfiles } from "../../hooks";
-import type { FormProps, UpgradeProfile } from "../../types";
-import UpgradeProfileScheduleBlock from "../UpgradeProfileScheduleBlock";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { Form, Input, Select } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useEffect } from "react";
+import type { CreateUpgradeProfileParams } from "../../hooks";
+import { useUpgradeProfiles } from "../../hooks";
+import type { FormProps, UpgradeProfile } from "../../types";
+import UpgradeProfileScheduleBlock from "../UpgradeProfileScheduleBlock";
 import { CTA_LABELS, INITIAL_VALUES, NOTIFICATION_ACTIONS } from "./constants";
 import { getValidationSchema } from "./helpers";
 
@@ -75,8 +75,18 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
     try {
       if (props.action === "edit") {
         await editUpgradeProfile({
+          all_computers: valuesToSubmit.all_computers,
+          at_hour: valuesToSubmit.at_hour,
+          at_minute: valuesToSubmit.at_minute,
+          autoremove: valuesToSubmit.autoremove,
+          deliver_delay_window: valuesToSubmit.deliver_delay_window,
+          deliver_within: valuesToSubmit.deliver_within,
+          every: valuesToSubmit.every,
           name: props.profile.name,
-          ...valuesToSubmit,
+          on_days: valuesToSubmit.on_days,
+          tags: valuesToSubmit.tags,
+          title: valuesToSubmit.title,
+          upgrade_type: valuesToSubmit.upgrade_type,
         });
       } else {
         await createUpgradeProfile(valuesToSubmit);

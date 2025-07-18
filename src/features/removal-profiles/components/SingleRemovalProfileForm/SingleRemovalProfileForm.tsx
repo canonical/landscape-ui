@@ -1,20 +1,20 @@
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { useEffect } from "react";
-import { Form, Input, Select } from "@canonical/react-components";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import type { CreateRemovalProfileParams } from "../../hooks";
-import { useRemovalProfiles } from "../../hooks";
-import type { RemovalProfile } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { Form, Input, Select } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useEffect } from "react";
+import type { CreateRemovalProfileParams } from "../../hooks";
+import { useRemovalProfiles } from "../../hooks";
+import type { RemovalProfile } from "../../types";
 import { CTA_LABELS, INITIAL_VALUES, NOTIFICATION_ACTIONS } from "./constants";
 import { getValidationSchema } from "./helpers";
-import type { FormProps } from "./types";
 import classes from "./SingleRemovalProfileForm.module.scss";
+import type { FormProps } from "./types";
 
 type SingleRemovalProfileFormProps =
   | {
@@ -59,8 +59,11 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
     try {
       if (props.action === "edit") {
         await editRemovalProfile({
-          ...valuesToSubmit,
+          all_computers: valuesToSubmit.all_computers,
+          days_without_exchange: valuesToSubmit.days_without_exchange,
           name: props.profile.name,
+          tags: valuesToSubmit.tags,
+          title: valuesToSubmit.title,
         });
       } else {
         await createRemovalProfile(valuesToSubmit);
