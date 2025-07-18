@@ -117,22 +117,12 @@ export const MENU_ITEMS: MenuItem[] = [
     ],
   },
   {
-    label: "Help",
-    path: "/help",
-    icon: "help",
-    items: [
-      {
-        label: "Legal",
-        path: "https://ubuntu.com/legal",
-      },
-      {
-        label: "Documentation",
-        path: "https://ubuntu.com/landscape/docs",
-      },
-      {
-        label: "Support",
-        path: "https://support-portal.canonical.com/",
-      },
-    ],
+    label: "Documentation",
+    path: "https://documentation.ubuntu.com/landscape/",
+    hasDivider: true,
+  },
+  {
+    label: "Support",
+    path: "https://support-portal.canonical.com/",
   },
 ];

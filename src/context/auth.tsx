@@ -19,7 +19,6 @@ import useFeatures from "@/hooks/useFeatures";
 export interface AuthContextProps {
   authLoading: boolean;
   authorized: boolean;
-  isOidcAvailable: boolean;
   logout: () => void;
   redirectToExternalUrl: (url: string, options?: { replace: boolean }) => void;
   setAuthLoading: (loading: boolean) => void;
@@ -31,7 +30,6 @@ export interface AuthContextProps {
 const initialState: AuthContextProps = {
   authLoading: false,
   authorized: false,
-  isOidcAvailable: false,
   logout: () => undefined,
   redirectToExternalUrl: () => undefined,
   setAuthLoading: () => undefined,
@@ -54,12 +52,10 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { notify } = useNotify();
-  const { getLoginMethodsQuery, getAuthStateQuery } = useUnsigned();
+  const { getAuthStateQuery } = useUnsigned();
   const { isFeatureEnabled, isFeaturesLoading } = useFeatures(
     user?.email ?? null,
   );
-
-  const { data: getLoginMethodsQueryResult } = getLoginMethodsQuery();
 
   const isGetAuthStateQueryEnabled = !pathname.includes("handle-auth");
 
@@ -146,7 +142,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         user,
         authLoading: loading || isFeaturesLoading,
         authorized: null !== user,
-        isOidcAvailable: !!getLoginMethodsQueryResult?.data.oidc.available,
         logout: handleLogout,
         redirectToExternalUrl: handleExternalRedirect,
         setAuthLoading: handleAuthLoading,

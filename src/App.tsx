@@ -202,7 +202,6 @@ const FeatureRoute: FC<FeatureRouteProps> = ({ feature, children }) => {
 
 const App: FC = () => {
   const { notify, sidePanel } = useNotify();
-  const { isOidcAvailable } = useAuth();
 
   return (
     <FetchOldProvider>
@@ -285,16 +284,14 @@ const App: FC = () => {
                   path="settings/general"
                   element={<GeneralOrganisationSettings />}
                 />
-                {!isOidcAvailable && (
-                  <Route
-                    path="settings/identity-providers"
-                    element={
-                      <FeatureRoute feature="oidc-configuration">
-                        <IdentityProvidersPage />
-                      </FeatureRoute>
-                    }
-                  />
-                )}
+                <Route
+                  path="settings/identity-providers"
+                  element={
+                    <FeatureRoute feature="oidc-configuration">
+                      <IdentityProvidersPage />
+                    </FeatureRoute>
+                  }
+                />
                 <Route path="profiles" element={<ProfilesPage />} />
                 <Route
                   path="profiles/package"

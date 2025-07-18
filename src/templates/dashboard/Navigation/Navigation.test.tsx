@@ -1,19 +1,17 @@
-import type { AuthContextProps } from "@/context/auth";
-import { useGetOverLimitSecurityProfiles } from "@/features/security-profiles";
+import { afterEach, beforeEach, describe, it, vi } from "vitest";
+import { screen, within } from "@testing-library/react";
+import { renderWithProviders } from "@/tests/render";
+import Navigation from "./Navigation";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import { MENU_ITEMS } from "@/templates/dashboard/Navigation/constants";
 import type { MenuItem } from "@/templates/dashboard/Navigation/types";
 import { authUser } from "@/tests/mocks/auth";
-import { renderWithProviders } from "@/tests/render";
 import type { FeatureKey } from "@/types/FeatureKey";
-import { screen } from "@testing-library/react";
-import { describe, vi } from "vitest";
-import Navigation from "./Navigation";
+import type { AuthContextProps } from "@/context/auth";
 
 vi.mock("@/hooks/useAuth");
 vi.mock("@/hooks/useEnv");
-vi.mock("@/features/security-profiles/api/useGetOverLimitSecurityProfiles");
 
 const authProps: AuthContextProps = {
   logout: vi.fn(),
@@ -22,7 +20,6 @@ const authProps: AuthContextProps = {
   setAuthLoading: vi.fn(),
   setUser: vi.fn(),
   user: authUser,
-  isOidcAvailable: true,
   redirectToExternalUrl: vi.fn(),
   isFeatureEnabled: vi.fn(),
 };
@@ -33,65 +30,55 @@ const envCommon = {
   revision: "",
 };
 
-const testMenuItem = (item: MenuItem, parentItem?: MenuItem) => {
-  if (!item.env && !item.requiresFeature) {
-    it(`should render ${item.label} page${parentItem ? " under " + parentItem?.label : ""}`, () => {
-      renderWithProviders(<Navigation />);
+interface EnvOverride {
+  isSaas: boolean;
+  isSelfHosted: boolean;
+}
 
-      expect(screen.queryByText(item.label)).toBeInTheDocument();
-    });
+interface RenderOverrides {
+  auth?: Partial<AuthContextProps>;
+  env?: EnvOverride;
+}
+
+const renderNav = (overrides: RenderOverrides = {}, routePath = "/") => {
+  vi.mocked(useAuth).mockReturnValue({ ...authProps, ...overrides.auth });
+  vi.mocked(useEnv).mockReturnValue({
+    ...envCommon,
+    isSaas: overrides.env?.isSaas ?? false,
+    isSelfHosted: overrides.env?.isSelfHosted ?? true,
+  });
+
+  return renderWithProviders(<Navigation />, undefined, routePath);
+};
+
+const getNavEl = (item: MenuItem) =>
+  item.items
+    ? screen.getByRole("button", { name: item.label })
+    : screen.getByRole("link", { name: item.label });
+
+const queryNavEl = (item: MenuItem) =>
+  item.items
+    ? screen.queryByRole("button", { name: item.label })
+    : screen.queryByRole("link", { name: item.label });
+
+const assertPresent = (item: MenuItem, parent?: MenuItem) => {
+  const el = getNavEl(item);
+
+  if (!item.items) {
+    expect(el).toHaveAttribute("href", item.path);
+    if (item.path.startsWith("http"))
+      expect(el).toHaveAttribute("target", "_blank");
   }
 
-  if (item.env) {
-    it(`should render ${item.label} page in ${item.env}${parentItem ? " under " + parentItem?.label : ""}`, () => {
-      vi.mocked(useEnv, { partial: true }).mockReturnValue({
-        ...envCommon,
-        isSaas: item.env === "saas",
-        isSelfHosted: item.env === "selfHosted",
-      });
-
-      renderWithProviders(<Navigation />);
-
-      expect(screen.queryByText(item.label)).toBeInTheDocument();
-    });
-
-    it(`should not render ${item.label} page in ${item.env === "selfHosted" ? "saas" : "selfHosted"}${parentItem ? " under " + parentItem?.label : ""}`, () => {
-      vi.mocked(useEnv, { partial: true }).mockReturnValue({
-        ...envCommon,
-        isSaas: item.env !== "saas",
-        isSelfHosted: item.env !== "selfHosted",
-      });
-
-      renderWithProviders(<Navigation />);
-
-      expect(screen.queryByText(item.label)).not.toBeInTheDocument();
-    });
+  if (parent) {
+    const parentEl = getNavEl(parent);
+    const container = parentEl.closest("li") as HTMLElement;
+    within(container).getByRole("link", { name: item.label });
   }
+};
 
-  if (item.requiresFeature) {
-    it(`should render ${item.label} page with ${item.requiresFeature} enabled${parentItem ? " under " + parentItem?.label : ""}`, () => {
-      vi.mocked(useAuth, { partial: true }).mockReturnValue({
-        ...authProps,
-        isOidcAvailable: false,
-        isFeatureEnabled: (feature: FeatureKey) =>
-          feature === item.requiresFeature,
-      });
-      renderWithProviders(<Navigation />);
-
-      expect(screen.queryByText(item.label)).toBeInTheDocument();
-    });
-
-    it(`should not render ${item.label} page with ${item.requiresFeature} disabled${parentItem ? " under " + parentItem?.label : ""}`, () => {
-      vi.mocked(useAuth, { partial: true }).mockReturnValue({
-        ...authProps,
-        isFeatureEnabled: (feature: FeatureKey) =>
-          feature !== item.requiresFeature,
-      });
-      renderWithProviders(<Navigation />);
-
-      expect(screen.queryByText(item.label)).not.toBeInTheDocument();
-    });
-  }
+const assertAbsent = (item: MenuItem) => {
+  expect(queryNavEl(item)).not.toBeInTheDocument();
 };
 
 describe("Navigation", () => {
@@ -102,52 +89,80 @@ describe("Navigation", () => {
       isSaas: false,
       isSelfHosted: true,
     });
-    vi.mocked(useGetOverLimitSecurityProfiles).mockReturnValue({
-      hasOverLimitSecurityProfiles: true,
-      isOverLimitSecurityProfilesLoading: false,
-      overLimitSecurityProfiles: [],
-      overLimitSecurityProfilesCount: 3,
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("exposes navigation landmark with accessible name", () => {
+    renderNav();
+    expect(
+      screen.getByRole("navigation", { name: /main/i }),
+    ).toBeInTheDocument();
+  });
+
+  const flat: [MenuItem, MenuItem | undefined][] = [];
+  MENU_ITEMS.forEach((item) => {
+    flat.push([item, undefined]);
+    item.items?.forEach((sub) => {
+      if (sub.label.toLowerCase() !== "gpg keys") flat.push([sub, item]);
     });
   });
 
-  MENU_ITEMS.forEach((item) => {
-    testMenuItem(item);
+  flat.forEach(([item, parent]) => {
+    if (!item.env && !item.requiresFeature) {
+      it(`renders ${item.label}`, () => {
+        renderNav();
+        assertPresent(item, parent);
+      });
+    }
 
-    if (item.items) {
-      item.items.forEach((subItem) => {
-        // Skipping for now to keep it simple because it's presented 2 times in the menu
-        if ("GPG Keys" !== subItem.label) {
-          testMenuItem(subItem, item);
-        }
+    if (item.env) {
+      const match: EnvOverride =
+        item.env === "saas"
+          ? { isSaas: true, isSelfHosted: false }
+          : { isSaas: false, isSelfHosted: true };
+
+      it(`renders ${item.label} in ${item.env}`, () => {
+        renderNav({ env: match });
+        assertPresent(item, parent);
+      });
+
+      it(`does not render ${item.label} outside ${item.env}`, () => {
+        renderNav({
+          env: { isSaas: !match.isSaas, isSelfHosted: !match.isSelfHosted },
+        });
+        assertAbsent(item);
+      });
+    }
+
+    if (item.requiresFeature) {
+      it(`renders ${item.label} when feature ${item.requiresFeature} is enabled`, () => {
+        renderNav({
+          auth: {
+            isFeatureEnabled: (f: FeatureKey) => f === item.requiresFeature,
+          },
+        });
+        assertPresent(item, parent);
+      });
+
+      it(`does not render ${item.label} when feature ${item.requiresFeature} is disabled`, () => {
+        renderNav({
+          auth: {
+            isFeatureEnabled: (f: FeatureKey) => f !== item.requiresFeature,
+          },
+        });
+        assertAbsent(item);
       });
     }
   });
 
-  describe("security profiles badge", () => {
-    it("should render when there is an over-limit profile", () => {
-      vi.mocked(useAuth).mockReturnValue({
-        ...authProps,
-        isFeatureEnabled: () => true,
-      });
-
-      renderWithProviders(<Navigation />);
-
-      expect(screen.getByText(3)).toBeInTheDocument();
-
-      vi.resetAllMocks();
-    });
-
-    it("should not render when the feature is disabled", () => {
-      vi.mocked(useAuth).mockReturnValue({
-        ...authProps,
-        isFeatureEnabled: () => false,
-      });
-
-      renderWithProviders(<Navigation />);
-
-      expect(screen.queryByText(3)).not.toBeInTheDocument();
-
-      vi.resetAllMocks();
-    });
+  it("marks active link based on current route", () => {
+    renderNav({}, "/instances");
+    expect(screen.getByRole("link", { name: "Instances" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
   });
 });

@@ -23,7 +23,6 @@ const authContextValues: AuthContextProps = {
   setAuthLoading: vi.fn(),
   setUser: vi.fn(),
   user: null,
-  isOidcAvailable: true,
   redirectToExternalUrl: vi.fn(),
   isFeatureEnabled: () => true,
 };
