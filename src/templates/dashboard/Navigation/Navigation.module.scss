@@ -29,6 +29,9 @@
   }
 
   &::after {
+    background-image: vf-icon-external-link-url(
+      $colors--dark-theme--icon
+    ) !important;
     margin-top: $spv--x-small !important;
   }
 

@@ -10,7 +10,7 @@ interface NavigationLinkProps {
 const NavigationLink: FC<NavigationLinkProps> = ({ item }) => {
   return (
     <a
-      className={classNames("p-side-navigation__link is-light", classes.link)}
+      className={classNames("p-side-navigation__link", classes.link)}
       href={item.path}
       target="_blank"
       rel="nofollow noopener noreferrer"
