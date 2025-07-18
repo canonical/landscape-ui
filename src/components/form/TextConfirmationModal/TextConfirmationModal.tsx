@@ -1,6 +1,5 @@
 import { ConfirmationModal, Form, Input } from "@canonical/react-components";
 import { useState, type ComponentProps, type FC } from "react";
-import classes from "./TextConfirmationModal.module.scss";
 
 interface TextConfirmationModalProps
   extends ComponentProps<typeof ConfirmationModal> {
@@ -68,13 +67,7 @@ const TextConfirmationModal: FC<TextConfirmationModalProps> = ({
 
         <Input
           type="text"
-          label={
-            <span>
-              Type{" "}
-              <b className={classes.confirmationKeyword}>{confirmationText}</b>{" "}
-              to confirm
-            </span>
-          }
+          label={<span>Type {confirmationText} to confirm.</span>}
           placeholder={confirmationText}
           autoComplete="off"
           value={inputText}
