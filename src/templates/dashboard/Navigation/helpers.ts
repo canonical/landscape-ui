@@ -1,7 +1,8 @@
 import type { MenuItem } from "./types";
 import { MENU_ITEMS } from "./constants";
+import type { FeatureKey } from "@/types/FeatureKey";
 
-const getFilteredByEnvItems = ({
+export const getFilteredByEnvItems = ({
   isSaas,
   isSelfHosted,
   items,
@@ -29,18 +30,29 @@ const getFilteredByEnvItems = ({
     );
 };
 
-export const getFilteredByEnvMenuItems = ({
-  isSaas,
-  isSelfHosted,
+export const getFilteredByFeatureItems = ({
+  isFeatureEnabled,
+  items,
 }: {
-  isSaas: boolean;
-  isSelfHosted: boolean;
-}) => {
-  return getFilteredByEnvItems({
-    isSaas,
-    isSelfHosted,
-    items: MENU_ITEMS,
-  });
+  isFeatureEnabled: (feature: FeatureKey) => boolean;
+  items: MenuItem[];
+}): MenuItem[] => {
+  return items
+    .filter(
+      ({ requiresFeature }) =>
+        !requiresFeature || isFeatureEnabled(requiresFeature),
+    )
+    .map((item) =>
+      item.items
+        ? {
+            ...item,
+            items: getFilteredByFeatureItems({
+              items: item.items,
+              isFeatureEnabled,
+            }),
+          }
+        : item,
+    );
 };
 
 export const getPathToExpand = (pathname: string) => {

@@ -10,4 +10,8 @@ export interface MenuItem {
   items?: MenuItem[];
   requiresFeature?: FeatureKey;
   hasDivider?: boolean;
+  badge?: {
+    count: number;
+    isNegative: boolean;
+  };
 }

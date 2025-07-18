@@ -8,15 +8,9 @@ import { Badge } from "@canonical/react-components";
 interface NavigationRouteProps {
   readonly item: MenuItem;
   readonly current?: boolean;
-  readonly hasBadge?: boolean;
-  readonly badgeCount?: number;
 }
 
-const NavigationRoute: FC<NavigationRouteProps> = ({
-  item,
-  current,
-  badgeCount,
-}) => {
+const NavigationRoute: FC<NavigationRouteProps> = ({ item, current }) => {
   return (
     <Link
       className={classNames("p-side-navigation__link", classes.link)}
@@ -33,13 +27,16 @@ const NavigationRoute: FC<NavigationRouteProps> = ({
       )}
       <span
         className={classNames("p-side-navigation__label", classes.label, {
-          [classes.hasBadge]: badgeCount !== undefined && badgeCount > 0,
+          [classes.hasBadge]: item.badge !== undefined && item.badge.count > 0,
         })}
       >
         {item.label}
-        {badgeCount !== undefined && badgeCount > 0 && (
+        {item.badge !== undefined && item.badge.count > 0 && (
           <div className={classes.badge}>
-            <Badge value={badgeCount} isNegative />
+            <Badge
+              value={item.badge.count}
+              isNegative={item.badge.isNegative}
+            />
           </div>
         )}
       </span>
