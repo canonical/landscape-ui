@@ -20,7 +20,7 @@ const LoginPage: FC = () => {
 
   return (
     <>
-      {!bannerHidden && !displayDisaStigBanner && (
+      {!bannerHidden && displayDisaStigBanner && (
         <ConsentBannerModal
           onClose={() => {
             setBannerHidden(true);
