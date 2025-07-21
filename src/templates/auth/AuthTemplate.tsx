@@ -1,4 +1,5 @@
 import type { FC, ReactNode } from "react";
+import { useLayoutEffect } from "react";
 import { LoginPageLayout, Notification } from "@canonical/react-components";
 import Logo from "@/assets/images/logo-white-character.svg";
 import { APP_TITLE } from "@/constants";
@@ -12,6 +13,10 @@ interface AuthTemplateProps {
 
 const AuthTemplate: FC<AuthTemplateProps> = ({ title, children }) => {
   const { invitationAccount } = useInvitation();
+
+  useLayoutEffect(() => {
+    document.body.classList.remove("is-paper");
+  }, []);
 
   return (
     <div className={classes.root}>

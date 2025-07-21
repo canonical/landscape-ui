@@ -1,36 +1,16 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-:global(body.is-dark.is-paper) {
-  --vf-theme-light: ;
-  --vf-theme-dark: initial;
-}
-
 .root {
   align-items: center;
-  background-color: $colors--light-theme--background-alt;
+  background-color: $colors--theme--background-alt;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-height: 100vh;
 
-  :global(.is-dark) & {
-    background-color: $colors--dark-theme--background-default;
-  }
-
   :global(.p-card) {
-    --vf-color-background-default: #fff;
-    --vf-color-background-inputs: #{$colors--light-theme--background-inputs};
-    --vf-color-background-hover: #{$colors--light-theme--background-hover};
-    --vf-color-text-default: #{$colors--light-theme--text-default};
-
-    :global(.is-dark) & {
-      --vf-color-background-default: #{$colors--dark-theme--background-alt};
-      --vf-color-background-inputs: #{$colors--dark-theme--background-inputs};
-      --vf-color-background-hover: #{$colors--dark-theme--background-hover};
-      --vf-color-text-default: #{$colors--dark-theme--text-default};
-    }
-
+    background-color: $colors--theme--background-default;
     border: 0;
     margin-left: auto;
     margin-right: auto;
