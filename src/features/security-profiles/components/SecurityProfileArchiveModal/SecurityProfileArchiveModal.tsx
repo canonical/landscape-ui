@@ -1,9 +1,9 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { FC } from "react";
 import { useArchiveSecurityProfile } from "../../api";
 import type { SecurityProfile } from "../../types";
-import useDebug from "@/hooks/useDebug";
 
 interface SecurityProfileArchiveModalProps {
   readonly profile: SecurityProfile;
@@ -44,7 +44,7 @@ const SecurityProfileArchiveModal: FC<SecurityProfileArchiveModalProps> = ({
       title={`Archive "${profile.title}" profile`}
       close={close}
       confirmButtonLabel="Archive"
-      confirmationText={`archive ${profile.name}`}
+      confirmationText={`archive ${profile.title}`}
       confirmButtonLoading={isArchivingSecurityProfile}
       confirmButtonDisabled={isArchivingSecurityProfile}
       onConfirm={onConfirm}

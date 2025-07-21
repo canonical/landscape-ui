@@ -136,8 +136,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       <Input
         type="text"
         required={props.action === "add"}
-        label="Name"
-        aria-label="Name"
+        label="Title"
         {...formik.getFieldProps("title")}
         error={
           formik.touched.title && formik.errors.title

@@ -1,13 +1,13 @@
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { accessGroups } from "@/tests/mocks/accessGroup";
+import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
-import RebootProfileDetails from "./RebootProfileDetails";
-import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
-import { formatWeeklyRebootSchedule } from "./helpers";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { accessGroups } from "@/tests/mocks/accessGroup";
+import { describe, expect, it } from "vitest";
+import { formatWeeklyRebootSchedule } from "./helpers";
+import RebootProfileDetails from "./RebootProfileDetails";
 
 const [profile] = rebootProfiles;
 const accessGroupOptions = accessGroups.map((group) => ({
@@ -32,7 +32,7 @@ describe("RebootProfileDetails", () => {
 
     const fieldsToCheck = [
       {
-        label: "Name",
+        label: "Title",
         value: profile.title,
       },
       {

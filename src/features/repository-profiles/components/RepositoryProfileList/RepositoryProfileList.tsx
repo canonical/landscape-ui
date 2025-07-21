@@ -1,5 +1,9 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import ListTitle, {
+  LIST_TITLE_COLUMN_PROPS,
+} from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { SelectOption } from "@/types/SelectOption";
@@ -10,7 +14,6 @@ import type { RepositoryProfile } from "../../types";
 import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { handleCellProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface RepositoryProfileListProps {
   readonly repositoryProfiles: RepositoryProfile[];
@@ -43,8 +46,13 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
   const columns = useMemo<Column<RepositoryProfile>[]>(
     () => [
       {
-        accessor: "title",
-        Header: "Title",
+        ...LIST_TITLE_COLUMN_PROPS,
+        Cell: ({ row }: CellProps<RepositoryProfile>) => (
+          <ListTitle>
+            {row.original.title}
+            <span className="u-text--muted">{row.original.name}</span>
+          </ListTitle>
+        ),
       },
       {
         accessor: "description",

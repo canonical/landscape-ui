@@ -1,9 +1,9 @@
+import { removalProfiles } from "@/tests/mocks/removalProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import SingleRemovalProfileForm from "./SingleRemovalProfileForm";
-import { removalProfiles } from "@/tests/mocks/removalProfiles";
 
 const [profile] = removalProfiles;
 const user = userEvent.setup();
@@ -12,7 +12,7 @@ describe("SingleRemovalProfileForm", () => {
   it("submits correctly in add mode", async () => {
     renderWithProviders(<SingleRemovalProfileForm action="add" />);
 
-    await user.type(screen.getByLabelText(/name/i), "New removal profile");
+    await user.type(screen.getByLabelText(/title/i), "New removal profile");
     await user.type(screen.getByLabelText(/removal timeframe/i), "15");
     await user.click(
       screen.getByRole("button", { name: /add removal profile/i }),
@@ -24,7 +24,7 @@ describe("SingleRemovalProfileForm", () => {
       <SingleRemovalProfileForm action="edit" profile={profile} />,
     );
 
-    const input = screen.getByLabelText(/name/i);
+    const input = screen.getByLabelText(/title/i);
     await user.clear(input);
     await user.type(input, "Updated profile");
 

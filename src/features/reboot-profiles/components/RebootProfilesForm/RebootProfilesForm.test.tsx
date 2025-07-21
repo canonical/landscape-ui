@@ -1,9 +1,9 @@
+import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import RebootProfilesForm from "./RebootProfilesForm";
-import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
 
 const [profile] = rebootProfiles;
 
@@ -13,7 +13,7 @@ describe("RebootProfilesForm", () => {
   it("submits with correct values for add action", async () => {
     renderWithProviders(<RebootProfilesForm action="add" />);
 
-    await user.type(screen.getByLabelText(/Name/i), "New Test Profile");
+    await user.type(screen.getByLabelText(/title/i), "New Test Profile");
 
     const dayCombobox = screen.getByRole("combobox", {
       name: /days/i,
@@ -36,7 +36,7 @@ describe("RebootProfilesForm", () => {
   it("submits with correct values for edit action", async () => {
     renderWithProviders(<RebootProfilesForm action="edit" profile={profile} />);
 
-    const nameInput = screen.getByLabelText(/Name/i);
+    const nameInput = screen.getByLabelText(/title/i);
     await user.clear(nameInput);
     await user.type(nameInput, "Updated title");
 

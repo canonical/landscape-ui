@@ -98,7 +98,10 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
 
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>
-          <InfoItem label="Name" value={profile.title} />
+          <InfoItem label="Title" value={profile.title} />
+        </Col>
+        <Col size={6}>
+          <InfoItem label="Name" value={profile.name} />
         </Col>
         <Col size={6}>
           <InfoItem
@@ -164,7 +167,7 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
         confirmButtonLoading={isRemoving}
         onConfirm={handleRemoveUpgradeProfile}
         close={handleCloseModal}
-        confirmationText={`remove ${profile.name}`}
+        confirmationText={`remove ${profile.title}`}
       >
         <p>
           This will remove &quot;{profile.title}&quot; upgrade profile. This

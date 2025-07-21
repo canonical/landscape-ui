@@ -11,7 +11,7 @@ export const securityProfiles: SecurityProfile[] = [
     retention_period: 0,
     tailoring_file_uri: null,
     title: "CIS 2 laptop compliance",
-    name: "CIS 2 laptop compliance",
+    name: "cis-2-laptop-compliance",
     status: "archived",
     last_run_results: {
       passing: 0,
@@ -40,7 +40,7 @@ export const securityProfiles: SecurityProfile[] = [
     modification_time: "",
     retention_period: 0,
     tailoring_file_uri: null,
-    name: "DISA STIG for Ubuntu 20.04 Compliance Assessment",
+    name: "disa-stig-for-ubuntu-20.04-compliance-assessment",
     title: "DISA STIG for Ubuntu 20.04 Compliance Assessment",
     status: "active",
     last_run_results: {
@@ -70,7 +70,7 @@ export const securityProfiles: SecurityProfile[] = [
     modification_time: "",
     retention_period: 0,
     tailoring_file_uri: null,
-    name: "Ubuntu 20.04 Security Hardening Checklist Audit",
+    name: "ubuntu-20.04-security-hardening-checklist-audit",
     title: "Ubuntu 20.04 Security Hardening Checklist Audit",
     status: "over-limit",
     last_run_results: {
@@ -100,7 +100,7 @@ export const securityProfiles: SecurityProfile[] = [
     modification_time: "",
     retention_period: 0,
     tailoring_file_uri: null,
-    name: "Ubuntu 20.04 LTS Security Configuration Compliance",
+    name: "ubuntu-20.04-lts-security-configuration-compliance",
     title: "Ubuntu 20.04 LTS Security Configuration Compliance",
     status: "over-limit",
     last_run_results: {
@@ -130,7 +130,7 @@ export const securityProfiles: SecurityProfile[] = [
     modification_time: "",
     retention_period: 0,
     tailoring_file_uri: null,
-    name: "CIS Ubuntu Linux 20.04 LTS Benchmark Compliance 1",
+    name: "cis-ubuntu-linux-20.04-lts-benchmark-compliance-1",
     title: "CIS Ubuntu Linux 20.04 LTS Benchmark Compliance 1",
     status: "active",
     last_run_results: {
@@ -160,7 +160,7 @@ export const securityProfiles: SecurityProfile[] = [
     modification_time: "",
     retention_period: 0,
     tailoring_file_uri: null,
-    name: "CIS Ubuntu Linux 20.04 LTS Benchmark Compliance 2",
+    name: "cis-ubuntu-linux-20.04-lts-benchmark-compliance-2",
     title: "CIS Ubuntu Linux 20.04 LTS Benchmark Compliance 2",
     status: "archived",
     last_run_results: {
@@ -190,7 +190,7 @@ export const securityProfiles: SecurityProfile[] = [
     modification_time: "",
     retention_period: 0,
     tailoring_file_uri: null,
-    name: "CIS Ubuntu Linux 20.04 LTS Benchmark Compliance 3",
+    name: "cis-ubuntu-linux-20.04-lts-benchmark-compliance-3",
     title: "CIS Ubuntu Linux 20.04 LTS Benchmark Compliance 3",
     status: "archived",
     last_run_results: {

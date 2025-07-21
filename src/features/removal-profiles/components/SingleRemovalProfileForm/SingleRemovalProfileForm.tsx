@@ -104,7 +104,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        label="Name"
+        label="Title"
         required={props.action === "add"}
         {...formik.getFieldProps("title")}
         error={

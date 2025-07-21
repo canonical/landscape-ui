@@ -5,13 +5,13 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { useWslProfiles } from "../../hooks";
 import type { WslProfile } from "../../types";
 import classes from "./WslProfileDetails.module.scss";
-import { pluralize } from "@/utils/_helpers";
 
 const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
 const WslProfileInstallForm = lazy(
@@ -114,18 +114,19 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
       </div>
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>
-          <InfoItem label="name" value={profile.title} />
+          <InfoItem label="title" value={profile.title} />
         </Col>
         <Col size={6}>
-          <InfoItem
-            label="access group"
-            value={
-              accessGroupOptions.find(
-                ({ value }) => value === profile.access_group,
-              )?.label ?? profile.access_group
-            }
-          />
+          <InfoItem label="name" value={profile.name} />
         </Col>
+        <InfoItem
+          label="access group"
+          value={
+            accessGroupOptions.find(
+              ({ value }) => value === profile.access_group,
+            )?.label ?? profile.access_group
+          }
+        />
         <InfoItem label="description" value={profile.description} />
         <div className={classes.block}>
           <InfoItem label="rootfs image name" value={profile.image_name} />
@@ -184,7 +185,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
         confirmButtonAppearance="negative"
         confirmButtonDisabled={isRemoving}
         confirmButtonLoading={isRemoving}
-        confirmationText={`remove ${profile.name}`}
+        confirmationText={`remove ${profile.title}`}
       >
         <p>
           Removing this profile will affect{" "}

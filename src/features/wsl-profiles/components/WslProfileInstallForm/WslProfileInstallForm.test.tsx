@@ -3,8 +3,8 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import WslProfileInstallForm from "./WslProfileInstallForm";
 import { FILE_INPUT_HELPER_TEXT } from "../constants";
+import WslProfileInstallForm from "./WslProfileInstallForm";
 
 describe("WslProfileInstallForm", () => {
   const testProfile = wslProfiles[0];
@@ -15,7 +15,7 @@ describe("WslProfileInstallForm", () => {
     );
 
     expect(container).toHaveTexts([
-      "Name",
+      "Title",
       "Access group",
       "RootFS image",
       "Cloud-init",

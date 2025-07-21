@@ -1,16 +1,16 @@
-import { renderWithProviders } from "@/tests/render";
+import { getTestErrorParams } from "@/tests/mocks/error";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
+import { renderWithProviders } from "@/tests/render";
+import type { ApiError } from "@/types/api/ApiError";
+import type { UseMutationResult } from "@tanstack/react-query";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { UseMutationResult } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiError } from "@/types/api/ApiError";
+import type { Mock } from "vitest";
 import type { EditPackageProfileParams } from "../../hooks";
 import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";
-import type { Mock } from "vitest";
 import PackageProfileEditForm from "./PackageProfileEditForm";
-import { getTestErrorParams } from "@/tests/mocks/error";
 
 describe("PackageProfileEditForm", () => {
   vi.mock("../../hooks");
@@ -40,7 +40,7 @@ describe("PackageProfileEditForm", () => {
   });
 
   it("should render all form's fields", async () => {
-    expect(screen.getByRole("textbox", { name: /name/i })).toHaveValue(
+    expect(screen.getByRole("textbox", { name: /title/i })).toHaveValue(
       packageProfiles[0].title,
     );
     expect(screen.getByRole("textbox", { name: /description/i })).toHaveValue(
@@ -69,7 +69,7 @@ describe("PackageProfileEditForm", () => {
 
   it("should show error message if trying to submit an empty required field", async () => {
     const errorMessage = "This field is required";
-    const nameInput = screen.getByRole("textbox", { name: /name/i });
+    const nameInput = screen.getByRole("textbox", { name: /title/i });
     const submitButton = screen.getByRole("button", { name: /save changes/i });
 
     expect(screen.queryByText(errorMessage)).not.toBeInTheDocument();
@@ -101,7 +101,7 @@ describe("PackageProfileEditForm", () => {
   it("should show error notification if editPackageProfile throws an error", async () => {
     expect(screen.queryByText(testErrorMessage)).not.toBeInTheDocument();
 
-    const nameInput = screen.getByRole("textbox", { name: /name/i });
+    const nameInput = screen.getByRole("textbox", { name: /title/i });
 
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, "error");

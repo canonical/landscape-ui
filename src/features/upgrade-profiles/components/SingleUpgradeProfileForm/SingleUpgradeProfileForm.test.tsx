@@ -1,8 +1,8 @@
-import { screen } from "@testing-library/react";
-import { renderWithProviders } from "@/tests/render";
-import SingleUpgradeProfileForm from "./SingleUpgradeProfileForm";
-import userEvent from "@testing-library/user-event";
 import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import SingleUpgradeProfileForm from "./SingleUpgradeProfileForm";
 
 describe("SingleUpgradeProfileForm", () => {
   it("should render initial form state", async () => {
@@ -11,7 +11,7 @@ describe("SingleUpgradeProfileForm", () => {
     );
 
     expect(container).toHaveTexts([
-      "Name",
+      "Title",
       "Only upgrade security issues",
       "Remove packages that are no longer needed",
       "Access group",
@@ -39,7 +39,7 @@ describe("SingleUpgradeProfileForm", () => {
 
     renderWithProviders(<SingleUpgradeProfileForm action="add" />);
 
-    const nameInput = screen.getByLabelText(/name/i);
+    const nameInput = screen.getByLabelText(/title/i);
     const securityIssuesOnlyCheckbox = screen.getByLabelText(
       "Only upgrade security issues",
     );

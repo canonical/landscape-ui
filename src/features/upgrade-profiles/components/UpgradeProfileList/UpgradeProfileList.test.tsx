@@ -1,7 +1,7 @@
-import type { ComponentProps } from "react";
-import { screen, waitFor } from "@testing-library/react";
 import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
+import { screen, waitFor } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import UpgradeProfileList from "./UpgradeProfileList";
 
 const props: ComponentProps<typeof UpgradeProfileList> = {
@@ -35,7 +35,7 @@ describe("UpgradeProfileList", () => {
   });
 
   it("should filter profiles by search", () => {
-    const searchText = upgradeProfiles[0].name;
+    const searchText = upgradeProfiles[0].title;
 
     renderWithProviders(
       <UpgradeProfileList {...props} />,
@@ -46,7 +46,7 @@ describe("UpgradeProfileList", () => {
     expect(screen.getByText(searchText)).toBeInTheDocument();
 
     upgradeProfiles
-      .filter(({ name }) => !name.includes(searchText))
+      .filter(({ title }) => !title.includes(searchText))
       .forEach((profile) => {
         expect(screen.queryByText(profile.title)).not.toBeInTheDocument();
       });

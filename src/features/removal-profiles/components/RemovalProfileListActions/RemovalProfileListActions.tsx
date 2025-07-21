@@ -92,7 +92,7 @@ const RemovalProfileListActions: FC<RemovalProfileListActionsProps> = ({
       <TextConfirmationModal
         isOpen={isModalOpen}
         title="Remove package profile"
-        confirmationText={`remove ${profile.name}`}
+        confirmationText={`remove ${profile.title}`}
         confirmButtonLabel="Remove"
         confirmButtonAppearance="negative"
         confirmButtonDisabled={isRemoving}

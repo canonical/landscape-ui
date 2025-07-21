@@ -1,6 +1,11 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
 .textContainer {
   align-items: center;
   display: flex;
@@ -72,11 +77,6 @@
   border-left: 1px solid $colors--theme--border-default;
 }
 
-.nameCell {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .status {
   width: 10rem;
 }
@@ -96,10 +96,4 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.ellipsisButton {
-  max-width: 75%;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }

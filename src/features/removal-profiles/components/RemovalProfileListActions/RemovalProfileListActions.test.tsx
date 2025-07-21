@@ -38,7 +38,7 @@ describe("RemovalProfileListActions", () => {
     const modalDeleteBtn = screen.getByRole("button", { name: "Remove" });
     expect(modalDeleteBtn).toBeDisabled();
 
-    await user.type(screen.getByRole("textbox"), `remove ${profile.name}`);
+    await user.type(screen.getByRole("textbox"), `remove ${profile.title}`);
     expect(modalDeleteBtn).toBeEnabled();
   });
 });

@@ -59,7 +59,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        label="Name"
+        label="Title"
         {...formik.getFieldProps("title")}
         error={
           formik.touched.title && formik.errors.title

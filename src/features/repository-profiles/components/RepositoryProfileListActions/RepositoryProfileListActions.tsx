@@ -90,7 +90,7 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
       />
       <TextConfirmationModal
         isOpen={isModalOpen}
-        confirmationText={`remove ${profile.name}`}
+        confirmationText={`remove ${profile.title}`}
         title="Remove repository profile"
         confirmButtonLabel="Remove"
         confirmButtonAppearance="negative"

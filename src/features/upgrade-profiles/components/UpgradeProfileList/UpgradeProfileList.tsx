@@ -1,6 +1,12 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import ListTitle, {
+  LIST_TITLE_COLUMN_PROPS,
+} from "@/components/layout/ListTitle";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -11,10 +17,7 @@ import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { UpgradeProfile } from "../../types";
 import UpgradeProfileListActions from "../UpgradeProfileListActions";
-import { useExpandableRow } from "@/hooks/useExpandableRow";
-import TruncatedCell from "@/components/layout/TruncatedCell";
 import { getCellProps, getRowProps } from "./helpers";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const UpgradeProfileDetails = lazy(
   async () => import("../UpgradeProfileDetails"),
@@ -64,19 +67,22 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
   const columns = useMemo<Column<UpgradeProfile>[]>(
     () => [
       {
-        accessor: "name",
-        Header: "Name",
+        ...LIST_TITLE_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => {
-              handleUpgradeProfileDetailsOpen(original);
-            }}
-          >
-            {original.title}
-          </Button>
+          <ListTitle>
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              onClick={() => {
+                handleUpgradeProfileDetailsOpen(original);
+              }}
+            >
+              {original.title}
+            </Button>
+
+            <span className="u-text--muted">{original.name}</span>
+          </ListTitle>
         ),
       },
       {

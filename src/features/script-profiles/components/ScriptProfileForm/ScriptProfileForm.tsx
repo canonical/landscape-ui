@@ -231,7 +231,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     <Form noValidate onSubmit={formik.handleSubmit}>
       <Input
         type="text"
-        label="Name"
+        label="Title"
         required
         {...formik.getFieldProps("title")}
         error={getFormikError(formik, "title")}

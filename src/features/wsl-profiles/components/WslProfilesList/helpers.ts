@@ -1,6 +1,6 @@
-import type { WslProfile } from "../../types";
 import type { HTMLProps } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
+import type { WslProfile } from "../../types";
 
 export const getCellProps = (expandedRowIndex: number | null) => {
   return ({
@@ -13,7 +13,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
       {};
 
     switch (column.id) {
-      case "name":
+      case "title":
         cellProps.role = "rowheader";
         break;
       case "access_group":

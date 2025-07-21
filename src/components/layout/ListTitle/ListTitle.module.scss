@@ -1,0 +1,18 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+
+  * {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

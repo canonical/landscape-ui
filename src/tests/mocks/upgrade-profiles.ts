@@ -3,7 +3,7 @@ import type { UpgradeProfile } from "@/features/upgrade-profiles";
 export const upgradeProfiles: UpgradeProfile[] = [
   {
     id: 12,
-    title: "test",
+    title: "Test",
     name: "test",
     access_group: "global",
     upgrade_type: "security",
@@ -19,7 +19,7 @@ export const upgradeProfiles: UpgradeProfile[] = [
   },
   {
     id: 1,
-    title: "web-daily",
+    title: "Web daily",
     name: "web-daily",
     access_group: "global",
     upgrade_type: "all",

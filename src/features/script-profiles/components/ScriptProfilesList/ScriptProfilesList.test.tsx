@@ -1,11 +1,11 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import ScriptProfileList from "./ScriptProfilesList";
-import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { getTriggerText } from "../../helpers";
+import ScriptProfileList from "./ScriptProfilesList";
 
 describe("ScriptProfileList", () => {
   const user = userEvent.setup();
@@ -20,7 +20,7 @@ describe("ScriptProfileList", () => {
 
     const table = screen.getByRole("table");
     expect(table).toHaveTexts([
-      "Name",
+      "Title",
       "Status",
       "Associated instances",
       "Tags",

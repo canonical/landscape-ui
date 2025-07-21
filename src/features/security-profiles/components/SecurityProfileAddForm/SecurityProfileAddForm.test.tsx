@@ -9,7 +9,7 @@ describe("SecurityProfileAddForm", () => {
     renderWithProviders(<SecurityProfileAddForm onSuccess={() => undefined} />);
 
     await userEvent.type(
-      screen.getByRole("textbox", { name: "Profile name" }),
+      screen.getByRole("textbox", { name: "Title" }),
       "Name",
     );
 
