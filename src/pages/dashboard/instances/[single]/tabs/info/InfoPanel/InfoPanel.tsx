@@ -233,15 +233,16 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   };
 
   const handleTagsUpdate = async () => {
-    const getProfileChangesResponse = await refetchProfileChanges();
+    if (addedTags.length) {
+      const getProfileChangesResponse = await refetchProfileChanges();
 
-    if (!getProfileChangesResponse.isSuccess) {
-      debug(getProfileChangesResponse.error);
-      return;
-    }
-
-    if (getProfileChangesResponse.data.data.count) {
-      setIsModalVisible("tags");
+      if (!getProfileChangesResponse.isSuccess) {
+        debug(getProfileChangesResponse.error);
+      } else if (getProfileChangesResponse.data.data.count) {
+        setIsModalVisible("tags");
+      } else {
+        await updateTags();
+      }
     } else {
       await updateTags();
     }
