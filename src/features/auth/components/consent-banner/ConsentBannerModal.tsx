@@ -1,13 +1,14 @@
 import type { FC } from "react";
-import { useState } from "react";
 import { Button, CheckboxInput, Modal } from "@canonical/react-components";
+import { useBoolean } from "usehooks-ts";
 
 interface ConsentBannerProps {
   readonly onClose: () => void;
 }
 
 const ConsentBannerModal: FC<ConsentBannerProps> = ({ onClose }) => {
-  const [consentAcknowledged, setConsentAcknowledged] = useState(false);
+  const { value: consentAcknowledged, toggle: toggleAcknowledged } =
+    useBoolean();
 
   return (
     <Modal
@@ -63,9 +64,7 @@ const ConsentBannerModal: FC<ConsentBannerProps> = ({ onClose }) => {
           <CheckboxInput
             inline
             label="I acknowledge that I have read and understood the above consent notice."
-            onChange={() => {
-              setConsentAcknowledged(!consentAcknowledged);
-            }}
+            onChange={toggleAcknowledged}
           />
         </p>
       </section>

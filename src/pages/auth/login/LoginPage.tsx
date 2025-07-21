@@ -1,16 +1,16 @@
 import type { FC } from "react";
-import { useState } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { LoginMethodsLayout, useUnsigned } from "@/features/auth";
 import AuthTemplate from "@/templates/auth";
 import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 import useEnv from "@/hooks/useEnv";
 import ConsentBannerModal from "../../../features/auth/components/consent-banner";
+import { useBoolean } from "usehooks-ts";
 
 const LoginPage: FC = () => {
   const { getLoginMethodsQuery } = useUnsigned();
   const { displayDisaStigBanner } = useEnv();
-  const [bannerHidden, setBannerHidden] = useState(false);
+  const { value: bannerHidden, setTrue: hideBanner } = useBoolean();
 
   const {
     data: getLoginMethodsQueryResult,
@@ -21,11 +21,7 @@ const LoginPage: FC = () => {
   return (
     <>
       {!bannerHidden && displayDisaStigBanner && (
-        <ConsentBannerModal
-          onClose={() => {
-            setBannerHidden(true);
-          }}
-        />
+        <ConsentBannerModal onClose={hideBanner} />
       )}
       <AuthTemplate title="Sign in to Landscape">
         {isLoading ? (
