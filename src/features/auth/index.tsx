@@ -7,6 +7,7 @@ export { default as AvailableProviderList } from "./components/AvailableProvider
 export { default as LoginForm } from "./components/LoginForm";
 export { default as ProvidersEmptyState } from "./components/ProvidersEmptyState";
 export { default as ProviderList } from "./components/ProviderList";
+export { default as ConsentBannerModal } from "./components/consent-banner/ConsentBannerModal";
 export { redirectToExternalUrl } from "./helpers";
 export { useAuthHandle, useUnsigned, useInvitation } from "./hooks";
 export { getProviderIcon } from "./helpers";

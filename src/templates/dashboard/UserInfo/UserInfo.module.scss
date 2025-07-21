@@ -27,11 +27,6 @@
   &::after {
     margin-top: $spv--x-small !important;
   }
-
-  &:focus,
-  &:hover {
-    background-color: $colors--theme--background-alt !important;
-  }
 }
 
 .icon {
@@ -70,10 +65,5 @@
     &::after {
       transform: rotate(-90deg);
     }
-  }
-
-  &:focus,
-  &:hover {
-    background-color: $colors--theme--background-alt !important;
   }
 }

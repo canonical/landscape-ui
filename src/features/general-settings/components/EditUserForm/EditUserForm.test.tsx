@@ -17,6 +17,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUserGeneralSettings } from "../../hooks";
 import type { EditUserDetailsParams, UserDetails } from "../../types";
 import EditUserForm from "./EditUserForm";
+import type { EnvContextState } from "@/context/env";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
@@ -64,20 +65,22 @@ const authContextValues: AuthContextProps = {
   isFeatureEnabled: vi.fn(),
 };
 
-const mockSelfHosted = {
+const mockSelfHosted: EnvContextState = {
   envLoading: false,
   isSaas: false,
   isSelfHosted: true,
   packageVersion: "",
   revision: "",
+  displayDisaStigBanner: false,
 };
 
-const mockSaas = {
+const mockSaas: EnvContextState = {
   envLoading: false,
   isSaas: true,
   isSelfHosted: false,
   packageVersion: "",
   revision: "",
+  displayDisaStigBanner: false,
 };
 
 describe("EditUserForm", () => {
