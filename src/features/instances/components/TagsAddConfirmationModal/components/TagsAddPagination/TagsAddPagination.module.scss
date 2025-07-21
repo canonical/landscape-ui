@@ -1,0 +1,17 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.pagination {
+  border-top: 1px solid $colors--theme--border-default;
+  display: flex;
+  justify-content: end;
+  margin-top: $spv--medium;
+  padding-bottom: $spv--medium;
+  padding-top: $spv--medium;
+}
+
+.inner {
+  align-items: center;
+  display: flex;
+  gap: $spv--medium;
+}

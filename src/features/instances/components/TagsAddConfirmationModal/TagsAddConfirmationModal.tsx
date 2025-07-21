@@ -4,17 +4,16 @@ import { useGetProfileChanges } from "@/features/tags";
 import type { Instance } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import {
-  Button,
   ConfirmationModal,
   Icon,
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
-import { useMemo, type ComponentProps, type FC } from "react";
+import { type ComponentProps, type FC, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useCounter } from "usehooks-ts";
 import { PAGE_SIZE } from "./constants";
-import classes from "./TagsAddConfirmationModal.module.scss";
+import TagsAddPagination from "./components/TagsAddPagination";
 
 interface TagsAddConfirmationModalProps
   extends Omit<
@@ -150,30 +149,14 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
         />
       )}
 
-      <hr />
-
-      <div className={classes.pagination}>
-        <div>
-          <Button
-            className="u-no-margin--right"
-            appearance="base"
-            hasIcon
-            onClick={decrementCurrentPage}
-            disabled={currentPage <= 1}
-          >
-            <Icon name="chevron-left" />
-          </Button>
-          Page {currentPage} of {maximumPage}
-          <Button
-            appearance="base"
-            hasIcon
-            onClick={incrementCurrentPage}
-            disabled={currentPage >= maximumPage}
-          >
-            <Icon name="chevron-right" />
-          </Button>
-        </div>
-      </div>
+      {maximumPage > 1 && (
+        <TagsAddPagination
+          max={maximumPage}
+          current={currentPage}
+          onPrev={decrementCurrentPage}
+          onNext={incrementCurrentPage}
+        />
+      )}
     </ConfirmationModal>
   );
 };
