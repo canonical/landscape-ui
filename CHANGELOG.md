@@ -1,3 +1,19 @@
+# [1.15.0](https://github.com/canonical/landscape-ui/compare/v1.14.1...v1.15.0) (2025-07-21)
+
+
+### Bug Fixes
+
+* allow copy-and-paste in text confirmation modals ([#302](https://github.com/canonical/landscape-ui/issues/302)) ([5fc76ff](https://github.com/canonical/landscape-ui/commit/5fc76ff6bd75c673adc90280da84f98ce767ea1b))
+* remove extra security profile api call ([#296](https://github.com/canonical/landscape-ui/issues/296)) ([5c57469](https://github.com/canonical/landscape-ui/commit/5c574697e75b37b8e02728e90593c71f57045f30))
+* show scripts warning ([#293](https://github.com/canonical/landscape-ui/issues/293)) ([3ae8b19](https://github.com/canonical/landscape-ui/commit/3ae8b1964b0ab705ffcade72280912ae72e3e261))
+
+
+### Features
+
+* add dark mode ([#297](https://github.com/canonical/landscape-ui/issues/297)) ([7b584ef](https://github.com/canonical/landscape-ui/commit/7b584ef12dccb258b224a6dce10ca5058de245c3))
+* add disa stig consent banner when enabled ([#295](https://github.com/canonical/landscape-ui/issues/295)) ([455e3eb](https://github.com/canonical/landscape-ui/commit/455e3ebdff6ffefc3ede58c35e538ff9c5400c58))
+* add support provider login page ([#294](https://github.com/canonical/landscape-ui/issues/294)) ([527292e](https://github.com/canonical/landscape-ui/commit/527292e671deb911b440acaf00b2d06cf7c730a9))
+
 ## [1.14.1](https://github.com/canonical/landscape-ui/compare/v1.14.0...v1.14.1) (2025-07-01)
 
 
