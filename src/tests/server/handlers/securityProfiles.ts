@@ -30,7 +30,7 @@ export default [
       const passRate = Math.round(rawPassRate);
 
       return (
-        securityProfile.name.startsWith(search) &&
+        securityProfile.title.startsWith(search) &&
         (!status || status == securityProfile.status) &&
         passRate >= passRateFrom &&
         passRate <= passRateTo
@@ -43,7 +43,7 @@ export default [
         offset,
         limit,
         search,
-        searchFields: ["name"],
+        searchFields: ["title"],
       }),
     );
   }),

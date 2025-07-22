@@ -1,10 +1,10 @@
-import { screen } from "@testing-library/react";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
-import UpgradeProfileDetails from "./UpgradeProfileDetails";
-import { getScheduleInfo } from "../UpgradeProfileDetails/helpers";
 import { pluralize } from "@/utils/_helpers";
+import { screen } from "@testing-library/react";
+import { getScheduleInfo } from "../UpgradeProfileDetails/helpers";
+import UpgradeProfileDetails from "./UpgradeProfileDetails";
 
 describe("UpgradeProfileDetails", () => {
   const [testProfile] = upgradeProfiles;
@@ -13,7 +13,7 @@ describe("UpgradeProfileDetails", () => {
 
   const itemsToCheck = [
     {
-      label: "Name",
+      label: "Title",
       value: testProfile.title,
     },
     {

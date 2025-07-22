@@ -6,7 +6,7 @@ import SecurityProfilesContainer from "./SecurityProfilesContainer";
 
 describe("SecurityProfilesContainer", () => {
   it("should filter security profiles that match the search text", async () => {
-    const searchText = securityProfiles[0].name.charAt(0);
+    const searchText = securityProfiles[0].title.charAt(0);
 
     renderWithProviders(
       <SecurityProfilesContainer hideRetentionNotification={() => undefined} />,
@@ -16,20 +16,14 @@ describe("SecurityProfilesContainer", () => {
 
     await expectLoadingState();
 
-    for (const profile of securityProfiles.filter(({ title }) =>
-      title.startsWith(searchText),
-    )) {
-      expect(
-        screen.getByRole("button", { name: profile.title }),
-      ).toBeInTheDocument();
-    }
+    for (const profile of securityProfiles) {
+      const button = screen.queryByRole("button", { name: profile.title });
 
-    for (const profile of securityProfiles.filter(
-      ({ title }) => !title.startsWith(searchText),
-    )) {
-      expect(
-        screen.queryByRole("button", { name: profile.title }),
-      ).not.toBeInTheDocument();
+      if (profile.title.startsWith(searchText)) {
+        expect(button).toBeInTheDocument();
+      } else {
+        expect(button).not.toBeInTheDocument();
+      }
     }
   });
 });
