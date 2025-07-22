@@ -47,6 +47,11 @@ const HeaderActions: FC<HeaderActionsProps> = ({
 
   const [previousWidth, setPreviousWidth] = useState(0);
 
+  const hasMultipleCollapsedActions =
+    nondestructiveActions.filter((action) => action.collapsed).length +
+      destructiveActions.filter((action) => action.collapsed).length >
+    1;
+
   const visibleCheck = (element: HTMLElement, parentElement: HTMLElement) => {
     if (
       collapsedActions.destructive.length ||
@@ -59,8 +64,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
       (!element.lastElementChild ||
         element.lastElementChild.getBoundingClientRect().right <=
           parentElement.getBoundingClientRect().right) &&
-      nondestructiveActions.every((action) => !action.collapsed) &&
-      destructiveActions.every((action) => !action.collapsed)
+      !hasMultipleCollapsedActions
     ) {
       setIsCollapsedButtonVisible(false);
       return;
@@ -78,7 +82,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
       if (
         element.children[index].getBoundingClientRect().right >
           element.getBoundingClientRect().right ||
-        action.collapsed
+        (action.collapsed && hasMultipleCollapsedActions)
       ) {
         newCollapsedActions.nondestructive.push(action);
       } else {
@@ -92,7 +96,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
       if (
         element.children[index].getBoundingClientRect().right >
           element.getBoundingClientRect().right ||
-        action.collapsed
+        (action.collapsed && hasMultipleCollapsedActions)
       ) {
         newCollapsedActions.destructive.push(action);
       } else {

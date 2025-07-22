@@ -40,11 +40,11 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
   const filteredWslInstances = useMemo(() => {
     if (!search) {
       return wslInstances;
+    } else {
+      return wslInstances.filter(({ name }) =>
+        name.toLowerCase().includes(search.toLowerCase()),
+      );
     }
-
-    return wslInstances.filter(({ name }) =>
-      name.toLowerCase().includes(search.toLowerCase()),
-    );
   }, [wslInstances, search]);
 
   const {
@@ -69,18 +69,18 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
                   <span className="u-off-screen">Toggle all instances</span>
                 }
                 checked={
-                  wslInstances.length > 0 &&
-                  selectedWslInstances.length === wslInstances.length
+                  filteredWslInstances.length > 0 &&
+                  selectedWslInstances.length === filteredWslInstances.length
                 }
                 indeterminate={
                   selectedWslInstances.length > 0 &&
-                  selectedWslInstances.length < wslInstances.length
+                  selectedWslInstances.length < filteredWslInstances.length
                 }
-                disabled={wslInstances.length === 0}
+                disabled={filteredWslInstances.length === 0}
                 onChange={() => {
                   setSelectedWslInstances(
-                    selectedWslInstances.length < wslInstances.length
-                      ? wslInstances
+                    selectedWslInstances.length < filteredWslInstances.length
+                      ? filteredWslInstances
                       : [],
                   );
                 }}
@@ -125,7 +125,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
             original.actions,
         },
       ].filter((column) => column !== null),
-    [wslInstances, selectedWslInstances],
+    [filteredWslInstances, selectedWslInstances],
   );
 
   const createRow = (instances: InstanceChild[]) => {
@@ -189,23 +189,23 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
     });
   };
 
-  const noncompliantWslInstances = wslInstances.filter(
+  const noncompliantWslInstances = filteredWslInstances.filter(
     (wslInstance) => wslInstance.compliance === "noncompliant",
   );
 
-  const uninstalledWslInstances = wslInstances.filter(
+  const uninstalledWslInstances = filteredWslInstances.filter(
     (wslInstance) => wslInstance.compliance === "uninstalled",
   );
 
-  const compliantWslInstances = wslInstances.filter(
+  const compliantWslInstances = filteredWslInstances.filter(
     (wslInstance) => wslInstance.compliance === "compliant",
   );
 
-  const registeredWslInstances = wslInstances.filter(
+  const registeredWslInstances = filteredWslInstances.filter(
     (wslInstance) => wslInstance.registered,
   );
 
-  const unregisteredWslInstances = wslInstances.filter(
+  const unregisteredWslInstances = filteredWslInstances.filter(
     (wslInstance) => wslInstance.compliance === "unregistered",
   );
 
@@ -278,7 +278,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
                 },
                 ...createRow(unregisteredWslInstances),
               ]
-            : createRow(wslInstances)
+            : createRow(filteredWslInstances)
         }
         emptyMsg="No WSL instances found according to your search parameters."
       />

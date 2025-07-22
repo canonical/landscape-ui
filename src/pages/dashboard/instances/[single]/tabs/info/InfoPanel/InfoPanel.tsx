@@ -328,157 +328,166 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         />
       </div>
 
-      <h5 className="u-no-margin--bottom">Instance status</h5>
+      <section>
+        <h5 className="u-no-margin--bottom">Instance status</h5>
 
-      <Row className="u-no-padding u-no-margin">
-        <Col size={3}>
-          <InfoItem
-            label="Status"
-            value={
-              <div className={classes.status}>
-                <Icon name={getStatusCellIconAndLabel(instance).icon ?? ""} />
-                <span>{getStatusCellIconAndLabel(instance).label}</span>
-              </div>
-            }
-          />
-        </Col>
-
-        <Col size={3}>
-          <InfoItem
-            label="Last ping time"
-            value={
-              moment(instance.last_ping_time).isValid() ? (
-                moment(instance.last_ping_time).format(DISPLAY_DATE_TIME_FORMAT)
-              ) : (
-                <NoData />
-              )
-            }
-          />
-        </Col>
-
-        <Col size={3}>
-          <InfoItem
-            label="Access group"
-            value={
-              accessGroups.find(
-                (accessGroup) => accessGroup.name === instance.access_group,
-              )?.title || instance.access_group
-            }
-          />
-        </Col>
-      </Row>
-
-      <Row className="u-no-padding u-no-margin">
-        <Col size={3}>
-          <InfoItem
-            type="truncated"
-            label="Profiles"
-            value={
-              instance.profiles?.length ? (
-                <Profiles profiles={instance.profiles} />
-              ) : (
-                <NoData />
-              )
-            }
-          />
-        </Col>
-
-        {getFeatures(instance).employees &&
-          isFeatureEnabled("employee-management") && (
-            <Col size={3}>
-              <InfoItem
-                label="Associated employee"
-                value={employee ? employee.name : <NoData />}
-              />
-            </Col>
-          )}
-      </Row>
-
-      <hr />
-      <h5>Registration details</h5>
-
-      <Row className="u-no-padding u-no-margin">
-        <Col size={3}>
-          <InfoItem label="Hostname" value={instance.hostname ?? <NoData />} />
-        </Col>
-
-        <Col size={3}>
-          <InfoItem label="Instance ID" value={instance.id} />
-        </Col>
-
-        {getFeatures(instance).hardware && (
-          <>
-            <Col size={3}>
-              <InfoItem
-                label="Serial number"
-                value={instance.grouped_hardware?.system.serial ?? <NoData />}
-              />
-            </Col>
-
-            <Col size={3}>
-              <InfoItem
-                label="Product identifier"
-                value={instance.grouped_hardware?.system.model ?? <NoData />}
-              />
-            </Col>
-          </>
-        )}
-      </Row>
-
-      <Row className="u-no-padding u-no-margin">
-        <Col size={3}>
-          <InfoItem
-            label="OS"
-            value={
-              instance.distribution_info ? (
-                instance.distribution_info.description
-              ) : (
-                <NoData />
-              )
-            }
-          />
-        </Col>
-
-        {getFeatures(instance).hardware && (
+        <Row className="u-no-padding u-no-margin">
           <Col size={3}>
             <InfoItem
-              label="IP addresses"
-              type="truncated"
+              label="Status"
               value={
-                Array.isArray(instance.grouped_hardware?.network) ? (
-                  instance.grouped_hardware.network
-                    .map((network) => network.ip)
-                    .join(", ")
+                <div className={classes.status}>
+                  <Icon name={getStatusCellIconAndLabel(instance).icon ?? ""} />
+                  <span>{getStatusCellIconAndLabel(instance).label}</span>
+                </div>
+              }
+            />
+          </Col>
+
+          <Col size={3}>
+            <InfoItem
+              label="Last ping time"
+              value={
+                moment(instance.last_ping_time).isValid() ? (
+                  moment(instance.last_ping_time).format(
+                    DISPLAY_DATE_TIME_FORMAT,
+                  )
                 ) : (
                   <NoData />
                 )
               }
             />
           </Col>
-        )}
 
-        <Col size={3}>
-          <InfoItem
-            label="Registered"
-            value={moment(instance.registered_at).format(
-              DISPLAY_DATE_TIME_FORMAT,
+          <Col size={3}>
+            <InfoItem
+              label="Access group"
+              value={
+                accessGroups.find(
+                  (accessGroup) => accessGroup.name === instance.access_group,
+                )?.title || instance.access_group
+              }
+            />
+          </Col>
+        </Row>
+
+        <Row className="u-no-padding u-no-margin">
+          <Col size={3}>
+            <InfoItem
+              type="truncated"
+              label="Profiles"
+              value={
+                instance.profiles?.length ? (
+                  <Profiles profiles={instance.profiles} />
+                ) : (
+                  <NoData />
+                )
+              }
+            />
+          </Col>
+
+          {getFeatures(instance).employees &&
+            isFeatureEnabled("employee-management") && (
+              <Col size={3}>
+                <InfoItem
+                  label="Associated employee"
+                  value={employee ? employee.name : <NoData />}
+                />
+              </Col>
             )}
-          />
-        </Col>
-      </Row>
+        </Row>
+      </section>
 
-      <hr />
-      <h5>Other</h5>
+      <section className={classes.block}>
+        <h5>Registration details</h5>
 
-      <Row className="u-no-padding u-no-margin">
-        <Col size={3}>
-          <InfoItem label="Annotations" value={<NoData />} />
-        </Col>
+        <Row className="u-no-padding u-no-margin">
+          <Col size={3}>
+            <InfoItem
+              label="Hostname"
+              value={instance.hostname ?? <NoData />}
+            />
+          </Col>
 
-        <Col size={3}>
-          <InfoItem label="Comment" value={instance.comment || <NoData />} />
-        </Col>
-      </Row>
+          <Col size={3}>
+            <InfoItem label="Instance ID" value={instance.id} />
+          </Col>
+
+          {getFeatures(instance).hardware && (
+            <>
+              <Col size={3}>
+                <InfoItem
+                  label="Serial number"
+                  value={instance.grouped_hardware?.system.serial ?? <NoData />}
+                />
+              </Col>
+
+              <Col size={3}>
+                <InfoItem
+                  label="Product identifier"
+                  value={instance.grouped_hardware?.system.model ?? <NoData />}
+                />
+              </Col>
+            </>
+          )}
+        </Row>
+
+        <Row className="u-no-padding u-no-margin">
+          <Col size={3}>
+            <InfoItem
+              label="OS"
+              value={
+                instance.distribution_info ? (
+                  instance.distribution_info.description
+                ) : (
+                  <NoData />
+                )
+              }
+            />
+          </Col>
+
+          {getFeatures(instance).hardware && (
+            <Col size={3}>
+              <InfoItem
+                label="IP addresses"
+                type="truncated"
+                value={
+                  Array.isArray(instance.grouped_hardware?.network) ? (
+                    instance.grouped_hardware.network
+                      .map((network) => network.ip)
+                      .join(", ")
+                  ) : (
+                    <NoData />
+                  )
+                }
+              />
+            </Col>
+          )}
+
+          <Col size={3}>
+            <InfoItem
+              label="Registered"
+              value={moment(instance.registered_at).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )}
+            />
+          </Col>
+        </Row>
+      </section>
+
+      <section className={classes.block}>
+        <h5>Other</h5>
+
+        <Row className="u-no-padding u-no-margin">
+          <Col size={3}>
+            <InfoItem label="Annotations" value={<NoData />} />
+          </Col>
+
+          <Col size={3}>
+            <InfoItem label="Comment" value={instance.comment || <NoData />} />
+          </Col>
+        </Row>
+      </section>
 
       {isRestartModalOpen && (
         <ConfirmationModal

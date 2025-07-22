@@ -17,7 +17,7 @@ const GroupHeader: FC<GroupHeaderProps> = ({
   wslInstances,
 }) => {
   return (
-    <>
+    <div className={classes.groupHeader}>
       <CheckboxInput
         inline
         label={
@@ -51,10 +51,10 @@ const GroupHeader: FC<GroupHeaderProps> = ({
         }}
       />
 
-      <span className={classes.header}>
+      <span className={classes.label}>
         {label} ({wslInstances.length})
       </span>
-    </>
+    </div>
   );
 };
 
