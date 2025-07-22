@@ -1,8 +1,8 @@
 /// <reference types="vitest" />
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import eslint from "vite-plugin-eslint";
 import * as path from "path";
+import { defineConfig } from "vite";
+import eslint from "vite-plugin-eslint";
 import packageJson from "./package.json";
 
 // https://vitejs.dev/config/
@@ -19,7 +19,6 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        api: "modern",
         quietDeps: true,
       },
     },
