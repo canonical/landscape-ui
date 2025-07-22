@@ -24,8 +24,7 @@ const TruncatedInfoItem: FC<TruncatedInfoItemProps> = ({ value, ...props }) => {
       value={
         <div
           className={classNames({
-            [classes.expandedCell]: isExpanded,
-            [classes.expandedRow]: isExpanded,
+            [classes.expanded]: isExpanded,
           })}
           ref={ref}
         >

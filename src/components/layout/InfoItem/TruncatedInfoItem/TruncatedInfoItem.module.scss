@@ -1,13 +1,11 @@
 @import "vanilla-framework/scss/settings_colors";
 
-.expandedCell {
-  overflow: visible;
-  padding: 0;
-}
-
-.expandedRow {
+.expanded {
   background-color: $colors--theme--background-alt;
   filter: drop-shadow(0 4px 8px $colors--theme--background-alt);
+  height: 1.5rem;
+  overflow: visible;
+  padding: 0;
   position: relative;
   z-index: 20;
 }
