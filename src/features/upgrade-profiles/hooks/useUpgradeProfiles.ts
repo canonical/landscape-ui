@@ -27,7 +27,7 @@ export interface CreateUpgradeProfileParams {
 }
 
 interface EditUpgradeProfileParams
-  extends Omit<CreateUpgradeProfileParams, "title"> {
+  extends Omit<CreateUpgradeProfileParams, "access_group" | "title"> {
   name: string;
   title?: string;
 }

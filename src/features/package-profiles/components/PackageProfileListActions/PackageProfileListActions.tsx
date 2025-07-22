@@ -132,7 +132,7 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
         confirmButtonLoading={isRemoving}
         confirmButtonDisabled={isRemoving}
         close={closeModal}
-        confirmationText={`remove ${profile.name}`}
+        confirmationText={`remove ${profile.title}`}
         onConfirm={handleRemovePackageProfile}
       >
         <p>

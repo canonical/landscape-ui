@@ -1,6 +1,12 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import ListTitle, {
+  LIST_TITLE_COLUMN_PROPS,
+} from "@/components/layout/ListTitle";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -10,10 +16,7 @@ import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RemovalProfile } from "../../types";
 import RemovalProfileListActions from "../RemovalProfileListActions";
-import TruncatedCell from "@/components/layout/TruncatedCell";
-import { useExpandableRow } from "@/hooks/useExpandableRow";
 import { getCellProps, getRowProps } from "./helpers";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const RemovalProfileDetails = lazy(
   async () => import("../RemovalProfileDetails"),
@@ -63,20 +66,23 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
   const columns = useMemo<Column<RemovalProfile>[]>(
     () => [
       {
-        accessor: "title",
-        Header: "Name",
+        ...LIST_TITLE_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<RemovalProfile>) => (
-          <Button
-            type="button"
-            appearance="link"
-            onClick={() => {
-              handleRemovalProfileDetailsOpen(original);
-            }}
-            className="u-no-margin--bottom u-no-padding--top"
-            aria-label={`Open "${original.title}" profile details`}
-          >
-            {original.title}
-          </Button>
+          <ListTitle>
+            <Button
+              type="button"
+              appearance="link"
+              onClick={() => {
+                handleRemovalProfileDetailsOpen(original);
+              }}
+              className="u-no-margin--bottom u-no-padding--top u-align--left"
+              aria-label={`Open "${original.title}" profile details`}
+            >
+              {original.title}
+            </Button>
+
+            <span className="u-text--muted">{original.name}</span>
+          </ListTitle>
         ),
       },
       {

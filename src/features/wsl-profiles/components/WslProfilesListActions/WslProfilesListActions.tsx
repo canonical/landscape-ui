@@ -111,7 +111,7 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
         confirmButtonLoading={isRemoving}
         onConfirm={handleRemoveWslProfile}
         close={closeModal}
-        confirmationText={`remove ${profile.name}`}
+        confirmationText={`remove ${profile.title}`}
       >
         <p>
           Removing this profile will affect{" "}

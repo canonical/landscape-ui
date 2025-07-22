@@ -1,10 +1,17 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import ListTitle, {
+  LIST_TITLE_COLUMN_PROPS,
+} from "@/components/layout/ListTitle";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
@@ -14,10 +21,6 @@ import WslProfilesListActions from "../WslProfilesListActions";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
-import { useExpandableRow } from "@/hooks/useExpandableRow";
-import TruncatedCell from "@/components/layout/TruncatedCell";
-import { pluralize } from "@/utils/_helpers";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const WslProfileDetails = lazy(async () => import("../WslProfileDetails"));
 
@@ -65,19 +68,22 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
   const columns = useMemo<Column<WslProfile>[]>(
     () => [
       {
-        accessor: "name",
-        Header: "Name",
+        ...LIST_TITLE_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<WslProfile>) => (
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => {
-              handleWslProfileDetailsOpen(original);
-            }}
-          >
-            {original.title}
-          </Button>
+          <ListTitle>
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align--left"
+              onClick={() => {
+                handleWslProfileDetailsOpen(original);
+              }}
+            >
+              {original.title}
+            </Button>
+
+            <span className="u-text--muted">{original.name}</span>
+          </ListTitle>
         ),
       },
       {

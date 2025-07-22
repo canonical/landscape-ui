@@ -83,7 +83,7 @@ const PackageProfileCreateForm: FC = () => {
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
         type="text"
-        label="Name"
+        label="Title"
         required
         {...formik.getFieldProps("title")}
         error={

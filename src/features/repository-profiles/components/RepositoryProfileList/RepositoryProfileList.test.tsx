@@ -1,10 +1,10 @@
-import { renderWithProviders } from "@/tests/render";
-import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { accessGroups } from "@/tests/mocks/accessGroup";
+import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
+import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { describe, it } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 describe("RepositoryProfileList", () => {
   it("renders table headers and rows", async () => {
@@ -47,7 +47,9 @@ describe("RepositoryProfileList", () => {
     );
 
     expect(
-      screen.getByRole("rowheader", { name: repositoryProfiles[0].title }),
+      screen.getByRole("rowheader", {
+        name: `${repositoryProfiles[0].title} ${repositoryProfiles[0].name}`,
+      }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("rowheader", { name: repositoryProfiles[1].title }),

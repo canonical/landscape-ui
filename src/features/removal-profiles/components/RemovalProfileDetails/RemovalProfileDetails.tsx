@@ -1,16 +1,16 @@
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useRemovalProfiles } from "../../hooks";
 import type { RemovalProfile } from "../../types";
 import classes from "./RemovalProfileDetails.module.scss";
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 const SingleRemovalProfileForm = lazy(
   async () => import("../SingleRemovalProfileForm"),
@@ -96,7 +96,10 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
 
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>
-          <InfoItem label="Name" value={profile.title} />
+          <InfoItem label="Title" value={profile.title} />
+        </Col>
+        <Col size={6}>
+          <InfoItem label="Name" value={profile.name} />
         </Col>
         <Col size={6}>
           <InfoItem
@@ -136,7 +139,7 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
       <TextConfirmationModal
         isOpen={modalOpen}
         title="Remove package profile"
-        confirmationText={`remove ${profile.name}`}
+        confirmationText={`remove ${profile.title}`}
         confirmButtonLabel="Remove"
         confirmButtonAppearance="negative"
         confirmButtonDisabled={isRemoving}

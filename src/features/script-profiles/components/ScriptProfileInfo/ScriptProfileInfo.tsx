@@ -39,7 +39,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
     <>
       <Row className="u-no-padding">
         <Col size={6}>
-          <InfoItem label="Name" value={profile.title} />
+          <InfoItem label="Title" value={profile.title} />
         </Col>
 
         <Col size={6}>

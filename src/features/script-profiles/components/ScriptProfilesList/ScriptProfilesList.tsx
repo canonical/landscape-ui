@@ -119,7 +119,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
   const columns = useMemo<Column<ScriptProfile>[]>(
     () => [
       {
-        Header: "Name",
+        Header: "Title",
         accessor: "title",
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => (
           <Button

@@ -28,7 +28,7 @@ describe("RemovalProfileDetails", () => {
         ?.label ?? profile.access_group;
 
     const fields = [
-      { label: "Name", value: profile.title },
+      { label: "Title", value: profile.title },
       { label: "Access group", value: accessGroup },
       {
         label: "Removal timeframe",
@@ -79,7 +79,7 @@ describe("RemovalProfileDetails", () => {
     const removeButton = screen.getByRole("button", { name: "Remove" });
     expect(removeButton).toBeDisabled();
 
-    await user.type(screen.getByRole("textbox"), `remove ${profile.name}`);
+    await user.type(screen.getByRole("textbox"), `remove ${profile.title}`);
     expect(removeButton).toBeEnabled();
   });
 });

@@ -1,7 +1,7 @@
-import type { ComponentProps } from "react";
-import { screen } from "@testing-library/react";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import PackageProfileList from "./PackageProfileList";
 
 const props: ComponentProps<typeof PackageProfileList> = {
@@ -29,7 +29,9 @@ describe("PackageProfileList", () => {
 
     packageProfiles.forEach((profile) => {
       expect(
-        screen.getByRole("rowheader", { name: profile.title }),
+        screen.getByRole("rowheader", {
+          name: `${profile.title} ${profile.name}`,
+        }),
       ).toBeInTheDocument();
     });
   });
@@ -44,7 +46,9 @@ describe("PackageProfileList", () => {
     );
 
     expect(
-      screen.getByRole("rowheader", { name: searchText }),
+      screen.getByRole("rowheader", {
+        name: `${searchText} ${packageProfiles[0].name}`,
+      }),
     ).toBeInTheDocument();
 
     packageProfiles

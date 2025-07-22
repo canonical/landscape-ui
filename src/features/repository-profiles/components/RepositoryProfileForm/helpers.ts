@@ -1,5 +1,4 @@
 import * as Yup from "yup";
-import { testLowercaseAlphaNumeric } from "@/utils/tests";
 
 export const getValidationSchema = (action: "add" | "edit") => {
   return Yup.object().shape({
@@ -9,15 +8,10 @@ export const getValidationSchema = (action: "add" | "edit") => {
     description: Yup.string(),
     pockets: Yup.array().of(Yup.string()),
     tags: Yup.array().of(Yup.string()),
-    title: Yup.string()
-      .test({
-        test: (value) => !value || testLowercaseAlphaNumeric.test(value),
-        message: testLowercaseAlphaNumeric.message,
-      })
-      .test({
-        message: "This field is required.",
-        params: { action },
-        test: (value) => action !== "add" || !!value,
-      }),
+    title: Yup.string().test({
+      message: "This field is required.",
+      params: { action },
+      test: (value) => action !== "add" || !!value,
+    }),
   });
 };

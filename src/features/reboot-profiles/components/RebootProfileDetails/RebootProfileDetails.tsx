@@ -115,7 +115,7 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
 
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>
-          <InfoItem label="Name" value={profile.title} />
+          <InfoItem label="Title" value={profile.title} />
         </Col>
         <Col size={6}>
           <InfoItem

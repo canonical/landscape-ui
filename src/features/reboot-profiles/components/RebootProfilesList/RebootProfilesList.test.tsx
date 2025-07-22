@@ -1,10 +1,10 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { accessGroups } from "@/tests/mocks/accessGroup";
+import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import RebootProfilesList from "./RebootProfilesList";
-import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
-import { accessGroups } from "@/tests/mocks/accessGroup";
 
 describe("RebootProfilesList", () => {
   it("renders table headers", () => {
@@ -12,7 +12,7 @@ describe("RebootProfilesList", () => {
 
     const table = screen.getByRole("table");
     expect(table).toHaveTexts([
-      "name",
+      "Title",
       "access group",
       "Tags",
       "associated",

@@ -118,7 +118,10 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
       </div>
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={3}>
-          <InfoItem label="Name" value={profile.title} />
+          <InfoItem label="Title" value={profile.title} />
+        </Col>
+        <Col size={3}>
+          <InfoItem label="Name" value={profile.name} />
         </Col>
         <Col size={9}>
           <InfoItem label="Description" value={profile.description} />
@@ -177,7 +180,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         confirmButtonLoading={isRemoving}
         confirmButtonDisabled={isRemoving}
         close={handleCloseModal}
-        confirmationText={`remove ${profile.name}`}
+        confirmationText={`remove ${profile.title}`}
         onConfirm={handleRemovePackageProfile}
       >
         <p>

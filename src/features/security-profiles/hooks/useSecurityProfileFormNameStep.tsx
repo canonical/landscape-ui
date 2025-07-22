@@ -1,11 +1,11 @@
 import { useOrgSettings } from "@/features/organisation-settings";
 import useEnv from "@/hooks/useEnv";
 import useRoles from "@/hooks/useRoles";
+import { pluralize } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import { Input, Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
-import { pluralize } from "@/utils/_helpers";
 
 export default function useSecurityProfileFormNameStep<
   T extends SecurityProfileFormValues,
@@ -40,12 +40,12 @@ export default function useSecurityProfileFormNameStep<
     isLoading: isLoadingAccessGroups || isLoadingOrganisationPreferences,
     isValid: !formik.errors.title,
     description:
-      "Choose a descriptive profile name and the right access group for your security profile.",
+      "Choose a descriptive title and the right access group for your security profile.",
     content: (
       <>
         <Input
           type="text"
-          label="Profile name"
+          label="Title"
           {...formik.getFieldProps("title")}
           error={getFormikError(formik, "title")}
           required

@@ -17,7 +17,7 @@ describe("SecurityProfilesList", () => {
     expect(screen.getByText("Last audit's pass rate")).toBeInTheDocument();
     expect(screen.getByText("Associated instances")).toBeInTheDocument();
     expect(screen.getByText("Tags")).toBeInTheDocument();
-    expect(screen.getByText("Profile mode")).toBeInTheDocument();
+    expect(screen.getByText("Mode")).toBeInTheDocument();
     expect(screen.getByText("Last run")).toBeInTheDocument();
     expect(screen.getByText("Schedule")).toBeInTheDocument();
     expect(screen.getByText("Actions")).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe("SecurityProfilesList", () => {
     for (const profile of securityProfiles) {
       expect(screen.getByText(profile.title)).toBeInTheDocument();
       expect(
-        screen.getByLabelText(`${profile.name} profile actions`),
+        screen.getByLabelText(`${profile.title} profile actions`),
       ).toBeInTheDocument();
     }
   });

@@ -1,14 +1,14 @@
 import NoData from "@/components/layout/NoData";
-import { renderWithProviders } from "@/tests/render";
-import { describe, expect, it } from "vitest";
-import ScriptProfileInfo from "./ScriptProfileInfo";
-import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
-import { getStatusText, getTriggerLongText } from "../../helpers";
-import { detailedScriptsData } from "@/tests/mocks/script";
-import { accessGroups } from "@/tests/mocks/accessGroup";
-import { expectLoadingState } from "@/tests/helpers";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { expectLoadingState } from "@/tests/helpers";
+import { accessGroups } from "@/tests/mocks/accessGroup";
+import { detailedScriptsData } from "@/tests/mocks/script";
+import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
+import { renderWithProviders } from "@/tests/render";
 import moment from "moment";
+import { describe, expect, it } from "vitest";
+import { getStatusText, getTriggerLongText } from "../../helpers";
+import ScriptProfileInfo from "./ScriptProfileInfo";
 
 const [profile] = scriptProfiles;
 const relatedScript = detailedScriptsData.find(
@@ -29,7 +29,7 @@ describe("ScriptProfileInfo", () => {
     await expectLoadingState();
 
     const fieldsToCheck = [
-      { label: "Name", value: profile.title },
+      { label: "Title", value: profile.title },
       { label: "Status", value: getStatusText(profile) },
       {
         label: "Script",

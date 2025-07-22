@@ -13,7 +13,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
       {};
 
     switch (column.id) {
-      case "name":
+      case "title":
         cellProps.role = "rowheader";
         break;
       case "access_group":

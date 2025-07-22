@@ -1,6 +1,7 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
@@ -17,7 +18,6 @@ import type { RebootProfile } from "../../types";
 import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import RebootProfilesListActions from "../RebootProfilesListActions";
 import { getCellProps, getRowProps } from "./helpers";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const RebootProfileDetails = lazy(
   async () => import("../RebootProfileDetails"),
@@ -68,8 +68,8 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
   const columns = useMemo<Column<RebootProfile>[]>(
     () => [
       {
-        accessor: "name",
-        Header: "name",
+        accessor: "title",
+        Header: "Title",
         Cell: ({ row: { original } }: CellProps<RebootProfile>) => (
           <Button
             type="button"

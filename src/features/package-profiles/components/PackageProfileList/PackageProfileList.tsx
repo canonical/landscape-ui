@@ -1,4 +1,7 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import ListTitle, {
+  LIST_TITLE_COLUMN_PROPS,
+} from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
@@ -62,19 +65,22 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
   const columns = useMemo<Column<PackageProfile>[]>(
     () => [
       {
-        accessor: "name",
-        Header: "Name",
+        ...LIST_TITLE_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => {
-              handlePackageProfileDetailsOpen(original);
-            }}
-          >
-            {original.title}
-          </Button>
+          <ListTitle>
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              onClick={() => {
+                handlePackageProfileDetailsOpen(original);
+              }}
+            >
+              {original.title}
+            </Button>
+
+            <span className="u-text--muted">{original.name}</span>
+          </ListTitle>
         ),
       },
       {

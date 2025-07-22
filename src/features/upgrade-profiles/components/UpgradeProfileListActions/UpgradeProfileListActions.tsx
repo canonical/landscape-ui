@@ -88,7 +88,7 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
 
       <TextConfirmationModal
         isOpen={isModalOpen}
-        confirmationText={`remove ${profile.name}`}
+        confirmationText={`remove ${profile.title}`}
         title="Remove upgrade profile"
         confirmButtonLabel="Remove"
         confirmButtonAppearance="negative"
