@@ -37,15 +37,11 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
 }) => {
   const { groupBy, search } = usePageParams();
 
-  const filteredWslInstances = useMemo(() => {
-    if (!search) {
-      return wslInstances;
-    } else {
-      return wslInstances.filter(({ name }) =>
+  const filteredWslInstances = search
+    ? wslInstances.filter(({ name }) =>
         name.toLowerCase().includes(search.toLowerCase()),
-      );
-    }
-  }, [wslInstances, search]);
+      )
+    : wslInstances;
 
   const {
     selectedItems: selectedWslInstances,
@@ -54,6 +50,10 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
 
   const hasWslProfiles = wslInstances.some(
     (instanceChild) => instanceChild.profile,
+  );
+
+  const nonPendingWslInstances = filteredWslInstances.filter(
+    (wslInstance) => wslInstance.compliance !== "pending",
   );
 
   const columns = useMemo<Column<WslInstanceListRow>[]>(
@@ -69,18 +69,18 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
                   <span className="u-off-screen">Toggle all instances</span>
                 }
                 checked={
-                  filteredWslInstances.length > 0 &&
-                  selectedWslInstances.length === filteredWslInstances.length
+                  !!nonPendingWslInstances.length &&
+                  selectedWslInstances.length === nonPendingWslInstances.length
                 }
                 indeterminate={
-                  selectedWslInstances.length > 0 &&
-                  selectedWslInstances.length < filteredWslInstances.length
+                  !!selectedWslInstances.length &&
+                  selectedWslInstances.length < nonPendingWslInstances.length
                 }
-                disabled={filteredWslInstances.length === 0}
+                disabled={!nonPendingWslInstances.length}
                 onChange={() => {
                   setSelectedWslInstances(
-                    selectedWslInstances.length < filteredWslInstances.length
-                      ? filteredWslInstances
+                    selectedWslInstances.length < nonPendingWslInstances.length
+                      ? nonPendingWslInstances
                       : [],
                   );
                 }}
@@ -125,7 +125,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
             original.actions,
         },
       ].filter((column) => column !== null),
-    [filteredWslInstances, selectedWslInstances],
+    [nonPendingWslInstances, selectedWslInstances, hasWslProfiles],
   );
 
   const createRow = (instances: InstanceChild[]) => {
@@ -152,6 +152,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
               }
               labelClassName="u-no-margin--bottom u-no-padding--top"
               checked={selectedWslInstances.includes(wslInstance)}
+              disabled={wslInstance.compliance === "pending"}
               onChange={change}
             />
 
