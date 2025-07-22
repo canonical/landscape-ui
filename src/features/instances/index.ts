@@ -10,5 +10,4 @@ export {
   hasSecurityUpgrades,
   hasUpgrades,
 } from "./helpers";
-export { useTaggedSecurityProfiles } from "./hooks";
 export type { Status } from "./types";

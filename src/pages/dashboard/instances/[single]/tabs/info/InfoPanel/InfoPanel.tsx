@@ -2,12 +2,13 @@ import TagMultiSelect from "@/components/form/TagMultiSelect";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
+import { ResponsiveButtons } from "@/components/ui";
 import { useActivities } from "@/features/activities";
 import {
   currentInstanceCan,
   TagsAddConfirmationModal,
-  useTaggedSecurityProfiles,
 } from "@/features/instances";
+import { useGetProfileChanges } from "@/features/tags";
 import { useWsl } from "@/features/wsl";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
@@ -19,6 +20,7 @@ import type { Instance } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
 import {
+  ActionButton,
   Button,
   CheckboxInput,
   Col,
@@ -39,7 +41,6 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getInstanceInfoItems } from "./helpers";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
-import { ResponsiveButtons } from "@/components/ui";
 
 const EditInstance = lazy(
   async () =>
@@ -67,9 +68,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   const addedTags = instanceTags.filter((tag) => !instance.tags.includes(tag));
 
-  const { securityProfiles, isSecurityProfilesLoading } =
-    useTaggedSecurityProfiles(addedTags, [instance]);
-
   const navigate = useNavigate();
   const debug = useDebug();
   const { openActivityDetails } = useActivities();
@@ -85,6 +83,19 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { deleteChildInstancesQuery } = useWsl();
   const { editInstanceQuery } = useInstances();
   const { isFeatureEnabled } = useAuth();
+
+  const {
+    isFetchingProfileChanges,
+    profileChangesCount,
+    refetchProfileChanges,
+  } = useGetProfileChanges(
+    {
+      instance_ids: [instance.id],
+      tags: addedTags,
+      limit: 10,
+    },
+    { enabled: false },
+  );
 
   useEffect(() => {
     setInstanceTags([...instance.tags]);
@@ -222,10 +233,18 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   };
 
   const handleTagsUpdate = async () => {
-    if (securityProfiles.length) {
-      setIsModalVisible("securityProfilesTags");
+    if (addedTags.length) {
+      const getProfileChangesResponse = await refetchProfileChanges();
+
+      if (!getProfileChangesResponse.isSuccess) {
+        debug(getProfileChangesResponse.error);
+      } else if (getProfileChangesResponse.data.data.count) {
+        setIsModalVisible("tags");
+      } else {
+        await updateTags();
+      }
     } else {
-      updateTags();
+      await updateTags();
     }
   };
 
@@ -431,26 +450,27 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             />
           </Col>
           <Col size={2} className={classes.tagsButton}>
-            <Button
+            <ActionButton
               type="button"
               className="u-no-margin--bottom"
               onClick={handleTagsUpdate}
-              disabled={isSecurityProfilesLoading || !tagsChanged}
+              disabled={!tagsChanged}
+              loading={isFetchingProfileChanges}
             >
               Update
-            </Button>
+            </ActionButton>
           </Col>
         </Row>
       </div>
 
-      {isModalVisible === "securityProfilesTags" && (
+      {isModalVisible === "tags" && (
         <TagsAddConfirmationModal
           instances={[instance]}
-          securityProfiles={securityProfiles}
           tags={addedTags}
           onConfirm={updateTags}
           confirmButtonDisabled={isEditing}
           close={closeModal}
+          profileChangesCount={profileChangesCount}
         />
       )}
 

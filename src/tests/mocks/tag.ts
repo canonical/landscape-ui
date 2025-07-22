@@ -1,3 +1,5 @@
+import type { ProfileChange } from "@/features/tags";
+
 export const tags = [
   "appservers",
   "asd",
@@ -32,4 +34,17 @@ export const tags = [
   // "webfarm",
   // "windows",
   // "wsl",
+];
+
+export const profileChanges: ProfileChange[] = [
+  {
+    tag: "appservers",
+    profile: {
+      name: "Profile",
+      current_associated_instances: 0,
+      profile_type: "ChildInstanceProfile",
+      will_exceed_limit: false,
+      will_exclude_instances: false,
+    },
+  },
 ];
