@@ -13,7 +13,7 @@ import type { CellProps, Column } from "react-table";
 import WslInstanceListActions from "../WslInstanceListActions";
 import WslInstancesHeader from "../WslInstancesHeader";
 import GroupHeader from "./components/GroupHeader";
-import { getCompliance } from "./helpers";
+import { getCompliance, getComplianceIcon } from "./helpers";
 import classes from "./WslInstanceList.module.scss";
 
 interface WslInstanceListProps {
@@ -167,8 +167,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
           </div>
         ),
         compliance: getCompliance(wslInstance),
-        complianceIcon:
-          wslInstance.compliance === "compliant" ? "success-grey" : "warning",
+        complianceIcon: getComplianceIcon(wslInstance),
         os: wslInstance.version_id || <NoData />,
         profile: wslInstance.profile || <NoData />,
         default:
@@ -207,6 +206,10 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
 
   const unregisteredWslInstances = filteredWslInstances.filter(
     (wslInstance) => wslInstance.compliance === "unregistered",
+  );
+
+  const pendingWslInstances = filteredWslInstances.filter(
+    (wslInstance) => wslInstance.compliance === "pending",
   );
 
   return (
@@ -277,6 +280,17 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
                   ),
                 },
                 ...createRow(unregisteredWslInstances),
+                {
+                  name: (
+                    <GroupHeader
+                      label="Pending"
+                      selectedWslInstances={selectedWslInstances}
+                      setSelectedWslInstances={setSelectedWslInstances}
+                      wslInstances={unregisteredWslInstances}
+                    />
+                  ),
+                },
+                ...createRow(pendingWslInstances),
               ]
             : createRow(filteredWslInstances)
         }

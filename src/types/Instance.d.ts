@@ -296,7 +296,12 @@ export interface PendingInstance extends Record<string, unknown> {
 export interface InstanceChild extends Record<string, unknown> {
   name: string;
   version_id: string;
-  compliance: "compliant" | "noncompliant" | "uninstalled" | "unregistered";
+  compliance:
+    | "compliant"
+    | "pending"
+    | "noncompliant"
+    | "uninstalled"
+    | "unregistered";
   computer_id: number | null;
   profile: string | null;
   is_running: boolean;

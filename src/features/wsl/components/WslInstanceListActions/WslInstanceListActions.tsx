@@ -57,6 +57,10 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
     useSetWslInstanceAsDefault();
   const { reapplyWslProfile } = useReapplyWslProfile();
 
+  if (wslInstance.compliance === "pending") {
+    return;
+  }
+
   const install = async () => {
     try {
       await reapplyWslProfile({
