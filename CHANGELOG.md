@@ -1,3 +1,17 @@
+# [1.16.0](https://github.com/canonical/landscape-ui/compare/v1.15.0...v1.16.0) (2025-07-22)
+
+
+### Bug Fixes
+
+* prevent api credentials page from going beyond the bottom ([dfce7ab](https://github.com/canonical/landscape-ui/commit/dfce7ab0f4926b392f821c0dc4843c00f56d9d48))
+* provide correct 'copy_from' param when duplicating a package profile ([99420c8](https://github.com/canonical/landscape-ui/commit/99420c881e9610ef23d2574f8bfff64bb76df850))
+* removal profiles and upgrade profiles can be edited [LNDENG-2858] ([#303](https://github.com/canonical/landscape-ui/issues/303)) ([771248b](https://github.com/canonical/landscape-ui/commit/771248b198f61945af1ff72592541f77f2b37c3c))
+
+
+### Features
+
+* use new endpoint for tags modal ([#298](https://github.com/canonical/landscape-ui/issues/298)) ([5e503c1](https://github.com/canonical/landscape-ui/commit/5e503c1055caa97d4698e5db11b76605d8e226ba))
+
 # [1.15.0](https://github.com/canonical/landscape-ui/compare/v1.14.1...v1.15.0) (2025-07-21)
 
 
