@@ -41,7 +41,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
     const valuesToSubmit: CopyPackageProfileParams = {
       all_computers: values.all_computers,
       access_group: values.access_group,
-      copy_from: profile.title,
+      copy_from: profile.name,
       description: values.description,
       title: values.title,
     };
