@@ -1,8 +1,11 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
-import { useEditInstance } from "@/features/instances";
-import { useGetTags } from "@/features/tags";
+import {
+  TagsAddConfirmationModal,
+  useEditInstance,
+} from "@/features/instances";
+import { useGetProfileChanges, useGetTags } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
@@ -19,6 +22,7 @@ import {
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import { VALIDATION_SCHEMA } from "./constants";
 import classes from "./EditInstance.module.scss";
 import type { FormProps } from "./types";
@@ -31,6 +35,7 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
   const { notify } = useNotify();
+
   const { getAccessGroupQuery } = useRoles();
 
   const { data: getAccessGroupQueryResult, isPending: isGettingAccessGroups } =
@@ -38,23 +43,11 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
   const { tags, isGettingTags } = useGetTags();
   const { editInstance } = useEditInstance();
 
-  const handleSubmit = async (values: FormProps) => {
-    try {
-      await editInstance({
-        instanceId: instance.id,
-        ...values,
-      });
-
-      closeSidePanel();
-
-      notify.success({
-        title: "Instance updated",
-        message: `Instance "${instance.title}" updated successfully`,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean();
 
   const formik = useFormik({
     initialValues: {
@@ -63,9 +56,58 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
       access_group: instance.access_group,
       tags: instance.tags,
     },
-    onSubmit: handleSubmit,
+    onSubmit: async (values: FormProps) => {
+      try {
+        await editInstance({
+          instanceId: instance.id,
+          ...values,
+        });
+
+        closeSidePanel();
+
+        notify.success({
+          title: "Instance updated",
+          message: `Instance "${instance.title}" updated successfully`,
+        });
+      } catch (error) {
+        debug(error);
+      }
+    },
     validationSchema: VALIDATION_SCHEMA,
   });
+
+  const addedTags = formik.values.tags.filter(
+    (tag) => !instance.tags.includes(tag),
+  );
+
+  const {
+    isFetchingProfileChanges,
+    profileChangesCount,
+    refetchProfileChanges,
+  } = useGetProfileChanges(
+    {
+      instance_ids: [instance.id],
+      tags: addedTags,
+      limit: 10,
+    },
+    { enabled: false },
+  );
+
+  const submit = async () => {
+    if (addedTags.length) {
+      const getProfileChangesResponse = await refetchProfileChanges();
+
+      if (!getProfileChangesResponse.isSuccess) {
+        debug(getProfileChangesResponse.error);
+      } else if (getProfileChangesResponse.data.data.count) {
+        openModal();
+      } else {
+        formik.handleSubmit();
+      }
+    } else {
+      formik.handleSubmit();
+    }
+  };
 
   if (isGettingAccessGroups || isGettingTags) {
     return <LoadingState />;
@@ -84,68 +126,92 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
     })) ?? [];
 
   return (
-    <Form onSubmit={formik.handleSubmit} className="l-form" noValidate>
-      <Input
-        label="Title"
-        aria-label="Title"
-        type="text"
-        required
-        disabled={instance.is_wsl_instance}
-        {...formik.getFieldProps("title")}
-        error={getFormikError(formik, "title")}
-      />
+    <>
+      <Form
+        onSubmit={(event) => {
+          event.preventDefault();
+          submit();
+        }}
+        className="l-form"
+        noValidate
+      >
+        <Input
+          label="Title"
+          aria-label="Title"
+          type="text"
+          required
+          disabled={instance.is_wsl_instance}
+          {...formik.getFieldProps("title")}
+          error={getFormikError(formik, "title")}
+        />
 
-      <Select
-        label="Access group"
-        options={accessGroupOptions}
-        {...formik.getFieldProps("access_group")}
-        error={getFormikError(formik, "access_group")}
-      />
+        <Select
+          label="Access group"
+          options={accessGroupOptions}
+          {...formik.getFieldProps("access_group")}
+          error={getFormikError(formik, "access_group")}
+        />
 
-      <MultiSelectField
-        label="Tags"
-        placeholder="Search and add tags"
-        {...formik.getFieldProps("tags")}
-        items={tagOptions}
-        selectedItems={tagOptions.filter(({ value }) =>
-          formik.values.tags.includes(value),
-        )}
-        onItemsUpdate={async (items) =>
-          formik.setFieldValue(
-            "tags",
-            items.map(({ value }) => value) as string[],
-          )
-        }
-      />
+        <MultiSelectField
+          label="Tags"
+          placeholder="Search and add tags"
+          {...formik.getFieldProps("tags")}
+          items={tagOptions}
+          selectedItems={tagOptions.filter(({ value }) =>
+            formik.values.tags.includes(value),
+          )}
+          onItemsUpdate={async (items) =>
+            formik.setFieldValue(
+              "tags",
+              items.map(({ value }) => value) as string[],
+            )
+          }
+        />
 
-      <div className={classes.chips}>
-        {formik.values.tags.map((tag) => (
-          <Chip
-            key={tag}
-            className="u-no-margin--bottom u-no-margin--right"
-            value={tag}
-            onDismiss={async () =>
-              formik.setFieldValue(
-                "tags",
-                formik.values.tags.filter((t) => t !== tag),
-              )
-            }
-          />
-        ))}
-      </div>
+        <div className={classes.chips}>
+          {formik.values.tags.map((tag) => (
+            <Chip
+              key={tag}
+              className="u-no-margin--bottom u-no-margin--right"
+              value={tag}
+              onDismiss={async () =>
+                formik.setFieldValue(
+                  "tags",
+                  formik.values.tags.filter((t) => t !== tag),
+                )
+              }
+            />
+          ))}
+        </div>
 
-      <Textarea
-        label="Comment"
-        rows={3}
-        {...formik.getFieldProps("comment")}
-        error={getFormikError(formik, "comment")}
-      />
+        <Textarea
+          label="Comment"
+          rows={3}
+          {...formik.getFieldProps("comment")}
+          error={getFormikError(formik, "comment")}
+        />
 
-      <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Save changes"
-      />
-    </Form>
+        <SidePanelFormButtons
+          submitButtonLoading={
+            formik.isSubmitting || (addedTags && isFetchingProfileChanges)
+          }
+          submitButtonText="Save changes"
+        />
+      </Form>
+
+      {isModalOpen && (
+        <TagsAddConfirmationModal
+          instances={[instance]}
+          tags={addedTags}
+          onConfirm={() => {
+            formik.handleSubmit();
+          }}
+          confirmButtonLoading={formik.isSubmitting}
+          close={closeModal}
+          profileChangesCount={profileChangesCount}
+        />
+      )}
+    </>
   );
 };
 

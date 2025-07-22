@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import type { ProfileChange } from "@/features/tags";
 import { useGetProfileChanges } from "@/features/tags";
-import type { Instance } from "@/types/Instance";
+import type { InstanceWithoutRelation } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import {
   ConfirmationModal,
@@ -12,15 +12,15 @@ import {
 import { type ComponentProps, type FC, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useCounter } from "usehooks-ts";
-import { PAGE_SIZE } from "./constants";
 import TagsAddPagination from "./components/TagsAddPagination";
+import { PAGE_SIZE } from "./constants";
 
 interface TagsAddConfirmationModalProps
   extends Omit<
     ComponentProps<typeof ConfirmationModal>,
     "children" | "confirmButtonLabel" | "title"
   > {
-  readonly instances: Instance[];
+  readonly instances: InstanceWithoutRelation[];
   readonly profileChangesCount: number;
   readonly tags: string[];
 }

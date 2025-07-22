@@ -41,7 +41,6 @@ describe("SingleInstanceTabs", () => {
         authLoading: false,
         authorized: true,
         isFeatureEnabled: () => true,
-        isOidcAvailable: true,
         logout: vi.fn(),
         redirectToExternalUrl: vi.fn(),
         setAuthLoading: vi.fn(),
