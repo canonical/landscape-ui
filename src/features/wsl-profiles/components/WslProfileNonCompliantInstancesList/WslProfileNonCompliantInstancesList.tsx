@@ -195,7 +195,7 @@ const WslProfileNonCompliantInstancesList: FC<
         filters={[
           {
             label: "Search",
-            value: search || undefined,
+            item: search || undefined,
             clear,
           },
         ]}

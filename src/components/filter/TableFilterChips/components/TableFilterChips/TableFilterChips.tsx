@@ -4,7 +4,8 @@ import type { ComponentProps, FC } from "react";
 import { defaultFiltersToDisplay } from "../../constants";
 import {
   filterSearchQuery,
-  getChipLabel,
+  getItem,
+  getItems,
   parseSearchQuery,
 } from "../../helpers";
 import type { FilterKey } from "../../types";
@@ -49,6 +50,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     query,
     passRateFrom,
     passRateTo,
+    wsl,
   } = usePageParams();
 
   const filters: ComponentProps<typeof TableFilterChipsBase>["filters"] = [];
@@ -57,7 +59,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "Query",
       multiple: true,
-      values: parseSearchQuery(query),
+      items: parseSearchQuery(query),
       remove: (value) => {
         setPageParams({ query: filterSearchQuery(query, value as string) });
       },
@@ -70,7 +72,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("search")) {
     filters.push({
       label: "Search",
-      value: search,
+      item: search,
       clear: () => {
         setPageParams({ search: "" });
       },
@@ -80,7 +82,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("status")) {
     filters.push({
       label: "Status",
-      value: getChipLabel(statusOptions, status),
+      item: getItem(statusOptions, status),
       clear: () => {
         setPageParams({ status: "" });
       },
@@ -90,20 +92,21 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("os")) {
     filters.push({
       label: "OS",
-      value: getChipLabel(osOptions, os),
+      item: getItem(osOptions, os),
       clear: () => {
         setPageParams({ os: "" });
       },
     });
   }
 
-  if (filtersToDisplay.includes("availabilityZones")) {
+  if (
+    filtersToDisplay.includes("availabilityZones") &&
+    availabilityZonesOptions
+  ) {
     filters.push({
       label: "Availability z.",
       multiple: true,
-      values: availabilityZones.map((availabilityZone) =>
-        getChipLabel(availabilityZonesOptions, availabilityZone),
-      ),
+      items: getItems(availabilityZonesOptions, availabilityZones),
       remove: (availabilityZone) => {
         setPageParams({
           availabilityZones: availabilityZones.filter(
@@ -121,9 +124,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "Access group",
       multiple: true,
-      values: accessGroups.map((accessGroup) =>
-        getChipLabel(accessGroupOptions, accessGroup),
-      ),
+      items: getItems(accessGroupOptions, accessGroups),
       remove: (accessGroup) => {
         setPageParams({
           accessGroups: accessGroups.filter((g) => g !== accessGroup),
@@ -139,9 +140,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "Autoinstall file",
       multiple: true,
-      values: autoinstallFiles.map((autoinstallFile) =>
-        getChipLabel(autoinstallFileOptions, autoinstallFile),
-      ),
+      items: getItems(autoinstallFileOptions, autoinstallFiles),
       remove: (autoinstallFile) => {
         setPageParams({
           autoinstallFiles: autoinstallFiles.filter(
@@ -159,8 +158,8 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "Employee group",
       multiple: true,
-      values: employeeGroups.map((employeeGroup) =>
-        getChipLabel(employeeGroupOptions, employeeGroup),
+      items: employeeGroups.map((employeeGroup) =>
+        getItem(employeeGroupOptions, employeeGroup),
       ),
       remove: (employeeGroup) => {
         setPageParams({
@@ -177,7 +176,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "Tag",
       multiple: true,
-      values: tags.map((tag) => getChipLabel(tagOptions, tag)),
+      items: getItems(tagOptions, tags),
       remove: (tag) => {
         setPageParams({
           tags: tags.filter((t) => t !== tag),
@@ -192,7 +191,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("fromDate")) {
     filters.push({
       label: "From",
-      value: fromDate,
+      item: fromDate,
       clear: () => {
         setPageParams({ fromDate: "" });
       },
@@ -202,7 +201,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("toDate")) {
     filters.push({
       label: "To",
-      value: toDate,
+      item: toDate,
       clear: () => {
         setPageParams({ toDate: "" });
       },
@@ -212,7 +211,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("passRateFrom")) {
     filters.push({
       label: "From pass rate",
-      value: passRateFrom === 0 ? undefined : `${passRateFrom}%`,
+      item: passRateFrom === 0 ? undefined : `${passRateFrom}%`,
       clear: () => {
         setPageParams({ passRateFrom: 0 });
       },
@@ -222,7 +221,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("passRateTo")) {
     filters.push({
       label: "To",
-      value: passRateTo === 100 ? undefined : `${passRateTo}%`,
+      item: passRateTo === 100 ? undefined : `${passRateTo}%`,
       clear: () => {
         setPageParams({ passRateTo: 100 });
       },
@@ -232,9 +231,31 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("type")) {
     filters.push({
       label: "Type",
-      value: getChipLabel(typeOptions, type),
+      item: getItem(typeOptions, type),
       clear: () => {
         setPageParams({ type: "" });
+      },
+    });
+  }
+
+  if (filtersToDisplay.includes("wsl")) {
+    filters.push({
+      label: "WSL",
+      multiple: true,
+      items: getItems(
+        [
+          { label: "Parent", value: "parent" },
+          { label: "Child", value: "child" },
+        ],
+        wsl,
+      ),
+      remove: (item) => {
+        setPageParams({
+          wsl: wsl.filter((i) => i !== item),
+        });
+      },
+      clear: () => {
+        setPageParams({ wsl: [] });
       },
     });
   }
@@ -257,6 +278,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           query: "",
           passRateFrom: 0,
           passRateTo: 100,
+          wsl: [],
         });
       }}
       filters={filters}

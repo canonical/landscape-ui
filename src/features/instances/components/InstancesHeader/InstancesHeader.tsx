@@ -16,6 +16,7 @@ import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
 import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
+import WslFilter from "../WslFilter";
 import { INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesHeader.module.scss";
 
@@ -75,7 +76,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
         <ResponsiveTableFilters
           collapseFrom="xxl"
           filters={[
-            <span key="divider-1" className={classes.divider} />,
             <StatusFilter
               key="status"
               label="Status"
@@ -93,6 +93,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
               options={accessGroupOptions}
             />,
             <TagFilter key="tag" label="Tags" options={tagOptions} />,
+            <WslFilter key="wsl" label="WSL" options={[]} />,
             <span key="divider-2" className={classes.divider} />,
             <ColumnFilter
               key="column"
@@ -111,6 +112,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           "status",
           "tags",
           "query",
+          "wsl",
         ]}
         accessGroupOptions={accessGroupOptions}
         availabilityZonesOptions={availabilityZoneOptions}

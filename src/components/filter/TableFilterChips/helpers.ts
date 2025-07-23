@@ -15,7 +15,10 @@ export const parseSearchQuery = (searchQuery: string) => {
   return searchQuery
     .split(",")
     .filter((searchQueryParam) => searchQueryParam.trim() !== "")
-    .map((searchQueryParam) => `'${searchQueryParam}'`);
+    .map((searchQueryParam) => ({
+      label: `'${searchQueryParam}'`,
+      value: searchQueryParam,
+    }));
 };
 
 export const filterSearchQuery = (searchQuery: string, chipValue: string) => {
@@ -36,7 +39,7 @@ export const filterSearchQuery = (searchQuery: string, chipValue: string) => {
   return updatedSearchParams.join(",");
 };
 
-export const getChipLabel = (
+export const getItem = (
   options: SelectOption[] | undefined,
   valueToFind: string,
 ) => {
@@ -49,6 +52,20 @@ export const getChipLabel = (
     valueToFind
   );
 };
+
+export const getItems = (
+  options: SelectOption[] | undefined,
+  values: string[],
+) =>
+  options
+    ? values.filter(Boolean).map(
+        (value) =>
+          options?.find((option) => option.value === value) ?? {
+            label: value,
+            value,
+          },
+      )
+    : [];
 
 export const checkRenderConditions: CheckRenderConditions = ({
   filtersToMonitor,

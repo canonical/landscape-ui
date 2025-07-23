@@ -11,7 +11,7 @@ import { type FC } from "react";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
-  const { currentPage, pageSize, ...filters } = usePageParams();
+  const { currentPage, pageSize, wsl, ...filters } = usePageParams();
 
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
     query: getQuery(filters),
@@ -20,6 +20,8 @@ const InstancesPage: FC = () => {
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
+    wsl_children: wsl.includes("child"),
+    wsl_parents: wsl.includes("parent"),
   });
 
   const {

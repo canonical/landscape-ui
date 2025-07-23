@@ -12,13 +12,16 @@ interface FilterBase {
 }
 
 interface SingleFilter<T> extends FilterBase {
-  value: T | undefined;
+  item: T | undefined;
   multiple?: false;
 }
 
 interface MultiFilter<T> extends FilterBase {
   remove: (value: T) => void;
-  values: T[];
+  items: {
+    label: string;
+    value: T;
+  }[];
   multiple: true;
 }
 
@@ -92,14 +95,14 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
   }, [
     hiddenChipCount,
     ...filters.map((filter) =>
-      filter.multiple ? filter.values.length : filter.value,
+      filter.multiple ? filter.items.length : filter.item,
     ),
   ]);
 
   const totalChipsToRenderCount = filters.reduce(
     (previousValue, filter) =>
       previousValue +
-      (filter.multiple ? filter.values.length : Number(!!filter.value)),
+      (filter.multiple ? filter.items.length : Number(!!filter.item)),
     0,
   );
 
@@ -130,23 +133,23 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
 
         {filters.map((filter) =>
           filter.multiple
-            ? filter.values.map(
-                (value, index) =>
-                  !!value && (
+            ? filter.items.map(
+                (item, index) =>
+                  !!item.label && (
                     <Chip
                       key={filter.label + index}
-                      value={`${filter.label}: ${value}`}
+                      value={`${filter.label}: ${item.label}`}
                       onDismiss={() => {
-                        filter.remove(value);
+                        filter.remove(item.value);
                       }}
                       className="u-no-margin--bottom u-no-margin--right"
                     />
                   ),
               )
-            : !!filter.value && (
+            : !!filter.item && (
                 <Chip
                   key={filter.label}
-                  value={`${filter.label}: ${filter.value}`}
+                  value={`${filter.label}: ${filter.item}`}
                   onDismiss={filter.clear}
                   className="u-no-margin--bottom u-no-margin--right"
                 />
