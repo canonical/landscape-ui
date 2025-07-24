@@ -1,3 +1,4 @@
+@import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_breakpoints";
 
@@ -20,6 +21,9 @@
 }
 
 :global(.l-navigation) {
+  color-scheme: dark;
+  scrollbar-color: $colors--dark-theme--text-muted
+    $colors--dark-theme--background-default;
   z-index: 350;
 }
 
