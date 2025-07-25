@@ -1,11 +1,11 @@
-import type { FC } from "react";
-import classNames from "classnames";
-import classes from "@/templates/dashboard/Navigation/Navigation.module.scss";
-import { useLocation } from "react-router";
-import type { MenuItem } from "@/templates/dashboard/Navigation/types";
+import NavigationExpandable from "@/templates/dashboard/Navigation/components/NavigationExpandable";
 import NavigationLink from "@/templates/dashboard/Navigation/components/NavigationLink";
 import NavigationRoute from "@/templates/dashboard/Navigation/components/NavigationRoute";
-import NavigationExpandable from "@/templates/dashboard/Navigation/components/NavigationExpandable";
+import classes from "@/templates/dashboard/Navigation/Navigation.module.scss";
+import type { MenuItem } from "@/templates/dashboard/Navigation/types";
+import classNames from "classnames";
+import type { FC } from "react";
+import { useLocation } from "react-router";
 
 interface NavigationItemProps {
   readonly item: MenuItem;
@@ -28,7 +28,10 @@ const NavigationItem: FC<NavigationItemProps> = ({ item }) => {
           {item.path.startsWith("http") ? (
             <NavigationLink item={item} />
           ) : (
-            <NavigationRoute item={item} current={pathname === item.path} />
+            <NavigationRoute
+              item={item}
+              current={pathname.startsWith(item.path)}
+            />
           )}
         </>
       )}

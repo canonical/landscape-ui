@@ -1,25 +1,13 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
+import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";
-
-const PackageProfileConstraintsEditForm = lazy(
-  async () => import("../PackageProfileConstraintsEditForm"),
-);
-const PackageProfileDuplicateForm = lazy(
-  async () => import("../PackageProfileDuplicateForm"),
-);
-const PackageProfileEditForm = lazy(
-  async () => import("../PackageProfileEditForm"),
-);
 
 interface PackageProfileListActionsProps {
   readonly profile: PackageProfile;
@@ -30,7 +18,7 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const navigateWithSearch = useNavigateWithSearch();
 
   const { removePackageProfileQuery } = usePackageProfiles();
 
@@ -43,32 +31,18 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
   const { mutateAsync: removePackageProfile, isPending: isRemoving } =
     removePackageProfileQuery;
 
+  const encodedName = encodeURIComponent(profile.name);
+
   const handleConstraintsChange = () => {
-    setSidePanelContent(
-      `Change "${profile.title}" profile's constraints`,
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileConstraintsEditForm profile={profile} />
-      </Suspense>,
-      "medium",
-    );
+    navigateWithSearch(`change-package-constraints/${encodedName}`);
   };
 
   const handlePackageProfileEdit = () => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileEditForm profile={profile} />
-      </Suspense>,
-    );
+    navigateWithSearch(`edit/${encodedName}`);
   };
 
   const handlePackageProfileDuplicate = () => {
-    setSidePanelContent(
-      `Duplicate "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileDuplicateForm profile={profile} />
-      </Suspense>,
-    );
+    navigateWithSearch(`duplicate/${encodedName}`);
   };
 
   const handleRemovePackageProfile = async () => {

@@ -21,6 +21,14 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router";
+import LocalSidePanel from "./components/layout/LocalSidePanel";
+import {
+  PackageProfileCreateForm,
+  PackageProfileDetails,
+} from "./features/package-profiles";
+import PackageProfileConstraintsEditSidePanel from "./features/package-profiles/components/PackageProfileConstraintsEditSidePanel";
+import PackageProfileDuplicateSidePanel from "./features/package-profiles/components/PackageProfileDuplicateSidePanel";
+import PackageProfileEditSidePanel from "./features/package-profiles/components/PackageProfileEditSidePanel";
 
 const OidcAuthPage = lazy(async () => import("@/pages/auth/handle/oidc"));
 const UbuntuOneAuthPage = lazy(
@@ -290,7 +298,48 @@ const App: FC = () => {
                       <PackageProfilesPage />
                     </Suspense>
                   }
-                />
+                >
+                  <Route
+                    path="add"
+                    element={
+                      <LocalSidePanel size="medium">
+                        <PackageProfileCreateForm />
+                      </LocalSidePanel>
+                    }
+                  />
+                  <Route
+                    path="view/:packageProfileName"
+                    element={
+                      <LocalSidePanel size="medium">
+                        <PackageProfileDetails />
+                      </LocalSidePanel>
+                    }
+                  />
+                  <Route
+                    path="edit/:packageProfileName"
+                    element={
+                      <LocalSidePanel>
+                        <PackageProfileEditSidePanel />
+                      </LocalSidePanel>
+                    }
+                  />
+                  <Route
+                    path="duplicate/:packageProfileName"
+                    element={
+                      <LocalSidePanel>
+                        <PackageProfileDuplicateSidePanel />
+                      </LocalSidePanel>
+                    }
+                  />
+                  <Route
+                    path="change-package-constraints/:packageProfileName"
+                    element={
+                      <LocalSidePanel size="medium">
+                        <PackageProfileConstraintsEditSidePanel />
+                      </LocalSidePanel>
+                    }
+                  />
+                </Route>
                 <Route
                   path="upgrade"
                   element={

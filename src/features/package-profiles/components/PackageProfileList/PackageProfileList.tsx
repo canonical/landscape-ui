@@ -6,9 +6,9 @@ import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
+import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
@@ -17,7 +17,6 @@ import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { PackageProfile } from "../../types";
 import PackageProfileAssociatedInstancesLink from "../PackageProfileAssociatedInstancesLink";
-import PackageProfileDetails from "../PackageProfileDetails";
 import PackageProfileListActions from "../PackageProfileListActions";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps, getRowProps } from "./helpers";
@@ -31,7 +30,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
   packageProfiles,
 }) => {
   const { search } = usePageParams();
-  const { setSidePanelContent } = useSidePanel();
+  const navigateWithSearch = useNavigateWithSearch();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
@@ -45,11 +44,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
     })) ?? [];
 
   const handlePackageProfileDetailsOpen = (profile: PackageProfile) => {
-    setSidePanelContent(
-      profile.title,
-      <PackageProfileDetails profile={profile} />,
-      "medium",
-    );
+    navigateWithSearch(`view/${encodeURIComponent(profile.name)}`);
   };
 
   const profiles = useMemo(() => {
@@ -175,7 +170,11 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
       },
     ],
-    [accessGroupOptions.length, expandedRowIndex],
+    [
+      accessGroupOptions.length,
+      expandedRowIndex,
+      handlePackageProfileDetailsOpen,
+    ],
   );
 
   return (

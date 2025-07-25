@@ -1,11 +1,12 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { LocalSidePanelHeader } from "@/components/layout/LocalSidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { Form, Input, Select } from "@canonical/react-components";
+import { Form, Input, Select, SidePanel } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import type { CreatePackageProfileParams } from "../../hooks";
@@ -80,52 +81,58 @@ const PackageProfileCreateForm: FC = () => {
   });
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate>
-      <Input
-        type="text"
-        label="Title"
-        required
-        {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
-      />
+    <>
+      <LocalSidePanelHeader root=".." title="Add package profile" />
 
-      <Input
-        type="text"
-        label="Description"
-        required
-        autoComplete="off"
-        {...formik.getFieldProps("description")}
-        error={
-          formik.touched.description && formik.errors.description
-            ? formik.errors.description
-            : undefined
-        }
-      />
+      <SidePanel.Content>
+        <Form onSubmit={formik.handleSubmit} noValidate>
+          <Input
+            type="text"
+            label="Title"
+            required
+            {...formik.getFieldProps("title")}
+            error={
+              formik.touched.title && formik.errors.title
+                ? formik.errors.title
+                : undefined
+            }
+          />
 
-      <Select
-        label="Access group"
-        {...formik.getFieldProps("access_group")}
-        options={accessGroupOptions}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
-      />
+          <Input
+            type="text"
+            label="Description"
+            required
+            autoComplete="off"
+            {...formik.getFieldProps("description")}
+            error={
+              formik.touched.description && formik.errors.description
+                ? formik.errors.description
+                : undefined
+            }
+          />
 
-      <AssociationBlock formik={formik} />
+          <Select
+            label="Access group"
+            {...formik.getFieldProps("access_group")}
+            options={accessGroupOptions}
+            error={
+              formik.touched.access_group && formik.errors.access_group
+                ? formik.errors.access_group
+                : undefined
+            }
+          />
 
-      <PackageProfileConstraintsTypeBlock formik={formik} />
+          <AssociationBlock formik={formik} />
 
-      <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Add package profile"
-      />
-    </Form>
+          <PackageProfileConstraintsTypeBlock formik={formik} />
+
+          <SidePanelFormButtons
+            submitButtonDisabled={formik.isSubmitting}
+            submitButtonText="Add package profile"
+          />
+        </Form>
+      </SidePanel.Content>
+    </>
   );
 };
 

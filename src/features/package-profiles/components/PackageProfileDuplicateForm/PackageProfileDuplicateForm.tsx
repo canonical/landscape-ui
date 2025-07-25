@@ -1,6 +1,7 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
+import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -22,6 +23,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
   profile,
 }) => {
   const debug = useDebug();
+  const navigateWithSearch = useNavigateWithSearch();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
@@ -84,6 +86,14 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
     });
   }, [profile]);
 
+  const goBack = () => {
+    navigateWithSearch(`../view/${encodeURIComponent(profile.name)}`);
+  };
+
+  const cancel = () => {
+    navigateWithSearch("..");
+  };
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
@@ -127,6 +137,9 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Duplicate"
+        hasBackButton
+        onBackButtonPress={goBack}
+        onCancel={cancel}
       />
     </Form>
   );

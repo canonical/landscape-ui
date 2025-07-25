@@ -1,11 +1,11 @@
+import NavigationExpandableParent from "@/templates/dashboard/Navigation/components/NavigationExpandableParent";
+import NavigationLink from "@/templates/dashboard/Navigation/components/NavigationLink";
+import NavigationRoute from "@/templates/dashboard/Navigation/components/NavigationRoute";
+import { getPathToExpand } from "@/templates/dashboard/Navigation/helpers";
+import type { MenuItem } from "@/templates/dashboard/Navigation/types";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
-import type { MenuItem } from "@/templates/dashboard/Navigation/types";
-import NavigationLink from "@/templates/dashboard/Navigation/components/NavigationLink";
 import { useLocation } from "react-router";
-import { getPathToExpand } from "@/templates/dashboard/Navigation/helpers";
-import NavigationRoute from "@/templates/dashboard/Navigation/components/NavigationRoute";
-import NavigationExpandableParent from "@/templates/dashboard/Navigation/components/NavigationExpandableParent";
 
 interface NavigationExpandableProps {
   readonly item: MenuItem;
@@ -44,7 +44,7 @@ const NavigationExpandable: FC<NavigationExpandableProps> = ({ item }) => {
               ) : (
                 <NavigationRoute
                   item={subItem}
-                  current={pathname === subItem.path}
+                  current={pathname.startsWith(subItem.path)}
                 />
               )}
             </li>

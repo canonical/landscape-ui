@@ -1,18 +1,14 @@
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { Button } from "@canonical/react-components";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
-import PackageProfileDetailsConstraintsInfo from "../PackageProfileDetailsConstraintsInfo";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
+import { useState } from "react";
 import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";
-import useSidePanel from "@/hooks/useSidePanel";
-import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import PackageProfileDetailsConstraintsInfo from "../PackageProfileDetailsConstraintsInfo";
 import classes from "./PackageProfileDetailsConstraints.module.scss";
-
-const PackageProfileConstraintsEditForm = lazy(
-  () => import("../PackageProfileConstraintsEditForm"),
-);
 
 interface PackageProfileDetailsConstraintsProps {
   readonly profile: PackageProfile;
@@ -25,7 +21,7 @@ const PackageProfileDetailsConstraints: FC<
   const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState("");
 
-  const { setSidePanelContent } = useSidePanel();
+  const navigateWithSearch = useNavigateWithSearch();
   const { getPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const {
@@ -39,12 +35,8 @@ const PackageProfileDetailsConstraints: FC<
   });
 
   const handlePackageConstraintsChange = () => {
-    setSidePanelContent(
-      `Change "${profile.title}" profile's constraints`,
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileConstraintsEditForm profile={profile} />
-      </Suspense>,
-      "medium",
+    navigateWithSearch(
+      `../change-package-constraints/${encodeURIComponent(profile.name)}`,
     );
   };
 
@@ -64,7 +56,9 @@ const PackageProfileDetailsConstraints: FC<
         <>
           <HeaderWithSearch
             className={classes.actions}
-            onSearch={(searchText) => setSearch(searchText)}
+            onSearch={(searchText) => {
+              setSearch(searchText);
+            }}
             actions={
               <Button
                 className="u-no-margin--bottom"
@@ -87,8 +81,12 @@ const PackageProfileDetailsConstraints: FC<
           <SidePanelTablePagination
             currentPage={currentPage}
             pageSize={pageSize}
-            paginate={(page) => setCurrentPage(page)}
-            setPageSize={(itemsNumber) => setPageSize(itemsNumber)}
+            paginate={(page) => {
+              setCurrentPage(page);
+            }}
+            setPageSize={(itemsNumber) => {
+              setPageSize(itemsNumber);
+            }}
             totalItems={getPackageProfileConstraintsQueryResult?.data.count}
           />
         </>

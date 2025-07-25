@@ -1,14 +1,15 @@
-import type { FC } from "react";
-import type { EditFormProps, PackageProfile } from "../../types";
-import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
-import { usePackageProfiles } from "../../hooks";
-import { useFormik } from "formik";
-import { Form, Input } from "@canonical/react-components";
-import { VALIDATION_SCHEMA } from "./constants";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import AssociationBlock from "@/components/form/AssociationBlock";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useDebug from "@/hooks/useDebug";
+import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
 import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Form, Input } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { usePackageProfiles } from "../../hooks";
+import type { EditFormProps, PackageProfile } from "../../types";
+import { VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileEditFormProps {
   readonly profile: PackageProfile;
@@ -18,6 +19,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
   profile,
 }) => {
   const debug = useDebug();
+  const navigateWithSearch = useNavigateWithSearch();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
   const { editPackageProfileQuery } = usePackageProfiles();
@@ -55,6 +57,14 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
     validationSchema: VALIDATION_SCHEMA,
   });
 
+  const goBack = () => {
+    navigateWithSearch(`../view/${encodeURIComponent(profile.name)}`);
+  };
+
+  const cancel = () => {
+    navigateWithSearch("..");
+  };
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
@@ -79,6 +89,9 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
+        hasBackButton
+        onBackButtonPress={goBack}
+        onCancel={cancel}
       />
     </Form>
   );
