@@ -1,14 +1,13 @@
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import classes from "./AlertCard.module.scss";
-import classNames from "classnames";
 import useInstances from "@/hooks/useInstances";
-import { Link } from "react-router";
 import type { Status } from "@/features/instances";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon } from "@canonical/react-components";
-import { pluralize } from "@/utils/_helpers";
+import { Icon } from "@canonical/react-components";
+import EmptyAlertCount from "./components/EmptyAlertCount";
+import AlertLink from "./components/AlertLink";
 
 const PendingInstancesForm = lazy(
   () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -33,7 +32,7 @@ const AlertCard: FC<Status> = ({
     isError: getAlertsQueryError,
   } = getInstancesQuery(
     {
-      query: query,
+      query,
       limit: 1,
       root_only: false,
     },
@@ -54,10 +53,13 @@ const AlertCard: FC<Status> = ({
     getAlertsQueryResult?.data.results ||
     getPendingInstancesQueryResult?.data ||
     [];
-  const alertCount =
-    getAlertsQueryResult?.data.count ||
-    getPendingInstancesQueryResult?.data.length ||
-    0;
+
+  const alertCount = Number(
+    isPendingComputersAlert
+      ? getPendingInstancesQueryResult?.data.length
+      : getAlertsQueryResult?.data.count,
+  );
+
   const isLoading = getAlertsQueryLoading || getPendingInstancesQueryLoading;
   const isError = getAlertsQueryError || getPendingInstancesQueryError;
 
@@ -87,40 +89,25 @@ const AlertCard: FC<Status> = ({
       {!isLoading && isError && (
         <p className="u-no-margin--bottom">Error loading data.</p>
       )}
+
       {alertData && !isLoading && !isError && (
         <>
-          {isPendingComputersAlert && alertCount > 0 && (
-            <Button
-              type="button"
-              appearance="link"
-              className={classNames("u-no-margin u-no-padding", classes.link)}
-              onClick={handlePendingInstancesReview}
-            >
-              <span className={classes.instancesNumber}>{alertCount}</span>{" "}
-              {pluralize(alertCount, "instance")}
-            </Button>
-          )}
-
-          {!isPendingComputersAlert && alertCount > 0 && (
-            <Link
-              className={classNames("u-no-margin u-no-padding", classes.link)}
-              to={`/instances?status=${filterValue}`}
-            >
-              <span className={classes.instancesNumber}>{alertCount}</span>{" "}
-              {pluralize(alertCount, "instance")}
-            </Link>
-          )}
-
-          {alertCount === 0 && (
-            <span
-              className={classNames(
-                "u-no-margin u-no-padding u-text--muted",
-                classes.link,
-              )}
-            >
-              <span className={classes.instancesNumber}>{alertCount}</span>{" "}
-              instances
-            </span>
+          {alertCount > 0 ? (
+            <AlertLink
+              count={alertCount}
+              onClick={
+                isPendingComputersAlert
+                  ? handlePendingInstancesReview
+                  : undefined
+              }
+              to={
+                isPendingComputersAlert
+                  ? undefined
+                  : `/instances?status=${filterValue}`
+              }
+            />
+          ) : (
+            <EmptyAlertCount />
           )}
         </>
       )}
