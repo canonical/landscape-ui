@@ -79,7 +79,7 @@ const PackageProfileDetails: FC = () => {
   };
 
   const handlePackageProfileEdit = () => {
-    navigateWithSearch(`../edit${packageProfileName}`);
+    navigateWithSearch(`../edit/${packageProfileName}`);
   };
 
   const handlePackageProfileDuplicate = () => {
