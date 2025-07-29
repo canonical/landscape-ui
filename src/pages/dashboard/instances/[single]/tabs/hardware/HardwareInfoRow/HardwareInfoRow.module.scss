@@ -24,12 +24,3 @@
 .infoRows {
   flex-grow: 1;
 }
-
-.infoRow {
-  padding-bottom: $spv--large;
-  padding-top: $spv--large;
-
-  &:not(:first-child) {
-    border-top: 1px solid $colors--theme--border-default;
-  }
-}

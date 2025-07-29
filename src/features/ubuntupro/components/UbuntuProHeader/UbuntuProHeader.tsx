@@ -1,11 +1,10 @@
+import Menu from "@/components/layout/Menu";
+import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import type { UbuntuProInfo } from "@/types/Instance";
+import moment from "moment";
 import type { FC } from "react";
 import classes from "./UbuntuProHeader.module.scss";
-import { Col, Row } from "@canonical/react-components";
-import InfoItem from "@/components/layout/InfoItem";
-import type { UbuntuProInfo } from "@/types/Instance";
-import NoData from "@/components/layout/NoData";
-import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 interface UbuntuProHeaderProps {
   readonly ubuntuProData: UbuntuProInfo;
@@ -54,13 +53,12 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => {
           </a>
         </span>
       </div>
-      <Row className="u-no-padding--left u-no-padding--right u-no-max-width">
-        {infoItems.map(({ label, value }) => (
-          <Col size={3} key={label}>
-            <InfoItem label={label} value={value} />
-          </Col>
-        ))}
-      </Row>
+      <Menu
+        items={infoItems.map((item) => ({
+          ...item,
+          size: 3,
+        }))}
+      />
     </div>
   );
 };

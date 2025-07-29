@@ -1,12 +1,11 @@
-import type { FC } from "react";
-import InfoItem from "@/components/layout/InfoItem";
-import type { User } from "@/types/User";
-import UserPanelActionButtons from "../UserPanelActionButtons";
-import useUsers from "@/hooks/useUsers";
-import { NOT_AVAILABLE } from "@/constants";
-import { useParams } from "react-router";
+import Menu from "@/components/layout/Menu";
 import NoData from "@/components/layout/NoData";
+import useUsers from "@/hooks/useUsers";
 import type { UrlParams } from "@/types/UrlParams";
+import type { User } from "@/types/User";
+import type { FC } from "react";
+import { useParams } from "react-router";
+import UserPanelActionButtons from "../UserPanelActionButtons";
 
 interface UserDetailsProps {
   readonly user: User;
@@ -35,22 +34,51 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
   return (
     <>
       <UserPanelActionButtons selectedUsers={[user]} sidePanel />
-      <InfoItem label="username" value={user.username} />
-      <InfoItem
-        label="name"
-        value={user.name !== "" ? user.name : NOT_AVAILABLE}
+      <Menu
+        items={[
+          {
+            label: "Username",
+            size: 12,
+            value: user.username,
+          },
+          {
+            label: "Name",
+            size: 12,
+            value: user.name || <NoData />,
+          },
+          {
+            label: "Passphrase",
+            size: 12,
+            type: "password",
+          },
+          {
+            label: "Primary group",
+            size: 12,
+            value: primaryGroup || <NoData />,
+          },
+          {
+            label: "Additional groups",
+            size: 12,
+            value: userGroups || <NoData />,
+            type: "truncated",
+          },
+          {
+            label: "Location",
+            size: 12,
+            value: user?.location || <NoData />,
+          },
+          {
+            label: "Home phone",
+            size: 12,
+            value: user?.home_phone || <NoData />,
+          },
+          {
+            label: "Work phone",
+            size: 12,
+            value: user?.work_phone || <NoData />,
+          },
+        ]}
       />
-      <InfoItem label="passphrase" type="password" />
-      <InfoItem label="primary group" value={primaryGroup ?? <NoData />} />
-      <InfoItem
-        label="additional groups"
-        {...(userGroups
-          ? { type: "truncated", value: userGroups }
-          : { value: <NoData /> })}
-      />
-      <InfoItem label="location" value={user?.location ?? <NoData />} />
-      <InfoItem label="home phone" value={user?.home_phone ?? <NoData />} />
-      <InfoItem label="work phone" value={user?.work_phone ?? <NoData />} />
     </>
   );
 };

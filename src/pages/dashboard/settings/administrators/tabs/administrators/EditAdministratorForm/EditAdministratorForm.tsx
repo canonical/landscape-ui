@@ -1,6 +1,6 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import InfoItem from "@/components/layout/InfoItem";
+import Menu from "@/components/layout/Menu";
 import NoData from "@/components/layout/NoData";
 import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
@@ -10,12 +10,10 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { Administrator } from "@/types/Administrator";
 import type { SelectOption } from "@/types/SelectOption";
 import {
-  Col,
   ConfirmationButton,
   Form,
   Icon,
   ICONS,
-  Row,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -124,20 +122,30 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
         <span>Remove</span>
       </ConfirmationButton>
 
-      <Row className="u-no-padding--left u-no-padding--right">
-        <Col size={6}>
-          <InfoItem label="Name" value={currentAdministrator.name} />
-        </Col>
-        <Col size={6}>
-          <InfoItem label="Email" value={currentAdministrator.email} />
-        </Col>
-        <Col size={12}>
-          <InfoItem label="Timezone" value={<NoData />} />
-        </Col>
-        <Col size={12}>
-          <InfoItem label="Identity URL" value={<NoData />} />
-        </Col>
-      </Row>
+      <Menu
+        items={[
+          {
+            label: "Name",
+            size: 6,
+            value: currentAdministrator.name,
+          },
+          {
+            label: "Email",
+            size: 6,
+            value: currentAdministrator.email,
+          },
+          {
+            label: "Timezone",
+            size: 12,
+            value: <NoData />,
+          },
+          {
+            label: "Identity URL",
+            size: 12,
+            value: <NoData />,
+          },
+        ]}
+      />
 
       <MultiSelectField
         variant="condensed"

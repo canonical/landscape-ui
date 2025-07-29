@@ -1,12 +1,12 @@
-import InfoItem from "@/components/layout/InfoItem";
+import Block from "@/components/layout/Block";
 import LoadingState from "@/components/layout/LoadingState";
+import Menu from "@/components/layout/Menu";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
 import useRoles from "@/hooks/useRoles";
-import { Col, Row } from "@canonical/react-components";
 import moment from "moment";
-import type { FC } from "react";
+import type { ComponentProps, FC } from "react";
 import { Link } from "react-router";
 import { getStatusText, getTriggerLongText } from "../../helpers";
 import type { ScriptProfile } from "../../types";
@@ -35,113 +35,108 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
 
   const activity = profile.activities.last_activity;
 
+  const triggerMenuItems: ComponentProps<typeof Menu>["items"] = [
+    {
+      label: "Trigger",
+      size: 12,
+      value: getTriggerLongText(profile) || <NoData />,
+    },
+  ];
+
+  if (profile.trigger.trigger_type !== "event") {
+    triggerMenuItems.push({
+      label: "Next run",
+      size: 6,
+      value: profile.trigger.next_run ? (
+        `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)}`
+      ) : (
+        <NoData />
+      ),
+    });
+  }
+
+  triggerMenuItems.push({
+    label: "Next run",
+    size: 6,
+    value: activity ? (
+      <Link to={`/activities?query=parent-id%3A${activity.id}`}>
+        {moment(activity.creation_time).utc().format(DISPLAY_DATE_TIME_FORMAT)}
+      </Link>
+    ) : (
+      <NoData />
+    ),
+  });
+
   return (
     <>
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="Title" value={profile.title} />
-        </Col>
-
-        <Col size={6}>
-          <InfoItem label="Status" value={getStatusText(profile)} />
-        </Col>
-      </Row>
-
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem
-            label="Script"
-            value={
-              script ? (
+      <Block>
+        <Menu
+          items={[
+            {
+              label: "Title",
+              size: 6,
+              value: profile.title,
+            },
+            {
+              label: "Status",
+              size: 6,
+              value: getStatusText(profile),
+            },
+            {
+              label: "Script",
+              size: 6,
+              value: script ? (
                 <Link to="/scripts?tab=scripts" state={{ scriptId: script.id }}>
                   {script.title}
                 </Link>
               ) : (
                 <NoData />
-              )
-            }
-          />
-        </Col>
-
-        <Col size={6}>
-          <InfoItem label="Access group" value={accessGroup} />
-        </Col>
-      </Row>
-
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="Run as user" value={profile.username} />
-        </Col>
-
-        <Col size={6}>
-          <InfoItem label="Time limit" value={`${profile.time_limit}s`} />
-        </Col>
-      </Row>
-
-      <hr />
-
-      <InfoItem
-        label="Trigger"
-        value={getTriggerLongText(profile) || <NoData />}
-      />
-
-      <Row className="u-no-padding">
-        {profile.trigger.trigger_type != "event" && (
-          <Col size={6}>
-            <InfoItem
-              label="Next run"
-              value={
-                profile.trigger.next_run ? (
-                  `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)}`
-                ) : (
-                  <NoData />
-                )
-              }
-            />
-          </Col>
-        )}
-
-        <Col size={6}>
-          <InfoItem
-            label="Last run"
-            value={
-              activity ? (
-                <Link to={`/activities?query=parent-id%3A${activity.id}`}>
-                  {moment(activity.creation_time)
-                    .utc()
-                    .format(DISPLAY_DATE_TIME_FORMAT)}
-                </Link>
-              ) : (
-                <NoData />
-              )
-            }
-          />
-        </Col>
-      </Row>
-
-      <hr />
-      <p className="p-heading--5">Association</p>
-
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Associated instances"
-          value={
-            <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
-          }
+              ),
+            },
+            {
+              label: "Access group",
+              size: 6,
+              value: accessGroup,
+            },
+            {
+              label: "Run as user",
+              size: 6,
+              value: profile.username,
+            },
+            {
+              label: "Time limit",
+              size: 6,
+              value: `${profile.time_limit}s`,
+            },
+          ]}
         />
-      </Row>
+      </Block>
 
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Tags"
-          type="truncated"
-          value={
-            profile.all_computers
-              ? "All instances"
-              : profile.tags.join(", ") || <NoData />
-          }
+      <Block heading>
+        <Menu items={triggerMenuItems} />
+      </Block>
+
+      <Block heading="Association">
+        <Menu
+          items={[
+            {
+              label: "Associated instances",
+              size: 12,
+              value: (
+                <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
+              ),
+            },
+            {
+              label: "Tags",
+              size: 12,
+              value: profile.all_computers
+                ? "All instances"
+                : profile.tags.join(", ") || <NoData />,
+              type: "truncated",
+            },
+          ]}
         />
-      </Row>
+      </Block>
     </>
   );
 };

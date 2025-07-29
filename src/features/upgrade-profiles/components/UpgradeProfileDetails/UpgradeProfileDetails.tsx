@@ -1,18 +1,19 @@
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import Block from "@/components/layout/Block";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
+import Menu from "@/components/layout/Menu";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { pluralize } from "@/utils/_helpers";
+import { Button, Icon, ICONS } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useUpgradeProfiles } from "../../hooks";
 import type { UpgradeProfile } from "../../types";
 import { getScheduleInfo } from "./helpers";
-import classes from "./UpgradeProfileDetails.module.scss";
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import { pluralize } from "@/utils/_helpers";
 
 const SingleUpgradeProfileForm = lazy(
   async () => import("../SingleUpgradeProfileForm"),
@@ -96,53 +97,56 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Row className="u-no-padding--left u-no-padding--right">
-        <Col size={6}>
-          <InfoItem label="Title" value={profile.title} />
-        </Col>
-        <Col size={6}>
-          <InfoItem label="Name" value={profile.name} />
-        </Col>
-        <Col size={6}>
-          <InfoItem
-            label="Access group"
-            value={
-              accessGroupOptions.find(
-                ({ value }) => value === profile.access_group,
-              )?.label ?? profile.access_group
-            }
-          />
-        </Col>
-        <Col size={6}>
-          <InfoItem
-            label="Upgrade type"
-            value={profile.upgrade_type === "all" ? "All" : "Security"}
-          />
-        </Col>
-        <Col size={6}>
-          <InfoItem
-            label="Auto remove packages"
-            value={profile.autoremove ? "On" : "Off"}
-          />
-        </Col>
-      </Row>
-
-      <div className={classes.block}>
-        <p className="p-heading--5">Schedule</p>
-        <div>
-          <InfoItem label="Schedule" value={scheduleMessage} />
-        </div>
-        <div>
-          <InfoItem label="Next run" value={nextRunMessage} />
-        </div>
-        <InfoItem
-          label="Delivery delay window"
-          value={`${profile.deliver_delay_window} ${pluralize(Number(profile.deliver_delay_window), "minute")}`}
+      <Block>
+        <Menu
+          items={[
+            { label: "Title", size: 6, value: profile.title },
+            { label: "Name", size: 6, value: profile.name },
+            {
+              label: "Access group",
+              size: 6,
+              value:
+                accessGroupOptions.find(
+                  ({ value }) => value === profile.access_group,
+                )?.label ?? profile.access_group,
+            },
+            {
+              label: "Upgrade type",
+              size: 6,
+              value: profile.upgrade_type === "all" ? "All" : "Security",
+            },
+            {
+              label: "Auto remove packages",
+              size: 6,
+              value: profile.autoremove ? "On" : "Off",
+            },
+          ]}
         />
-      </div>
+      </Block>
 
-      <div className={classes.block}>
-        <p className="p-heading--5">Association</p>
+      <Block heading="Schedule">
+        <Menu
+          items={[
+            {
+              label: "Schedule",
+              size: 12,
+              value: scheduleMessage,
+            },
+            {
+              label: "Next run",
+              size: 12,
+              value: nextRunMessage,
+            },
+            {
+              label: "Delivery delay window",
+              size: 12,
+              value: `${profile.deliver_delay_window} ${pluralize(Number(profile.deliver_delay_window), "minute")}`,
+            },
+          ]}
+        />
+      </Block>
+
+      <Block heading="Association">
         {profile.all_computers && (
           <p>This profile has been associated with all instances.</p>
         )}
@@ -156,7 +160,7 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
             value={profile.tags.join(", ")}
           />
         )}
-      </div>
+      </Block>
 
       <TextConfirmationModal
         isOpen={modalOpen}

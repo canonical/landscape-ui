@@ -1,23 +1,23 @@
-import InfoItem from "@/components/layout/InfoItem";
+import Menu from "@/components/layout/Menu";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import type { UrlParams } from "@/types/UrlParams";
 import {
   Button,
-  Col,
   ConfirmationButton,
   Form,
   Input,
   Notification,
-  Row,
   Select,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
 import type { FC } from "react";
 import { useParams } from "react-router";
+import { KERNEL_ACTIONS_VALIDATION_SCHEMA } from "../../constants";
 import { useKernel } from "../../hooks";
 import type { Kernel } from "../../types";
 import {
@@ -27,8 +27,6 @@ import {
 } from "./constants";
 import classes from "./DowngradeKernelForm.module.scss";
 import type { FormProps } from "./types";
-import type { UrlParams } from "@/types/UrlParams";
-import { KERNEL_ACTIONS_VALIDATION_SCHEMA } from "../../constants";
 
 interface DowngradeKernelFormProps {
   readonly currentKernelVersion: string;
@@ -138,15 +136,13 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
       <Notification severity="caution" title="Security warning">
         <span>{SECURITY_WARNING}</span>
       </Notification>
-      <Row className="u-no-padding--left u-no-padding--right">
-        <Col size={6}>
-          <InfoItem label="current version" value={currentKernelVersion} />
-        </Col>
-        <Col size={6}>
-          <InfoItem
-            label="kernel version"
-            className={classes.infoItem}
-            value={
+      <Menu
+        items={[
+          { label: "Current version", size: 6, value: currentKernelVersion },
+          {
+            label: "Kernel version",
+            size: 6,
+            value:
               downgradeKernelVersions.length === 1 ? (
                 <span>{downgradeKernelVersions[0].version_rounded}</span>
               ) : (
@@ -154,11 +150,10 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
                   options={KERNEL_VERSION_OPTIONS}
                   {...formik.getFieldProps("new_kernel_version_id")}
                 />
-              )
-            }
-          />
-        </Col>
-      </Row>
+              ),
+          },
+        ]}
+      />
       <strong className={classes.marginTop}>Delivery time</strong>
       <div className={classes.radioGroup}>
         <Input

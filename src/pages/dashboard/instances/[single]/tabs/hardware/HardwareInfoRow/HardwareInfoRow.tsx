@@ -1,7 +1,7 @@
+import Block from "@/components/layout/Block";
+import Menu from "@/components/layout/Menu";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
-import { Col, Row } from "@canonical/react-components";
-import InfoItem from "@/components/layout/InfoItem";
 import classes from "./HardwareInfoRow.module.scss";
 
 interface InfoBlock {
@@ -30,18 +30,14 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
       </h3>
       <div className={classes.infoRows}>
         {infoBlocksArray.map((infoBlocks, index) => (
-          <div
-            key={index}
-            className={classNames("p-strip u-no-max-width", classes.infoRow)}
-          >
-            <Row className="u-no-padding--left u-no-padding--right u-no-max-width">
-              {infoBlocks.map(({ label, value }, index) => (
-                <Col size={3} key={index}>
-                  <InfoItem label={label} value={value} />
-                </Col>
-              ))}
-            </Row>
-          </div>
+          <Block heading={index > 0} key={index}>
+            <Menu
+              items={infoBlocks.map((infoBlock) => ({
+                ...infoBlock,
+                size: 3,
+              }))}
+            />
+          </Block>
         ))}
       </div>
     </div>

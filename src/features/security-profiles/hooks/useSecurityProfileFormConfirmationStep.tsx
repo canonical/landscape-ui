@@ -1,12 +1,11 @@
 import Flow from "@/components/layout/Flow";
-import InfoItem from "@/components/layout/InfoItem";
+import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { Row } from "@canonical/react-components";
+import { pluralize } from "@/utils/_helpers";
 import type { FormikContextType } from "formik";
 import moment from "moment";
 import { phrase } from "../helpers";
 import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
-import { pluralize } from "@/utils/_helpers";
 
 export default function useSecurityProfileFormConfirmationStep<
   T extends SecurityProfileFormValues,
@@ -51,29 +50,26 @@ export default function useSecurityProfileFormConfirmationStep<
                   "To complete the fixes, instances must be restarted.",
                 iconName: "restart",
                 children: (
-                  <>
-                    <Row className="u-no-padding">
-                      <InfoItem
-                        label="Delivery time"
-                        value={
+                  <Menu
+                    items={[
+                      {
+                        label: "Delivery time",
+                        size: 12,
+                        value:
                           formik.values.delivery_time == "asap"
                             ? "As soon as possible"
-                            : `Delayed by ${formik.values.restart_deliver_delay} ${pluralize(formik.values.restart_deliver_delay, "hour")}`
-                        }
-                      />
-                    </Row>
-
-                    <Row className="u-no-padding">
-                      <InfoItem
-                        label="Randomize delivery over a time window"
-                        value={
+                            : `Delayed by ${formik.values.restart_deliver_delay} ${pluralize(formik.values.restart_deliver_delay, "hour")}`,
+                      },
+                      {
+                        label: "Randomize delivery over a time window",
+                        size: 12,
+                        value:
                           formik.values.randomize_delivery == "yes"
                             ? `Yes, over ${formik.values.restart_deliver_delay_window} ${pluralize(formik.values.restart_deliver_delay_window, "minute")}`
-                            : "No"
-                        }
-                      />
-                    </Row>
-                  </>
+                            : "No",
+                      },
+                    ]}
+                  />
                 ),
               }
             : null,

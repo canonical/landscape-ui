@@ -1,16 +1,17 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import InfoItem from "@/components/layout/InfoItem";
+import Block from "@/components/layout/Block";
 import LoadingState from "@/components/layout/LoadingState";
+import Menu from "@/components/layout/Menu";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
+import { pluralize } from "@/utils/_helpers";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { useRemovalProfiles } from "../../hooks";
 import type { RemovalProfile } from "../../types";
-import classes from "./RemovalProfileDetails.module.scss";
 
 const SingleRemovalProfileForm = lazy(
   async () => import("../SingleRemovalProfileForm"),
@@ -94,47 +95,50 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Row className="u-no-padding--left u-no-padding--right">
-        <Col size={6}>
-          <InfoItem label="Title" value={profile.title} />
-        </Col>
-        <Col size={6}>
-          <InfoItem label="Name" value={profile.name} />
-        </Col>
-        <Col size={6}>
-          <InfoItem
-            label="Access group"
-            value={
-              accessGroupOptions.find(
-                ({ value }) => value === profile.access_group,
-              )?.label ?? profile.access_group
-            }
-          />
-        </Col>
-        <Col size={12}>
-          <InfoItem
-            label="Removal timeframe"
-            value={`${profile.days_without_exchange} days`}
-          />
-        </Col>
-      </Row>
+      <Block>
+        <Menu
+          items={[
+            { label: "Title", size: 6, value: profile.title },
+            {
+              label: "Name",
+              size: 6,
+              value: profile.name,
+            },
+            {
+              label: "Access group",
+              size: 6,
+              value:
+                accessGroupOptions.find(
+                  ({ value }) => value === profile.access_group,
+                )?.label ?? profile.access_group,
+            },
+            {
+              label: "Removal timeframe",
+              size: 12,
+              value: `${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`,
+            },
+          ]}
+        />
+      </Block>
 
-      <div className={classes.block}>
-        <p className="p-heading--5">Association</p>
-        {profile.all_computers && (
+      <Block heading="Association">
+        {profile.all_computers ? (
           <p>This profile has been associated with all instances.</p>
-        )}
-        {!profile.all_computers && !profile.tags.length && (
+        ) : !profile.tags.length ? (
           <p>This profile has not yet been associated with any instances.</p>
-        )}
-        {!profile.all_computers && profile.tags.length > 0 && (
-          <InfoItem
-            label="Tags"
-            type="truncated"
-            value={profile.tags.join(", ")}
+        ) : (
+          <Menu
+            items={[
+              {
+                label: "Tags",
+                size: 12,
+                value: profile.tags.join(", "),
+                type: "truncated",
+              },
+            ]}
           />
         )}
-      </div>
+      </Block>
 
       <TextConfirmationModal
         isOpen={modalOpen}

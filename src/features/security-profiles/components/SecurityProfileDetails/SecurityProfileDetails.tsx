@@ -1,12 +1,13 @@
-import InfoItem from "@/components/layout/InfoItem";
+import Block from "@/components/layout/Block";
 import LoadingState from "@/components/layout/LoadingState";
+import Menu from "@/components/layout/Menu";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import moment from "moment";
-import type { FC } from "react";
+import type { ComponentProps, FC } from "react";
 import {
   SECURITY_PROFILE_BENCHMARK_LABELS,
   SECURITY_PROFILE_MODE_LABELS,
@@ -48,6 +49,40 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
 
   if (!accessGroup) {
     return;
+  }
+
+  const scheduleMenuItems: ComponentProps<typeof Menu>["items"] = [
+    { label: "Schedule", size: 12, value: getSchedule(profile) },
+    {
+      label: "Last run",
+      size: 6,
+      value: profile.last_run_results.timestamp ? (
+        `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+      ) : (
+        <NoData />
+      ),
+    },
+    {
+      label: "Next run",
+      size: 6,
+      value: profile.next_run_time ? (
+        `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+      ) : (
+        <NoData />
+      ),
+    },
+  ];
+
+  if (profile.mode == "audit-fix-restart") {
+    scheduleMenuItems.push({
+      label: "Restart schedule",
+      size: 12,
+      value: `${
+        profile.restart_deliver_delay
+          ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
+          : "As soon as possible"
+      }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`,
+    });
   }
 
   return (
@@ -114,112 +149,80 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
         </div>
       </div>
 
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="Title" value={profile.title} />
-        </Col>
-
-        <Col size={6}>
-          <InfoItem label="Name" value={profile.name} />
-        </Col>
-      </Row>
-
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="Access group" value={accessGroup.title} />
-        </Col>
-
-        <Col size={6}>
-          <InfoItem label="Status" value={getStatus(profile).label} />
-        </Col>
-      </Row>
-
-      <hr />
-      <h5>Security profile</h5>
-
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem
-            label="Benchmark"
-            value={SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark]}
-          />
-        </Col>
-
-        <Col size={6}>
-          <InfoItem label="Tailoring file" value={getTailoringFile(profile)} />
-        </Col>
-      </Row>
-
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Mode"
-          value={SECURITY_PROFILE_MODE_LABELS[profile.mode]}
+      <Block>
+        <Menu
+          items={[
+            {
+              label: "Title",
+              size: 6,
+              value: profile.title,
+            },
+            {
+              label: "Name",
+              size: 6,
+              value: profile.name,
+            },
+            {
+              label: "Access group",
+              size: 6,
+              value: accessGroup.title,
+            },
+            {
+              label: "Status",
+              size: 6,
+              value: getStatus(profile).label,
+            },
+          ]}
         />
-      </Row>
+      </Block>
 
-      <hr />
-      <h5>Schedule</h5>
-
-      <Row className="u-no-padding">
-        <InfoItem label="Profile schedule" value={getSchedule(profile)} />
-      </Row>
-
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem
-            label="Last run"
-            value={
-              profile.last_run_results.timestamp ? (
-                `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-              ) : (
-                <NoData />
-              )
-            }
-          />
-        </Col>
-
-        <Col size={6}>
-          <InfoItem
-            label="Next run"
-            value={
-              profile.next_run_time ? (
-                `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-              ) : (
-                <NoData />
-              )
-            }
-          />
-        </Col>
-      </Row>
-
-      {profile.mode == "audit-fix-restart" && (
-        <Row className="u-no-padding">
-          <InfoItem
-            label="Restart schedule"
-            value={`${
-              profile.restart_deliver_delay
-                ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
-                : "As soon as possible"
-            }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
-          />
-        </Row>
-      )}
-
-      <hr />
-      <h5>Association</h5>
-
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Associated instances"
-          value={
-            <SecurityProfileAssociatedInstancesLink securityProfile={profile} />
-          }
+      <Block heading="Security profile">
+        <Menu
+          items={[
+            {
+              label: "Benchmark",
+              size: 6,
+              value: SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark],
+            },
+            {
+              label: "Tailoring file",
+              size: 6,
+              value: getTailoringFile(profile),
+            },
+            {
+              label: "Mode",
+              size: 12,
+              value: SECURITY_PROFILE_MODE_LABELS[profile.mode],
+            },
+          ]}
         />
-      </Row>
+      </Block>
 
-      <Row className="u-no-padding">
-        <InfoItem label="Tags" type="truncated" value={getTags(profile)} />
-      </Row>
+      <Block heading="Schedule">
+        <Menu items={scheduleMenuItems} />
+      </Block>
+
+      <Block heading="Association">
+        <Menu
+          items={[
+            {
+              label: "Associated instances",
+              size: 12,
+              value: (
+                <SecurityProfileAssociatedInstancesLink
+                  securityProfile={profile}
+                />
+              ),
+            },
+            {
+              label: "Tags",
+              size: 12,
+              value: getTags(profile),
+              type: "truncated",
+            },
+          ]}
+        />
+      </Block>
     </>
   );
 };

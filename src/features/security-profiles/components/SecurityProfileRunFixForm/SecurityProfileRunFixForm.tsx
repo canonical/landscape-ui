@@ -1,7 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import Flow from "@/components/layout/Flow";
-import InfoItem from "@/components/layout/InfoItem";
-import { Form, Row } from "@canonical/react-components";
+import Menu from "@/components/layout/Menu";
+import { Form } from "@canonical/react-components";
 import type { ComponentProps, FC, SyntheticEvent } from "react";
 import type { SecurityProfile } from "../../types";
 
@@ -50,29 +50,25 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
             description: "To complete the fixes, instances must be restarted.",
             iconName: "restart",
             children: (
-              <>
-                <Row className="u-no-padding">
-                  <InfoItem
-                    label="Delivery time"
-                    value={
+              <Menu
+                items={[
+                  {
+                    label: "Delivery time",
+                    size: 12,
+                    value:
                       profile.restart_deliver_delay === 0
                         ? "As soon as possible"
-                        : "Scheduled"
-                    }
-                  />
-                </Row>
-
-                <Row className="u-no-padding">
-                  <InfoItem
-                    label="Randomize delivery over a time window"
-                    value={
-                      profile.restart_deliver_delay
-                        ? `${profile.restart_deliver_delay_window} minutes`
-                        : "No"
-                    }
-                  />
-                </Row>
-              </>
+                        : "Scheduled",
+                  },
+                  {
+                    label: "Randomize delivery over a time window",
+                    size: 12,
+                    value: profile.restart_deliver_delay
+                      ? `${profile.restart_deliver_delay_window} minutes`
+                      : "No",
+                  },
+                ]}
+              />
             ),
           },
           {

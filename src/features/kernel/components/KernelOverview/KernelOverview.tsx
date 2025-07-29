@@ -1,16 +1,14 @@
+import Menu from "@/components/layout/Menu";
+import NoData from "@/components/layout/NoData";
+import { Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import type { KernelOverviewInfo } from "../../types";
-import { Col, Icon, Row, Tooltip } from "@canonical/react-components";
-import InfoItem from "@/components/layout/InfoItem";
 import {
   getLivepatchCoverageDisplayValue,
   getLivepatchCoverageIcon,
-  getStatusIcon,
   getStatusTooltipMessage,
 } from "./helpers";
 import classes from "./KernelOverview.module.scss";
-import classNames from "classnames";
-import NoData from "@/components/layout/NoData";
 
 interface KernelHeaderProps {
   readonly kernelOverview: KernelOverviewInfo;
@@ -49,47 +47,27 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
     {
       label: "livepatch coverage",
       value: kernelOverview.expirationDate ? (
-        getLivepatchCoverageDisplayValue(
-          livepatchEnabled,
-          kernelOverview.expirationDate,
-        )
+        <>
+          <Icon
+            name={getLivepatchCoverageIcon(
+              livepatchEnabled,
+              kernelOverview.expirationDate,
+            )}
+            aria-hidden
+            className={classes.statusIcon}
+          />
+          {getLivepatchCoverageDisplayValue(
+            livepatchEnabled,
+            kernelOverview.expirationDate,
+          )}
+        </>
       ) : (
         <NoData />
       ),
     },
   ];
 
-  return (
-    <Row
-      className={classNames(
-        "u-no-padding--left u-no-padding--right u-no-max-width",
-        classes.container,
-      )}
-    >
-      {infoItems.map(({ label, value }) => (
-        <Col size={3} key={label}>
-          {label === "status" && (
-            <Icon
-              name={getStatusIcon(kernelOverview.status)}
-              aria-hidden
-              className={classes.statusIcon}
-            />
-          )}
-          {label === "livepatch coverage" && kernelOverview.expirationDate && (
-            <Icon
-              name={getLivepatchCoverageIcon(
-                livepatchEnabled,
-                kernelOverview.expirationDate,
-              )}
-              aria-hidden
-              className={classes.statusIcon}
-            />
-          )}
-          <InfoItem label={label} value={value} />
-        </Col>
-      ))}
-    </Row>
-  );
+  return <Menu items={infoItems.map((item) => ({ size: 3, ...item }))} />;
 };
 
 export default KernelOverview;

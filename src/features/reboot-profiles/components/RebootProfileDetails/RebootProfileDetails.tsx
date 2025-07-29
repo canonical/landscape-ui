@@ -1,12 +1,13 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import InfoItem from "@/components/layout/InfoItem";
+import Block from "@/components/layout/Block";
 import LoadingState from "@/components/layout/LoadingState";
+import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
@@ -14,7 +15,6 @@ import { useRemoveRebootProfileQuery } from "../../api";
 import type { RebootProfile } from "../../types";
 import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import { formatWeeklyRebootSchedule } from "./helpers";
-import classes from "./RebootProfileDetails.module.scss";
 
 const RebootProfilesForm = lazy(async () => import("../RebootProfilesForm"));
 
@@ -113,62 +113,61 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Row className="u-no-padding--left u-no-padding--right">
-        <Col size={6}>
-          <InfoItem label="Title" value={profile.title} />
-        </Col>
-        <Col size={6}>
-          <InfoItem
-            label="Access group"
-            value={
-              accessGroupOptions.find(
-                ({ value }) => value === profile.access_group,
-              )?.label ?? profile.access_group
-            }
-          />
-        </Col>
-      </Row>
+      <Block>
+        <Menu
+          items={[
+            { label: "Title", size: 6, value: profile.title },
+            {
+              label: "Access group",
+              size: 6,
+              value:
+                accessGroupOptions.find(
+                  ({ value }) => value === profile.access_group,
+                )?.label ?? profile.access_group,
+            },
+          ]}
+        />
+      </Block>
 
-      <div className={classes.block}>
-        <p className="p-heading--5">Reboot schedule</p>
-        <div>
-          <InfoItem
-            label="schedule"
-            value={formatWeeklyRebootSchedule(profile)}
-          />
-        </div>
-        <div>
-          <InfoItem
-            label="next reboot"
-            value={moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
-          />
-        </div>
-      </div>
+      <Block heading="Reboot schedule">
+        <Menu
+          items={[
+            {
+              label: "Schedule",
+              size: 12,
+              value: formatWeeklyRebootSchedule(profile),
+            },
+            {
+              label: "Next reboot",
+              size: 12,
+              value: moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT),
+            },
+          ]}
+        />
+      </Block>
 
-      <div className={classes.block}>
-        <p className="p-heading--5">Association</p>
-        {profile.all_computers && (
+      <Block heading="Association">
+        {profile.all_computers ? (
           <p>This profile has been associated with all instances.</p>
-        )}
-        {!profile.all_computers && !profile.tags.length && (
+        ) : !profile.tags.length ? (
           <p>This profile has not yet been associated with any instances.</p>
+        ) : (
+          <Menu
+            items={[
+              { label: "Tags", size: 12, value: profile.tags.join(", ") },
+              {
+                label: "Associated instances",
+                size: 12,
+                value: (
+                  <RebootProfileAssociatedInstancesLink
+                    rebootProfile={profile}
+                  />
+                ),
+              },
+            ]}
+          />
         )}
-        {!profile.all_computers && profile.tags.length > 0 && (
-          <>
-            <InfoItem
-              label="Tags"
-              type="truncated"
-              value={profile.tags.join(", ")}
-            />
-            <InfoItem
-              label="associated instances"
-              value={
-                <RebootProfileAssociatedInstancesLink rebootProfile={profile} />
-              }
-            />
-          </>
-        )}
-      </div>
+      </Block>
 
       <TextConfirmationModal
         isOpen={modalOpen}

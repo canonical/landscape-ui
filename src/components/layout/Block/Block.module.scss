@@ -1,0 +1,12 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.block {
+  margin-bottom: 2rem;
+}
+
+.heading {
+  border-top: solid 1px $colors--theme--border-low-contrast;
+  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}

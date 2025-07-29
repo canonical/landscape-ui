@@ -1,20 +1,13 @@
-import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import StaticLink from "@/components/layout/StaticLink";
+import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import {
-  CodeSnippet,
-  Col,
-  ConfirmationButton,
-  Icon,
-  Row,
-} from "@canonical/react-components";
+import { ConfirmationButton, Icon } from "@canonical/react-components";
 import moment from "moment";
-import type { FC } from "react";
+import type { ComponentProps, FC } from "react";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities } from "../../hooks";
 import type { Activity } from "../../types";
@@ -49,19 +42,28 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const {
     data: getSingleActivityQueryResult,
-    isLoading: getSingleActivityQueryLoading,
+    isPending: getSingleActivityQueryPending,
+    error: getSingleActivityQueryError,
   } = getSingleActivityQuery({ activityId });
 
-  const activity = getSingleActivityQueryResult?.data;
+  const instanceId = getSingleActivityQueryResult?.data.computer_id;
 
-  const isActivityComputerIdDefined = activity?.computer_id !== undefined;
+  const isInstanceIdDefined = instanceId !== undefined;
 
   const { instance, isGettingInstance } = useGetInstance(
-    { instanceId: activity?.computer_id as number },
-    { enabled: isActivityComputerIdDefined },
+    { instanceId: instanceId as number },
+    { enabled: isInstanceIdDefined },
   );
 
-  if (isActivityComputerIdDefined && isGettingInstance) {
+  if (getSingleActivityQueryPending) {
+    return <LoadingState />;
+  }
+
+  if (getSingleActivityQueryError) {
+    throw getSingleActivityQueryError;
+  }
+
+  if (isInstanceIdDefined && isGettingInstance) {
     return <LoadingState />;
   }
 
@@ -128,189 +130,161 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
     }
   };
 
+  const activity = getSingleActivityQueryResult.data;
+
+  const menuItems: ComponentProps<typeof Menu>["items"] = [
+    {
+      label: "Description",
+      size: 12,
+      value: activity.summary,
+    },
+  ];
+
+  if (instance) {
+    menuItems.push({
+      label: "Instance",
+      size: 12,
+      value: instance.title,
+    });
+  }
+
+  menuItems.push(
+    {
+      label: "Status",
+      size: 6,
+      value: (
+        <>
+          <Icon
+            name={ACTIVITY_STATUSES[activity.activity_status].icon}
+            className={classes.statusIcon}
+          />
+          {ACTIVITY_STATUSES[activity.activity_status].label}
+        </>
+      ),
+    },
+    {
+      label: "Created at",
+      size: 6,
+      value: moment(activity.creation_time).format(DISPLAY_DATE_TIME_FORMAT),
+    },
+  );
+
+  if (activity.delivery_time) {
+    menuItems.push({
+      label: "Delivered at",
+      size: 6,
+      value: moment(activity.delivery_time).format(DISPLAY_DATE_TIME_FORMAT),
+    });
+  }
+
+  if (activity.completion_time) {
+    menuItems.push({
+      label: "Completed at",
+      size: 6,
+      value: moment(activity.completion_time).format(DISPLAY_DATE_TIME_FORMAT),
+    });
+  }
+
   return (
     <>
-      {getSingleActivityQueryLoading && <LoadingState />}
-      {!getSingleActivityQueryLoading && activity && (
-        <>
-          <div key="buttons" className="p-segmented-control">
-            <div className="p-segmented-control__list">
-              {activity.actions?.approvable && (
-                <ConfirmationButton
-                  className="p-segmented-control__button"
-                  type="button"
-                  disabled={approveActivitiesLoading}
-                  confirmationModalProps={{
-                    title: "Approve activity",
-                    children: (
-                      <p>
-                        Are you sure you want to approve {activity.summary}{" "}
-                        activity?
-                      </p>
-                    ),
-                    confirmButtonLabel: "Approve",
-                    confirmButtonAppearance: "positive",
-                    confirmButtonDisabled: approveActivitiesLoading,
-                    confirmButtonLoading: approveActivitiesLoading,
-                    onConfirm: async () => handleApproveActivity(activity),
-                  }}
-                >
-                  Approve
-                </ConfirmationButton>
-              )}
-              {activity.actions?.cancelable && (
-                <ConfirmationButton
-                  className="p-segmented-control__button"
-                  type="button"
-                  disabled={cancelActivitiesLoading}
-                  confirmationModalProps={{
-                    title: "Cancel activity",
-                    children: (
-                      <p>
-                        Are you sure you want to cancel {activity.summary}{" "}
-                        activity?
-                      </p>
-                    ),
-                    confirmButtonLabel: "Apply",
-                    confirmButtonAppearance: "positive",
-                    confirmButtonDisabled: cancelActivitiesLoading,
-                    confirmButtonLoading: cancelActivitiesLoading,
-                    onConfirm: async () => handleCancelActivity(activity),
-                  }}
-                >
-                  {!activity.actions?.approvable &&
-                  !activity.actions?.reappliable &&
-                  !activity.actions?.revertable
-                    ? "Cancel activity"
-                    : "Cancel"}
-                </ConfirmationButton>
-              )}
-              {activity.actions?.revertable && (
-                <ConfirmationButton
-                  className="p-segmented-control__button"
-                  type="button"
-                  disabled={undoActivitiesLoading}
-                  confirmationModalProps={{
-                    title: "Undo activity",
-                    children: (
-                      <p>
-                        Are you sure you want to undo {activity.summary}{" "}
-                        activity?
-                      </p>
-                    ),
-                    confirmButtonLabel: "Undo",
-                    confirmButtonAppearance: "positive",
-                    confirmButtonDisabled: undoActivitiesLoading,
-                    confirmButtonLoading: undoActivitiesLoading,
-                    onConfirm: async () => handleUndoActivity(activity),
-                  }}
-                >
-                  Undo
-                </ConfirmationButton>
-              )}
-              {activity.actions?.reappliable && (
-                <ConfirmationButton
-                  className="p-segmented-control__button"
-                  type="button"
-                  disabled={redoActivitiesLoading}
-                  confirmationModalProps={{
-                    title: "Redo activity",
-                    children: (
-                      <p>
-                        Are you sure you want to redo {activity.summary}{" "}
-                        activity?
-                      </p>
-                    ),
-                    confirmButtonLabel: "Redo",
-                    confirmButtonAppearance: "positive",
-                    confirmButtonDisabled: redoActivitiesLoading,
-                    confirmButtonLoading: redoActivitiesLoading,
-                    onConfirm: async () => handleRedoActivity(activity),
-                  }}
-                >
-                  Redo
-                </ConfirmationButton>
-              )}
-            </div>
-          </div>
-          <Row className="u-no-padding--left u-no-padding--right">
-            <Col size={12}>
-              <InfoItem label="Description" value={activity.summary} />
-            </Col>
-            {instance && (
-              <Col size={12}>
-                <InfoItem
-                  label="Instance"
-                  value={
-                    <StaticLink
-                      to={`/instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`}
-                    >
-                      {instance.title}
-                    </StaticLink>
-                  }
-                />
-              </Col>
-            )}
-            <Col size={6}>
-              <InfoItem
-                label="Status"
-                value={
-                  <>
-                    <Icon
-                      name={ACTIVITY_STATUSES[activity.activity_status].icon}
-                      className={classes.statusIcon}
-                    />
-                    <span>
-                      {ACTIVITY_STATUSES[activity.activity_status].label}
-                    </span>
-                  </>
-                }
-              />
-            </Col>
-            <Col size={6}>
-              <InfoItem
-                label="Created at"
-                value={moment(activity.creation_time).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
-              />
-            </Col>
-            {typeof activity.delivery_time === "string" && (
-              <Col size={6}>
-                <InfoItem
-                  label="Delivered at"
-                  value={moment(activity.delivery_time).format(
-                    DISPLAY_DATE_TIME_FORMAT,
-                  )}
-                />
-              </Col>
-            )}
-            {activity.completion_time && (
-              <Col size={6}>
-                <InfoItem
-                  label="Completed at"
-                  value={moment(activity.completion_time).format(
-                    DISPLAY_DATE_TIME_FORMAT,
-                  )}
-                />
-              </Col>
-            )}
-            {activity.result_text && (
-              <Col size={12}>
-                <CodeSnippet
-                  className={classes.output}
-                  blocks={[
-                    {
-                      title: "Output",
-                      code: activity.result_text,
-                    },
-                  ]}
-                />
-              </Col>
-            )}
-          </Row>
-        </>
-      )}
+      <div key="buttons" className="p-segmented-control">
+        <div className="p-segmented-control__list">
+          {activity.actions?.approvable && (
+            <ConfirmationButton
+              className="p-segmented-control__button"
+              type="button"
+              disabled={approveActivitiesLoading}
+              confirmationModalProps={{
+                title: "Approve activity",
+                children: (
+                  <p>
+                    Are you sure you want to approve {activity.summary}{" "}
+                    activity?
+                  </p>
+                ),
+                confirmButtonLabel: "Approve",
+                confirmButtonAppearance: "positive",
+                confirmButtonDisabled: approveActivitiesLoading,
+                confirmButtonLoading: approveActivitiesLoading,
+                onConfirm: async () => handleApproveActivity(activity),
+              }}
+            >
+              Approve
+            </ConfirmationButton>
+          )}
+          {activity.actions?.cancelable && (
+            <ConfirmationButton
+              className="p-segmented-control__button"
+              type="button"
+              disabled={cancelActivitiesLoading}
+              confirmationModalProps={{
+                title: "Cancel activity",
+                children: (
+                  <p>
+                    Are you sure you want to cancel {activity.summary} activity?
+                  </p>
+                ),
+                confirmButtonLabel: "Apply",
+                confirmButtonAppearance: "positive",
+                confirmButtonDisabled: cancelActivitiesLoading,
+                confirmButtonLoading: cancelActivitiesLoading,
+                onConfirm: async () => handleCancelActivity(activity),
+              }}
+            >
+              {!activity.actions?.approvable &&
+              !activity.actions?.reappliable &&
+              !activity.actions?.revertable
+                ? "Cancel activity"
+                : "Cancel"}
+            </ConfirmationButton>
+          )}
+          {activity.actions?.revertable && (
+            <ConfirmationButton
+              className="p-segmented-control__button"
+              type="button"
+              disabled={undoActivitiesLoading}
+              confirmationModalProps={{
+                title: "Undo activity",
+                children: (
+                  <p>
+                    Are you sure you want to undo {activity.summary} activity?
+                  </p>
+                ),
+                confirmButtonLabel: "Undo",
+                confirmButtonAppearance: "positive",
+                confirmButtonDisabled: undoActivitiesLoading,
+                confirmButtonLoading: undoActivitiesLoading,
+                onConfirm: async () => handleUndoActivity(activity),
+              }}
+            >
+              Undo
+            </ConfirmationButton>
+          )}
+          {activity.actions?.reappliable && (
+            <ConfirmationButton
+              className="p-segmented-control__button"
+              type="button"
+              disabled={redoActivitiesLoading}
+              confirmationModalProps={{
+                title: "Redo activity",
+                children: (
+                  <p>
+                    Are you sure you want to redo {activity.summary} activity?
+                  </p>
+                ),
+                confirmButtonLabel: "Redo",
+                confirmButtonAppearance: "positive",
+                confirmButtonDisabled: redoActivitiesLoading,
+                confirmButtonLoading: redoActivitiesLoading,
+                onConfirm: async () => handleRedoActivity(activity),
+              }}
+            >
+              Redo
+            </ConfirmationButton>
+          )}
+        </div>
+      </div>
+      <Menu items={menuItems} />
     </>
   );
 };
