@@ -1,10 +1,9 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
-import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -23,9 +22,8 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
   profile,
 }) => {
   const debug = useDebug();
-  const navigateWithSearch = useNavigateWithSearch();
+  const { setPageParams } = usePageParams();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
   const { copyPackageProfileQuery } = usePackageProfiles();
 
@@ -38,6 +36,10 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       label: title,
       value: name,
     })) ?? [];
+
+  const close = () => {
+    setPageParams({ action: "", packageProfile: "" });
+  };
 
   const handleSubmit = async (values: DuplicateFormProps) => {
     const valuesToSubmit: CopyPackageProfileParams = {
@@ -55,7 +57,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
     try {
       await copyPackageProfile(valuesToSubmit);
 
-      closeSidePanel();
+      close();
 
       notify.success({
         message: `Profile "${profile.title}" duplicated successfully`,
@@ -87,11 +89,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
   }, [profile]);
 
   const goBack = () => {
-    navigateWithSearch(`../view/${encodeURIComponent(profile.name)}`);
-  };
-
-  const cancel = () => {
-    navigateWithSearch("..");
+    setPageParams({ action: "view" });
   };
 
   return (
@@ -135,11 +133,11 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Duplicate"
         hasBackButton
         onBackButtonPress={goBack}
-        onCancel={cancel}
+        onCancel={close}
       />
     </Form>
   );

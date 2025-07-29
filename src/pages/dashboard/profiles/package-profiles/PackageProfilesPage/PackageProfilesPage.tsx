@@ -1,17 +1,60 @@
+import LocalSidePanel from "@/components/layout/LocalSidePanel";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
 import PackageProfilesContainer from "@/pages/dashboard/profiles/package-profiles/PackageProfilesContainer";
 import { Button } from "@canonical/react-components";
-import type { FC } from "react";
-import { Outlet } from "react-router";
+import { lazy, type FC } from "react";
+
+const PackageProfileConstraintsEditSidePanel = lazy(async () =>
+  import("@/features/package-profiles").then((module) => ({
+    default: module.PackageProfileConstraintsEditSidePanel,
+  })),
+);
+
+const PackageProfileCreateForm = lazy(async () =>
+  import("@/features/package-profiles").then((module) => ({
+    default: module.PackageProfileCreateForm,
+  })),
+);
+
+const PackageProfileDetails = lazy(async () =>
+  import("@/features/package-profiles").then((module) => ({
+    default: module.PackageProfileDetails,
+  })),
+);
+
+const PackageProfileDuplicateSidePanel = lazy(async () =>
+  import("@/features/package-profiles").then((module) => ({
+    default: module.PackageProfileDuplicateSidePanel,
+  })),
+);
+
+const PackageProfileEditSidePanel = lazy(async () =>
+  import("@/features/package-profiles").then((module) => ({
+    default: module.PackageProfileEditSidePanel,
+  })),
+);
 
 const PackageProfilesPage: FC = () => {
-  const navigateWithSearch = useNavigateWithSearch();
+  const { action, setPageParams } = usePageParams();
+
+  useSetDynamicFilterValidation("action", [
+    "add",
+    "changePackageConstraints",
+    "duplicate",
+    "edit",
+    "view",
+  ]);
 
   const handleAddPackageProfile = () => {
-    navigateWithSearch("add");
+    setPageParams({ action: "add" });
+  };
+
+  const close = () => {
+    setPageParams({ action: "", packageProfile: "" });
   };
 
   return (
@@ -35,7 +78,35 @@ const PackageProfilesPage: FC = () => {
         </PageContent>
       </PageMain>
 
-      <Outlet />
+      {action === "add" && (
+        <LocalSidePanel close={close} size="medium">
+          <PackageProfileCreateForm />
+        </LocalSidePanel>
+      )}
+
+      {action === "changePackageConstraints" && (
+        <LocalSidePanel close={close} size="medium">
+          <PackageProfileConstraintsEditSidePanel />
+        </LocalSidePanel>
+      )}
+
+      {action === "duplicate" && (
+        <LocalSidePanel close={close}>
+          <PackageProfileDuplicateSidePanel />
+        </LocalSidePanel>
+      )}
+
+      {action === "edit" && (
+        <LocalSidePanel close={close}>
+          <PackageProfileEditSidePanel />
+        </LocalSidePanel>
+      )}
+
+      {action === "view" && (
+        <LocalSidePanel close={close} size="medium">
+          <PackageProfileDetails />
+        </LocalSidePanel>
+      )}
     </>
   );
 };

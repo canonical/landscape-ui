@@ -5,5 +5,4 @@
 export type UrlParams = {
   instanceId: string;
   childInstanceId: string;
-  packageProfileName: string;
 };

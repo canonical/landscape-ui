@@ -1,54 +1,39 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { LocalSidePanelHeader } from "@/components/layout/LocalSidePanel";
-import type { UrlParams } from "@/types/UrlParams";
-import { SidePanel } from "@canonical/react-components";
+import { LocalSidePanelBody } from "@/components/layout/LocalSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import { useParams } from "react-router";
 import { usePackageProfiles } from "../../hooks";
 import PackageProfileDuplicateForm from "../PackageProfileDuplicateForm";
 
 const PackageProfileDuplicateSidePanel: FC = () => {
-  const { packageProfileName } = useParams<UrlParams>();
+  const { packageProfile: packageProfileName } = usePageParams();
 
   const { getPackageProfilesQuery } = usePackageProfiles();
 
   const {
     data: getPackageProfilesQueryResponse,
-    isPending: isPendingPackageProfiles,
-  } = getPackageProfilesQuery(
-    { names: [packageProfileName as string] },
-    { enabled: !!packageProfileName },
-  );
+    isPending: isLoadingPackageProfiles,
+    error: packageProfilesError,
+  } = getPackageProfilesQuery({ names: [packageProfileName] });
 
-  if (isPendingPackageProfiles) {
+  if (isLoadingPackageProfiles) {
     return (
-      <>
-        <LocalSidePanelHeader root=".." />
-
-        <SidePanel.Content>
-          <LoadingState />
-        </SidePanel.Content>
-      </>
+      <LocalSidePanelBody>
+        <LoadingState />
+      </LocalSidePanelBody>
     );
   }
 
-  const packageProfile = getPackageProfilesQueryResponse?.data.result[0];
-
-  if (!packageProfile) {
-    throw new Error("The package profile could not be found.");
+  if (packageProfilesError) {
+    throw packageProfilesError;
   }
 
-  return (
-    <>
-      <LocalSidePanelHeader
-        root=".."
-        title={`Duplicate ${packageProfile.title}`}
-      />
+  const [packageProfile] = getPackageProfilesQueryResponse.data.result;
 
-      <SidePanel.Content>
-        <PackageProfileDuplicateForm profile={packageProfile} />
-      </SidePanel.Content>
-    </>
+  return (
+    <LocalSidePanelBody title={`Duplicate ${packageProfile.title}`}>
+      <PackageProfileDuplicateForm profile={packageProfile} />
+    </LocalSidePanelBody>
   );
 };
 

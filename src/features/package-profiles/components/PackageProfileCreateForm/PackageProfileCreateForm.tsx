@@ -1,12 +1,12 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { LocalSidePanelHeader } from "@/components/layout/LocalSidePanel";
+import { LocalSidePanelBody } from "@/components/layout/LocalSidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { Form, Input, Select, SidePanel } from "@canonical/react-components";
+import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import type { CreatePackageProfileParams } from "../../hooks";
@@ -18,7 +18,7 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 const PackageProfileCreateForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { createPackageProfileQuery } = usePackageProfiles();
 
@@ -31,6 +31,10 @@ const PackageProfileCreateForm: FC = () => {
     })) ?? [];
 
   const { mutateAsync: createPackageProfile } = createPackageProfileQuery;
+
+  const close = () => {
+    setPageParams({ action: "", packageProfile: "" });
+  };
 
   const handleSubmit = async (values: AddFormProps) => {
     const valuesToProfileCreation: CreatePackageProfileParams = {
@@ -63,7 +67,7 @@ const PackageProfileCreateForm: FC = () => {
     try {
       await createPackageProfile(valuesToProfileCreation);
 
-      closeSidePanel();
+      close();
 
       notify.success({
         message: `Profile "${values.title}" added successfully`,
@@ -81,58 +85,55 @@ const PackageProfileCreateForm: FC = () => {
   });
 
   return (
-    <>
-      <LocalSidePanelHeader root=".." title="Add package profile" />
+    <LocalSidePanelBody title="Add package profile">
+      <Form onSubmit={formik.handleSubmit} noValidate>
+        <Input
+          type="text"
+          label="Title"
+          required
+          {...formik.getFieldProps("title")}
+          error={
+            formik.touched.title && formik.errors.title
+              ? formik.errors.title
+              : undefined
+          }
+        />
 
-      <SidePanel.Content>
-        <Form onSubmit={formik.handleSubmit} noValidate>
-          <Input
-            type="text"
-            label="Title"
-            required
-            {...formik.getFieldProps("title")}
-            error={
-              formik.touched.title && formik.errors.title
-                ? formik.errors.title
-                : undefined
-            }
-          />
+        <Input
+          type="text"
+          label="Description"
+          required
+          autoComplete="off"
+          {...formik.getFieldProps("description")}
+          error={
+            formik.touched.description && formik.errors.description
+              ? formik.errors.description
+              : undefined
+          }
+        />
 
-          <Input
-            type="text"
-            label="Description"
-            required
-            autoComplete="off"
-            {...formik.getFieldProps("description")}
-            error={
-              formik.touched.description && formik.errors.description
-                ? formik.errors.description
-                : undefined
-            }
-          />
+        <Select
+          label="Access group"
+          {...formik.getFieldProps("access_group")}
+          options={accessGroupOptions}
+          error={
+            formik.touched.access_group && formik.errors.access_group
+              ? formik.errors.access_group
+              : undefined
+          }
+        />
 
-          <Select
-            label="Access group"
-            {...formik.getFieldProps("access_group")}
-            options={accessGroupOptions}
-            error={
-              formik.touched.access_group && formik.errors.access_group
-                ? formik.errors.access_group
-                : undefined
-            }
-          />
+        <AssociationBlock formik={formik} />
 
-          <AssociationBlock formik={formik} />
+        <PackageProfileConstraintsTypeBlock formik={formik} />
 
-          <PackageProfileConstraintsTypeBlock formik={formik} />
-
-          <SidePanelFormButtons
-            submitButtonDisabled={formik.isSubmitting}
-            submitButtonText="Add package profile"
-          />
-        </Form>
-      </SidePanel.Content>
-    </>
+        <SidePanelFormButtons
+          submitButtonDisabled={formik.isSubmitting}
+          submitButtonText="Add package profile"
+          onCancel={close}
+        />
+      </Form>
+    </LocalSidePanelBody>
   );
 };
 

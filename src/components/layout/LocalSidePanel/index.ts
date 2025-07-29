@@ -1,2 +1,2 @@
-export { default as LocalSidePanelHeader } from "./components/Header";
+export { default as LocalSidePanelBody } from "./components/Body";
 export { default } from "./LocalSidePanel";

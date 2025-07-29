@@ -129,4 +129,14 @@ export const PARAMS_CONFIG: ParamsConfig = [
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,
   },
+  {
+    urlParam: "action",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_EMPTY_STRING,
+  },
+  {
+    urlParam: "packageProfile",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_EMPTY_STRING,
+  },
 ];

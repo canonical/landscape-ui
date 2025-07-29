@@ -1,14 +1,12 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { LocalSidePanelHeader } from "@/components/layout/LocalSidePanel";
-import type { UrlParams } from "@/types/UrlParams";
-import { SidePanel } from "@canonical/react-components";
+import { LocalSidePanelBody } from "@/components/layout/LocalSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import { useParams } from "react-router";
 import { usePackageProfiles } from "../../hooks";
 import PackageProfileConstraintsEditForm from "../PackageProfileConstraintsEditForm";
 
 const PackageProfileConstraintsEditSidePanel: FC = () => {
-  const { packageProfileName } = useParams<UrlParams>();
+  const { packageProfile: packageProfileName } = usePageParams();
 
   const { getPackageProfilesQuery } = usePackageProfiles();
 
@@ -22,13 +20,9 @@ const PackageProfileConstraintsEditSidePanel: FC = () => {
 
   if (isPendingPackageProfiles) {
     return (
-      <>
-        <LocalSidePanelHeader root=".." />
-
-        <SidePanel.Content>
-          <LoadingState />
-        </SidePanel.Content>
-      </>
+      <LocalSidePanelBody>
+        <LoadingState />
+      </LocalSidePanelBody>
     );
   }
 
@@ -39,16 +33,11 @@ const PackageProfileConstraintsEditSidePanel: FC = () => {
   }
 
   return (
-    <>
-      <LocalSidePanelHeader
-        root=".."
-        title={`Change ${packageProfile.title} package constraints`}
-      />
-
-      <SidePanel.Content>
-        <PackageProfileConstraintsEditForm profile={packageProfile} />
-      </SidePanel.Content>
-    </>
+    <LocalSidePanelBody
+      title={`Change ${packageProfile.title} package constraints`}
+    >
+      <PackageProfileConstraintsEditForm profile={packageProfile} />
+    </LocalSidePanelBody>
   );
 };
 

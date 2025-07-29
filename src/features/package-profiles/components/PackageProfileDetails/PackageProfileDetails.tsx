@@ -1,16 +1,14 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
-import { LocalSidePanelHeader } from "@/components/layout/LocalSidePanel";
+import { LocalSidePanelBody } from "@/components/layout/LocalSidePanel";
 import useDebug from "@/hooks/useDebug";
-import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import type { UrlParams } from "@/types/UrlParams";
 import { pluralize } from "@/utils/_helpers";
-import { Button, Icon, ICONS, SidePanel } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
-import { useParams } from "react-router";
 import { useBoolean } from "usehooks-ts";
 import { usePackageProfiles } from "../../hooks";
 import PackageProfileAssociatedInstancesLink from "../PackageProfileAssociatedInstancesLink";
@@ -18,9 +16,8 @@ import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraint
 
 const PackageProfileDetails: FC = () => {
   const debug = useDebug();
-  const navigateWithSearch = useNavigateWithSearch();
   const { notify } = useNotify();
-  const { packageProfileName } = useParams<UrlParams>();
+  const { packageProfile: packageProfileName, setPageParams } = usePageParams();
   const { getPackageProfilesQuery, removePackageProfileQuery } =
     usePackageProfiles();
   const { getAccessGroupQuery } = useRoles();
@@ -34,7 +31,7 @@ const PackageProfileDetails: FC = () => {
     isPending: isPendingPackageProfiles,
   } = getPackageProfilesQuery(
     { names: [packageProfileName as string] },
-    { enabled: !!packageProfileName },
+    { enabled: !!packageProfileName && !isRemoving },
   );
 
   const {
@@ -43,15 +40,15 @@ const PackageProfileDetails: FC = () => {
     setFalse: handleCloseModal,
   } = useBoolean();
 
+  const close = () => {
+    setPageParams({ action: "", packageProfile: "" });
+  };
+
   if (isPendingPackageProfiles) {
     return (
-      <>
-        <LocalSidePanelHeader root=".." />
-
-        <SidePanel.Content>
-          <LoadingState />
-        </SidePanel.Content>
-      </>
+      <LocalSidePanelBody>
+        <LoadingState />
+      </LocalSidePanelBody>
     );
   }
 
@@ -65,7 +62,7 @@ const PackageProfileDetails: FC = () => {
     try {
       await removePackageProfile({ name: profile.name });
 
-      navigateWithSearch("..");
+      close();
 
       notify.success({
         message: `Package profile "${profile.name}" removed successfully.`,
@@ -79,97 +76,93 @@ const PackageProfileDetails: FC = () => {
   };
 
   const handlePackageProfileEdit = () => {
-    navigateWithSearch(`../edit/${packageProfileName}`);
+    setPageParams({ action: "edit" });
   };
 
   const handlePackageProfileDuplicate = () => {
-    navigateWithSearch(`../duplicate/${packageProfileName}`);
+    setPageParams({ action: "duplicate" });
   };
 
   return (
-    <>
-      <LocalSidePanelHeader root=".." title={profile.title} />
+    <LocalSidePanelBody title={profile.title}>
+      <div className="p-segmented-control">
+        <Button
+          type="button"
+          hasIcon
+          className="p-segmented-control__button u-no-margin"
+          onClick={handlePackageProfileDuplicate}
+        >
+          <Icon name="canvas" />
+          <span>Duplicate profile</span>
+        </Button>
+        <Button
+          type="button"
+          hasIcon
+          className="p-segmented-control__button u-no-margin"
+          onClick={handlePackageProfileEdit}
+        >
+          <Icon name="edit" />
+          <span>Edit</span>
+        </Button>
+        <Button
+          className="p-segmented-control__button u-no-margin"
+          hasIcon
+          type="button"
+          onClick={handleOpenModal}
+          aria-label={`Remove ${profile.title} package profile`}
+        >
+          <Icon name={ICONS.delete} />
+          <span>Remove</span>
+        </Button>
+      </div>
 
-      <SidePanel.Content>
-        <div className="p-segmented-control">
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button u-no-margin"
-            onClick={handlePackageProfileDuplicate}
-          >
-            <Icon name="canvas" />
-            <span>Duplicate profile</span>
-          </Button>
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button u-no-margin"
-            onClick={handlePackageProfileEdit}
-          >
-            <Icon name="edit" />
-            <span>Edit</span>
-          </Button>
-          <Button
-            className="p-segmented-control__button u-no-margin"
-            hasIcon
-            type="button"
-            onClick={handleOpenModal}
-            aria-label={`Remove ${profile.title} package profile`}
-          >
-            <Icon name={ICONS.delete} />
-            <span>Remove</span>
-          </Button>
-        </div>
+      <InfoGrid spaced>
+        <InfoGrid.Item label="Title" value={profile.title} />
 
-        <InfoGrid spaced>
-          <InfoGrid.Item label="Title" value={profile.title} />
+        <InfoGrid.Item label="Name" value={profile.name} />
 
-          <InfoGrid.Item label="Name" value={profile.name} />
+        <InfoGrid.Item label="Description" value={profile.description} />
 
-          <InfoGrid.Item label="Description" value={profile.description} />
+        <InfoGrid.Item
+          label="Access group"
+          value={
+            accessGroups.find((group) => group.name === profile.access_group)
+              ?.title ?? profile.access_group
+          }
+        />
 
-          <InfoGrid.Item
-            label="Access group"
-            value={
-              accessGroups.find((group) => group.name === profile.access_group)
-                ?.title ?? profile.access_group
-            }
-          />
+        <InfoGrid.Item
+          label="Tags"
+          large
+          value={profile.tags.join(", ") || null}
+          type="truncated"
+        />
 
-          <InfoGrid.Item
-            label="Tags"
-            large
-            value={profile.tags.join(", ") || null}
-            type="truncated"
-          />
+        <InfoGrid.Item
+          label="Associated to"
+          value={
+            <PackageProfileAssociatedInstancesLink packageProfile={profile} />
+          }
+        />
 
-          <InfoGrid.Item
-            label="Associated to"
-            value={
-              <PackageProfileAssociatedInstancesLink packageProfile={profile} />
-            }
-          />
+        <InfoGrid.Item
+          label="Pending on"
+          value={`${profile.computers.pending?.length ?? 0} ${pluralize(
+            profile.computers.pending.length,
+            "instance",
+          )}`}
+        />
 
-          <InfoGrid.Item
-            label="Pending on"
-            value={`${profile.computers.pending?.length ?? 0} ${pluralize(
-              profile.computers.pending.length,
-              "instance",
-            )}`}
-          />
+        <InfoGrid.Item
+          label="Not compliant on"
+          value={`${profile.computers["non-compliant"].length} ${pluralize(
+            profile.computers["non-compliant"].length,
+            "instance",
+          )}`}
+        />
+      </InfoGrid>
 
-          <InfoGrid.Item
-            label="Not compliant on"
-            value={`${profile.computers["non-compliant"].length} ${pluralize(
-              profile.computers["non-compliant"].length,
-              "instance",
-            )}`}
-          />
-        </InfoGrid>
-
-        <PackageProfileDetailsConstraints profile={profile} />
-      </SidePanel.Content>
+      <PackageProfileDetailsConstraints profile={profile} />
 
       <TextConfirmationModal
         isOpen={modalOpen}
@@ -187,7 +180,7 @@ const PackageProfileDetails: FC = () => {
           <b>irreversible</b>.
         </p>
       </TextConfirmationModal>
-    </>
+    </LocalSidePanelBody>
   );
 };
 

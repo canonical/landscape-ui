@@ -1,8 +1,8 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
 import useDebug from "@/hooks/useDebug";
-import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -18,7 +18,7 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const navigateWithSearch = useNavigateWithSearch();
+  const { setPageParams } = usePageParams();
 
   const { removePackageProfileQuery } = usePackageProfiles();
 
@@ -31,18 +31,19 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
   const { mutateAsync: removePackageProfile, isPending: isRemoving } =
     removePackageProfileQuery;
 
-  const encodedName = encodeURIComponent(profile.name);
-
   const handleConstraintsChange = () => {
-    navigateWithSearch(`change-package-constraints/${encodedName}`);
+    setPageParams({
+      action: "changePackageConstraints",
+      packageProfile: profile.name,
+    });
   };
 
   const handlePackageProfileEdit = () => {
-    navigateWithSearch(`edit/${encodedName}`);
+    setPageParams({ action: "edit", packageProfile: profile.name });
   };
 
   const handlePackageProfileDuplicate = () => {
-    navigateWithSearch(`duplicate/${encodedName}`);
+    setPageParams({ action: "duplicate", packageProfile: profile.name });
   };
 
   const handleRemovePackageProfile = async () => {

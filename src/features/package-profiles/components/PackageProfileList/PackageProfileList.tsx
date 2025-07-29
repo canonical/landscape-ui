@@ -6,7 +6,6 @@ import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
-import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { SelectOption } from "@/types/SelectOption";
@@ -29,8 +28,7 @@ interface PackageProfileListProps {
 const PackageProfileList: FC<PackageProfileListProps> = ({
   packageProfiles,
 }) => {
-  const { search } = usePageParams();
-  const navigateWithSearch = useNavigateWithSearch();
+  const { search, setPageParams } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
@@ -44,7 +42,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
     })) ?? [];
 
   const handlePackageProfileDetailsOpen = (profile: PackageProfile) => {
-    navigateWithSearch(`view/${encodeURIComponent(profile.name)}`);
+    setPageParams({ action: "view", packageProfile: profile.name });
   };
 
   const profiles = useMemo(() => {

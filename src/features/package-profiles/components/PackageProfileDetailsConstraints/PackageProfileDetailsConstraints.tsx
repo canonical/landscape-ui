@@ -1,7 +1,7 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
+import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
@@ -21,7 +21,7 @@ const PackageProfileDetailsConstraints: FC<
   const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState("");
 
-  const navigateWithSearch = useNavigateWithSearch();
+  const { setPageParams } = usePageParams();
   const { getPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const {
@@ -35,9 +35,7 @@ const PackageProfileDetailsConstraints: FC<
   });
 
   const handlePackageConstraintsChange = () => {
-    navigateWithSearch(
-      `../change-package-constraints/${encodeURIComponent(profile.name)}`,
-    );
+    setPageParams({ action: "changePackageConstraints" });
   };
 
   return (

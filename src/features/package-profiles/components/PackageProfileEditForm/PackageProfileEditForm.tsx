@@ -1,9 +1,8 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
-import useNavigateWithSearch from "@/hooks/useNavigateWithSearch";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -19,12 +18,15 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
   profile,
 }) => {
   const debug = useDebug();
-  const navigateWithSearch = useNavigateWithSearch();
+  const { setPageParams } = usePageParams();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
   const { editPackageProfileQuery } = usePackageProfiles();
 
   const { mutateAsync: editPackageProfile } = editPackageProfileQuery;
+
+  const close = () => {
+    setPageParams({ action: "", packageProfile: "" });
+  };
 
   const handleSubmit = async (values: EditFormProps) => {
     try {
@@ -34,7 +36,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
         tags: values.all_computers ? [] : values.tags,
       });
 
-      closeSidePanel();
+      close();
 
       notify.success({
         message: `Package profile "${profile.title}" updated successfully`,
@@ -58,11 +60,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
   });
 
   const goBack = () => {
-    navigateWithSearch(`../view/${encodeURIComponent(profile.name)}`);
-  };
-
-  const cancel = () => {
-    navigateWithSearch("..");
+    setPageParams({ action: "view" });
   };
 
   return (
@@ -87,11 +85,11 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Save changes"
         hasBackButton
         onBackButtonPress={goBack}
-        onCancel={cancel}
+        onCancel={close}
       />
     </Form>
   );
