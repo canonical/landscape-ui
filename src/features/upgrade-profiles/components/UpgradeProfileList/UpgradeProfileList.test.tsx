@@ -28,7 +28,7 @@ describe("UpgradeProfileList", () => {
       upgradeProfiles.forEach(async (profile) => {
         expect(screen.getByText(profile.title)).toBeInTheDocument();
         expect(
-          screen.getByLabelText(`${profile.name} profile actions`),
+          screen.getByLabelText(`${profile.title} profile actions`),
         ).toBeInTheDocument();
       });
     });
