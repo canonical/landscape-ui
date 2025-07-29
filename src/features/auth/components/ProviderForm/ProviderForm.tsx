@@ -1,17 +1,31 @@
+import CheckboxGroup from "@/components/form/CheckboxGroup";
+import useDebug from "@/hooks/useDebug";
+import useSidePanel from "@/hooks/useSidePanel";
+import {
+  Button,
+  Form,
+  Icon,
+  Input,
+  Tooltip,
+} from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useEffect } from "react";
-import { Form, Icon, Input, Tooltip } from "@canonical/react-components";
-import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import { Link } from "react-router";
 import type { AddProviderParams } from "../../hooks";
 import { useAuthHandle } from "../../hooks";
 import type { IdentityProvider, SupportedIdentityProvider } from "../../types";
 import ProviderFormCta from "../ProviderFormCta";
-import { INITIAL_VALUES } from "./constants";
+import {
+  INITIAL_VALUES,
+  SCOPES_DEFAULT_VALUES,
+  SCOPES_OPTIONS,
+} from "./constants";
 import { getValidationSchema } from "./helpers";
-import type { ProviderFormValues } from "./types";
 import classes from "./ProviderForm.module.scss";
+import type { ProviderFormValues } from "./types";
+import { useCopyToClipboard } from "usehooks-ts";
+import { getFormikError } from "@/utils/formikErrors";
 
 type ProvideFormProps =
   | {
@@ -27,6 +41,7 @@ type ProvideFormProps =
 const ProviderForm: FC<ProvideFormProps> = (props) => {
   const { action, provider } = props;
 
+  const [, copy] = useCopyToClipboard();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const {
@@ -116,14 +131,29 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       {(action !== "edit" || provider.provider !== "ubuntu-one") && (
-        <div className={classes.urlContainer}>
-          <span>Redirect URL </span>
+        <div className={classes.container}>
+          <span>Callback URL </span>
           <Icon name="information" />
-          <code className={classes.url}>
-            {action === "add"
-              ? provider.redirect_uri
-              : getSingleProviderQueryResult?.data.redirect_uri}
-          </code>
+          <div className={classes.urlContainer}>
+            <code className={classes.url}>
+              {action === "add"
+                ? provider.redirect_uri
+                : getSingleProviderQueryResult?.data.redirect_uri}
+            </code>
+            <Button
+              className={classes.copyButton}
+              type="button"
+              onClick={() => {
+                copy(
+                  action === "add"
+                    ? (provider.redirect_uri ?? "")
+                    : (getSingleProviderQueryResult?.data.redirect_uri ?? ""),
+                );
+              }}
+            >
+              copy
+            </Button>
+          </div>
           <p className="p-text--small u-text--muted u-no-margin--bottom">
             You will need to set this in the configuration of your identity
             provider.
@@ -157,11 +187,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
             required
             {...formik.getFieldProps("name")}
             autoComplete="off"
-            error={
-              formik.touched.name && formik.errors.name
-                ? formik.errors.name
-                : undefined
-            }
+            error={getFormikError(formik, "name")}
           />
           <Input
             type="text"
@@ -169,11 +195,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
             required
             {...formik.getFieldProps("client_id")}
             autoComplete="off"
-            error={
-              formik.touched.client_id && formik.errors.client_id
-                ? formik.errors.client_id
-                : undefined
-            }
+            error={getFormikError(formik, "client_id")}
           />
           <Input
             type="text"
@@ -181,11 +203,32 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
             required
             {...formik.getFieldProps("client_secret")}
             autoComplete="off"
-            error={
-              formik.touched.client_secret && formik.errors.client_secret
-                ? formik.errors.client_secret
-                : undefined
+            error={getFormikError(formik, "client_secret")}
+          />
+
+          <CheckboxGroup
+            label="Scopes"
+            name="scopes"
+            help={
+              <>
+                Scopes control which user attributes (Claims) the Landscape gets
+                access to. Read more about Scopes in the{" "}
+                <Link
+                  to="https://openid.net/specs/openid-connect-basic-1_0.html#Scopes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  OIDC docs
+                </Link>
+                .
+              </>
             }
+            options={SCOPES_OPTIONS}
+            value={SCOPES_DEFAULT_VALUES}
+            disabled={true}
+            onChange={() => {
+              return;
+            }}
           />
           <Input
             type="url"
@@ -193,11 +236,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
             required
             {...formik.getFieldProps("issuer")}
             autoComplete="off"
-            error={
-              formik.touched.issuer && formik.errors.issuer
-                ? formik.errors.issuer
-                : undefined
-            }
+            error={getFormikError(formik, "issuer")}
           />
         </>
       )}

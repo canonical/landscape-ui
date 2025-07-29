@@ -23,7 +23,7 @@ describe("ProviderForm", () => {
       <ProviderForm action="add" provider={supportedProviders[0]} />,
     );
 
-    expect(screen.getByText("Redirect URL")).toBeInTheDocument();
+    expect(screen.getByText("Callback URL")).toBeInTheDocument();
 
     expect(
       screen.getByText(
@@ -51,7 +51,7 @@ describe("ProviderForm", () => {
       />,
     );
 
-    expect(screen.getByText("Redirect URL")).toBeInTheDocument();
+    expect(screen.getByText("Callback URL")).toBeInTheDocument();
 
     expect(
       screen.getByRole("checkbox", { name: "Enabled" }),
@@ -78,7 +78,7 @@ describe("ProviderForm", () => {
       <ProviderForm action="edit" provider={ubuntuOneProvider} canBeDisabled />,
     );
 
-    expect(screen.queryByText("Redirect URL")).not.toBeInTheDocument();
+    expect(screen.queryByText("Callback URL")).not.toBeInTheDocument();
 
     expect(
       screen.getByRole("checkbox", { name: "Enabled" }),

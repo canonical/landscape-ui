@@ -1,7 +1,7 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.urlContainer {
+.container {
   border: 1px solid $colors--theme--border-default;
   margin-bottom: $spv--medium;
   padding: $sp-medium;
@@ -11,6 +11,18 @@
   display: block;
   margin-bottom: $spv--medium;
   margin-top: $spv--medium;
-  overflow-x: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.copyButton {
+  margin: 0;
+  padding: 0 $sph--small;
+}
+
+.urlContainer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
 }
