@@ -32,13 +32,6 @@ describe("EmployeeDetails", () => {
       { label: "name", value: employeeWithoutInstances.name },
       { label: "email", value: employeeWithoutInstances.email },
       {
-        label: "employee groups",
-        value:
-          employeeWithoutInstances.groups
-            ?.map((group) => group.name)
-            .join(", ") || "N/A",
-      },
-      {
         label: "status",
         value: employeeWithoutInstances.is_active ? "Active" : "Inactive",
       },

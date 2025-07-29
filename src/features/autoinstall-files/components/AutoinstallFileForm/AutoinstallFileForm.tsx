@@ -58,7 +58,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
         closeSidePanel();
 
         notify.success({
-          message: `${filename} ${notification.message}`,
+          message: `The autoinstall file ${filename} ${notification.message}`,
           title: `${notification.title} ${filename}`,
         });
       } catch (error) {

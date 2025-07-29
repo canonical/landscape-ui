@@ -20,7 +20,7 @@ const AutoinstallFileForm = lazy(async () =>
 );
 
 const AutoinstallFilesPanel: FC = () => {
-  const { currentPage, employeeGroups, pageSize, search } = usePageParams();
+  const { currentPage, pageSize, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const { addAutoinstallFile } = useAddAutoinstallFile();
@@ -29,8 +29,6 @@ const AutoinstallFilesPanel: FC = () => {
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
       with_groups: true,
-      employee_group_ids:
-        employeeGroups.length > 0 ? employeeGroups.map(Number) : undefined,
       search,
     });
 
@@ -49,12 +47,7 @@ const AutoinstallFilesPanel: FC = () => {
     );
   };
 
-  if (
-    !autoinstallFiles.length &&
-    !search &&
-    employeeGroups.length === 0 &&
-    !isAutoinstallFilesLoading
-  ) {
+  if (!autoinstallFiles.length && !search && !isAutoinstallFilesLoading) {
     return (
       <EmptyState
         icon="file"

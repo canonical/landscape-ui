@@ -8,7 +8,6 @@ import auth from "./auth";
 import autoinstallFiles from "./autoinstallFiles";
 import availabilityZones from "./availabilityZones";
 import distributions from "./distributions";
-import employeeGroups from "./employeeGroups";
 import employees from "./employees";
 import eventsLog from "./eventsLog";
 import features from "./features";
@@ -46,7 +45,6 @@ export default [
   ...availabilityZones,
   ...distributions,
   ...employees,
-  ...employeeGroups,
   ...eventsLog,
   ...gpgKey,
   ...instance,

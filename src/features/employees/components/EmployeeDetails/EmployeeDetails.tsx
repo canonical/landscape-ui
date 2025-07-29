@@ -25,15 +25,6 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
       </Row>
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>
-          <InfoItem
-            label="employee groups"
-            value={
-              employee.groups?.map((group) => group.name)?.join(", ") || "N/A"
-            }
-            type="truncated"
-          />
-        </Col>
-        <Col size={6}>
           <InfoItem label="status" value={getStatusText(employee)} />
         </Col>
       </Row>

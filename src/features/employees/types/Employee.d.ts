@@ -1,5 +1,4 @@
 import type { AutoinstallFile } from "@/features/autoinstall-files";
-import type { EmployeeGroup } from "@/features/employee-groups";
 import type { Instance } from "@/types/Instance";
 
 export interface Employee extends Record<string, unknown> {
@@ -11,7 +10,6 @@ export interface Employee extends Record<string, unknown> {
   is_active: boolean;
   autoinstall_file: AutoinstallFile | null;
   computers: Instance[] | null;
-  groups: EmployeeGroup[] | null;
 }
 
 export interface RecoveryKey {

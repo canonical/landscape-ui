@@ -161,9 +161,6 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
                       <div className="u-truncate" data-testid="dropdownElement">
                         {boldSubstring(item.name, search)}
                       </div>
-                      <small className="u-text-muted">
-                        {item.groups?.map((group) => group.name).join(", ")}
-                      </small>
                     </li>
                   ))
                 )}
@@ -186,11 +183,6 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
           >
             <div>
               <div>{employee.name}</div>
-              <span>
-                <small className="u-text--muted p-text--small">
-                  {employee.groups?.map((group) => group.name).join(", ")}
-                </small>
-              </span>
             </div>
             <Button
               type="button"

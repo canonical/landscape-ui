@@ -13,7 +13,7 @@ import { useMemo } from "react";
 import { EMPLOYEE_LIMIT, EMPTY_STATE } from "./constants";
 
 const EmployeesPanel: FC = () => {
-  const { status, employeeGroups, autoinstallFiles, search } = usePageParams();
+  const { status, autoinstallFiles, search } = usePageParams();
 
   const { employees, isPending, count } = useGetEmployees();
 
@@ -24,7 +24,6 @@ const EmployeesPanel: FC = () => {
   if (
     !isPending &&
     count === 0 &&
-    employeeGroups.length === 0 &&
     autoinstallFiles.length === 0 &&
     status === "" &&
     search === ""

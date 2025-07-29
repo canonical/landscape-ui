@@ -26,7 +26,7 @@ const AutoinstallFileDeleteModal: FC<AutoinstallFileDeleteModalProps> = ({
     closeSidePanel();
 
     notify.success({
-      message: `The ${autoinstallFile.filename} autoinstall file has been permanently removed. All employee groups associated with this file are now using the default autoinstall file.`,
+      message: `The autoinstall file ${autoinstallFile.filename} has been permanently removed. All Employee accounts previously relying on it through identity provider group assignments will now fall back to the default autoinstall file.`,
       title: `You have successfully removed ${autoinstallFile.filename} autoinstall file.`,
     });
   };
@@ -41,8 +41,9 @@ const AutoinstallFileDeleteModal: FC<AutoinstallFileDeleteModalProps> = ({
     >
       <p>
         You are about to remove {autoinstallFile.filename}, an autoinstall file.
-        This action is irreversible. All employee groups this file is associated
-        with, will have the default autoinstall file associated instead.
+        This action is irreversible. All Employee accounts previously assigned
+        this file via identity provider will instead use the default autoinstall
+        file.
       </p>
     </ConfirmationModal>
   );

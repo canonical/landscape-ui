@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe } from "vitest";
 import AutoinstallFileForm from "./AutoinstallFileForm";
+import { ADD_AUTOINSTALL_FILE_NOTIFICATION } from "@/pages/dashboard/settings/employees/tabs/autoinstall-files";
 
 describe("AutoinstallFileForm", () => {
   const props: ComponentProps<typeof AutoinstallFileForm> = {
@@ -13,7 +14,7 @@ describe("AutoinstallFileForm", () => {
       contents: "echo 'Hello, world!'",
       filename: "autoinstall.yaml",
     },
-    notification: { message: "has been added.", title: "You have added" },
+    notification: ADD_AUTOINSTALL_FILE_NOTIFICATION,
     onSubmit: vi.fn(),
   };
 
@@ -26,7 +27,7 @@ describe("AutoinstallFileForm", () => {
 
     expect(
       screen.getByText(
-        `${props.initialFile?.filename} ${props.notification.message}`,
+        `The autoinstall file ${props.initialFile?.filename} ${props.notification.message}`,
       ),
     ).toBeInTheDocument();
 

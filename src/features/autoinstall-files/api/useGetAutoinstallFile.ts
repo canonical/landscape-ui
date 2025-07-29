@@ -2,7 +2,7 @@ import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { AutoinstallFile, WithGroups, WithMetadata } from "../types";
+import type { AutoinstallFile, WithMetadata } from "../types";
 
 export interface GetAutoinstallFileParams {
   id: number;
@@ -13,7 +13,6 @@ export interface GetAutoinstallFileParams {
 
 export type GetAutoinstallFileResult<T extends GetAutoinstallFileParams> =
   AutoinstallFile &
-    (T extends { with_groups: true } ? WithGroups<AutoinstallFile> : object) &
     (T extends { with_metadata: true }
       ? WithMetadata<AutoinstallFile>
       : object);

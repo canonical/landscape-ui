@@ -8,29 +8,12 @@ import {
   getAutoinstallFileOptions,
   useGetAutoinstallFiles,
 } from "@/features/autoinstall-files";
-import {
-  EmployeeGroupsFilter,
-  getEmployeeGroupOptions,
-  useGetEmployeeGroups,
-} from "@/features/employee-groups";
 import { type FC, useMemo } from "react";
 import { STATUS_OPTIONS } from "./constants";
 import classes from "./EmployeesPanelHeader.module.scss";
 
 const EmployeesPanelHeader: FC = () => {
-  const { employeeGroups } = useGetEmployeeGroups(
-    {},
-    {
-      listenToUrlParams: false,
-    },
-  );
-
   const { autoinstallFiles } = useGetAutoinstallFiles();
-
-  const employeeGroupOptions = useMemo(
-    () => getEmployeeGroupOptions(employeeGroups),
-    [employeeGroups],
-  );
 
   const autoinstallFileOptions = useMemo(
     () => getAutoinstallFileOptions(autoinstallFiles),
@@ -42,7 +25,6 @@ const EmployeesPanelHeader: FC = () => {
       <HeaderWithSearch
         actions={
           <div className={classes.filters}>
-            <EmployeeGroupsFilter options={employeeGroupOptions} />
             <AutoinstallFilesFilter
               label="Autoinstall files"
               options={autoinstallFileOptions}
@@ -52,13 +34,7 @@ const EmployeesPanelHeader: FC = () => {
         }
       />
       <TableFilterChips
-        filtersToDisplay={[
-          "autoinstallFiles",
-          "employeeGroups",
-          "search",
-          "status",
-        ]}
-        employeeGroupOptions={employeeGroupOptions}
+        filtersToDisplay={["autoinstallFiles", "search", "status"]}
         autoinstallFileOptions={autoinstallFileOptions}
         statusOptions={STATUS_OPTIONS}
       />

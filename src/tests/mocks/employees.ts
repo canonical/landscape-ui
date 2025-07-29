@@ -1,7 +1,5 @@
-import type { ConfigurationLimit } from "@/features/employee-groups";
 import type { Employee, RecoveryKey } from "@/features/employees";
 import { instances } from "./instance";
-import { employeeGroups } from "./employeeGroups";
 
 export const employees: Employee[] = [
   {
@@ -14,7 +12,6 @@ export const employees: Employee[] = [
     autoinstall_file: {
       id: 1,
       created_at: "2021-09-01T00:00:00Z",
-      employeeGroupsAssociated: ["Marketing"],
       events: [],
       filename: "high-security-policy.yaml",
       is_default: false,
@@ -23,7 +20,6 @@ export const employees: Employee[] = [
       contents: "echo 'Hello World'",
     },
     computers: instances,
-    groups: employeeGroups,
   },
   {
     id: 2,
@@ -51,8 +47,4 @@ export const employees: Employee[] = [
 
 export const recoveryKey: RecoveryKey = {
   fde_recovery_key: "recovery-key",
-};
-
-export const configurationLimit: ConfigurationLimit = {
-  limit: 100_000,
 };
