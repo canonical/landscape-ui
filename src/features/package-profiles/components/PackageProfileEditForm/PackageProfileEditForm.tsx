@@ -3,6 +3,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
+import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -69,11 +70,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
         type="text"
         label="Title"
         {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
       />
 
       <Input

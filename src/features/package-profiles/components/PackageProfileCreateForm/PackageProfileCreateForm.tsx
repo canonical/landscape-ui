@@ -6,6 +6,7 @@ import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { SelectOption } from "@/types/SelectOption";
+import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -92,11 +93,7 @@ const PackageProfileCreateForm: FC = () => {
           label="Title"
           required
           {...formik.getFieldProps("title")}
-          error={
-            formik.touched.title && formik.errors.title
-              ? formik.errors.title
-              : undefined
-          }
+          error={getFormikError(formik, "title")}
         />
 
         <Input
@@ -105,22 +102,14 @@ const PackageProfileCreateForm: FC = () => {
           required
           autoComplete="off"
           {...formik.getFieldProps("description")}
-          error={
-            formik.touched.description && formik.errors.description
-              ? formik.errors.description
-              : undefined
-          }
+          error={getFormikError(formik, "description")}
         />
 
         <Select
           label="Access group"
           {...formik.getFieldProps("access_group")}
           options={accessGroupOptions}
-          error={
-            formik.touched.access_group && formik.errors.access_group
-              ? formik.errors.access_group
-              : undefined
-          }
+          error={getFormikError(formik, "access_group")}
         />
 
         <AssociationBlock formik={formik} />

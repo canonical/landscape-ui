@@ -123,7 +123,6 @@ export default function usePackageProfiles() {
   >({
     mutationFn: async (params) =>
       authFetchOld.get("RemovePackageProfile", { params }),
-
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });

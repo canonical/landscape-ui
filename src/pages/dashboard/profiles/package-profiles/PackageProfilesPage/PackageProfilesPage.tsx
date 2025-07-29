@@ -50,7 +50,7 @@ const PackageProfilesPage: FC = () => {
   ]);
 
   const handleAddPackageProfile = () => {
-    setPageParams({ action: "add" });
+    setPageParams({ action: "add", packageProfile: "" });
   };
 
   const close = () => {
@@ -58,25 +58,23 @@ const PackageProfilesPage: FC = () => {
   };
 
   return (
-    <>
-      <PageMain>
-        <PageHeader
-          title="Package profiles"
-          actions={[
-            <Button
-              type="button"
-              key="add-package-profile"
-              appearance="positive"
-              onClick={handleAddPackageProfile}
-            >
-              Add package profile
-            </Button>,
-          ]}
-        />
-        <PageContent>
-          <PackageProfilesContainer />
-        </PageContent>
-      </PageMain>
+    <PageMain>
+      <PageHeader
+        title="Package profiles"
+        actions={[
+          <Button
+            type="button"
+            key="add-package-profile"
+            appearance="positive"
+            onClick={handleAddPackageProfile}
+          >
+            Add package profile
+          </Button>,
+        ]}
+      />
+      <PageContent>
+        <PackageProfilesContainer />
+      </PageContent>
 
       {action === "add" && (
         <LocalSidePanel close={close} size="medium">
@@ -107,7 +105,7 @@ const PackageProfilesPage: FC = () => {
           <PackageProfileDetails />
         </LocalSidePanel>
       )}
-    </>
+    </PageMain>
   );
 };
 
