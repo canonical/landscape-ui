@@ -13,6 +13,7 @@ describe("AutoinstallFileForm", () => {
     initialFile: {
       contents: "echo 'Hello, world!'",
       filename: "autoinstall.yaml",
+      is_default: false,
     },
     notification: ADD_AUTOINSTALL_FILE_NOTIFICATION,
     onSubmit: vi.fn(),
@@ -34,6 +35,7 @@ describe("AutoinstallFileForm", () => {
     expect(props.onSubmit).toHaveBeenLastCalledWith({
       contents: props.initialFile?.contents,
       filename: props.initialFile?.filename,
+      is_default: props.initialFile?.is_default,
     });
   });
 

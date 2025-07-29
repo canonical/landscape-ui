@@ -18,12 +18,13 @@ import { removeAutoinstallFileExtension } from "../../helpers";
 import classes from "./AutoinstallFileForm.module.scss";
 import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
 import type { FormikProps } from "./types";
+import type { AddAutoinstallFileParams } from "../../api";
 
 interface AutoinstallFileFormProps {
   readonly buttonText: string;
   readonly description: string;
   readonly notification: NotificationMethodArgs;
-  readonly onSubmit: (params: FormikProps) => Promise<unknown>;
+  readonly onSubmit: (params: AddAutoinstallFileParams) => Promise<unknown>;
   readonly initialFile?: FormikProps;
 }
 
@@ -43,6 +44,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   const formik = useFormik<FormikProps>({
     initialValues: {
       ...initialFile,
+      is_default: false,
       filename: removeAutoinstallFileExtension(initialFile.filename),
     },
     validationSchema: VALIDATION_SCHEMA,
@@ -119,6 +121,13 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
           {AUTOINSTALL_FILE_EXTENSION}
         </span>
       </div>
+
+      <Input
+        type="checkbox"
+        label="Default"
+        {...formik.getFieldProps("is_default")}
+        help="This file will be used to configure newly registered instances. Only one default file can be set at a time."
+      />
 
       <input
         ref={inputRef}
