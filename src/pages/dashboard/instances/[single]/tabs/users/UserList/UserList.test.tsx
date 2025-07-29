@@ -1,3 +1,5 @@
+import NoData from "@/components/layout/NoData";
+import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
@@ -6,8 +8,6 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import UserList from "./UserList";
-import NoData from "@/components/layout/NoData";
-import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 
 const userIds = users.map((user) => user.uid);
 const unlockedUser = users.find((user) => user.enabled);
@@ -151,14 +151,14 @@ describe("UserList", () => {
       expect(loaded).toBeInTheDocument();
       const getFieldsToCheck = (item: User) => {
         return [
-          { label: "username", value: item.username },
-          { label: "name", value: item?.name ?? <NoData /> },
-          { label: "passphrase", value: "****************" },
-          { label: "primary group", value: primaryGroup ?? <NoData /> },
-          { label: "additional groups", value: groupsData },
-          { label: "location", value: item?.location ?? <NoData /> },
-          { label: "home phone", value: item?.home_phone ?? <NoData /> },
-          { label: "work phone", value: item?.work_phone ?? <NoData /> },
+          { label: "Username", value: item.username },
+          { label: "Name", value: item?.name ?? <NoData /> },
+          { label: "Passphrase", value: "****************" },
+          { label: "Primary group", value: primaryGroup ?? <NoData /> },
+          { label: "Additional groups", value: groupsData },
+          { label: "Location", value: item?.location ?? <NoData /> },
+          { label: "Home phone", value: item?.home_phone ?? <NoData /> },
+          { label: "Work phone", value: item?.work_phone ?? <NoData /> },
         ];
       };
       const fieldsToCheck = getFieldsToCheck(user);

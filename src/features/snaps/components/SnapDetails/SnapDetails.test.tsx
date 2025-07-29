@@ -22,21 +22,21 @@ describe("Snap details", () => {
       );
       const getFieldsToCheck = (snap: InstalledSnap) => {
         return [
-          { label: "snap name", value: snap.snap.name },
-          { label: "channel", value: snap.tracking_channel },
-          { label: "version", value: snap.version },
-          { label: "confinement", value: snap.confinement },
+          { label: "Name", value: snap.snap.name },
+          { label: "Channel", value: snap.tracking_channel },
+          { label: "Version", value: snap.version },
+          { label: "Confinement", value: snap.confinement },
           {
-            label: "held until",
+            label: "Held until",
             value: moment(snap.held_until).isValid() ? (
               moment(snap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
             ) : (
               <NoData />
             ),
           },
-          { label: "summary", value: snap.snap.summary ?? <NoData /> },
+          { label: "Summary", value: snap.snap.summary ?? <NoData /> },
           {
-            label: "publisher",
+            label: "Publisher",
             value: snap.snap.publisher.username,
           },
         ];

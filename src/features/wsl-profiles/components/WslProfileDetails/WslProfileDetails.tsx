@@ -4,14 +4,12 @@ import Menu from "@/components/layout/Menu";
 import NoData from "@/components/layout/NoData";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { ComponentProps, FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { WslProfile } from "../../types";
-import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink";
-import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
-import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfileRemoveModal from "../WslProfileRemoveModal";
 
 const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
@@ -64,35 +62,6 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
     size: 12,
     value: profile.cloud_init_contents || <NoData />,
   });
-
-  const associationMenuItems: ComponentProps<typeof Menu>["items"] = [
-    {
-      label: "Tags",
-      size: 12,
-      value: profile.tags.join(", "),
-      type: "truncated",
-    },
-  ];
-
-  if (profile.tags.length) {
-    associationMenuItems.push(
-      {
-        label: "Associated parents",
-        size: 12,
-        value: <WslProfileAssociatedParentsLink wslProfile={profile} />,
-      },
-      {
-        label: "Not compliant",
-        size: 6,
-        value: <WslProfileNonCompliantParentsLink wslProfile={profile} />,
-      },
-      {
-        label: "Compliant",
-        size: 6,
-        value: <WslProfileCompliantParentsLink wslProfile={profile} />,
-      },
-    );
-  }
 
   return (
     <>
@@ -159,7 +128,36 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
         {profile.all_computers ? (
           <p>This profile has been associated with all instances.</p>
         ) : (
-          <Menu items={associationMenuItems} />
+          <Menu
+            items={[
+              {
+                label: "Tags",
+                size: 12,
+                value: profile.tags.join(", "),
+              },
+            ]}
+          />
+        )}
+        {(profile.all_computers || profile.tags.length) && (
+          <Menu
+            items={[
+              {
+                label: "Associated",
+                size: 12,
+                value: `${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`,
+              },
+              {
+                label: "Not compliant",
+                size: 6,
+                value: `${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`,
+              },
+              {
+                label: "Pending",
+                size: 6,
+                value: `${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`,
+              },
+            ]}
+          />
         )}
       </Block>
 

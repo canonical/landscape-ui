@@ -29,14 +29,14 @@ describe("EmployeeDetails", () => {
     ).toBeVisible();
 
     const fieldsToCheck = [
-      { label: "name", value: employeeWithoutInstances.name },
-      { label: "email", value: employeeWithoutInstances.email },
+      { label: "Name", value: employeeWithoutInstances.name },
+      { label: "Email", value: employeeWithoutInstances.email },
       {
-        label: "status",
+        label: "Status",
         value: employeeWithoutInstances.is_active ? "Active" : "Inactive",
       },
       {
-        label: "autoinstall file",
+        label: "Autoinstall file",
         value: employeeWithoutInstances.autoinstall_file ? (
           `${employeeWithoutInstances.autoinstall_file?.filename}, v${employeeWithoutInstances.autoinstall_file?.version}`
         ) : (

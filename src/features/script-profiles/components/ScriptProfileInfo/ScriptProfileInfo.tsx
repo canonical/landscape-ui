@@ -56,7 +56,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
   }
 
   triggerMenuItems.push({
-    label: "Next run",
+    label: "Last run",
     size: 6,
     value: activity ? (
       <Link to={`/activities?query=parent-id%3A${activity.id}`}>
