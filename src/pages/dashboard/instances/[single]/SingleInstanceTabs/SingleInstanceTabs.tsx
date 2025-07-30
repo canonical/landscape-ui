@@ -1,13 +1,13 @@
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
+import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { Instance, WindowsInstance } from "@/types/Instance";
+import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import { Tabs } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import type { Instance, WindowsInstance } from "@/types/Instance";
-import useSidePanel from "@/hooks/useSidePanel";
 import { getTabLinks } from "./helpers";
 import classes from "./SingleInstanceTabs.module.scss";
-import usePageParams from "@/hooks/usePageParams";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
 const InfoPanel = lazy(
   async () => import("@/pages/dashboard/instances/[single]/tabs/info"),
@@ -93,33 +93,61 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
         className={classes.tabPanel}
       >
         <AppErrorBoundary>
-          <Suspense fallback={<LoadingState />}>
-            {"tab-link-info" === currentTabLinkId && (
+          {"tab-link-info" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
               <InfoPanel instance={instance} />
-            )}
-            {"tab-link-wsl" === currentTabLinkId && (
+            </Suspense>
+          )}
+          {"tab-link-wsl" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
               <WslPanel instance={instance as WindowsInstance} />
-            )}
-            {"tab-link-activities" === currentTabLinkId && (
+            </Suspense>
+          )}
+          {"tab-link-activities" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
               <ActivityPanel instanceId={instance.id} />
-            )}
-            {"tab-link-kernel" === currentTabLinkId && (
+            </Suspense>
+          )}
+          {"tab-link-kernel" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
               <KernelPanel instanceTitle={instance.title} />
-            )}
-            {"tab-link-security-issues" === currentTabLinkId && (
+            </Suspense>
+          )}
+          {"tab-link-security-issues" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
               <SecurityIssuesPanel instance={instance} />
-            )}
-            {"tab-link-packages" === currentTabLinkId && <PackagesPanel />}
-            {"tab-link-snaps" === currentTabLinkId && <SnapsPanel />}
-            {"tab-link-processes" === currentTabLinkId && <ProcessesPanel />}
-            {"tab-link-ubuntu-pro" === currentTabLinkId && (
+            </Suspense>
+          )}
+          {"tab-link-packages" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
+              <PackagesPanel />
+            </Suspense>
+          )}
+          {"tab-link-snaps" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
+              <SnapsPanel />
+            </Suspense>
+          )}
+          {"tab-link-processes" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
+              <ProcessesPanel />
+            </Suspense>
+          )}
+          {"tab-link-ubuntu-pro" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
               <UbuntuProPanel instance={instance} />
-            )}
-            {"tab-link-users" === currentTabLinkId && <UserPanel />}
-            {"tab-link-hardware" === currentTabLinkId && (
+            </Suspense>
+          )}
+          {"tab-link-users" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
+              <UserPanel />
+            </Suspense>
+          )}
+          {"tab-link-hardware" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
               <HardwarePanel instance={instance} />
-            )}
-          </Suspense>
+            </Suspense>
+          )}
         </AppErrorBoundary>
       </div>
     </>

@@ -63,15 +63,21 @@ const EmployeesTabs: FC = () => {
         aria-labelledby={currentTabLinkId}
         className={classes.tabPanel}
       >
-        <Suspense fallback={<LoadingState />}>
-          {"tab-link-employee-groups" === currentTabLinkId && (
+        {"tab-link-employee-groups" === currentTabLinkId && (
+          <Suspense fallback={<LoadingState />}>
             <EmployeeGroupsPanel />
-          )}
-          {"tab-link-employees" === currentTabLinkId && <EmployeesPanel />}
-          {"tab-link-autoinstall-files" === currentTabLinkId && (
+          </Suspense>
+        )}
+        {"tab-link-employees" === currentTabLinkId && (
+          <Suspense fallback={<LoadingState />}>
+            <EmployeesPanel />
+          </Suspense>
+        )}
+        {"tab-link-autoinstall-files" === currentTabLinkId && (
+          <Suspense fallback={<LoadingState />}>
             <AutoinstallFilesPanel />
-          )}
-        </Suspense>
+          </Suspense>
+        )}
       </div>
     </>
   );
