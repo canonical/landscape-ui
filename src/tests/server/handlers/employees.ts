@@ -41,4 +41,8 @@ export default [
   http.delete(`${API_URL}employees/:id`, async () => {
     return HttpResponse.json();
   }),
+
+  http.get(`${API_URL}employees/:id`, async () => {
+    return HttpResponse.json(employees[0]);
+  }),
 ];

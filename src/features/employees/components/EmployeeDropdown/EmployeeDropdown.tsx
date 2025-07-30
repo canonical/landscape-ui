@@ -15,13 +15,13 @@ import { boldSubstring } from "./helpers";
 interface EmployeeDropdown {
   readonly employee: Employee | null;
   readonly setEmployee: (employee: Employee | null) => void;
-  readonly loadingExistingEmployee: boolean;
+  readonly error: string | undefined;
 }
 
 const EmployeeDropdown: FC<EmployeeDropdown> = ({
   employee,
   setEmployee,
-  loadingExistingEmployee,
+  error,
 }) => {
   const [search, setSearch] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -111,7 +111,7 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
   const helpText = getHelpText();
 
   return (
-    <div className={classes.container}>
+    <div className={classNames(classes.container, { "is-error": !!error })}>
       <Downshift
         onSelect={handleSelectItem}
         itemToString={() => ""}
@@ -170,7 +170,16 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
         )}
       </Downshift>
 
-      {loadingExistingEmployee && <LoadingState />}
+      {!!error && (
+        <p
+          className={classNames(
+            classes.errorMessage,
+            "p-form-validation__message is-error",
+          )}
+        >
+          {error}
+        </p>
+      )}
 
       {employee && (
         <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">

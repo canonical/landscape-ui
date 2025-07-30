@@ -110,4 +110,50 @@ describe("InfoPanel", () => {
       expect(associateEmployeeButton).not.toBeInTheDocument();
     });
   });
+
+  describe("Disassociate employee button", () => {
+    it("should render button if instance has an employee associated", () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authProps,
+        isFeatureEnabled: (feature: FeatureKey) =>
+          feature === "employee-management",
+      });
+      const instanceWithEmployee = instances.find(
+        (instance) => instance.employee_id !== null,
+      );
+
+      assert(instanceWithEmployee);
+
+      renderWithProviders(<InfoPanel instance={instanceWithEmployee} />);
+
+      const disassociateEmployeeButton = screen.getByRole("button", {
+        name: /disassociate employee/i,
+      });
+
+      expect(disassociateEmployeeButton).toBeInTheDocument();
+    });
+
+    it("should not render button if instance does not have an employee associated", () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authProps,
+        isFeatureEnabled: (feature: FeatureKey) =>
+          feature === "employee-management",
+      });
+
+      const instanceWithoutEmployee = instances.find(
+        (instance) => instance.employee_id === null,
+      );
+      assert(instanceWithoutEmployee);
+
+      vi.mocked(useAuth).mockReturnValue(authProps);
+
+      renderWithProviders(<InfoPanel instance={instanceWithoutEmployee} />);
+
+      const disassociateEmployeeButton = screen.queryByRole("button", {
+        name: /disassociate employee/i,
+      });
+
+      expect(disassociateEmployeeButton).not.toBeInTheDocument();
+    });
+  });
 });

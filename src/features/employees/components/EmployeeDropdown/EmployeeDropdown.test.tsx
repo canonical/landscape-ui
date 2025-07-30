@@ -9,7 +9,7 @@ import { employees as mockEmployees } from "@/tests/mocks/employees";
 const props: ComponentProps<typeof EmployeeDropdown> = {
   employee: null,
   setEmployee: vi.fn(),
-  loadingExistingEmployee: false,
+  error: undefined,
 };
 
 describe("EmployeeDropdown", () => {
