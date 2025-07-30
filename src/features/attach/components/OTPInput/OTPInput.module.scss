@@ -1,0 +1,20 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.otpContainer {
+  display: flex;
+  gap: $sph--small;
+}
+
+.input {
+  min-width: 0;
+  text-align: center;
+  width: 3rem;
+}

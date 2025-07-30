@@ -15,6 +15,7 @@ export type {
   AuthStateResponse,
   LoginMethods,
   LoginRequestParams,
+  GetOidcUrlParams,
 } from "./hooks";
 export type {
   Account,

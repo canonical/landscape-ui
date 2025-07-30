@@ -27,6 +27,13 @@ const OidcAuthPage: FC = () => {
       return;
     }
 
+    if (getAuthStateQueryResult.data.attach_code) {
+      navigate("/attach/success", {
+        replace: true,
+      });
+      return;
+    }
+
     if (
       getAuthStateQueryResult.data.return_to?.external &&
       getAuthStateQueryResult.data.return_to.url

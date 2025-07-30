@@ -130,4 +130,27 @@ describe("OidcAuthPage", () => {
       );
     });
   });
+
+  describe("with an attach_code", () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      vi.resetModules();
+    });
+
+    it("should redirect to attach page when attach_code is present", async () => {
+      const attachCode = "123123";
+      mockTestParams({
+        ...authUser,
+        attach_code: attachCode,
+        return_to: null,
+      });
+      const { default: Component } = await import("./OidcAuthPage");
+
+      renderWithProviders(<Component />);
+
+      expect(navigate).toHaveBeenCalledWith(`/attach/success`, {
+        replace: true,
+      });
+    });
+  });
 });
