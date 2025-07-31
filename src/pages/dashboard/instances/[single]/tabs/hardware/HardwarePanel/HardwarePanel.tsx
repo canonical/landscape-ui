@@ -1,9 +1,7 @@
 import EmptyState from "@/components/layout/EmptyState";
 import HardwareInfoRow from "@/pages/dashboard/instances/[single]/tabs/hardware/HardwareInfoRow";
 import type { Instance } from "@/types/Instance";
-import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
-import { useParams } from "react-router";
 import { getHardwareInfo } from "./helpers";
 
 interface HardwarePanelProps {
@@ -12,23 +10,6 @@ interface HardwarePanelProps {
 
 const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
   const groupedHardware = instance?.grouped_hardware;
-  const { childInstanceId } = useParams<UrlParams>();
-
-  if (childInstanceId) {
-    return (
-      <EmptyState
-        title="Hardware information unavailable"
-        icon="connected"
-        body={
-          <>
-            <p className="u-no-margin--bottom">
-              Hardware information is not available for WSL instances.
-            </p>
-          </>
-        }
-      />
-    );
-  }
 
   if (!groupedHardware) {
     return (

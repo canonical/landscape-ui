@@ -1,11 +1,13 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
-import { ROOT_PATH } from "@/constants";
 import { useActivities } from "@/features/activities";
+import {
+  InstanceRemoveFromLandscapeModal,
+  useSanitizeInstance,
+} from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
+import type { Action } from "@/types/Action";
 import type { Instance } from "@/types/Instance";
 import { ICONS } from "@canonical/react-components";
 import { useState, type FC } from "react";
@@ -24,13 +26,8 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
   const { notify } = useNotify();
   const navigate = useNavigate();
   const { openActivityDetails } = useActivities();
-  const { removeInstancesQuery, sanitizeInstanceQuery } = useInstances();
 
-  const { mutateAsync: removeInstances, isPending: isRemoving } =
-    removeInstancesQuery;
-
-  const { mutateAsync: sanitizeInstanceMutation, isPending: isSanitizing } =
-    sanitizeInstanceQuery;
+  const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
 
   const handleCloseModal = () => {
     setSelectedAction("");
@@ -38,7 +35,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
 
   const handleSanitizeInstance = async () => {
     try {
-      const { data: sanitizeActivity } = await sanitizeInstanceMutation({
+      const { data: sanitizeActivity } = await sanitizeInstance({
         computer_id: instance.id,
         computer_title: instance.title,
       });
@@ -62,33 +59,16 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     }
   };
 
-  const handleRemoveInstances = async () => {
-    try {
-      await removeInstances({
-        computer_ids: [instance.id],
-      });
-
-      notify.success({
-        title: `You have successfully removed ${instance.title}`,
-        message: `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
-
-  const actions: ListAction[] = [
+  const actions: Action[] = [
     {
-      icon: "machines",
+      icon: "show",
       label: "View details",
       "aria-label": `View ${instance.title} instance details`,
-      onClick: async () => navigate(`${ROOT_PATH}instances/${instance.id}`),
+      onClick: async () => navigate(`instances/${instance.id}`),
     },
   ];
 
-  const destructiveActions: ListAction[] = [
+  const destructiveActions: Action[] = [
     {
       icon: "tidy",
       label: "Sanitize",
@@ -100,7 +80,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     {
       icon: ICONS.delete,
       label: "Remove from Landscape",
-      "aria-label": `Remove from Landscape`,
+      "aria-label": `Remove ${instance.title} from Landscape`,
       onClick: () => {
         setSelectedAction("remove");
       },
@@ -114,27 +94,19 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
         actions={actions}
         destructiveActions={destructiveActions}
       />
-      <TextConfirmationModal
-        isOpen={selectedAction === "remove"}
-        title={`Remove ${instance.title} instance`}
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        onConfirm={handleRemoveInstances}
+
+      <InstanceRemoveFromLandscapeModal
         close={handleCloseModal}
-        confirmationText={`remove ${instance.title}`}
-      >
-        <p>
-          Removing this {instance.title} will delete all associated data and
-          free up one license slot for another computer to be registered.
-        </p>
-      </TextConfirmationModal>
+        instances={[instance]}
+        isOpen={selectedAction === "remove"}
+      />
+
       <TextConfirmationModal
         isOpen={selectedAction === "sanitize"}
         title={`Sanitize "${instance.title}" instance`}
         confirmButtonLabel="Sanitize"
         confirmButtonAppearance="negative"
-        confirmButtonDisabled={isSanitizing}
+        confirmButtonDisabled={isSanitizingInstance}
         onConfirm={handleSanitizeInstance}
         close={handleCloseModal}
         confirmationText={`sanitize ${instance.title}`}

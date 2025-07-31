@@ -5,21 +5,27 @@ import activity from "./activity";
 import alerts from "./alerts";
 import aptSource from "./aptSource";
 import auth from "./auth";
-import oidcIssuers from "./oidcIssuers";
+import autoinstallFiles from "./autoinstallFiles";
 import availabilityZones from "./availabilityZones";
 import distributions from "./distributions";
 import employeeGroups from "./employeeGroups";
+import employees from "./employees";
 import eventsLog from "./eventsLog";
+import features from "./features";
 import gpgKey from "./gpgKey";
 import instance from "./instance";
+import oidcIssuers from "./oidcIssuers";
 import organisationPreferences from "./organisationPreferences";
 import packageProfile from "./packageProfile";
 import packages from "./packages";
 import pockets from "./pockets";
 import process from "./process";
+import rebootProfiles from "./rebootProfiles";
+import removalProfiles from "./removalProfiles";
 import repo from "./repo";
-import securityProfiles from "./securityProfiles";
+import repositoryProfiles from "./repositoryProfiles";
 import scriptProfiles from "./scriptProfiles";
+import securityProfiles from "./securityProfiles";
 import snap from "./snap";
 import tag from "./tag";
 import upgradeProfile from "./upgradeProfile";
@@ -27,12 +33,7 @@ import user from "./user";
 import userSettings from "./userSettings";
 import usn from "./usn";
 import wsl from "./wsl";
-import employees from "./employees";
-import autoinstallFiles from "./autoinstallFiles";
-import features from "./features";
-import rebootProfiles from "./rebootProfiles";
-import removalProfiles from "./removalProfiles";
-import repositoryProfiles from "./repositoryProfiles";
+import wslProfiles from "./wslProfiles";
 
 export default [
   ...accessGroup,
@@ -69,5 +70,6 @@ export default [
   ...userSettings,
   ...usn,
   ...wsl,
+  ...wslProfiles,
   ...features,
 ];

@@ -1,12 +1,16 @@
+import {
+  useAcceptPendingInstances,
+  useRejectPendingInstances,
+} from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import PendingInstanceList from "@/pages/dashboard/instances/PendingInstanceList";
 import type { PendingInstance } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationButton,
@@ -16,7 +20,6 @@ import type { FC } from "react";
 import { useState } from "react";
 import { Link } from "react-router";
 import classes from "./PendingInstancesForm.module.scss";
-import { pluralize } from "@/utils/_helpers";
 
 interface PendingInstanceListProps {
   readonly instances: PendingInstance[];
@@ -32,8 +35,6 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const { notify } = useNotify();
   const { closeSidePanel, changeSidePanelSize } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
-  const { acceptPendingInstancesQuery, rejectPendingInstancesQuery } =
-    useInstances();
 
   const userOrganisation = user?.accounts.find(
     (account) => account.name === user?.current_account,
@@ -49,14 +50,10 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
     changeSidePanelSize("large");
   };
 
-  const {
-    mutateAsync: acceptPendingInstances,
-    isPending: isAcceptingPendingInstances,
-  } = acceptPendingInstancesQuery;
-  const {
-    mutateAsync: rejectPendingInstances,
-    isPending: isRejectingPendingInstances,
-  } = rejectPendingInstancesQuery;
+  const { acceptPendingInstances, isAcceptingPendingInstances } =
+    useAcceptPendingInstances();
+  const { rejectPendingInstances, isRejectingPendingInstances } =
+    useRejectPendingInstances();
 
   const handlePendingInstancesReject = async () => {
     try {

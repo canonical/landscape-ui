@@ -1,0 +1,13 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.header {
+  column-gap: $sph--x-large;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $spv--x-large;
+}
+
+.search {
+  flex-basis: 30rem;
+  min-width: 300px;
+}

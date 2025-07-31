@@ -1,14 +1,15 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useWsl } from "@/features/wsl";
+import { useGetWslInstanceTypes } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { FC } from "react";
-import { useWslProfiles } from "../../hooks";
+import { type FC } from "react";
+import { useEditWslProfile } from "../../api";
 import type { WslProfile } from "../../types";
 import { CLOUD_INIT_OPTIONS } from "../constants";
 import { getValidationSchema } from "./helpers";
@@ -31,18 +32,15 @@ interface WslProfileEditFormProps {
 
 const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
   const { getAccessGroupQuery } = useRoles();
-  const { getWslInstanceNamesQuery } = useWsl();
-  const { editWslProfileQuery } = useWslProfiles();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
 
-  const { mutateAsync: editWslProfile } = editWslProfileQuery;
-
-  const { data: getWslInstanceNamesQueryResult } = getWslInstanceNamesQuery();
+  const { editWslProfile } = useEditWslProfile();
+  const { wslInstanceTypes } = useGetWslInstanceTypes();
 
   const instanceQueryResultOptions =
-    (getWslInstanceNamesQueryResult?.data ?? []).map(({ label, name }) => ({
+    wslInstanceTypes.map(({ label, name }) => ({
       label,
       value: name,
     })) || [];
@@ -105,11 +103,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
         label="Title"
         required
         {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
       />
 
       <Input
@@ -117,11 +111,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
         label="Description"
         required
         {...formik.getFieldProps("description")}
-        error={
-          formik.touched.description && formik.errors.description
-            ? formik.errors.description
-            : undefined
-        }
+        error={getFormikError(formik, "description")}
       />
 
       <Select
@@ -130,11 +120,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
         options={accessGroupResultOptions}
         required
         {...formik.getFieldProps("access_group")}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
       />
 
       <div className={classes.block}>
@@ -151,11 +137,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
           aria-label="RootFS image"
           options={ROOTFS_IMAGE_OPTIONS}
           {...formik.getFieldProps("instanceType")}
-          error={
-            formik.touched.instanceType && formik.errors.instanceType
-              ? formik.errors.instanceType
-              : undefined
-          }
+          error={getFormikError(formik, "instanceType")}
         />
 
         {formik.values.instanceType === "custom" && (
@@ -166,11 +148,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
               type="text"
               required
               {...formik.getFieldProps("customImageName")}
-              error={
-                formik.touched.customImageName && formik.errors.customImageName
-                  ? formik.errors.customImageName
-                  : undefined
-              }
+              error={getFormikError(formik, "customImageName")}
             />
             <Input
               disabled
@@ -178,11 +156,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
               label="RootFS image URL"
               required
               {...formik.getFieldProps("rootfsImage")}
-              error={
-                formik.touched.rootfsImage && formik.errors.rootfsImage
-                  ? formik.errors.rootfsImage
-                  : undefined
-              }
+              error={getFormikError(formik, "rootfsImage")}
               help="The file path must be reachable by the affected WSL instances."
             />
           </>

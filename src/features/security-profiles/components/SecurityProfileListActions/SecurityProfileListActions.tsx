@@ -1,6 +1,6 @@
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import { useIsSecurityProfilesLimitReached } from "@/features/security-profiles";
+import type { Action } from "@/types/Action";
 import { type FC } from "react";
 import type { SecurityProfile } from "../../types";
 import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
@@ -16,9 +16,9 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
 }) => {
   const profileLimitReached = useIsSecurityProfilesLimitReached();
 
-  const nondestructiveActions: ListAction[] = [
+  const nondestructiveActions: Action[] = [
     {
-      icon: "switcher-environments",
+      icon: "show",
       label: "View details",
       "aria-label": `View "${profile.title}" security profile details`,
       onClick: actions.viewDetails,
@@ -57,7 +57,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
     disabled: profileLimitReached,
   });
 
-  const destructiveActions: ListAction[] | undefined =
+  const destructiveActions: Action[] | undefined =
     profile.status !== "archived"
       ? [
           {

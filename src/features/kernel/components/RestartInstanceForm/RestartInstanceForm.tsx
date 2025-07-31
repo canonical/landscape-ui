@@ -1,8 +1,9 @@
 import { useActivities } from "@/features/activities";
+import { useRestartInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { UrlParams } from "@/types/UrlParams";
 import {
   Button,
   ConfirmationButton,
@@ -15,6 +16,8 @@ import { useFormik } from "formik";
 import moment from "moment";
 import type { FC } from "react";
 import { useParams } from "react-router";
+import { useKernel } from "../../hooks";
+import { UPGRADE_MESSAGE_WITH_REBOOT } from "../UpgradeKernelForm/constants";
 import {
   INITIAL_VALUES,
   NOTIFICATION_MESSAGE,
@@ -22,9 +25,6 @@ import {
 } from "./constants";
 import classes from "./RestartInstanceForm.module.scss";
 import type { FormProps } from "./types";
-import { useKernel } from "../../hooks";
-import { UPGRADE_MESSAGE_WITH_REBOOT } from "../UpgradeKernelForm/constants";
-import type { UrlParams } from "@/types/UrlParams";
 
 interface RestartInstanceFormProps {
   readonly showNotification: boolean;
@@ -41,12 +41,10 @@ const RestartInstanceForm: FC<RestartInstanceFormProps> = ({
   const { instanceId } = useParams<UrlParams>();
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
-  const { restartInstanceQuery } = useInstances();
   const { upgradeKernelQuery } = useKernel();
   const { openActivityDetails } = useActivities();
 
-  const { mutateAsync: restartInstance, isPending: isRestartingInstance } =
-    restartInstanceQuery;
+  const { restartInstance, isRestartingInstance } = useRestartInstance();
   const { mutateAsync: upgradeKernel, isPending: isUpgradingAndRestarting } =
     upgradeKernelQuery;
 
@@ -99,7 +97,9 @@ const RestartInstanceForm: FC<RestartInstanceFormProps> = ({
       actions: [
         {
           label: "View details",
-          onClick: () => openActivityDetails(activity),
+          onClick: () => {
+            openActivityDetails(activity);
+          },
         },
       ],
     });
@@ -120,7 +120,9 @@ const RestartInstanceForm: FC<RestartInstanceFormProps> = ({
       actions: [
         {
           label: "View details",
-          onClick: () => openActivityDetails(activity),
+          onClick: () => {
+            openActivityDetails(activity);
+          },
         },
       ],
     });
@@ -244,7 +246,9 @@ const RestartInstanceForm: FC<RestartInstanceFormProps> = ({
             confirmButtonAppearance: "negative",
             confirmButtonLoading: isRestartingInstance,
             confirmButtonDisabled: isRestartingInstance,
-            onConfirm: () => formik.handleSubmit(),
+            onConfirm: () => {
+              formik.handleSubmit();
+            },
           }}
         >
           Restart

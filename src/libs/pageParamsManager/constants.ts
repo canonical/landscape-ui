@@ -134,4 +134,9 @@ export const PARAMS_CONFIG: ParamsConfig = [
     shouldResetPage: true,
     defaultValue: DEFAULT_RATE_TO,
   },
+  {
+    urlParam: "wsl",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
+  },
 ];

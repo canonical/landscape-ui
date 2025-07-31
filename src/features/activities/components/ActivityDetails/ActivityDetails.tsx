@@ -1,8 +1,11 @@
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
+import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { useGetInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
+import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
 import {
   CodeSnippet,
   Col,
@@ -16,8 +19,6 @@ import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities } from "../../hooks";
 import type { Activity } from "../../types";
 import classes from "./ActivityDetails.module.scss";
-import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
 
 interface ActivityDetailsProps {
   readonly activityId: number;
@@ -34,7 +35,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
     redoActivitiesQuery,
     undoActivitiesQuery,
   } = useActivities();
-  const { getInstancesQuery } = useInstances();
 
   const {
     mutateAsync: approveActivities,
@@ -54,20 +54,16 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const activity = getSingleActivityQueryResult?.data;
 
-  const { data: getInstancesQueryResult } = getInstancesQuery(
-    {
-      query: `id:${activity?.computer_id}`,
-      root_only: false,
-    },
-    {
-      enabled: !!activity?.computer_id,
-    },
+  const isActivityComputerIdDefined = activity?.computer_id !== undefined;
+
+  const { instance, isGettingInstance } = useGetInstance(
+    { instanceId: activity?.computer_id as number },
+    { enabled: isActivityComputerIdDefined },
   );
 
-  const instanceTitle =
-    getInstancesQueryResult && getInstancesQueryResult.data.results.length > 0
-      ? getInstancesQueryResult.data.results[0].title
-      : "";
+  if (isActivityComputerIdDefined && isGettingInstance) {
+    return <LoadingState />;
+  }
 
   const handleApproveActivity = async (a: Activity) => {
     try {
@@ -241,9 +237,18 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
             <Col size={12}>
               <InfoItem label="Description" value={activity.summary} />
             </Col>
-            {instanceTitle && (
+            {instance && (
               <Col size={12}>
-                <InfoItem label="Instance" value={instanceTitle} />
+                <InfoItem
+                  label="Instance"
+                  value={
+                    <StaticLink
+                      to={`/instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`}
+                    >
+                      {instance.title}
+                    </StaticLink>
+                  }
+                />
               </Col>
             )}
             <Col size={6}>

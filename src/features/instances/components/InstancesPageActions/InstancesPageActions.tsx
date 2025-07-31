@@ -3,7 +3,6 @@ import { ResponsiveButtons } from "@/components/ui";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
@@ -15,7 +14,8 @@ import {
   Icon,
 } from "@canonical/react-components";
 import { lazy, memo, Suspense, useState } from "react";
-import { currentInstanceCan, hasUpgrades } from "../../helpers";
+import { useRestartInstances, useShutDownInstances } from "../../api";
+import { getFeatures, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
 
@@ -52,14 +52,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const [rebootModalOpen, setRebootModalOpen] = useState(false);
   const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
 
-  const { rebootInstancesQuery, shutdownInstancesQuery } = useInstances();
-
-  const { mutateAsync: rebootInstances, isPending: rebootInstancesLoading } =
-    rebootInstancesQuery;
-  const {
-    mutateAsync: shutdownInstances,
-    isPending: shutdownInstancesLoading,
-  } = shutdownInstancesQuery;
+  const { restartInstances, isRestartingInstances } = useRestartInstances();
+  const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
 
   const createInstanceCountString = (instances: Instance[]) => {
     return (
@@ -74,7 +68,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       "Run script",
       <Suspense fallback={<LoadingState />}>
         {selectedInstances.some(
-          (instance) => !currentInstanceCan("runScripts", instance),
+          (instance) => !getFeatures(instance).scripts,
         ) ? (
           <div className={classes.warning}>
             <p>
@@ -86,8 +80,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
               <li>
                 run on{" "}
                 {createInstanceCountString(
-                  selectedInstances.filter((instance) =>
-                    currentInstanceCan("runScripts", instance),
+                  selectedInstances.filter(
+                    (instance) => getFeatures(instance).scripts,
                   ),
                 )}
               </li>
@@ -95,7 +89,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
                 not run on{" "}
                 {createInstanceCountString(
                   selectedInstances.filter(
-                    (instance) => !currentInstanceCan("runScripts", instance),
+                    (instance) => !getFeatures(instance).scripts,
                   ),
                 )}
               </li>
@@ -111,7 +105,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleShutdownInstance = async () => {
     try {
-      const { data: shutdownActivity } = await shutdownInstances({
+      const { data: shutdownActivity } = await shutDownInstances({
         computer_ids: selectedInstances.map(({ id }) => id),
       });
 
@@ -131,7 +125,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleRebootInstance = async () => {
     try {
-      const { data: rebootActivity } = await rebootInstances({
+      const { data: rebootActivity } = await restartInstances({
         computer_ids: selectedInstances.map(({ id }) => id),
       });
 
@@ -197,7 +191,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             className="has-icon"
             type="button"
             disabled={
-              shutdownInstancesLoading ||
+              isShuttingDownInstances ||
               0 === selectedInstances.length ||
               isGettingInstances
             }
@@ -206,14 +200,14 @@ const InstancesPageActions = memo(function InstancesPageActions({
             }}
           >
             <Icon name="power-off" />
-            <span>Shutdown</span>
+            <span>Shut down</span>
           </Button>,
           <Button
             key="reboot-instances"
             hasIcon
             type="button"
             disabled={
-              rebootInstancesLoading ||
+              isRestartingInstances ||
               0 === selectedInstances.length ||
               isGettingInstances
             }
@@ -242,7 +236,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             onClick={handleRunScript}
             disabled={
               selectedInstances.every((instance) => {
-                return !currentInstanceCan("runScripts", instance);
+                return !getFeatures(instance).scripts;
               }) || isGettingInstances
             }
           >
@@ -296,8 +290,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
           title="Restarting selected instances"
           confirmButtonLabel="Restart"
           confirmButtonAppearance="negative"
-          confirmButtonLoading={rebootInstancesLoading}
-          confirmButtonDisabled={rebootInstancesLoading}
+          confirmButtonLoading={isRestartingInstances}
+          confirmButtonDisabled={isRestartingInstances}
           onConfirm={handleRebootInstance}
         >
           <p>
@@ -312,14 +306,14 @@ const InstancesPageActions = memo(function InstancesPageActions({
             setShutdownModalOpen(false);
           }}
           title="Shutting down selected instances"
-          confirmButtonLabel="Shutdown"
+          confirmButtonLabel="Shut down"
           confirmButtonAppearance="negative"
-          confirmButtonLoading={shutdownInstancesLoading}
-          confirmButtonDisabled={shutdownInstancesLoading}
+          confirmButtonLoading={isShuttingDownInstances}
+          confirmButtonDisabled={isShuttingDownInstances}
           onConfirm={handleShutdownInstance}
         >
           <p>
-            Are you sure you want to shutdown {selectedInstances.length}
+            Are you sure you want to shut down {selectedInstances.length}
             {pluralize(selectedInstances.length, "instance")}?
           </p>
         </ConfirmationModal>

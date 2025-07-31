@@ -1,16 +1,17 @@
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
+import NoData from "@/components/layout/NoData";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { pluralize } from "@/utils/_helpers";
 import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { useWslProfiles } from "../../hooks";
+import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 import type { WslProfile } from "../../types";
+import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink";
+import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
+import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
+import WslProfileRemoveModal from "../WslProfileRemoveModal";
 import classes from "./WslProfileDetails.module.scss";
 
 const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
@@ -27,40 +28,13 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
   profile,
   accessGroupOptions,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const { setSidePanelContent } = useSidePanel();
 
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelContent } = useSidePanel();
-  const { removeWslProfileQuery } = useWslProfiles();
-
-  const { mutateAsync: removeWslProfile, isPending: isRemoving } =
-    removeWslProfileQuery;
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
-  const handleRemoveWslProfile = async () => {
-    try {
-      await removeWslProfile({ name: profile.name });
-
-      handleCloseModal();
-      closeSidePanel();
-
-      notify.success({
-        message: `WSL profile "${profile.title}" removed successfully.`,
-        title: "WSL profile removed",
-      });
-    } catch (error) {
-      handleCloseModal();
-      debug(error);
-    }
-  };
+  const {
+    value: isRemoveModalOpen,
+    setTrue: openRemoveModal,
+    setFalse: closeRemoveModal,
+  } = useBoolean();
 
   const handleWslProfileEdit = () => {
     setSidePanelContent(
@@ -83,116 +57,156 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
   return (
     <>
       <div className="p-segmented-control">
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          onClick={handleWslProfileEdit}
-        >
-          <Icon name="edit" />
-          <span>Edit</span>
-        </Button>
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          onClick={handleWslProfileDuplicate}
-        >
-          <Icon name="canvas" />
-          <span>Duplicate</span>
-        </Button>
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          aria-label={`Remove ${profile.title} profile`}
-          onClick={handleOpenModal}
-        >
-          <Icon name={ICONS.delete} />
-          <span>Remove</span>
-        </Button>
+        <div className="p-segmented-control__list">
+          <Button
+            type="button"
+            hasIcon
+            className="p-segmented-control__button"
+            onClick={handleWslProfileEdit}
+          >
+            <Icon name="edit" />
+            <span>Edit</span>
+          </Button>
+
+          <Button
+            type="button"
+            hasIcon
+            className="p-segmented-control__button"
+            onClick={handleWslProfileDuplicate}
+          >
+            <Icon name="canvas" />
+            <span>Duplicate</span>
+          </Button>
+
+          <Button
+            type="button"
+            hasIcon
+            className="p-segmented-control__button"
+            aria-label={`Remove ${profile.title} profile`}
+            onClick={openRemoveModal}
+          >
+            <Icon name={ICONS.delete} />
+            <span>Remove</span>
+          </Button>
+        </div>
       </div>
+
       <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>
-          <InfoItem label="title" value={profile.title} />
+          <InfoItem label="Title" value={profile.title} />
         </Col>
-        <Col size={6}>
-          <InfoItem label="name" value={profile.name} />
-        </Col>
-        <InfoItem
-          label="access group"
-          value={
-            accessGroupOptions.find(
-              ({ value }) => value === profile.access_group,
-            )?.label ?? profile.access_group
-          }
-        />
-        <InfoItem label="description" value={profile.description} />
-        <div className={classes.block}>
-          <InfoItem label="rootfs image name" value={profile.image_name} />
-          {profile.image_source && (
-            <InfoItem
-              type="truncated"
-              label="rootfs image source"
-              value={profile.image_source}
-            />
-          )}
-          <InfoItem
-            label="cloud init"
-            value={profile.cloud_init_contents || "N/A"}
-          />
-        </div>
 
-        <div className={classes.block}>
-          <p className="p-heading--5">Association</p>
-          {profile.all_computers && (
-            <p>This profile has been associated with all instances.</p>
-          )}
-          {!profile.all_computers && !profile.tags.length && (
-            <p>This profile has not yet been associated with any instances.</p>
-          )}
-          {!profile.all_computers && profile.tags.length > 0 && (
-            <InfoItem label="tags" value={profile.tags.join(", ")} />
-          )}
-        </div>
+        <Col size={6}>
+          <InfoItem label="Name" value={profile.name} />
+        </Col>
+      </Row>
 
-        <Col size={12}>
-          <InfoItem
-            label="associated"
-            value={`${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`}
-          />
-        </Col>
+      <Row className="u-no-padding--left u-no-padding--right">
         <Col size={6}>
           <InfoItem
-            label="not compliant"
-            value={`${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`}
-          />
-        </Col>
-        <Col size={6}>
-          <InfoItem
-            label="pending"
-            value={`${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`}
+            label="Access group"
+            value={
+              accessGroupOptions.find(
+                ({ value }) => value === profile.access_group,
+              )?.label ?? profile.access_group
+            }
           />
         </Col>
       </Row>
 
-      <TextConfirmationModal
-        isOpen={modalOpen}
-        close={handleCloseModal}
-        onConfirm={handleRemoveWslProfile}
-        title="Remove WSL profile"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        confirmationText={`remove ${profile.title}`}
-      >
-        <p>
-          Removing this profile will affect{" "}
-          <b>{profile.computers.constrained.length} instances</b>. This action
-          is <b>irreversible</b>.
-        </p>
-      </TextConfirmationModal>
+      <Row className="u-no-padding--left u-no-padding--right">
+        <Col size={12}>
+          <InfoItem label="Description" value={profile.description} />
+        </Col>
+      </Row>
+
+      <div className={classes.block}>
+        <Row className="u-no-padding--left u-no-padding--right">
+          <Col size={12}>
+            <InfoItem label="RootFS image name" value={profile.image_name} />
+          </Col>
+        </Row>
+
+        {profile.image_source && (
+          <Row className="u-no-padding--left u-no-padding--right">
+            <Col size={12}>
+              <InfoItem
+                type="truncated"
+                label="RootFS image source"
+                value={profile.image_source}
+              />
+            </Col>
+          </Row>
+        )}
+
+        <Row className="u-no-padding--left u-no-padding--right">
+          <Col size={12}>
+            <InfoItem
+              label="Cloud-init"
+              value={profile.cloud_init_contents || <NoData />}
+            />
+          </Col>
+        </Row>
+      </div>
+
+      <div className={classes.block}>
+        <p className="p-heading--5">Association</p>
+
+        {profile.all_computers ? (
+          <p>This profile has been associated with all instances.</p>
+        ) : (
+          <Row className="u-no-padding--left u-no-padding--right">
+            <Col size={12}>
+              <InfoItem
+                label="Tags"
+                type="truncated"
+                value={profile.tags.join(", ")}
+              />
+            </Col>
+          </Row>
+        )}
+
+        {(profile.all_computers || !!profile.tags.length) && (
+          <>
+            <Row className="u-no-padding--left u-no-padding--right">
+              <Col size={12}>
+                <InfoItem
+                  label="Associated parents"
+                  value={
+                    <WslProfileAssociatedParentsLink wslProfile={profile} />
+                  }
+                />
+              </Col>
+            </Row>
+
+            <Row className="u-no-padding--left u-no-padding--right">
+              <Col size={6}>
+                <InfoItem
+                  label="Not compliant"
+                  value={
+                    <WslProfileNonCompliantParentsLink wslProfile={profile} />
+                  }
+                />
+              </Col>
+
+              <Col size={6}>
+                <InfoItem
+                  label="Compliant"
+                  value={
+                    <WslProfileCompliantParentsLink wslProfile={profile} />
+                  }
+                />
+              </Col>
+            </Row>
+          </>
+        )}
+      </div>
+
+      <WslProfileRemoveModal
+        isOpen={isRemoveModalOpen}
+        close={closeRemoveModal}
+        wslProfile={profile}
+      />
     </>
   );
 };

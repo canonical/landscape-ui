@@ -1,3 +1,5 @@
+import useAuth from "@/hooks/useAuth";
+import { authUser } from "@/tests/mocks/auth";
 import {
   debianInstance,
   ubuntuCoreInstance,
@@ -9,6 +11,8 @@ import type { Instance } from "@/types/Instance";
 import { screen } from "@testing-library/react";
 import { describe } from "vitest";
 import SingleInstanceTabs from "./SingleInstanceTabs";
+
+vi.mock("@/hooks/useAuth");
 
 const validateTabs = (instance: Instance, tabNames: string[]) => {
   renderWithProviders(
@@ -32,6 +36,19 @@ const validateTabs = (instance: Instance, tabNames: string[]) => {
 
 describe("SingleInstanceTabs", () => {
   describe("getTabLinks", () => {
+    beforeEach(() => {
+      vi.mocked(useAuth).mockReturnValue({
+        authLoading: false,
+        authorized: true,
+        isFeatureEnabled: () => true,
+        logout: vi.fn(),
+        redirectToExternalUrl: vi.fn(),
+        setAuthLoading: vi.fn(),
+        setUser: vi.fn(),
+        user: authUser,
+      });
+    });
+
     it("should use the correct tabs for ubuntu", () => {
       validateTabs(ubuntuInstance, [
         "Info",

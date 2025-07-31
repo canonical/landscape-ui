@@ -1,7 +1,7 @@
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -40,16 +40,16 @@ const EmployeeListActions: FC<EmployeeDetailsActionsProps> = ({ employee }) => {
     );
   };
 
-  const actions: ListAction[] = [
+  const actions: Action[] = [
     {
-      icon: "file",
+      icon: "show",
       label: "View details",
       "aria-label": `View ${employee.name} employee details`,
       onClick: handleViewDetails,
     },
   ];
 
-  const destructiveActions: ListAction[] = [];
+  const destructiveActions: Action[] = [];
 
   if (employee.is_active) {
     destructiveActions.push({

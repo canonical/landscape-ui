@@ -1,4 +1,3 @@
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions, {
   LIST_ACTIONS_COLUMN_PROPS,
 } from "@/components/layout/ListActions";
@@ -8,6 +7,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { Action } from "@/types/Action";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -220,9 +220,9 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => {
-          const nondestructiveActions: ListAction[] = [
+          const nondestructiveActions: Action[] = [
             {
-              icon: "switcher-environments",
+              icon: "show",
               label: "View details",
               onClick: actions(profile).viewDetails,
             },
@@ -236,7 +236,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             });
           }
 
-          const destructiveActions: ListAction[] | undefined = !profile.archived
+          const destructiveActions: Action[] | undefined = !profile.archived
             ? [
                 {
                   icon: "archive",

@@ -81,11 +81,11 @@ describe("InstanceList", () => {
     expect(checkedCheckboxes).toHaveLength(instances.length + 1);
   });
 
-  it("should show upgrades for an ubuntu core instance", async () => {
+  it("should not show upgrades for an ubuntu core instance", async () => {
     renderWithProviders(
       <InstanceList {...props} instances={[ubuntuCoreInstance]} />,
     );
 
-    expect(screen.getByText("Up to date")).toBeInTheDocument();
+    expect(screen.queryByText("Up to date")).not.toBeInTheDocument();
   });
 });

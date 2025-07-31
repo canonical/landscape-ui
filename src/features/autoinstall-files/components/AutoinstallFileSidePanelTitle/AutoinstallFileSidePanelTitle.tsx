@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import Chip from "@/components/layout/Chip";
 import type { FC } from "react";
 import type { AutoinstallFile } from "../../types";
 import classes from "./AutoinstallFileSidePanelTitle.module.scss";
@@ -18,16 +18,7 @@ const AutoinstallFileSidePanelTitle: FC<AutoinstallFileSidePanelTitleProps> = ({
     <div className={classes.container}>
       {!!title && `${title} `}
       {file.filename}, v{version}
-      {file.is_default && (
-        <span
-          className={classNames(
-            "p-chip is-dense u-no-margin--bottom",
-            classes.chip,
-          )}
-        >
-          <span className="p-chip__value">default</span>
-        </span>
-      )}
+      {file.is_default && <Chip className={classes.chip} value="Default" />}
     </div>
   );
 };

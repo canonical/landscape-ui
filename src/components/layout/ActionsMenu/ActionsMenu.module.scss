@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.menu {
+  display: flex;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.separator {
+  border-top: 1px solid $colors--light-theme--border-low-contrast !important;
+}

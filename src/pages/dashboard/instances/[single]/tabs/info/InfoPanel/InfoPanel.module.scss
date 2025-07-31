@@ -2,38 +2,32 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .titleRow {
+  align-items: center;
   display: flex;
+  gap: $sph--x-large;
   justify-content: space-between;
+  white-space: nowrap;
 }
 
-.flexContainer {
-  column-gap: $sph--large;
+.headerContainer {
+  column-gap: $sph--small;
   display: flex;
 }
 
-.italic {
-  font-style: italic;
+.status {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
 }
 
-.infoRow {
-  padding-bottom: $spv--large;
-  padding-top: $spv--large;
+.heading {
+  margin-bottom: 0;
 }
 
-.tagSection {
+.block {
   box-shadow: inset 0 1px 0 0 $colors--theme--border-low-contrast;
-  padding-top: $spv--x-large;
-}
-
-.tagsRow {
-  align-items: flex-end;
-  gap: $sp-medium;
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.tagsButton {
-  padding-top: 31.11px;
+  display: flex;
+  flex-direction: column;
+  margin-top: $spv--medium;
+  padding-top: $spv--medium;
 }

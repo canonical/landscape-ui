@@ -10,7 +10,7 @@ import InstancesPageActions from "./InstancesPageActions";
 const selected = instances.slice(0, 2);
 
 const BUTTON_LABELS = [
-  "Shutdown",
+  "Shut down",
   "Restart",
   "View report",
   "Run script",
@@ -144,7 +144,7 @@ describe("InstancesPageActions", () => {
     });
 
     it("'Shutdown' button", async () => {
-      await userEvent.click(screen.getByRole("button", { name: /shutdown/i }));
+      await userEvent.click(screen.getByRole("button", { name: /shut down/i }));
 
       const dialog = screen.getByRole("dialog", {
         name: /shutting down selected instances/i,
@@ -153,7 +153,7 @@ describe("InstancesPageActions", () => {
       expect(dialog).toBeInTheDocument();
 
       await userEvent.click(
-        within(dialog).getByRole("button", { name: /shutdown/i }),
+        within(dialog).getByRole("button", { name: /shut down/i }),
       );
 
       screen.getByText("Selected instances have been queued for shutdown.");

@@ -8,9 +8,9 @@ import {
 
 describe("SingleInstanceContainer", () => {
   describe("isInstancePackagesQueryEnabled", () => {
-    it("should be true for an ubuntu core instance", () => {
+    it("should be false for an ubuntu core instance", () => {
       assert(
-        isInstancePackagesQueryEnabled(
+        !isInstancePackagesQueryEnabled(
           ubuntuCoreInstance,
           undefined,
           undefined,
@@ -20,16 +20,16 @@ describe("SingleInstanceContainer", () => {
   });
 
   describe("isLivepatchInfoQueryEnabled", () => {
-    it("should be true for an ubuntu core instance", () => {
+    it("should be false for an ubuntu core instance", () => {
       assert(
-        isLivepatchInfoQueryEnabled(ubuntuCoreInstance, undefined, undefined),
+        !isLivepatchInfoQueryEnabled(ubuntuCoreInstance, undefined, undefined),
       );
     });
   });
 
   describe("isUsnQueryEnabled", () => {
-    it("should be true for an ubuntu core instance", () => {
-      assert(isUsnQueryEnabled(ubuntuCoreInstance, undefined, undefined));
+    it("should be false for an ubuntu core instance", () => {
+      assert(!isUsnQueryEnabled(ubuntuCoreInstance, undefined, undefined));
     });
   });
 });

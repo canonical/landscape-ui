@@ -1,4 +1,4 @@
-import useInstances from "@/hooks/useInstances";
+import { useGetInstances } from "@/features/instances";
 import { pluralize } from "@/utils/_helpers";
 import { Spinner } from "@canonical/react-components";
 import { type FC } from "react";
@@ -12,17 +12,14 @@ interface AccessGroupInstanceCountCellProps {
 const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
   accessGroup,
 }) => {
-  const { getInstancesQuery } = useInstances();
-
-  const { data: getInstancesQueryResult, isPending } = getInstancesQuery({
+  const { instancesCount, isGettingInstances } = useGetInstances({
     query: `access-group: ${accessGroup.name}`,
-    root_only: false,
     with_alerts: true,
     with_upgrades: true,
     limit: 1,
   });
 
-  if (isPending) {
+  if (isGettingInstances) {
     return (
       <>
         <span className="u-off-screen">Loading...</span>
@@ -31,12 +28,10 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
     );
   }
 
-  const count = getInstancesQueryResult?.data.count;
-
-  if (count) {
+  if (instancesCount) {
     return (
       <Link to={`/instances?accessGroups=${accessGroup.name}`}>
-        {count} {pluralize(count, "instance")}
+        {instancesCount} {pluralize(instancesCount, "instance")}
       </Link>
     );
   }

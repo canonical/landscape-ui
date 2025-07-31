@@ -1,8 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
-import { useGetProfileChanges } from "@/features/tags";
+import { useGetProfileChanges, useGetTags } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
@@ -16,6 +15,7 @@ import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
+import { useAddTagsToInstances } from "../../api";
 import TagsAddConfirmationModal from "../TagsAddConfirmationModal";
 
 interface TagsAddFormProps {
@@ -31,9 +31,11 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
 
-  const { addTagsToInstancesQuery, getAllInstanceTagsQuery } = useInstances();
+  const { addTagsToInstances, isAddingTagsToInstances } =
+    useAddTagsToInstances();
+  const { tags, isGettingTags } = useGetTags();
 
-  const [tags, setTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const {
     isFetchingProfileChanges,
@@ -56,16 +58,11 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
   const [search, setSearch] = useState("");
 
-  const { mutateAsync: addTagsToInstances, isPending: isAddingTags } =
-    addTagsToInstancesQuery;
-  const { data: getAllInstanceTagsQueryResult, isLoading: isLoadingTags } =
-    getAllInstanceTagsQuery();
-
   const addTags = async () => {
     try {
       await addTagsToInstances({
         query: selected.map(({ id }) => `id:${id}`).join(" OR "),
-        tags,
+        tags: selectedTags,
       });
 
       closeSidePanel();
@@ -99,15 +96,14 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
   };
 
   const filteredTags =
-    getAllInstanceTagsQueryResult?.data.results.filter((value) =>
-      value.toLowerCase().includes(search.toLowerCase()),
-    ) ?? [];
+    tags.filter((tag) => tag.toLowerCase().includes(search.toLowerCase())) ??
+    [];
 
   const toggleAll = () => {
-    if (filteredTags.every((tag) => tags.includes(tag))) {
-      setTags([]);
+    if (filteredTags.every((tag) => selectedTags.includes(tag))) {
+      setSelectedTags([]);
     } else {
-      setTags(filteredTags);
+      setSelectedTags(filteredTags);
     }
   };
 
@@ -125,7 +121,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
               )}
               checked={filteredTags.every(
                 (tag) =>
-                  tags.includes(tag) ||
+                  selectedTags.includes(tag) ||
                   selected.every((instance) => instance.tags.includes(tag)),
               )}
               indeterminate={
@@ -148,10 +144,10 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
           },
         }: CellProps<TagObject>) => {
           const toggle = () => {
-            if (tags.includes(tag)) {
-              setTags(
-                tags.toSpliced(
-                  tags.findIndex((t) => t == tag),
+            if (selectedTags.includes(tag)) {
+              setSelectedTags(
+                selectedTags.toSpliced(
+                  selectedTags.findIndex((t) => t == tag),
                   1,
                 ),
               );
@@ -163,7 +159,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
               return;
             }
 
-            setTags([...tags, tag]);
+            setSelectedTags([...selectedTags, tag]);
           };
 
           return (
@@ -175,11 +171,11 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
               )}
               name={`tag-${index}`}
               checked={
-                tags.includes(tag) ||
+                selectedTags.includes(tag) ||
                 selected.every((instance) => instance.tags.includes(tag))
               }
               indeterminate={
-                !tags.includes(tag) &&
+                !selectedTags.includes(tag) &&
                 selected.some((instance) => instance.tags.includes(tag)) &&
                 selected.some((instance) => !instance.tags.includes(tag))
               }
@@ -189,10 +185,10 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
         },
       },
     ],
-    [tags, filteredTags],
+    [selectedTags, filteredTags],
   );
 
-  if (isLoadingTags) {
+  if (isGettingTags) {
     return <LoadingState />;
   }
 
@@ -230,17 +226,19 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
       <SidePanelFormButtons
         onSubmit={submit}
-        submitButtonDisabled={!tags.length}
-        submitButtonLoading={isAddingTags || isFetchingProfileChanges}
+        submitButtonDisabled={!selectedTags.length}
+        submitButtonLoading={
+          isAddingTagsToInstances || isFetchingProfileChanges
+        }
         submitButtonText="Assign"
       />
 
       {isModalVisible && (
         <TagsAddConfirmationModal
           instances={selected}
-          tags={tags}
+          tags={selectedTags}
           onConfirm={addTags}
-          confirmButtonLoading={isAddingTags}
+          confirmButtonLoading={isAddingTagsToInstances}
           close={closeModal}
           profileChangesCount={profileChangesCount}
         />

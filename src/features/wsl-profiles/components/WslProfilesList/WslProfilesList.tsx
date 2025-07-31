@@ -11,29 +11,29 @@ import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
+import { useGetWslProfiles } from "../../api";
 import type { WslProfile } from "../../types";
+import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink";
+import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
+import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfilesListActions from "../WslProfilesListActions";
-import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
 
 const WslProfileDetails = lazy(async () => import("../WslProfileDetails"));
 
-interface WslProfileListProps {
-  readonly wslProfiles: WslProfile[];
-}
-
-const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
+const WslProfilesList: FC = () => {
+  const { expandedRowIndex, getTableRowsRef, handleExpand } =
+    useExpandableRow();
   const { search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
-  const { expandedRowIndex, getTableRowsRef, handleExpand } =
-    useExpandableRow();
+
+  const { isGettingWslProfiles, wslProfiles } = useGetWslProfiles({ search });
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -43,53 +43,58 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
       value: name,
     })) ?? [];
 
-  const handleWslProfileDetailsOpen = (profile: WslProfile) => {
-    setSidePanelContent(
-      profile.title,
-      <Suspense fallback={<LoadingState />}>
-        <WslProfileDetails
-          profile={profile}
-          accessGroupOptions={accessGroupOptions}
-        />
-      </Suspense>,
-    );
-  };
-
-  const profiles = useMemo(() => {
-    if (!search) {
-      return wslProfiles;
-    }
-
-    return wslProfiles.filter((profile) => {
-      return profile.title.toLowerCase().includes(search.toLowerCase());
-    });
-  }, [wslProfiles, search]);
-
   const columns = useMemo<Column<WslProfile>[]>(
     () => [
       {
         ...LIST_TITLE_COLUMN_PROPS,
-        Cell: ({ row: { original } }: CellProps<WslProfile>) => (
-          <ListTitle>
-            <Button
-              type="button"
-              appearance="link"
-              className="u-no-margin--bottom u-no-padding--top u-align--left"
-              onClick={() => {
-                handleWslProfileDetailsOpen(original);
-              }}
-            >
-              {original.title}
-            </Button>
+        Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => {
+          const openWslProfileDetails = () => {
+            setSidePanelContent(
+              wslProfile.title,
+              <Suspense fallback={<LoadingState />}>
+                <WslProfileDetails
+                  profile={wslProfile}
+                  accessGroupOptions={accessGroupOptions}
+                />
+              </Suspense>,
+            );
+          };
 
-            <span className="u-text--muted">{original.name}</span>
-          </ListTitle>
-        ),
+          return (
+            <ListTitle>
+              <Button
+                type="button"
+                appearance="link"
+                className="u-no-margin--bottom u-no-padding--top u-align--left"
+                onClick={openWslProfileDetails}
+              >
+                {wslProfile.title}
+              </Button>
+
+              <span className="u-text--muted">{wslProfile.name}</span>
+            </ListTitle>
+          );
+        },
       },
       {
         accessor: "description",
         className: classes.description,
         Header: "Description",
+        Cell: ({
+          row: { original: wslProfile, index },
+        }: CellProps<WslProfile>) => {
+          const onExpand = () => {
+            handleExpand(index);
+          };
+
+          return (
+            <TruncatedCell
+              content={wslProfile.description}
+              isExpanded={index === expandedRowIndex}
+              onExpand={onExpand}
+            />
+          );
+        },
       },
       {
         accessor: "access_group",
@@ -105,81 +110,96 @@ const WslProfilesList: FC<WslProfileListProps> = ({ wslProfiles }) => {
       {
         accessor: "tags",
         Header: "Tags",
-        Cell: ({ row: { original, index } }: CellProps<WslProfile>) =>
-          original.tags.length > 0 ? (
+        Cell: ({
+          row: { original: wslProfile, index },
+        }: CellProps<WslProfile>) => {
+          if (wslProfile.all_computers) {
+            return "All instances";
+          }
+
+          if (!wslProfile.tags.length) {
+            return <NoData />;
+          }
+
+          const onExpand = () => {
+            handleExpand(index);
+          };
+
+          return (
             <TruncatedCell
-              content={original.tags.map((tag) => (
+              content={wslProfile.tags.map((tag) => (
                 <span className="truncatedItem" key={tag}>
                   {tag}
                 </span>
               ))}
-              isExpanded={index == expandedRowIndex}
-              onExpand={() => {
-                handleExpand(index);
-              }}
+              isExpanded={index === expandedRowIndex}
+              onExpand={onExpand}
               showCount
             />
-          ) : (
-            <NoData />
-          ),
+          );
+        },
+      },
+      {
+        accessor: "computers['constrained']",
+        Header: "Associated parents",
+        Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => (
+          <WslProfileAssociatedParentsLink wslProfile={wslProfile} />
+        ),
       },
       {
         accessor: "computers['non-compliant']",
         Header: (
-          <div className={classes.noWrap}>
-            <span>Not compliant </span>
-            <Tooltip position="btm-left" message={NON_COMPLIANT_TOOLTIP}>
+          <div className={classes.header}>
+            Not compliant
+            <Tooltip
+              position="btm-left"
+              message="These instances are not compliant with the profile. They do not have a pending activity to become compliant."
+            >
               <Icon name="help" />
             </Tooltip>
           </div>
         ),
-        Cell: ({ row: { original } }: CellProps<WslProfile>) => (
-          <>
-            {`${original.computers["non-compliant"].length} ${pluralize(original.computers["non-compliant"].length, "instance")}`}
-          </>
+        Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => (
+          <WslProfileNonCompliantParentsLink wslProfile={wslProfile} />
         ),
       },
       {
-        accessor: "computers['pending']",
+        accessor: "computers['compliant']",
         Header: (
-          <div className={classes.noWrap}>
-            <span>Pending </span>
-            <Tooltip position="btm-left" message={PENDING_TOOLTIP}>
+          <div className={classes.header}>
+            Compliant
+            <Tooltip
+              position="btm-left"
+              message="These instances are compliant with the profile."
+            >
               <Icon name="help" />
             </Tooltip>
           </div>
         ),
-        Cell: ({ row: { original } }: CellProps<WslProfile>) => (
-          <>
-            {`${original.computers["pending"].length ?? 0} ${pluralize(original.computers["pending"].length, "instance")}`}
-          </>
-        ),
-      },
-      {
-        accessor: "computers['constrained']",
-        Header: "Associated",
-        Cell: ({ row: { original } }: CellProps<WslProfile>) => (
-          <>
-            {`${original.computers["constrained"].length} ${pluralize(original.computers["constrained"].length, "instance")}`}
-          </>
+        Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => (
+          <WslProfileCompliantParentsLink wslProfile={wslProfile} />
         ),
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({ row: { original } }: CellProps<WslProfile>) => (
-          <WslProfilesListActions profile={original} />
+        Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => (
+          <WslProfilesListActions profile={wslProfile} />
         ),
       },
     ],
     [accessGroupOptions.length, expandedRowIndex],
   );
 
+  if (isGettingWslProfiles) {
+    return <LoadingState />;
+  }
+
   return (
     <div ref={getTableRowsRef}>
       <ResponsiveTable
         columns={columns}
-        data={profiles}
-        emptyMsg={`No WSL profiles found with the search "${search}"`}
+        data={wslProfiles}
+        emptyMsg={`No WSL profiles found according to your search parameters.`}
         getCellProps={getCellProps(expandedRowIndex)}
         getRowProps={getRowProps(expandedRowIndex)}
         minWidth={1200}

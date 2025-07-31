@@ -1,9 +1,9 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
-import { currentInstanceCan } from "@/features/instances";
+import { getFeatures, useGetInstances } from "@/features/instances";
+import { useGetTags } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
@@ -34,7 +34,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { getAllInstanceTagsQuery, getInstancesQuery } = useInstances();
 
   const { runScript } = useRunScript();
 
@@ -83,22 +82,21 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const { data: getAllInstanceTagsQueryResult, isLoading: isGettingTags } =
-    getAllInstanceTagsQuery();
+  const { tags, isGettingTags } = useGetTags();
 
-  const { data: getInstancesQueryResult, isLoading: isGettingInstances } =
-    getInstancesQuery({
-      query: `access-group-recursive:${script.access_group}`,
-    });
+  const { instances, isGettingInstances } = useGetInstances({
+    query: `access-group-recursive:${script.access_group}`,
+  });
 
   const {
-    data: getTaggedInstancesQueryResult,
-    isLoading: isGettingTaggedInstances,
-    error: taggedInstancesQueryError,
-  } = getInstancesQuery(
+    instances: taggedInstances,
+    isGettingInstances: isGettingTaggedInstances,
+    instancesError: taggedInstancesError,
+  } = useGetInstances(
     {
       query: `access-group-recursive:${script.access_group} ${formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ")}`,
     },
+    undefined,
     {
       enabled: !!formik.values.tags.length,
     },
@@ -108,8 +106,8 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
     return <LoadingState />;
   }
 
-  if (taggedInstancesQueryError) {
-    debug(taggedInstancesQueryError);
+  if (taggedInstancesError) {
+    debug(taggedInstancesError);
   }
 
   const hideModal = () => {
@@ -121,24 +119,26 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
   };
 
   const tagOptions: MultiSelectItem[] =
-    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
+    tags.map((tag) => ({
       label: tag,
       value: tag,
     })) ?? [];
 
-  const instances =
-    getInstancesQueryResult?.data.results.filter((instance) => {
-      return currentInstanceCan("runScripts", instance);
+  const instancesWithScriptsFeature =
+    instances.filter((instance) => {
+      return getFeatures(instance).scripts;
     }) ?? [];
 
-  const instanceOptions: MultiSelectItem[] = instances.map(({ title, id }) => ({
-    label: title,
-    value: id,
-  }));
+  const instanceOptions: MultiSelectItem[] = instancesWithScriptsFeature.map(
+    ({ title, id }) => ({
+      label: title,
+      value: id,
+    }),
+  );
 
-  const taggedInstances =
-    getTaggedInstancesQueryResult?.data.results.filter((instance) => {
-      return currentInstanceCan("runScripts", instance);
+  const taggedInstancesWithScriptsFeature =
+    taggedInstances.filter((instance) => {
+      return getFeatures(instance).scripts;
     }) ?? [];
 
   const trySubmit = () => {
@@ -282,7 +282,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
           }}
           confirmButtonDisabled={
             formik.isSubmitting ||
-            !!taggedInstancesQueryError ||
+            !!taggedInstancesError ||
             isGettingTaggedInstances
           }
           confirmButtonLoading={isGettingTaggedInstances}
@@ -295,7 +295,9 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
             {formik.values.tags.length == 1 ? "tag" : "tags"}.
           </p>
 
-          <RunScriptFormInstanceList instances={taggedInstances} />
+          <RunScriptFormInstanceList
+            instances={taggedInstancesWithScriptsFeature}
+          />
         </ConfirmationModal>
       )}
     </>

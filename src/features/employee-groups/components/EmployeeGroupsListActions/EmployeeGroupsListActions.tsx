@@ -1,7 +1,7 @@
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { Action } from "@/types/Action";
 import { ConfirmationModal, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -62,7 +62,7 @@ const EmployeeGroupsListActions: FC<EmployeeDetailsActionsProps> = ({
     );
   };
 
-  const actions: ListAction[] = [
+  const actions: Action[] = [
     {
       icon: "sort-both",
       label: "Edit priority",
@@ -77,7 +77,7 @@ const EmployeeGroupsListActions: FC<EmployeeDetailsActionsProps> = ({
     },
   ];
 
-  const destructiveActions: ListAction[] = [
+  const destructiveActions: Action[] = [
     {
       icon: ICONS.delete,
       label: "Remove",

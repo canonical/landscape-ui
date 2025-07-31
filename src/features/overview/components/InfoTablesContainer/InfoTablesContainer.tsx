@@ -5,11 +5,11 @@ import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
 import { useActivities, useGetActivities } from "@/features/activities";
+import { useGetInstances } from "@/features/instances";
 import type { Package } from "@/features/packages";
 import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
 import useNotify from "@/hooks/useNotify";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
@@ -49,7 +49,6 @@ const InfoTablesContainer: FC = () => {
   const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { getInstancesQuery } = useInstances();
   const { getPackagesQuery, upgradePackagesQuery } = usePackages();
   const { getUsnsQuery } = useUsns();
   const { approveActivitiesQuery } = useActivities();
@@ -93,18 +92,15 @@ const InfoTablesContainer: FC = () => {
   );
 
   const {
-    data: instancesUpgradesRes = {
-      data: { results: [] as Instance[], count: 0 },
-    } as AxiosResponse<ApiPaginatedResponse<Instance>>,
-    refetch: refetchInstanceUpgrades,
-    isFetching: isFetchingInstanceUpgrades,
-  } = getInstancesQuery({
+    instances: instancesWithUpgrades,
+    instancesCount: instancesWithUpgradesCount,
+    refetchInstances: refetchInstancesWithUpgrades,
+    isFetchingInstances: isFetchingInstancesWithUpgrades,
+  } = useGetInstances({
     query: "alert:security-upgrades OR alert:package-upgrades",
     limit: MAX_UPGRADE_COUNT,
     with_upgrades: true,
   });
-
-  const instancesData = instancesUpgradesRes.data.results;
 
   const {
     data: usnsData = {
@@ -114,11 +110,11 @@ const InfoTablesContainer: FC = () => {
     isFetching: isFetchingUsns,
   } = getUsnsQuery(
     {
-      computer_ids: instancesData.map((instance) => instance.id),
+      computer_ids: instancesWithUpgrades.map((instance) => instance.id),
       limit: usnsLimit,
     },
     {
-      enabled: !!instancesData.length && currentUpgradesTab === "usns",
+      enabled: !!instancesWithUpgrades.length && currentUpgradesTab === "usns",
     },
   );
   const {
@@ -129,12 +125,15 @@ const InfoTablesContainer: FC = () => {
     isFetching: isFetchingPackages,
   } = getPackagesQuery(
     {
-      query: instancesData.map((instance) => `id:${instance.id}`).join(" OR "),
+      query: instancesWithUpgrades
+        .map((instance) => `id:${instance.id}`)
+        .join(" OR "),
       upgrade: true,
       limit: packagesLimit,
     },
     {
-      enabled: !!instancesData.length && currentUpgradesTab === "packages",
+      enabled:
+        !!instancesWithUpgrades.length && currentUpgradesTab === "packages",
     },
   );
 
@@ -147,7 +146,7 @@ const InfoTablesContainer: FC = () => {
     if (table === "upgrades") {
       switch (currentUpgradesTab) {
         case "instances":
-          return instancesUpgradesRes.data.count;
+          return instancesWithUpgradesCount ?? 0;
         case "packages":
           return packageDataRes.data.count;
         case "usns":
@@ -177,7 +176,7 @@ const InfoTablesContainer: FC = () => {
   const getUpgradesTableData = (): (Instance | Package | Usn)[] => {
     switch (currentUpgradesTab) {
       case "instances":
-        return instancesData;
+        return instancesWithUpgrades;
       case "packages":
         return packagesData;
       case "usns":
@@ -188,7 +187,7 @@ const InfoTablesContainer: FC = () => {
   const getIsLoadingUpgrades = (): boolean => {
     switch (currentUpgradesTab) {
       case "instances":
-        return isFetchingInstanceUpgrades;
+        return isFetchingInstancesWithUpgrades;
       case "packages":
         return isFetchingPackages;
       case "usns":
@@ -198,7 +197,7 @@ const InfoTablesContainer: FC = () => {
 
   const upgradesTableData = useMemo(
     () => getUpgradesTableData(),
-    [currentUpgradesTab, instancesData, packagesData, usnsUpgradesData],
+    [currentUpgradesTab, instancesWithUpgrades, packagesData, usnsUpgradesData],
   );
 
   const upgradesTableColumns = useMemo<
@@ -342,15 +341,15 @@ const InfoTablesContainer: FC = () => {
   const handleUpgradesRefresh = (): void => {
     switch (currentUpgradesTab) {
       case "instances":
-        refetchInstanceUpgrades();
+        refetchInstancesWithUpgrades();
         break;
       case "packages":
-        if (instancesData.length) {
+        if (instancesWithUpgrades.length) {
           refetchPackages();
         }
         break;
       case "usns":
-        if (instancesData.length) {
+        if (instancesWithUpgrades.length) {
           refetchUsns();
         }
         break;
@@ -372,7 +371,7 @@ const InfoTablesContainer: FC = () => {
     const isSecurityOnly = currentUpgradesTab === "usns";
     try {
       await upgradePackages({
-        query: instancesData
+        query: instancesWithUpgrades
           .map((instance) => `id:${instance.id}`)
           .join(" OR "),
         security_only: isSecurityOnly,

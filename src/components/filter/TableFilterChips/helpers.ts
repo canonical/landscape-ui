@@ -1,11 +1,11 @@
 import { PARAMS_CONFIG } from "@/libs/pageParamsManager/constants";
+import type { SelectOption } from "@/types/SelectOption";
 import type {
   CheckRenderConditions,
   CheckRenderConditionsReturn,
   PluralChipsKey,
   SingularChipKey,
 } from "./types";
-import type { SelectOption } from "@/types/SelectOption";
 
 export const parseSearchQuery = (searchQuery: string) => {
   if (!searchQuery) {
@@ -15,7 +15,10 @@ export const parseSearchQuery = (searchQuery: string) => {
   return searchQuery
     .split(",")
     .filter((searchQueryParam) => searchQueryParam.trim() !== "")
-    .map((searchQueryParam) => `'${searchQueryParam}'`);
+    .map((searchQueryParam) => ({
+      label: `'${searchQueryParam}'`,
+      value: searchQueryParam,
+    }));
 };
 
 export const filterSearchQuery = (searchQuery: string, chipValue: string) => {
@@ -36,15 +39,33 @@ export const filterSearchQuery = (searchQuery: string, chipValue: string) => {
   return updatedSearchParams.join(",");
 };
 
-export const getChipLabel = (
+export const getItem = (
   options: SelectOption[] | undefined,
   valueToFind: string,
 ) => {
+  if (!valueToFind) {
+    return undefined;
+  }
+
   return (
     options?.find((option) => option.value === valueToFind)?.label ??
     valueToFind
   );
 };
+
+export const getItems = (
+  options: SelectOption[] | undefined,
+  values: string[],
+) =>
+  options
+    ? values.filter(Boolean).map(
+        (value) =>
+          options?.find((option) => option.value === value) ?? {
+            label: value,
+            value,
+          },
+      )
+    : [];
 
 export const checkRenderConditions: CheckRenderConditions = ({
   filtersToMonitor,

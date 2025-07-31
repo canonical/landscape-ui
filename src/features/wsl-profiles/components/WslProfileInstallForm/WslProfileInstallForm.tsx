@@ -2,15 +2,16 @@ import AssociationBlock from "@/components/form/AssociationBlock";
 import CodeEditor from "@/components/form/CodeEditor";
 import FileInput from "@/components/form/FileInput";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useWsl } from "@/features/wsl";
+import { useGetWslInstanceTypes } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { FC } from "react";
-import { useWslProfiles } from "../../hooks";
+import { type FC } from "react";
+import { useAddWslProfile } from "../../api";
 import type { WslProfile } from "../../types";
 import { CLOUD_INIT_OPTIONS, FILE_INPUT_HELPER_TEXT } from "../constants";
 import { CTA_INFO } from "./constants";
@@ -43,18 +44,15 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
-  const { getWslInstanceNamesQuery } = useWsl();
-  const { createWslProfileQuery } = useWslProfiles();
 
-  const { mutateAsync: createWslProfile } = createWslProfileQuery;
+  const { addWslProfile: addWslProfile } = useAddWslProfile();
+
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-  const {
-    data: getWslInstanceNamesQueryResult,
-    isLoading: isLoadingWslInstanceNames,
-  } = getWslInstanceNamesQuery();
+  const { isGettingWslInstanceTypes, wslInstanceTypes } =
+    useGetWslInstanceTypes();
 
   const instanceQueryResultOptions =
-    (getWslInstanceNamesQueryResult?.data ?? []).map(({ label, name }) => ({
+    wslInstanceTypes.map(({ label, name }) => ({
       label,
       value: name,
     })) || [];
@@ -73,9 +71,9 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
 
   const handleSubmit = async (values: FormProps) => {
     try {
-      const strippedCloudInit = await getCloudInitFile(formik.values.cloudInit);
+      const strippedCloudInit = await getCloudInitFile(values.cloudInit);
 
-      const profileResponse = await createWslProfile({
+      const profileResponse = await addWslProfile({
         title: values.title,
         access_group: values.access_group,
         description: values.description,
@@ -127,11 +125,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
         label="Title"
         required
         {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
       />
 
       <Input
@@ -139,11 +133,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
         label="Description"
         required
         {...formik.getFieldProps("description")}
-        error={
-          formik.touched.description && formik.errors.description
-            ? formik.errors.description
-            : undefined
-        }
+        error={getFormikError(formik, "description")}
       />
 
       <Select
@@ -152,11 +142,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
         required
         options={accessGroupResultOptions}
         {...formik.getFieldProps("access_group")}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
       />
 
       <div className={classes.block}>
@@ -171,16 +157,12 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
         )}
         <Select
           label="RootFS image"
-          disabled={isLoadingWslInstanceNames}
+          disabled={isGettingWslInstanceTypes}
           aria-label="RootFS image"
           options={ROOTFS_IMAGE_OPTIONS}
           required
           {...formik.getFieldProps("instanceType")}
-          error={
-            formik.touched.instanceType && formik.errors.instanceType
-              ? formik.errors.instanceType
-              : undefined
-          }
+          error={getFormikError(formik, "instanceType")}
         />
 
         {formik.values.instanceType === "custom" && (
@@ -189,21 +171,13 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
               label="Image name"
               type="text"
               {...formik.getFieldProps("customImageName")}
-              error={
-                formik.touched.customImageName && formik.errors.customImageName
-                  ? formik.errors.customImageName
-                  : undefined
-              }
+              error={getFormikError(formik, "customImageName")}
             />
             <Input
               type="text"
               label="RootFS image URL"
               {...formik.getFieldProps("rootfsImage")}
-              error={
-                formik.touched.rootfsImage && formik.errors.rootfsImage
-                  ? formik.errors.rootfsImage
-                  : undefined
-              }
+              error={getFormikError(formik, "rootfsImage")}
               help="The file path must be reachable by the affected WSL instances."
             />
           </>
@@ -214,11 +188,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
           aria-label="Cloud-init"
           options={CLOUD_INIT_OPTIONS}
           {...formik.getFieldProps("cloudInitType")}
-          error={
-            formik.touched.cloudInitType && formik.errors.cloudInitType
-              ? formik.errors.cloudInitType
-              : undefined
-          }
+          error={getFormikError(formik, "cloudInitType")}
         />
 
         {formik.values.cloudInitType === "file" && (
@@ -230,11 +200,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
             onFileRemove={handleRemoveFile}
             onFileUpload={handleFileUpload}
             help={FILE_INPUT_HELPER_TEXT}
-            error={
-              formik.touched.cloudInit && formik.errors.cloudInit
-                ? formik.errors.cloudInit
-                : undefined
-            }
+            error={getFormikError(formik, "cloudInit")}
           />
         )}
 
@@ -247,11 +213,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
             value={formik.values.cloudInit ?? ""}
             language="yaml"
             defaultValue="# paste cloud-init config here"
-            error={
-              formik.touched.cloudInit && formik.errors.cloudInit
-                ? formik.errors.cloudInit
-                : undefined
-            }
+            error={getFormikError(formik, "cloudInit")}
           />
         )}
       </div>

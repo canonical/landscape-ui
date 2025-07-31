@@ -9,10 +9,6 @@
 
 .rowHeader {
   display: flex;
-
-  &.nested {
-    padding-left: $sp-x-large;
-  }
 }
 
 .restartError {

@@ -1,16 +1,31 @@
-import type { FC } from "react";
-import { useFormik } from "formik";
-import { Form, Input, Select, Textarea } from "@canonical/react-components";
-import type { InstanceWithoutRelation } from "@/types/Instance";
-import useSidePanel from "@/hooks/useSidePanel";
-import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
-import { VALIDATION_SCHEMA } from "./constants";
-import type { FormProps } from "./types";
+import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import useRoles from "@/hooks/useRoles";
-import type { SelectOption } from "@/types/SelectOption";
+import LoadingState from "@/components/layout/LoadingState";
+import {
+  TagsAddConfirmationModal,
+  useEditInstance,
+} from "@/features/instances";
+import { useGetProfileChanges, useGetTags } from "@/features/tags";
+import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import useRoles from "@/hooks/useRoles";
+import useSidePanel from "@/hooks/useSidePanel";
+import type { InstanceWithoutRelation } from "@/types/Instance";
+import type { SelectOption } from "@/types/SelectOption";
+import { getFormikError } from "@/utils/formikErrors";
+import {
+  Chip,
+  Form,
+  Input,
+  Select,
+  Textarea,
+} from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
+import { VALIDATION_SCHEMA } from "./constants";
+import classes from "./EditInstance.module.scss";
+import type { FormProps } from "./types";
 
 interface EditInstanceProps {
   readonly instance: InstanceWithoutRelation;
@@ -20,40 +35,83 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
   const { notify } = useNotify();
+
   const { getAccessGroupQuery } = useRoles();
-  const { editInstanceQuery } = useInstances();
 
-  const { mutateAsync: editInstance } = editInstanceQuery;
+  const { data: getAccessGroupQueryResult, isPending: isGettingAccessGroups } =
+    getAccessGroupQuery();
+  const { tags, isGettingTags } = useGetTags();
+  const { editInstance } = useEditInstance();
 
-  const handleSubmit = async (values: FormProps) => {
-    try {
-      await editInstance({
-        instanceId: instance.id,
-        ...values,
-      });
-
-      closeSidePanel();
-
-      notify.success({
-        title: "Instance updated",
-        message: `Instance "${instance.title}" updated successfully`,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean();
 
   const formik = useFormik({
     initialValues: {
       title: instance.title,
       comment: instance.comment,
       access_group: instance.access_group,
+      tags: instance.tags,
     },
-    onSubmit: handleSubmit,
+    onSubmit: async (values: FormProps) => {
+      try {
+        await editInstance({
+          instanceId: instance.id,
+          ...values,
+        });
+
+        closeSidePanel();
+
+        notify.success({
+          title: "Instance updated",
+          message: `Instance "${instance.title}" updated successfully`,
+        });
+      } catch (error) {
+        debug(error);
+      }
+    },
     validationSchema: VALIDATION_SCHEMA,
   });
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
+  const addedTags = formik.values.tags.filter(
+    (tag) => !instance.tags.includes(tag),
+  );
+
+  const {
+    isFetchingProfileChanges,
+    profileChangesCount,
+    refetchProfileChanges,
+  } = useGetProfileChanges(
+    {
+      instance_ids: [instance.id],
+      tags: addedTags,
+      limit: 10,
+    },
+    { enabled: false },
+  );
+
+  const submit = async () => {
+    if (addedTags.length) {
+      const getProfileChangesResponse = await refetchProfileChanges();
+
+      if (!getProfileChangesResponse.isSuccess) {
+        debug(getProfileChangesResponse.error);
+      } else if (getProfileChangesResponse.data.data.count) {
+        openModal();
+      } else {
+        formik.handleSubmit();
+      }
+    } else {
+      formik.handleSubmit();
+    }
+  };
+
+  if (isGettingAccessGroups || isGettingTags) {
+    return <LoadingState />;
+  }
 
   const accessGroupOptions: SelectOption[] =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({
@@ -61,49 +119,99 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
       value: name,
     })) ?? [];
 
+  const tagOptions: SelectOption[] =
+    tags.map((tag) => ({
+      label: tag,
+      value: tag,
+    })) ?? [];
+
   return (
-    <Form onSubmit={formik.handleSubmit} className="l-form" noValidate>
-      <Input
-        label="Title"
-        aria-label="Title"
-        type="text"
-        required
-        disabled={instance.is_wsl_instance}
-        {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
-      />
+    <>
+      <Form
+        onSubmit={(event) => {
+          event.preventDefault();
+          submit();
+        }}
+        className="l-form"
+        noValidate
+      >
+        <Input
+          label="Title"
+          aria-label="Title"
+          type="text"
+          required
+          disabled={instance.is_wsl_instance}
+          {...formik.getFieldProps("title")}
+          error={getFormikError(formik, "title")}
+        />
 
-      <Select
-        label="Access group"
-        options={accessGroupOptions}
-        {...formik.getFieldProps("access_group")}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
-      />
+        <Select
+          label="Access group"
+          options={accessGroupOptions}
+          {...formik.getFieldProps("access_group")}
+          error={getFormikError(formik, "access_group")}
+        />
 
-      <Textarea
-        label="Comment"
-        rows={5}
-        {...formik.getFieldProps("comment")}
-        error={
-          formik.touched.comment && formik.errors.comment
-            ? formik.errors.comment
-            : undefined
-        }
-      />
+        <MultiSelectField
+          label="Tags"
+          placeholder="Search and add tags"
+          {...formik.getFieldProps("tags")}
+          items={tagOptions}
+          selectedItems={tagOptions.filter(({ value }) =>
+            formik.values.tags.includes(value),
+          )}
+          onItemsUpdate={async (items) =>
+            formik.setFieldValue(
+              "tags",
+              items.map(({ value }) => value) as string[],
+            )
+          }
+        />
 
-      <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Save changes"
-      />
-    </Form>
+        <div className={classes.chips}>
+          {formik.values.tags.map((tag) => (
+            <Chip
+              key={tag}
+              className="u-no-margin--bottom u-no-margin--right"
+              value={tag}
+              onDismiss={async () =>
+                formik.setFieldValue(
+                  "tags",
+                  formik.values.tags.filter((t) => t !== tag),
+                )
+              }
+            />
+          ))}
+        </div>
+
+        <Textarea
+          label="Comment"
+          rows={3}
+          {...formik.getFieldProps("comment")}
+          error={getFormikError(formik, "comment")}
+        />
+
+        <SidePanelFormButtons
+          submitButtonLoading={
+            formik.isSubmitting || (addedTags && isFetchingProfileChanges)
+          }
+          submitButtonText="Save changes"
+        />
+      </Form>
+
+      {isModalOpen && (
+        <TagsAddConfirmationModal
+          instances={[instance]}
+          tags={addedTags}
+          onConfirm={() => {
+            formik.handleSubmit();
+          }}
+          confirmButtonLoading={formik.isSubmitting}
+          close={closeModal}
+          profileChangesCount={profileChangesCount}
+        />
+      )}
+    </>
   );
 };
 

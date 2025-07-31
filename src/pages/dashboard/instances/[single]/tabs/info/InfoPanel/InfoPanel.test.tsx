@@ -1,23 +1,18 @@
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import type { AuthContextProps } from "@/context/auth";
+import useAuth from "@/hooks/useAuth";
+import { expectLoadingState, setScreenSize } from "@/tests/helpers";
+import { authUser } from "@/tests/mocks/auth";
+import { instances } from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
+import type { FeatureKey } from "@/types/FeatureKey";
+import type { Instance } from "@/types/Instance";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import InfoPanel from "./InfoPanel";
-import { screen } from "@testing-library/react";
-import { renderWithProviders } from "@/tests/render";
-import { instances } from "@/tests/mocks/instance";
-import type { Instance } from "@/types/Instance";
-import userEvent from "@testing-library/user-event";
-import useAuth from "@/hooks/useAuth";
-import type { AuthContextProps } from "@/context/auth";
-import { authUser } from "@/tests/mocks/auth";
-import type { FeatureKey } from "@/types/FeatureKey";
-import { setScreenSize } from "@/tests/helpers";
 
-const PROPS_TO_CHECK: (keyof Instance)[] = [
-  "title",
-  "hostname",
-  "distribution",
-  "access_group",
-  "comment",
-];
+const PROPS_TO_CHECK: (keyof Instance)[] = ["title", "hostname", "comment"];
 
 const authProps: AuthContextProps = {
   logout: vi.fn(),
@@ -34,16 +29,25 @@ vi.mock("@/hooks/useAuth");
 
 describe("InfoPanel", () => {
   describe("Basic", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       vi.mocked(useAuth).mockReturnValue(authProps);
       renderWithProviders(<InfoPanel instance={instances[0]} />);
       setScreenSize("xxl");
+      await expectLoadingState();
     });
 
     it("should render instance info", () => {
       for (const prop of PROPS_TO_CHECK) {
-        expect(screen.getByText(instances[0][prop] as string)).toBeVisible();
+        expect(
+          screen.getByText((instances[0][prop] as string) || NO_DATA_TEXT),
+        ).toBeVisible();
       }
+
+      expect(
+        screen.getByText(
+          instances[0].distribution_info?.description ?? NO_DATA_TEXT,
+        ),
+      ).toBeVisible();
     });
 
     it("should edit instance", async () => {
@@ -68,7 +72,7 @@ describe("InfoPanel", () => {
   });
 
   describe("Associate employee button", () => {
-    it("should render button if feature enabled", () => {
+    it("should render button if feature enabled", async () => {
       vi.mocked(useAuth).mockReturnValue({
         ...authProps,
         isFeatureEnabled: (feature: FeatureKey) =>
@@ -77,11 +81,17 @@ describe("InfoPanel", () => {
 
       renderWithProviders(<InfoPanel instance={instances[0]} />);
 
-      const associateEmployeeButton = screen.queryByRole("button", {
-        name: /associate employee/i,
-      });
+      await expectLoadingState();
 
-      expect(associateEmployeeButton).toBeInTheDocument();
+      await userEvent.click(
+        screen.getByRole("button", { name: "More actions" }),
+      );
+
+      expect(
+        screen.getByRole("button", {
+          name: /associate employee/i,
+        }),
+      ).toBeInTheDocument();
     });
 
     it("should not render button if feature disabled", () => {

@@ -1,92 +1,87 @@
 import { TableFilterChips } from "@/components/filter";
+import GroupFilter from "@/components/filter/GroupFilter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import LoadingState from "@/components/layout/LoadingState";
+import { useReapplyWslProfile } from "@/features/wsl-profiles";
 import useDebug from "@/hooks/useDebug";
-import useInstances from "@/hooks/useInstances";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { WslInstanceWithoutRelation } from "@/types/Instance";
-import { Button } from "@canonical/react-components";
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { useWsl } from "../../hooks";
-import classes from "./WslInstancesHeader.module.scss";
 import useNotify from "@/hooks/useNotify";
+import useSidePanel from "@/hooks/useSidePanel";
+import type {
+  InstanceChild,
+  WindowsInstanceWithoutRelation,
+} from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
+import { Button, Icon } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
+import WindowsInstanceMakeCompliantModal from "../WindowsInstanceMakeCompliantModal";
+import WslInstanceReinstallModal from "../WslInstanceReinstallModal";
+import WslInstanceUninstallModal from "../WslInstanceUninstallModal";
+import classes from "./WslInstancesHeader.module.scss";
 
 const WslInstanceInstallForm = lazy(
   async () => import("../WslInstanceInstallForm"),
 );
 
 interface WslInstancesHeaderProps {
-  readonly selectedInstances: WslInstanceWithoutRelation[];
+  readonly hasWslProfiles: boolean;
+  readonly windowsInstance: WindowsInstanceWithoutRelation;
+  readonly selectedWslInstances: InstanceChild[];
 }
 
 const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
-  selectedInstances,
+  hasWslProfiles,
+  selectedWslInstances,
+  windowsInstance,
 }) => {
-  const [modalOpen, setModalOpen] = useState("");
-
-  const { notify } = useNotify();
   const debug = useDebug();
+  const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
-  const { deleteChildInstancesQuery } = useWsl();
-  const { removeInstancesQuery } = useInstances();
 
-  const { mutateAsync: deleteChildInstances, isPending: isDeleting } =
-    deleteChildInstancesQuery;
-  const { mutateAsync: removeInstances, isPending: isRemoving } =
-    removeInstancesQuery;
+  const { reapplyWslProfile } = useReapplyWslProfile();
 
-  const handleOpenModal = (modal: string) => {
-    setModalOpen(modal);
-  };
+  const {
+    value: isReinstallModalOpen,
+    setTrue: openReinstallModal,
+    setFalse: closeReinstallModal,
+  } = useBoolean();
 
-  const handleCloseModal = () => {
-    setModalOpen("");
-  };
+  const {
+    value: isUninstallModalOpen,
+    setTrue: openUninstallModal,
+    setFalse: closeUninstallModal,
+  } = useBoolean();
 
-  const handleDeleteChildInstances = async () => {
+  const {
+    value: isMakeCompliantModalOpen,
+    setTrue: openMakeCompliantModal,
+    setFalse: closeMakeCompliantModal,
+  } = useBoolean();
+
+  const install = async () => {
     try {
-      await deleteChildInstances({
-        computer_ids: selectedInstances.map(({ id }) => id),
-      });
-
-      notify.success({
-        title: `You queued ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")} to be deleted.`,
-        message: `${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")} will be deleted.`,
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
-
-  const handleRemoveInstances = async () => {
-    try {
-      await removeInstances({
-        computer_ids: selectedInstances.map(({ id }) => id),
-      });
-
-      notify.success({
-        title: `You have successfully removed ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}.`,
-        message: pluralize(
-          selectedInstances.length,
-          `${selectedInstances.length} instance has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
-          `${selectedInstances.length} instances have been removed from Landscape. To manage them again, you will need to re-register them in Landscape.`,
+      await Promise.all(
+        selectedWslInstances.map((wslInstance) =>
+          reapplyWslProfile({
+            name: wslInstance.name,
+            computer_ids: [windowsInstance.id],
+          }),
         ),
+      );
+
+      notify.success({
+        title: `You have successfully queued ${pluralize(selectedWslInstances.length, `${selectedWslInstances[0].name}`, `${selectedWslInstances.length} instances`)} to be installed.`,
+        message: "An activity has been queued to install it.",
       });
     } catch (error) {
       debug(error);
-    } finally {
-      handleCloseModal();
     }
   };
 
-  const handleWslInstanceInstall = () => {
+  const openInstallForm = () => {
     setSidePanelContent(
-      "Install new WSL instance",
+      "Create new WSL instance",
       <Suspense fallback={<LoadingState />}>
         <WslInstanceInstallForm />
       </Suspense>,
@@ -98,102 +93,126 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       <HeaderWithSearch
         actions={
           <div className={classes.cta}>
-            <Button
-              type="button"
-              onClick={handleWslInstanceInstall}
-              className="u-no-margin--bottom"
-            >
-              <span>Create new instance</span>
-            </Button>
+            {hasWslProfiles && (
+              <GroupFilter
+                label="Group by"
+                options={[
+                  { label: "None", value: "" },
+                  { label: "Compliance", value: "compliance" },
+                ]}
+              />
+            )}
 
-            <div className="p-segmented-control">
-              <div className="p-segmented-control__list">
-                <Button
-                  type="button"
-                  className="p-segmented-control__button u-no-margin--bottom"
-                  disabled={selectedInstances.length === 0}
-                  onClick={() => {
-                    handleOpenModal("delete");
-                  }}
-                >
-                  Delete instance
-                </Button>
+            <div className={classes.buttons}>
+              <div className="p-segmented-control">
+                <div className="p-segmented-control__list">
+                  {hasWslProfiles && (
+                    <Button
+                      type="button"
+                      onClick={install}
+                      className="p-segmented-control__button u-no-margin--bottom"
+                      hasIcon
+                      disabled={
+                        !selectedWslInstances.length ||
+                        selectedWslInstances.some(
+                          (wslInstance) =>
+                            wslInstance.compliance !== "uninstalled",
+                        )
+                      }
+                    >
+                      <Icon name="begin-downloading" />
+                      <span>Install</span>
+                    </Button>
+                  )}
 
-                <Button
-                  type="button"
-                  className="p-segmented-control__button u-no-margin--bottom"
-                  disabled={selectedInstances.length === 0}
-                  onClick={() => {
-                    handleOpenModal("remove");
-                  }}
-                >
-                  Remove from Landscape
-                </Button>
+                  {hasWslProfiles && (
+                    <Button
+                      type="button"
+                      onClick={openReinstallModal}
+                      className="p-segmented-control__button u-no-margin--bottom"
+                      hasIcon
+                      disabled={
+                        !selectedWslInstances.length ||
+                        selectedWslInstances.some(
+                          (wslInstance) =>
+                            wslInstance.compliance !== "noncompliant",
+                        )
+                      }
+                    >
+                      <Icon name="restart" />
+                      <span>Reinstall</span>
+                    </Button>
+                  )}
+
+                  <Button
+                    type="button"
+                    onClick={openUninstallModal}
+                    className="p-segmented-control__button u-no-margin--bottom"
+                    hasIcon
+                    disabled={
+                      !selectedWslInstances.length ||
+                      selectedWslInstances.some(
+                        (wslInstance) => wslInstance.computer_id === null,
+                      )
+                    }
+                  >
+                    <Icon name="close" />
+                    <span>Uninstall</span>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="p-segmented-control">
+                <div className="p-segmented-control__list">
+                  <Button
+                    type="button"
+                    onClick={openInstallForm}
+                    className="p-segmented-control__button u-no-margin--bottom"
+                    hasIcon
+                  >
+                    <Icon name="plus" />
+                    <span>Create new instance</span>
+                  </Button>
+
+                  {hasWslProfiles && (
+                    <Button
+                      type="button"
+                      className="p-segmented-control__button u-no-margin--bottom"
+                      hasIcon
+                      onClick={openMakeCompliantModal}
+                    >
+                      <Icon name="security-tick" />
+                      <span>Make compliant</span>
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         }
       />
+
       <TableFilterChips filtersToDisplay={["search"]} />
 
-      <TextConfirmationModal
-        isOpen={modalOpen === "remove"}
-        close={handleCloseModal}
-        onConfirm={handleRemoveInstances}
-        title={`Remove ${pluralize(selectedInstances.length, "instance")} from Landscape`}
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        confirmationText={pluralize(
-          selectedInstances.length,
-          `remove ${selectedInstances[0]?.title ?? "instance"}`,
-          "remove instances",
-        )}
-      >
-        {selectedInstances.length !== 1 ? (
-          <p>
-            This will remove the selected instances from Landscape. They will
-            remain on the parent machine. You can re-register them to Landscape
-            at any time.
-          </p>
-        ) : (
-          <p>
-            This will remove the instance <b>{selectedInstances[0]?.title}</b>{" "}
-            from Landscape. It will remain on the parent machine. You can
-            re-register it to Landscape at any time.
-          </p>
-        )}
-      </TextConfirmationModal>
+      <WslInstanceReinstallModal
+        close={closeReinstallModal}
+        instances={selectedWslInstances}
+        isOpen={isReinstallModalOpen}
+        windowsInstance={windowsInstance}
+      />
 
-      <TextConfirmationModal
-        isOpen={modalOpen === "delete"}
-        close={handleCloseModal}
-        onConfirm={handleDeleteChildInstances}
-        title={`Delete ${pluralize(selectedInstances.length, "instance")}`}
-        confirmButtonLabel="Delete"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isDeleting}
-        confirmButtonLoading={isDeleting}
-        confirmationText={pluralize(
-          selectedInstances.length,
-          `delete ${selectedInstances[0]?.title ?? ""}`,
-          "delete instances",
-        )}
-      >
-        {selectedInstances.length !== 1 ? (
-          <p>
-            This will permanently delete the selected instances from both the
-            Windows host machine and Landscape.
-          </p>
-        ) : (
-          <p>
-            This will permanently delete the instance{" "}
-            <b>{selectedInstances[0]?.title ?? ""}</b> from both the Windows
-            host machine and Landscape.
-          </p>
-        )}
-      </TextConfirmationModal>
+      <WslInstanceUninstallModal
+        close={closeUninstallModal}
+        instances={selectedWslInstances}
+        isOpen={isUninstallModalOpen}
+        parentId={windowsInstance.id}
+      />
+
+      <WindowsInstanceMakeCompliantModal
+        close={closeMakeCompliantModal}
+        instances={[windowsInstance]}
+        isOpen={isMakeCompliantModalOpen}
+      />
     </>
   );
 };

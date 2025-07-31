@@ -1,16 +1,18 @@
-import type { FC } from "react";
-import { useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import { useGetInstance } from "@/features/instances";
+import { useKernel } from "@/features/kernel";
 import { usePackages } from "@/features/packages";
-import useAuth from "@/hooks/useAuth";
-import useInstances from "@/hooks/useInstances";
 import { useUsns } from "@/features/usns";
+import useAuth from "@/hooks/useAuth";
 import SingleInstanceEmptyState from "@/pages/dashboard/instances/[single]/SingleInstanceEmptyState";
 import SingleInstanceTabs from "@/pages/dashboard/instances/[single]/SingleInstanceTabs";
+import type { UrlParams } from "@/types/UrlParams";
+import type { FC } from "react";
+import { useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router";
 import {
   getBreadcrumbs,
   getInstanceRequestId,
@@ -26,14 +28,11 @@ import {
   isLivepatchInfoQueryEnabled,
   isUsnQueryEnabled,
 } from "./helpers";
-import type { UrlParams } from "@/types/UrlParams";
-import { useKernel } from "@/features/kernel";
 
 const SingleInstanceContainer: FC = () => {
   const { instanceId, childInstanceId } = useParams<UrlParams>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { getSingleInstanceQuery } = useInstances();
   const { getUsnsQuery } = useUsns();
   const { getInstancePackagesQuery } = usePackages();
   const { getLivepatchInfoQuery } = useKernel();
@@ -56,14 +55,12 @@ const SingleInstanceContainer: FC = () => {
     navigate("/instances", { replace: true });
   }, [user?.current_account]);
 
-  const {
-    data: getSingleInstanceQueryResult,
-    isLoading: getSingleInstanceQueryLoading,
-  } = getSingleInstanceQuery(
+  const { instance, isGettingInstance } = useGetInstance(
     {
       instanceId: getInstanceRequestId(instanceId, childInstanceId),
       with_annotations: true,
       with_grouped_hardware: true,
+      with_profiles: true,
     },
     {
       enabled: isInstanceQueryEnabled(
@@ -73,8 +70,6 @@ const SingleInstanceContainer: FC = () => {
       ),
     },
   );
-
-  const instance = getSingleInstanceQueryResult?.data ?? null;
 
   const { data: getUsnsQueryResult, isLoading: getUsnsQueryLoading } =
     getUsnsQuery(
@@ -136,7 +131,7 @@ const SingleInstanceContainer: FC = () => {
         breadcrumbs={getBreadcrumbs(instance)}
       />
       <PageContent>
-        {getSingleInstanceQueryLoading ? (
+        {isGettingInstance ? (
           <LoadingState />
         ) : (
           <>

@@ -1,23 +1,24 @@
 import type { GroupedOption } from "@/components/filter";
 import { StatusFilter, TableFilterChips } from "@/components/filter";
+import ResponsiveTableFilters from "@/components/filter/ResponsiveTableFilters";
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import ColumnFilter from "@/components/form/ColumnFilter";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import { SearchBoxWithSavedSearches } from "@/features/saved-searches";
-import useInstances from "@/hooks/useInstances";
+import { useGetTags } from "@/features/tags";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
 import { useState } from "react";
-import GroupFilter from "../../../../components/filter/GroupFilter";
+import { useGetAvailabilityZones } from "../../api";
 import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
 import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
+import WslFilter from "../WslFilter";
 import { INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesHeader.module.scss";
-import ResponsiveTableFilters from "@/components/filter/ResponsiveTableFilters";
 
 interface InstancesHeaderProps {
   readonly columnFilterOptions: ColumnFilterOption[];
@@ -27,21 +28,18 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
   const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const { getAccessGroupQuery } = useRoles();
-  const { getAllInstanceTagsQuery, getAvailabilityZonesQuery } = useInstances();
 
-  const { data: getAllInstanceTagsQueryResult } = getAllInstanceTagsQuery();
+  const { tags } = useGetTags();
 
   const tagOptions =
-    getAllInstanceTagsQueryResult?.data.results.map((tag) => ({
+    tags.map((tag) => ({
       label: tag,
       value: tag,
     })) ?? [];
 
-  const { data: getAvailabilityZonesQueryResult } = getAvailabilityZonesQuery();
+  const { availabilityZones } = useGetAvailabilityZones();
 
-  const availabilityZoneOptions = (
-    getAvailabilityZonesQueryResult?.data.values ?? []
-  ).reduce(
+  const availabilityZoneOptions = availabilityZones.reduce(
     (acc, zone) => {
       acc.push({
         label: zone,
@@ -61,8 +59,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
       label: title,
     })) ?? [];
 
-  const groupOptions =
-    FILTERS.groupBy.type === "select" ? FILTERS.groupBy.options : [];
   const statusOptions =
     FILTERS.status.type === "select" ? FILTERS.status.options : [];
   const osOptions = FILTERS.os.type === "select" ? FILTERS.os.options : [];
@@ -80,8 +76,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
         <ResponsiveTableFilters
           collapseFrom="xxl"
           filters={[
-            <GroupFilter key="group" label="Group by" options={groupOptions} />,
-            <span key="divider-1" className={classes.divider} />,
             <StatusFilter
               key="status"
               label="Status"
@@ -99,6 +93,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
               options={accessGroupOptions}
             />,
             <TagFilter key="tag" label="Tags" options={tagOptions} />,
+            <WslFilter key="wsl" label="WSL" options={[]} />,
             <span key="divider-2" className={classes.divider} />,
             <ColumnFilter
               key="column"
@@ -117,6 +112,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           "status",
           "tags",
           "query",
+          "wsl",
         ]}
         accessGroupOptions={accessGroupOptions}
         availabilityZonesOptions={availabilityZoneOptions}

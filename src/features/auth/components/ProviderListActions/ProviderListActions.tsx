@@ -1,8 +1,8 @@
-import type { ListAction } from "@/components/layout/ListActions";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { Action } from "@/types/Action";
 import { ConfirmationModal, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -58,7 +58,7 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
     }
   };
 
-  const actions: ListAction[] = [
+  const actions: Action[] = [
     {
       icon: "edit",
       label: "Edit",
@@ -67,7 +67,7 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
     },
   ];
 
-  const destructiveActions: ListAction[] = [
+  const destructiveActions: Action[] = [
     {
       icon: ICONS.delete,
       label: "Delete",

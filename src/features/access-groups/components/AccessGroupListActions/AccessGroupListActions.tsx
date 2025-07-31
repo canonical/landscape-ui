@@ -1,13 +1,13 @@
 import ListActions from "@/components/layout/ListActions";
+import { useGetInstances } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
+import { pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { AccessGroupWithInstancesCount } from "../../types";
-import useNotify from "@/hooks/useNotify";
-import useInstances from "@/hooks/useInstances";
-import { pluralize } from "@/utils/_helpers";
 
 interface AccessGroupListActionsProps {
   readonly accessGroup: AccessGroupWithInstancesCount;
@@ -21,7 +21,6 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { removeAccessGroupQuery } = useRoles();
-  const { getInstancesQuery } = useInstances();
 
   const {
     value: isModalOpen,
@@ -29,15 +28,12 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const { data: getInstancesQueryResult } = getInstancesQuery({
+  const { instancesCount = 0 } = useGetInstances({
     query: `access-group: ${accessGroup.name}`,
-    root_only: false,
     with_alerts: true,
     with_upgrades: true,
     limit: 1,
   });
-
-  const count = getInstancesQueryResult?.data.count || 0;
 
   const { mutateAsync: remove, isPending: isRemoving } = removeAccessGroupQuery;
 
@@ -82,10 +78,11 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
           onConfirm={tryRemove}
           close={closeModal}
         >
-          {count > 0 && (
+          {instancesCount > 0 && (
             <p>
-              Removing this access group will affect {count}{" "}
-              {pluralize(count, "instance")}. They will now belong to &quot;
+              Removing this access group will affect {instancesCount}{" "}
+              {pluralize(instancesCount, "instance")}. They will now belong to
+              &quot;
               {parentAccessGroupTitle}&quot;.
             </p>
           )}
