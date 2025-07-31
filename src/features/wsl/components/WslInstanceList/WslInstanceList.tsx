@@ -37,11 +37,13 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
 }) => {
   const { groupBy, search } = usePageParams();
 
-  const filteredWslInstances = search
-    ? wslInstances.filter(({ name }) =>
-        name.toLowerCase().includes(search.toLowerCase()),
-      )
-    : wslInstances;
+  const filteredWslInstances = useMemo(() => {
+    return search
+      ? wslInstances.filter(({ name }) =>
+          name.toLowerCase().includes(search.toLowerCase()),
+        )
+      : wslInstances;
+  }, [wslInstances, search]);
 
   const {
     selectedItems: selectedWslInstances,
@@ -287,7 +289,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
                       label="Pending"
                       selectedWslInstances={selectedWslInstances}
                       setSelectedWslInstances={setSelectedWslInstances}
-                      wslInstances={unregisteredWslInstances}
+                      wslInstances={pendingWslInstances}
                     />
                   ),
                 },
