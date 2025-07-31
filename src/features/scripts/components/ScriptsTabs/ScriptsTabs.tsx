@@ -40,10 +40,16 @@ const ScriptsTabs: FC = () => {
         className={classes.tabPanel}
       >
         <AppErrorBoundary>
-          <Suspense fallback={<LoadingState />}>
-            {"tab-link-scripts" === currentTab && <ScriptsPanel />}
-            {"tab-link-profiles" === currentTab && <ScriptProfilesPanel />}
-          </Suspense>
+          {"tab-link-scripts" === currentTab && (
+            <Suspense fallback={<LoadingState />}>
+              <ScriptsPanel />
+            </Suspense>
+          )}
+          {"tab-link-profiles" === currentTab && (
+            <Suspense fallback={<LoadingState />}>
+              <ScriptProfilesPanel />
+            </Suspense>
+          )}
         </AppErrorBoundary>
       </div>
     </>

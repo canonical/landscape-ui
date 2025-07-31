@@ -33,9 +33,6 @@ const SupportLoginPage = lazy(async () => import("@/pages/auth/support-login"));
 const DistributionsPage = lazy(
   async () => import("@/pages/dashboard/repositories/mirrors"),
 );
-const RepositoryPage = lazy(
-  async () => import("@/pages/dashboard/repositories"),
-);
 const RepositoryProfilesPage = lazy(
   async () => import("@/pages/dashboard/profiles/repository-profiles"),
 );
@@ -53,7 +50,6 @@ const SingleInstance = lazy(
 );
 const ActivitiesPage = lazy(async () => import("@/pages/dashboard/activities"));
 const ScriptsPage = lazy(async () => import("@/pages/dashboard/scripts"));
-const ProfilesPage = lazy(async () => import("@/pages/dashboard/profiles"));
 const PackageProfilesPage = lazy(
   async () => import("@/pages/dashboard/profiles/package-profiles"),
 );
@@ -72,7 +68,6 @@ const SecurityProfilesPage = lazy(
 const RebootProfilesPage = lazy(
   async () => import("@/pages/dashboard/profiles/reboot-profiles"),
 );
-const SettingsPage = lazy(async () => import("@/pages/dashboard/settings"));
 const AccessGroupsPage = lazy(
   async () => import("@/pages/dashboard/settings/access-group"),
 );
@@ -91,7 +86,6 @@ const OverviewPage = lazy(async () => import("@/pages/dashboard/overview"));
 const GeneralOrganisationSettings = lazy(
   async () => import("@/pages/dashboard/settings/general"),
 );
-const AccountPage = lazy(async () => import("@/pages/dashboard/account"));
 const GeneralSettings = lazy(
   async () => import("@/pages/dashboard/account/general"),
 );
@@ -217,148 +211,343 @@ const App: FC = () => {
               </AuthRoute>
             }
           >
-            <Route path="/" element={<DashboardPage />}>
+            <Route element={<DashboardPage />}>
               <Route
+                path="overview"
                 element={
-                  <SelfHostedRoute>
-                    <Suspense fallback={<LoadingState />}>
-                      <Outlet />
-                    </Suspense>
-                  </SelfHostedRoute>
-                }
-              >
-                <Route
-                  path="repositories/mirrors"
-                  element={<DistributionsPage />}
-                />
-                <Route path="profiles/wsl" element={<WslProfilesPage />} />
-              </Route>
-              <Route
-                element={
-                  <Suspense fallback={<LoadingState />}>
-                    <Outlet />
+                  <Suspense key="overview" fallback={<LoadingState />}>
+                    <OverviewPage />
                   </Suspense>
                 }
-              >
-                <Route path="repositories" element={<RepositoryPage />} />
+              />
+              <Route path="instances">
                 <Route
-                  path="profiles/repositories"
-                  element={<RepositoryProfilesPage />}
-                />
-                <Route path="repositories/gpg-keys" element={<GPGKeysPage />} />
-                <Route
-                  path="repositories/apt-sources"
-                  element={<APTSourcesPage />}
-                />
-                <Route path="instances" element={<InstancesPage />} />
-                <Route
-                  path="instances/:instanceId"
-                  element={<SingleInstance />}
-                />
-                <Route
-                  path="instances/:instanceId/:childInstanceId"
-                  element={<SingleInstance />}
-                />
-                <Route path="activities" element={<ActivitiesPage />} />
-                <Route path="scripts" element={<ScriptsPage />} />
-                <Route path="events-log" element={<EventsLogPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-                <Route
-                  path="settings/administrators"
-                  element={<AdministratorsPage />}
-                />
-                <Route
-                  path="settings/employees"
+                  index
                   element={
-                    <FeatureRoute feature="employee-management">
-                      <EmployeesPage />
-                    </FeatureRoute>
+                    <Suspense key="instances" fallback={<LoadingState />}>
+                      <InstancesPage />
+                    </Suspense>
                   }
                 />
                 <Route
-                  path="settings/access-groups"
-                  element={<AccessGroupsPage />}
-                />
-                <Route path="settings/roles" element={<RolesPage />} />
-                <Route
-                  path="settings/general"
-                  element={<GeneralOrganisationSettings />}
-                />
-                <Route
-                  path="settings/identity-providers"
+                  path=":instanceId"
                   element={
-                    <FeatureRoute feature="oidc-configuration">
-                      <IdentityProvidersPage />
-                    </FeatureRoute>
+                    <Suspense
+                      key="instances/instance"
+                      fallback={<LoadingState />}
+                    >
+                      <SingleInstance />
+                    </Suspense>
+                  }
+                >
+                  <Route path=":childInstanceId" />
+                </Route>
+              </Route>
+              <Route
+                path="activities"
+                element={
+                  <Suspense key="activities" fallback={<LoadingState />}>
+                    <ActivitiesPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="scripts"
+                element={
+                  <Suspense key="scripts" fallback={<LoadingState />}>
+                    <ScriptsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="events-log"
+                element={
+                  <Suspense key="events-log" fallback={<LoadingState />}>
+                    <EventsLogPage />
+                  </Suspense>
+                }
+              />
+              <Route path="profiles">
+                <Route
+                  path="repository"
+                  element={
+                    <Suspense
+                      key="profiles/repository"
+                      fallback={<LoadingState />}
+                    >
+                      <RepositoryProfilesPage />
+                    </Suspense>
                   }
                 />
-                <Route path="profiles" element={<ProfilesPage />} />
                 <Route
-                  path="profiles/package"
-                  element={<PackageProfilesPage />}
+                  path="package"
+                  element={
+                    <Suspense
+                      key="profiles/package"
+                      fallback={<LoadingState />}
+                    >
+                      <PackageProfilesPage />
+                    </Suspense>
+                  }
                 />
                 <Route
-                  path="profiles/removal"
-                  element={<RemovalProfilesPage />}
+                  path="upgrade"
+                  element={
+                    <Suspense
+                      key="profiles/upgrade"
+                      fallback={<LoadingState />}
+                    >
+                      <UpgradeProfilesPage />
+                    </Suspense>
+                  }
                 />
                 <Route
-                  path="profiles/upgrade"
-                  element={<UpgradeProfilesPage />}
+                  path="reboot"
+                  element={
+                    <Suspense key="profiles/reboot" fallback={<LoadingState />}>
+                      <RebootProfilesPage />
+                    </Suspense>
+                  }
                 />
                 <Route
-                  path="profiles/security"
+                  path="removal"
+                  element={
+                    <Suspense
+                      key="profiles/removal"
+                      fallback={<LoadingState />}
+                    >
+                      <RemovalProfilesPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="wsl"
+                  element={
+                    <SelfHostedRoute>
+                      <Suspense key="profiles/wsl" fallback={<LoadingState />}>
+                        <WslProfilesPage />
+                      </Suspense>
+                    </SelfHostedRoute>
+                  }
+                />
+                <Route
+                  path="security"
                   element={
                     <FeatureRoute feature="usg-profiles">
-                      <SecurityProfilesPage />
+                      <Suspense
+                        key="profiles/security"
+                        fallback={<LoadingState />}
+                      >
+                        <SecurityProfilesPage />
+                      </Suspense>
+                    </FeatureRoute>
+                  }
+                />
+              </Route>
+              <Route path="repositories">
+                <Route
+                  path="mirrors"
+                  element={
+                    <SelfHostedRoute>
+                      <Suspense
+                        key="repositories/mirrors"
+                        fallback={<LoadingState />}
+                      >
+                        <DistributionsPage />
+                      </Suspense>
+                    </SelfHostedRoute>
+                  }
+                />
+
+                <Route
+                  path="gpg-keys"
+                  element={
+                    <Suspense
+                      key="repositories/gpg-keys"
+                      fallback={<LoadingState />}
+                    >
+                      <GPGKeysPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="apt-sources"
+                  element={
+                    <Suspense
+                      key="repositories/apt-sources"
+                      fallback={<LoadingState />}
+                    >
+                      <APTSourcesPage />
+                    </Suspense>
+                  }
+                />
+              </Route>
+              <Route path="settings">
+                <Route
+                  path="general"
+                  element={
+                    <Suspense
+                      key="settings/general"
+                      fallback={<LoadingState />}
+                    >
+                      <GeneralOrganisationSettings />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="administrators"
+                  element={
+                    <Suspense
+                      key="settings/administrators"
+                      fallback={<LoadingState />}
+                    >
+                      <AdministratorsPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="employees"
+                  element={
+                    <FeatureRoute feature="employee-management">
+                      <Suspense
+                        key="settings/employees"
+                        fallback={<LoadingState />}
+                      >
+                        <EmployeesPage />
+                      </Suspense>
                     </FeatureRoute>
                   }
                 />
                 <Route
-                  path="profiles/reboot"
-                  element={<RebootProfilesPage />}
+                  path="roles"
+                  element={
+                    <Suspense key="settings/roles" fallback={<LoadingState />}>
+                      <RolesPage />
+                    </Suspense>
+                  }
                 />
-                <Route path="account" element={<AccountPage />} />
-                <Route path="account/general" element={<GeneralSettings />} />
-                <Route path="account/alerts" element={<Alerts />} />
                 <Route
-                  path="account/api-credentials"
-                  element={<ApiCredentials />}
+                  path="access-groups"
+                  element={
+                    <Suspense
+                      key="settings/access-groups"
+                      fallback={<LoadingState />}
+                    >
+                      <AccessGroupsPage />
+                    </Suspense>
+                  }
                 />
-                <Route path="alerts" element={<AlertNotificationsPage />} />
-                <Route path="overview" element={<OverviewPage />} />
-                <Route path="env-error" element={<EnvError />} />
+                <Route
+                  path="identity-providers"
+                  element={
+                    <FeatureRoute feature="oidc-configuration">
+                      <Suspense
+                        key="settings/identity-providers"
+                        fallback={<LoadingState />}
+                      >
+                        <IdentityProvidersPage />
+                      </Suspense>
+                    </FeatureRoute>
+                  }
+                />
               </Route>
+              <Route path="account">
+                <Route
+                  path="general"
+                  element={
+                    <Suspense key="account/general" fallback={<LoadingState />}>
+                      <GeneralSettings />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="alerts"
+                  element={
+                    <Suspense key="account/alerts" fallback={<LoadingState />}>
+                      <Alerts />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="api-credentials"
+                  element={
+                    <Suspense
+                      key="account/api-credentials"
+                      fallback={<LoadingState />}
+                    >
+                      <ApiCredentials />
+                    </Suspense>
+                  }
+                />
+              </Route>
+              <Route
+                path="alerts"
+                element={
+                  <Suspense key="alerts" fallback={<LoadingState />}>
+                    <AlertNotificationsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="env-error"
+                element={
+                  <Suspense key="env-error" fallback={<LoadingState />}>
+                    <EnvError />
+                  </Suspense>
+                }
+              />
             </Route>
           </Route>
           <Route
             element={
               <GuestRoute>
-                <Suspense fallback={<LoadingState />}>
-                  <Outlet />
-                </Suspense>
+                <Outlet />
               </GuestRoute>
             }
           >
-            <Route path={"/login"} element={<LoginPage />} />
+            <Route
+              path={"/login"}
+              element={
+                <Suspense key="/login" fallback={<LoadingState />}>
+                  <LoginPage />
+                </Suspense>
+              }
+            />
             <Route
               path={"/support/login"}
               element={
                 <FeatureRoute feature="support-provider-login">
-                  <SupportLoginPage />
+                  <Suspense key="/support/login" fallback={<LoadingState />}>
+                    <SupportLoginPage />
+                  </Suspense>
                 </FeatureRoute>
               }
             />
 
-            <Route path={"/handle-auth/oidc"} element={<OidcAuthPage />} />
+            <Route
+              path={"/handle-auth/oidc"}
+              element={
+                <Suspense key="/handle-auth/oidc" fallback={<LoadingState />}>
+                  <OidcAuthPage />
+                </Suspense>
+              }
+            />
             <Route
               path={"/handle-auth/ubuntu-one"}
-              element={<UbuntuOneAuthPage />}
+              element={
+                <Suspense
+                  key="/handle-auth/ubuntu-one"
+                  fallback={<LoadingState />}
+                >
+                  <UbuntuOneAuthPage />
+                </Suspense>
+              }
             />
           </Route>
           <Route
             path={"/*"}
             element={
-              <Suspense fallback={<LoadingState />}>
+              <Suspense key="*" fallback={<LoadingState />}>
                 <PageNotFound />
               </Suspense>
             }

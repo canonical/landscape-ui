@@ -33,7 +33,7 @@ export const MENU_ITEMS: MenuItem[] = [
     items: [
       {
         label: "Repository profiles",
-        path: "/profiles/repositories",
+        path: "/profiles/repository",
       },
       {
         label: "Package profiles",
