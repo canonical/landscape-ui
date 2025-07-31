@@ -16,6 +16,10 @@ const GroupHeader: FC<GroupHeaderProps> = ({
   setSelectedWslInstances,
   wslInstances,
 }) => {
+  const nonPendingWslInstances = wslInstances.filter(
+    (wslInstance) => wslInstance.compliance !== "pending",
+  );
+
   return (
     <div className={classes.groupHeader}>
       <CheckboxInput
@@ -25,26 +29,28 @@ const GroupHeader: FC<GroupHeaderProps> = ({
         }
         labelClassName="u-no-margin--bottom u-no-padding--top"
         checked={
-          !!wslInstances.length &&
-          wslInstances.every((i) => selectedWslInstances.includes(i))
+          !!nonPendingWslInstances.length &&
+          nonPendingWslInstances.every((i) => selectedWslInstances.includes(i))
         }
         indeterminate={
-          wslInstances.some((i) => selectedWslInstances.includes(i)) &&
-          !wslInstances.every((i) => selectedWslInstances.includes(i))
+          nonPendingWslInstances.some((i) =>
+            selectedWslInstances.includes(i),
+          ) &&
+          !nonPendingWslInstances.every((i) => selectedWslInstances.includes(i))
         }
-        disabled={!wslInstances.length}
+        disabled={!nonPendingWslInstances.length}
         onChange={({ currentTarget: { checked } }) => {
           if (checked) {
             setSelectedWslInstances([
               ...selectedWslInstances.filter(
-                (wslInstance) => !wslInstances.includes(wslInstance),
+                (wslInstance) => !nonPendingWslInstances.includes(wslInstance),
               ),
-              ...wslInstances,
+              ...nonPendingWslInstances,
             ]);
           } else {
             setSelectedWslInstances(
               selectedWslInstances.filter(
-                (wslInstance) => !wslInstances.includes(wslInstance),
+                (wslInstance) => !nonPendingWslInstances.includes(wslInstance),
               ),
             );
           }
