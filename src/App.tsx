@@ -211,7 +211,7 @@ const App: FC = () => {
               </AuthRoute>
             }
           >
-            <Route element={<DashboardPage />}>
+            <Route path="/" element={<DashboardPage />}>
               <Route
                 path="overview"
                 element={
