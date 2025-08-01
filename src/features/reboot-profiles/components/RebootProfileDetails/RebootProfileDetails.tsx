@@ -1,7 +1,8 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import Block from "@/components/layout/Block";
+import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
+import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -9,7 +10,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import moment from "moment";
-import type { FC } from "react";
+import type { ComponentProps, FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { useRemoveRebootProfileQuery } from "../../api";
 import type { RebootProfile } from "../../types";
@@ -78,6 +79,25 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
     setModalOpen(true);
   };
 
+  const associationMenuItems: ComponentProps<typeof Menu>["items"] = [];
+
+  if (!profile.all_computers) {
+    associationMenuItems.push({
+      label: "Tags",
+      size: 12,
+      value: profile.tags.join(", ") || <NoData />,
+      type: "truncated",
+    });
+  }
+
+  if (profile.all_computers || profile.tags.length) {
+    associationMenuItems.push({
+      label: "Associated instances",
+      size: 12,
+      value: <RebootProfileAssociatedInstancesLink rebootProfile={profile} />,
+    });
+  }
+
   return (
     <>
       <div className="p-segmented-control">
@@ -113,61 +133,62 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Block>
-        <Menu
-          items={[
-            { label: "Title", size: 6, value: profile.title },
-            {
-              label: "Access group",
-              size: 6,
-              value:
-                accessGroupOptions.find(
-                  ({ value }) => value === profile.access_group,
-                )?.label ?? profile.access_group,
-            },
-          ]}
-        />
-      </Block>
+      <Blocks>
+        {{
+          key: 0,
+          content: (
+            <Menu
+              items={[
+                { label: "Title", size: 6, value: profile.title },
+                {
+                  label: "Access group",
+                  size: 6,
+                  value:
+                    accessGroupOptions.find(
+                      ({ value }) => value === profile.access_group,
+                    )?.label ?? profile.access_group,
+                },
+              ]}
+            />
+          ),
+        }}
 
-      <Block heading="Reboot schedule">
-        <Menu
-          items={[
-            {
-              label: "Schedule",
-              size: 12,
-              value: formatWeeklyRebootSchedule(profile),
-            },
-            {
-              label: "Next reboot",
-              size: 12,
-              value: moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT),
-            },
-          ]}
-        />
-      </Block>
+        {{
+          key: "reboot-schedule",
+          title: "Reboot schedule",
+          content: (
+            <Menu
+              items={[
+                {
+                  label: "Schedule",
+                  size: 12,
+                  value: formatWeeklyRebootSchedule(profile),
+                },
+                {
+                  label: "Next reboot",
+                  size: 12,
+                  value: moment(profile.next_run).format(
+                    DISPLAY_DATE_TIME_FORMAT,
+                  ),
+                },
+              ]}
+            />
+          ),
+        }}
+        {{
+          key: "association",
+          title: "Association",
+          content: (
+            <>
+              {profile.all_computers && (
+                <p>This profile has been associated with all instances.</p>
+              )}
 
-      <Block heading="Association">
-        {profile.all_computers ? (
-          <p>This profile has been associated with all instances.</p>
-        ) : !profile.tags.length ? (
-          <p>This profile has not yet been associated with any instances.</p>
-        ) : (
-          <Menu
-            items={[
-              { label: "Tags", size: 12, value: profile.tags.join(", ") },
-              {
-                label: "Associated instances",
-                size: 12,
-                value: (
-                  <RebootProfileAssociatedInstancesLink
-                    rebootProfile={profile}
-                  />
-                ),
-              },
-            ]}
-          />
-        )}
-      </Block>
+              <Menu items={associationMenuItems} />
+            </>
+          ),
+        }}
+      </Blocks>
 
       <TextConfirmationModal
         isOpen={modalOpen}

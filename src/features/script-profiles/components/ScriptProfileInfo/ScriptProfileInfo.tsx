@@ -1,4 +1,4 @@
-import Block from "@/components/layout/Block";
+import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
 import NoData from "@/components/layout/NoData";
@@ -68,76 +68,84 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
   });
 
   return (
-    <>
-      <Block>
-        <Menu
-          items={[
-            {
-              label: "Title",
-              size: 6,
-              value: profile.title,
-            },
-            {
-              label: "Status",
-              size: 6,
-              value: getStatusText(profile),
-            },
-            {
-              label: "Script",
-              size: 6,
-              value: script ? (
-                <Link to="/scripts?tab=scripts" state={{ scriptId: script.id }}>
-                  {script.title}
-                </Link>
-              ) : (
-                <NoData />
-              ),
-            },
-            {
-              label: "Access group",
-              size: 6,
-              value: accessGroup,
-            },
-            {
-              label: "Run as user",
-              size: 6,
-              value: profile.username,
-            },
-            {
-              label: "Time limit",
-              size: 6,
-              value: `${profile.time_limit}s`,
-            },
-          ]}
-        />
-      </Block>
-
-      <Block heading>
-        <Menu items={triggerMenuItems} />
-      </Block>
-
-      <Block heading="Association">
-        <Menu
-          items={[
-            {
-              label: "Associated instances",
-              size: 12,
-              value: (
-                <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
-              ),
-            },
-            {
-              label: "Tags",
-              size: 12,
-              value: profile.all_computers
-                ? "All instances"
-                : profile.tags.join(", ") || <NoData />,
-              type: "truncated",
-            },
-          ]}
-        />
-      </Block>
-    </>
+    <Blocks>
+      {{
+        key: 0,
+        content: (
+          <Menu
+            items={[
+              {
+                label: "Title",
+                size: 6,
+                value: profile.title,
+              },
+              {
+                label: "Status",
+                size: 6,
+                value: getStatusText(profile),
+              },
+              {
+                label: "Script",
+                size: 6,
+                value: script ? (
+                  <Link
+                    to="/scripts?tab=scripts"
+                    state={{ scriptId: script.id }}
+                  >
+                    {script.title}
+                  </Link>
+                ) : (
+                  <NoData />
+                ),
+              },
+              {
+                label: "Access group",
+                size: 6,
+                value: accessGroup,
+              },
+              {
+                label: "Run as user",
+                size: 6,
+                value: profile.username,
+              },
+              {
+                label: "Time limit",
+                size: 6,
+                value: `${profile.time_limit}s`,
+              },
+            ]}
+          />
+        ),
+      }}
+      {{ key: 1, content: <Menu items={triggerMenuItems} /> }}
+      {{
+        key: "association",
+        title: "Association",
+        content: (
+          <Menu
+            items={[
+              {
+                label: "Associated instances",
+                size: 12,
+                value: (
+                  <ScriptProfileAssociatedInstancesLink
+                    scriptProfile={profile}
+                  />
+                ),
+              },
+              {
+                label: "Tags",
+                size: 12,
+                value: profile.all_computers
+                  ? "All instances"
+                  : profile.tags.join(", ") || <NoData />,
+                type: "truncated",
+              },
+            ]}
+          />
+        ),
+      }}
+    </Blocks>
   );
 };
 

@@ -1,4 +1,4 @@
-import Block from "@/components/layout/Block";
+import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
 import NoData from "@/components/layout/NoData";
@@ -63,6 +63,36 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
     value: profile.cloud_init_contents || <NoData />,
   });
 
+  const associationMenu: ComponentProps<typeof Menu>["items"] = [];
+
+  if (!profile.all_computers) {
+    associationMenu.push({
+      label: "Tags",
+      size: 12,
+      value: profile.tags.join(", ") || <NoData />,
+    });
+  }
+
+  if (profile.all_computers || profile.tags.length) {
+    associationMenu.push(
+      {
+        label: "Associated",
+        size: 12,
+        value: `${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`,
+      },
+      {
+        label: "Not compliant",
+        size: 6,
+        value: `${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`,
+      },
+      {
+        label: "Pending",
+        size: 6,
+        value: `${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`,
+      },
+    );
+  }
+
   return (
     <>
       <div className="p-segmented-control">
@@ -90,76 +120,54 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
         </div>
       </div>
 
-      <Block>
-        <Menu
-          items={[
-            {
-              label: "Title",
-              size: 6,
-              value: profile.title,
-            },
-            {
-              label: "Name",
-              size: 6,
-              value: profile.name,
-            },
-            {
-              label: "Access group",
-              size: 6,
-              value:
-                accessGroupOptions.find(
-                  ({ value }) => value === profile.access_group,
-                )?.label ?? profile.access_group,
-            },
-            {
-              label: "Description",
-              size: 12,
-              value: profile.description,
-            },
-          ]}
-        />
-      </Block>
+      <Blocks>
+        {{
+          key: 0,
+          content: (
+            <Menu
+              items={[
+                {
+                  label: "Title",
+                  size: 6,
+                  value: profile.title,
+                },
+                {
+                  label: "Name",
+                  size: 6,
+                  value: profile.name,
+                },
+                {
+                  label: "Access group",
+                  size: 6,
+                  value:
+                    accessGroupOptions.find(
+                      ({ value }) => value === profile.access_group,
+                    )?.label ?? profile.access_group,
+                },
+                {
+                  label: "Description",
+                  size: 12,
+                  value: profile.description,
+                },
+              ]}
+            />
+          ),
+        }}
+        {{ key: 1, content: <Menu items={wslProfileMenuItems} /> }}
+        {{
+          key: "association",
+          title: "Association",
+          content: (
+            <>
+              {profile.all_computers && (
+                <p>This profile has been associated with all instances.</p>
+              )}
 
-      <Block heading>
-        <Menu items={wslProfileMenuItems} />
-      </Block>
-
-      <Block heading="Association">
-        {profile.all_computers ? (
-          <p>This profile has been associated with all instances.</p>
-        ) : (
-          <Menu
-            items={[
-              {
-                label: "Tags",
-                size: 12,
-                value: profile.tags.join(", "),
-              },
-            ]}
-          />
-        )}
-        {(profile.all_computers || profile.tags.length) && (
-          <Menu
-            items={[
-              {
-                label: "Associated",
-                size: 12,
-                value: `${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`,
-              },
-              {
-                label: "Not compliant",
-                size: 6,
-                value: `${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`,
-              },
-              {
-                label: "Pending",
-                size: 6,
-                value: `${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`,
-              },
-            ]}
-          />
-        )}
-      </Block>
+              <Menu items={associationMenu} />
+            </>
+          ),
+        }}
+      </Blocks>
 
       <WslProfileRemoveModal
         isOpen={isRemoveModalOpen}

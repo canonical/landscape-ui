@@ -1,5 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import Block from "@/components/layout/Block";
+import Blocks from "@/components/layout/Blocks";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
@@ -97,70 +97,85 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Block>
-        <Menu
-          items={[
-            { label: "Title", size: 6, value: profile.title },
-            { label: "Name", size: 6, value: profile.name },
-            {
-              label: "Access group",
-              size: 6,
-              value:
-                accessGroupOptions.find(
-                  ({ value }) => value === profile.access_group,
-                )?.label ?? profile.access_group,
-            },
-            {
-              label: "Upgrade type",
-              size: 6,
-              value: profile.upgrade_type === "all" ? "All" : "Security",
-            },
-            {
-              label: "Auto remove packages",
-              size: 6,
-              value: profile.autoremove ? "On" : "Off",
-            },
-          ]}
-        />
-      </Block>
-
-      <Block heading="Schedule">
-        <Menu
-          items={[
-            {
-              label: "Schedule",
-              size: 12,
-              value: scheduleMessage,
-            },
-            {
-              label: "Next run",
-              size: 12,
-              value: nextRunMessage,
-            },
-            {
-              label: "Delivery delay window",
-              size: 12,
-              value: `${profile.deliver_delay_window} ${pluralize(Number(profile.deliver_delay_window), "minute")}`,
-            },
-          ]}
-        />
-      </Block>
-
-      <Block heading="Association">
-        {profile.all_computers && (
-          <p>This profile has been associated with all instances.</p>
-        )}
-        {!profile.all_computers && !profile.tags.length && (
-          <p>This profile has not yet been associated with any instances.</p>
-        )}
-        {!profile.all_computers && profile.tags.length > 0 && (
-          <InfoItem
-            label="Tags"
-            type="truncated"
-            value={profile.tags.join(", ")}
-          />
-        )}
-      </Block>
+      <Blocks>
+        {{
+          key: 0,
+          content: (
+            <Menu
+              items={[
+                { label: "Title", size: 6, value: profile.title },
+                { label: "Name", size: 6, value: profile.name },
+                {
+                  label: "Access group",
+                  size: 6,
+                  value:
+                    accessGroupOptions.find(
+                      ({ value }) => value === profile.access_group,
+                    )?.label ?? profile.access_group,
+                },
+                {
+                  label: "Upgrade type",
+                  size: 6,
+                  value: profile.upgrade_type === "all" ? "All" : "Security",
+                },
+                {
+                  label: "Auto remove packages",
+                  size: 6,
+                  value: profile.autoremove ? "On" : "Off",
+                },
+              ]}
+            />
+          ),
+        }}
+        {{
+          key: "schedule",
+          title: "Schedule",
+          content: (
+            <Menu
+              items={[
+                {
+                  label: "Schedule",
+                  size: 12,
+                  value: scheduleMessage,
+                },
+                {
+                  label: "Next run",
+                  size: 12,
+                  value: nextRunMessage,
+                },
+                {
+                  label: "Delivery delay window",
+                  size: 12,
+                  value: `${profile.deliver_delay_window} ${pluralize(Number(profile.deliver_delay_window), "minute")}`,
+                },
+              ]}
+            />
+          ),
+        }}
+        {{
+          key: "association",
+          title: "Association",
+          content: (
+            <>
+              {profile.all_computers && (
+                <p>This profile has been associated with all instances.</p>
+              )}
+              {!profile.all_computers && !profile.tags.length && (
+                <p>
+                  This profile has not yet been associated with any instances.
+                </p>
+              )}
+              {!profile.all_computers && profile.tags.length > 0 && (
+                <InfoItem
+                  label="Tags"
+                  type="truncated"
+                  value={profile.tags.join(", ")}
+                />
+              )}
+            </>
+          ),
+        }}
+      </Blocks>
 
       <TextConfirmationModal
         isOpen={modalOpen}

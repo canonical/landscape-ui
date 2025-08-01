@@ -14,12 +14,14 @@ const RegularInfoItem: FC<RegularInfoItemProps> = ({
   value,
 }) => {
   return (
-    <div className={classNames(classes.wrapper, className)}>
-      <p className="p-text--small p-text--small-caps u-text--muted u-no-margin--bottom">
+    <div className={className}>
+      <div
+        className={classNames("p-text--x-small u-text--muted", classes.label)}
+      >
         {label}
-      </p>
+      </div>
 
-      {value}
+      <div>{value}</div>
     </div>
   );
 };

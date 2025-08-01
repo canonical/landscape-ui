@@ -1,0 +1,18 @@
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.rule {
+  margin-bottom: 1rem;
+}
+
+.heading {
+  margin: -0.5rem 0 1rem;
+  padding: 0;
+}
+
+.content {
+  margin-top: 1rem;
+}

@@ -1,5 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import Block from "@/components/layout/Block";
+import Blocks from "@/components/layout/Blocks";
 import Chip from "@/components/layout/Chip";
 import HeaderActions from "@/components/layout/HeaderActions";
 import LoadingState from "@/components/layout/LoadingState";
@@ -7,6 +7,10 @@ import Menu from "@/components/layout/Menu";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
+import {
+  useDisassociateEmployeeFromInstance,
+  useGetEmployee,
+} from "@/features/employees";
 import {
   getFeatures,
   getStatusCellIconAndLabel,
@@ -50,10 +54,6 @@ import Profiles from "./components/Profiles";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
-import {
-  useDisassociateEmployeeFromInstance,
-  useGetEmployee,
-} from "@/features/employees";
 
 const EditInstance = lazy(
   async () =>
@@ -467,30 +467,38 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         />
       </div>
 
-      <Block heading="Status">
-        <Menu items={statusMenuItems} />
-      </Block>
-
-      <Block heading="Registration details">
-        <Menu items={registrationDetailsMenuItems} />
-      </Block>
-
-      <Block heading="Other">
-        <Menu
-          items={[
-            {
-              label: "Annotations",
-              size: 3,
-              value: <NoData />,
-            },
-            {
-              label: "Comment",
-              size: 3,
-              value: instance.comment || <NoData />,
-            },
-          ]}
-        />
-      </Block>
+      <Blocks>
+        {{
+          key: "status",
+          title: "Status",
+          content: <Menu items={statusMenuItems} />,
+        }}
+        {{
+          key: "registration-details",
+          title: "Registration details",
+          content: <Menu items={registrationDetailsMenuItems} />,
+        }}
+        {{
+          key: "other",
+          title: "Other",
+          content: (
+            <Menu
+              items={[
+                {
+                  label: "Annotations",
+                  size: 3,
+                  value: <NoData />,
+                },
+                {
+                  label: "Comment",
+                  size: 3,
+                  value: instance.comment || <NoData />,
+                },
+              ]}
+            />
+          ),
+        }}
+      </Blocks>
 
       {isRestartModalOpen && (
         <ConfirmationModal

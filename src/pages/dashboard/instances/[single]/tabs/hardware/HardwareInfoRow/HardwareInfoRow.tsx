@@ -1,4 +1,4 @@
-import Block from "@/components/layout/Block";
+import Blocks from "@/components/layout/Blocks";
 import Menu from "@/components/layout/Menu";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
@@ -29,16 +29,19 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
         {infoRowLabel}
       </h3>
       <div className={classes.infoRows}>
-        {infoBlocksArray.map((infoBlocks, index) => (
-          <Block heading={index > 0} key={index}>
-            <Menu
-              items={infoBlocks.map((infoBlock) => ({
-                ...infoBlock,
-                size: 3,
-              }))}
-            />
-          </Block>
-        ))}
+        <Blocks>
+          {infoBlocksArray.map((infoBlocks, index) => ({
+            key: index,
+            content: (
+              <Menu
+                items={infoBlocks.map((infoBlock) => ({
+                  ...infoBlock,
+                  size: 3,
+                }))}
+              />
+            ),
+          }))}
+        </Blocks>
       </div>
     </div>
   );

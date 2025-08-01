@@ -1,7 +1,8 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import Block from "@/components/layout/Block";
+import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
+import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -95,50 +96,58 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Block>
-        <Menu
-          items={[
-            { label: "Title", size: 6, value: profile.title },
-            {
-              label: "Name",
-              size: 6,
-              value: profile.name,
-            },
-            {
-              label: "Access group",
-              size: 6,
-              value:
-                accessGroupOptions.find(
-                  ({ value }) => value === profile.access_group,
-                )?.label ?? profile.access_group,
-            },
-            {
-              label: "Removal timeframe",
-              size: 12,
-              value: `${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`,
-            },
-          ]}
-        />
-      </Block>
-
-      <Block heading="Association">
-        {profile.all_computers ? (
-          <p>This profile has been associated with all instances.</p>
-        ) : !profile.tags.length ? (
-          <p>This profile has not yet been associated with any instances.</p>
-        ) : (
-          <Menu
-            items={[
-              {
-                label: "Tags",
-                size: 12,
-                value: profile.tags.join(", "),
-                type: "truncated",
-              },
-            ]}
-          />
-        )}
-      </Block>
+      <Blocks>
+        {{
+          key: 0,
+          content: (
+            <Menu
+              items={[
+                { label: "Title", size: 6, value: profile.title },
+                {
+                  label: "Name",
+                  size: 6,
+                  value: profile.name,
+                },
+                {
+                  label: "Access group",
+                  size: 6,
+                  value:
+                    accessGroupOptions.find(
+                      ({ value }) => value === profile.access_group,
+                    )?.label ?? profile.access_group,
+                },
+                {
+                  label: "Removal timeframe",
+                  size: 12,
+                  value: `${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`,
+                },
+              ]}
+            />
+          ),
+        }}
+        {{
+          key: "association",
+          title: "Assocation",
+          content: (
+            <>
+              {profile.all_computers ? (
+                <p>This profile has been associated with all instances.</p>
+              ) : (
+                <Menu
+                  items={[
+                    {
+                      label: "Tags",
+                      size: 12,
+                      value: profile.tags.join(", ") || <NoData />,
+                      type: "truncated",
+                    },
+                  ]}
+                />
+              )}
+            </>
+          ),
+        }}
+      </Blocks>
 
       <TextConfirmationModal
         isOpen={modalOpen}
