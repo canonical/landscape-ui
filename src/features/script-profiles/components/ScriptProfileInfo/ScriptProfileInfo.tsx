@@ -70,7 +70,6 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
   return (
     <Blocks>
       {{
-        key: 0,
         content: (
           <Menu
             items={[
@@ -117,9 +116,8 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
           />
         ),
       }}
-      {{ key: 1, content: <Menu items={triggerMenuItems} /> }}
+      {{ content: <Menu items={triggerMenuItems} /> }}
       {{
-        key: "association",
         title: "Association",
         content: (
           <Menu

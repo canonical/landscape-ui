@@ -1,9 +1,8 @@
-import { type FC, type Key, type ReactNode } from "react";
+import { type FC, type ReactNode } from "react";
 import classes from "./Blocks.module.scss";
 
 interface Block {
   content: ReactNode;
-  key: Key;
   title?: string;
 }
 
@@ -13,11 +12,11 @@ interface BlocksProps {
 
 const Blocks: FC<BlocksProps> = ({ children }) => (
   <div className={classes.blocks}>
-    {children.map(({ content, key, title }, index) => {
+    {children.flatMap(({ content, title }, index) => {
       const isTitleDefined = title !== undefined;
 
       return (
-        <section key={key}>
+        <section>
           {(isTitleDefined || index > 0) && <hr className={classes.rule} />}
           {isTitleDefined && <h5 className={classes.heading}>{title}</h5>}
           {content}

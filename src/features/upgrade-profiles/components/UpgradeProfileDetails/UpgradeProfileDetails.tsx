@@ -99,7 +99,6 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
 
       <Blocks>
         {{
-          key: 0,
           content: (
             <Menu
               items={[
@@ -128,7 +127,6 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
           ),
         }}
         {{
-          key: "schedule",
           title: "Schedule",
           content: (
             <Menu
@@ -153,7 +151,6 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
           ),
         }}
         {{
-          key: "association",
           title: "Association",
           content: (
             <>

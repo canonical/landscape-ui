@@ -30,8 +30,7 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
       </h3>
       <div className={classes.infoRows}>
         <Blocks>
-          {infoBlocksArray.map((infoBlocks, index) => ({
-            key: index,
+          {infoBlocksArray.flatMap((infoBlocks) => ({
             content: (
               <Menu
                 items={infoBlocks.map((infoBlock) => ({

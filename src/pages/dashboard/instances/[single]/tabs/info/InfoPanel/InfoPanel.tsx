@@ -469,17 +469,14 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
       <Blocks>
         {{
-          key: "status",
           title: "Status",
           content: <Menu items={statusMenuItems} />,
         }}
         {{
-          key: "registration-details",
           title: "Registration details",
           content: <Menu items={registrationDetailsMenuItems} />,
         }}
         {{
-          key: "other",
           title: "Other",
           content: (
             <Menu

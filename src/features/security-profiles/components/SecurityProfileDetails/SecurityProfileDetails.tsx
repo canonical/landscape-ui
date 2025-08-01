@@ -151,7 +151,6 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
 
       <Blocks>
         {{
-          key: 0,
           content: (
             <Menu
               items={[
@@ -180,7 +179,6 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
           ),
         }}
         {{
-          key: "security-profile",
           title: "Security profile",
           content: (
             <Menu
@@ -205,12 +203,10 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
           ),
         }}
         {{
-          key: "schedule",
           title: "Schedule",
           content: <Menu items={scheduleMenuItems} />,
         }}
         {{
-          key: "association",
           title: "Association",
           content: (
             <Menu

@@ -98,7 +98,6 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
 
       <Blocks>
         {{
-          key: 0,
           content: (
             <Menu
               items={[
@@ -126,7 +125,6 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
           ),
         }}
         {{
-          key: "association",
           title: "Assocation",
           content: (
             <>

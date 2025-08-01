@@ -135,7 +135,6 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
 
       <Blocks>
         {{
-          key: 0,
           content: (
             <Menu
               items={[
@@ -154,7 +153,6 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
         }}
 
         {{
-          key: "reboot-schedule",
           title: "Reboot schedule",
           content: (
             <Menu
@@ -176,7 +174,6 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
           ),
         }}
         {{
-          key: "association",
           title: "Association",
           content: (
             <>

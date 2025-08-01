@@ -122,7 +122,6 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
 
       <Blocks>
         {{
-          key: 0,
           content: (
             <Menu
               items={[
@@ -153,9 +152,8 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
             />
           ),
         }}
-        {{ key: 1, content: <Menu items={wslProfileMenuItems} /> }}
+        {{ content: <Menu items={wslProfileMenuItems} /> }}
         {{
-          key: "association",
           title: "Association",
           content: (
             <>
