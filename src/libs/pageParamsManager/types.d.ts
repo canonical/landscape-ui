@@ -30,6 +30,7 @@ export interface PageParams {
   type: string;
   query: string;
   wsl: string[];
+  code: string;
 }
 
 /**

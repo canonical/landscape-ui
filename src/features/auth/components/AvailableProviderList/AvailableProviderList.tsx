@@ -1,11 +1,12 @@
+import { useGetEmployeeOidcUrlQuery } from "@/features/attach";
+import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { Button, Icon } from "@canonical/react-components";
-import type { IdentityProvider } from "../../types";
+import { getProviderIcon, redirectToExternalUrl } from "../../helpers";
 import type { GetOidcUrlParams, GetUbuntuOneUrlParams } from "../../hooks";
 import { useInvitation, useUnsigned } from "../../hooks";
-import { getProviderIcon, redirectToExternalUrl } from "../../helpers";
+import type { IdentityProvider } from "../../types";
 import classes from "./AvailableProviderList.module.scss";
 
 interface AvailableProviderListProps {
@@ -22,11 +23,11 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   const [providerId, setProviderId] = useState(0);
   const [searchParams] = useSearchParams();
   const { invitationId } = useInvitation();
-
   const { getOidcUrlQuery, getUbuntuOneUrlQuery } = useUnsigned();
 
   const redirectTo = searchParams.get("redirect-to");
   const external = searchParams.has("external");
+  const code = searchParams.get("code");
 
   const params: GetOidcUrlParams = {};
 
@@ -46,9 +47,21 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
     params.external = true;
   }
 
-  const { data: getOidcUrlQueryResult } = getOidcUrlQuery(params, {
-    enabled: providerId !== 0,
+  if (code) {
+    params.attach_code = code;
+  }
+
+  const adminOidcUrlQuery = getOidcUrlQuery(params, {
+    enabled: providerId !== 0 && !code,
   });
+
+  const employeeOidcUrlQuery = useGetEmployeeOidcUrlQuery(params, {
+    enabled: providerId !== 0 && Boolean(code),
+  });
+
+  const { data: getOidcUrlQueryResult } = code
+    ? employeeOidcUrlQuery
+    : adminOidcUrlQuery;
 
   useEffect(() => {
     if (!getOidcUrlQueryResult) {
@@ -108,7 +121,9 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
           <Button
             type="button"
             hasIcon
-            onClick={() => setProviderId(-1)}
+            onClick={() => {
+              setProviderId(-1);
+            }}
             className={classes.button}
           >
             <Icon
@@ -124,7 +139,9 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
           <Button
             type="button"
             hasIcon
-            onClick={() => setProviderId(provider.id)}
+            onClick={() => {
+              setProviderId(provider.id);
+            }}
             className={classes.button}
           >
             <Icon

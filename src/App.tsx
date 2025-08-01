@@ -96,6 +96,7 @@ const ApiCredentials = lazy(
 const IdentityProvidersPage = lazy(
   async () => import("@/pages/dashboard/settings/identity-providers"),
 );
+const AttachPage = lazy(async () => import("@/pages/auth/attach/AttachPage"));
 
 interface AuthRouteProps {
   readonly children: ReactNode;
@@ -506,13 +507,14 @@ const App: FC = () => {
             }
           >
             <Route
-              path={"/login"}
+              path={"/attach"}
               element={
-                <Suspense key="/login" fallback={<LoadingState />}>
-                  <LoginPage />
-                </Suspense>
+                <FeatureRoute feature="employee-management">
+                  <AttachPage />
+                </FeatureRoute>
               }
             />
+            <Route path={"/login"} element={<LoginPage />} />
             <Route
               path={"/support/login"}
               element={

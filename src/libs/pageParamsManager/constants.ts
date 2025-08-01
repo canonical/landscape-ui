@@ -134,4 +134,9 @@ export const PARAMS_CONFIG: ParamsConfig = [
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_ARRAY,
   },
+  {
+    urlParam: "code",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_STRING,
+  },
 ];

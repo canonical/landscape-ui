@@ -1,3 +1,4 @@
+import type { UseQueryOptions } from "@tanstack/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   QueryFnType,
@@ -43,6 +44,7 @@ export type AuthStateResponse =
       } | null;
       self_hosted: boolean;
       identity_source: string;
+      attach_code: string | null;
     });
 
 export interface LoginRequestParams {
@@ -55,6 +57,7 @@ export interface GetOidcUrlParams {
   external?: boolean;
   invitation_id?: string;
   return_to?: string;
+  attach_code?: string;
 }
 
 interface GetAuthStateParams {
@@ -82,7 +85,12 @@ export default function useUnsignedHooks() {
   const getLoginMethodsQuery: QueryFnType<
     AxiosResponse<LoginMethods>,
     Record<never, unknown>
-  > = (_, config = {}) =>
+  > = (
+    config: Omit<
+      UseQueryOptions<AxiosResponse<LoginMethods, AxiosError<ApiError>>>,
+      "queryKey" | "queryFn"
+    > = {},
+  ) =>
     useQuery({
       queryKey: ["loginMethods"],
       queryFn: async () => axiosInstance.get<LoginMethods>("login/methods"),
