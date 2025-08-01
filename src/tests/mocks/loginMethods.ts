@@ -24,6 +24,29 @@ export const allLoginMethods: LoginMethods = {
   },
 };
 
+export const employeeLoginMethods: LoginMethods = {
+  oidc: {
+    available: true,
+    configurations: identityProviders,
+  },
+  standalone_oidc: {
+    available: true,
+    enabled: true,
+  },
+  ubuntu_one: {
+    available: true,
+    enabled: true,
+  },
+  password: {
+    available: false,
+    enabled: false,
+  },
+  pam: {
+    available: false,
+    enabled: false,
+  },
+};
+
 export const noneLoginMethods: LoginMethods = {
   oidc: {
     available: false,

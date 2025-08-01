@@ -2,7 +2,7 @@ import { useGetEmployeeOidcUrlQuery } from "@/features/attach";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router";
+import { useLocation, useSearchParams } from "react-router";
 import { getProviderIcon, redirectToExternalUrl } from "../../helpers";
 import type { GetOidcUrlParams, GetUbuntuOneUrlParams } from "../../hooks";
 import { useInvitation, useUnsigned } from "../../hooks";
@@ -24,10 +24,11 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   const [searchParams] = useSearchParams();
   const { invitationId } = useInvitation();
   const { getOidcUrlQuery, getUbuntuOneUrlQuery } = useUnsigned();
+  const location = useLocation();
 
   const redirectTo = searchParams.get("redirect-to");
   const external = searchParams.has("external");
-  const code = searchParams.get("code");
+  const code = location.state?.code;
 
   const params: GetOidcUrlParams = {};
 

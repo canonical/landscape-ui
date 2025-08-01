@@ -1,11 +1,10 @@
 import { OTPInputContainer, SuccessfulAttachPage } from "@/features/attach";
 import type { FC } from "react";
-import { useSearchParams } from "react-router";
+import { useLocation } from "react-router";
 
 const AttachPage: FC = () => {
-  const [searchParams] = useSearchParams();
-
-  const success = searchParams.get("success");
+  const location = useLocation();
+  const success = location.state?.success;
 
   if (success === "true") {
     return <SuccessfulAttachPage />;

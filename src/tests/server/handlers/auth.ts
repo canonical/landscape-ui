@@ -15,7 +15,10 @@ import {
   supportedProviders,
 } from "@/tests/mocks/identityProviders";
 import type { InvitationSummary } from "@/types/Invitation";
-import { allLoginMethods } from "@/tests/mocks/loginMethods";
+import {
+  allLoginMethods,
+  employeeLoginMethods,
+} from "@/tests/mocks/loginMethods";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
 interface SwitchAccountParams {
@@ -94,6 +97,20 @@ export default [
 
   http.get(`${API_URL}auth/start`, () => {
     return HttpResponse.json({ location: locationToRedirectTo });
+  }),
+
+  http.get(
+    `${API_URL}ubuntu-installer-attach-sessions/code/:attach_code`,
+    () => {
+      return HttpResponse.json({
+        valid: true,
+        valid_until: new Date(Date.now() + 3600 * 1000).toISOString(),
+      });
+    },
+  ),
+
+  http.get(`${API_URL}employee-access/login/methods`, () => {
+    return HttpResponse.json(employeeLoginMethods);
   }),
 
   http.get(`${API_URL}me`, () => {
