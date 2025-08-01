@@ -16,7 +16,6 @@ describe("EmployeeList", () => {
     expect(table).toHaveTexts([
       "name",
       "email",
-      "employee group",
       "assigned autoinstall file",
       "status",
       "associated instances",
@@ -27,8 +26,6 @@ describe("EmployeeList", () => {
     renderWithProviders(<EmployeeList employees={employees} />);
 
     for (const employee of employees) {
-      const employeeGroups = employee.groups || [];
-
       const row = screen.getByRole("row", {
         name: (name) => {
           return name.toLowerCase().includes(employee.name.toLowerCase());
@@ -61,14 +58,6 @@ describe("EmployeeList", () => {
 
       expect(
         within(row).getByRole("cell", {
-          name: /employee group/i,
-        }),
-      ).toHaveTextContent(
-        employeeGroups.map((group) => group.name).join("") || NO_DATA_TEXT,
-      );
-
-      expect(
-        within(row).getByRole("cell", {
           name: /associated instances/i,
         }),
       ).toHaveTextContent(
@@ -90,36 +79,6 @@ describe("EmployeeList", () => {
 
     const sidePanel = await screen.findByRole("complementary");
     expect(sidePanel).toBeInTheDocument();
-  });
-
-  it("toggles expansion for the employee group truncated cell", async () => {
-    renderWithProviders(<EmployeeList employees={employees} />);
-
-    const employee = employees.find(
-      (items) => items.groups && items.groups?.length > 1,
-    );
-    assert(employee);
-    const employeeGroups = employee.groups;
-    assert(employeeGroups);
-
-    const row = screen.getByRole("row", {
-      name: (name) => {
-        return name.toLowerCase().includes(employee.name.toLowerCase());
-      },
-    });
-    expect(row).toBeInTheDocument();
-    assert(row);
-
-    const groupsCell = within(row).getByRole("cell", {
-      name: /employee group/i,
-    });
-
-    const groupCellTextContent = groupsCell.textContent;
-
-    for (const group of employeeGroups) {
-      const groupLabel = group.name;
-      expect(groupCellTextContent).toContain(groupLabel);
-    }
   });
 
   it("toggles expansion for the associated instances truncated cell", async () => {

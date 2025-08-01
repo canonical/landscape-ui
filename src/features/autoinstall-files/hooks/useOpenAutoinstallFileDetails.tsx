@@ -3,17 +3,13 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Suspense } from "react";
 import AutoinstallFileDetails from "../components/AutoinstallFileDetails";
 import AutoinstallFileSidePanelTitle from "../components/AutoinstallFileSidePanelTitle";
-import type {
-  AutoinstallFile,
-  AutoinstallFileTabId,
-  WithGroups,
-} from "../types";
+import type { AutoinstallFile, AutoinstallFileTabId } from "../types";
 
 const useOpenAutoinstallFileDetails = () => {
   const { setSidePanelContent } = useSidePanel();
 
   return (
-    autoinstallFile: WithGroups<AutoinstallFile>,
+    autoinstallFile: AutoinstallFile,
     initialTabId?: AutoinstallFileTabId,
   ): void => {
     setSidePanelContent(

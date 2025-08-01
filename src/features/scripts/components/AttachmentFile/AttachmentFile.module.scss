@@ -4,6 +4,7 @@
 .attachment {
   align-items: center;
   background-color: $colors--theme--background-default;
+  border: 1px solid $colors--theme--border-default;
   display: flex;
   justify-content: space-between;
   margin-top: $spv--small;
@@ -19,6 +20,6 @@
 .actionButton {
   &:focus,
   &:hover {
-    background-color: $colors--theme--background-default;
+    background-color: $colors--theme--background-alt;
   }
 }

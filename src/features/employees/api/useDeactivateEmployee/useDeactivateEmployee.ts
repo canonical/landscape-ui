@@ -24,7 +24,7 @@ const useDeactivateEmployee = () => {
       return authFetch.post(`employees/${id}/offboard`, rest);
     },
     onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["employee"] }),
+      queryClient.invalidateQueries({ queryKey: ["employees"] }),
   });
 
   return {

@@ -3,10 +3,10 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { Col, Row } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import type { AutoinstallFile, WithGroups } from "../../types";
+import type { AutoinstallFile } from "../../types";
 
 interface AutoinstallFileInfoProps {
-  readonly file: WithGroups<AutoinstallFile>;
+  readonly file: AutoinstallFile;
 }
 
 const AutoinstallFileInfo: FC<AutoinstallFileInfoProps> = ({ file }) => {
@@ -39,11 +39,6 @@ const AutoinstallFileInfo: FC<AutoinstallFileInfoProps> = ({ file }) => {
           />
         </Col>
       </Row>
-
-      <InfoItem
-        label="Employee groups associated"
-        value={file.groups.map((group) => group.name).join(", ")}
-      />
     </>
   );
 };

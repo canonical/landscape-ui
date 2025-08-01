@@ -20,4 +20,8 @@ export default [
       }),
     );
   }),
+
+  http.post(`${API_URL}repositoryprofiles`, async () => {
+    return HttpResponse.json(repositoryProfiles[0], { status: 201 });
+  }),
 ];

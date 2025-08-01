@@ -34,14 +34,8 @@ const useGetEmployees = (
   > = {},
 ) => {
   const authFetch = useFetch();
-  const {
-    autoinstallFiles,
-    currentPage,
-    employeeGroups,
-    pageSize,
-    search,
-    status,
-  } = usePageParams();
+  const { autoinstallFiles, currentPage, pageSize, search, status } =
+    usePageParams();
 
   config = {
     ...DEFAULT_CONFIG,
@@ -53,10 +47,7 @@ const useGetEmployees = (
       ? {
           with_autoinstall_file: true,
           with_computers: true,
-          with_groups: true,
           is_active: getStatus(status),
-          employee_group_ids:
-            employeeGroups.length > 0 ? employeeGroups : undefined,
           autoinstall_file_ids:
             autoinstallFiles.length > 0 ? autoinstallFiles : undefined,
           limit: pageSize,

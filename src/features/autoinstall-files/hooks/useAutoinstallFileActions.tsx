@@ -5,16 +5,10 @@ import { Suspense } from "react";
 import { useUpdateAutoinstallFile } from "../api";
 import AutoinstallFileEditForm from "../components/AutoinstallFileEditForm";
 import AutoinstallFileSidePanelTitle from "../components/AutoinstallFileSidePanelTitle";
-import type {
-  AutoinstallFile,
-  AutoinstallFileTabId,
-  WithGroups,
-} from "../types";
+import type { AutoinstallFile, AutoinstallFileTabId } from "../types";
 import useOpenAutoinstallFileDetails from "./useOpenAutoinstallFileDetails";
 
-const useAutoinstallFileActions = (
-  autoinstallFile: WithGroups<AutoinstallFile>,
-) => {
+const useAutoinstallFileActions = (autoinstallFile: AutoinstallFile) => {
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
 
@@ -46,7 +40,7 @@ const useAutoinstallFileActions = (
 
       notify.success({
         message:
-          "Employee groups without an autoinstall file assigned will inherit this default file.",
+          "Employee accounts without a specific autoinstall file assigned via the identity provider will now inherit this default file.",
         title: `You have successfully set ${autoinstallFile.filename} as the default autoinstall file`,
       });
     },

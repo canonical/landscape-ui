@@ -29,7 +29,6 @@ export interface PageParams {
   passRateFrom: number;
   type: string;
   query: string;
-  employeeGroups: string[];
   wsl: string[];
 }
 

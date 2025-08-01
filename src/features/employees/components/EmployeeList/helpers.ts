@@ -9,11 +9,7 @@ export const handleRowProps =
     const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
       {};
 
-    if (
-      (expandedCell?.column === "computers" ||
-        expandedCell?.column === "groups") &&
-      expandedCell.row === index
-    ) {
+    if (expandedCell?.column === "computers" && expandedCell.row === index) {
       rowProps.className = "expandedRow";
     }
     return rowProps;
@@ -26,12 +22,6 @@ export const handleCellProps =
       {};
     if (column.id === "computers") {
       cellProps["aria-label"] = "Associated instances";
-
-      if (expandedCell?.column === column.id && expandedCell.row === index) {
-        cellProps.className = "expandedCell";
-      }
-    } else if (column.id === "groups") {
-      cellProps["aria-label"] = "Employee group";
 
       if (expandedCell?.column === column.id && expandedCell.row === index) {
         cellProps.className = "expandedCell";

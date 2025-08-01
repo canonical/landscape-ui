@@ -11,5 +11,5 @@ export type {
 export { default as AutoinstallFileForm } from "./components/AutoinstallFileForm";
 export { default as AutoinstallFilesHeader } from "./components/AutoinstallFilesHeader";
 export { default as AutoinstallFilesList } from "./components/AutoinstallFilesList";
-export type { AutoinstallFile, WithGroups } from "./types";
+export type { AutoinstallFile } from "./types";
 export { getAutoinstallFileOptions } from "./helpers";

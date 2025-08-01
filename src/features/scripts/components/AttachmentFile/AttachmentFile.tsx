@@ -46,36 +46,39 @@ const AttachmentFile: FC<AttachmentFileProps> = ({
       <span>{filename}</span>
       <div className={classes.attachmentActions}>
         {scriptId ? (
-          <Button
-            className={classNames(
-              "u-no-margin--bottom u-no-margin--right",
-              classes.actionButton,
-            )}
-            hasIcon
-            type="button"
-            onClick={handleDownload}
-            disabled={isScriptAttachmentsLoading}
-            appearance="base"
-            aria-label={`Download ${filename}`}
-          >
-            <Tooltip message="Download">
+          <Tooltip message="Download" position="top-center">
+            <Button
+              className={classNames(
+                "u-no-margin--bottom u-no-margin--right",
+                classes.actionButton,
+              )}
+              hasIcon
+              type="button"
+              onClick={handleDownload}
+              disabled={isScriptAttachmentsLoading}
+              appearance="base"
+              aria-label={`Download ${filename}`}
+            >
               <Icon name="begin-downloading" />
-            </Tooltip>
-          </Button>
+            </Button>
+          </Tooltip>
         ) : null}
         {onInitialAttachmentDelete ? (
-          <Button
-            type="button"
-            hasIcon
-            appearance="base"
-            className={classNames("u-no-margin--bottom", classes.actionButton)}
-            aria-label={`Remove ${filename} attachment`}
-            onClick={onInitialAttachmentDelete}
-          >
-            <Tooltip message="Remove" position="top-center">
+          <Tooltip message="Remove" position="top-center">
+            <Button
+              type="button"
+              hasIcon
+              appearance="base"
+              className={classNames(
+                "u-no-margin--bottom u-no-margin--right",
+                classes.actionButton,
+              )}
+              aria-label={`Remove ${filename} attachment`}
+              onClick={onInitialAttachmentDelete}
+            >
               <Icon name={ICONS.delete} />
-            </Tooltip>
-          </Button>
+            </Button>
+          </Tooltip>
         ) : null}
       </div>
     </span>

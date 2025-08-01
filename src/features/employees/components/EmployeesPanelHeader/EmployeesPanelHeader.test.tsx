@@ -4,11 +4,10 @@ import EmployeesPanelHeader from "./EmployeesPanelHeader";
 import { describe, it, expect } from "vitest";
 
 describe("EmployeesPanelHeader", () => {
-  it("renders header with search and filter components when employee groups data is available", () => {
+  it("renders header with search and filter components when employees data is available", () => {
     renderWithProviders(<EmployeesPanelHeader />);
 
     expect(screen.getByRole("searchbox")).toBeInTheDocument();
-    expect(screen.getByText(/employee group/i)).toBeInTheDocument();
     expect(screen.getByText(/status/i)).toBeInTheDocument();
   });
 });

@@ -16,6 +16,7 @@ interface CheckboxGroupProps {
   readonly disabled?: boolean;
   readonly className?: string;
   readonly style?: CSSProperties;
+  readonly help?: ReactNode;
 }
 
 const CheckboxGroup: FC<CheckboxGroupProps> = ({
@@ -30,6 +31,7 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
   name,
   style,
   disabled,
+  help,
 }) => {
   return (
     <fieldset
@@ -47,7 +49,7 @@ const CheckboxGroup: FC<CheckboxGroupProps> = ({
       </legend>
 
       {!!error && <p className="p-form-validation__message">{error}</p>}
-
+      {help && <p className="p-form-help-text">{help}</p>}
       <div className="checkbox-group__inner">
         {options.map((option) => (
           <CheckboxInput

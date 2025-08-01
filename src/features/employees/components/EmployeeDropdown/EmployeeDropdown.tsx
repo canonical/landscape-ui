@@ -15,13 +15,13 @@ import { boldSubstring } from "./helpers";
 interface EmployeeDropdown {
   readonly employee: Employee | null;
   readonly setEmployee: (employee: Employee | null) => void;
-  readonly loadingExistingEmployee: boolean;
+  readonly error: string | undefined;
 }
 
 const EmployeeDropdown: FC<EmployeeDropdown> = ({
   employee,
   setEmployee,
-  loadingExistingEmployee,
+  error,
 }) => {
   const [search, setSearch] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -111,7 +111,7 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
   const helpText = getHelpText();
 
   return (
-    <div className={classes.container}>
+    <div className={classNames(classes.container, { "is-error": !!error })}>
       <Downshift
         onSelect={handleSelectItem}
         itemToString={() => ""}
@@ -119,9 +119,17 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
       >
         {({ getInputProps, getItemProps, getMenuProps, highlightedIndex }) => (
           <div className="p-autocomplete">
+            <label
+              className="p-form__label"
+              htmlFor="employee-searchbox"
+              id="employee-searchbox-label"
+            >
+              Employee
+            </label>
             <SearchBox
               {...getInputProps()}
-              placeholder="Search for employees"
+              id="employee-searchbox"
+              placeholder="Search for an employee"
               className="u-no-margin--bottom"
               shouldRefocusAfterReset
               externallyControlled
@@ -161,9 +169,6 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
                       <div className="u-truncate" data-testid="dropdownElement">
                         {boldSubstring(item.name, search)}
                       </div>
-                      <small className="u-text-muted">
-                        {item.groups?.map((group) => group.name).join(", ")}
-                      </small>
                     </li>
                   ))
                 )}
@@ -173,32 +178,43 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
         )}
       </Downshift>
 
-      {loadingExistingEmployee && <LoadingState />}
+      {!!error && (
+        <p
+          className={classNames(
+            classes.errorMessage,
+            "p-form-validation__message is-error",
+          )}
+        >
+          {error}
+        </p>
+      )}
 
       {employee && (
         <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
           <li
             className={classNames(
               "p-autocomplete__result p-list__item p-card u-no-margin--bottom",
-              classes.selectedContainer,
+              classes.selectedEmployee__container,
             )}
             key={employee.id}
           >
-            <div>
-              <div>{employee.name}</div>
-              <span>
-                <small className="u-text--muted p-text--small">
-                  {employee.groups?.map((group) => group.name).join(", ")}
-                </small>
-              </span>
-            </div>
+            <span className={classes.selectedEmployee__name}>
+              {employee.name}
+            </span>
             <Button
               type="button"
+              title="Remove"
               appearance="link"
-              className="u-no-margin--bottom"
+              className={classNames(
+                "u-no-margin--bottom",
+                classes.selectedEmployee__button,
+              )}
               onClick={handleDeleteSelectedItem}
             >
-              <Icon name={ICONS.delete} />
+              <Icon
+                name={ICONS.delete}
+                className={classes.selectedEmployee__icon}
+              />
             </Button>
           </li>
         </ul>

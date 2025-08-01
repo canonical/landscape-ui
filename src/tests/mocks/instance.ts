@@ -313,7 +313,7 @@ export const instances: Instance[] = [
       distributor: "Canonical",
       release: "12.04",
     },
-    employee_id: null,
+    employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
   },

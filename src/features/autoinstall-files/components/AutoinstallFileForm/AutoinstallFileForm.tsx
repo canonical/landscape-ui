@@ -18,12 +18,14 @@ import { removeAutoinstallFileExtension } from "../../helpers";
 import classes from "./AutoinstallFileForm.module.scss";
 import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
 import type { FormikProps } from "./types";
+import type { AddAutoinstallFileParams } from "../../api";
+import { areTextsIdentical } from "./helpers";
 
 interface AutoinstallFileFormProps {
   readonly buttonText: string;
   readonly description: string;
   readonly notification: NotificationMethodArgs;
-  readonly onSubmit: (params: FormikProps) => Promise<unknown>;
+  readonly onSubmit: (params: AddAutoinstallFileParams) => Promise<unknown>;
   readonly initialFile?: FormikProps;
 }
 
@@ -34,6 +36,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   notification,
   onSubmit,
 }) => {
+  const IS_CREATING = buttonText === "Add";
   const inputRef = useRef<HTMLInputElement>(null);
 
   const debug = useDebug();
@@ -42,7 +45,8 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
 
   const formik = useFormik<FormikProps>({
     initialValues: {
-      ...initialFile,
+      contents: initialFile.contents,
+      is_default: initialFile.is_default,
       filename: removeAutoinstallFileExtension(initialFile.filename),
     },
     validationSchema: VALIDATION_SCHEMA,
@@ -51,14 +55,15 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
 
       try {
         await onSubmit({
-          ...file,
+          contents: file.contents,
+          is_default: file.is_default,
           filename,
         });
 
         closeSidePanel();
 
         notify.success({
-          message: `${filename} ${notification.message}`,
+          message: `The autoinstall file ${filename} ${notification.message}`,
           title: `${notification.title} ${filename}`,
         });
       } catch (error) {
@@ -120,6 +125,15 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
         </span>
       </div>
 
+      {IS_CREATING && (
+        <Input
+          type="checkbox"
+          label="Default"
+          {...formik.getFieldProps("is_default")}
+          help="This file will be used to configure newly registered instances. Only one default file can be set at a time."
+        />
+      )}
+
       <input
         ref={inputRef}
         className="u-hide"
@@ -152,7 +166,10 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonDisabled={
+          areTextsIdentical(formik.values.contents, initialFile.contents) ||
+          formik.isSubmitting
+        }
         submitButtonText={buttonText}
       />
     </Form>

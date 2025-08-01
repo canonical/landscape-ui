@@ -7,6 +7,7 @@ import type { AutoinstallFile } from "../types";
 export interface AddAutoinstallFileParams {
   contents: string;
   filename: string;
+  is_default: boolean;
 }
 
 export const useAddAutoinstallFile = (): {

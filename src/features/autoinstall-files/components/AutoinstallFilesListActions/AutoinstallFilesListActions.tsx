@@ -3,11 +3,11 @@ import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useAutoinstallFileActions } from "../../hooks";
-import type { AutoinstallFile, WithGroups } from "../../types";
+import type { AutoinstallFile } from "../../types";
 import AutoinstallFileDeleteModal from "../AutoinstallFileDeleteModal";
 
 interface AutoinstallFilesListActionsProps {
-  readonly autoinstallFile: WithGroups<AutoinstallFile>;
+  readonly autoinstallFile: AutoinstallFile;
 }
 
 const AutoinstallFilesListActions: FC<AutoinstallFilesListActionsProps> = ({

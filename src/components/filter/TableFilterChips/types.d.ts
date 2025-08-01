@@ -6,7 +6,6 @@ export type FilterType = Pick<
   | "accessGroups"
   | "autoinstallFiles"
   | "availabilityZones"
-  | "employeeGroups"
   | "fromDate"
   | "os"
   | "search"

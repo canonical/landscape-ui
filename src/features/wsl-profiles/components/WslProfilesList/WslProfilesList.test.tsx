@@ -30,7 +30,10 @@ describe("WslProfilesList", () => {
 
     await waitFor(() => {
       wslProfiles.forEach(async (profile) => {
-        expect(screen.getByText(profile.title)).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: profile.title }),
+        ).toBeInTheDocument();
+
         expect(
           screen.getByLabelText(`${profile.title} profile actions`),
         ).toBeInTheDocument();

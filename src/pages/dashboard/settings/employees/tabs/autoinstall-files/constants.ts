@@ -1,4 +1,5 @@
 export const ADD_AUTOINSTALL_FILE_NOTIFICATION = {
-  message: "can now be assigned to employee groups.",
+  message:
+    "is now available and can be assigned to identity provider user groups.",
   title: "You have successfully added",
 };

@@ -1,6 +1,6 @@
-import type { AutoinstallFile, WithGroups } from "@/features/autoinstall-files";
+import type { AutoinstallFile } from "@/features/autoinstall-files";
 
-export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
+export const autoinstallFiles: AutoinstallFile[] = [
   {
     id: 1,
     contents: "echo 'Hello World'",
@@ -9,44 +9,6 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
     is_default: true,
     created_at: "2025-02-02T17:55:23.806269",
     last_modified_at: "2025-02-07T17:55:23.806269",
-    groups: [
-      {
-        id: 42,
-        issuer_id: 2,
-        group_id: "manager-group-id",
-        name: "Managers",
-        priority: 2,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-      {
-        id: 43,
-        issuer_id: 2,
-        group_id: "super-admin-group-id",
-        name: "Super Admins",
-        priority: 1,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-      {
-        id: 44,
-        issuer_id: 2,
-        group_id: "regular-group-id",
-        name: "Regular Employees",
-        priority: 3,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-      {
-        id: 1,
-        issuer_id: 2,
-        group_id: "curb-id",
-        name: "Curb Group",
-        priority: 4,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-    ],
   },
   {
     id: 2,
@@ -56,44 +18,6 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
     is_default: false,
     created_at: "2025-02-02T17:55:23.806269",
     last_modified_at: "2025-02-07T17:55:23.806269",
-    groups: [
-      {
-        id: 42,
-        issuer_id: 2,
-        group_id: "manager-group-id",
-        name: "Managers",
-        priority: 2,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-      {
-        id: 43,
-        issuer_id: 2,
-        group_id: "super-admin-group-id",
-        name: "Super Admins",
-        priority: 1,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-      {
-        id: 44,
-        issuer_id: 2,
-        group_id: "regular-group-id",
-        name: "Regular Employees",
-        priority: 3,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-      {
-        id: 1,
-        issuer_id: 2,
-        group_id: "curb-id",
-        name: "Curb Group",
-        priority: 4,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-    ],
   },
   {
     id: 3,
@@ -103,44 +27,6 @@ export const autoinstallFiles: WithGroups<AutoinstallFile>[] = [
     is_default: false,
     created_at: "2025-02-02T17:55:23.806269",
     last_modified_at: "2025-02-07T17:55:23.806269",
-    groups: [
-      {
-        id: 42,
-        issuer_id: 2,
-        group_id: "manager-group-id",
-        name: "Managers",
-        priority: 2,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-      {
-        id: 43,
-        issuer_id: 2,
-        group_id: "super-admin-group-id",
-        name: "Super Admins",
-        priority: 1,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-      {
-        id: 44,
-        issuer_id: 2,
-        group_id: "regular-group-id",
-        name: "Regular Employees",
-        priority: 3,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-      {
-        id: 1,
-        issuer_id: 2,
-        group_id: "curb-id",
-        name: "Curb Group",
-        priority: 4,
-        autoinstall_file: null,
-        employee_count: 20,
-      },
-    ],
   },
 ];
 

@@ -4,10 +4,9 @@ import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { AutoinstallFile, WithGroups } from "../types";
+import type { AutoinstallFile } from "../types";
 
 export interface GetAutoinstallFilesParams {
-  employee_group_ids?: number[];
   is_default?: boolean;
   limit?: number;
   offset?: number;
@@ -15,31 +14,27 @@ export interface GetAutoinstallFilesParams {
   with_groups?: boolean;
 }
 
-export interface GetAutoinstallFilesResult<
-  T extends GetAutoinstallFilesParams,
-> {
-  autoinstallFiles: (T extends { with_groups: true }
-    ? WithGroups<AutoinstallFile>
-    : AutoinstallFile)[];
+export interface GetAutoinstallFilesResult {
+  autoinstallFiles: AutoinstallFile[];
   autoinstallFilesCount: number | undefined;
   isAutoinstallFilesLoading: boolean;
   isFetching: boolean;
 }
 
-export const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
-  params?: T,
+export const useGetAutoinstallFiles = (
+  params?: GetAutoinstallFilesParams,
   config: Omit<
     UseQueryOptions<
       AxiosResponse<
         ApiPaginatedResponse<
-          GetAutoinstallFilesResult<T>["autoinstallFiles"][number]
+          GetAutoinstallFilesResult["autoinstallFiles"][number]
         >,
         AxiosError<ApiError>
       >
     >,
     "queryKey" | "queryFn"
   > = {},
-): GetAutoinstallFilesResult<T> => {
+): GetAutoinstallFilesResult => {
   const authFetch = useFetch();
 
   const {
@@ -49,7 +44,7 @@ export const useGetAutoinstallFiles = <T extends GetAutoinstallFilesParams>(
   } = useQuery<
     AxiosResponse<
       ApiPaginatedResponse<
-        GetAutoinstallFilesResult<T>["autoinstallFiles"][number]
+        GetAutoinstallFilesResult["autoinstallFiles"][number]
       >
     >,
     AxiosError<ApiError>

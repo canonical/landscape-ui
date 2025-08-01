@@ -6,7 +6,6 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
-import { useGetEmployee } from "@/features/employees";
 import {
   getFeatures,
   getStatusCellIconAndLabel,
@@ -52,6 +51,10 @@ import Profiles from "./components/Profiles";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
+import {
+  useDisassociateEmployeeFromInstance,
+  useGetEmployee,
+} from "@/features/employees";
 
 const EditInstance = lazy(
   async () =>
@@ -79,14 +82,16 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { setSidePanelContent } = useSidePanel();
 
   const { openActivityDetails } = useActivities();
-  const { employee, isLoading: isGettingEmployee } = useGetEmployee(
-    { id: instance.employee_id as number },
+  const { employee, isGettingEmployee } = useGetEmployee(
+    { id: instance.employee_id ?? 0 },
     { enabled: !!instance.employee_id },
   );
   const { restartInstances, isRestartingInstances } = useRestartInstances();
   const { getAccessGroupQuery } = useRoles();
   const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
   const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
+  const { disassociateEmployeeFromInstance, isDisassociating } =
+    useDisassociateEmployeeFromInstance();
 
   const {
     value: isRestartModalOpen,
@@ -122,6 +127,12 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     value: isSanitizeModalOpen,
     setTrue: openSanitizeModal,
     setFalse: closeSanitizeModal,
+  } = useBoolean();
+
+  const {
+    value: disassociateModalOpen,
+    setTrue: openDisassociateModal,
+    setFalse: closeDisassociateModal,
   } = useBoolean();
 
   const { data: getAccessGroupQueryResult, isPending: isGettingAccessGroups } =
@@ -226,12 +237,27 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     setSidePanelContent(
       `Associate employee with ${instance.title}`,
       <Suspense fallback={<LoadingState />}>
-        <AssignEmployeeToInstanceForm
-          instanceTitle={instance.title}
-          employeeId={instance.employee_id}
-        />
+        <AssignEmployeeToInstanceForm instanceTitle={instance.title} />
       </Suspense>,
     );
+  };
+
+  const handleDisassociateEmployee = async () => {
+    try {
+      await disassociateEmployeeFromInstance({
+        computer_id: instance.id,
+        employee_id: instance.employee_id ?? 0,
+      });
+
+      closeDisassociateModal();
+
+      notify.success({
+        title: `You have successfully disassociated ${employee?.name ?? "the employee"}.`,
+        message: `${employee?.name ?? "The employee"} has been successfully disassociated from ${instance.title}.`,
+      });
+    } catch (error) {
+      debug(error);
+    }
   };
 
   const handleFormSubmit = async (action: "reboot" | "shutdown") => {
@@ -264,6 +290,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </div>
 
         <HeaderActions
+          key={instance.employee_id ?? "no-employee"}
           actions={{
             nondestructive: [
               { icon: "edit", label: "Edit", onClick: openEditForm },
@@ -292,7 +319,18 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 collapsed: true,
                 excluded:
                   !isFeatureEnabled("employee-management") ||
-                  !getFeatures(instance).employees,
+                  !getFeatures(instance).employees ||
+                  !!instance.employee_id,
+              },
+              {
+                icon: ICONS.user,
+                label: "Disassociate employee",
+                onClick: openDisassociateModal,
+                collapsed: true,
+                excluded:
+                  !isFeatureEnabled("employee-management") ||
+                  !getFeatures(instance).employees ||
+                  instance.employee_id === null,
               },
             ],
             destructive: [
@@ -546,6 +584,24 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             />
             <p>This will shut down &quot;{instance.title}&quot; instance.</p>
           </Form>
+        </ConfirmationModal>
+      )}
+
+      {disassociateModalOpen && (
+        <ConfirmationModal
+          close={closeDisassociateModal}
+          title={`Disassociate employee from ${instance.title}`}
+          confirmButtonLabel="Disassociate"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={isDisassociating}
+          confirmButtonLoading={isDisassociating}
+          onConfirm={handleDisassociateEmployee}
+        >
+          <p>
+            You are about to disassociate instance {instance.title} from{" "}
+            {employee?.name}. This will revoke their access to the instance’s
+            details and recovery key.
+          </p>
         </ConfirmationModal>
       )}
 

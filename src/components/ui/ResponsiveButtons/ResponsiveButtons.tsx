@@ -2,7 +2,11 @@ import type { FC, ReactElement, ReactNode } from "react";
 import { isValidElement, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classNames from "classnames";
-import type { MenuLink, Position } from "@canonical/react-components";
+import type {
+  ConfirmationButtonProps,
+  MenuLink,
+  Position,
+} from "@canonical/react-components";
 import { ContextualMenu } from "@canonical/react-components";
 import { BREAKPOINT_PX } from "@/constants";
 import classes from "./ResponsiveButtons.module.scss";
@@ -37,7 +41,6 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
 
   const { visibleButtons, collapsedLinks } = useMemo(() => {
     const visible = isLargeScreen ? buttons : buttons.slice(0, alwaysVisible);
-
     const collapsed: (MenuLink & { key: string })[] = [];
 
     buttons.slice(isLargeScreen ? 0 : alwaysVisible).forEach((node, i) => {
@@ -45,7 +48,8 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
 
       if (
         isValidElement(node) &&
-        (node.props as ButtonLikeProps).onClick &&
+        ((node.props as ButtonLikeProps).onClick ||
+          (node.props as ConfirmationButtonProps).confirmationModalProps) &&
         !visible.includes(node)
       ) {
         const el = node as ReactElement<ButtonLikeProps>;
@@ -67,7 +71,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
 
     return { visibleButtons: visible, collapsedLinks: collapsed };
   }, [buttons, alwaysVisible, isLargeScreen]);
-
+  console.log(visibleButtons, collapsedLinks);
   const groupedMarkup =
     grouped && visibleButtons.length > 1 ? (
       <div className="p-segmented-control">

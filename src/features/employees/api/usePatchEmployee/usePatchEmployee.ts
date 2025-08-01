@@ -17,7 +17,7 @@ const usePatchEmployee = () => {
     mutationFn: async ({ id, ...params }) =>
       authFetch.patch(`employees/${id}`, params),
     onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["employee"] }),
+      queryClient.invalidateQueries({ queryKey: ["employees"] }),
   });
 
   return {

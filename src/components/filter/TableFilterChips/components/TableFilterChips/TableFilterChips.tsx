@@ -15,7 +15,6 @@ interface TableFilterChipsProps {
   readonly accessGroupOptions?: SelectOption[];
   readonly autoinstallFileOptions?: SelectOption[];
   readonly availabilityZonesOptions?: SelectOption[];
-  readonly employeeGroupOptions?: SelectOption[];
   readonly filtersToDisplay?: FilterKey[];
   readonly osOptions?: SelectOption[];
   readonly statusOptions?: SelectOption[];
@@ -27,7 +26,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   accessGroupOptions,
   availabilityZonesOptions,
   autoinstallFileOptions,
-  employeeGroupOptions,
   filtersToDisplay = defaultFiltersToDisplay,
   osOptions,
   statusOptions,
@@ -39,7 +37,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     accessGroups,
     autoinstallFiles,
     availabilityZones,
-    employeeGroups,
     fromDate,
     os,
     status,
@@ -154,24 +151,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     });
   }
 
-  if (filtersToDisplay.includes("employeeGroups")) {
-    filters.push({
-      label: "Employee group",
-      multiple: true,
-      items: employeeGroups.map((employeeGroup) =>
-        getItem(employeeGroupOptions, employeeGroup),
-      ),
-      remove: (employeeGroup) => {
-        setPageParams({
-          employeeGroups: employeeGroups.filter((g) => g !== employeeGroup),
-        });
-      },
-      clear: () => {
-        setPageParams({ employeeGroups: [] });
-      },
-    });
-  }
-
   if (filtersToDisplay.includes("tags")) {
     filters.push({
       label: "Tag",
@@ -267,7 +246,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           accessGroups: [],
           autoinstallFiles: [],
           availabilityZones: [],
-          employeeGroups: [],
           fromDate: "",
           os: "",
           status: "",

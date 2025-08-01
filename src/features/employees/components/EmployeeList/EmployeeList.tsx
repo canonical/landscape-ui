@@ -31,7 +31,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
   const tableRowsRef = useRef<HTMLTableRowElement[]>([]);
 
   useOnClickOutside(
-    expandedCell?.column === "computers" || expandedCell?.column === "groups"
+    expandedCell?.column === "computers"
       ? { current: tableRowsRef.current[expandedCell.row] }
       : [],
     (event) => {
@@ -53,7 +53,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
         column: columnId,
         row:
           prevState &&
-          ["computers", "groups"].includes(prevState.column) &&
+          ["computers"].includes(prevState.column) &&
           prevState.row < rowIndex
             ? rowIndex - 1
             : rowIndex,
@@ -93,32 +93,6 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
       {
         accessor: "email",
         Header: "email",
-      },
-      {
-        accessor: "groups",
-        Header: "employee group",
-        Cell: ({ row: { original, index } }: CellProps<Employee>) =>
-          original.groups && original.groups.length > 0 ? (
-            <TruncatedCell
-              content={original.groups.map((group) => (
-                <Link
-                  to={`/settings/employees?tab=employee-groups&search=${group.name}`}
-                  key={group.group_id}
-                  className="truncatedItem"
-                >
-                  {group.name}
-                </Link>
-              ))}
-              isExpanded={
-                expandedCell?.column === "groups" && expandedCell.row === index
-              }
-              onExpand={() => {
-                handleExpandCellClick("groups", index);
-              }}
-            />
-          ) : (
-            <NoData />
-          ),
       },
       {
         accessor: "autoinstall_file",
