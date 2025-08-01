@@ -18,7 +18,7 @@ describe("AssignEmployeeToInstanceForm", () => {
 
   it("renders form correctly", () => {
     const title = screen.getByRole("searchbox", {
-      name: /search for employees/i,
+      name: /search for an employee/i,
     });
     expect(title).toBeInTheDocument();
 

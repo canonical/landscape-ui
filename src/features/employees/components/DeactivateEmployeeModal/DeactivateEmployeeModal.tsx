@@ -156,13 +156,15 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
                 This action cannot be undone. Please confirm you wish to
                 proceed.
               </p>
+              <p>
+                Type{" "}
+                <b className={classes.confirmationText}>sanitize instances</b>{" "}
+                to confirm
+              </p>
               <Input
                 key="sanitizationConfirmationText"
-                label={
-                  <span>
-                    Type <b>sanitize instances</b> to confirm
-                  </span>
-                }
+                label="Confirm instances sanitization"
+                labelClassName="u-off-screen"
                 aria-label="Sanitization confirmation text"
                 placeholder="sanitize instances"
                 autoComplete="off"
@@ -205,13 +207,15 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
                 with their stored data. To manage them again, you would need to
                 re-register them in Landscape.
               </p>
+              <p>
+                Type{" "}
+                <b className={classes.confirmationText}>remove instances</b> to
+                confirm
+              </p>
               <Input
                 key="removeFromLandscapeConfirmationText"
-                label={
-                  <span>
-                    Type <b>remove instances</b> to confirm.
-                  </span>
-                }
+                label="Confirm instances removal from Landscape"
+                labelClassName="u-off-screen"
                 placeholder="remove instances"
                 autoComplete="off"
                 aria-label="Remove from Landscape confirmation text"

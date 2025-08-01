@@ -119,9 +119,17 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
       >
         {({ getInputProps, getItemProps, getMenuProps, highlightedIndex }) => (
           <div className="p-autocomplete">
+            <label
+              className="p-form__label"
+              htmlFor="employee-searchbox"
+              id="employee-searchbox-label"
+            >
+              Employee
+            </label>
             <SearchBox
               {...getInputProps()}
-              placeholder="Search for employees"
+              id="employee-searchbox"
+              placeholder="Search for an employee"
               className="u-no-margin--bottom"
               shouldRefocusAfterReset
               externallyControlled
@@ -186,20 +194,27 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
           <li
             className={classNames(
               "p-autocomplete__result p-list__item p-card u-no-margin--bottom",
-              classes.selectedContainer,
+              classes.selectedEmployee__container,
             )}
             key={employee.id}
           >
-            <div>
-              <div>{employee.name}</div>
-            </div>
+            <span className={classes.selectedEmployee__name}>
+              {employee.name}
+            </span>
             <Button
               type="button"
+              title="Remove"
               appearance="link"
-              className="u-no-margin--bottom"
+              className={classNames(
+                "u-no-margin--bottom",
+                classes.selectedEmployee__button,
+              )}
               onClick={handleDeleteSelectedItem}
             >
-              <Icon name={ICONS.delete} />
+              <Icon
+                name={ICONS.delete}
+                className={classes.selectedEmployee__icon}
+              />
             </Button>
           </li>
         </ul>

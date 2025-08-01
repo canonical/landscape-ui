@@ -60,10 +60,11 @@ const AutoinstallFileEditForm: FC<AutoinstallFileEditFormProps> = ({
         description={`The duplicated ${autoinstallFileWithMetadata.filename} will be assigned to the same user groups in the identity provider as the original file.`}
         initialFile={autoinstallFileWithMetadata}
         notification={EDIT_AUTOINSTALL_FILE_NOTIFICATION}
-        onSubmit={async ({ contents }) => {
+        onSubmit={async ({ contents, is_default }) => {
           await updateAutoinstallFile({
             id: autoinstallFileWithMetadata.id,
             contents,
+            is_default,
           });
         }}
       />

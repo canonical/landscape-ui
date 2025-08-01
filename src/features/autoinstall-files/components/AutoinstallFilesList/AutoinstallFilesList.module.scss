@@ -4,3 +4,8 @@
   display: flex;
   gap: $sph--small;
 }
+
+.header {
+  display: flex;
+  flex-direction: column;
+}

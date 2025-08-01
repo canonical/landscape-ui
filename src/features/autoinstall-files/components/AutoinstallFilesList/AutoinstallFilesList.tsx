@@ -12,6 +12,9 @@ import type { AutoinstallFile } from "../../types";
 import AutoinstallFilesListActions from "../AutoinstallFilesListActions";
 import classes from "./AutoinstallFilesList.module.scss";
 import { getCellProps, getRowProps } from "./helpers";
+import ListTitle, {
+  LIST_TITLE_COLUMN_PROPS,
+} from "@/components/layout/ListTitle";
 
 interface AutoinstallFilesListProps {
   readonly autoinstallFiles: AutoinstallFile[];
@@ -25,25 +28,33 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
   const columns = useMemo<Column<AutoinstallFile>[]>(
     () => [
       {
+        ...LIST_TITLE_COLUMN_PROPS,
         accessor: "filename",
-        Header: "Name",
+        Header: (
+          <div className={classes.header}>
+            Name
+            <span className="u-text--muted">Version</span>
+          </div>
+        ),
         Cell: ({
           row: { original },
         }: CellProps<AutoinstallFile>): ReactNode => (
-          <div className={classes.container}>
-            <Button
-              type="button"
-              appearance="link"
-              className="u-no-margin u-no-padding--top"
-              onClick={() => {
-                openAutoinstallFileDetails(original);
-              }}
-            >
-              {`${original.filename}, v${original.version}`}
-            </Button>
-
-            {original.is_default && <Chip value="Default" />}
-          </div>
+          <ListTitle>
+            <div className={classes.container}>
+              <Button
+                type="button"
+                appearance="link"
+                className="u-no-margin u-no-padding--top u-align-text--left"
+                onClick={() => {
+                  openAutoinstallFileDetails(original);
+                }}
+              >
+                {original.filename}
+              </Button>
+              {original.is_default && <Chip value="Default" />}
+            </div>
+            <span className="u-text--muted">Version {original.version}</span>
+          </ListTitle>
         ),
       },
       {

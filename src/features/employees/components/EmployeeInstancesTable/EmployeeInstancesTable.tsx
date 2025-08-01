@@ -49,11 +49,6 @@ const EmployeeInstancesTable: FC<EmployeeInstancesTableProps> = ({
         },
       },
       {
-        accessor: "recovery_key",
-        Header: "recovery key",
-        Cell: () => "****************",
-      },
-      {
         ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<Instance>) => (
           <EmployeeInstancesTableActions instance={original} />

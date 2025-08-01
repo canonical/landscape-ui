@@ -14,19 +14,18 @@ const useGetEmployee = (
 ) => {
   const authFetch = useFetch();
   const { id, ...params } = queryParams;
-  const { data, isPending, isLoading } = useQuery<
+  const { data, isLoading } = useQuery<
     AxiosResponse<Employee>,
     AxiosError<ApiError>
   >({
-    queryKey: ["employee", queryParams],
+    queryKey: ["employees", "employee", queryParams],
     queryFn: async () => authFetch.get(`employees/${id}`, { params: params }),
     ...config,
   });
 
   return {
     employee: data?.data,
-    isLoading,
-    isPending,
+    isGettingEmployee: isLoading,
   };
 };
 

@@ -7,6 +7,7 @@
 
 .suggestionsContainer {
   max-height: 20rem;
+  padding: 0 !important;
   position: absolute;
   width: 100%;
   z-index: 100;
@@ -21,13 +22,32 @@
   background-color: $colors--theme--background-alt;
 }
 
-.selectedContainer {
+.selectedEmployee__container {
   align-items: center;
-  background-color: $colors--theme--background-alt;
   display: flex;
   justify-content: space-between;
   margin-top: $spv--medium;
-  padding: $spv--small !important;
+  padding: 0 !important;
+}
+
+.selectedEmployee__name {
+  line-height: 1;
+  padding: $spv--large;
+}
+
+.selectedEmployee__button {
+  line-height: 1;
+  margin: 0 $spv--small 0 0 !important;
+  padding: $spv--medium;
+
+  &:focus,
+  &:hover {
+    background-color: $colors--theme--background-alt;
+  }
+}
+
+.selectedEmployee__icon {
+  vertical-align: middle;
 }
 
 .errorMessage {

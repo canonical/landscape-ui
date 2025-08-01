@@ -5,13 +5,7 @@ import {
   type Script,
 } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
-import {
-  Button,
-  Icon,
-  ICONS,
-  SearchBox,
-  Tooltip,
-} from "@canonical/react-components";
+import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
@@ -246,30 +240,31 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
           id="script-selected"
           className={classNames(
             "p-autocomplete__result p-list__item p-card u-no-margin--bottom",
-            classes.selectedContainer,
+            classes.selectedScript__container,
             {
               [classes.marginTop]: !existingScriptId,
-              [classes.extraPadding]: existingScriptId,
             },
           )}
           key={script.id}
         >
-          <span>
+          <span className={classes.selectedScript__name}>
             <b>{script.title}</b>
           </span>
           {!existingScriptId ? (
             <Button
               type="button"
+              title="Remove"
               appearance="base"
               className={classNames(
-                classes.removeButton,
+                classes.selectedScript__button,
                 "u-no-margin--bottom u-no-margin--right",
               )}
               onClick={handleDeleteSelectedItem}
             >
-              <Tooltip message="Remove">
-                <Icon name={ICONS.delete} className={classes.icon} />
-              </Tooltip>
+              <Icon
+                name={ICONS.delete}
+                className={classes.selectedScript__icon}
+              />
             </Button>
           ) : null}
         </div>
