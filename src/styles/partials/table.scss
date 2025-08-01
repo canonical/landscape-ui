@@ -14,10 +14,6 @@
   &:not(:last-child)::after {
     content: ", ";
   }
-
-  &:visited {
-    color: $color-link !important;
-  }
 }
 
 .checkbox-cell {
