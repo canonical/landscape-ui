@@ -13,6 +13,7 @@ const PackageProfileConstraintsEditSidePanel: FC = () => {
   const {
     data: getPackageProfilesQueryResponse,
     isPending: isPendingPackageProfiles,
+    error: packageProfilesError,
   } = getPackageProfilesQuery(
     { names: [packageProfileName as string] },
     { enabled: !!packageProfileName },
@@ -26,11 +27,11 @@ const PackageProfileConstraintsEditSidePanel: FC = () => {
     );
   }
 
-  const packageProfile = getPackageProfilesQueryResponse?.data.result[0];
-
-  if (!packageProfile) {
-    throw new Error("The package profile could not be found.");
+  if (packageProfilesError) {
+    throw packageProfilesError;
   }
+
+  const [packageProfile] = getPackageProfilesQueryResponse.data.result;
 
   return (
     <LocalSidePanelBody

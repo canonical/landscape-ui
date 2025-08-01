@@ -1,11 +1,11 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { RebootProfile } from "../types";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 
 export default function useGetRebootProfiles() {
   const authFetch = useFetch();
@@ -29,10 +29,11 @@ export default function useGetRebootProfiles() {
       ...config,
     });
 
-  const { data, isPending } = getRebootProfilesQuery();
+  const { data, isPending, error } = getRebootProfilesQuery();
 
   return {
     rebootProfiles: data?.data.results || [],
     isPending,
+    error,
   };
 }

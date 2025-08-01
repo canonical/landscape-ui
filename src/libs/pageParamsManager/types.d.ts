@@ -30,8 +30,9 @@ export interface PageParams {
   query: string;
   wsl: string[];
   code: string;
-  packageProfile: string;
   action: string;
+  packageProfile: string;
+  rebootProfile: number | null;
 }
 
 /**

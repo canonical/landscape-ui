@@ -27,11 +27,19 @@ const Profiles: FC<ProfilesProps> = ({ profiles }) => {
       {
         {
           package: (
-            <StaticLink to={`/profiles/package/view/${profile.name}`}>
+            <StaticLink
+              to={`/profiles/package?action=view&packageProfile=${profile.name}`}
+            >
               {profile.title}
             </StaticLink>
           ),
-          reboot: profile.title,
+          reboot: (
+            <StaticLink
+              to={`/profiles/reboot?action=view&rebootProfile=${profile.id}`}
+            >
+              {profile.title}
+            </StaticLink>
+          ),
           removal: profile.title,
           repository: profile.title,
           script: profile.title,

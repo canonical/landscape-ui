@@ -29,6 +29,7 @@ const PackageProfileDetails: FC = () => {
   const {
     data: getPackageProfilesQueryResponse,
     isPending: isPendingPackageProfiles,
+    error: packageProfilesError,
   } = getPackageProfilesQuery(
     { names: [packageProfileName as string] },
     { enabled: !!packageProfileName && !isRemoving },
@@ -52,11 +53,11 @@ const PackageProfileDetails: FC = () => {
     );
   }
 
-  const profile = getPackageProfilesQueryResponse?.data.result[0];
-
-  if (!profile) {
-    throw new Error("The package profile could not be found.");
+  if (packageProfilesError) {
+    throw packageProfilesError;
   }
+
+  const [profile] = getPackageProfilesQueryResponse.data.result;
 
   const handleRemovePackageProfile = async () => {
     try {

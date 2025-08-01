@@ -1,12 +1,19 @@
-import LoadingState from "@/components/layout/LoadingState";
+import LocalSidePanel, {
+  LocalSidePanelBody,
+} from "@/components/layout/LocalSidePanel";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { RebootProfilesContainer } from "@/features/reboot-profiles";
-import useSidePanel from "@/hooks/useSidePanel";
+import {
+  RebootProfileDetails,
+  RebootProfilesContainer,
+  RebootProfilesSidePanel,
+} from "@/features/reboot-profiles";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
 const RebootProfilesForm = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
@@ -15,15 +22,16 @@ const RebootProfilesForm = lazy(async () =>
 );
 
 const RebootProfilesPage: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { action, rebootProfile, setPageParams } = usePageParams();
+
+  useSetDynamicFilterValidation("action", ["add", "duplicate", "edit", "view"]);
 
   const handleAddProfile = () => {
-    setSidePanelContent(
-      "Add reboot profile",
-      <Suspense fallback={<LoadingState />}>
-        <RebootProfilesForm action="add" />,
-      </Suspense>,
-    );
+    setPageParams({ action: "add", rebootProfile: null });
+  };
+
+  const close = () => {
+    setPageParams({ action: "", rebootProfile: null });
   };
 
   return (
@@ -44,6 +52,38 @@ const RebootProfilesPage: FC = () => {
       <PageContent>
         <RebootProfilesContainer />
       </PageContent>
+
+      {action === "add" && (
+        <LocalSidePanel close={close}>
+          <LocalSidePanelBody title="Add reboot profile">
+            <RebootProfilesForm action="add" />
+          </LocalSidePanelBody>
+        </LocalSidePanel>
+      )}
+
+      {action === "duplicate" && (
+        <LocalSidePanel close={close}>
+          <RebootProfilesSidePanel
+            action="duplicate"
+            rebootProfileId={rebootProfile}
+          />
+        </LocalSidePanel>
+      )}
+
+      {action === "edit" && (
+        <LocalSidePanel close={close}>
+          <RebootProfilesSidePanel
+            action="edit"
+            rebootProfileId={rebootProfile}
+          />
+        </LocalSidePanel>
+      )}
+
+      {action === "view" && (
+        <LocalSidePanel close={close} size="medium">
+          <RebootProfileDetails />
+        </LocalSidePanel>
+      )}
     </PageMain>
   );
 };
