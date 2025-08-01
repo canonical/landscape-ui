@@ -1,11 +1,12 @@
 @import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  height: 1.5rem;
+}
 
 .expanded {
-  background-color: $colors--theme--background-alt;
-  filter: drop-shadow(0 4px 8px $colors--theme--background-alt);
-  height: 1.5rem;
-  overflow: visible;
-  padding: 0;
-  position: relative;
-  z-index: 20;
+  background: white;
+  border: 1.5px solid $colors--theme--border-default;
+  padding: calc($spv--small - 1px) $sph--small $spv--small;
 }
