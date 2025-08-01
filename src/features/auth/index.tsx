@@ -27,6 +27,7 @@ export type {
   SupportedIdentityProvider,
 } from "./types";
 export type { GetInvitationSummaryParams } from "./hooks/useUnsigned";
+export * from "./api";
 
 const SupportedProviderListComponent = lazy(
   async () => import("./components/SupportedProviderList"),

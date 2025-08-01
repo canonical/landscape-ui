@@ -4,30 +4,34 @@ import type { ApiError } from "@/types/api/ApiError";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
+import { useSearchParams } from "react-router";
 
-const useGetEmployeeLoginMethods = (
+export const useGetLoginMethods = (
   config: Omit<
     UseQueryOptions<AxiosResponse<LoginMethods, AxiosError<ApiError>>>,
     "queryKey" | "queryFn"
   > = {},
 ) => {
   const authFetch = useFetch();
+  const [params] = useSearchParams();
+
+  const isEmployeeLogin = params.get("code") !== "";
+  const url = isEmployeeLogin
+    ? "employee-access/login/methods"
+    : "login/methods";
 
   const { data, isLoading, isError } = useQuery<
     AxiosResponse<LoginMethods>,
     AxiosError<ApiError>
   >({
-    queryKey: ["employeeLoginMethods"],
-    queryFn: async () =>
-      authFetch.get<LoginMethods>("employee-access/login/methods"),
+    queryKey: ["loginMethods"],
+    queryFn: async () => authFetch.get<LoginMethods>(url),
     ...config,
   });
 
   return {
-    data,
-    isLoading,
-    isError,
+    loginMethods: data?.data ?? null,
+    loginMethodsLoading: isLoading,
+    isLoginMethodsError: isError,
   };
 };
-
-export default useGetEmployeeLoginMethods;
