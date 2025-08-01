@@ -28,8 +28,9 @@ const OidcAuthPage: FC = () => {
     }
 
     if (getAuthStateQueryResult.data.attach_code) {
-      navigate("/attach/success", {
+      navigate("/attach", {
         replace: true,
+        state: { success: true },
       });
       return;
     }

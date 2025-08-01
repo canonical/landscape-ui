@@ -97,9 +97,6 @@ const IdentityProvidersPage = lazy(
   async () => import("@/pages/dashboard/settings/identity-providers"),
 );
 const AttachPage = lazy(async () => import("@/pages/auth/attach/AttachPage"));
-const SuccessfulAttachPage = lazy(
-  () => import("@/pages/auth/attach/SuccessfulAttachPage"),
-);
 
 interface AuthRouteProps {
   readonly children: ReactNode;

@@ -1,11 +1,10 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import AuthTemplate from "@/templates/auth";
 import { Button, Form } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useEffect, type FC } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useVerifyOtpCode } from "../../api";
 import { OTP_LENGTH } from "../../constants";
 import OTPInput from "../OTPInput";
@@ -15,12 +14,14 @@ import { getFormikError } from "@/utils/formikErrors";
 import * as Yup from "yup";
 
 const OTPInputContainer: FC = () => {
-  const { code } = usePageParams();
+  const [searchParams] = useSearchParams();
   const { notify } = useNotify();
   const debug = useDebug();
   const navigate = useNavigate();
 
   const { verify, isVerifying } = useVerifyOtpCode();
+
+  const code = searchParams.get("code") || "";
 
   const formik = useFormik<FormikProps>({
     initialValues: {
@@ -57,7 +58,9 @@ const OTPInputContainer: FC = () => {
           message: "Code is valid",
           title: "Success",
         });
-        navigate(`/login?code=${attachCode}`);
+        navigate("/login", {
+          state: { code: attachCode },
+        });
       } catch (error) {
         debug(error);
       }

@@ -15,7 +15,7 @@ export const useGetLoginMethods = (
   const authFetch = useFetch();
   const [params] = useSearchParams();
 
-  const isEmployeeLogin = params.get("code") !== "";
+  const isEmployeeLogin = params.get("code") !== null;
   const url = isEmployeeLogin
     ? "employee-access/login/methods"
     : "login/methods";

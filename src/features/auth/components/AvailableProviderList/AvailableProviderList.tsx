@@ -1,5 +1,4 @@
 import { useGetEmployeeOidcUrlQuery } from "@/features/attach";
-import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
@@ -24,11 +23,11 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   const [providerId, setProviderId] = useState(0);
   const [searchParams] = useSearchParams();
   const { invitationId } = useInvitation();
-  const { code } = usePageParams();
   const { getOidcUrlQuery, getUbuntuOneUrlQuery } = useUnsigned();
 
   const redirectTo = searchParams.get("redirect-to");
   const external = searchParams.has("external");
+  const code = searchParams.get("code");
 
   const params: GetOidcUrlParams = {};
 

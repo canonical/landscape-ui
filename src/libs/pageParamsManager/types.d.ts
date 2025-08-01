@@ -12,7 +12,6 @@ export interface PageParams {
   autoinstallFiles: string[];
   availabilityZones: string[];
   currentPage: number;
-  code: string;
   days: string;
   disabledColumns: string[];
   fromDate: string;
@@ -31,6 +30,7 @@ export interface PageParams {
   type: string;
   query: string;
   wsl: string[];
+  code: string;
 }
 
 /**
