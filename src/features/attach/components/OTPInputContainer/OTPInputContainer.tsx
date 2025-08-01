@@ -3,7 +3,7 @@ import useNotify from "@/hooks/useNotify";
 import AuthTemplate from "@/templates/auth";
 import { Button, Form } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { useEffect, type FC } from "react";
+import { type FC, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useVerifyOtpCode } from "../../api";
 import { OTP_LENGTH } from "../../constants";
@@ -30,7 +30,7 @@ const OTPInputContainer: FC = () => {
     validationSchema: Yup.object().shape({
       code: Yup.array().test(
         "is-complete",
-        `Code must be ${OTP_LENGTH} digits long`,
+        `Code must be ${OTP_LENGTH} characters long`,
         (value) => {
           return value != null && value.every((digit) => digit && digit !== "");
         },

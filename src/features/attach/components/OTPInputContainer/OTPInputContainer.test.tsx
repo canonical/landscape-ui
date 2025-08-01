@@ -26,7 +26,7 @@ describe("OTPInputContainer", () => {
     const submitButton = screen.getByRole("button", { name: /next/i });
     await user.click(submitButton);
 
-    const errorMessage = screen.getByText("Code must be 6 digits long");
+    const errorMessage = screen.getByText("Code must be 6 characters long");
     expect(errorMessage).toBeInTheDocument();
   });
 });
