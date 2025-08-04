@@ -218,7 +218,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
       </Row>
 
       <Row className="u-no-padding">
-        <InfoItem label="Tags" value={getTags(profile)} />
+        <InfoItem label="Tags" type="truncated" value={getTags(profile)} />
       </Row>
     </>
   );

@@ -134,6 +134,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
       <Row className="u-no-padding">
         <InfoItem
           label="Tags"
+          type="truncated"
           value={
             profile.all_computers
               ? "All instances"
