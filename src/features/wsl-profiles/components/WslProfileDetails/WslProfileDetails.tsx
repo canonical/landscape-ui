@@ -1,12 +1,11 @@
 import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { pluralize } from "@/utils/_helpers";
+import { filter, pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
-import type { ComponentProps, FC } from "react";
+import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { WslProfile } from "../../types";
@@ -40,58 +39,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
     );
   };
 
-  const wslProfileMenuItems: ComponentProps<typeof Menu>["items"] = [
-    {
-      label: "RootFS image name",
-      size: 12,
-      value: profile.image_name,
-    },
-  ];
-
-  if (profile.image_source) {
-    wslProfileMenuItems.push({
-      label: "RootFS image source",
-      size: 12,
-      value: profile.image_source,
-      type: "truncated",
-    });
-  }
-
-  wslProfileMenuItems.push({
-    label: "Cloud-init",
-    size: 12,
-    value: profile.cloud_init_contents || <NoData />,
-  });
-
-  const associationMenu: ComponentProps<typeof Menu>["items"] = [];
-
-  if (!profile.all_computers) {
-    associationMenu.push({
-      label: "Tags",
-      size: 12,
-      value: profile.tags.join(", ") || <NoData />,
-    });
-  }
-
-  if (profile.all_computers || profile.tags.length) {
-    associationMenu.push(
-      {
-        label: "Associated",
-        size: 12,
-        value: `${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`,
-      },
-      {
-        label: "Not compliant",
-        size: 6,
-        value: `${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`,
-      },
-      {
-        label: "Pending",
-        size: 6,
-        value: `${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`,
-      },
-    );
-  }
+  const canBeAssociated = profile.all_computers || !!profile.tags.length;
 
   return (
     <>
@@ -153,7 +101,30 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
               />
             ),
           },
-          { content: <Menu items={wslProfileMenuItems} /> },
+          {
+            content: (
+              <Menu
+                items={filter(
+                  {
+                    label: "RootFS image name",
+                    size: 12,
+                    value: profile.image_name,
+                  },
+                  profile.image_source !== null && {
+                    label: "RootFS image source",
+                    size: 12,
+                    value: profile.image_source,
+                    type: "truncated",
+                  },
+                  {
+                    label: "Cloud-init",
+                    size: 12,
+                    value: profile.cloud_init_contents || null,
+                  },
+                )}
+              />
+            ),
+          },
           {
             title: "Association",
             content: (
@@ -162,7 +133,30 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
                   <p>This profile has been associated with all instances.</p>
                 )}
 
-                <Menu items={associationMenu} />
+                <Menu
+                  items={filter(
+                    !profile.all_computers && {
+                      label: "Tags",
+                      size: 12,
+                      value: profile.tags.join(", ") || null,
+                    },
+                    canBeAssociated && {
+                      label: "Associated",
+                      size: 12,
+                      value: `${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`,
+                    },
+                    canBeAssociated && {
+                      label: "Not compliant",
+                      size: 6,
+                      value: `${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`,
+                    },
+                    canBeAssociated && {
+                      label: "Pending",
+                      size: 6,
+                      value: `${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`,
+                    },
+                  )}
+                />
               </>
             ),
           },

@@ -2,16 +2,17 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
+import { filter } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import moment from "moment";
-import type { ComponentProps, FC } from "react";
-import { lazy, Suspense, useState } from "react";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 import { useRemoveRebootProfileQuery } from "../../api";
 import type { RebootProfile } from "../../types";
 import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
@@ -28,7 +29,11 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
   accessGroupOptions,
   profile,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const {
+    value: modalOpen,
+    setFalse: handleCloseModal,
+    setTrue: handleOpenModal,
+  } = useBoolean();
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -70,33 +75,6 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
       </Suspense>,
     );
   };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const associationMenuItems: ComponentProps<typeof Menu>["items"] = [];
-
-  if (!profile.all_computers) {
-    associationMenuItems.push({
-      label: "Tags",
-      size: 12,
-      value: profile.tags.join(", ") || <NoData />,
-      type: "truncated",
-    });
-  }
-
-  if (profile.all_computers || profile.tags.length) {
-    associationMenuItems.push({
-      label: "Associated instances",
-      size: 12,
-      value: <RebootProfileAssociatedInstancesLink rebootProfile={profile} />,
-    });
-  }
 
   return (
     <>
@@ -181,7 +159,25 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
                   <p>This profile has been associated with all instances.</p>
                 )}
 
-                <Menu items={associationMenuItems} />
+                <Menu
+                  items={filter(
+                    !profile.all_computers && {
+                      label: "Tags",
+                      size: 12,
+                      value: profile.tags.join(", ") || null,
+                      type: "truncated",
+                    },
+                    (profile.all_computers || !!profile.tags.length) && {
+                      label: "Associated instances",
+                      size: 12,
+                      value: (
+                        <RebootProfileAssociatedInstancesLink
+                          rebootProfile={profile}
+                        />
+                      ),
+                    },
+                  )}
+                />
               </>
             ),
           },

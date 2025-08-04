@@ -1,5 +1,4 @@
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { UbuntuProInfo } from "@/types/Instance";
 import moment from "moment";
@@ -14,24 +13,22 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => {
   const infoItems = [
     {
       label: "Account",
-      value: ubuntuProData.account?.name || <NoData />,
+      value: ubuntuProData.account?.name || null,
     },
     {
       label: "Subscription",
-      value: ubuntuProData.contract?.name || <NoData />,
+      value: ubuntuProData.contract?.name || null,
     },
     {
       label: "Valid Until",
       value:
-        ubuntuProData.expires && moment(ubuntuProData.expires).isValid() ? (
-          moment(ubuntuProData.expires).format(DISPLAY_DATE_TIME_FORMAT)
-        ) : (
-          <NoData />
-        ),
+        ubuntuProData.expires && moment(ubuntuProData.expires).isValid()
+          ? moment(ubuntuProData.expires).format(DISPLAY_DATE_TIME_FORMAT)
+          : null,
     },
     {
       label: "Technical Support Level",
-      value: ubuntuProData.contract?.tech_support_level ?? <NoData />,
+      value: ubuntuProData.contract?.tech_support_level,
     },
   ];
   return (

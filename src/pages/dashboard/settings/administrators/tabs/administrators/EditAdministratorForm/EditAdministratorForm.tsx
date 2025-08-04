@@ -1,7 +1,6 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -137,12 +136,12 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
           {
             label: "Timezone",
             size: 12,
-            value: <NoData />,
+            value: null,
           },
           {
             label: "Identity URL",
             size: 12,
-            value: <NoData />,
+            value: null,
           },
         ]}
       />

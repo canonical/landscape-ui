@@ -1,5 +1,4 @@
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import type { KernelOverviewInfo } from "../../types";
@@ -20,7 +19,7 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
   const infoItems = [
     {
       label: "current kernel version",
-      value: kernelOverview.currentVersion || <NoData />,
+      value: kernelOverview.currentVersion || null,
     },
     {
       label: "kernel status",
@@ -29,7 +28,7 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
           <span>
             {!livepatchEnabled
               ? "Not covered by Livepatch"
-              : kernelOverview.status || <NoData />}
+              : kernelOverview.status || null}
           </span>
           <Tooltip
             message={getStatusTooltipMessage(
@@ -61,9 +60,7 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
             kernelOverview.expirationDate,
           )}
         </>
-      ) : (
-        <NoData />
-      ),
+      ) : null,
     },
   ];
 

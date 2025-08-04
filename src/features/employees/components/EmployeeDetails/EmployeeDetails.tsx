@@ -1,5 +1,4 @@
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import type { FC } from "react";
 import { getStatusText } from "../../helpers";
 import type { Employee } from "../../types";
@@ -22,11 +21,9 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
           {
             label: "Autoinstall file",
             size: 12,
-            value: employee.autoinstall_file ? (
-              `${employee.autoinstall_file.filename}, v${employee.autoinstall_file.version}`
-            ) : (
-              <NoData />
-            ),
+            value: employee.autoinstall_file
+              ? `${employee.autoinstall_file.filename}, v${employee.autoinstall_file.version}`
+              : null,
           },
         ]}
       />

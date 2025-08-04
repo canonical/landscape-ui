@@ -5,9 +5,10 @@ import { useGetInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import { filter } from "@/utils/_helpers";
 import { ConfirmationButton, Icon } from "@canonical/react-components";
 import moment from "moment";
-import type { ComponentProps, FC } from "react";
+import { type FC } from "react";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities } from "../../hooks";
 import type { Activity } from "../../types";
@@ -132,59 +133,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
   const activity = getSingleActivityQueryResult.data;
 
-  const menuItems: ComponentProps<typeof Menu>["items"] = [
-    {
-      label: "Description",
-      size: 12,
-      value: activity.summary,
-    },
-  ];
-
-  if (instance) {
-    menuItems.push({
-      label: "Instance",
-      size: 12,
-      value: instance.title,
-    });
-  }
-
-  menuItems.push(
-    {
-      label: "Status",
-      size: 6,
-      value: (
-        <>
-          <Icon
-            name={ACTIVITY_STATUSES[activity.activity_status].icon}
-            className={classes.statusIcon}
-          />
-          {ACTIVITY_STATUSES[activity.activity_status].label}
-        </>
-      ),
-    },
-    {
-      label: "Created at",
-      size: 6,
-      value: moment(activity.creation_time).format(DISPLAY_DATE_TIME_FORMAT),
-    },
-  );
-
-  if (activity.delivery_time) {
-    menuItems.push({
-      label: "Delivered at",
-      size: 6,
-      value: moment(activity.delivery_time).format(DISPLAY_DATE_TIME_FORMAT),
-    });
-  }
-
-  if (activity.completion_time) {
-    menuItems.push({
-      label: "Completed at",
-      size: 6,
-      value: moment(activity.completion_time).format(DISPLAY_DATE_TIME_FORMAT),
-    });
-  }
-
   return (
     <>
       <div key="buttons" className="p-segmented-control">
@@ -284,7 +232,54 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           )}
         </div>
       </div>
-      <Menu items={menuItems} />
+      <Menu
+        items={filter(
+          {
+            label: "Description",
+            size: 12,
+            value: activity.summary,
+          },
+          instance && {
+            label: "Instance",
+            size: 12,
+            value: instance.title,
+          },
+          {
+            label: "Status",
+            size: 6,
+            value: (
+              <>
+                <Icon
+                  name={ACTIVITY_STATUSES[activity.activity_status].icon}
+                  className={classes.statusIcon}
+                />
+                {ACTIVITY_STATUSES[activity.activity_status].label}
+              </>
+            ),
+          },
+          {
+            label: "Created at",
+            size: 6,
+            value: moment(activity.creation_time).format(
+              DISPLAY_DATE_TIME_FORMAT,
+            ),
+          },
+          typeof activity.delivery_time === "string" && {
+            label: "Delivered at",
+            size: 6,
+            value: moment(activity.delivery_time).format(
+              DISPLAY_DATE_TIME_FORMAT,
+            ),
+          },
+          activity.completion_time !== null && {
+            label: "Completed at",
+            size: 6,
+            value: moment(activity.completion_time).format(
+              DISPLAY_DATE_TIME_FORMAT,
+            ),
+          },
+        )}
+      />
     </>
   );
 };

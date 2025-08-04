@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
+import NoData from "../../NoData";
 import classes from "./RegularInfoItem.module.scss";
 
 export interface RegularInfoItemProps {
@@ -21,7 +22,7 @@ const RegularInfoItem: FC<RegularInfoItemProps> = ({
         {label}
       </div>
 
-      <div>{value}</div>
+      <div>{value ?? <NoData />}</div>
     </div>
   );
 };

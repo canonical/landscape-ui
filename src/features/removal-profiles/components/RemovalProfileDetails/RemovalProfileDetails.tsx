@@ -2,7 +2,6 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -137,7 +136,7 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
                       {
                         label: "Tags",
                         size: 12,
-                        value: profile.tags.join(", ") || <NoData />,
+                        value: profile.tags.join(", ") || null,
                         type: "truncated",
                       },
                     ]}

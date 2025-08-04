@@ -1,5 +1,4 @@
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
 import { Link } from "react-router";
@@ -57,37 +56,35 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
             label: "Attachments",
             size: 12,
             value:
-              script.attachments.length > 0 ? (
-                script.attachments.map((att) => (
-                  <AttachmentFile
-                    key={att.id}
-                    attachmentId={att.id}
-                    filename={att.filename}
-                    scriptId={script.id}
-                  />
-                ))
-              ) : (
-                <NoData />
-              ),
+              script.attachments.length > 0
+                ? script.attachments.map((att) => (
+                    <AttachmentFile
+                      key={att.id}
+                      attachmentId={att.id}
+                      filename={att.filename}
+                      scriptId={script.id}
+                    />
+                  ))
+                : null,
           },
           {
             label: "Associated profiles",
             size: 12,
             value:
-              script.script_profiles.length > 0 ? (
-                script.script_profiles.map((profile, index) => (
-                  <Link
-                    to="/scripts?tab=profiles"
-                    state={{ scriptProfileId: profile.id }}
-                    key={profile.id}
-                  >
-                    {profile.title}
-                    {index < script.script_profiles.length - 1 ? ", " : ""}{" "}
-                  </Link>
-                ))
-              ) : (
-                <NoData />
-              ),
+              script.script_profiles.length > 0
+                ? script.script_profiles.map((profile, index) => (
+                    <Link
+                      to="/scripts?tab=profiles"
+                      state={{ scriptProfileId: profile.id }}
+                      key={profile.id}
+                    >
+                      {profile.title}
+                      {index < script.script_profiles.length - 1
+                        ? ", "
+                        : ""}{" "}
+                    </Link>
+                  ))
+                : null,
           },
         ]}
       />

@@ -1,13 +1,12 @@
 import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useRoles from "@/hooks/useRoles";
-import { pluralize } from "@/utils/_helpers";
+import { filter, pluralize } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import moment from "moment";
-import type { ComponentProps, FC } from "react";
+import type { FC } from "react";
 import {
   SECURITY_PROFILE_BENCHMARK_LABELS,
   SECURITY_PROFILE_MODE_LABELS,
@@ -49,40 +48,6 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
 
   if (!accessGroup) {
     return;
-  }
-
-  const scheduleMenuItems: ComponentProps<typeof Menu>["items"] = [
-    { label: "Schedule", size: 12, value: getSchedule(profile) },
-    {
-      label: "Last run",
-      size: 6,
-      value: profile.last_run_results.timestamp ? (
-        `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-      ) : (
-        <NoData />
-      ),
-    },
-    {
-      label: "Next run",
-      size: 6,
-      value: profile.next_run_time ? (
-        `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-      ) : (
-        <NoData />
-      ),
-    },
-  ];
-
-  if (profile.mode == "audit-fix-restart") {
-    scheduleMenuItems.push({
-      label: "Restart schedule",
-      size: 12,
-      value: `${
-        profile.restart_deliver_delay
-          ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
-          : "As soon as possible"
-      }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`,
-    });
   }
 
   return (
@@ -205,7 +170,36 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
           },
           {
             title: "Schedule",
-            content: <Menu items={scheduleMenuItems} />,
+            content: (
+              <Menu
+                items={filter(
+                  { label: "Schedule", size: 12, value: getSchedule(profile) },
+                  {
+                    label: "Last run",
+                    size: 6,
+                    value: profile.last_run_results.timestamp
+                      ? `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                      : null,
+                  },
+                  {
+                    label: "Next run",
+                    size: 6,
+                    value: profile.next_run_time
+                      ? `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                      : null,
+                  },
+                  profile.mode === "audit-fix-restart" && {
+                    label: "Restart schedule",
+                    size: 12,
+                    value: `${
+                      profile.restart_deliver_delay
+                        ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
+                        : "As soon as possible"
+                    }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`,
+                  },
+                )}
+              />
+            ),
           },
           {
             title: "Association",

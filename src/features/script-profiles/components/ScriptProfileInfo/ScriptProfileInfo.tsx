@@ -1,12 +1,12 @@
 import Blocks from "@/components/layout/Blocks";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
 import useRoles from "@/hooks/useRoles";
+import { filter } from "@/utils/_helpers";
 import moment from "moment";
-import type { ComponentProps, FC } from "react";
+import type { FC } from "react";
 import { Link } from "react-router";
 import { getStatusText, getTriggerLongText } from "../../helpers";
 import type { ScriptProfile } from "../../types";
@@ -35,38 +35,6 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
 
   const activity = profile.activities.last_activity;
 
-  const triggerMenuItems: ComponentProps<typeof Menu>["items"] = [
-    {
-      label: "Trigger",
-      size: 12,
-      value: getTriggerLongText(profile) || <NoData />,
-    },
-  ];
-
-  if (profile.trigger.trigger_type !== "event") {
-    triggerMenuItems.push({
-      label: "Next run",
-      size: 6,
-      value: profile.trigger.next_run ? (
-        `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)}`
-      ) : (
-        <NoData />
-      ),
-    });
-  }
-
-  triggerMenuItems.push({
-    label: "Last run",
-    size: 6,
-    value: activity ? (
-      <Link to={`/activities?query=parent-id%3A${activity.id}`}>
-        {moment(activity.creation_time).utc().format(DISPLAY_DATE_TIME_FORMAT)}
-      </Link>
-    ) : (
-      <NoData />
-    ),
-  });
-
   return (
     <Blocks
       items={[
@@ -94,9 +62,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
                     >
                       {script.title}
                     </Link>
-                  ) : (
-                    <NoData />
-                  ),
+                  ) : null,
                 },
                 {
                   label: "Access group",
@@ -117,7 +83,37 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
             />
           ),
         },
-        { content: <Menu items={triggerMenuItems} /> },
+        {
+          content: (
+            <Menu
+              items={filter(
+                {
+                  label: "Trigger",
+                  size: 12,
+                  value: getTriggerLongText(profile) || null,
+                },
+                profile.trigger.trigger_type !== "event" && {
+                  label: "Next run",
+                  size: 6,
+                  value: profile.trigger.next_run
+                    ? `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)}`
+                    : null,
+                },
+                {
+                  label: "Last run",
+                  size: 6,
+                  value: activity ? (
+                    <Link to={`/activities?query=parent-id%3A${activity.id}`}>
+                      {moment(activity.creation_time)
+                        .utc()
+                        .format(DISPLAY_DATE_TIME_FORMAT)}
+                    </Link>
+                  ) : null,
+                },
+              )}
+            />
+          ),
+        },
         {
           title: "Association",
           content: (
@@ -137,7 +133,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
                   size: 12,
                   value: profile.all_computers
                     ? "All instances"
-                    : profile.tags.join(", ") || <NoData />,
+                    : profile.tags.join(", ") || null,
                   type: "truncated",
                 },
               ]}

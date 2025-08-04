@@ -54,28 +54,28 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
           {
             label: "Primary group",
             size: 12,
-            value: primaryGroup || <NoData />,
+            value: primaryGroup,
           },
           {
             label: "Additional groups",
             size: 12,
-            value: userGroups || <NoData />,
+            value: userGroups,
             type: "truncated",
           },
           {
             label: "Location",
             size: 12,
-            value: user?.location || <NoData />,
+            value: user?.location,
           },
           {
             label: "Home phone",
             size: 12,
-            value: user?.home_phone || <NoData />,
+            value: user?.home_phone,
           },
           {
             label: "Work phone",
             size: 12,
-            value: user?.work_phone || <NoData />,
+            value: user?.work_phone,
           },
         ]}
       />

@@ -1,7 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
@@ -131,7 +130,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           {
             label: "Tags",
             size: 9,
-            value: profile.tags.join(", ") || <NoData />,
+            value: profile.tags.join(", ") || null,
             type: "truncated",
           },
           {

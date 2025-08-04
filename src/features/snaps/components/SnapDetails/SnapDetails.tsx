@@ -1,5 +1,4 @@
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import type { FC } from "react";
@@ -39,16 +38,16 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
           {
             label: "Held until",
             size: 6,
-            value: moment(installedSnap.held_until).isValid() ? (
-              moment(installedSnap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
-            ) : (
-              <NoData />
-            ),
+            value: moment(installedSnap.held_until).isValid()
+              ? moment(installedSnap.held_until).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )
+              : null,
           },
           {
             label: "Summary",
             size: 12,
-            value: installedSnap.snap.summary ?? <NoData />,
+            value: installedSnap.snap.summary,
           },
           {
             label: "Publisher",

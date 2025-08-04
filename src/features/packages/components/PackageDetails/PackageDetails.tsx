@@ -1,8 +1,9 @@
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
 import useSidePanel from "@/hooks/useSidePanel";
+import { filter } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
-import type { ComponentProps, FC } from "react";
+import type { FC } from "react";
 import { Fragment, lazy, Suspense } from "react";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
@@ -41,35 +42,6 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
     downgrade: singlePackage.status !== "held",
   };
 
-  const menuItems: ComponentProps<typeof Menu>["items"] = [
-    {
-      label: "Name",
-      size: 12,
-      value: singlePackage.name,
-    },
-    {
-      label: "Summary",
-      size: 12,
-      value: singlePackage.summary,
-    },
-    {
-      label: "Current version",
-      size: 6,
-      value: singlePackage.current_version,
-    },
-  ];
-
-  if (
-    singlePackage.available_version &&
-    singlePackage.available_version !== singlePackage.current_version
-  ) {
-    menuItems.push({
-      label: "Upgradable to",
-      size: 6,
-      value: highlightVersionsDifference(singlePackage),
-    });
-  }
-
   return (
     <>
       <div key="buttons" className="p-segmented-control">
@@ -98,7 +70,32 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
           ))}
       </div>
 
-      <Menu items={menuItems} />
+      <Menu
+        items={filter(
+          {
+            label: "Name",
+            size: 12,
+            value: singlePackage.name,
+          },
+          {
+            label: "Summary",
+            size: 12,
+            value: singlePackage.summary,
+          },
+          {
+            label: "Current version",
+            size: 6,
+            value: singlePackage.current_version,
+          },
+          singlePackage.available_version !== null &&
+            singlePackage.available_version !==
+              singlePackage.current_version && {
+              label: "Upgradable to",
+              size: 6,
+              value: highlightVersionsDifference(singlePackage),
+            },
+        )}
+      />
     </>
   );
 };

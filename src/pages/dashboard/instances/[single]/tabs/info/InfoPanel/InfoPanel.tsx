@@ -4,7 +4,6 @@ import Chip from "@/components/layout/Chip";
 import HeaderActions from "@/components/layout/HeaderActions";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import {
@@ -34,6 +33,7 @@ import type {
   WindowsInstance,
   WslInstance,
 } from "@/types/Instance";
+import { filter } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
@@ -46,7 +46,7 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import type { ComponentProps, FC } from "react";
+import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useNavigate } from "react-router";
 import { useBoolean } from "usehooks-ts";
@@ -272,108 +272,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     ? getAccessGroupQueryResult.data
     : [];
 
-  const statusMenuItems: ComponentProps<typeof Menu>["items"] = [
-    {
-      label: "Status",
-      size: 3,
-      value: (
-        <div className={classes.status}>
-          <Icon name={getStatusCellIconAndLabel(instance).icon ?? ""} />
-          <span>{getStatusCellIconAndLabel(instance).label}</span>
-        </div>
-      ),
-    },
-    {
-      label: "Last ping time",
-      size: 3,
-      value: moment(instance.last_ping_time).isValid() ? (
-        moment(instance.last_ping_time).format(DISPLAY_DATE_TIME_FORMAT)
-      ) : (
-        <NoData />
-      ),
-    },
-    {
-      label: "Access group",
-      size: 3,
-      value:
-        accessGroups.find(
-          (accessGroup) => accessGroup.name === instance.access_group,
-        )?.title || instance.access_group,
-    },
-    {
-      label: "Profiles",
-      size: 3,
-      value: instance.profiles?.length ? (
-        <Profiles profiles={instance.profiles} />
-      ) : (
-        <NoData />
-      ),
-      type: "truncated",
-    },
-  ];
-
-  if (
-    getFeatures(instance).employees &&
-    isFeatureEnabled("employee-management")
-  ) {
-    statusMenuItems.push({
-      label: "Associated employee",
-      size: 3,
-      value: employee ? employee.name : <NoData />,
-    });
-  }
-
-  const registrationDetailsMenuItems: ComponentProps<typeof Menu>["items"] = [
-    { label: "Hostname", size: 3, value: instance.hostname ?? <NoData /> },
-    { label: "ID", size: 3, value: instance.id },
-  ];
-
-  if (getFeatures(instance).hardware) {
-    registrationDetailsMenuItems.push(
-      {
-        label: "Serial number",
-        size: 3,
-        value: instance.grouped_hardware?.system.serial ?? <NoData />,
-      },
-      {
-        label: "Product identifier",
-        size: 3,
-        value: instance.grouped_hardware?.system.model ?? <NoData />,
-      },
-    );
-  }
-
-  registrationDetailsMenuItems.push({
-    label: "OS",
-    size: 3,
-    value: instance.distribution_info ? (
-      instance.distribution_info.description
-    ) : (
-      <NoData />
-    ),
-  });
-
-  if (getFeatures(instance).hardware) {
-    registrationDetailsMenuItems.push({
-      label: "IP addresses",
-      size: 3,
-      value: Array.isArray(instance.grouped_hardware?.network) ? (
-        instance.grouped_hardware.network
-          .map((network) => network.ip)
-          .join(", ")
-      ) : (
-        <NoData />
-      ),
-      type: "truncated",
-    });
-  }
-
-  registrationDetailsMenuItems.push({
-    label: "Registered",
-    size: 3,
-    value: moment(instance.registered_at).format(DISPLAY_DATE_TIME_FORMAT),
-  });
-
   return (
     <>
       <div className={classes.titleRow}>
@@ -471,11 +369,103 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         items={[
           {
             title: "Status",
-            content: <Menu items={statusMenuItems} />,
+            content: (
+              <Menu
+                items={filter(
+                  {
+                    label: "Status",
+                    size: 3,
+                    value: (
+                      <div className={classes.status}>
+                        <Icon
+                          name={getStatusCellIconAndLabel(instance).icon ?? ""}
+                        />
+                        <span>{getStatusCellIconAndLabel(instance).label}</span>
+                      </div>
+                    ),
+                  },
+                  {
+                    label: "Last ping time",
+                    size: 3,
+                    value: moment(instance.last_ping_time).isValid()
+                      ? moment(instance.last_ping_time).format(
+                          DISPLAY_DATE_TIME_FORMAT,
+                        )
+                      : null,
+                  },
+                  {
+                    label: "Access group",
+                    size: 3,
+                    value:
+                      accessGroups.find(
+                        (accessGroup) =>
+                          accessGroup.name === instance.access_group,
+                      )?.title || instance.access_group,
+                  },
+                  {
+                    label: "Profiles",
+                    size: 3,
+                    value: instance.profiles?.length ? (
+                      <Profiles profiles={instance.profiles} />
+                    ) : null,
+                    type: "truncated",
+                  },
+                  getFeatures(instance).employees &&
+                    isFeatureEnabled("employee-management") && {
+                      label: "Associated employee",
+                      size: 3,
+                      value: employee?.name,
+                    },
+                )}
+              />
+            ),
           },
           {
             title: "Registration details",
-            content: <Menu items={registrationDetailsMenuItems} />,
+            content: (
+              <Menu
+                items={filter(
+                  {
+                    label: "Hostname",
+                    size: 3,
+                    value: instance.hostname,
+                  },
+                  { label: "ID", size: 3, value: instance.id },
+                  getFeatures(instance).hardware && {
+                    label: "Serial number",
+                    size: 3,
+                    value: instance.grouped_hardware?.system.serial,
+                  },
+                  getFeatures(instance).hardware && {
+                    label: "Product identifier",
+                    size: 3,
+                    value: instance.grouped_hardware?.system.model,
+                  },
+                  {
+                    label: "OS",
+                    size: 3,
+                    value: instance.distribution_info?.description,
+                  },
+                  getFeatures(instance).hardware && {
+                    label: "IP addresses",
+                    size: 3,
+                    value: Array.isArray(instance.grouped_hardware?.network)
+                      ? instance.grouped_hardware.network
+                          .map((network) => network.ip)
+                          .join(", ")
+                      : null,
+                    type: "truncated",
+                  },
+                  {
+                    label: "Registered",
+                    size: 3,
+                    value: moment(instance.registered_at).format(
+                      DISPLAY_DATE_TIME_FORMAT,
+                    ),
+                  },
+                )}
+              />
+            ),
           },
           {
             title: "Other",
@@ -485,12 +475,12 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                   {
                     label: "Annotations",
                     size: 3,
-                    value: <NoData />,
+                    value: null,
                   },
                   {
                     label: "Comment",
                     size: 3,
-                    value: instance.comment || <NoData />,
+                    value: instance.comment || null,
                   },
                 ]}
               />

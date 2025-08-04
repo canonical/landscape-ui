@@ -1,11 +1,11 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { ResponsiveButtons } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import type { KernelManagementInfo } from "../../types";
 import classes from "./KernelHeader.module.scss";
+import { ResponsiveButtons } from "@/components/ui";
 
 const DowngradeKernelForm = lazy(async () => import("../DowngradeKernelForm"));
 const UpgradeKernelForm = lazy(async () => import("../UpgradeKernelForm"));
