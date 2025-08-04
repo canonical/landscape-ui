@@ -9,9 +9,6 @@ import type { WslProfile } from "../../types";
 import WslProfileRemoveModal from "../WslProfileRemoveModal";
 
 const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
-const WslProfileInstallForm = lazy(
-  async () => import("../WslProfileInstallForm"),
-);
 
 interface WslProfilesListActionsProps {
   readonly profile: WslProfile;
@@ -37,27 +34,12 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
     );
   };
 
-  const handleWslProfileDuplicate = () => {
-    setSidePanelContent(
-      `Duplicate "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <WslProfileInstallForm action="duplicate" profile={profile} />
-      </Suspense>,
-    );
-  };
-
   const actions: Action[] = [
     {
       icon: "edit",
       label: "Edit",
       "aria-label": `Edit ${profile.title} profile`,
       onClick: handleWslProfileEdit,
-    },
-    {
-      icon: "canvas",
-      label: "Duplicate",
-      "aria-label": `Duplicate ${profile.title} profile`,
-      onClick: handleWslProfileDuplicate,
     },
   ];
 

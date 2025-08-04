@@ -2,6 +2,7 @@ import AssociationBlock from "@/components/form/AssociationBlock";
 import CodeEditor from "@/components/form/CodeEditor";
 import FileInput from "@/components/form/FileInput";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import { useGetWslInstanceTypes } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -12,14 +13,8 @@ import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { type FC } from "react";
 import { useAddWslProfile } from "../../api";
-import type { WslProfile } from "../../types";
 import { CLOUD_INIT_OPTIONS, FILE_INPUT_HELPER_TEXT } from "../constants";
-import { CTA_INFO } from "./constants";
-import {
-  getCloudInitFile,
-  getInitialValues,
-  getValidationSchema,
-} from "./helpers";
+import { getCloudInitFile, getValidationSchema } from "./helpers";
 import classes from "./WslProfileInstallForm.module.scss";
 
 interface FormProps {
@@ -35,11 +30,7 @@ interface FormProps {
   tags: string[];
 }
 
-type WslProfileInstallFormProps =
-  | { action: "add" }
-  | { action: "duplicate"; profile: WslProfile };
-
-const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
+const WslProfileInstallForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
@@ -92,11 +83,8 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
 
       closeSidePanel();
 
-      const profileTitle =
-        props.action === "add" ? values.title : props.profile.title;
-
       notify.success({
-        title: `Profile "${profileTitle}" ${CTA_INFO[props.action].notificationAction} successfully`,
+        title: `Profile "${values.title}" added successfully`,
         message: `It has been associated with ${affectedInstancesCount} instances`,
       });
     } catch (error) {
@@ -105,7 +93,18 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
   };
 
   const formik = useFormik({
-    initialValues: getInitialValues(props),
+    initialValues: {
+      title: "",
+      access_group: DEFAULT_ACCESS_GROUP_NAME,
+      description: "",
+      instanceType: "",
+      customImageName: "",
+      rootfsImage: "",
+      cloudInitType: "",
+      cloudInit: null,
+      all_computers: false,
+      tags: [],
+    },
     onSubmit: handleSubmit,
     validationSchema: getValidationSchema(),
   });
@@ -223,8 +222,8 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
-        submitButtonText={CTA_INFO[props.action].buttonLabel}
-        submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
+        submitButtonText="Add WSL profile"
+        submitButtonAriaLabel="Add a new WSL profile"
         submitButtonDisabled={formik.isSubmitting}
       />
     </Form>
