@@ -150,7 +150,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
           formik.values.cloudInitType !== "") && (
           <Notification severity="caution" title="Warning">
             <span>
-              Once the profile is added, you cannot modify the Rootfs image or
+              Once the profile is added, you cannot modify the rootfs image or
               Cloud-init file.
             </span>
           </Notification>
