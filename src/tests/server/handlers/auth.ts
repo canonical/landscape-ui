@@ -113,6 +113,13 @@ export default [
     return HttpResponse.json(employeeLoginMethods);
   }),
 
+  http.get(`${API_URL}auth/handle-code`, () => {
+    return HttpResponse.json({
+      ...authResponse,
+      attach_code: "QWER12",
+    });
+  }),
+
   http.get(`${API_URL}me`, () => {
     return HttpResponse.json(authResponse);
   }),

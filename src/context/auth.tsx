@@ -85,7 +85,10 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       return;
     }
 
-    if ("current_account" in getAuthStateQueryResult.data) {
+    if (
+      "current_account" in getAuthStateQueryResult.data &&
+      getAuthStateQueryResult.data.attach_code === null
+    ) {
       setUser(getAuthStateQueryResult.data);
     }
 
