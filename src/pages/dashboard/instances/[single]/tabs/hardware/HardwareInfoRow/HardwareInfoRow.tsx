@@ -19,18 +19,13 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
   infoBlocksArray,
 }) => {
   return (
-    <div
-      className={classNames(
-        "p-strip u-no-padding--bottom u-no-padding--top u-no-max-width",
-        classes.wrapper,
-      )}
-    >
+    <div className={classNames("p-strip u-no-max-width", classes.wrapper)}>
       <h3 className={classNames("p-heading--4", classes.blockTitle)}>
         {infoRowLabel}
       </h3>
       <div className={classes.infoRows}>
-        <Blocks>
-          {infoBlocksArray.flatMap((infoBlocks) => ({
+        <Blocks
+          items={infoBlocksArray.map((infoBlocks) => ({
             content: (
               <Menu
                 items={infoBlocks.map((infoBlock) => ({
@@ -40,7 +35,7 @@ const HardwareInfoRow: FC<HardwareInfoRowProps> = ({
               />
             ),
           }))}
-        </Blocks>
+        />
       </div>
     </div>
   );

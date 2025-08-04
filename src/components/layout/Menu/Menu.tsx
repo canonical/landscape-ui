@@ -1,8 +1,8 @@
 import { Col, Row } from "@canonical/react-components";
+import classNames from "classnames";
 import type { ComponentProps, FC } from "react";
 import InfoItem from "../InfoItem";
 import classes from "./Menu.module.scss";
-import classNames from "classnames";
 
 type Item = ComponentProps<typeof InfoItem> &
   Pick<ComponentProps<typeof Col>, "size">;

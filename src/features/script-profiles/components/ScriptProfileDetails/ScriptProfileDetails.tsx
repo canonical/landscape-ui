@@ -42,7 +42,7 @@ const ScriptProfileDetails: FC<ScriptProfileDetailsProps> = ({
   return (
     <>
       <ScriptProfileControl actions={actions} profile={profile} />
-      <Tabs listClassName="u-no-margin--bottom" links={links} />
+      <Tabs links={links} />
 
       {tabId == "info" && <ScriptProfileInfo profile={profile} />}
 

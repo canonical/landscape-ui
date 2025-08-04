@@ -149,88 +149,90 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
         </div>
       </div>
 
-      <Blocks>
-        {{
-          content: (
-            <Menu
-              items={[
-                {
-                  label: "Title",
-                  size: 6,
-                  value: profile.title,
-                },
-                {
-                  label: "Name",
-                  size: 6,
-                  value: profile.name,
-                },
-                {
-                  label: "Access group",
-                  size: 6,
-                  value: accessGroup.title,
-                },
-                {
-                  label: "Status",
-                  size: 6,
-                  value: getStatus(profile).label,
-                },
-              ]}
-            />
-          ),
-        }}
-        {{
-          title: "Security profile",
-          content: (
-            <Menu
-              items={[
-                {
-                  label: "Benchmark",
-                  size: 6,
-                  value: SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark],
-                },
-                {
-                  label: "Tailoring file",
-                  size: 6,
-                  value: getTailoringFile(profile),
-                },
-                {
-                  label: "Mode",
-                  size: 12,
-                  value: SECURITY_PROFILE_MODE_LABELS[profile.mode],
-                },
-              ]}
-            />
-          ),
-        }}
-        {{
-          title: "Schedule",
-          content: <Menu items={scheduleMenuItems} />,
-        }}
-        {{
-          title: "Association",
-          content: (
-            <Menu
-              items={[
-                {
-                  label: "Associated instances",
-                  size: 12,
-                  value: (
-                    <SecurityProfileAssociatedInstancesLink
-                      securityProfile={profile}
-                    />
-                  ),
-                },
-                {
-                  label: "Tags",
-                  size: 12,
-                  value: getTags(profile),
-                  type: "truncated",
-                },
-              ]}
-            />
-          ),
-        }}
-      </Blocks>
+      <Blocks
+        items={[
+          {
+            content: (
+              <Menu
+                items={[
+                  {
+                    label: "Title",
+                    size: 6,
+                    value: profile.title,
+                  },
+                  {
+                    label: "Name",
+                    size: 6,
+                    value: profile.name,
+                  },
+                  {
+                    label: "Access group",
+                    size: 6,
+                    value: accessGroup.title,
+                  },
+                  {
+                    label: "Status",
+                    size: 6,
+                    value: getStatus(profile).label,
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            title: "Security profile",
+            content: (
+              <Menu
+                items={[
+                  {
+                    label: "Benchmark",
+                    size: 6,
+                    value: SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark],
+                  },
+                  {
+                    label: "Tailoring file",
+                    size: 6,
+                    value: getTailoringFile(profile),
+                  },
+                  {
+                    label: "Mode",
+                    size: 12,
+                    value: SECURITY_PROFILE_MODE_LABELS[profile.mode],
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            title: "Schedule",
+            content: <Menu items={scheduleMenuItems} />,
+          },
+          {
+            title: "Association",
+            content: (
+              <Menu
+                items={[
+                  {
+                    label: "Associated instances",
+                    size: 12,
+                    value: (
+                      <SecurityProfileAssociatedInstancesLink
+                        securityProfile={profile}
+                      />
+                    ),
+                  },
+                  {
+                    label: "Tags",
+                    size: 12,
+                    value: getTags(profile),
+                    type: "truncated",
+                  },
+                ]}
+              />
+            ),
+          },
+        ]}
+      />
     </>
   );
 };

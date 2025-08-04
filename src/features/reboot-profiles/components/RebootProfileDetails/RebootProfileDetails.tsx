@@ -133,59 +133,60 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Blocks>
-        {{
-          content: (
-            <Menu
-              items={[
-                { label: "Title", size: 6, value: profile.title },
-                {
-                  label: "Access group",
-                  size: 6,
-                  value:
-                    accessGroupOptions.find(
-                      ({ value }) => value === profile.access_group,
-                    )?.label ?? profile.access_group,
-                },
-              ]}
-            />
-          ),
-        }}
+      <Blocks
+        items={[
+          {
+            content: (
+              <Menu
+                items={[
+                  { label: "Title", size: 6, value: profile.title },
+                  {
+                    label: "Access group",
+                    size: 6,
+                    value:
+                      accessGroupOptions.find(
+                        ({ value }) => value === profile.access_group,
+                      )?.label ?? profile.access_group,
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            title: "Reboot schedule",
+            content: (
+              <Menu
+                items={[
+                  {
+                    label: "Schedule",
+                    size: 12,
+                    value: formatWeeklyRebootSchedule(profile),
+                  },
+                  {
+                    label: "Next reboot",
+                    size: 12,
+                    value: moment(profile.next_run).format(
+                      DISPLAY_DATE_TIME_FORMAT,
+                    ),
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            title: "Association",
+            content: (
+              <>
+                {profile.all_computers && (
+                  <p>This profile has been associated with all instances.</p>
+                )}
 
-        {{
-          title: "Reboot schedule",
-          content: (
-            <Menu
-              items={[
-                {
-                  label: "Schedule",
-                  size: 12,
-                  value: formatWeeklyRebootSchedule(profile),
-                },
-                {
-                  label: "Next reboot",
-                  size: 12,
-                  value: moment(profile.next_run).format(
-                    DISPLAY_DATE_TIME_FORMAT,
-                  ),
-                },
-              ]}
-            />
-          ),
-        }}
-        {{
-          title: "Association",
-          content: (
-            <>
-              {profile.all_computers && (
-                <p>This profile has been associated with all instances.</p>
-              )}
-
-              <Menu items={associationMenuItems} />
-            </>
-          ),
-        }}
-      </Blocks>
+                <Menu items={associationMenuItems} />
+              </>
+            ),
+          },
+        ]}
+      />
 
       <TextConfirmationModal
         isOpen={modalOpen}

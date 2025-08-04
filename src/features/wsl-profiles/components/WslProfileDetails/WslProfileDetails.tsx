@@ -120,52 +120,54 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
         </div>
       </div>
 
-      <Blocks>
-        {{
-          content: (
-            <Menu
-              items={[
-                {
-                  label: "Title",
-                  size: 6,
-                  value: profile.title,
-                },
-                {
-                  label: "Name",
-                  size: 6,
-                  value: profile.name,
-                },
-                {
-                  label: "Access group",
-                  size: 6,
-                  value:
-                    accessGroupOptions.find(
-                      ({ value }) => value === profile.access_group,
-                    )?.label ?? profile.access_group,
-                },
-                {
-                  label: "Description",
-                  size: 12,
-                  value: profile.description,
-                },
-              ]}
-            />
-          ),
-        }}
-        {{ content: <Menu items={wslProfileMenuItems} /> }}
-        {{
-          title: "Association",
-          content: (
-            <>
-              {profile.all_computers && (
-                <p>This profile has been associated with all instances.</p>
-              )}
+      <Blocks
+        items={[
+          {
+            content: (
+              <Menu
+                items={[
+                  {
+                    label: "Title",
+                    size: 6,
+                    value: profile.title,
+                  },
+                  {
+                    label: "Name",
+                    size: 6,
+                    value: profile.name,
+                  },
+                  {
+                    label: "Access group",
+                    size: 6,
+                    value:
+                      accessGroupOptions.find(
+                        ({ value }) => value === profile.access_group,
+                      )?.label ?? profile.access_group,
+                  },
+                  {
+                    label: "Description",
+                    size: 12,
+                    value: profile.description,
+                  },
+                ]}
+              />
+            ),
+          },
+          { content: <Menu items={wslProfileMenuItems} /> },
+          {
+            title: "Association",
+            content: (
+              <>
+                {profile.all_computers && (
+                  <p>This profile has been associated with all instances.</p>
+                )}
 
-              <Menu items={associationMenu} />
-            </>
-          ),
-        }}
-      </Blocks>
+                <Menu items={associationMenu} />
+              </>
+            ),
+          },
+        ]}
+      />
 
       <WslProfileRemoveModal
         isOpen={isRemoveModalOpen}

@@ -7,16 +7,16 @@ interface Block {
 }
 
 interface BlocksProps {
-  readonly children: Block[];
+  readonly items: Block[];
 }
 
-const Blocks: FC<BlocksProps> = ({ children }) => (
+const Blocks: FC<BlocksProps> = ({ items }) => (
   <div className={classes.blocks}>
-    {children.flatMap(({ content, title }, index) => {
+    {items.map(({ content, title }, index) => {
       const isTitleDefined = title !== undefined;
 
       return (
-        <section>
+        <section key={index}>
           {(isTitleDefined || index > 0) && <hr className={classes.rule} />}
           {isTitleDefined && <h5 className={classes.heading}>{title}</h5>}
           {content}

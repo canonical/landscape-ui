@@ -467,35 +467,37 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         />
       </div>
 
-      <Blocks>
-        {{
-          title: "Status",
-          content: <Menu items={statusMenuItems} />,
-        }}
-        {{
-          title: "Registration details",
-          content: <Menu items={registrationDetailsMenuItems} />,
-        }}
-        {{
-          title: "Other",
-          content: (
-            <Menu
-              items={[
-                {
-                  label: "Annotations",
-                  size: 3,
-                  value: <NoData />,
-                },
-                {
-                  label: "Comment",
-                  size: 3,
-                  value: instance.comment || <NoData />,
-                },
-              ]}
-            />
-          ),
-        }}
-      </Blocks>
+      <Blocks
+        items={[
+          {
+            title: "Status",
+            content: <Menu items={statusMenuItems} />,
+          },
+          {
+            title: "Registration details",
+            content: <Menu items={registrationDetailsMenuItems} />,
+          },
+          {
+            title: "Other",
+            content: (
+              <Menu
+                items={[
+                  {
+                    label: "Annotations",
+                    size: 3,
+                    value: <NoData />,
+                  },
+                  {
+                    label: "Comment",
+                    size: 3,
+                    value: instance.comment || <NoData />,
+                  },
+                ]}
+              />
+            ),
+          },
+        ]}
+      />
 
       {isRestartModalOpen && (
         <ConfirmationModal

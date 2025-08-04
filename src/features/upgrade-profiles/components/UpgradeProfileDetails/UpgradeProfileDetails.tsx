@@ -97,82 +97,84 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Blocks>
-        {{
-          content: (
-            <Menu
-              items={[
-                { label: "Title", size: 6, value: profile.title },
-                { label: "Name", size: 6, value: profile.name },
-                {
-                  label: "Access group",
-                  size: 6,
-                  value:
-                    accessGroupOptions.find(
-                      ({ value }) => value === profile.access_group,
-                    )?.label ?? profile.access_group,
-                },
-                {
-                  label: "Upgrade type",
-                  size: 6,
-                  value: profile.upgrade_type === "all" ? "All" : "Security",
-                },
-                {
-                  label: "Auto remove packages",
-                  size: 6,
-                  value: profile.autoremove ? "On" : "Off",
-                },
-              ]}
-            />
-          ),
-        }}
-        {{
-          title: "Schedule",
-          content: (
-            <Menu
-              items={[
-                {
-                  label: "Schedule",
-                  size: 12,
-                  value: scheduleMessage,
-                },
-                {
-                  label: "Next run",
-                  size: 12,
-                  value: nextRunMessage,
-                },
-                {
-                  label: "Delivery delay window",
-                  size: 12,
-                  value: `${profile.deliver_delay_window} ${pluralize(Number(profile.deliver_delay_window), "minute")}`,
-                },
-              ]}
-            />
-          ),
-        }}
-        {{
-          title: "Association",
-          content: (
-            <>
-              {profile.all_computers && (
-                <p>This profile has been associated with all instances.</p>
-              )}
-              {!profile.all_computers && !profile.tags.length && (
-                <p>
-                  This profile has not yet been associated with any instances.
-                </p>
-              )}
-              {!profile.all_computers && profile.tags.length > 0 && (
-                <InfoItem
-                  label="Tags"
-                  type="truncated"
-                  value={profile.tags.join(", ")}
-                />
-              )}
-            </>
-          ),
-        }}
-      </Blocks>
+      <Blocks
+        items={[
+          {
+            content: (
+              <Menu
+                items={[
+                  { label: "Title", size: 6, value: profile.title },
+                  { label: "Name", size: 6, value: profile.name },
+                  {
+                    label: "Access group",
+                    size: 6,
+                    value:
+                      accessGroupOptions.find(
+                        ({ value }) => value === profile.access_group,
+                      )?.label ?? profile.access_group,
+                  },
+                  {
+                    label: "Upgrade type",
+                    size: 6,
+                    value: profile.upgrade_type === "all" ? "All" : "Security",
+                  },
+                  {
+                    label: "Auto remove packages",
+                    size: 6,
+                    value: profile.autoremove ? "On" : "Off",
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            title: "Schedule",
+            content: (
+              <Menu
+                items={[
+                  {
+                    label: "Schedule",
+                    size: 12,
+                    value: scheduleMessage,
+                  },
+                  {
+                    label: "Next run",
+                    size: 12,
+                    value: nextRunMessage,
+                  },
+                  {
+                    label: "Delivery delay window",
+                    size: 12,
+                    value: `${profile.deliver_delay_window} ${pluralize(Number(profile.deliver_delay_window), "minute")}`,
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            title: "Association",
+            content: (
+              <>
+                {profile.all_computers && (
+                  <p>This profile has been associated with all instances.</p>
+                )}
+                {!profile.all_computers && !profile.tags.length && (
+                  <p>
+                    This profile has not yet been associated with any instances.
+                  </p>
+                )}
+                {!profile.all_computers && profile.tags.length > 0 && (
+                  <InfoItem
+                    label="Tags"
+                    type="truncated"
+                    value={profile.tags.join(", ")}
+                  />
+                )}
+              </>
+            ),
+          },
+        ]}
+      />
 
       <TextConfirmationModal
         isOpen={modalOpen}
