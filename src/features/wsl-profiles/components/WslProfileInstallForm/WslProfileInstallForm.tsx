@@ -151,7 +151,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
           <Notification severity="caution" title="Warning">
             <span>
               Once the profile is added, you cannot modify the rootfs image or
-              Cloud-init file.
+              cloud-init file.
             </span>
           </Notification>
         )}

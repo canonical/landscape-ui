@@ -126,7 +126,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       <div className={classes.block}>
         <Notification severity="caution" title="Editing unavailable">
           <span>
-            You cannot edit rootfs image or Cloud-init file. To modify these
+            You cannot edit rootfs image or cloud-init file. To modify these
             fields, create a new profile.
           </span>
         </Notification>
