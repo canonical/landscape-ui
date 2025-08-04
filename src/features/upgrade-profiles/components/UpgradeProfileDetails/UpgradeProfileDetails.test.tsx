@@ -66,8 +66,7 @@ describe("UpgradeProfileDetails", () => {
 
     expect(
       screen.getByText("Schedule", {
-        selector:
-          "p.p-text--small.p-text--small-caps.u-text--muted.u-no-margin--bottom",
+        selector: ".p-text--x-small.u-text--muted",
       }).nextElementSibling,
     ).toHaveTextContent(scheduleMessage);
 

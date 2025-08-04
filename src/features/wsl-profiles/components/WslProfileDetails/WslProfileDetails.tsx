@@ -3,12 +3,15 @@ import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { filter, pluralize } from "@/utils/_helpers";
+import { filter } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { WslProfile } from "../../types";
+import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink";
+import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
+import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfileRemoveModal from "../WslProfileRemoveModal";
 
 const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
@@ -106,12 +109,12 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
               <Menu
                 items={filter(
                   {
-                    label: "RootFS image name",
+                    label: "Rootfs image name",
                     size: 12,
                     value: profile.image_name,
                   },
                   profile.image_source !== null && {
-                    label: "RootFS image source",
+                    label: "Rootfs image source",
                     size: 12,
                     value: profile.image_source,
                     type: "truncated",
@@ -141,19 +144,27 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
                       value: profile.tags.join(", ") || null,
                     },
                     canBeAssociated && {
-                      label: "Associated",
+                      label: "Associated parents",
                       size: 12,
-                      value: `${profile.computers.constrained.length} ${pluralize(profile.computers.constrained.length, "instance")}`,
+                      value: (
+                        <WslProfileAssociatedParentsLink wslProfile={profile} />
+                      ),
                     },
                     canBeAssociated && {
                       label: "Not compliant",
                       size: 6,
-                      value: `${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`,
+                      value: (
+                        <WslProfileNonCompliantParentsLink
+                          wslProfile={profile}
+                        />
+                      ),
                     },
                     canBeAssociated && {
-                      label: "Pending",
+                      label: "Compliant",
                       size: 6,
-                      value: `${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`,
+                      value: (
+                        <WslProfileCompliantParentsLink wslProfile={profile} />
+                      ),
                     },
                   )}
                 />
