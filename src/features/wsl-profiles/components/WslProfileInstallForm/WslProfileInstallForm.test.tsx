@@ -17,7 +17,7 @@ describe("WslProfileInstallForm", () => {
     expect(container).toHaveTexts([
       "Title",
       "Access group",
-      "RootFS image",
+      "Rootfs image",
       "Cloud-init",
       "Add",
     ]);

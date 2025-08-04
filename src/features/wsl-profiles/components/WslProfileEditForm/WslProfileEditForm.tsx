@@ -126,15 +126,15 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       <div className={classes.block}>
         <Notification severity="caution" title="Editing unavailable">
           <span>
-            You cannot edit RootFS image or Cloud-init file. To modify these
+            You cannot edit rootfs image or Cloud-init file. To modify these
             fields, create a new profile.
           </span>
         </Notification>
 
         <Select
           disabled
-          label="RootFS image"
-          aria-label="RootFS image"
+          label="Rootfs image"
+          aria-label="Rootfs image"
           options={ROOTFS_IMAGE_OPTIONS}
           {...formik.getFieldProps("instanceType")}
           error={getFormikError(formik, "instanceType")}
@@ -153,7 +153,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
             <Input
               disabled
               type="text"
-              label="RootFS image URL"
+              label="Rootfs image URL"
               required
               {...formik.getFieldProps("rootfsImage")}
               error={getFormikError(formik, "rootfsImage")}

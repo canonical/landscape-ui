@@ -150,15 +150,15 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
           formik.values.cloudInitType !== "") && (
           <Notification severity="caution" title="Warning">
             <span>
-              Once the profile is added, you cannot modify the RootFS image or
+              Once the profile is added, you cannot modify the rootfs image or
               Cloud-init file.
             </span>
           </Notification>
         )}
         <Select
-          label="RootFS image"
+          label="Rootfs image"
           disabled={isGettingWslInstanceTypes}
-          aria-label="RootFS image"
+          aria-label="Rootfs image"
           options={ROOTFS_IMAGE_OPTIONS}
           required
           {...formik.getFieldProps("instanceType")}
@@ -170,12 +170,14 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
             <Input
               label="Image name"
               type="text"
+              required
               {...formik.getFieldProps("customImageName")}
               error={getFormikError(formik, "customImageName")}
             />
             <Input
               type="text"
-              label="RootFS image URL"
+              label="Rootfs image URL"
+              required
               {...formik.getFieldProps("rootfsImage")}
               error={getFormikError(formik, "rootfsImage")}
               help="The file path must be reachable by the affected WSL instances."
@@ -206,7 +208,7 @@ const WslProfileInstallForm: FC<WslProfileInstallFormProps> = (props) => {
 
         {formik.values.cloudInitType === "text" && (
           <CodeEditor
-            label="Cloud init configuration"
+            label="Cloud-init configuration"
             onChange={(value) => {
               formik.setFieldValue("cloudInit", value ?? "");
             }}

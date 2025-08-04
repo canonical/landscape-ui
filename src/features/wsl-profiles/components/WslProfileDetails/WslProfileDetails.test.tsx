@@ -22,11 +22,11 @@ describe("WslProfileDetails", () => {
           ?.title ?? testProfile.access_group,
     },
     {
-      label: "RootFS image name",
+      label: "Rootfs image name",
       value: testProfile.image_name,
     },
     {
-      label: "RootFS image source",
+      label: "Rootfs image source",
       value: testProfile.image_source || NO_DATA_TEXT,
     },
     {

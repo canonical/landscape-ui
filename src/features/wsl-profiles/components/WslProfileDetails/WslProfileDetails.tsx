@@ -123,7 +123,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
       <div className={classes.block}>
         <Row className="u-no-padding--left u-no-padding--right">
           <Col size={12}>
-            <InfoItem label="RootFS image name" value={profile.image_name} />
+            <InfoItem label="Rootfs image name" value={profile.image_name} />
           </Col>
         </Row>
 
@@ -132,7 +132,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
             <Col size={12}>
               <InfoItem
                 type="truncated"
-                label="RootFS image source"
+                label="Rootfs image source"
                 value={profile.image_source}
               />
             </Col>
