@@ -155,7 +155,11 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
         )}
         {!profile.all_computers && profile.tags.length > 0 && (
           <>
-            <InfoItem label="Tags" value={profile.tags.join(", ")} />
+            <InfoItem
+              label="Tags"
+              type="truncated"
+              value={profile.tags.join(", ")}
+            />
             <InfoItem
               label="associated instances"
               value={

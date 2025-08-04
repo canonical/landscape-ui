@@ -152,9 +152,15 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
       <div className={classes.block}>
         <p className="p-heading--5">Association</p>
 
-        {profile.all_computers ? (
+        {profile.all_computers && (
           <p>This profile has been associated with all instances.</p>
-        ) : (
+        )}
+
+        {!profile.all_computers && !profile.tags.length && (
+          <p>This profile has not yet been associated with any instances.</p>
+        )}
+
+        {!profile.all_computers && profile.tags.length > 0 && (
           <Row className="u-no-padding--left u-no-padding--right">
             <Col size={12}>
               <InfoItem
