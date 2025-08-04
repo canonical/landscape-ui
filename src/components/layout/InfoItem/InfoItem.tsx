@@ -20,7 +20,7 @@ const InfoItem: FC<InfoItemProps> = (props) => {
     }
 
     default: {
-      return <RegularInfoItem {...props} value={props.value} />;
+      return <RegularInfoItem {...props} />;
     }
   }
 };

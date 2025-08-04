@@ -22,19 +22,21 @@ const TruncatedInfoItem: FC<TruncatedInfoItemProps> = ({ value, ...props }) => {
   return (
     <RegularInfoItem
       value={
-        <div
-          className={classNames({
-            [classes.container]: isExpanded,
-          })}
-          ref={ref}
-        >
-          <Truncated
-            content={value}
-            expandedClassName={classes.expanded}
-            isExpanded={isExpanded}
-            onExpand={expand}
-          />
-        </div>
+        value ? (
+          <div
+            className={classNames({
+              [classes.container]: isExpanded,
+            })}
+            ref={ref}
+          >
+            <Truncated
+              content={value}
+              expandedClassName={classes.expanded}
+              isExpanded={isExpanded}
+              onExpand={expand}
+            />
+          </div>
+        ) : null
       }
       {...props}
     />
