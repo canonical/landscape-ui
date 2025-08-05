@@ -25,15 +25,15 @@ const WslInstanceInstallForm = lazy(
 );
 
 interface WslInstancesHeaderProps {
-  readonly hasWslProfiles: boolean;
   readonly windowsInstance: WindowsInstanceWithoutRelation;
   readonly selectedWslInstances: InstanceChild[];
+  readonly wslInstances: InstanceChild[];
 }
 
 const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
-  hasWslProfiles,
   selectedWslInstances,
   windowsInstance,
+  wslInstances,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -87,6 +87,10 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       </Suspense>,
     );
   };
+
+  const hasWslProfiles = wslInstances.some(
+    (instanceChild) => instanceChild.profile,
+  );
 
   return (
     <>
@@ -180,6 +184,11 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
                       className="p-segmented-control__button u-no-margin--bottom"
                       hasIcon
                       onClick={openMakeCompliantModal}
+                      disabled={wslInstances.every(
+                        (wslInstance) =>
+                          wslInstance.compliance === "compliant" ||
+                          wslInstance.compliance === "pending",
+                      )}
                     >
                       <Icon name="security-tick" />
                       <span>Make compliant</span>

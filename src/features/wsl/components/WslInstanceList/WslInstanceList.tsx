@@ -164,6 +164,8 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
               >
                 {wslInstance.name}
               </StaticLink>
+            ) : wslInstance.compliance === "uninstalled" ? (
+              <span className="u-text--muted">{wslInstance.name}</span>
             ) : (
               wslInstance.name
             )}
@@ -220,7 +222,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
       <WslInstancesHeader
         windowsInstance={windowsInstance}
         selectedWslInstances={selectedWslInstances}
-        hasWslProfiles={hasWslProfiles}
+        wslInstances={wslInstances}
       />
 
       <ResponsiveTable
@@ -286,7 +288,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
                 {
                   name: (
                     <GroupHeader
-                      label="Pending"
+                      label="Pending installation"
                       selectedWslInstances={selectedWslInstances}
                       setSelectedWslInstances={setSelectedWslInstances}
                       wslInstances={pendingWslInstances}

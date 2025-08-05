@@ -32,10 +32,7 @@ const WslProfilesPage: FC = () => {
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
 
   const handleAddWslProfile = () => {
-    setSidePanelContent(
-      "Add WSL profile",
-      <WslProfileInstallForm action="add" />,
-    );
+    setSidePanelContent("Add WSL profile", <WslProfileInstallForm />);
   };
 
   const isWslProfileLimitReached =

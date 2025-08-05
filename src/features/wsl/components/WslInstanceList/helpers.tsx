@@ -5,7 +5,7 @@ export const getCompliance = (wslInstance: InstanceChild) => {
     case "compliant":
       return "Compliant";
     case "pending":
-      return "Pending";
+      return "Pending installation";
     case "noncompliant":
       return "Not compliant";
     case "uninstalled":

@@ -1,8 +1,5 @@
-import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
-import type { ComponentProps } from "react";
 import * as Yup from "yup";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "../constants";
-import type WslProfileInstallForm from "./WslProfileInstallForm";
 
 export const getValidationSchema = () => {
   return Yup.object().shape({
@@ -61,40 +58,6 @@ export const getValidationSchema = () => {
     all_computers: Yup.boolean(),
     tags: Yup.array().of(Yup.string()),
   });
-};
-
-export const getInitialValues = (
-  props: ComponentProps<typeof WslProfileInstallForm>,
-) => {
-  return props.action === "add"
-    ? {
-        title: "",
-        access_group: DEFAULT_ACCESS_GROUP_NAME,
-        description: "",
-        instanceType: "",
-        customImageName: "",
-        rootfsImage: "",
-        cloudInitType: "",
-        cloudInit: null,
-        all_computers: false,
-        tags: [],
-      }
-    : {
-        title: `${props.profile.title} (copy)`,
-        access_group: props.profile.access_group,
-        all_computers: props.profile.all_computers,
-        cloudInit: null,
-        cloudInitType: "",
-        description: props.profile.description,
-        tags: props.profile.tags,
-        customImageName: props.profile.image_source
-          ? props.profile.image_name
-          : "",
-        instanceType: props.profile.image_source
-          ? "custom"
-          : props.profile.image_name,
-        rootfsImage: props.profile.image_source || "",
-      };
 };
 
 const convertStringtoFile = (inputString: string) => {

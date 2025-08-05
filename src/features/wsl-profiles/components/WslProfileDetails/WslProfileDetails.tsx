@@ -15,9 +15,6 @@ import WslProfileRemoveModal from "../WslProfileRemoveModal";
 import classes from "./WslProfileDetails.module.scss";
 
 const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
-const WslProfileInstallForm = lazy(
-  async () => import("../WslProfileInstallForm"),
-);
 
 interface WslProfileDetailsProps {
   readonly profile: WslProfile;
@@ -45,15 +42,6 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
     );
   };
 
-  const handleWslProfileDuplicate = () => {
-    setSidePanelContent(
-      `Duplicate "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <WslProfileInstallForm action="duplicate" profile={profile} />
-      </Suspense>,
-    );
-  };
-
   return (
     <>
       <div className="p-segmented-control">
@@ -66,16 +54,6 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
           >
             <Icon name="edit" />
             <span>Edit</span>
-          </Button>
-
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button"
-            onClick={handleWslProfileDuplicate}
-          >
-            <Icon name="canvas" />
-            <span>Duplicate</span>
           </Button>
 
           <Button
