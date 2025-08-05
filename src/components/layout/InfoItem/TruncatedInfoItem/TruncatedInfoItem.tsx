@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useRef, type FC } from "react";
 import { useBoolean, useOnClickOutside } from "usehooks-ts";
-import TruncatedCell from "../../TruncatedCell";
+import Truncated from "../../Truncated";
 import type { RegularInfoItemProps } from "../RegularInfoItem";
 import RegularInfoItem from "../RegularInfoItem";
 import classes from "./TruncatedInfoItem.module.scss";
@@ -24,12 +24,13 @@ const TruncatedInfoItem: FC<TruncatedInfoItemProps> = ({ value, ...props }) => {
       value={
         <div
           className={classNames({
-            [classes.expanded]: isExpanded,
+            [classes.container]: isExpanded,
           })}
           ref={ref}
         >
-          <TruncatedCell
+          <Truncated
             content={value}
+            expandedClassName={classes.expanded}
             isExpanded={isExpanded}
             onExpand={expand}
           />

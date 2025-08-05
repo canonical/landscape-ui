@@ -1,92 +1,9 @@
-import { Button } from "@canonical/react-components";
-import classNames from "classnames";
-import type { FC, MouseEvent as ReactMouseEvent, ReactNode, Ref } from "react";
-import { useState } from "react";
+import type { ComponentProps, FC } from "react";
+import Truncated from "../Truncated";
 import classes from "./TruncatedCell.module.scss";
 
-interface TruncatedCellProps {
-  readonly content: ReactNode;
-  readonly isExpanded: boolean;
-  readonly onExpand: (
-    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => void;
-  readonly showCount?: boolean;
-}
-
-const TruncatedCell: FC<TruncatedCellProps> = ({
-  content,
-  isExpanded,
-  onExpand,
-  showCount,
-}) => {
-  const [overflownChildCount, setOverflownChildCount] = useState<
-    number | undefined
-  >(undefined);
-
-  const expandabilityCheck = (
-    element: HTMLElement,
-    parentElement: HTMLElement,
-  ) => {
-    setOverflownChildCount(
-      [...element.childNodes].filter((child) => {
-        const range = document.createRange();
-        range.selectNodeContents(child);
-
-        return (
-          range.getBoundingClientRect().right >
-          parentElement.getBoundingClientRect().right
-        );
-      }).length,
-    );
-  };
-
-  const initialCheck: Ref<HTMLElement> = (element) => {
-    const parentElement = element?.parentElement;
-
-    if (!parentElement) {
-      return;
-    }
-
-    expandabilityCheck(element, parentElement);
-
-    const observer = new ResizeObserver(() => {
-      expandabilityCheck(element, parentElement);
-    });
-
-    observer.observe(parentElement);
-
-    return () => {
-      observer.disconnect();
-    };
-  };
-
-  return (
-    <div className={classNames({ [classes.container]: isExpanded })}>
-      <div className={isExpanded ? classes.expanded : classes.collapsed}>
-        <span
-          ref={initialCheck}
-          className={isExpanded ? classes.expandedContent : classes.truncated}
-        >
-          {content}
-        </span>
-        {!!overflownChildCount && !isExpanded && (
-          <Button
-            type="button"
-            appearance="link"
-            className={classNames(
-              "p-text--small u-no-margin--bottom",
-              classes.button,
-            )}
-            onClick={onExpand}
-          >
-            <span className={classNames("u-text--muted", classes.buttonText)}>
-              {showCount ? `+${overflownChildCount}` : "Show more"}
-            </span>
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-};
+const TruncatedCell: FC<
+  Omit<ComponentProps<typeof Truncated>, "expandedClassName">
+> = (props) => <Truncated expandedClassName={classes.expanded} {...props} />;
 
 export default TruncatedCell;
