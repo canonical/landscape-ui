@@ -1,0 +1,1 @@
+import{r as l,m as o}from"./index-DdDZs9iJ.js";function d(){const[t,n]=l.useState(null),u=l.useRef([]),r=l.useCallback(e=>{e&&(u.current=[...e.querySelectorAll("tbody tr")])},[]);o({current:t==null?null:u.current[t]},()=>{n(null)});const s=l.useCallback(e=>{n(a=>a===e?null:e)},[]);return{expandedRowIndex:t,getTableRowsRef:r,handleExpand:s}}export{d as u};

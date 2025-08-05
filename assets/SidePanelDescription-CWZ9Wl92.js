@@ -1,1 +1,0 @@
-import{j as s}from"./index-DHd_VY7f.js";const i=1e4,n="Priority levels for employee groups can resolve conflicts when assigning autoinstall files. By default, no priorities are set. Employees in multiple groups inherit the file from the highest-priority group.",e="_root_1kojr_1",t={root:e},l=({children:o})=>s.jsx("p",{className:t.root,children:o});export{n as E,i as I,l as S};

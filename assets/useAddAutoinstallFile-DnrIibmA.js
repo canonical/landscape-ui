@@ -1,0 +1,1 @@
+import{c as a,i as u,k as l}from"./index-DdDZs9iJ.js";const c=()=>{const t=a(),s=u(),{isPending:e,mutateAsync:n}=l({mutationFn:async i=>t.post("autoinstall",i),onSuccess:async()=>s.invalidateQueries({queryKey:["autoinstallFiles"]})});return{isAutoinstallFileAdding:e,addAutoinstallFile:n}};export{c as u};

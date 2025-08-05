@@ -1,3 +1,9 @@
+landscape-dashboard (1.17.0-0landscape0) jammy; urgency=medium
+
+  * Release 1.17.0 for jammy
+
+ -- Justin Kim <justin.kim@canonical.com>  Tue, 05 Aug 2025 14:34:23 -0700
+
 landscape-dashboard (1.16.0-0landscape0) jammy; urgency=medium
 
   * Release 1.16.0 for jammy
