@@ -164,7 +164,8 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
               >
                 {wslInstance.name}
               </StaticLink>
-            ) : wslInstance.compliance === "uninstalled" ? (
+            ) : wslInstance.compliance === "uninstalled" ||
+              wslInstance.compliance === "pending" ? (
               <span className="u-text--muted">{wslInstance.name}</span>
             ) : (
               wslInstance.name
