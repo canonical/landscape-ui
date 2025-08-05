@@ -60,7 +60,8 @@ export const useGetInstances = (
     AxiosError<ApiError>
   >({
     queryKey: ["instances", params],
-    queryFn: async () => authFetch.get("computers", { params }),
+    queryFn: async () =>
+      authFetch.get("computers", { params: { ...params, root_only: false } }),
     ...options,
   });
 
