@@ -6,7 +6,8 @@
 }
 
 .expanded {
-  background: white;
-  border: 1.5px solid $colors--theme--border-default;
+  background: $colors--theme--background-default;
+  border: 1px solid $colors--theme--border-default;
+  box-shadow: 0 0 0.5rem rgb(0 0 0 / 10%);
   padding: calc($spv--small - 1px) $sph--small $spv--small;
 }
