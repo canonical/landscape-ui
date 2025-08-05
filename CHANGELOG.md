@@ -1,3 +1,19 @@
+# [1.17.0](https://github.com/canonical/landscape-ui/compare/v1.16.0...v1.17.0) (2025-08-05)
+
+
+### Bug Fixes
+
+* show correct duplicates count along with pending instances ([#308](https://github.com/canonical/landscape-ui/issues/308)) ([239205b](https://github.com/canonical/landscape-ui/commit/239205ba2f0e7bf8e6971029ceca40e4230afaaf))
+* show loading state while loading a page for the first time ([#312](https://github.com/canonical/landscape-ui/issues/312)) ([30cd296](https://github.com/canonical/landscape-ui/commit/30cd2969fb72140940a14b66004f5449ed182fc5))
+
+
+### Features
+
+* compliance checks for WSL profiles ([#285](https://github.com/canonical/landscape-ui/issues/285)) ([bdcaa0f](https://github.com/canonical/landscape-ui/commit/bdcaa0fc4d6214d0c00daf715a5ab8c337b7d086))
+* implement attach page ([#300](https://github.com/canonical/landscape-ui/issues/300)) ([170576f](https://github.com/canonical/landscape-ui/commit/170576f45ba3d47ef94f27a9d4fed19b5111300a))
+* make authentication experience changes ([#299](https://github.com/canonical/landscape-ui/issues/299)) ([9220dec](https://github.com/canonical/landscape-ui/commit/9220dec72e88f86ade707a65e7ff1863fb0bfd76))
+* minor wsl changes ([#318](https://github.com/canonical/landscape-ui/issues/318)) ([ec6040f](https://github.com/canonical/landscape-ui/commit/ec6040feb2a90bc1b6da20f4030d15be3d6f581d))
+
 # [1.16.0](https://github.com/canonical/landscape-ui/compare/v1.15.0...v1.16.0) (2025-07-22)
 
 
