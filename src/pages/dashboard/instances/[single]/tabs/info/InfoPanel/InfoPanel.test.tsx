@@ -1,5 +1,6 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import type { AuthContextProps } from "@/context/auth";
+import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
 import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 import { authUser } from "@/tests/mocks/auth";
@@ -112,21 +113,28 @@ describe("InfoPanel", () => {
   });
 
   describe("Disassociate employee button", () => {
-    it("should render button if instance has an employee associated", () => {
+    it("should render button if instance has an employee associated", async () => {
       vi.mocked(useAuth).mockReturnValue({
         ...authProps,
         isFeatureEnabled: (feature: FeatureKey) =>
           feature === "employee-management",
       });
       const instanceWithEmployee = instances.find(
-        (instance) => instance.employee_id !== null,
+        (instance) =>
+          instance.employee_id !== null && getFeatures(instance).employees,
       );
 
       assert(instanceWithEmployee);
 
       renderWithProviders(<InfoPanel instance={instanceWithEmployee} />);
+      await expectLoadingState();
 
-      const disassociateEmployeeButton = screen.getByRole("button", {
+      const moreActionsButton = screen.getByRole("button", {
+        name: "More actions",
+      });
+      await userEvent.click(moreActionsButton);
+
+      const disassociateEmployeeButton = await screen.findByRole("button", {
         name: /disassociate employee/i,
       });
 

@@ -2,17 +2,11 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .list {
-  border-top: 1px solid $colors--theme--border-low-contrast;
   list-style: none;
   margin-bottom: 0;
   margin-left: 0;
-  margin-top: $spv--large;
   padding-left: 0;
   padding-top: $spv--x-large;
-
-  &:not(:first-child) {
-    margin-top: $spv--x-large;
-  }
 
   li:first-child {
     padding-top: 0;
@@ -20,6 +14,15 @@
 
   li:last-child {
     padding-bottom: 0;
+  }
+}
+
+.list__bordered {
+  border-top: 1px solid $colors--theme--border-low-contrast;
+  margin-top: $spv--large;
+
+  &:not(:first-child) {
+    margin-top: $spv--x-large;
   }
 }
 

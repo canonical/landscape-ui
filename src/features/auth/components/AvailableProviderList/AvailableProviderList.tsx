@@ -1,13 +1,15 @@
-import { useGetEmployeeOidcUrlQuery } from "@/features/attach";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { getProviderIcon, redirectToExternalUrl } from "../../helpers";
-import type { GetOidcUrlParams, GetUbuntuOneUrlParams } from "../../hooks";
+import type { GetUbuntuOneUrlParams } from "../../hooks";
 import { useInvitation, useUnsigned } from "../../hooks";
 import type { IdentityProvider } from "../../types";
 import classes from "./AvailableProviderList.module.scss";
+import classNames from "classnames";
+import type { GetOidcUrlParams } from "../../api";
+import { useGetOidcUrlQuery } from "../../api";
 
 interface AvailableProviderListProps {
   readonly isStandaloneOidcEnabled: boolean;
@@ -23,12 +25,11 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   const [providerId, setProviderId] = useState(0);
   const [searchParams] = useSearchParams();
   const { invitationId } = useInvitation();
-  const { getOidcUrlQuery, getUbuntuOneUrlQuery } = useUnsigned();
-  const location = useLocation();
+  const { getUbuntuOneUrlQuery } = useUnsigned();
 
   const redirectTo = searchParams.get("redirect-to");
   const external = searchParams.has("external");
-  const code = location.state?.code;
+  const code = searchParams.get("code");
 
   const params: GetOidcUrlParams = {};
 
@@ -52,25 +53,17 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
     params.attach_code = code;
   }
 
-  const adminOidcUrlQuery = getOidcUrlQuery(params, {
-    enabled: providerId !== 0 && !code,
+  const { oidcUrlLocation } = useGetOidcUrlQuery(params, {
+    enabled: providerId !== 0,
   });
-
-  const employeeOidcUrlQuery = useGetEmployeeOidcUrlQuery(params, {
-    enabled: providerId !== 0 && Boolean(code),
-  });
-
-  const { data: getOidcUrlQueryResult } = code
-    ? employeeOidcUrlQuery
-    : adminOidcUrlQuery;
 
   useEffect(() => {
-    if (!getOidcUrlQueryResult) {
+    if (!oidcUrlLocation) {
       return;
     }
 
-    redirectToExternalUrl(getOidcUrlQueryResult.data.location);
-  }, [getOidcUrlQueryResult]);
+    redirectToExternalUrl(oidcUrlLocation);
+  }, [oidcUrlLocation]);
 
   const ubuntuOneParams: GetUbuntuOneUrlParams = {};
 
@@ -100,60 +93,72 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
   }, [getUbuntuOneUrlQueryResult]);
 
   return (
-    <ul className={classes.list}>
-      {isUbuntuOneEnabled && (
-        <li className="p-list__item">
-          <Button
-            type="button"
-            hasIcon
-            onClick={refetchGetUbuntuOneUrlQuery}
-            className={classes.button}
-          >
-            <Icon
-              name={getProviderIcon("ubuntu-one")}
-              className={classes.icon}
-            />
-            <span>Sign in with Ubuntu One</span>
-          </Button>
-        </li>
+    <>
+      {code && (
+        <p className="u-no-margin--bottom u-text--muted">
+          Sign in with your Identity provider to complete the attachment
+          process.
+        </p>
       )}
-      {isStandaloneOidcEnabled && (
-        <li className="p-list__item">
-          <Button
-            type="button"
-            hasIcon
-            onClick={() => {
-              setProviderId(-1);
-            }}
-            className={classes.button}
-          >
-            <Icon
-              name={getProviderIcon("standalone")}
-              className={classes.icon}
-            />
-            <span>Sign in with Enterprise Login</span>
-          </Button>
-        </li>
-      )}
-      {oidcProviders.map((provider) => (
-        <li key={provider.id} className="p-list__item">
-          <Button
-            type="button"
-            hasIcon
-            onClick={() => {
-              setProviderId(provider.id);
-            }}
-            className={classes.button}
-          >
-            <Icon
-              name={getProviderIcon(provider.provider)}
-              className={classes.icon}
-            />
-            <span>{`Sign in with ${provider.name}`}</span>
-          </Button>
-        </li>
-      ))}
-    </ul>
+      <ul
+        className={classNames(classes.list, {
+          [classes["list__bordered"]]: !code,
+        })}
+      >
+        {isUbuntuOneEnabled && (
+          <li className="p-list__item">
+            <Button
+              type="button"
+              hasIcon
+              onClick={refetchGetUbuntuOneUrlQuery}
+              className={classes.button}
+            >
+              <Icon
+                name={getProviderIcon("ubuntu-one")}
+                className={classes.icon}
+              />
+              <span>Sign in with Ubuntu One</span>
+            </Button>
+          </li>
+        )}
+        {isStandaloneOidcEnabled && (
+          <li className="p-list__item">
+            <Button
+              type="button"
+              hasIcon
+              onClick={() => {
+                setProviderId(-1);
+              }}
+              className={classes.button}
+            >
+              <Icon
+                name={getProviderIcon("standalone")}
+                className={classes.icon}
+              />
+              <span>Sign in with Enterprise Login</span>
+            </Button>
+          </li>
+        )}
+        {oidcProviders.map((provider) => (
+          <li key={provider.id} className="p-list__item">
+            <Button
+              type="button"
+              hasIcon
+              onClick={() => {
+                setProviderId(provider.id);
+              }}
+              className={classes.button}
+            >
+              <Icon
+                name={getProviderIcon(provider.provider)}
+                className={classes.icon}
+              />
+              <span>{`Sign in with ${provider.name}`}</span>
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 };
 

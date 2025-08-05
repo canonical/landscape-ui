@@ -1,5 +1,4 @@
 import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import AuthTemplate from "@/templates/auth";
 import { Button, Form } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -15,7 +14,6 @@ import * as Yup from "yup";
 
 const OTPInputContainer: FC = () => {
   const [searchParams] = useSearchParams();
-  const { notify } = useNotify();
   const debug = useDebug();
   const navigate = useNavigate();
 
@@ -54,13 +52,7 @@ const OTPInputContainer: FC = () => {
           return;
         }
 
-        notify.success({
-          message: "Code is valid",
-          title: "Success",
-        });
-        navigate("/login", {
-          state: { code: attachCode },
-        });
+        navigate(`/login?code=${attachCode}`);
       } catch (error) {
         debug(error);
       }

@@ -22,7 +22,7 @@ import type { AddAutoinstallFileParams } from "../../api";
 import { areTextsIdentical } from "./helpers";
 
 interface AutoinstallFileFormProps {
-  readonly buttonText: string;
+  readonly buttonText: "Add" | "Save changes";
   readonly description: string;
   readonly notification: NotificationMethodArgs;
   readonly onSubmit: (params: AddAutoinstallFileParams) => Promise<unknown>;

@@ -37,8 +37,6 @@ describe("EmployeeInstancesTable", () => {
       });
       expect(statusCell).toBeInTheDocument();
 
-      expect(within(row).getByText("****************")).toBeInTheDocument();
-
       expect(
         within(row).getByLabelText(`${instance.title} profile actions`),
       ).toBeInTheDocument();

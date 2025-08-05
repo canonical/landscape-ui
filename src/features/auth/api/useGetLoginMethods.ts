@@ -4,7 +4,7 @@ import type { ApiError } from "@/types/api/ApiError";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import { useLocation } from "react-router";
+import { useSearchParams } from "react-router";
 
 export const useGetLoginMethods = (
   config: Omit<
@@ -13,9 +13,9 @@ export const useGetLoginMethods = (
   > = {},
 ) => {
   const authFetch = useFetch();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
-  const isEmployeeLogin = location.state?.code;
+  const isEmployeeLogin = searchParams.has("code");
 
   const url = isEmployeeLogin
     ? "employee-access/login/methods"

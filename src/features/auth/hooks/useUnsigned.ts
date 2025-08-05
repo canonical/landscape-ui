@@ -52,14 +52,6 @@ export interface LoginRequestParams {
   password: string;
 }
 
-export interface GetOidcUrlParams {
-  id?: number;
-  external?: boolean;
-  invitation_id?: string;
-  return_to?: string;
-  attach_code?: string;
-}
-
 interface GetAuthStateParams {
   code: string;
   state: string;
@@ -104,20 +96,6 @@ export default function useUnsignedHooks() {
   >({
     mutationFn: async (params) => axiosInstance.post("login", params),
   });
-
-  const getOidcUrlQuery: QueryFnTypeWithRequiredParam<
-    AxiosResponse<{ location: string }>,
-    GetOidcUrlParams
-  > = (queryParams, config = {}) =>
-    useQuery({
-      queryKey: ["oidcUrl", queryParams],
-      queryFn: async () =>
-        axiosInstance.get<{ location: string }>("auth/start", {
-          params: queryParams,
-        }),
-      ...config,
-      gcTime: 0,
-    });
 
   const getAuthStateWithOidcQuery: QueryFnTypeWithRequiredParam<
     AxiosResponse<AuthStateResponse>,
@@ -190,7 +168,6 @@ export default function useUnsignedHooks() {
     getAuthStateWithUbuntuOneQuery,
     getInvitationSummaryQuery,
     getLoginMethodsQuery,
-    getOidcUrlQuery,
     getUbuntuOneUrlQuery,
     signInWithEmailAndPasswordQuery,
   };
