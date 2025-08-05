@@ -17,14 +17,16 @@ import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
 import WslFilter from "../WslFilter";
-import { INSTANCE_SEARCH_HELP_TERMS } from "./constants";
 import classes from "./InstancesHeader.module.scss";
+import useInstanceSearchHelpTerms from "./hooks/useInstanceSearchHelpTerms";
 
 interface InstancesHeaderProps {
   readonly columnFilterOptions: ColumnFilterOption[];
 }
 
 const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
+  const instanceSearchHelpTerms = useInstanceSearchHelpTerms();
+
   const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const { getAccessGroupQuery } = useRoles();
@@ -123,7 +125,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
 
       <SearchHelpPopup
         open={showSearchHelp}
-        data={INSTANCE_SEARCH_HELP_TERMS}
+        data={instanceSearchHelpTerms}
         onClose={() => {
           setShowSearchHelp(false);
         }}

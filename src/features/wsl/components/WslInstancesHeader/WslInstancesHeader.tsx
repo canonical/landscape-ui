@@ -156,7 +156,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
                     disabled={
                       !selectedWslInstances.length ||
                       selectedWslInstances.some(
-                        (wslInstance) => wslInstance.computer_id === null,
+                        (wslInstance) => !wslInstance.installed,
                       )
                     }
                   >

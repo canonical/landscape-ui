@@ -13,21 +13,22 @@ import { getQuery } from "./helpers";
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, wsl, ...filters } = usePageParams();
 
-  const { instances, instancesCount, isGettingInstances } = useGetInstances({
-    query: getQuery(filters),
-    archived_only: filters.status === "archived",
-    with_alerts: true,
-    with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-    wsl_children: wsl.includes("child"),
-    wsl_parents: wsl.includes("parent"),
-  });
+  const { instances, instancesCount, isGettingInstances, isErrorInstances } =
+    useGetInstances({
+      query: getQuery(filters),
+      archived_only: filters.status === "archived",
+      with_alerts: true,
+      with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
+      limit: pageSize,
+      offset: (currentPage - 1) * pageSize,
+      wsl_children: wsl.includes("child"),
+      wsl_parents: wsl.includes("parent"),
+    });
 
   const {
     selectedItems: selectedInstances,
     setSelectedItems: setSelectedInstances,
-  } = useSelection<Instance>(instances, isGettingInstances);
+  } = useSelection<Instance>(instances, isGettingInstances || isErrorInstances);
 
   return (
     <PageMain>
