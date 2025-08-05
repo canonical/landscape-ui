@@ -1,8 +1,7 @@
-@import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
 .label {
-  margin-bottom: 0.5rem;
+  margin-bottom: $spv--small;
   padding: 0;
   text-transform: uppercase;
 }

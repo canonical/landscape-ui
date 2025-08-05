@@ -1,3 +1,5 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .blocks {
   display: flex;
   flex-direction: column;
@@ -5,10 +7,10 @@
 }
 
 .rule {
-  margin-bottom: 1rem;
+  margin-bottom: $spv--large;
 }
 
 .heading {
-  margin: -0.5rem 0 1rem;
+  margin: -0.5rem 0 $spv--large;
   padding: 0;
 }
