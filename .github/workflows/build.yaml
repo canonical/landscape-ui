@@ -1,7 +1,11 @@
 name: PPA build commit
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ dev ]
+  workflow_run:
+    workflows: ['Release']
+    types:
+      - completed
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref == 'refs/heads/main' && 'ppa-build' || 'ppa-build-dev' }}
+          ref: ${{ github.event_name == 'workflow_run' && 'ppa-build' || 'ppa-build-dev' }}
       - name: Download dist for PPA
         uses: actions/download-artifact@v4
         with:
