@@ -3,7 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useRoles from "@/hooks/useRoles";
-import { filter, pluralize } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -114,119 +114,124 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
         </div>
       </div>
 
-      <Blocks
-        items={[
-          {
-            content: (
-              <Menu
-                items={[
-                  {
-                    label: "Title",
-                    size: 6,
-                    value: profile.title,
-                  },
-                  {
-                    label: "Name",
-                    size: 6,
-                    value: profile.name,
-                  },
-                  {
-                    label: "Access group",
-                    size: 6,
-                    value: accessGroup.title,
-                  },
-                  {
-                    label: "Status",
-                    size: 6,
-                    value: getStatus(profile).label,
-                  },
-                ]}
+      <Blocks>
+        <Blocks.Item>
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item label="Title" size={6} value={profile.title} />
+              <Menu.Row.Item label="Name" size={6} value={profile.name} />
+            </Menu.Row>
+
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Access group"
+                size={6}
+                value={accessGroup.title}
               />
-            ),
-          },
-          {
-            title: "Security profile",
-            content: (
-              <Menu
-                items={[
-                  {
-                    label: "Benchmark",
-                    size: 6,
-                    value: SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark],
-                  },
-                  {
-                    label: "Tailoring file",
-                    size: 6,
-                    value: getTailoringFile(profile),
-                  },
-                  {
-                    label: "Mode",
-                    size: 12,
-                    value: SECURITY_PROFILE_MODE_LABELS[profile.mode],
-                  },
-                ]}
+              <Menu.Row.Item
+                label="Status"
+                size={6}
+                value={getStatus(profile).label}
               />
-            ),
-          },
-          {
-            title: "Schedule",
-            content: (
-              <Menu
-                items={filter(
-                  { label: "Schedule", size: 12, value: getSchedule(profile) },
-                  {
-                    label: "Last run",
-                    size: 6,
-                    value: profile.last_run_results.timestamp
-                      ? `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-                      : null,
-                  },
-                  {
-                    label: "Next run",
-                    size: 6,
-                    value: profile.next_run_time
-                      ? `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-                      : null,
-                  },
-                  profile.mode === "audit-fix-restart" && {
-                    label: "Restart schedule",
-                    size: 12,
-                    value: `${
-                      profile.restart_deliver_delay
-                        ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
-                        : "As soon as possible"
-                    }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`,
-                  },
-                )}
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+
+        <Blocks.Item title="Security profile">
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Benchmark"
+                size={6}
+                value={SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark]}
               />
-            ),
-          },
-          {
-            title: "Association",
-            content: (
-              <Menu
-                items={[
-                  {
-                    label: "Associated instances",
-                    size: 12,
-                    value: (
-                      <SecurityProfileAssociatedInstancesLink
-                        securityProfile={profile}
-                      />
-                    ),
-                  },
-                  {
-                    label: "Tags",
-                    size: 12,
-                    value: getTags(profile),
-                    type: "truncated",
-                  },
-                ]}
+              <Menu.Row.Item
+                label="Tailoring file"
+                size={6}
+                value={getTailoringFile(profile)}
               />
-            ),
-          },
-        ]}
-      />
+              <Menu.Row.Item
+                label="Mode"
+                size={12}
+                value={SECURITY_PROFILE_MODE_LABELS[profile.mode]}
+              />
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+
+        <Blocks.Item title="Schedule">
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Schedule"
+                size={12}
+                value={getSchedule(profile)}
+              />
+            </Menu.Row>
+
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Last run"
+                size={6}
+                value={
+                  profile.last_run_results.timestamp
+                    ? `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                    : null
+                }
+              />
+
+              <Menu.Row.Item
+                label="Next run"
+                size={6}
+                value={
+                  profile.next_run_time
+                    ? `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                    : null
+                }
+              />
+            </Menu.Row>
+
+            {profile.mode === "audit-fix-restart" && (
+              <Menu.Row>
+                <Menu.Row.Item
+                  label="Restart schedule"
+                  size={12}
+                  value={`${
+                    profile.restart_deliver_delay
+                      ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
+                      : "As soon as possible"
+                  }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
+                />
+              </Menu.Row>
+            )}
+          </Menu>
+        </Blocks.Item>
+
+        <Blocks.Item title="Association">
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Associated instances"
+                size={12}
+                value={
+                  <SecurityProfileAssociatedInstancesLink
+                    securityProfile={profile}
+                  />
+                }
+              />
+            </Menu.Row>
+
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Tags"
+                size={12}
+                value={getTags(profile)}
+                type="truncated"
+              />
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+      </Blocks>
     </>
   );
 };

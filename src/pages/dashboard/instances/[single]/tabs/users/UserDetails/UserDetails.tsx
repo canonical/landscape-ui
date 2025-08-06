@@ -34,51 +34,56 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
   return (
     <>
       <UserPanelActionButtons selectedUsers={[user]} sidePanel />
-      <Menu
-        items={[
-          {
-            label: "Username",
-            size: 12,
-            value: user.username,
-          },
-          {
-            label: "Name",
-            size: 12,
-            value: user.name || <NoData />,
-          },
-          {
-            label: "Passphrase",
-            size: 12,
-            type: "password",
-          },
-          {
-            label: "Primary group",
-            size: 12,
-            value: primaryGroup,
-          },
-          {
-            label: "Additional groups",
-            size: 12,
-            value: userGroups,
-            type: "truncated",
-          },
-          {
-            label: "Location",
-            size: 12,
-            value: user?.location,
-          },
-          {
-            label: "Home phone",
-            size: 12,
-            value: user?.home_phone,
-          },
-          {
-            label: "Work phone",
-            size: 12,
-            value: user?.work_phone,
-          },
-        ]}
-      />
+      <Menu>
+        <Menu.Row>
+          <Menu.Row.Item label="Username" size={12} value={user.username} />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Name"
+            size={12}
+            value={user.name || <NoData />}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item label="Passphrase" size={12} type="password" />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item label="Primary group" size={12} value={primaryGroup} />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Additional groups"
+            size={12}
+            value={userGroups}
+            type="truncated"
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item label="Location" size={12} value={user?.location} />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Home phone"
+            size={12}
+            value={user?.home_phone}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Work phone"
+            size={12}
+            value={user?.work_phone}
+          />
+        </Menu.Row>
+      </Menu>
     </>
   );
 };

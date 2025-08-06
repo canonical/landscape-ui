@@ -1,29 +1,36 @@
+import classNames from "classnames";
 import { type FC, type ReactNode } from "react";
 import classes from "./Blocks.module.scss";
 
-interface Block {
-  content: ReactNode;
-  title?: string;
-}
-
 interface BlocksProps {
-  readonly items: Block[];
+  readonly children: ReactNode;
 }
 
-const Blocks: FC<BlocksProps> = ({ items }) => (
-  <div className={classes.blocks}>
-    {items.map(({ content, title }, index) => {
-      const isTitleDefined = title !== undefined;
+interface ItemProps {
+  readonly children: ReactNode;
+  readonly title?: string;
+}
 
-      return (
-        <section key={index}>
-          {(isTitleDefined || index > 0) && <hr className={classes.rule} />}
-          {isTitleDefined && <h5 className={classes.heading}>{title}</h5>}
-          {content}
-        </section>
-      );
-    })}
-  </div>
-);
+const Blocks: FC<BlocksProps> & { Item: FC<ItemProps> } = ({
+  children,
+}: BlocksProps) => <div className={classes.blocks}>{children}</div>;
+
+const Item: FC<ItemProps> = ({ children, title }: ItemProps) => {
+  const isTitleDefined = title !== undefined;
+
+  return (
+    <section
+      className={classNames({
+        [classes.block]: !isTitleDefined,
+        [classes.dividedBlock]: isTitleDefined,
+      })}
+    >
+      {isTitleDefined && <h5 className={classes.heading}>{title}</h5>}
+      {children}
+    </section>
+  );
+};
+
+Blocks.Item = Item;
 
 export default Blocks;

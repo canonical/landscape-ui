@@ -17,45 +17,63 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
         installedSnaps={[installedSnap]}
         sidePanel
       />
-      <Menu
-        items={[
-          { label: "Name", size: 12, value: installedSnap.snap.name },
-          {
-            label: "Channel",
-            size: 6,
-            value: installedSnap.tracking_channel,
-          },
-          {
-            label: "Version",
-            size: 6,
-            value: installedSnap.version,
-          },
-          {
-            label: "Confinement",
-            size: 6,
-            value: installedSnap.confinement,
-          },
-          {
-            label: "Held until",
-            size: 6,
-            value: moment(installedSnap.held_until).isValid()
-              ? moment(installedSnap.held_until).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )
-              : null,
-          },
-          {
-            label: "Summary",
-            size: 12,
-            value: installedSnap.snap.summary,
-          },
-          {
-            label: "Publisher",
-            size: 12,
-            value: installedSnap.snap.publisher.username,
-          },
-        ]}
-      />
+      <Menu>
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Name"
+            size={12}
+            value={installedSnap.snap.name}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Channel"
+            size={6}
+            value={installedSnap.tracking_channel}
+          />
+          <Menu.Row.Item
+            label="Version"
+            size={6}
+            value={installedSnap.version}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Confinement"
+            size={6}
+            value={installedSnap.confinement}
+          />
+          <Menu.Row.Item
+            label="Held until"
+            size={6}
+            value={
+              moment(installedSnap.held_until).isValid()
+                ? moment(installedSnap.held_until).format(
+                    DISPLAY_DATE_TIME_FORMAT,
+                  )
+                : null
+            }
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Summary"
+            size={12}
+            value={installedSnap.snap.summary}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Publisher"
+            size={12}
+            value={installedSnap.snap.publisher.username}
+          />
+        </Menu.Row>
+      </Menu>
     </>
   );
 };

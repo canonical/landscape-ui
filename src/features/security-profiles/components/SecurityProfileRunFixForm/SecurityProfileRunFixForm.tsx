@@ -50,25 +50,31 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
             description: "To complete the fixes, instances must be restarted.",
             iconName: "restart",
             children: (
-              <Menu
-                items={[
-                  {
-                    label: "Delivery time",
-                    size: 12,
-                    value:
+              <Menu>
+                <Menu.Row>
+                  <Menu.Row.Item
+                    label="Delivery time"
+                    size={12}
+                    value={
                       profile.restart_deliver_delay === 0
                         ? "As soon as possible"
-                        : "Scheduled",
-                  },
-                  {
-                    label: "Randomize delivery over a time window",
-                    size: 12,
-                    value: profile.restart_deliver_delay
-                      ? `${profile.restart_deliver_delay_window} minutes`
-                      : "No",
-                  },
-                ]}
-              />
+                        : "Scheduled"
+                    }
+                  />
+                </Menu.Row>
+
+                <Menu.Row>
+                  <Menu.Row.Item
+                    label="Randomize delivery over a time window"
+                    size={12}
+                    value={
+                      profile.restart_deliver_delay
+                        ? `${profile.restart_deliver_delay_window} minutes`
+                        : "No"
+                    }
+                  />
+                </Menu.Row>
+              </Menu>
             ),
           },
           {

@@ -50,12 +50,16 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => {
           </a>
         </span>
       </div>
-      <Menu
-        items={infoItems.map((item) => ({
-          ...item,
-          size: 3,
-        }))}
-      />
+      <Menu.Row>
+        {infoItems.map((item) => (
+          <Menu.Row.Item
+            key={item.label}
+            label={item.label}
+            size={3}
+            value={item.value}
+          />
+        ))}
+      </Menu.Row>
     </div>
   );
 };

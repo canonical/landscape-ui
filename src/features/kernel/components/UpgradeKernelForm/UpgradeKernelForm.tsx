@@ -136,24 +136,28 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
       <Notification severity="information" title="Restart recommended">
         <span>{NOTIFICATION_MESSAGE}</span>
       </Notification>
-      <Menu
-        items={[
-          { label: "Current version", size: 6, value: currentKernelVersion },
-          {
-            label: "New version",
-            size: 6,
-            value:
-              upgradeKernelVersions.length === 1 ? (
-                <span>{upgradeKernelVersions[0].version_rounded}</span>
-              ) : (
-                <Select
-                  options={KERNEL_VERSION_OPTIONS}
-                  {...formik.getFieldProps("new_kernel_version")}
-                />
-              ),
-          },
-        ]}
-      />
+      <Menu.Row>
+        <Menu.Row.Item
+          label="Current version"
+          size={6}
+          value={currentKernelVersion}
+        />
+        <Menu.Row.Item
+          label="New version"
+          size={6}
+          value={
+            upgradeKernelVersions.length === 1 ? (
+              <span>{upgradeKernelVersions[0].version_rounded}</span>
+            ) : (
+              <Select
+                options={KERNEL_VERSION_OPTIONS}
+                {...formik.getFieldProps("new_kernel_version")}
+              />
+            )
+          }
+        />
+      </Menu.Row>
+
       <strong className={classes.marginTop}>Delivery time</strong>
       <div className={classes.radioGroup}>
         <Input

@@ -4,7 +4,6 @@ import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
 import useRoles from "@/hooks/useRoles";
-import { filter } from "@/utils/_helpers";
 import moment from "moment";
 import type { FC } from "react";
 import { Link } from "react-router";
@@ -36,112 +35,121 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
   const activity = profile.activities.last_activity;
 
   return (
-    <Blocks
-      items={[
-        {
-          content: (
-            <Menu
-              items={[
-                {
-                  label: "Title",
-                  size: 6,
-                  value: profile.title,
-                },
-                {
-                  label: "Status",
-                  size: 6,
-                  value: getStatusText(profile),
-                },
-                {
-                  label: "Script",
-                  size: 6,
-                  value: script ? (
-                    <Link
-                      to="/scripts?tab=scripts"
-                      state={{ scriptId: script.id }}
-                    >
-                      {script.title}
-                    </Link>
-                  ) : null,
-                },
-                {
-                  label: "Access group",
-                  size: 6,
-                  value: accessGroup,
-                },
-                {
-                  label: "Run as user",
-                  size: 6,
-                  value: profile.username,
-                },
-                {
-                  label: "Time limit",
-                  size: 6,
-                  value: `${profile.time_limit}s`,
-                },
-              ]}
+    <Blocks>
+      <Blocks.Item>
+        <Menu>
+          <Menu.Row>
+            <Menu.Row.Item label="Title" size={6} value={profile.title} />
+
+            <Menu.Row.Item
+              label="Status"
+              size={6}
+              value={getStatusText(profile)}
             />
-          ),
-        },
-        {
-          content: (
-            <Menu
-              items={filter(
-                {
-                  label: "Trigger",
-                  size: 12,
-                  value: getTriggerLongText(profile) || null,
-                },
-                profile.trigger.trigger_type !== "event" && {
-                  label: "Next run",
-                  size: 6,
-                  value: profile.trigger.next_run
+          </Menu.Row>
+
+          <Menu.Row>
+            <Menu.Row.Item
+              label="Script"
+              size={6}
+              value={
+                script ? (
+                  <Link
+                    to="/scripts?tab=scripts"
+                    state={{ scriptId: script.id }}
+                  >
+                    {script.title}
+                  </Link>
+                ) : null
+              }
+            />
+
+            <Menu.Row.Item label="Access group" size={6} value={accessGroup} />
+          </Menu.Row>
+
+          <Menu.Row>
+            <Menu.Row.Item
+              label="Run as user"
+              size={6}
+              value={profile.username}
+            />
+
+            <Menu.Row.Item
+              label="Time limit"
+              size={6}
+              value={`${profile.time_limit}s`}
+            />
+          </Menu.Row>
+        </Menu>
+      </Blocks.Item>
+
+      <Blocks.Item>
+        <Menu>
+          <Menu.Row>
+            <Menu.Row.Item
+              label="Trigger"
+              size={12}
+              value={getTriggerLongText(profile) || null}
+            />
+          </Menu.Row>
+
+          <Menu.Row>
+            {profile.trigger.trigger_type !== "event" && (
+              <Menu.Row.Item
+                label="Next run"
+                size={6}
+                value={
+                  profile.trigger.next_run
                     ? `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)}`
-                    : null,
-                },
-                {
-                  label: "Last run",
-                  size: 6,
-                  value: activity ? (
-                    <Link to={`/activities?query=parent-id%3A${activity.id}`}>
-                      {moment(activity.creation_time)
-                        .utc()
-                        .format(DISPLAY_DATE_TIME_FORMAT)}
-                    </Link>
-                  ) : null,
-                },
-              )}
+                    : null
+                }
+              />
+            )}
+
+            <Menu.Row.Item
+              label="Last run"
+              size={6}
+              value={
+                activity ? (
+                  <Link to={`/activities?query=parent-id%3A${activity.id}`}>
+                    {moment(activity.creation_time)
+                      .utc()
+                      .format(DISPLAY_DATE_TIME_FORMAT)}
+                  </Link>
+                ) : null
+              }
             />
-          ),
-        },
-        {
-          title: "Association",
-          content: (
-            <Menu
-              items={[
-                {
-                  label: "Associated instances",
-                  size: 12,
-                  value: (
-                    <ScriptProfileAssociatedInstancesLink
-                      scriptProfile={profile}
-                    />
-                  ),
-                },
-                {
-                  label: "Tags",
-                  size: 12,
-                  value: profile.all_computers
-                    ? "All instances"
-                    : profile.tags.join(", ") || null,
-                  type: "truncated",
-                },
-              ]}
+          </Menu.Row>
+        </Menu>
+      </Blocks.Item>
+
+      <Blocks.Item>
+        <Menu>
+          <Menu.Row>
+            <Menu.Row.Item
+              label="Associated instances"
+              size={12}
+              value={
+                <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
+              }
             />
-          ),
-        },
-      ]}
-    />
+          </Menu.Row>
+
+          <Menu.Row>
+            <Menu.Row.Item
+              label="Tags"
+              size={12}
+              value={
+                profile.all_computers
+                  ? "All instances"
+                  : profile.tags.join(", ") || null
+              }
+              type="truncated"
+            />
+          </Menu.Row>
+        </Menu>
+      </Blocks.Item>
+    </Blocks>
   );
 };
 

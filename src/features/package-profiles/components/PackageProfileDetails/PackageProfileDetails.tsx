@@ -115,43 +115,60 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           <span>Remove</span>
         </Button>
       </div>
-      <Menu
-        items={[
-          { label: "Title", size: 3, value: profile.title },
-          { label: "Name", size: 3, value: profile.name },
-          { label: "Description", size: 6, value: profile.description },
-          {
-            label: "Access group",
-            size: 3,
-            value:
+      <Menu>
+        <Menu.Row>
+          <Menu.Row.Item label="Title" size={3} value={profile.title} />
+          <Menu.Row.Item label="Name" size={3} value={profile.name} />
+          <Menu.Row.Item
+            label="Description"
+            size={6}
+            value={profile.description}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Access group"
+            size={3}
+            value={
               accessGroups.find((group) => group.name === profile.access_group)
-                ?.title ?? profile.access_group,
-          },
-          {
-            label: "Tags",
-            size: 9,
-            value: profile.tags.join(", ") || null,
-            type: "truncated",
-          },
-          {
-            label: "Associated to",
-            size: 3,
-            value: (
+                ?.title ?? profile.access_group
+            }
+          />
+          <Menu.Row.Item
+            label="Tags"
+            size={9}
+            value={profile.tags.join(", ") || null}
+            type="truncated"
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Associated to"
+            size={3}
+            value={
               <PackageProfileAssociatedInstancesLink packageProfile={profile} />
-            ),
-          },
-          {
-            label: "Pending on",
-            size: 3,
-            value: `${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`,
-          },
-          {
-            label: "Not compliant on",
-            size: 3,
-            value: `${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`,
-          },
-        ]}
-      />
+            }
+          />
+          <Menu.Row.Item
+            label="Pending on"
+            size={3}
+            value={`${profile.computers.pending?.length ?? 0} ${pluralize(
+              profile.computers.pending.length,
+              "instance",
+            )}`}
+          />
+          <Menu.Row.Item
+            label="Not compliant on"
+            size={3}
+            value={`${profile.computers["non-compliant"].length} ${pluralize(
+              profile.computers["non-compliant"].length,
+              "instance",
+            )}`}
+          />
+        </Menu.Row>
+      </Menu>
 
       <PackageProfileDetailsConstraints profile={profile} />
 

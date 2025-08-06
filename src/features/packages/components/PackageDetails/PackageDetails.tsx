@@ -1,7 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
 import useSidePanel from "@/hooks/useSidePanel";
-import { filter } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { Fragment, lazy, Suspense } from "react";
@@ -70,32 +69,36 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
           ))}
       </div>
 
-      <Menu
-        items={filter(
-          {
-            label: "Name",
-            size: 12,
-            value: singlePackage.name,
-          },
-          {
-            label: "Summary",
-            size: 12,
-            value: singlePackage.summary,
-          },
-          {
-            label: "Current version",
-            size: 6,
-            value: singlePackage.current_version,
-          },
-          singlePackage.available_version !== null &&
+      <Menu>
+        <Menu.Row>
+          <Menu.Row.Item label="Name" size={12} value={singlePackage.name} />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Summary"
+            size={12}
+            value={singlePackage.summary}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Current version"
+            size={6}
+            value={singlePackage.current_version}
+          />
+          {singlePackage.available_version !== null &&
             singlePackage.available_version !==
-              singlePackage.current_version && {
-              label: "Upgradable to",
-              size: 6,
-              value: highlightVersionsDifference(singlePackage),
-            },
-        )}
-      />
+              singlePackage.current_version && (
+              <Menu.Row.Item
+                label="Upgradable to"
+                size={6}
+                value={highlightVersionsDifference(singlePackage)}
+              />
+            )}
+        </Menu.Row>
+      </Menu>
     </>
   );
 };

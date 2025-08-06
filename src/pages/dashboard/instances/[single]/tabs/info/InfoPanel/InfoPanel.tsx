@@ -32,7 +32,6 @@ import type {
   WindowsInstance,
   WslInstance,
 } from "@/types/Instance";
-import { filter } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
@@ -360,128 +359,131 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         />
       </div>
 
-      <Blocks
-        items={[
-          {
-            title: "Status",
-            content: (
-              <Menu
-                items={filter(
-                  {
-                    label: "Status",
-                    size: 3,
-                    value: (
-                      <div className={classes.status}>
-                        <Icon
-                          name={getStatusCellIconAndLabel(instance).icon ?? ""}
-                        />
-                        <span>{getStatusCellIconAndLabel(instance).label}</span>
-                      </div>
-                    ),
-                  },
-                  {
-                    label: "Last ping time",
-                    size: 3,
-                    value: moment(instance.last_ping_time).isValid()
-                      ? moment(instance.last_ping_time).format(
-                          DISPLAY_DATE_TIME_FORMAT,
-                        )
-                      : null,
-                  },
-                  {
-                    label: "Access group",
-                    size: 6,
-                    value:
-                      accessGroups.find(
-                        (accessGroup) =>
-                          accessGroup.name === instance.access_group,
-                      )?.title || instance.access_group,
-                  },
-                  {
-                    label: "Profiles",
-                    size: 3,
-                    value: instance.profiles?.length ? (
-                      <Profiles profiles={instance.profiles} />
-                    ) : null,
-                    type: "truncated",
-                  },
-                  getFeatures(instance).employees && {
-                    label: "Associated employee",
-                    size: 6,
-                    value: employee?.name,
-                  },
-                )}
+      <Blocks>
+        <Blocks.Item title="Status">
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Status"
+                size={3}
+                value={
+                  <div className={classes.status}>
+                    <Icon
+                      name={getStatusCellIconAndLabel(instance).icon ?? ""}
+                    />
+                    <span>{getStatusCellIconAndLabel(instance).label}</span>
+                  </div>
+                }
               />
-            ),
-          },
-          {
-            title: "Registration details",
-            content: (
-              <Menu
-                items={filter(
-                  {
-                    label: "Hostname",
-                    size: 3,
-                    value: instance.hostname,
-                  },
-                  { label: "ID", size: 3, value: instance.id },
-                  getFeatures(instance).hardware && {
-                    label: "Serial number",
-                    size: 3,
-                    value: instance.grouped_hardware?.system.serial,
-                  },
-                  getFeatures(instance).hardware && {
-                    label: "Product identifier",
-                    size: 3,
-                    value: instance.grouped_hardware?.system.model,
-                  },
-                  {
-                    label: "OS",
-                    size: 3,
-                    value: instance.distribution_info?.description,
-                  },
-                  getFeatures(instance).hardware && {
-                    label: "IP addresses",
-                    size: 3,
-                    value: Array.isArray(instance.grouped_hardware?.network)
+              <Menu.Row.Item
+                label="Last ping time"
+                size={3}
+                value={
+                  moment(instance.last_ping_time).isValid()
+                    ? moment(instance.last_ping_time).format(
+                        DISPLAY_DATE_TIME_FORMAT,
+                      )
+                    : null
+                }
+              />
+              <Menu.Row.Item
+                label="Access group"
+                size={3}
+                value={
+                  accessGroups.find(
+                    (accessGroup) => accessGroup.name === instance.access_group,
+                  )?.title || instance.access_group
+                }
+              />
+            </Menu.Row>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Profiles"
+                size={3}
+                value={
+                  instance.profiles?.length ? (
+                    <Profiles profiles={instance.profiles} />
+                  ) : null
+                }
+                type="truncated"
+              />
+              {getFeatures(instance).employees && (
+                <Menu.Row.Item
+                  label="Associated employee"
+                  size={3}
+                  value={employee?.name}
+                />
+              )}
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+        <Blocks.Item title="Registration details">
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Hostname"
+                size={3}
+                value={instance.hostname}
+              />
+              <Menu.Row.Item label="ID" size={3} value={instance.id} />
+              {getFeatures(instance).hardware && (
+                <Menu.Row.Item
+                  label="Serial number"
+                  size={3}
+                  value={instance.grouped_hardware?.system.serial}
+                />
+              )}
+              {getFeatures(instance).hardware && (
+                <Menu.Row.Item
+                  label="Product identifier"
+                  size={3}
+                  value={instance.grouped_hardware?.system.model}
+                />
+              )}
+            </Menu.Row>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="OS"
+                size={3}
+                value={instance.distribution_info?.description}
+              />
+              {getFeatures(instance).hardware && (
+                <Menu.Row.Item
+                  label="IP addresses"
+                  size={3}
+                  value={
+                    Array.isArray(instance.grouped_hardware?.network)
                       ? instance.grouped_hardware.network
                           .map((network) => network.ip)
                           .join(", ")
-                      : null,
-                    type: "truncated",
-                  },
-                  {
-                    label: "Registered",
-                    size: 6,
-                    value: moment(instance.registered_at).format(
-                      DISPLAY_DATE_TIME_FORMAT,
-                    ),
-                  },
+                      : null
+                  }
+                  type="truncated"
+                />
+              )}
+              <Menu.Row.Item
+                label="Registered"
+                size={3}
+                value={moment(instance.registered_at).format(
+                  DISPLAY_DATE_TIME_FORMAT,
                 )}
               />
-            ),
-          },
-          {
-            title: "Other",
-            content: (
-              <Menu
-                items={[
-                  {
-                    label: "Annotations",
-                    size: 3,
-                    value: null,
-                  },
-                  {
-                    label: "Comment",
-                    size: 9,
-                    value: instance.comment || null,
-                  },
-                ]}
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+        <Blocks.Item title="Other">
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item label="Annotations" size={3} value={null} />
+              <Menu.Row.Item
+                label="Comment"
+                size={3}
+                value={instance.comment || null}
               />
-            ),
-          },
-        ]}
-      />
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+      </Blocks>
 
       {isRestartModalOpen && (
         <ConfirmationModal

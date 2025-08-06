@@ -3,7 +3,6 @@ import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { filter } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -71,108 +70,115 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
         </div>
       </div>
 
-      <Blocks
-        items={[
-          {
-            content: (
-              <Menu
-                items={[
-                  {
-                    label: "Title",
-                    size: 6,
-                    value: profile.title,
-                  },
-                  {
-                    label: "Name",
-                    size: 6,
-                    value: profile.name,
-                  },
-                  {
-                    label: "Access group",
-                    size: 6,
-                    value:
-                      accessGroupOptions.find(
-                        ({ value }) => value === profile.access_group,
-                      )?.label ?? profile.access_group,
-                  },
-                  {
-                    label: "Description",
-                    size: 12,
-                    value: profile.description,
-                  },
-                ]}
+      <Blocks>
+        <Blocks.Item>
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item label="Title" size={6} value={profile.title} />
+              <Menu.Row.Item label="Name" size={6} value={profile.name} />
+            </Menu.Row>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Access group"
+                size={6}
+                value={
+                  accessGroupOptions.find(
+                    ({ value }) => value === profile.access_group,
+                  )?.label ?? profile.access_group
+                }
               />
-            ),
-          },
-          {
-            content: (
-              <Menu
-                items={filter(
-                  {
-                    label: "Rootfs image name",
-                    size: 12,
-                    value: profile.image_name,
-                  },
-                  profile.image_source !== null && {
-                    label: "Rootfs image source",
-                    size: 12,
-                    value: profile.image_source,
-                    type: "truncated",
-                  },
-                  {
-                    label: "Cloud-init",
-                    size: 12,
-                    value: profile.cloud_init_contents || null,
-                  },
-                )}
+            </Menu.Row>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Description"
+                size={12}
+                value={profile.description}
               />
-            ),
-          },
-          {
-            title: "Association",
-            content: (
-              <>
-                {profile.all_computers && (
-                  <p>This profile has been associated with all instances.</p>
-                )}
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
 
-                <Menu
-                  items={filter(
-                    !profile.all_computers && {
-                      label: "Tags",
-                      size: 12,
-                      value: profile.tags.join(", ") || null,
-                    },
-                    canBeAssociated && {
-                      label: "Associated parents",
-                      size: 12,
-                      value: (
+        <Blocks.Item>
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Rootfs image name"
+                size={12}
+                value={profile.image_name}
+              />
+            </Menu.Row>
+            {profile.image_source !== null && (
+              <Menu.Row>
+                <Menu.Row.Item
+                  label="Rootfs image source"
+                  size={12}
+                  value={profile.image_source}
+                  type="truncated"
+                />
+              </Menu.Row>
+            )}
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Cloud-init"
+                size={12}
+                value={profile.cloud_init_contents || null}
+              />
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+
+        <Blocks.Item title="Association">
+          <>
+            {profile.all_computers && (
+              <p>This profile has been associated with all instances.</p>
+            )}
+
+            <Menu>
+              {!profile.all_computers && (
+                <Menu.Row>
+                  <Menu.Row.Item
+                    label="Tags"
+                    size={12}
+                    value={profile.tags.join(", ") || null}
+                  />
+                </Menu.Row>
+              )}
+
+              {canBeAssociated && (
+                <>
+                  <Menu.Row>
+                    <Menu.Row.Item
+                      label="Associated parents"
+                      size={12}
+                      value={
                         <WslProfileAssociatedParentsLink wslProfile={profile} />
-                      ),
-                    },
-                    canBeAssociated && {
-                      label: "Not compliant",
-                      size: 6,
-                      value: (
+                      }
+                    />
+                  </Menu.Row>
+                  <Menu.Row>
+                    <Menu.Row.Item
+                      label="Not compliant"
+                      size={6}
+                      value={
                         <WslProfileNonCompliantParentsLink
                           wslProfile={profile}
                         />
-                      ),
-                    },
-                    canBeAssociated && {
-                      label: "Compliant",
-                      size: 6,
-                      value: (
+                      }
+                    />
+                    <Menu.Row.Item
+                      label="Compliant"
+                      size={6}
+                      value={
                         <WslProfileCompliantParentsLink wslProfile={profile} />
-                      ),
-                    },
-                  )}
-                />
-              </>
-            ),
-          },
-        ]}
-      />
+                      }
+                    />
+                  </Menu.Row>
+                </>
+              )}
+            </Menu>
+          </>
+        </Blocks.Item>
+      </Blocks>
 
       <WslProfileRemoveModal
         isOpen={isRemoveModalOpen}

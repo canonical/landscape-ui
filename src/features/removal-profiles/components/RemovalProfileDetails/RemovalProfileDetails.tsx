@@ -95,58 +95,52 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Blocks
-        items={[
-          {
-            content: (
-              <Menu
-                items={[
-                  { label: "Title", size: 6, value: profile.title },
-                  {
-                    label: "Name",
-                    size: 6,
-                    value: profile.name,
-                  },
-                  {
-                    label: "Access group",
-                    size: 6,
-                    value:
-                      accessGroupOptions.find(
-                        ({ value }) => value === profile.access_group,
-                      )?.label ?? profile.access_group,
-                  },
-                  {
-                    label: "Removal timeframe",
-                    size: 12,
-                    value: `${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`,
-                  },
-                ]}
+      <Blocks>
+        <Blocks.Item>
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item label="Title" size={6} value={profile.title} />
+
+              <Menu.Row.Item label="Name" size={6} value={profile.name} />
+
+              <Menu.Row.Item
+                label="Access group"
+                size={6}
+                value={
+                  accessGroupOptions.find(
+                    ({ value }) => value === profile.access_group,
+                  )?.label ?? profile.access_group
+                }
               />
-            ),
-          },
-          {
-            title: "Assocation",
-            content: (
-              <>
-                {profile.all_computers ? (
-                  <p>This profile has been associated with all instances.</p>
-                ) : (
-                  <Menu
-                    items={[
-                      {
-                        label: "Tags",
-                        size: 12,
-                        value: profile.tags.join(", ") || null,
-                        type: "truncated",
-                      },
-                    ]}
-                  />
-                )}
-              </>
-            ),
-          },
-        ]}
-      />
+            </Menu.Row>
+
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Removal timeframe"
+                size={12}
+                value={`${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`}
+              />
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+
+        <Blocks.Item title="Association">
+          {profile.all_computers ? (
+            <p>This profile has been associated with all instances.</p>
+          ) : (
+            <Menu>
+              <Menu.Row>
+                <Menu.Row.Item
+                  label="Tags"
+                  size={12}
+                  value={profile.tags.join(", ") || null}
+                  type="truncated"
+                />
+              </Menu.Row>
+            </Menu>
+          )}
+        </Blocks.Item>
+      </Blocks>
 
       <TextConfirmationModal
         isOpen={modalOpen}

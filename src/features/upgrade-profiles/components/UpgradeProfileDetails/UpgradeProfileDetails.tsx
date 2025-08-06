@@ -1,6 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
-import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
 import useDebug from "@/hooks/useDebug";
@@ -97,84 +96,92 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Blocks
-        items={[
-          {
-            content: (
-              <Menu
-                items={[
-                  { label: "Title", size: 6, value: profile.title },
-                  { label: "Name", size: 6, value: profile.name },
-                  {
-                    label: "Access group",
-                    size: 6,
-                    value:
-                      accessGroupOptions.find(
-                        ({ value }) => value === profile.access_group,
-                      )?.label ?? profile.access_group,
-                  },
-                  {
-                    label: "Upgrade type",
-                    size: 6,
-                    value: profile.upgrade_type === "all" ? "All" : "Security",
-                  },
-                  {
-                    label: "Auto remove packages",
-                    size: 6,
-                    value: profile.autoremove ? "On" : "Off",
-                  },
-                ]}
+      <Blocks>
+        <Blocks.Item>
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item label="Title" size={6} value={profile.title} />
+              <Menu.Row.Item label="Name" size={6} value={profile.name} />
+            </Menu.Row>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Access group"
+                size={6}
+                value={
+                  accessGroupOptions.find(
+                    ({ value }) => value === profile.access_group,
+                  )?.label ?? profile.access_group
+                }
               />
-            ),
-          },
-          {
-            title: "Schedule",
-            content: (
-              <Menu
-                items={[
-                  {
-                    label: "Schedule",
-                    size: 12,
-                    value: scheduleMessage,
-                  },
-                  {
-                    label: "Next run",
-                    size: 12,
-                    value: nextRunMessage,
-                  },
-                  {
-                    label: "Delivery delay window",
-                    size: 12,
-                    value: `${profile.deliver_delay_window} ${pluralize(Number(profile.deliver_delay_window), "minute")}`,
-                  },
-                ]}
+              <Menu.Row.Item
+                label="Upgrade type"
+                size={6}
+                value={profile.upgrade_type === "all" ? "All" : "Security"}
               />
-            ),
-          },
-          {
-            title: "Association",
-            content: (
-              <>
-                {profile.all_computers && (
-                  <p>This profile has been associated with all instances.</p>
-                )}
-                {!profile.all_computers && !profile.tags.length && (
-                  <p>
-                    This profile has not yet been associated with any instances.
-                  </p>
-                )}
-                {!profile.all_computers && profile.tags.length > 0 && (
-                  <InfoItem
+            </Menu.Row>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Auto remove packages"
+                size={6}
+                value={profile.autoremove ? "On" : "Off"}
+              />
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+
+        <Blocks.Item title="Schedule">
+          <Menu>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Schedule"
+                size={12}
+                value={scheduleMessage}
+              />
+            </Menu.Row>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Next run"
+                size={12}
+                value={nextRunMessage}
+              />
+            </Menu.Row>
+            <Menu.Row>
+              <Menu.Row.Item
+                label="Delivery delay window"
+                size={12}
+                value={`${profile.deliver_delay_window} ${pluralize(
+                  Number(profile.deliver_delay_window),
+                  "minute",
+                )}`}
+              />
+            </Menu.Row>
+          </Menu>
+        </Blocks.Item>
+
+        <Blocks.Item title="Association">
+          <>
+            {profile.all_computers && (
+              <p>This profile has been associated with all instances.</p>
+            )}
+            {!profile.all_computers && !profile.tags.length && (
+              <p>
+                This profile has not yet been associated with any instances.
+              </p>
+            )}
+            {!profile.all_computers && profile.tags.length > 0 && (
+              <Menu>
+                <Menu.Row>
+                  <Menu.Row.Item
                     label="Tags"
-                    type="truncated"
-                    value={profile.tags.join(", ")}
+                    size={12}
+                    value={profile.tags.join(", ") || null}
                   />
-                )}
-              </>
-            ),
-          },
-        ]}
-      />
+                </Menu.Row>
+              </Menu>
+            )}
+          </>
+        </Blocks.Item>
+      </Blocks>
 
       <TextConfirmationModal
         isOpen={modalOpen}

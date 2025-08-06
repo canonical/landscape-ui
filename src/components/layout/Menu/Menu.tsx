@@ -1,47 +1,31 @@
-import { Col, Row } from "@canonical/react-components";
-import classNames from "classnames";
-import type { ComponentProps, FC } from "react";
+import type { ComponentProps, FC, ReactNode } from "react";
 import InfoItem from "../InfoItem";
 import classes from "./Menu.module.scss";
 
-type Item = ComponentProps<typeof InfoItem> &
-  Pick<ComponentProps<typeof Col>, "size">;
-
 interface MenuProps {
-  readonly items: Item[];
+  readonly children: ReactNode;
 }
 
-const Menu: FC<MenuProps> = ({ items }) => (
-  <div className={classes.menu}>
-    {items
-      .reduce((rows: Item[][], item) => {
-        const [lastRow, ...firstRows] = rows;
+interface RowProps {
+  readonly children: ReactNode;
+}
 
-        if (
-          lastRow &&
-          lastRow.reduce((totalSize, { size }) => totalSize + size, 0) +
-            item.size <=
-            12
-        ) {
-          return [[...lastRow, item], ...firstRows];
-        } else {
-          return [[item], ...rows];
-        }
-      }, [])
-      .toReversed()
-      .map((columns, rowIndex) => (
-        <Row
-          key={rowIndex}
-          className={classNames("u-no-padding u-no-max-width", classes.row)}
-        >
-          {columns.map(({ size, ...props }, columnIndex) => (
-            <Col key={columnIndex} size={size}>
-              <InfoItem {...props} />
-            </Col>
-          ))}
-        </Row>
-      ))}
-  </div>
+type ItemProps = ComponentProps<typeof InfoItem> & {
+  readonly size: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+};
+
+const Menu: FC<MenuProps> & { Row: FC<RowProps> & { Item: FC<ItemProps> } } = ({
+  children,
+}: MenuProps) => <div className={classes.menu}>{children}</div>;
+
+const Row: FC<RowProps> & { Item: FC<ItemProps> } = ({
+  children,
+}: RowProps) => <div className={classes.row}>{children}</div>;
+
+const Item: FC<ItemProps> = ({ size, ...props }) => (
+  <InfoItem style={{ gridColumn: `span ${size}` }} {...props} />
 );
 
+Row.Item = Item;
+Menu.Row = Row;
 export default Menu;

@@ -5,7 +5,6 @@ import { useGetInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { filter } from "@/utils/_helpers";
 import { ConfirmationButton, Icon } from "@canonical/react-components";
 import moment from "moment";
 import { type FC } from "react";
@@ -232,22 +231,26 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           )}
         </div>
       </div>
-      <Menu
-        items={filter(
-          {
-            label: "Description",
-            size: 12,
-            value: activity.summary,
-          },
-          instance && {
-            label: "Instance",
-            size: 12,
-            value: instance.title,
-          },
-          {
-            label: "Status",
-            size: 6,
-            value: (
+      <Menu>
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Description"
+            size={12}
+            value={activity.summary}
+          />
+        </Menu.Row>
+
+        {instance && (
+          <Menu.Row>
+            <Menu.Row.Item label="Instance" size={12} value={instance.title} />
+          </Menu.Row>
+        )}
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Status"
+            size={6}
+            value={
               <>
                 <Icon
                   name={ACTIVITY_STATUSES[activity.activity_status].icon}
@@ -255,31 +258,41 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
                 />
                 {ACTIVITY_STATUSES[activity.activity_status].label}
               </>
-            ),
-          },
-          {
-            label: "Created at",
-            size: 6,
-            value: moment(activity.creation_time).format(
+            }
+          />
+          <Menu.Row.Item
+            label="Created at"
+            size={6}
+            value={moment(activity.creation_time).format(
               DISPLAY_DATE_TIME_FORMAT,
-            ),
-          },
-          typeof activity.delivery_time === "string" && {
-            label: "Delivered at",
-            size: 6,
-            value: moment(activity.delivery_time).format(
-              DISPLAY_DATE_TIME_FORMAT,
-            ),
-          },
-          activity.completion_time !== null && {
-            label: "Completed at",
-            size: 6,
-            value: moment(activity.completion_time).format(
-              DISPLAY_DATE_TIME_FORMAT,
-            ),
-          },
+            )}
+          />
+        </Menu.Row>
+
+        {(typeof activity.delivery_time === "string" ||
+          activity.completion_time !== null) && (
+          <Menu.Row>
+            {typeof activity.delivery_time === "string" && (
+              <Menu.Row.Item
+                label="Delivered at"
+                size={6}
+                value={moment(activity.delivery_time).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              />
+            )}
+            {activity.completion_time !== null && (
+              <Menu.Row.Item
+                label="Completed at"
+                size={6}
+                value={moment(activity.completion_time).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              />
+            )}
+          </Menu.Row>
         )}
-      />
+      </Menu>
     </>
   );
 };

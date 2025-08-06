@@ -1,3 +1,5 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .menu {
   display: flex;
   flex-direction: column;
@@ -5,5 +7,7 @@
 }
 
 .row {
-  row-gap: 2rem;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(12, 1fr);
 }

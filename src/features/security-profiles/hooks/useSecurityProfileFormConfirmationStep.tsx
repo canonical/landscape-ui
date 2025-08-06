@@ -50,26 +50,37 @@ export default function useSecurityProfileFormConfirmationStep<
                   "To complete the fixes, instances must be restarted.",
                 iconName: "restart",
                 children: (
-                  <Menu
-                    items={[
-                      {
-                        label: "Delivery time",
-                        size: 12,
-                        value:
-                          formik.values.delivery_time == "asap"
+                  <Menu>
+                    <Menu.Row>
+                      <Menu.Row.Item
+                        label="Delivery time"
+                        size={12}
+                        value={
+                          formik.values.delivery_time === "asap"
                             ? "As soon as possible"
-                            : `Delayed by ${formik.values.restart_deliver_delay} ${pluralize(formik.values.restart_deliver_delay, "hour")}`,
-                      },
-                      {
-                        label: "Randomize delivery over a time window",
-                        size: 12,
-                        value:
-                          formik.values.randomize_delivery == "yes"
-                            ? `Yes, over ${formik.values.restart_deliver_delay_window} ${pluralize(formik.values.restart_deliver_delay_window, "minute")}`
-                            : "No",
-                      },
-                    ]}
-                  />
+                            : `Delayed by ${formik.values.restart_deliver_delay} ${pluralize(
+                                formik.values.restart_deliver_delay,
+                                "hour",
+                              )}`
+                        }
+                      />
+                    </Menu.Row>
+
+                    <Menu.Row>
+                      <Menu.Row.Item
+                        label="Randomize delivery over a time window"
+                        size={12}
+                        value={
+                          formik.values.randomize_delivery === "yes"
+                            ? `Yes, over ${formik.values.restart_deliver_delay_window} ${pluralize(
+                                formik.values.restart_deliver_delay_window,
+                                "minute",
+                              )}`
+                            : "No"
+                        }
+                      />
+                    </Menu.Row>
+                  </Menu>
                 ),
               }
             : null,

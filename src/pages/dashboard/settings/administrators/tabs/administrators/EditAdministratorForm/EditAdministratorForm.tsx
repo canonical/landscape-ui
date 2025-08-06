@@ -121,30 +121,28 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
         <span>Remove</span>
       </ConfirmationButton>
 
-      <Menu
-        items={[
-          {
-            label: "Name",
-            size: 6,
-            value: currentAdministrator.name,
-          },
-          {
-            label: "Email",
-            size: 6,
-            value: currentAdministrator.email,
-          },
-          {
-            label: "Timezone",
-            size: 12,
-            value: null,
-          },
-          {
-            label: "Identity URL",
-            size: 12,
-            value: null,
-          },
-        ]}
-      />
+      <Menu>
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Name"
+            size={6}
+            value={currentAdministrator.name}
+          />
+          <Menu.Row.Item
+            label="Email"
+            size={6}
+            value={currentAdministrator.email}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item label="Timezone" size={12} value={null} />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item label="Identity URL" size={12} value={null} />
+        </Menu.Row>
+      </Menu>
 
       <MultiSelectField
         variant="condensed"

@@ -1,3 +1,4 @@
+@import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
 .blocks {
@@ -6,8 +7,13 @@
   gap: 2.5rem;
 }
 
-.rule {
-  margin-bottom: $spv--large;
+.dividedBlock {
+  border-top: 1px solid $colors--theme--border-low-contrast;
+  padding-top: $spv--large;
+}
+
+.block:not(:first-child) {
+  @extend .dividedBlock;
 }
 
 .heading {

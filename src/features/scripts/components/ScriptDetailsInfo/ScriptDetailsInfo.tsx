@@ -22,40 +22,52 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
 
   return (
     <>
-      <Menu
-        items={[
-          { label: "Name", size: 6, value: script.title },
-          {
-            label: "Version",
-            size: 6,
-            value: script.version_number,
-          },
-          {
-            label: "Status",
-            size: 6,
-            value: formatTitleCase(script.status),
-          },
-          { label: "Access group", size: 6, value: accessGroup },
-          {
-            label: "Date created",
-            size: 12,
-            value: getAuthorInfo({
+      <Menu>
+        <Menu.Row>
+          <Menu.Row.Item label="Name" size={6} value={script.title} />
+          <Menu.Row.Item
+            label="Version"
+            size={6}
+            value={script.version_number}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Status"
+            size={6}
+            value={formatTitleCase(script.status)}
+          />
+          <Menu.Row.Item label="Access group" size={6} value={accessGroup} />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Date created"
+            size={12}
+            value={getAuthorInfo({
               author: script.created_by.name,
               date: script.created_at,
-            }),
-          },
-          {
-            label: "Last modified",
-            size: 12,
-            value: getAuthorInfo({
+            })}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Last modified"
+            size={12}
+            value={getAuthorInfo({
               author: script.last_edited_by.name,
               date: script.last_edited_at,
-            }),
-          },
-          {
-            label: "Attachments",
-            size: 12,
-            value:
+            })}
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Attachments"
+            size={12}
+            value={
               script.attachments.length > 0
                 ? script.attachments.map((att) => (
                     <AttachmentFile
@@ -65,12 +77,16 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
                       scriptId={script.id}
                     />
                   ))
-                : null,
-          },
-          {
-            label: "Associated profiles",
-            size: 12,
-            value:
+                : null
+            }
+          />
+        </Menu.Row>
+
+        <Menu.Row>
+          <Menu.Row.Item
+            label="Associated profiles"
+            size={12}
+            value={
               script.script_profiles.length > 0
                 ? script.script_profiles.map((profile, index) => (
                     <Link
@@ -79,15 +95,14 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
                       key={profile.id}
                     >
                       {profile.title}
-                      {index < script.script_profiles.length - 1
-                        ? ", "
-                        : ""}{" "}
+                      {index < script.script_profiles.length - 1 ? ", " : ""}
                     </Link>
                   ))
-                : null,
-          },
-        ]}
-      />
+                : null
+            }
+          />
+        </Menu.Row>
+      </Menu>
     </>
   );
 };

@@ -64,7 +64,13 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
     },
   ];
 
-  return <Menu items={infoItems.map((item) => ({ size: 3, ...item }))} />;
+  return (
+    <Menu.Row>
+      {infoItems.map((item, index) => (
+        <Menu.Row.Item key={index} size={3} {...item} />
+      ))}
+    </Menu.Row>
+  );
 };
 
 export default KernelOverview;
