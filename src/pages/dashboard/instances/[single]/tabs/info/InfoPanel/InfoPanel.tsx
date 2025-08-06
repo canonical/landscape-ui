@@ -22,6 +22,7 @@ import {
   WslInstanceReinstallModal,
   WslInstanceUninstallModal,
 } from "@/features/wsl";
+import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
@@ -72,6 +73,7 @@ interface InfoPanelProps {
 }
 
 const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
+  const { isFeatureEnabled } = useAuth();
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
@@ -314,7 +316,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 onClick: openAssociateEmployeeForm,
                 collapsed: true,
                 excluded:
-                  !getFeatures(instance).employees || !!instance.employee_id,
+                  !isFeatureEnabled("employee-management") ||
+                  !getFeatures(instance).employees ||
+                  instance.employee_id !== null,
               },
               {
                 icon: ICONS.user,
@@ -322,6 +326,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 onClick: openDisassociateModal,
                 collapsed: true,
                 excluded:
+                  !isFeatureEnabled("employee-management") ||
                   !getFeatures(instance).employees ||
                   instance.employee_id === null,
               },

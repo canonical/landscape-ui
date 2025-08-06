@@ -9,3 +9,8 @@
 .item:not(:first-child) {
   @extend .dividedItem;
 }
+
+.heading {
+  margin: -0.5rem 0 $spv--large;
+  padding: 0;
+}

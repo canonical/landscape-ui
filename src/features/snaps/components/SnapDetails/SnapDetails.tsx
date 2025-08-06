@@ -4,6 +4,7 @@ import moment from "moment";
 import type { FC } from "react";
 import type { InstalledSnap } from "../../types";
 import SnapsActions from "../SnapsActions";
+import classes from "./SnapDetails.module.scss";
 
 interface SnapDetailsProps {
   readonly installedSnap: InstalledSnap;
@@ -17,7 +18,7 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
         installedSnaps={[installedSnap]}
         sidePanel
       />
-      <InfoGrid>
+      <InfoGrid className={classes.infoGrid}>
         <InfoGrid.Item label="Name" size={12} value={installedSnap.snap.name} />
 
         <InfoGrid.Item

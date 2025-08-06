@@ -191,7 +191,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
                   profile.restart_deliver_delay
                     ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
                     : "As soon as possible"
-                }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
+                }${profile.restart_deliver_delay_window ? `, randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
               />
             )}
           </InfoGrid>

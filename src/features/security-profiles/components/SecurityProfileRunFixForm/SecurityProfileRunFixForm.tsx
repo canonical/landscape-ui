@@ -4,6 +4,7 @@ import InfoGrid from "@/components/layout/InfoGrid";
 import { Form } from "@canonical/react-components";
 import type { ComponentProps, FC, SyntheticEvent } from "react";
 import type { SecurityProfile } from "../../types";
+import { pluralize } from "@/utils/_helpers";
 
 interface SecurityProfileRunFixFormProps
   extends Pick<
@@ -57,7 +58,10 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
                   value={
                     profile.restart_deliver_delay === 0
                       ? "As soon as possible"
-                      : "Scheduled"
+                      : `Delayed by ${profile.restart_deliver_delay} ${pluralize(
+                          profile.restart_deliver_delay,
+                          "hour",
+                        )}`
                   }
                 />
 
@@ -65,8 +69,11 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
                   label="Randomize delivery over a time window"
                   size={12}
                   value={
-                    profile.restart_deliver_delay
-                      ? `${profile.restart_deliver_delay_window} minutes`
+                    profile.restart_deliver_delay_window
+                      ? `Yes, over ${profile.restart_deliver_delay_window} ${pluralize(
+                          profile.restart_deliver_delay_window,
+                          "minute",
+                        )}`
                       : "No"
                   }
                 />

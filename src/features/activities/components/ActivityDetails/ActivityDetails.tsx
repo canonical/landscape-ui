@@ -1,5 +1,6 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
+import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
@@ -11,7 +12,7 @@ import {
   Icon,
 } from "@canonical/react-components";
 import moment from "moment";
-import { type FC } from "react";
+import type { FC } from "react";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities } from "../../hooks";
 import type { Activity } from "../../types";
@@ -240,7 +241,17 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         <InfoGrid.Item label="Description" size={12} value={activity.summary} />
 
         {instance && (
-          <InfoGrid.Item label="Instance" size={12} value={instance.title} />
+          <InfoGrid.Item
+            label="Instance"
+            size={12}
+            value={
+              <StaticLink
+                to={`/instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`}
+              >
+                {instance.title}
+              </StaticLink>
+            }
+          />
         )}
 
         <InfoGrid.Item
@@ -252,7 +263,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
                 name={ACTIVITY_STATUSES[activity.activity_status].icon}
                 className={classes.statusIcon}
               />
-              {ACTIVITY_STATUSES[activity.activity_status].label}
+              <span>{ACTIVITY_STATUSES[activity.activity_status].label}</span>
             </>
           }
         />

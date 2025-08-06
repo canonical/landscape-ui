@@ -1,11 +1,11 @@
 import InfoGrid from "@/components/layout/InfoGrid";
-import NoData from "@/components/layout/NoData";
 import useUsers from "@/hooks/useUsers";
 import type { UrlParams } from "@/types/UrlParams";
 import type { User } from "@/types/User";
 import type { FC } from "react";
 import { useParams } from "react-router";
 import UserPanelActionButtons from "../UserPanelActionButtons";
+import classes from "./UserDetails.module.scss";
 
 interface UserDetailsProps {
   readonly user: User;
@@ -34,10 +34,10 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
   return (
     <>
       <UserPanelActionButtons selectedUsers={[user]} sidePanel />
-      <InfoGrid>
+      <InfoGrid className={classes.infoGrid}>
         <InfoGrid.Item label="Username" size={12} value={user.username} />
 
-        <InfoGrid.Item label="Name" size={12} value={user.name || <NoData />} />
+        <InfoGrid.Item label="Name" size={12} value={user.name || null} />
 
         <InfoGrid.Item label="Passphrase" size={12} type="password" />
 

@@ -54,7 +54,7 @@ describe("SecurityProfileDetails", () => {
 
     expect(
       await screen.findByText(
-        "Delayed by 1 hour, Randomize delivery over 2 minutes",
+        "Delayed by 1 hour, randomize delivery over 2 minutes",
       ),
     ).toBeInTheDocument();
 
