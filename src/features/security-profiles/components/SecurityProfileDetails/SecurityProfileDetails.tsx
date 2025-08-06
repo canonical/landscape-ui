@@ -1,5 +1,5 @@
 import Blocks from "@/components/layout/Blocks";
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useRoles from "@/hooks/useRoles";
@@ -116,54 +116,54 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Grid>
-            <Grid.Item label="Title" size={6} value={profile.title} />
-            <Grid.Item label="Name" size={6} value={profile.name} />
+          <InfoGrid>
+            <InfoGrid.Item label="Title" size={6} value={profile.title} />
+            <InfoGrid.Item label="Name" size={6} value={profile.name} />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Access group"
               size={6}
               value={accessGroup.title}
             />
-            <Grid.Item
+            <InfoGrid.Item
               label="Status"
               size={6}
               value={getStatus(profile).label}
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Security profile">
-          <Grid>
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item
               label="Benchmark"
               size={6}
               value={SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark]}
             />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Tailoring file"
               size={6}
               value={getTailoringFile(profile)}
             />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Mode"
               size={12}
               value={SECURITY_PROFILE_MODE_LABELS[profile.mode]}
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Schedule">
-          <Grid>
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item
               label="Schedule"
               size={12}
               value={getSchedule(profile)}
             />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Last run"
               size={6}
               value={
@@ -173,7 +173,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
               }
             />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Next run"
               size={6}
               value={
@@ -184,7 +184,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             />
 
             {profile.mode === "audit-fix-restart" && (
-              <Grid.Item
+              <InfoGrid.Item
                 label="Restart schedule"
                 size={12}
                 value={`${
@@ -194,12 +194,12 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
                 }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
               />
             )}
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">
-          <Grid>
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item
               label="Associated instances"
               size={12}
               value={
@@ -209,13 +209,13 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
               }
             />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Tags"
               size={12}
               value={getTags(profile)}
               type="truncated"
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
       </Blocks>
     </>

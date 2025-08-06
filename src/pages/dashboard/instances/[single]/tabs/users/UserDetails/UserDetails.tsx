@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import NoData from "@/components/layout/NoData";
 import useUsers from "@/hooks/useUsers";
 import type { UrlParams } from "@/types/UrlParams";
@@ -34,28 +34,28 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
   return (
     <>
       <UserPanelActionButtons selectedUsers={[user]} sidePanel />
-      <Grid>
-        <Grid.Item label="Username" size={12} value={user.username} />
+      <InfoGrid>
+        <InfoGrid.Item label="Username" size={12} value={user.username} />
 
-        <Grid.Item label="Name" size={12} value={user.name || <NoData />} />
+        <InfoGrid.Item label="Name" size={12} value={user.name || <NoData />} />
 
-        <Grid.Item label="Passphrase" size={12} type="password" />
+        <InfoGrid.Item label="Passphrase" size={12} type="password" />
 
-        <Grid.Item label="Primary group" size={12} value={primaryGroup} />
+        <InfoGrid.Item label="Primary group" size={12} value={primaryGroup} />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Additional groups"
           size={12}
           value={userGroups}
           type="truncated"
         />
 
-        <Grid.Item label="Location" size={12} value={user?.location} />
+        <InfoGrid.Item label="Location" size={12} value={user?.location} />
 
-        <Grid.Item label="Home phone" size={12} value={user?.home_phone} />
+        <InfoGrid.Item label="Home phone" size={12} value={user?.home_phone} />
 
-        <Grid.Item label="Work phone" size={12} value={user?.work_phone} />
-      </Grid>
+        <InfoGrid.Item label="Work phone" size={12} value={user?.work_phone} />
+      </InfoGrid>
     </>
   );
 };

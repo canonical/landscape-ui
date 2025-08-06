@@ -1,5 +1,5 @@
 import Flow from "@/components/layout/Flow";
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { pluralize } from "@/utils/_helpers";
 import type { FormikContextType } from "formik";
@@ -50,8 +50,8 @@ export default function useSecurityProfileFormConfirmationStep<
                   "To complete the fixes, instances must be restarted.",
                 iconName: "restart",
                 children: (
-                  <Grid>
-                    <Grid.Item
+                  <InfoGrid>
+                    <InfoGrid.Item
                       label="Delivery time"
                       size={12}
                       value={
@@ -64,7 +64,7 @@ export default function useSecurityProfileFormConfirmationStep<
                       }
                     />
 
-                    <Grid.Item
+                    <InfoGrid.Item
                       label="Randomize delivery over a time window"
                       size={12}
                       value={
@@ -76,7 +76,7 @@ export default function useSecurityProfileFormConfirmationStep<
                           : "No"
                       }
                     />
-                  </Grid>
+                  </InfoGrid>
                 ),
               }
             : null,

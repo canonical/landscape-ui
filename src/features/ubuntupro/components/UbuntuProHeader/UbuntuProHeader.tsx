@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { UbuntuProInfo } from "@/types/Instance";
 import moment from "moment";
@@ -28,20 +28,20 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => (
         </a>
       </span>
     </div>
-    <Grid>
-      <Grid.Item
+    <InfoGrid>
+      <InfoGrid.Item
         label="Account"
         size={3}
         value={ubuntuProData.account?.name || null}
       />
 
-      <Grid.Item
+      <InfoGrid.Item
         label="Subscription"
         size={3}
         value={ubuntuProData.contract?.name || null}
       />
 
-      <Grid.Item
+      <InfoGrid.Item
         label="Valid Until"
         size={3}
         value={
@@ -51,12 +51,12 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => (
         }
       />
 
-      <Grid.Item
+      <InfoGrid.Item
         label="Technical Support Level"
         size={3}
         value={ubuntuProData.contract?.tech_support_level}
       />
-    </Grid>
+    </InfoGrid>
   </div>
 );
 

@@ -1,5 +1,5 @@
 import Blocks from "@/components/layout/Blocks";
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
@@ -37,12 +37,16 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
   return (
     <Blocks>
       <Blocks.Item>
-        <Grid>
-          <Grid.Item label="Title" size={6} value={profile.title} />
+        <InfoGrid>
+          <InfoGrid.Item label="Title" size={6} value={profile.title} />
 
-          <Grid.Item label="Status" size={6} value={getStatusText(profile)} />
+          <InfoGrid.Item
+            label="Status"
+            size={6}
+            value={getStatusText(profile)}
+          />
 
-          <Grid.Item
+          <InfoGrid.Item
             label="Script"
             size={6}
             value={
@@ -54,28 +58,32 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
             }
           />
 
-          <Grid.Item label="Access group" size={6} value={accessGroup} />
+          <InfoGrid.Item label="Access group" size={6} value={accessGroup} />
 
-          <Grid.Item label="Run as user" size={6} value={profile.username} />
+          <InfoGrid.Item
+            label="Run as user"
+            size={6}
+            value={profile.username}
+          />
 
-          <Grid.Item
+          <InfoGrid.Item
             label="Time limit"
             size={6}
             value={`${profile.time_limit}s`}
           />
-        </Grid>
+        </InfoGrid>
       </Blocks.Item>
 
       <Blocks.Item>
-        <Grid>
-          <Grid.Item
+        <InfoGrid>
+          <InfoGrid.Item
             label="Trigger"
             size={12}
             value={getTriggerLongText(profile) || null}
           />
 
           {profile.trigger.trigger_type !== "event" && (
-            <Grid.Item
+            <InfoGrid.Item
               label="Next run"
               size={6}
               value={
@@ -86,7 +94,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
             />
           )}
 
-          <Grid.Item
+          <InfoGrid.Item
             label="Last run"
             size={6}
             value={
@@ -99,12 +107,12 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
               ) : null
             }
           />
-        </Grid>
+        </InfoGrid>
       </Blocks.Item>
 
       <Blocks.Item title="Association">
-        <Grid>
-          <Grid.Item
+        <InfoGrid>
+          <InfoGrid.Item
             label="Associated instances"
             size={12}
             value={
@@ -112,7 +120,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
             }
           />
 
-          <Grid.Item
+          <InfoGrid.Item
             label="Tags"
             size={12}
             value={
@@ -122,7 +130,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
             }
             type="truncated"
           />
-        </Grid>
+        </InfoGrid>
       </Blocks.Item>
     </Blocks>
   );

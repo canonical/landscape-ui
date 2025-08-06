@@ -1,6 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
@@ -99,10 +99,10 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Grid>
-            <Grid.Item label="Title" size={6} value={profile.title} />
-            <Grid.Item label="Name" size={6} value={profile.name} />
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item label="Title" size={6} value={profile.title} />
+            <InfoGrid.Item label="Name" size={6} value={profile.name} />
+            <InfoGrid.Item
               label="Access group"
               size={6}
               value={
@@ -111,24 +111,24 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
                 )?.label ?? profile.access_group
               }
             />
-            <Grid.Item
+            <InfoGrid.Item
               label="Upgrade type"
               size={6}
               value={profile.upgrade_type === "all" ? "All" : "Security"}
             />
-            <Grid.Item
+            <InfoGrid.Item
               label="Auto remove packages"
               size={6}
               value={profile.autoremove ? "On" : "Off"}
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Schedule">
-          <Grid>
-            <Grid.Item label="Schedule" size={12} value={scheduleMessage} />
-            <Grid.Item label="Next run" size={12} value={nextRunMessage} />
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item label="Schedule" size={12} value={scheduleMessage} />
+            <InfoGrid.Item label="Next run" size={12} value={nextRunMessage} />
+            <InfoGrid.Item
               label="Delivery delay window"
               size={12}
               value={`${profile.deliver_delay_window} ${pluralize(
@@ -136,7 +136,7 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
                 "minute",
               )}`}
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">

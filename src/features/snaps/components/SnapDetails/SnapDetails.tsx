@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import type { FC } from "react";
@@ -17,22 +17,22 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
         installedSnaps={[installedSnap]}
         sidePanel
       />
-      <Grid>
-        <Grid.Item label="Name" size={12} value={installedSnap.snap.name} />
+      <InfoGrid>
+        <InfoGrid.Item label="Name" size={12} value={installedSnap.snap.name} />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Channel"
           size={6}
           value={installedSnap.tracking_channel}
         />
-        <Grid.Item label="Version" size={6} value={installedSnap.version} />
+        <InfoGrid.Item label="Version" size={6} value={installedSnap.version} />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Confinement"
           size={6}
           value={installedSnap.confinement}
         />
-        <Grid.Item
+        <InfoGrid.Item
           label="Held until"
           size={6}
           value={
@@ -44,18 +44,18 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
           }
         />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Summary"
           size={12}
           value={installedSnap.snap.summary}
         />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Publisher"
           size={12}
           value={installedSnap.snap.publisher.username}
         />
-      </Grid>
+      </InfoGrid>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -136,13 +136,13 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
       <Notification severity="information" title="Restart recommended">
         <span>{NOTIFICATION_MESSAGE}</span>
       </Notification>
-      <Grid>
-        <Grid.Item
+      <InfoGrid>
+        <InfoGrid.Item
           label="Current version"
           size={6}
           value={currentKernelVersion}
         />
-        <Grid.Item
+        <InfoGrid.Item
           label="New version"
           size={6}
           value={
@@ -156,7 +156,7 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
             )
           }
         />
-      </Grid>
+      </InfoGrid>
 
       <strong className={classes.marginTop}>Delivery time</strong>
       <div className={classes.radioGroup}>

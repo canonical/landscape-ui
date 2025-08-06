@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import type { KernelOverviewInfo } from "../../types";
@@ -17,14 +17,14 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
   const livepatchEnabled = kernelOverview.status !== "Livepatch disabled";
 
   return (
-    <Grid>
-      <Grid.Item
+    <InfoGrid>
+      <InfoGrid.Item
         label="current kernel version"
         size={3}
         value={kernelOverview.currentVersion || null}
       />
 
-      <Grid.Item
+      <InfoGrid.Item
         label="kernel status"
         size={3}
         value={
@@ -48,7 +48,7 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
         }
       />
 
-      <Grid.Item
+      <InfoGrid.Item
         label="livepatch coverage"
         size={3}
         value={
@@ -70,7 +70,7 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
           ) : null
         }
       />
-    </Grid>
+    </InfoGrid>
   );
 };
 

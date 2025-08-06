@@ -1,10 +1,9 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
 import Chip from "@/components/layout/Chip";
-import Grid from "@/components/layout/Grid";
 import HeaderActions from "@/components/layout/HeaderActions";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
-import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import {
@@ -362,8 +361,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
       <Blocks>
         <Blocks.Item title="Status">
-          <Grid>
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item
               label="Status"
               size={3}
               value={
@@ -373,7 +372,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 </div>
               }
             />
-            <Grid.Item
+            <InfoGrid.Item
               label="Last ping time"
               size={3}
               value={
@@ -384,7 +383,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                   : null
               }
             />
-            <Grid.Item
+            <InfoGrid.Item
               label="Access group"
               size={6}
               value={
@@ -393,7 +392,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 )?.title || instance.access_group
               }
             />
-            <Grid.Item
+            <InfoGrid.Item
               label="Profiles"
               size={3}
               value={
@@ -404,73 +403,73 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               type="truncated"
             />
             {getFeatures(instance).employees && (
-              <Grid.Item
+              <InfoGrid.Item
                 label="Associated employee"
                 size={9}
                 value={employee?.name}
               />
             )}
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
         <Blocks.Item title="Registration details">
-          <Menu>
-            <Grid>
-              <Grid.Item label="Hostname" size={3} value={instance.hostname} />
-              <Grid.Item label="ID" size={3} value={instance.id} />
-              {getFeatures(instance).hardware && (
-                <Grid.Item
-                  label="Serial number"
-                  size={3}
-                  value={instance.grouped_hardware?.system.serial}
-                />
-              )}
-              {getFeatures(instance).hardware && (
-                <Grid.Item
-                  label="Product identifier"
-                  size={6}
-                  value={instance.grouped_hardware?.system.model}
-                />
-              )}
-            </Grid>
-            <Grid>
-              <Grid.Item
-                label="OS"
+          <InfoGrid>
+            <InfoGrid.Item
+              label="Hostname"
+              size={3}
+              value={instance.hostname}
+            />
+            <InfoGrid.Item label="ID" size={3} value={instance.id} />
+            {getFeatures(instance).hardware && (
+              <InfoGrid.Item
+                label="Serial number"
                 size={3}
-                value={instance.distribution_info?.description}
+                value={instance.grouped_hardware?.system.serial}
               />
-              {getFeatures(instance).hardware && (
-                <Grid.Item
-                  label="IP addresses"
-                  size={3}
-                  value={
-                    Array.isArray(instance.grouped_hardware?.network)
-                      ? instance.grouped_hardware.network
-                          .map((network) => network.ip)
-                          .join(", ")
-                      : null
-                  }
-                  type="truncated"
-                />
+            )}
+            {getFeatures(instance).hardware && (
+              <InfoGrid.Item
+                label="Product identifier"
+                size={3}
+                value={instance.grouped_hardware?.system.model}
+              />
+            )}
+            <InfoGrid.Item
+              label="OS"
+              size={3}
+              value={instance.distribution_info?.description}
+            />
+            {getFeatures(instance).hardware && (
+              <InfoGrid.Item
+                label="IP addresses"
+                size={3}
+                value={
+                  Array.isArray(instance.grouped_hardware?.network)
+                    ? instance.grouped_hardware.network
+                        .map((network) => network.ip)
+                        .join(", ")
+                    : null
+                }
+                type="truncated"
+              />
+            )}
+            <InfoGrid.Item
+              label="Registered"
+              size={3}
+              value={moment(instance.registered_at).format(
+                DISPLAY_DATE_TIME_FORMAT,
               )}
-              <Grid.Item
-                label="Registered"
-                size={6}
-                value={moment(instance.registered_at).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
-              />
-            </Grid>
-          </Menu>
+            />
+          </InfoGrid>
         </Blocks.Item>
         <Blocks.Item title="Other">
-          <Grid>
-            <Grid.Item label="Annotations" size={3} value={null} />
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item label="Annotations" size={3} value={null} />
+            <InfoGrid.Item
               label="Comment"
               size={9}
               value={instance.comment || null}
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
       </Blocks>
 

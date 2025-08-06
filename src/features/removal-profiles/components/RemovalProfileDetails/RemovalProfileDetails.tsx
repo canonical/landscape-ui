@@ -1,6 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
@@ -98,12 +98,12 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Grid>
-            <Grid.Item label="Title" size={6} value={profile.title} />
+          <InfoGrid>
+            <InfoGrid.Item label="Title" size={6} value={profile.title} />
 
-            <Grid.Item label="Name" size={6} value={profile.name} />
+            <InfoGrid.Item label="Name" size={6} value={profile.name} />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Access group"
               size={6}
               value={
@@ -113,12 +113,12 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
               }
             />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Removal timeframe"
               size={12}
               value={`${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`}
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">

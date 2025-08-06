@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -136,13 +136,13 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
       <Notification severity="caution" title="Security warning">
         <span>{SECURITY_WARNING}</span>
       </Notification>
-      <Grid>
-        <Grid.Item
+      <InfoGrid>
+        <InfoGrid.Item
           label="Current version"
           size={6}
           value={currentKernelVersion}
         />
-        <Grid.Item
+        <InfoGrid.Item
           label="Kernel version"
           size={6}
           value={
@@ -156,7 +156,7 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
             )
           }
         />
-      </Grid>
+      </InfoGrid>
 
       <strong className={classes.marginTop}>Delivery time</strong>
       <div className={classes.radioGroup}>

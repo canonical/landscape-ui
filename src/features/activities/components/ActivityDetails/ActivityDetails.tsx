@@ -1,6 +1,5 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
-import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
@@ -237,67 +236,65 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         </div>
       </div>
 
-      <Menu>
-        <Grid>
-          <Grid.Item label="Description" size={12} value={activity.summary} />
+      <InfoGrid>
+        <InfoGrid.Item label="Description" size={12} value={activity.summary} />
 
-          {instance && (
-            <Grid.Item label="Instance" size={12} value={instance.title} />
+        {instance && (
+          <InfoGrid.Item label="Instance" size={12} value={instance.title} />
+        )}
+
+        <InfoGrid.Item
+          label="Status"
+          size={6}
+          value={
+            <>
+              <Icon
+                name={ACTIVITY_STATUSES[activity.activity_status].icon}
+                className={classes.statusIcon}
+              />
+              {ACTIVITY_STATUSES[activity.activity_status].label}
+            </>
+          }
+        />
+        <InfoGrid.Item
+          label="Created at"
+          size={6}
+          value={moment(activity.creation_time).format(
+            DISPLAY_DATE_TIME_FORMAT,
           )}
+        />
 
-          <Grid.Item
-            label="Status"
+        {typeof activity.delivery_time === "string" && (
+          <InfoGrid.Item
+            label="Delivered at"
             size={6}
-            value={
-              <>
-                <Icon
-                  name={ACTIVITY_STATUSES[activity.activity_status].icon}
-                  className={classes.statusIcon}
-                />
-                {ACTIVITY_STATUSES[activity.activity_status].label}
-              </>
-            }
-          />
-          <Grid.Item
-            label="Created at"
-            size={6}
-            value={moment(activity.creation_time).format(
+            value={moment(activity.delivery_time).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
           />
-
-          {typeof activity.delivery_time === "string" && (
-            <Grid.Item
-              label="Delivered at"
-              size={6}
-              value={moment(activity.delivery_time).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )}
-            />
-          )}
-          {activity.completion_time !== null && (
-            <Grid.Item
-              label="Completed at"
-              size={6}
-              value={moment(activity.completion_time).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )}
-            />
-          )}
-        </Grid>
-
-        {activity.result_text && (
-          <CodeSnippet
-            className={classes.output}
-            blocks={[
-              {
-                title: "Output",
-                code: activity.result_text,
-              },
-            ]}
+        )}
+        {activity.completion_time !== null && (
+          <InfoGrid.Item
+            label="Completed at"
+            size={6}
+            value={moment(activity.completion_time).format(
+              DISPLAY_DATE_TIME_FORMAT,
+            )}
           />
         )}
-      </Menu>
+      </InfoGrid>
+
+      {activity.result_text && (
+        <CodeSnippet
+          className={classes.output}
+          blocks={[
+            {
+              title: "Output",
+              code: activity.result_text,
+            },
+          ]}
+        />
+      )}
     </>
   );
 };

@@ -1,6 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
@@ -112,10 +112,10 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Grid>
-            <Grid.Item label="Title" size={6} value={profile.title} />
+          <InfoGrid>
+            <InfoGrid.Item label="Title" size={6} value={profile.title} />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Access group"
               size={6}
               value={
@@ -124,23 +124,23 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
                 )?.label ?? profile.access_group
               }
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Reboot schedule">
-          <Grid>
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item
               label="Schedule"
               size={12}
               value={formatWeeklyRebootSchedule(profile)}
             />
 
-            <Grid.Item
+            <InfoGrid.Item
               label="Next reboot"
               size={12}
               value={moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">
@@ -148,9 +148,9 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
             <p>This profile has been associated with all instances.</p>
           )}
 
-          <Grid>
+          <InfoGrid>
             {!profile.all_computers && (
-              <Grid.Item
+              <InfoGrid.Item
                 label="Tags"
                 size={12}
                 value={profile.tags.join(", ") || null}
@@ -159,7 +159,7 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
             )}
 
             {(profile.all_computers || !!profile.tags.length) && (
-              <Grid.Item
+              <InfoGrid.Item
                 label="Associated instances"
                 size={12}
                 value={
@@ -169,7 +169,7 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
                 }
               />
             )}
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
       </Blocks>
 

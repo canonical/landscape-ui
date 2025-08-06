@@ -1,5 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -116,14 +116,18 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         </Button>
       </div>
 
-      <Grid>
-        <Grid.Item label="Title" size={3} value={profile.title} />
+      <InfoGrid>
+        <InfoGrid.Item label="Title" size={3} value={profile.title} />
 
-        <Grid.Item label="Name" size={3} value={profile.name} />
+        <InfoGrid.Item label="Name" size={3} value={profile.name} />
 
-        <Grid.Item label="Description" size={6} value={profile.description} />
+        <InfoGrid.Item
+          label="Description"
+          size={6}
+          value={profile.description}
+        />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Access group"
           size={3}
           value={
@@ -132,14 +136,14 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           }
         />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Tags"
           size={9}
           value={profile.tags.join(", ") || null}
           type="truncated"
         />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Associated to"
           size={3}
           value={
@@ -147,7 +151,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           }
         />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Pending on"
           size={3}
           value={`${profile.computers.pending?.length ?? 0} ${pluralize(
@@ -156,7 +160,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           )}`}
         />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Not compliant on"
           size={3}
           value={`${profile.computers["non-compliant"].length} ${pluralize(
@@ -164,7 +168,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
             "instance",
           )}`}
         />
-      </Grid>
+      </InfoGrid>
 
       <PackageProfileDetailsConstraints profile={profile} />
 

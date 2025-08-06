@@ -1,5 +1,5 @@
 import Blocks from "@/components/layout/Blocks";
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
@@ -72,10 +72,10 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Grid>
-            <Grid.Item label="Title" size={6} value={profile.title} />
-            <Grid.Item label="Name" size={6} value={profile.name} />
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item label="Title" size={6} value={profile.title} />
+            <InfoGrid.Item label="Name" size={6} value={profile.name} />
+            <InfoGrid.Item
               label="Access group"
               size={6}
               value={
@@ -84,35 +84,35 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
                 )?.label ?? profile.access_group
               }
             />
-            <Grid.Item
+            <InfoGrid.Item
               label="Description"
               size={12}
               value={profile.description}
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item>
-          <Grid>
-            <Grid.Item
+          <InfoGrid>
+            <InfoGrid.Item
               label="Rootfs image name"
               size={12}
               value={profile.image_name}
             />
             {profile.image_source !== null && (
-              <Grid.Item
+              <InfoGrid.Item
                 label="Rootfs image source"
                 size={12}
                 value={profile.image_source}
                 type="truncated"
               />
             )}
-            <Grid.Item
+            <InfoGrid.Item
               label="Cloud-init"
               size={12}
               value={profile.cloud_init_contents || null}
             />
-          </Grid>
+          </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">
@@ -121,9 +121,9 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
               <p>This profile has been associated with all instances.</p>
             )}
 
-            <Grid>
+            <InfoGrid>
               {!profile.all_computers && (
-                <Grid.Item
+                <InfoGrid.Item
                   label="Tags"
                   size={12}
                   value={profile.tags.join(", ") || null}
@@ -132,21 +132,21 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
 
               {canBeAssociated && (
                 <>
-                  <Grid.Item
+                  <InfoGrid.Item
                     label="Associated parents"
                     size={12}
                     value={
                       <WslProfileAssociatedParentsLink wslProfile={profile} />
                     }
                   />
-                  <Grid.Item
+                  <InfoGrid.Item
                     label="Not compliant"
                     size={6}
                     value={
                       <WslProfileNonCompliantParentsLink wslProfile={profile} />
                     }
                   />
-                  <Grid.Item
+                  <InfoGrid.Item
                     label="Compliant"
                     size={6}
                     value={
@@ -155,7 +155,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
                   />
                 </>
               )}
-            </Grid>
+            </InfoGrid>
           </>
         </Blocks.Item>
       </Blocks>

@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import type { FC } from "react";
@@ -9,23 +9,23 @@ interface AutoinstallFileInfoProps {
 }
 
 const AutoinstallFileInfo: FC<AutoinstallFileInfoProps> = ({ file }) => (
-  <Grid>
-    <Grid.Item label="Name" size={6} value={file.filename} />
+  <InfoGrid>
+    <InfoGrid.Item label="Name" size={6} value={file.filename} />
 
-    <Grid.Item label="Version" size={6} value={file.version} />
+    <InfoGrid.Item label="Version" size={6} value={file.version} />
 
-    <Grid.Item
+    <InfoGrid.Item
       label="Last modified"
       size={6}
       value={moment(file.last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}
     />
 
-    <Grid.Item
+    <InfoGrid.Item
       label="Date created"
       size={6}
       value={moment(file.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
     />
-  </Grid>
+  </InfoGrid>
 );
 
 export default AutoinstallFileInfo;

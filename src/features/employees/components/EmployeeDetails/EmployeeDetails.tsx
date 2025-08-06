@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import type { FC } from "react";
 import { getStatusText } from "../../helpers";
 import type { Employee } from "../../types";
@@ -14,14 +14,18 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
     <>
       <EmployeeDetailsHeader employee={employee} />
 
-      <Grid>
-        <Grid.Item label="Name" size={6} value={employee.name} />
+      <InfoGrid>
+        <InfoGrid.Item label="Name" size={6} value={employee.name} />
 
-        <Grid.Item label="Email" size={6} value={employee.email} />
+        <InfoGrid.Item label="Email" size={6} value={employee.email} />
 
-        <Grid.Item label="Status" size={6} value={getStatusText(employee)} />
+        <InfoGrid.Item
+          label="Status"
+          size={6}
+          value={getStatusText(employee)}
+        />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Autoinstall file"
           size={12}
           value={
@@ -30,7 +34,7 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
               : null
           }
         />
-      </Grid>
+      </InfoGrid>
 
       <EmployeeInstancesTable instances={employee.computers} />
     </>

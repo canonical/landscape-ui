@@ -1,6 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import Flow from "@/components/layout/Flow";
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import { Form } from "@canonical/react-components";
 import type { ComponentProps, FC, SyntheticEvent } from "react";
 import type { SecurityProfile } from "../../types";
@@ -50,8 +50,8 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
             description: "To complete the fixes, instances must be restarted.",
             iconName: "restart",
             children: (
-              <Grid>
-                <Grid.Item
+              <InfoGrid>
+                <InfoGrid.Item
                   label="Delivery time"
                   size={12}
                   value={
@@ -61,7 +61,7 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
                   }
                 />
 
-                <Grid.Item
+                <InfoGrid.Item
                   label="Randomize delivery over a time window"
                   size={12}
                   value={
@@ -70,7 +70,7 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
                       : "No"
                   }
                 />
-              </Grid>
+              </InfoGrid>
             ),
           },
           {

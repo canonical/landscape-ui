@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
 import { Link } from "react-router";
@@ -22,20 +22,20 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
 
   return (
     <>
-      <Grid>
-        <Grid.Item label="Name" size={6} value={script.title} />
+      <InfoGrid>
+        <InfoGrid.Item label="Name" size={6} value={script.title} />
 
-        <Grid.Item label="Version" size={6} value={script.version_number} />
+        <InfoGrid.Item label="Version" size={6} value={script.version_number} />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Status"
           size={6}
           value={formatTitleCase(script.status)}
         />
 
-        <Grid.Item label="Access group" size={6} value={accessGroup} />
+        <InfoGrid.Item label="Access group" size={6} value={accessGroup} />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Date created"
           size={12}
           value={getAuthorInfo({
@@ -44,7 +44,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
           })}
         />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Last modified"
           size={12}
           value={getAuthorInfo({
@@ -53,7 +53,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
           })}
         />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Attachments"
           size={12}
           value={
@@ -70,7 +70,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
           }
         />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Associated profiles"
           size={12}
           value={
@@ -88,7 +88,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
               : null
           }
         />
-      </Grid>
+      </InfoGrid>
     </>
   );
 };

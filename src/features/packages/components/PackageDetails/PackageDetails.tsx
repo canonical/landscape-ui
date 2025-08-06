@@ -1,4 +1,4 @@
-import Grid from "@/components/layout/Grid";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
@@ -69,12 +69,16 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
           ))}
       </div>
 
-      <Grid>
-        <Grid.Item label="Name" size={12} value={singlePackage.name} />
+      <InfoGrid>
+        <InfoGrid.Item label="Name" size={12} value={singlePackage.name} />
 
-        <Grid.Item label="Summary" size={12} value={singlePackage.summary} />
+        <InfoGrid.Item
+          label="Summary"
+          size={12}
+          value={singlePackage.summary}
+        />
 
-        <Grid.Item
+        <InfoGrid.Item
           label="Current version"
           size={6}
           value={singlePackage.current_version}
@@ -82,13 +86,13 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
 
         {singlePackage.available_version !== null &&
           singlePackage.available_version !== singlePackage.current_version && (
-            <Grid.Item
+            <InfoGrid.Item
               label="Upgradable to"
               size={6}
               value={highlightVersionsDifference(singlePackage)}
             />
           )}
-      </Grid>
+      </InfoGrid>
     </>
   );
 };
