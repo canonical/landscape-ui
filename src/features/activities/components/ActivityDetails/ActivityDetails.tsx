@@ -1,3 +1,4 @@
+import Grid from "@/components/layout/Grid";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
@@ -5,7 +6,11 @@ import { useGetInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { ConfirmationButton, Icon } from "@canonical/react-components";
+import {
+  CodeSnippet,
+  ConfirmationButton,
+  Icon,
+} from "@canonical/react-components";
 import moment from "moment";
 import { type FC } from "react";
 import { ACTIVITY_STATUSES } from "../../constants";
@@ -231,23 +236,16 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           )}
         </div>
       </div>
+
       <Menu>
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Description"
-            size={12}
-            value={activity.summary}
-          />
-        </Menu.Row>
+        <Grid>
+          <Grid.Item label="Description" size={12} value={activity.summary} />
 
-        {instance && (
-          <Menu.Row>
-            <Menu.Row.Item label="Instance" size={12} value={instance.title} />
-          </Menu.Row>
-        )}
+          {instance && (
+            <Grid.Item label="Instance" size={12} value={instance.title} />
+          )}
 
-        <Menu.Row>
-          <Menu.Row.Item
+          <Grid.Item
             label="Status"
             size={6}
             value={
@@ -260,37 +258,44 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
               </>
             }
           />
-          <Menu.Row.Item
+          <Grid.Item
             label="Created at"
             size={6}
             value={moment(activity.creation_time).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
           />
-        </Menu.Row>
 
-        {(typeof activity.delivery_time === "string" ||
-          activity.completion_time !== null) && (
-          <Menu.Row>
-            {typeof activity.delivery_time === "string" && (
-              <Menu.Row.Item
-                label="Delivered at"
-                size={6}
-                value={moment(activity.delivery_time).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
-              />
-            )}
-            {activity.completion_time !== null && (
-              <Menu.Row.Item
-                label="Completed at"
-                size={6}
-                value={moment(activity.completion_time).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
-              />
-            )}
-          </Menu.Row>
+          {typeof activity.delivery_time === "string" && (
+            <Grid.Item
+              label="Delivered at"
+              size={6}
+              value={moment(activity.delivery_time).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )}
+            />
+          )}
+          {activity.completion_time !== null && (
+            <Grid.Item
+              label="Completed at"
+              size={6}
+              value={moment(activity.completion_time).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )}
+            />
+          )}
+        </Grid>
+
+        {activity.result_text && (
+          <CodeSnippet
+            className={classes.output}
+            blocks={[
+              {
+                title: "Output",
+                code: activity.result_text,
+              },
+            ]}
+          />
         )}
       </Menu>
     </>

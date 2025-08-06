@@ -1,4 +1,4 @@
-import Menu from "@/components/layout/Menu";
+import Grid from "@/components/layout/Grid";
 import NoData from "@/components/layout/NoData";
 import useUsers from "@/hooks/useUsers";
 import type { UrlParams } from "@/types/UrlParams";
@@ -34,56 +34,28 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
   return (
     <>
       <UserPanelActionButtons selectedUsers={[user]} sidePanel />
-      <Menu>
-        <Menu.Row>
-          <Menu.Row.Item label="Username" size={12} value={user.username} />
-        </Menu.Row>
+      <Grid>
+        <Grid.Item label="Username" size={12} value={user.username} />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Name"
-            size={12}
-            value={user.name || <NoData />}
-          />
-        </Menu.Row>
+        <Grid.Item label="Name" size={12} value={user.name || <NoData />} />
 
-        <Menu.Row>
-          <Menu.Row.Item label="Passphrase" size={12} type="password" />
-        </Menu.Row>
+        <Grid.Item label="Passphrase" size={12} type="password" />
 
-        <Menu.Row>
-          <Menu.Row.Item label="Primary group" size={12} value={primaryGroup} />
-        </Menu.Row>
+        <Grid.Item label="Primary group" size={12} value={primaryGroup} />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Additional groups"
-            size={12}
-            value={userGroups}
-            type="truncated"
-          />
-        </Menu.Row>
+        <Grid.Item
+          label="Additional groups"
+          size={12}
+          value={userGroups}
+          type="truncated"
+        />
 
-        <Menu.Row>
-          <Menu.Row.Item label="Location" size={12} value={user?.location} />
-        </Menu.Row>
+        <Grid.Item label="Location" size={12} value={user?.location} />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Home phone"
-            size={12}
-            value={user?.home_phone}
-          />
-        </Menu.Row>
+        <Grid.Item label="Home phone" size={12} value={user?.home_phone} />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Work phone"
-            size={12}
-            value={user?.work_phone}
-          />
-        </Menu.Row>
-      </Menu>
+        <Grid.Item label="Work phone" size={12} value={user?.work_phone} />
+      </Grid>
     </>
   );
 };

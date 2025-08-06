@@ -1,4 +1,4 @@
-import Menu from "@/components/layout/Menu";
+import Grid from "@/components/layout/Grid";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -136,13 +136,13 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
       <Notification severity="caution" title="Security warning">
         <span>{SECURITY_WARNING}</span>
       </Notification>
-      <Menu.Row>
-        <Menu.Row.Item
+      <Grid>
+        <Grid.Item
           label="Current version"
           size={6}
           value={currentKernelVersion}
         />
-        <Menu.Row.Item
+        <Grid.Item
           label="Kernel version"
           size={6}
           value={
@@ -156,7 +156,7 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
             )
           }
         />
-      </Menu.Row>
+      </Grid>
 
       <strong className={classes.marginTop}>Delivery time</strong>
       <div className={classes.radioGroup}>

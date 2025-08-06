@@ -1,4 +1,4 @@
-import Menu from "@/components/layout/Menu";
+import Grid from "@/components/layout/Grid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import type { FC } from "react";
@@ -9,25 +9,23 @@ interface AutoinstallFileInfoProps {
 }
 
 const AutoinstallFileInfo: FC<AutoinstallFileInfoProps> = ({ file }) => (
-  <Menu>
-    <Menu.Row>
-      <Menu.Row.Item label="Name" size={6} value={file.filename} />
-      <Menu.Row.Item label="Version" size={6} value={file.version} />
-    </Menu.Row>
+  <Grid>
+    <Grid.Item label="Name" size={6} value={file.filename} />
 
-    <Menu.Row>
-      <Menu.Row.Item
-        label="Last modified"
-        size={6}
-        value={moment(file.last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}
-      />
-      <Menu.Row.Item
-        label="Date created"
-        size={6}
-        value={moment(file.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
-      />
-    </Menu.Row>
-  </Menu>
+    <Grid.Item label="Version" size={6} value={file.version} />
+
+    <Grid.Item
+      label="Last modified"
+      size={6}
+      value={moment(file.last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}
+    />
+
+    <Grid.Item
+      label="Date created"
+      size={6}
+      value={moment(file.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+    />
+  </Grid>
 );
 
 export default AutoinstallFileInfo;

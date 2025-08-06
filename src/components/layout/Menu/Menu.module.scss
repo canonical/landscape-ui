@@ -5,9 +5,3 @@
   flex-direction: column;
   gap: 2rem;
 }
-
-.row {
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: repeat(12, 1fr);
-}

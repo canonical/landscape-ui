@@ -1,6 +1,6 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import Menu from "@/components/layout/Menu";
+import Grid from "@/components/layout/Grid";
 import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -121,28 +121,14 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
         <span>Remove</span>
       </ConfirmationButton>
 
-      <Menu>
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Name"
-            size={6}
-            value={currentAdministrator.name}
-          />
-          <Menu.Row.Item
-            label="Email"
-            size={6}
-            value={currentAdministrator.email}
-          />
-        </Menu.Row>
+      <Grid>
+        <Grid.Item label="Name" size={6} value={currentAdministrator.name} />
+        <Grid.Item label="Email" size={6} value={currentAdministrator.email} />
 
-        <Menu.Row>
-          <Menu.Row.Item label="Timezone" size={12} value={null} />
-        </Menu.Row>
+        <Grid.Item label="Timezone" size={12} value={null} />
 
-        <Menu.Row>
-          <Menu.Row.Item label="Identity URL" size={12} value={null} />
-        </Menu.Row>
-      </Menu>
+        <Grid.Item label="Identity URL" size={12} value={null} />
+      </Grid>
 
       <MultiSelectField
         variant="condensed"

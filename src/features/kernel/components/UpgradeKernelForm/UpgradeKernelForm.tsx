@@ -1,4 +1,4 @@
-import Menu from "@/components/layout/Menu";
+import Grid from "@/components/layout/Grid";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -136,13 +136,13 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
       <Notification severity="information" title="Restart recommended">
         <span>{NOTIFICATION_MESSAGE}</span>
       </Notification>
-      <Menu.Row>
-        <Menu.Row.Item
+      <Grid>
+        <Grid.Item
           label="Current version"
           size={6}
           value={currentKernelVersion}
         />
-        <Menu.Row.Item
+        <Grid.Item
           label="New version"
           size={6}
           value={
@@ -156,7 +156,7 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
             )
           }
         />
-      </Menu.Row>
+      </Grid>
 
       <strong className={classes.marginTop}>Delivery time</strong>
       <div className={classes.radioGroup}>

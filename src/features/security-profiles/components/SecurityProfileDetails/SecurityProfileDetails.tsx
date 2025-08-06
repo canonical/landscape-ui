@@ -1,6 +1,6 @@
 import Blocks from "@/components/layout/Blocks";
+import Grid from "@/components/layout/Grid";
 import LoadingState from "@/components/layout/LoadingState";
-import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
@@ -116,120 +116,106 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item label="Title" size={6} value={profile.title} />
-              <Menu.Row.Item label="Name" size={6} value={profile.name} />
-            </Menu.Row>
+          <Grid>
+            <Grid.Item label="Title" size={6} value={profile.title} />
+            <Grid.Item label="Name" size={6} value={profile.name} />
 
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Access group"
-                size={6}
-                value={accessGroup.title}
-              />
-              <Menu.Row.Item
-                label="Status"
-                size={6}
-                value={getStatus(profile).label}
-              />
-            </Menu.Row>
-          </Menu>
+            <Grid.Item
+              label="Access group"
+              size={6}
+              value={accessGroup.title}
+            />
+            <Grid.Item
+              label="Status"
+              size={6}
+              value={getStatus(profile).label}
+            />
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item title="Security profile">
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Benchmark"
-                size={6}
-                value={SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark]}
-              />
-              <Menu.Row.Item
-                label="Tailoring file"
-                size={6}
-                value={getTailoringFile(profile)}
-              />
-              <Menu.Row.Item
-                label="Mode"
-                size={12}
-                value={SECURITY_PROFILE_MODE_LABELS[profile.mode]}
-              />
-            </Menu.Row>
-          </Menu>
+          <Grid>
+            <Grid.Item
+              label="Benchmark"
+              size={6}
+              value={SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark]}
+            />
+
+            <Grid.Item
+              label="Tailoring file"
+              size={6}
+              value={getTailoringFile(profile)}
+            />
+
+            <Grid.Item
+              label="Mode"
+              size={12}
+              value={SECURITY_PROFILE_MODE_LABELS[profile.mode]}
+            />
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item title="Schedule">
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Schedule"
-                size={12}
-                value={getSchedule(profile)}
-              />
-            </Menu.Row>
+          <Grid>
+            <Grid.Item
+              label="Schedule"
+              size={12}
+              value={getSchedule(profile)}
+            />
 
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Last run"
-                size={6}
-                value={
-                  profile.last_run_results.timestamp
-                    ? `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-                    : null
-                }
-              />
+            <Grid.Item
+              label="Last run"
+              size={6}
+              value={
+                profile.last_run_results.timestamp
+                  ? `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                  : null
+              }
+            />
 
-              <Menu.Row.Item
-                label="Next run"
-                size={6}
-                value={
-                  profile.next_run_time
-                    ? `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-                    : null
-                }
-              />
-            </Menu.Row>
+            <Grid.Item
+              label="Next run"
+              size={6}
+              value={
+                profile.next_run_time
+                  ? `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                  : null
+              }
+            />
 
             {profile.mode === "audit-fix-restart" && (
-              <Menu.Row>
-                <Menu.Row.Item
-                  label="Restart schedule"
-                  size={12}
-                  value={`${
-                    profile.restart_deliver_delay
-                      ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
-                      : "As soon as possible"
-                  }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
-                />
-              </Menu.Row>
+              <Grid.Item
+                label="Restart schedule"
+                size={12}
+                value={`${
+                  profile.restart_deliver_delay
+                    ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
+                    : "As soon as possible"
+                }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
+              />
             )}
-          </Menu>
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Associated instances"
-                size={12}
-                value={
-                  <SecurityProfileAssociatedInstancesLink
-                    securityProfile={profile}
-                  />
-                }
-              />
-            </Menu.Row>
+          <Grid>
+            <Grid.Item
+              label="Associated instances"
+              size={12}
+              value={
+                <SecurityProfileAssociatedInstancesLink
+                  securityProfile={profile}
+                />
+              }
+            />
 
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Tags"
-                size={12}
-                value={getTags(profile)}
-                type="truncated"
-              />
-            </Menu.Row>
-          </Menu>
+            <Grid.Item
+              label="Tags"
+              size={12}
+              value={getTags(profile)}
+              type="truncated"
+            />
+          </Grid>
         </Blocks.Item>
       </Blocks>
     </>

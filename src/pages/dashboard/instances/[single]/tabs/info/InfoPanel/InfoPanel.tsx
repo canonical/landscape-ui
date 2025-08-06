@@ -1,6 +1,7 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
 import Chip from "@/components/layout/Chip";
+import Grid from "@/components/layout/Grid";
 import HeaderActions from "@/components/layout/HeaderActions";
 import LoadingState from "@/components/layout/LoadingState";
 import Menu from "@/components/layout/Menu";
@@ -361,94 +362,84 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
       <Blocks>
         <Blocks.Item title="Status">
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Status"
-                size={3}
-                value={
-                  <div className={classes.status}>
-                    <Icon
-                      name={getStatusCellIconAndLabel(instance).icon ?? ""}
-                    />
-                    <span>{getStatusCellIconAndLabel(instance).label}</span>
-                  </div>
-                }
+          <Grid>
+            <Grid.Item
+              label="Status"
+              size={3}
+              value={
+                <div className={classes.status}>
+                  <Icon name={getStatusCellIconAndLabel(instance).icon ?? ""} />
+                  <span>{getStatusCellIconAndLabel(instance).label}</span>
+                </div>
+              }
+            />
+            <Grid.Item
+              label="Last ping time"
+              size={3}
+              value={
+                moment(instance.last_ping_time).isValid()
+                  ? moment(instance.last_ping_time).format(
+                      DISPLAY_DATE_TIME_FORMAT,
+                    )
+                  : null
+              }
+            />
+            <Grid.Item
+              label="Access group"
+              size={6}
+              value={
+                accessGroups.find(
+                  (accessGroup) => accessGroup.name === instance.access_group,
+                )?.title || instance.access_group
+              }
+            />
+            <Grid.Item
+              label="Profiles"
+              size={3}
+              value={
+                instance.profiles?.length ? (
+                  <Profiles profiles={instance.profiles} />
+                ) : null
+              }
+              type="truncated"
+            />
+            {getFeatures(instance).employees && (
+              <Grid.Item
+                label="Associated employee"
+                size={9}
+                value={employee?.name}
               />
-              <Menu.Row.Item
-                label="Last ping time"
-                size={3}
-                value={
-                  moment(instance.last_ping_time).isValid()
-                    ? moment(instance.last_ping_time).format(
-                        DISPLAY_DATE_TIME_FORMAT,
-                      )
-                    : null
-                }
-              />
-              <Menu.Row.Item
-                label="Access group"
-                size={3}
-                value={
-                  accessGroups.find(
-                    (accessGroup) => accessGroup.name === instance.access_group,
-                  )?.title || instance.access_group
-                }
-              />
-            </Menu.Row>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Profiles"
-                size={3}
-                value={
-                  instance.profiles?.length ? (
-                    <Profiles profiles={instance.profiles} />
-                  ) : null
-                }
-                type="truncated"
-              />
-              {getFeatures(instance).employees && (
-                <Menu.Row.Item
-                  label="Associated employee"
-                  size={3}
-                  value={employee?.name}
-                />
-              )}
-            </Menu.Row>
-          </Menu>
+            )}
+          </Grid>
         </Blocks.Item>
         <Blocks.Item title="Registration details">
           <Menu>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Hostname"
-                size={3}
-                value={instance.hostname}
-              />
-              <Menu.Row.Item label="ID" size={3} value={instance.id} />
+            <Grid>
+              <Grid.Item label="Hostname" size={3} value={instance.hostname} />
+              <Grid.Item label="ID" size={3} value={instance.id} />
               {getFeatures(instance).hardware && (
-                <Menu.Row.Item
+                <Grid.Item
                   label="Serial number"
                   size={3}
                   value={instance.grouped_hardware?.system.serial}
                 />
               )}
               {getFeatures(instance).hardware && (
-                <Menu.Row.Item
+                <Grid.Item
                   label="Product identifier"
-                  size={3}
+                  size={6}
                   value={instance.grouped_hardware?.system.model}
                 />
               )}
-            </Menu.Row>
-            <Menu.Row>
-              <Menu.Row.Item
+            </Grid>
+            <Grid>
+              <Grid.Item
                 label="OS"
                 size={3}
                 value={instance.distribution_info?.description}
               />
               {getFeatures(instance).hardware && (
-                <Menu.Row.Item
+                <Grid.Item
                   label="IP addresses"
                   size={3}
                   value={
@@ -461,27 +452,25 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                   type="truncated"
                 />
               )}
-              <Menu.Row.Item
+              <Grid.Item
                 label="Registered"
-                size={3}
+                size={6}
                 value={moment(instance.registered_at).format(
                   DISPLAY_DATE_TIME_FORMAT,
                 )}
               />
-            </Menu.Row>
+            </Grid>
           </Menu>
         </Blocks.Item>
         <Blocks.Item title="Other">
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item label="Annotations" size={3} value={null} />
-              <Menu.Row.Item
-                label="Comment"
-                size={3}
-                value={instance.comment || null}
-              />
-            </Menu.Row>
-          </Menu>
+          <Grid>
+            <Grid.Item label="Annotations" size={3} value={null} />
+            <Grid.Item
+              label="Comment"
+              size={9}
+              value={instance.comment || null}
+            />
+          </Grid>
         </Blocks.Item>
       </Blocks>
 

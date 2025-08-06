@@ -1,7 +1,8 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
+import Grid from "@/components/layout/Grid";
+import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import Menu from "@/components/layout/Menu";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -98,64 +99,44 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item label="Title" size={6} value={profile.title} />
-              <Menu.Row.Item label="Name" size={6} value={profile.name} />
-            </Menu.Row>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Access group"
-                size={6}
-                value={
-                  accessGroupOptions.find(
-                    ({ value }) => value === profile.access_group,
-                  )?.label ?? profile.access_group
-                }
-              />
-              <Menu.Row.Item
-                label="Upgrade type"
-                size={6}
-                value={profile.upgrade_type === "all" ? "All" : "Security"}
-              />
-            </Menu.Row>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Auto remove packages"
-                size={6}
-                value={profile.autoremove ? "On" : "Off"}
-              />
-            </Menu.Row>
-          </Menu>
+          <Grid>
+            <Grid.Item label="Title" size={6} value={profile.title} />
+            <Grid.Item label="Name" size={6} value={profile.name} />
+            <Grid.Item
+              label="Access group"
+              size={6}
+              value={
+                accessGroupOptions.find(
+                  ({ value }) => value === profile.access_group,
+                )?.label ?? profile.access_group
+              }
+            />
+            <Grid.Item
+              label="Upgrade type"
+              size={6}
+              value={profile.upgrade_type === "all" ? "All" : "Security"}
+            />
+            <Grid.Item
+              label="Auto remove packages"
+              size={6}
+              value={profile.autoremove ? "On" : "Off"}
+            />
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item title="Schedule">
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Schedule"
-                size={12}
-                value={scheduleMessage}
-              />
-            </Menu.Row>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Next run"
-                size={12}
-                value={nextRunMessage}
-              />
-            </Menu.Row>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Delivery delay window"
-                size={12}
-                value={`${profile.deliver_delay_window} ${pluralize(
-                  Number(profile.deliver_delay_window),
-                  "minute",
-                )}`}
-              />
-            </Menu.Row>
-          </Menu>
+          <Grid>
+            <Grid.Item label="Schedule" size={12} value={scheduleMessage} />
+            <Grid.Item label="Next run" size={12} value={nextRunMessage} />
+            <Grid.Item
+              label="Delivery delay window"
+              size={12}
+              value={`${profile.deliver_delay_window} ${pluralize(
+                Number(profile.deliver_delay_window),
+                "minute",
+              )}`}
+            />
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">
@@ -169,15 +150,7 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
               </p>
             )}
             {!profile.all_computers && profile.tags.length > 0 && (
-              <Menu>
-                <Menu.Row>
-                  <Menu.Row.Item
-                    label="Tags"
-                    size={12}
-                    value={profile.tags.join(", ") || null}
-                  />
-                </Menu.Row>
-              </Menu>
+              <InfoItem label="Tags" value={profile.tags.join(", ") || null} />
             )}
           </>
         </Blocks.Item>

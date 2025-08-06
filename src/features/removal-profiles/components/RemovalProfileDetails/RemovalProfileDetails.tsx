@@ -1,7 +1,8 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
+import Grid from "@/components/layout/Grid";
+import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
-import Menu from "@/components/layout/Menu";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -97,47 +98,38 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item label="Title" size={6} value={profile.title} />
+          <Grid>
+            <Grid.Item label="Title" size={6} value={profile.title} />
 
-              <Menu.Row.Item label="Name" size={6} value={profile.name} />
+            <Grid.Item label="Name" size={6} value={profile.name} />
 
-              <Menu.Row.Item
-                label="Access group"
-                size={6}
-                value={
-                  accessGroupOptions.find(
-                    ({ value }) => value === profile.access_group,
-                  )?.label ?? profile.access_group
-                }
-              />
-            </Menu.Row>
+            <Grid.Item
+              label="Access group"
+              size={6}
+              value={
+                accessGroupOptions.find(
+                  ({ value }) => value === profile.access_group,
+                )?.label ?? profile.access_group
+              }
+            />
 
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Removal timeframe"
-                size={12}
-                value={`${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`}
-              />
-            </Menu.Row>
-          </Menu>
+            <Grid.Item
+              label="Removal timeframe"
+              size={12}
+              value={`${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`}
+            />
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">
           {profile.all_computers ? (
             <p>This profile has been associated with all instances.</p>
           ) : (
-            <Menu>
-              <Menu.Row>
-                <Menu.Row.Item
-                  label="Tags"
-                  size={12}
-                  value={profile.tags.join(", ") || null}
-                  type="truncated"
-                />
-              </Menu.Row>
-            </Menu>
+            <InfoItem
+              label="Tags"
+              value={profile.tags.join(", ") || null}
+              type="truncated"
+            />
           )}
         </Blocks.Item>
       </Blocks>

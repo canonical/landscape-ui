@@ -1,5 +1,5 @@
+import Grid from "@/components/layout/Grid";
 import LoadingState from "@/components/layout/LoadingState";
-import Menu from "@/components/layout/Menu";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
@@ -69,36 +69,26 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
           ))}
       </div>
 
-      <Menu>
-        <Menu.Row>
-          <Menu.Row.Item label="Name" size={12} value={singlePackage.name} />
-        </Menu.Row>
+      <Grid>
+        <Grid.Item label="Name" size={12} value={singlePackage.name} />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Summary"
-            size={12}
-            value={singlePackage.summary}
-          />
-        </Menu.Row>
+        <Grid.Item label="Summary" size={12} value={singlePackage.summary} />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Current version"
-            size={6}
-            value={singlePackage.current_version}
-          />
-          {singlePackage.available_version !== null &&
-            singlePackage.available_version !==
-              singlePackage.current_version && (
-              <Menu.Row.Item
-                label="Upgradable to"
-                size={6}
-                value={highlightVersionsDifference(singlePackage)}
-              />
-            )}
-        </Menu.Row>
-      </Menu>
+        <Grid.Item
+          label="Current version"
+          size={6}
+          value={singlePackage.current_version}
+        />
+
+        {singlePackage.available_version !== null &&
+          singlePackage.available_version !== singlePackage.current_version && (
+            <Grid.Item
+              label="Upgradable to"
+              size={6}
+              value={highlightVersionsDifference(singlePackage)}
+            />
+          )}
+      </Grid>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import Menu from "@/components/layout/Menu";
+import Grid from "@/components/layout/Grid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import type { FC } from "react";
@@ -17,63 +17,45 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
         installedSnaps={[installedSnap]}
         sidePanel
       />
-      <Menu>
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Name"
-            size={12}
-            value={installedSnap.snap.name}
-          />
-        </Menu.Row>
+      <Grid>
+        <Grid.Item label="Name" size={12} value={installedSnap.snap.name} />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Channel"
-            size={6}
-            value={installedSnap.tracking_channel}
-          />
-          <Menu.Row.Item
-            label="Version"
-            size={6}
-            value={installedSnap.version}
-          />
-        </Menu.Row>
+        <Grid.Item
+          label="Channel"
+          size={6}
+          value={installedSnap.tracking_channel}
+        />
+        <Grid.Item label="Version" size={6} value={installedSnap.version} />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Confinement"
-            size={6}
-            value={installedSnap.confinement}
-          />
-          <Menu.Row.Item
-            label="Held until"
-            size={6}
-            value={
-              moment(installedSnap.held_until).isValid()
-                ? moment(installedSnap.held_until).format(
-                    DISPLAY_DATE_TIME_FORMAT,
-                  )
-                : null
-            }
-          />
-        </Menu.Row>
+        <Grid.Item
+          label="Confinement"
+          size={6}
+          value={installedSnap.confinement}
+        />
+        <Grid.Item
+          label="Held until"
+          size={6}
+          value={
+            moment(installedSnap.held_until).isValid()
+              ? moment(installedSnap.held_until).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )
+              : null
+          }
+        />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Summary"
-            size={12}
-            value={installedSnap.snap.summary}
-          />
-        </Menu.Row>
+        <Grid.Item
+          label="Summary"
+          size={12}
+          value={installedSnap.snap.summary}
+        />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Publisher"
-            size={12}
-            value={installedSnap.snap.publisher.username}
-          />
-        </Menu.Row>
-      </Menu>
+        <Grid.Item
+          label="Publisher"
+          size={12}
+          value={installedSnap.snap.publisher.username}
+        />
+      </Grid>
     </>
   );
 };

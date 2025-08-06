@@ -1,5 +1,5 @@
 import Flow from "@/components/layout/Flow";
-import Menu from "@/components/layout/Menu";
+import Grid from "@/components/layout/Grid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { pluralize } from "@/utils/_helpers";
 import type { FormikContextType } from "formik";
@@ -50,37 +50,33 @@ export default function useSecurityProfileFormConfirmationStep<
                   "To complete the fixes, instances must be restarted.",
                 iconName: "restart",
                 children: (
-                  <Menu>
-                    <Menu.Row>
-                      <Menu.Row.Item
-                        label="Delivery time"
-                        size={12}
-                        value={
-                          formik.values.delivery_time === "asap"
-                            ? "As soon as possible"
-                            : `Delayed by ${formik.values.restart_deliver_delay} ${pluralize(
-                                formik.values.restart_deliver_delay,
-                                "hour",
-                              )}`
-                        }
-                      />
-                    </Menu.Row>
+                  <Grid>
+                    <Grid.Item
+                      label="Delivery time"
+                      size={12}
+                      value={
+                        formik.values.delivery_time === "asap"
+                          ? "As soon as possible"
+                          : `Delayed by ${formik.values.restart_deliver_delay} ${pluralize(
+                              formik.values.restart_deliver_delay,
+                              "hour",
+                            )}`
+                      }
+                    />
 
-                    <Menu.Row>
-                      <Menu.Row.Item
-                        label="Randomize delivery over a time window"
-                        size={12}
-                        value={
-                          formik.values.randomize_delivery === "yes"
-                            ? `Yes, over ${formik.values.restart_deliver_delay_window} ${pluralize(
-                                formik.values.restart_deliver_delay_window,
-                                "minute",
-                              )}`
-                            : "No"
-                        }
-                      />
-                    </Menu.Row>
-                  </Menu>
+                    <Grid.Item
+                      label="Randomize delivery over a time window"
+                      size={12}
+                      value={
+                        formik.values.randomize_delivery === "yes"
+                          ? `Yes, over ${formik.values.restart_deliver_delay_window} ${pluralize(
+                              formik.values.restart_deliver_delay_window,
+                              "minute",
+                            )}`
+                          : "No"
+                      }
+                    />
+                  </Grid>
                 ),
               }
             : null,

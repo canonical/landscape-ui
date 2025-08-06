@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.dividedItem {
+  border-top: 1px solid $colors--theme--border-low-contrast;
+  padding-top: $spv--large;
+}
+
+.item:not(:first-child) {
+  @extend .dividedItem;
+}

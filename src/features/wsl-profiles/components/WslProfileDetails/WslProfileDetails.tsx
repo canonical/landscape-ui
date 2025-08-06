@@ -1,6 +1,6 @@
 import Blocks from "@/components/layout/Blocks";
+import Grid from "@/components/layout/Grid";
 import LoadingState from "@/components/layout/LoadingState";
-import Menu from "@/components/layout/Menu";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button, Icon, ICONS } from "@canonical/react-components";
@@ -72,59 +72,47 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item label="Title" size={6} value={profile.title} />
-              <Menu.Row.Item label="Name" size={6} value={profile.name} />
-            </Menu.Row>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Access group"
-                size={6}
-                value={
-                  accessGroupOptions.find(
-                    ({ value }) => value === profile.access_group,
-                  )?.label ?? profile.access_group
-                }
-              />
-            </Menu.Row>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Description"
-                size={12}
-                value={profile.description}
-              />
-            </Menu.Row>
-          </Menu>
+          <Grid>
+            <Grid.Item label="Title" size={6} value={profile.title} />
+            <Grid.Item label="Name" size={6} value={profile.name} />
+            <Grid.Item
+              label="Access group"
+              size={6}
+              value={
+                accessGroupOptions.find(
+                  ({ value }) => value === profile.access_group,
+                )?.label ?? profile.access_group
+              }
+            />
+            <Grid.Item
+              label="Description"
+              size={12}
+              value={profile.description}
+            />
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item>
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Rootfs image name"
-                size={12}
-                value={profile.image_name}
-              />
-            </Menu.Row>
+          <Grid>
+            <Grid.Item
+              label="Rootfs image name"
+              size={12}
+              value={profile.image_name}
+            />
             {profile.image_source !== null && (
-              <Menu.Row>
-                <Menu.Row.Item
-                  label="Rootfs image source"
-                  size={12}
-                  value={profile.image_source}
-                  type="truncated"
-                />
-              </Menu.Row>
-            )}
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Cloud-init"
+              <Grid.Item
+                label="Rootfs image source"
                 size={12}
-                value={profile.cloud_init_contents || null}
+                value={profile.image_source}
+                type="truncated"
               />
-            </Menu.Row>
-          </Menu>
+            )}
+            <Grid.Item
+              label="Cloud-init"
+              size={12}
+              value={profile.cloud_init_contents || null}
+            />
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">
@@ -133,49 +121,41 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
               <p>This profile has been associated with all instances.</p>
             )}
 
-            <Menu>
+            <Grid>
               {!profile.all_computers && (
-                <Menu.Row>
-                  <Menu.Row.Item
-                    label="Tags"
-                    size={12}
-                    value={profile.tags.join(", ") || null}
-                  />
-                </Menu.Row>
+                <Grid.Item
+                  label="Tags"
+                  size={12}
+                  value={profile.tags.join(", ") || null}
+                />
               )}
 
               {canBeAssociated && (
                 <>
-                  <Menu.Row>
-                    <Menu.Row.Item
-                      label="Associated parents"
-                      size={12}
-                      value={
-                        <WslProfileAssociatedParentsLink wslProfile={profile} />
-                      }
-                    />
-                  </Menu.Row>
-                  <Menu.Row>
-                    <Menu.Row.Item
-                      label="Not compliant"
-                      size={6}
-                      value={
-                        <WslProfileNonCompliantParentsLink
-                          wslProfile={profile}
-                        />
-                      }
-                    />
-                    <Menu.Row.Item
-                      label="Compliant"
-                      size={6}
-                      value={
-                        <WslProfileCompliantParentsLink wslProfile={profile} />
-                      }
-                    />
-                  </Menu.Row>
+                  <Grid.Item
+                    label="Associated parents"
+                    size={12}
+                    value={
+                      <WslProfileAssociatedParentsLink wslProfile={profile} />
+                    }
+                  />
+                  <Grid.Item
+                    label="Not compliant"
+                    size={6}
+                    value={
+                      <WslProfileNonCompliantParentsLink wslProfile={profile} />
+                    }
+                  />
+                  <Grid.Item
+                    label="Compliant"
+                    size={6}
+                    value={
+                      <WslProfileCompliantParentsLink wslProfile={profile} />
+                    }
+                  />
                 </>
               )}
-            </Menu>
+            </Grid>
           </>
         </Blocks.Item>
       </Blocks>

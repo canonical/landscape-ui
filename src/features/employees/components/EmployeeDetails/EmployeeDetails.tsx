@@ -1,4 +1,4 @@
-import Menu from "@/components/layout/Menu";
+import Grid from "@/components/layout/Grid";
 import type { FC } from "react";
 import { getStatusText } from "../../helpers";
 import type { Employee } from "../../types";
@@ -13,32 +13,24 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
   return (
     <>
       <EmployeeDetailsHeader employee={employee} />
-      <Menu>
-        <Menu.Row>
-          <Menu.Row.Item label="Name" size={6} value={employee.name} />
-          <Menu.Row.Item label="Email" size={6} value={employee.email} />
-        </Menu.Row>
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Status"
-            size={6}
-            value={getStatusText(employee)}
-          />
-        </Menu.Row>
+      <Grid>
+        <Grid.Item label="Name" size={6} value={employee.name} />
 
-        <Menu.Row>
-          <Menu.Row.Item
-            label="Autoinstall file"
-            size={12}
-            value={
-              employee.autoinstall_file
-                ? `${employee.autoinstall_file.filename}, v${employee.autoinstall_file.version}`
-                : null
-            }
-          />
-        </Menu.Row>
-      </Menu>
+        <Grid.Item label="Email" size={6} value={employee.email} />
+
+        <Grid.Item label="Status" size={6} value={getStatusText(employee)} />
+
+        <Grid.Item
+          label="Autoinstall file"
+          size={12}
+          value={
+            employee.autoinstall_file
+              ? `${employee.autoinstall_file.filename}, v${employee.autoinstall_file.version}`
+              : null
+          }
+        />
+      </Grid>
 
       <EmployeeInstancesTable instances={employee.computers} />
     </>

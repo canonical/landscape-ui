@@ -1,7 +1,7 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
+import Grid from "@/components/layout/Grid";
 import LoadingState from "@/components/layout/LoadingState";
-import Menu from "@/components/layout/Menu";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -112,41 +112,35 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
 
       <Blocks>
         <Blocks.Item>
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item label="Title" size={6} value={profile.title} />
+          <Grid>
+            <Grid.Item label="Title" size={6} value={profile.title} />
 
-              <Menu.Row.Item
-                label="Access group"
-                size={6}
-                value={
-                  accessGroupOptions.find(
-                    ({ value }) => value === profile.access_group,
-                  )?.label ?? profile.access_group
-                }
-              />
-            </Menu.Row>
-          </Menu>
+            <Grid.Item
+              label="Access group"
+              size={6}
+              value={
+                accessGroupOptions.find(
+                  ({ value }) => value === profile.access_group,
+                )?.label ?? profile.access_group
+              }
+            />
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item title="Reboot schedule">
-          <Menu>
-            <Menu.Row>
-              <Menu.Row.Item
-                label="Schedule"
-                size={12}
-                value={formatWeeklyRebootSchedule(profile)}
-              />
+          <Grid>
+            <Grid.Item
+              label="Schedule"
+              size={12}
+              value={formatWeeklyRebootSchedule(profile)}
+            />
 
-              <Menu.Row.Item
-                label="Next reboot"
-                size={12}
-                value={moment(profile.next_run).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
-              />
-            </Menu.Row>
-          </Menu>
+            <Grid.Item
+              label="Next reboot"
+              size={12}
+              value={moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
+            />
+          </Grid>
         </Blocks.Item>
 
         <Blocks.Item title="Association">
@@ -154,30 +148,28 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
             <p>This profile has been associated with all instances.</p>
           )}
 
-          <Menu>
-            <Menu.Row>
-              {!profile.all_computers && (
-                <Menu.Row.Item
-                  label="Tags"
-                  size={12}
-                  value={profile.tags.join(", ") || null}
-                  type="truncated"
-                />
-              )}
+          <Grid>
+            {!profile.all_computers && (
+              <Grid.Item
+                label="Tags"
+                size={12}
+                value={profile.tags.join(", ") || null}
+                type="truncated"
+              />
+            )}
 
-              {(profile.all_computers || !!profile.tags.length) && (
-                <Menu.Row.Item
-                  label="Associated instances"
-                  size={12}
-                  value={
-                    <RebootProfileAssociatedInstancesLink
-                      rebootProfile={profile}
-                    />
-                  }
-                />
-              )}
-            </Menu.Row>
-          </Menu>
+            {(profile.all_computers || !!profile.tags.length) && (
+              <Grid.Item
+                label="Associated instances"
+                size={12}
+                value={
+                  <RebootProfileAssociatedInstancesLink
+                    rebootProfile={profile}
+                  />
+                }
+              />
+            )}
+          </Grid>
         </Blocks.Item>
       </Blocks>
 

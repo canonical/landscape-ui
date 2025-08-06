@@ -1,6 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import Flow from "@/components/layout/Flow";
-import Menu from "@/components/layout/Menu";
+import Grid from "@/components/layout/Grid";
 import { Form } from "@canonical/react-components";
 import type { ComponentProps, FC, SyntheticEvent } from "react";
 import type { SecurityProfile } from "../../types";
@@ -50,31 +50,27 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
             description: "To complete the fixes, instances must be restarted.",
             iconName: "restart",
             children: (
-              <Menu>
-                <Menu.Row>
-                  <Menu.Row.Item
-                    label="Delivery time"
-                    size={12}
-                    value={
-                      profile.restart_deliver_delay === 0
-                        ? "As soon as possible"
-                        : "Scheduled"
-                    }
-                  />
-                </Menu.Row>
+              <Grid>
+                <Grid.Item
+                  label="Delivery time"
+                  size={12}
+                  value={
+                    profile.restart_deliver_delay === 0
+                      ? "As soon as possible"
+                      : "Scheduled"
+                  }
+                />
 
-                <Menu.Row>
-                  <Menu.Row.Item
-                    label="Randomize delivery over a time window"
-                    size={12}
-                    value={
-                      profile.restart_deliver_delay
-                        ? `${profile.restart_deliver_delay_window} minutes`
-                        : "No"
-                    }
-                  />
-                </Menu.Row>
-              </Menu>
+                <Grid.Item
+                  label="Randomize delivery over a time window"
+                  size={12}
+                  value={
+                    profile.restart_deliver_delay
+                      ? `${profile.restart_deliver_delay_window} minutes`
+                      : "No"
+                  }
+                />
+              </Grid>
             ),
           },
           {

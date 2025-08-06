@@ -1,19 +1,9 @@
-@import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
 .blocks {
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
-}
-
-.dividedBlock {
-  border-top: 1px solid $colors--theme--border-low-contrast;
-  padding-top: $spv--large;
-}
-
-.block:not(:first-child) {
-  @extend .dividedBlock;
 }
 
 .heading {
