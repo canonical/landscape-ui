@@ -1,0 +1,1 @@
+import{i as l,k as o}from"./index-Cl3Ng_mk.js";function d(){const[t,n]=l.useState(null),u=l.useRef([]),r=l.useCallback(e=>{e&&(u.current=[...e.querySelectorAll("tbody tr")])},[]);o({current:t==null?null:u.current[t]},()=>{n(null)});const s=l.useCallback(e=>{n(a=>a===e?null:e)},[]);return{expandedRowIndex:t,getTableRowsRef:r,handleExpand:s}}export{d as u};

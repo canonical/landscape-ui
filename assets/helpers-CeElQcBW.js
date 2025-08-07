@@ -1,0 +1,1 @@
+const u=s=>{const t=new Map(s.split(";").map(e=>{const[r,c]=e.split("=");return[r.toUpperCase(),c]})),a=t.get("FREQ")?.toLowerCase()??"",o=parseInt(t.get("BYHOUR")??"",10),n=parseInt(t.get("BYMINUTE")??"",10),p=(t.get("BYDAY")??"").split(",").map(e=>e.toLowerCase());return{freq:a,at_hour:o,at_minute:n,on_days:p}};export{u as p};
