@@ -1,14 +1,14 @@
 import { Button, Icon, SidePanel } from "@canonical/react-components";
 import type { FC, ReactNode } from "react";
 import { useContext } from "react";
-import CloseContext from "../context/CloseContext";
+import CloseContext from "./CloseContext";
 
-interface HeaderTitleProps {
+export interface BodyProps {
   readonly children: ReactNode;
   readonly title?: ReactNode;
 }
 
-const Body: FC<HeaderTitleProps> = ({ children, title }) => {
+const Body: FC<BodyProps> = ({ children, title }) => {
   const close = useContext(CloseContext);
 
   return (

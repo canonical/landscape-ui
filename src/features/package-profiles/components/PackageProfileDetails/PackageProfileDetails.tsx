@@ -1,7 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import InfoGrid from "@/components/layout/InfoGrid";
-import LoadingState from "@/components/layout/LoadingState";
-import { LocalSidePanelBody } from "@/components/layout/LocalSidePanel";
+import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -46,11 +45,7 @@ const PackageProfileDetails: FC = () => {
   };
 
   if (isPendingPackageProfiles) {
-    return (
-      <LocalSidePanelBody>
-        <LoadingState />
-      </LocalSidePanelBody>
-    );
+    return <SidePanel.LoadingState />;
   }
 
   if (packageProfilesError) {
@@ -85,7 +80,7 @@ const PackageProfileDetails: FC = () => {
   };
 
   return (
-    <LocalSidePanelBody title={profile.title}>
+    <SidePanel.Body title={profile.title}>
       <div className="p-segmented-control">
         <Button
           type="button"
@@ -181,7 +176,7 @@ const PackageProfileDetails: FC = () => {
           <b>irreversible</b>.
         </p>
       </TextConfirmationModal>
-    </LocalSidePanelBody>
+    </SidePanel.Body>
   );
 };
 

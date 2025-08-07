@@ -1,5 +1,4 @@
-import LoadingState from "@/components/layout/LoadingState";
-import { LocalSidePanelBody } from "@/components/layout/LocalSidePanel";
+import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import { useState, type FC } from "react";
 import { usePackageProfiles } from "../../hooks";
@@ -23,11 +22,7 @@ const PackageProfileConstraintsSidePanel: FC = () => {
   );
 
   if (isPendingPackageProfiles) {
-    return (
-      <LocalSidePanelBody>
-        <LoadingState />
-      </LocalSidePanelBody>
-    );
+    return <SidePanel.LoadingState />;
   }
 
   if (packageProfilesError) {
@@ -39,7 +34,7 @@ const PackageProfileConstraintsSidePanel: FC = () => {
   switch (action) {
     case "edit":
       return (
-        <LocalSidePanelBody
+        <SidePanel.Body
           title={`Change "${packageProfile.title}" profile's constraints`}
         >
           <PackageProfileConstraintsEditForm
@@ -48,12 +43,12 @@ const PackageProfileConstraintsSidePanel: FC = () => {
               setAction("add");
             }}
           />
-        </LocalSidePanelBody>
+        </SidePanel.Body>
       );
 
     case "add":
       return (
-        <LocalSidePanelBody
+        <SidePanel.Body
           title={`Add package constraints to "${packageProfile.title}" profile`}
         >
           <PackageProfileConstraintsAddForm
@@ -62,7 +57,7 @@ const PackageProfileConstraintsSidePanel: FC = () => {
               setAction("edit");
             }}
           />
-        </LocalSidePanelBody>
+        </SidePanel.Body>
       );
   }
 };

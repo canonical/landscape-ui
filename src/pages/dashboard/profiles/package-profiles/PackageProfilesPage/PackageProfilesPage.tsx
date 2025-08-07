@@ -1,15 +1,12 @@
-import LoadingState from "@/components/layout/LoadingState";
-import LocalSidePanel, {
-  LocalSidePanelBody,
-} from "@/components/layout/LocalSidePanel";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import PackageProfilesContainer from "@/pages/dashboard/profiles/package-profiles/PackageProfilesContainer";
 import { Button } from "@canonical/react-components";
-import { lazy, Suspense, type FC } from "react";
+import { lazy, type FC } from "react";
 
 const PackageProfileConstraintsSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
@@ -17,13 +14,13 @@ const PackageProfileConstraintsSidePanel = lazy(async () =>
   })),
 );
 
-const PackageProfileCreateForm = lazy(async () =>
+const PackageProfileAddSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
     default: module.PackageProfileCreateForm,
   })),
 );
 
-const PackageProfileDetails = lazy(async () =>
+const PackageProfileDetailsSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
     default: module.PackageProfileDetails,
   })),
@@ -80,78 +77,33 @@ const PackageProfilesPage: FC = () => {
       </PageContent>
 
       {action === "add" && (
-        <LocalSidePanel close={close} size="medium">
-          <Suspense
-            fallback={
-              <LocalSidePanelBody>
-                <LoadingState />
-              </LocalSidePanelBody>
-            }
-            key="add"
-          >
-            <PackageProfileCreateForm />
-          </Suspense>
-        </LocalSidePanel>
+        <SidePanel close={close} key="add" size="medium">
+          <PackageProfileAddSidePanel />
+        </SidePanel>
       )}
 
       {action === "constraints" && (
-        <LocalSidePanel close={close} size="medium">
-          <Suspense
-            fallback={
-              <LocalSidePanelBody>
-                <LoadingState />
-              </LocalSidePanelBody>
-            }
-            key="constraints"
-          >
-            <PackageProfileConstraintsSidePanel />
-          </Suspense>
-        </LocalSidePanel>
+        <SidePanel close={close} key="constraints" size="medium">
+          <PackageProfileConstraintsSidePanel />
+        </SidePanel>
       )}
 
       {action === "duplicate" && (
-        <LocalSidePanel close={close}>
-          <Suspense
-            fallback={
-              <LocalSidePanelBody>
-                <LoadingState />
-              </LocalSidePanelBody>
-            }
-            key="duplicate"
-          >
-            <PackageProfileDuplicateSidePanel />
-          </Suspense>
-        </LocalSidePanel>
+        <SidePanel close={close} key="duplicate">
+          <PackageProfileDuplicateSidePanel />
+        </SidePanel>
       )}
 
       {action === "edit" && (
-        <LocalSidePanel close={close}>
-          <Suspense
-            fallback={
-              <LocalSidePanelBody>
-                <LoadingState />
-              </LocalSidePanelBody>
-            }
-            key="edit"
-          >
-            <PackageProfileEditSidePanel />
-          </Suspense>
-        </LocalSidePanel>
+        <SidePanel close={close} key="edit">
+          <PackageProfileEditSidePanel />
+        </SidePanel>
       )}
 
       {action === "view" && (
-        <LocalSidePanel close={close} size="medium">
-          <Suspense
-            fallback={
-              <LocalSidePanelBody>
-                <LoadingState />
-              </LocalSidePanelBody>
-            }
-            key="view"
-          >
-            <PackageProfileDetails />
-          </Suspense>
-        </LocalSidePanel>
+        <SidePanel close={close} key="view" size="medium">
+          <PackageProfileDetailsSidePanel />
+        </SidePanel>
       )}
     </PageMain>
   );

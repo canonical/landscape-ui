@@ -1,5 +1,4 @@
-import LoadingState from "@/components/layout/LoadingState";
-import { LocalSidePanelBody } from "@/components/layout/LocalSidePanel";
+import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { usePackageProfiles } from "../../hooks";
@@ -20,11 +19,7 @@ const PackageProfileEditSidePanel: FC = () => {
   );
 
   if (isPendingPackageProfiles) {
-    return (
-      <LocalSidePanelBody>
-        <LoadingState />
-      </LocalSidePanelBody>
-    );
+    return <SidePanel.LoadingState />;
   }
 
   if (packageProfilesError) {
@@ -34,9 +29,9 @@ const PackageProfileEditSidePanel: FC = () => {
   const [packageProfile] = getPackageProfilesQueryResponse.data.result;
 
   return (
-    <LocalSidePanelBody title={`Edit ${packageProfile.title}`}>
+    <SidePanel.Body title={`Edit ${packageProfile.title}`}>
       <PackageProfileEditForm profile={packageProfile} />
-    </LocalSidePanelBody>
+    </SidePanel.Body>
   );
 };
 

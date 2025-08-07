@@ -1,5 +1,4 @@
-import LoadingState from "@/components/layout/LoadingState";
-import { LocalSidePanelBody } from "@/components/layout/LocalSidePanel";
+import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
 import { useGetRebootProfiles } from "../../api";
 import RebootProfilesForm from "../RebootProfilesForm";
@@ -16,11 +15,7 @@ const RebootProfilesSidePanel: FC<RebootProfilesSidePanelProps> = ({
   const { rebootProfiles, isPending, error } = useGetRebootProfiles();
 
   if (isPending) {
-    return (
-      <LocalSidePanelBody>
-        <LoadingState />
-      </LocalSidePanelBody>
-    );
+    return <SidePanel.LoadingState />;
   }
 
   if (error) {

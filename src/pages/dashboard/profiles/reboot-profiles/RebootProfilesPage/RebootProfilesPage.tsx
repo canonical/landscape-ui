@@ -1,9 +1,7 @@
-import LocalSidePanel, {
-  LocalSidePanelBody,
-} from "@/components/layout/LocalSidePanel";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import SidePanel from "@/components/layout/SidePanel";
 import {
   RebootProfileDetails,
   RebootProfilesContainer,
@@ -54,35 +52,35 @@ const RebootProfilesPage: FC = () => {
       </PageContent>
 
       {action === "add" && (
-        <LocalSidePanel close={close}>
-          <LocalSidePanelBody title="Add reboot profile">
+        <SidePanel close={close} key="add">
+          <SidePanel.Body title="Add reboot profile">
             <RebootProfilesForm action="add" />
-          </LocalSidePanelBody>
-        </LocalSidePanel>
+          </SidePanel.Body>
+        </SidePanel>
       )}
 
       {action === "duplicate" && (
-        <LocalSidePanel close={close}>
+        <SidePanel close={close} key="duplicate">
           <RebootProfilesSidePanel
             action="duplicate"
             rebootProfileId={rebootProfile}
           />
-        </LocalSidePanel>
+        </SidePanel>
       )}
 
       {action === "edit" && (
-        <LocalSidePanel close={close}>
+        <SidePanel close={close} key="edit">
           <RebootProfilesSidePanel
             action="edit"
             rebootProfileId={rebootProfile}
           />
-        </LocalSidePanel>
+        </SidePanel>
       )}
 
       {action === "view" && (
-        <LocalSidePanel close={close} size="medium">
+        <SidePanel close={close} key="view" size="medium">
           <RebootProfileDetails />
-        </LocalSidePanel>
+        </SidePanel>
       )}
     </PageMain>
   );

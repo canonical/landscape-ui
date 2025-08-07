@@ -1,6 +1,6 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { LocalSidePanelBody } from "@/components/layout/LocalSidePanel";
+import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -86,7 +86,7 @@ const PackageProfileCreateForm: FC = () => {
   });
 
   return (
-    <LocalSidePanelBody title="Add package profile">
+    <SidePanel.Body title="Add package profile">
       <Form onSubmit={formik.handleSubmit} noValidate>
         <Input
           type="text"
@@ -122,7 +122,7 @@ const PackageProfileCreateForm: FC = () => {
           onCancel={close}
         />
       </Form>
-    </LocalSidePanelBody>
+    </SidePanel.Body>
   );
 };
 
