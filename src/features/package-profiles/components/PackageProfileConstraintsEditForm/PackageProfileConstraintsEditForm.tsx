@@ -1,30 +1,31 @@
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import LoadingState from "@/components/layout/LoadingState";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import type { FormikHelpers } from "formik";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useState } from "react";
-import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import LoadingState from "@/components/layout/LoadingState";
-import PackageProfileConstraintsEditFormActions from "../PackageProfileConstraintsEditFormActions";
-import PackageProfileConstraintsEditFormTable from "../PackageProfileConstraintsEditFormTable";
 import { usePackageProfiles } from "../../hooks";
 import type {
   Constraint,
   PackageProfile,
   PackageProfileConstraintType,
 } from "../../types";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
+import PackageProfileConstraintsEditFormActions from "../PackageProfileConstraintsEditFormActions";
+import PackageProfileConstraintsEditFormTable from "../PackageProfileConstraintsEditFormTable";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./PackageProfileConstraintsEditForm.module.scss";
-import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 
 interface PackageProfileConstraintsEditFormProps {
+  readonly openAddForm: () => void;
   readonly profile: PackageProfile;
 }
 
 const PackageProfileConstraintsEditForm: FC<
   PackageProfileConstraintsEditFormProps
-> = ({ profile }) => {
+> = ({ openAddForm, profile }) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -115,13 +116,20 @@ const PackageProfileConstraintsEditForm: FC<
               <PackageProfileConstraintsEditFormActions
                 filter={constraintType}
                 formik={formik}
-                onFilterChange={(value) => setConstraintType(value)}
+                onFilterChange={(value) => {
+                  setConstraintType(value);
+                }}
                 profile={profile}
                 selectedIds={selectedIds}
-                setSelectedIds={(value) => setSelectedIds(value)}
+                setSelectedIds={(value) => {
+                  setSelectedIds(value);
+                }}
+                handleConstraintsAdd={openAddForm}
               />
             }
-            onSearch={(searchText) => setSearch(searchText)}
+            onSearch={(searchText) => {
+              setSearch(searchText);
+            }}
             disabled={formik.values.id !== 0}
           />
 
@@ -129,7 +137,9 @@ const PackageProfileConstraintsEditForm: FC<
             filter={constraintType}
             formik={formik}
             isConstraintsLoading={getPackageProfileConstraintsQueryLoading}
-            onSelectedIdsChange={(value) => setSelectedIds(value)}
+            onSelectedIdsChange={(value) => {
+              setSelectedIds(value);
+            }}
             pageSize={pageSize}
             profileConstraints={
               getPackageProfileConstraintsQueryResult?.data.results

@@ -33,7 +33,7 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
 
   const handleConstraintsChange = () => {
     setPageParams({
-      action: "changePackageConstraints",
+      action: "constraints",
       packageProfile: profile.name,
     });
   };

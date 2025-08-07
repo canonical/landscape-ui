@@ -11,9 +11,9 @@ import PackageProfilesContainer from "@/pages/dashboard/profiles/package-profile
 import { Button } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
 
-const PackageProfileConstraintsEditSidePanel = lazy(async () =>
+const PackageProfileConstraintsSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileConstraintsEditSidePanel,
+    default: module.PackageProfileConstraintsSidePanel,
   })),
 );
 
@@ -46,7 +46,7 @@ const PackageProfilesPage: FC = () => {
 
   useSetDynamicFilterValidation("action", [
     "add",
-    "changePackageConstraints",
+    "constraints",
     "duplicate",
     "edit",
     "view",
@@ -94,7 +94,7 @@ const PackageProfilesPage: FC = () => {
         </LocalSidePanel>
       )}
 
-      {action === "changePackageConstraints" && (
+      {action === "constraints" && (
         <LocalSidePanel close={close} size="medium">
           <Suspense
             fallback={
@@ -102,9 +102,9 @@ const PackageProfilesPage: FC = () => {
                 <LoadingState />
               </LocalSidePanelBody>
             }
-            key="changePackageConstraints"
+            key="constraints"
           >
-            <PackageProfileConstraintsEditSidePanel />
+            <PackageProfileConstraintsSidePanel />
           </Suspense>
         </LocalSidePanel>
       )}

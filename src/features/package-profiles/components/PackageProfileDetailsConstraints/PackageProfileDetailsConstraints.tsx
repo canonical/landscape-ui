@@ -35,7 +35,7 @@ const PackageProfileDetailsConstraints: FC<
   });
 
   const handlePackageConstraintsChange = () => {
-    setPageParams({ action: "changePackageConstraints" });
+    setPageParams({ action: "constraints" });
   };
 
   return (

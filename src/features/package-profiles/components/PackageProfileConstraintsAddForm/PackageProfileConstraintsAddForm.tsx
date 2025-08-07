@@ -1,43 +1,29 @@
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import { pluralize } from "@/utils/_helpers";
+import { Form } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { Suspense } from "react";
-import { Form } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
-import PackageProfileConstraintsEditForm from "../PackageProfileConstraintsEditForm";
 import { EMPTY_CONSTRAINT } from "../../constants";
 import { usePackageProfiles } from "../../hooks";
 import type { ConstraintsFormProps, PackageProfile } from "../../types";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
 import { VALIDATION_SCHEMA } from "./constants";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { pluralize } from "@/utils/_helpers";
 
 interface PackageProfileConstraintsAddFormProps {
+  readonly handleConstraintsEdit: () => void;
   readonly profile: PackageProfile;
 }
 
 const PackageProfileConstraintsAddForm: FC<
   PackageProfileConstraintsAddFormProps
-> = ({ profile }) => {
+> = ({ handleConstraintsEdit, profile }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
   const { addPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: addConstraints } = addPackageProfileConstraintsQuery;
-
-  const handleConstraintsEdit = () => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile's constraints`,
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileConstraintsEditForm profile={profile} />
-      </Suspense>,
-      "medium",
-    );
-  };
 
   const handleSubmit = async ({ constraints }: ConstraintsFormProps) => {
     try {
@@ -80,6 +66,8 @@ const PackageProfileConstraintsAddForm: FC<
         submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
         submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
         cancelButtonDisabled={formik.isSubmitting}
+        hasBackButton
+        onBackButtonPress={handleConstraintsEdit}
       />
     </Form>
   );
