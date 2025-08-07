@@ -1,3 +1,9 @@
+landscape-dashboard (1.17.1-0landscape0) jammy; urgency=medium
+
+  * Release 1.17.1 for jammy
+
+ -- Spencer Runde <spencer.runde@canonical.com>  Thu, 07 Aug 2025 07:01:31 -0500
+
 landscape-dashboard (1.16.0-0landscape0) jammy; urgency=medium
 
   * Release 1.16.0 for jammy
