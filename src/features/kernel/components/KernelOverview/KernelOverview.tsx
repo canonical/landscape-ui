@@ -17,16 +17,14 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
   const livepatchEnabled = kernelOverview.status !== "Livepatch disabled";
 
   return (
-    <InfoGrid>
+    <InfoGrid className={classes.infoGrid}>
       <InfoGrid.Item
         label="current kernel version"
-        size={3}
         value={kernelOverview.currentVersion || null}
       />
 
       <InfoGrid.Item
         label="kernel status"
-        size={3}
         value={
           <>
             <span>
@@ -50,7 +48,6 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
 
       <InfoGrid.Item
         label="livepatch coverage"
-        size={3}
         value={
           kernelOverview.expirationDate ? (
             <>

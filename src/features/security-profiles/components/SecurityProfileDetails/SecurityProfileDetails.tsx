@@ -117,19 +117,11 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
       <Blocks>
         <Blocks.Item>
           <InfoGrid>
-            <InfoGrid.Item label="Title" size={6} value={profile.title} />
-            <InfoGrid.Item label="Name" size={6} value={profile.name} />
+            <InfoGrid.Item label="Title" value={profile.title} />
+            <InfoGrid.Item label="Name" value={profile.name} />
 
-            <InfoGrid.Item
-              label="Access group"
-              size={6}
-              value={accessGroup.title}
-            />
-            <InfoGrid.Item
-              label="Status"
-              size={6}
-              value={getStatus(profile).label}
-            />
+            <InfoGrid.Item label="Access group" value={accessGroup.title} />
+            <InfoGrid.Item label="Status" value={getStatus(profile).label} />
           </InfoGrid>
         </Blocks.Item>
 
@@ -137,19 +129,17 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
           <InfoGrid>
             <InfoGrid.Item
               label="Benchmark"
-              size={6}
               value={SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark]}
             />
 
             <InfoGrid.Item
               label="Tailoring file"
-              size={6}
               value={getTailoringFile(profile)}
             />
 
             <InfoGrid.Item
               label="Mode"
-              size={12}
+              large
               value={SECURITY_PROFILE_MODE_LABELS[profile.mode]}
             />
           </InfoGrid>
@@ -159,13 +149,12 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
           <InfoGrid>
             <InfoGrid.Item
               label="Schedule"
-              size={12}
+              large
               value={getSchedule(profile)}
             />
 
             <InfoGrid.Item
               label="Last run"
-              size={6}
               value={
                 profile.last_run_results.timestamp
                   ? `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
@@ -175,7 +164,6 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
 
             <InfoGrid.Item
               label="Next run"
-              size={6}
               value={
                 profile.next_run_time
                   ? `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
@@ -186,7 +174,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             {profile.mode === "audit-fix-restart" && (
               <InfoGrid.Item
                 label="Restart schedule"
-                size={12}
+                large
                 value={`${
                   profile.restart_deliver_delay
                     ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
@@ -201,7 +189,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
           <InfoGrid>
             <InfoGrid.Item
               label="Associated instances"
-              size={12}
+              large
               value={
                 <SecurityProfileAssociatedInstancesLink
                   securityProfile={profile}
@@ -211,7 +199,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
 
             <InfoGrid.Item
               label="Tags"
-              size={12}
+              large
               value={getTags(profile)}
               type="truncated"
             />

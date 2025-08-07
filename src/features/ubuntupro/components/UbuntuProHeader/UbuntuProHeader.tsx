@@ -31,19 +31,16 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => (
     <InfoGrid>
       <InfoGrid.Item
         label="Account"
-        size={3}
         value={ubuntuProData.account?.name || null}
       />
 
       <InfoGrid.Item
         label="Subscription"
-        size={3}
         value={ubuntuProData.contract?.name || null}
       />
 
       <InfoGrid.Item
         label="Valid Until"
-        size={3}
         value={
           ubuntuProData.expires && moment(ubuntuProData.expires).isValid()
             ? moment(ubuntuProData.expires).format(DISPLAY_DATE_TIME_FORMAT)
@@ -53,7 +50,6 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => (
 
       <InfoGrid.Item
         label="Technical Support Level"
-        size={3}
         value={ubuntuProData.contract?.tech_support_level}
       />
     </InfoGrid>

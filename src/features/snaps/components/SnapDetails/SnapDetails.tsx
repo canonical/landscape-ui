@@ -19,23 +19,14 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
         sidePanel
       />
       <InfoGrid className={classes.infoGrid}>
-        <InfoGrid.Item label="Name" size={12} value={installedSnap.snap.name} />
+        <InfoGrid.Item label="Name" large value={installedSnap.snap.name} />
 
-        <InfoGrid.Item
-          label="Channel"
-          size={6}
-          value={installedSnap.tracking_channel}
-        />
-        <InfoGrid.Item label="Version" size={6} value={installedSnap.version} />
+        <InfoGrid.Item label="Channel" value={installedSnap.tracking_channel} />
+        <InfoGrid.Item label="Version" value={installedSnap.version} />
 
-        <InfoGrid.Item
-          label="Confinement"
-          size={6}
-          value={installedSnap.confinement}
-        />
+        <InfoGrid.Item label="Confinement" value={installedSnap.confinement} />
         <InfoGrid.Item
           label="Held until"
-          size={6}
           value={
             moment(installedSnap.held_until).isValid()
               ? moment(installedSnap.held_until).format(
@@ -47,13 +38,13 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
 
         <InfoGrid.Item
           label="Summary"
-          size={12}
+          large
           value={installedSnap.snap.summary}
         />
 
         <InfoGrid.Item
           label="Publisher"
-          size={12}
+          large
           value={installedSnap.snap.publisher.username}
         />
       </InfoGrid>

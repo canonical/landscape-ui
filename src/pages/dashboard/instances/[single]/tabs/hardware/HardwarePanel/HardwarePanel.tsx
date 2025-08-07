@@ -32,45 +32,32 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
     <>
       <HardwareInfoRow label="System">
         <InfoGrid>
-          <InfoGrid.Item
-            label="Model"
-            size={3}
-            value={groupedHardware.system.model}
-          />
+          <InfoGrid.Item label="Model" value={groupedHardware.system.model} />
 
-          <InfoGrid.Item
-            label="Vendor"
-            size={3}
-            value={groupedHardware.system.vendor}
-          />
+          <InfoGrid.Item label="Vendor" value={groupedHardware.system.vendor} />
 
           <InfoGrid.Item
             label="BIOS vendor"
-            size={3}
             value={groupedHardware.system.bios_vendor}
           />
 
           <InfoGrid.Item
             label="BIOS date"
-            size={3}
             value={groupedHardware.system.bios_date}
           />
 
           <InfoGrid.Item
             label="Serial number"
-            size={3}
             value={groupedHardware.system.serial}
           />
 
           <InfoGrid.Item
             label="Chassis"
-            size={3}
             value={groupedHardware.system.chassis}
           />
 
           <InfoGrid.Item
             label="BIOS version"
-            size={3}
             value={groupedHardware.system.bios_version}
           />
         </InfoGrid>
@@ -82,27 +69,17 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
             {groupedHardware.cpu.map((cpu, index) => (
               <Blocks.Item key={index}>
                 <InfoGrid>
-                  <InfoGrid.Item
-                    label="Vendor"
-                    size={3}
-                    value={cpu.vendor || null}
-                  />
+                  <InfoGrid.Item label="Vendor" value={cpu.vendor || null} />
 
                   <InfoGrid.Item
                     label="Clock speed"
-                    size={3}
                     value={cpu.clock_speed || null}
                   />
 
-                  <InfoGrid.Item
-                    label="Model"
-                    size={3}
-                    value={cpu.model || null}
-                  />
+                  <InfoGrid.Item label="Model" value={cpu.model || null} />
 
                   <InfoGrid.Item
                     label="Architecture"
-                    size={3}
                     value={cpu.architecture || null}
                   />
                 </InfoGrid>
@@ -111,10 +88,10 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
           </Blocks>
         ) : (
           <InfoGrid>
-            <InfoGrid.Item label="Vendor" size={3} value={null} />
-            <InfoGrid.Item label="Clock speed" size={3} value={null} />
-            <InfoGrid.Item label="Model" size={3} value={null} />
-            <InfoGrid.Item label="Architecture" size={3} value={null} />
+            <InfoGrid.Item label="Vendor" value={null} />
+            <InfoGrid.Item label="Clock speed" value={null} />
+            <InfoGrid.Item label="Model" value={null} />
+            <InfoGrid.Item label="Architecture" value={null} />
           </InfoGrid>
         )}
       </HardwareInfoRow>
@@ -123,7 +100,6 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
         <InfoGrid>
           <InfoGrid.Item
             label="Size"
-            size={3}
             value={groupedHardware.memory.size || null}
           />
         </InfoGrid>
@@ -134,7 +110,6 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
           <InfoGrid>
             <InfoGrid.Item
               label="Network"
-              size={3}
               value={groupedHardware.network || null}
             />
           </InfoGrid>
@@ -145,31 +120,26 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
                 <InfoGrid>
                   <InfoGrid.Item
                     label="IP address"
-                    size={3}
                     value={network.ip || null}
                   />
 
                   <InfoGrid.Item
                     label="Vendor"
-                    size={3}
                     value={network.vendor || null}
                   />
 
                   <InfoGrid.Item
                     label="Model"
-                    size={3}
                     value={network.product || null}
                   />
 
                   <InfoGrid.Item
                     label="MAC address"
-                    size={3}
                     value={network.mac || null}
                   />
 
                   <InfoGrid.Item
                     label="Description"
-                    size={3}
                     value={network.description || null}
                   />
                 </InfoGrid>
@@ -183,13 +153,11 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
         <InfoGrid>
           <InfoGrid.Item
             label="Model"
-            size={3}
             value={groupedHardware.multimedia.model || null}
           />
 
           <InfoGrid.Item
             label="Vendor"
-            size={3}
             value={groupedHardware.multimedia.vendor || null}
           />
         </InfoGrid>

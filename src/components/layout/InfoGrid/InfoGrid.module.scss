@@ -1,5 +1,17 @@
 .infoGrid {
+  container-type: inline-size;
+}
+
+.grid {
   display: grid;
   gap: 2rem;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+
+  @container (max-width: calc(15.5rem * 4 + 2rem * 3)) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  & > * {
+    min-width: 0;
+  }
 }

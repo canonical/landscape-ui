@@ -137,14 +137,9 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
         <span>{NOTIFICATION_MESSAGE}</span>
       </Notification>
       <InfoGrid>
-        <InfoGrid.Item
-          label="Current version"
-          size={6}
-          value={currentKernelVersion}
-        />
+        <InfoGrid.Item label="Current version" value={currentKernelVersion} />
         <InfoGrid.Item
           label="New version"
-          size={6}
           value={
             upgradeKernelVersions.length === 1 ? (
               <span>{upgradeKernelVersions[0].version_rounded}</span>

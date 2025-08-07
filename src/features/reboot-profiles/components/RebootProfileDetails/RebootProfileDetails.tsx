@@ -113,11 +113,10 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
       <Blocks>
         <Blocks.Item>
           <InfoGrid>
-            <InfoGrid.Item label="Title" size={6} value={profile.title} />
+            <InfoGrid.Item label="Title" value={profile.title} />
 
             <InfoGrid.Item
               label="Access group"
-              size={6}
               value={
                 accessGroupOptions.find(
                   ({ value }) => value === profile.access_group,
@@ -131,13 +130,13 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
           <InfoGrid>
             <InfoGrid.Item
               label="Schedule"
-              size={12}
+              large
               value={formatWeeklyRebootSchedule(profile)}
             />
 
             <InfoGrid.Item
               label="Next reboot"
-              size={12}
+              large
               value={moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
             />
           </InfoGrid>
@@ -152,7 +151,7 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
             {!profile.all_computers && (
               <InfoGrid.Item
                 label="Tags"
-                size={12}
+                large
                 value={profile.tags.join(", ") || null}
                 type="truncated"
               />
@@ -161,7 +160,7 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
             {(profile.all_computers || !!profile.tags.length) && (
               <InfoGrid.Item
                 label="Associated instances"
-                size={12}
+                large
                 value={
                   <RebootProfileAssociatedInstancesLink
                     rebootProfile={profile}

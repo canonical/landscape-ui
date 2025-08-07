@@ -23,21 +23,17 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
   return (
     <>
       <InfoGrid>
-        <InfoGrid.Item label="Name" size={6} value={script.title} />
+        <InfoGrid.Item label="Name" value={script.title} />
 
-        <InfoGrid.Item label="Version" size={6} value={script.version_number} />
+        <InfoGrid.Item label="Version" value={script.version_number} />
 
-        <InfoGrid.Item
-          label="Status"
-          size={6}
-          value={formatTitleCase(script.status)}
-        />
+        <InfoGrid.Item label="Status" value={formatTitleCase(script.status)} />
 
-        <InfoGrid.Item label="Access group" size={6} value={accessGroup} />
+        <InfoGrid.Item label="Access group" value={accessGroup} />
 
         <InfoGrid.Item
           label="Date created"
-          size={12}
+          large
           value={getAuthorInfo({
             author: script.created_by.name,
             date: script.created_at,
@@ -46,7 +42,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
 
         <InfoGrid.Item
           label="Last modified"
-          size={12}
+          large
           value={getAuthorInfo({
             author: script.last_edited_by.name,
             date: script.last_edited_at,
@@ -55,7 +51,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
 
         <InfoGrid.Item
           label="Attachments"
-          size={12}
+          large
           value={
             script.attachments.length > 0
               ? script.attachments.map((att) => (
@@ -72,7 +68,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
 
         <InfoGrid.Item
           label="Associated profiles"
-          size={12}
+          large
           value={
             script.script_profiles.length > 0
               ? script.script_profiles.map((profile, index) => (

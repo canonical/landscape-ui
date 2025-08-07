@@ -99,13 +99,12 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
       <Blocks>
         <Blocks.Item>
           <InfoGrid>
-            <InfoGrid.Item label="Title" size={6} value={profile.title} />
+            <InfoGrid.Item label="Title" value={profile.title} />
 
-            <InfoGrid.Item label="Name" size={6} value={profile.name} />
+            <InfoGrid.Item label="Name" value={profile.name} />
 
             <InfoGrid.Item
               label="Access group"
-              size={6}
               value={
                 accessGroupOptions.find(
                   ({ value }) => value === profile.access_group,
@@ -115,7 +114,7 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
 
             <InfoGrid.Item
               label="Removal timeframe"
-              size={12}
+              large
               value={`${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`}
             />
           </InfoGrid>

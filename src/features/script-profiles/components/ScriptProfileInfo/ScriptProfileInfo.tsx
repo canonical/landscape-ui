@@ -38,17 +38,12 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
     <Blocks>
       <Blocks.Item>
         <InfoGrid>
-          <InfoGrid.Item label="Title" size={6} value={profile.title} />
+          <InfoGrid.Item label="Title" value={profile.title} />
 
-          <InfoGrid.Item
-            label="Status"
-            size={6}
-            value={getStatusText(profile)}
-          />
+          <InfoGrid.Item label="Status" value={getStatusText(profile)} />
 
           <InfoGrid.Item
             label="Script"
-            size={6}
             value={
               script ? (
                 <Link to="/scripts?tab=scripts" state={{ scriptId: script.id }}>
@@ -58,19 +53,11 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
             }
           />
 
-          <InfoGrid.Item label="Access group" size={6} value={accessGroup} />
+          <InfoGrid.Item label="Access group" value={accessGroup} />
 
-          <InfoGrid.Item
-            label="Run as user"
-            size={6}
-            value={profile.username}
-          />
+          <InfoGrid.Item label="Run as user" value={profile.username} />
 
-          <InfoGrid.Item
-            label="Time limit"
-            size={6}
-            value={`${profile.time_limit}s`}
-          />
+          <InfoGrid.Item label="Time limit" value={`${profile.time_limit}s`} />
         </InfoGrid>
       </Blocks.Item>
 
@@ -78,14 +65,13 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
         <InfoGrid>
           <InfoGrid.Item
             label="Trigger"
-            size={12}
+            large
             value={getTriggerLongText(profile) || null}
           />
 
           {profile.trigger.trigger_type !== "event" && (
             <InfoGrid.Item
               label="Next run"
-              size={6}
               value={
                 profile.trigger.next_run
                   ? `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)}`
@@ -96,7 +82,6 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
 
           <InfoGrid.Item
             label="Last run"
-            size={6}
             value={
               activity ? (
                 <Link to={`/activities?query=parent-id%3A${activity.id}`}>
@@ -114,7 +99,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
         <InfoGrid>
           <InfoGrid.Item
             label="Associated instances"
-            size={12}
+            large
             value={
               <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
             }
@@ -122,7 +107,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
 
           <InfoGrid.Item
             label="Tags"
-            size={12}
+            large
             value={
               profile.all_computers
                 ? "All instances"

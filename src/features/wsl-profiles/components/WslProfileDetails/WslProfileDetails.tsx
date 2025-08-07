@@ -73,11 +73,10 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
       <Blocks>
         <Blocks.Item>
           <InfoGrid>
-            <InfoGrid.Item label="Title" size={6} value={profile.title} />
-            <InfoGrid.Item label="Name" size={6} value={profile.name} />
+            <InfoGrid.Item label="Title" value={profile.title} />
+            <InfoGrid.Item label="Name" value={profile.name} />
             <InfoGrid.Item
               label="Access group"
-              size={6}
               value={
                 accessGroupOptions.find(
                   ({ value }) => value === profile.access_group,
@@ -86,7 +85,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
             />
             <InfoGrid.Item
               label="Description"
-              size={12}
+              large
               value={profile.description}
             />
           </InfoGrid>
@@ -96,20 +95,20 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
           <InfoGrid>
             <InfoGrid.Item
               label="Rootfs image name"
-              size={12}
+              large
               value={profile.image_name}
             />
             {profile.image_source !== null && (
               <InfoGrid.Item
                 label="Rootfs image source"
-                size={12}
+                large
                 value={profile.image_source}
                 type="truncated"
               />
             )}
             <InfoGrid.Item
               label="Cloud-init"
-              size={12}
+              large
               value={profile.cloud_init_contents || null}
             />
           </InfoGrid>
@@ -125,7 +124,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
               {!profile.all_computers && (
                 <InfoGrid.Item
                   label="Tags"
-                  size={12}
+                  large
                   value={profile.tags.join(", ") || null}
                 />
               )}
@@ -134,21 +133,19 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
                 <>
                   <InfoGrid.Item
                     label="Associated parents"
-                    size={12}
+                    large
                     value={
                       <WslProfileAssociatedParentsLink wslProfile={profile} />
                     }
                   />
                   <InfoGrid.Item
                     label="Not compliant"
-                    size={6}
                     value={
                       <WslProfileNonCompliantParentsLink wslProfile={profile} />
                     }
                   />
                   <InfoGrid.Item
                     label="Compliant"
-                    size={6}
                     value={
                       <WslProfileCompliantParentsLink wslProfile={profile} />
                     }

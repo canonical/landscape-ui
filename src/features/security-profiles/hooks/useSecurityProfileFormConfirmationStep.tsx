@@ -53,7 +53,7 @@ export default function useSecurityProfileFormConfirmationStep<
                   <InfoGrid>
                     <InfoGrid.Item
                       label="Delivery time"
-                      size={12}
+                      large
                       value={
                         formik.values.delivery_time === "asap"
                           ? "As soon as possible"
@@ -66,7 +66,7 @@ export default function useSecurityProfileFormConfirmationStep<
 
                     <InfoGrid.Item
                       label="Randomize delivery over a time window"
-                      size={12}
+                      large
                       value={
                         formik.values.randomize_delivery === "yes"
                           ? `Yes, over ${formik.values.restart_deliver_delay_window} ${pluralize(

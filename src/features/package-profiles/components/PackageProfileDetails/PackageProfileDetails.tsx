@@ -117,19 +117,14 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
       </div>
 
       <InfoGrid>
-        <InfoGrid.Item label="Title" size={3} value={profile.title} />
+        <InfoGrid.Item label="Title" value={profile.title} />
 
-        <InfoGrid.Item label="Name" size={3} value={profile.name} />
+        <InfoGrid.Item label="Name" value={profile.name} />
 
-        <InfoGrid.Item
-          label="Description"
-          size={6}
-          value={profile.description}
-        />
+        <InfoGrid.Item label="Description" value={profile.description} />
 
         <InfoGrid.Item
           label="Access group"
-          size={3}
           value={
             accessGroups.find((group) => group.name === profile.access_group)
               ?.title ?? profile.access_group
@@ -138,14 +133,13 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
 
         <InfoGrid.Item
           label="Tags"
-          size={9}
+          large
           value={profile.tags.join(", ") || null}
           type="truncated"
         />
 
         <InfoGrid.Item
           label="Associated to"
-          size={3}
           value={
             <PackageProfileAssociatedInstancesLink packageProfile={profile} />
           }
@@ -153,7 +147,6 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
 
         <InfoGrid.Item
           label="Pending on"
-          size={3}
           value={`${profile.computers.pending?.length ?? 0} ${pluralize(
             profile.computers.pending.length,
             "instance",
@@ -162,7 +155,6 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
 
         <InfoGrid.Item
           label="Not compliant on"
-          size={3}
           value={`${profile.computers["non-compliant"].length} ${pluralize(
             profile.computers["non-compliant"].length,
             "instance",

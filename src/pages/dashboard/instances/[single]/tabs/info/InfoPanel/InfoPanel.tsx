@@ -369,7 +369,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           <InfoGrid>
             <InfoGrid.Item
               label="Status"
-              size={3}
               value={
                 <div className={classes.status}>
                   <Icon name={getStatusCellIconAndLabel(instance).icon ?? ""} />
@@ -379,7 +378,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             />
             <InfoGrid.Item
               label="Last ping time"
-              size={3}
               value={
                 moment(instance.last_ping_time).isValid()
                   ? moment(instance.last_ping_time).format(
@@ -390,7 +388,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             />
             <InfoGrid.Item
               label="Access group"
-              size={6}
               value={
                 accessGroups.find(
                   (accessGroup) => accessGroup.name === instance.access_group,
@@ -398,8 +395,12 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               }
             />
             <InfoGrid.Item
+              label="Tags"
+              value={instance.tags.join(", ") || null}
+              type="truncated"
+            />
+            <InfoGrid.Item
               label="Profiles"
-              size={3}
               value={
                 instance.profiles?.length ? (
                   <Profiles profiles={instance.profiles} />
@@ -410,7 +411,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             {getFeatures(instance).employees && (
               <InfoGrid.Item
                 label="Associated employee"
-                size={9}
                 value={employee?.name}
               />
             )}
@@ -418,35 +418,27 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </Blocks.Item>
         <Blocks.Item title="Registration details">
           <InfoGrid>
-            <InfoGrid.Item
-              label="Hostname"
-              size={3}
-              value={instance.hostname}
-            />
-            <InfoGrid.Item label="ID" size={3} value={instance.id} />
+            <InfoGrid.Item label="Hostname" value={instance.hostname} />
+            <InfoGrid.Item label="ID" value={instance.id} />
             {getFeatures(instance).hardware && (
               <InfoGrid.Item
                 label="Serial number"
-                size={3}
                 value={instance.grouped_hardware?.system.serial}
               />
             )}
             {getFeatures(instance).hardware && (
               <InfoGrid.Item
                 label="Product identifier"
-                size={3}
                 value={instance.grouped_hardware?.system.model}
               />
             )}
             <InfoGrid.Item
               label="OS"
-              size={3}
               value={instance.distribution_info?.description}
             />
             {getFeatures(instance).hardware && (
               <InfoGrid.Item
                 label="IP addresses"
-                size={3}
                 value={
                   Array.isArray(instance.grouped_hardware?.network)
                     ? instance.grouped_hardware.network
@@ -459,7 +451,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             )}
             <InfoGrid.Item
               label="Registered"
-              size={3}
               value={moment(instance.registered_at).format(
                 DISPLAY_DATE_TIME_FORMAT,
               )}
@@ -468,12 +459,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </Blocks.Item>
         <Blocks.Item title="Other">
           <InfoGrid>
-            <InfoGrid.Item label="Annotations" size={3} value={null} />
-            <InfoGrid.Item
-              label="Comment"
-              size={9}
-              value={instance.comment || null}
-            />
+            <InfoGrid.Item label="Annotations" value={null} />
+            <InfoGrid.Item label="Comment" value={instance.comment || null} />
           </InfoGrid>
         </Blocks.Item>
       </Blocks>

@@ -70,17 +70,12 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
       </div>
 
       <InfoGrid>
-        <InfoGrid.Item label="Name" size={12} value={singlePackage.name} />
+        <InfoGrid.Item label="Name" large value={singlePackage.name} />
 
-        <InfoGrid.Item
-          label="Summary"
-          size={12}
-          value={singlePackage.summary}
-        />
+        <InfoGrid.Item label="Summary" large value={singlePackage.summary} />
 
         <InfoGrid.Item
           label="Current version"
-          size={6}
           value={singlePackage.current_version}
         />
 
@@ -88,7 +83,6 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
           singlePackage.available_version !== singlePackage.current_version && (
             <InfoGrid.Item
               label="Upgradable to"
-              size={6}
               value={highlightVersionsDifference(singlePackage)}
             />
           )}

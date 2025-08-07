@@ -35,26 +35,26 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
     <>
       <UserPanelActionButtons selectedUsers={[user]} sidePanel />
       <InfoGrid className={classes.infoGrid}>
-        <InfoGrid.Item label="Username" size={12} value={user.username} />
+        <InfoGrid.Item label="Username" large value={user.username} />
 
-        <InfoGrid.Item label="Name" size={12} value={user.name || null} />
+        <InfoGrid.Item label="Name" large value={user.name || null} />
 
-        <InfoGrid.Item label="Passphrase" size={12} type="password" />
+        <InfoGrid.Item label="Passphrase" large type="password" />
 
-        <InfoGrid.Item label="Primary group" size={12} value={primaryGroup} />
+        <InfoGrid.Item label="Primary group" large value={primaryGroup} />
 
         <InfoGrid.Item
           label="Additional groups"
-          size={12}
+          large
           value={userGroups}
           type="truncated"
         />
 
-        <InfoGrid.Item label="Location" size={12} value={user?.location} />
+        <InfoGrid.Item label="Location" large value={user?.location} />
 
-        <InfoGrid.Item label="Home phone" size={12} value={user?.home_phone} />
+        <InfoGrid.Item label="Home phone" large value={user?.home_phone} />
 
-        <InfoGrid.Item label="Work phone" size={12} value={user?.work_phone} />
+        <InfoGrid.Item label="Work phone" large value={user?.work_phone} />
       </InfoGrid>
     </>
   );

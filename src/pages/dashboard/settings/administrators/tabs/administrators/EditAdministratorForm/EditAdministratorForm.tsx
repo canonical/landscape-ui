@@ -122,20 +122,12 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
       </ConfirmationButton>
 
       <InfoGrid>
-        <InfoGrid.Item
-          label="Name"
-          size={6}
-          value={currentAdministrator.name}
-        />
-        <InfoGrid.Item
-          label="Email"
-          size={6}
-          value={currentAdministrator.email}
-        />
+        <InfoGrid.Item label="Name" value={currentAdministrator.name} />
+        <InfoGrid.Item label="Email" value={currentAdministrator.email} />
 
-        <InfoGrid.Item label="Timezone" size={12} value={null} />
+        <InfoGrid.Item label="Timezone" large value={null} />
 
-        <InfoGrid.Item label="Identity URL" size={12} value={null} />
+        <InfoGrid.Item label="Identity URL" large value={null} />
       </InfoGrid>
 
       <MultiSelectField

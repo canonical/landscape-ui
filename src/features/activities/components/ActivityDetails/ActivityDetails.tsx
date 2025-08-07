@@ -238,12 +238,12 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
       </div>
 
       <InfoGrid>
-        <InfoGrid.Item label="Description" size={12} value={activity.summary} />
+        <InfoGrid.Item label="Description" large value={activity.summary} />
 
         {instance && (
           <InfoGrid.Item
             label="Instance"
-            size={12}
+            large
             value={
               <StaticLink
                 to={`/instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`}
@@ -256,7 +256,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
 
         <InfoGrid.Item
           label="Status"
-          size={6}
           value={
             <>
               <Icon
@@ -269,7 +268,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         />
         <InfoGrid.Item
           label="Created at"
-          size={6}
           value={moment(activity.creation_time).format(
             DISPLAY_DATE_TIME_FORMAT,
           )}
@@ -278,7 +276,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         {typeof activity.delivery_time === "string" && (
           <InfoGrid.Item
             label="Delivered at"
-            size={6}
             value={moment(activity.delivery_time).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
@@ -287,7 +284,6 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         {activity.completion_time !== null && (
           <InfoGrid.Item
             label="Completed at"
-            size={6}
             value={moment(activity.completion_time).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}

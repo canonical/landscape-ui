@@ -100,11 +100,10 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
       <Blocks>
         <Blocks.Item>
           <InfoGrid>
-            <InfoGrid.Item label="Title" size={6} value={profile.title} />
-            <InfoGrid.Item label="Name" size={6} value={profile.name} />
+            <InfoGrid.Item label="Title" value={profile.title} />
+            <InfoGrid.Item label="Name" value={profile.name} />
             <InfoGrid.Item
               label="Access group"
-              size={6}
               value={
                 accessGroupOptions.find(
                   ({ value }) => value === profile.access_group,
@@ -113,12 +112,10 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
             />
             <InfoGrid.Item
               label="Upgrade type"
-              size={6}
               value={profile.upgrade_type === "all" ? "All" : "Security"}
             />
             <InfoGrid.Item
               label="Auto remove packages"
-              size={6}
               value={profile.autoremove ? "On" : "Off"}
             />
           </InfoGrid>
@@ -126,11 +123,11 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
 
         <Blocks.Item title="Schedule">
           <InfoGrid>
-            <InfoGrid.Item label="Schedule" size={12} value={scheduleMessage} />
-            <InfoGrid.Item label="Next run" size={12} value={nextRunMessage} />
+            <InfoGrid.Item label="Schedule" large value={scheduleMessage} />
+            <InfoGrid.Item label="Next run" large value={nextRunMessage} />
             <InfoGrid.Item
               label="Delivery delay window"
-              size={12}
+              large
               value={`${profile.deliver_delay_window} ${pluralize(
                 Number(profile.deliver_delay_window),
                 "minute",

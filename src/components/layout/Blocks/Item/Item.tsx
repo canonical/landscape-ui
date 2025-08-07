@@ -6,15 +6,11 @@ export interface ItemProps {
   readonly title?: string;
 }
 
-const Item: FC<ItemProps> = ({ children, title }: ItemProps) => {
-  const isTitleDefined = title !== undefined;
-
-  return (
-    <section className={isTitleDefined ? classes.dividedItem : classes.item}>
-      {isTitleDefined && <h5 className={classes.heading}>{title}</h5>}
-      {children}
-    </section>
-  );
-};
+const Item: FC<ItemProps> = ({ children, title }: ItemProps) => (
+  <section className={title ? classes.dividedItem : classes.item}>
+    {title && <h5 className={classes.heading}>{title}</h5>}
+    {children}
+  </section>
+);
 
 export default Item;
