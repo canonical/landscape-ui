@@ -1,7 +1,7 @@
+import { Input } from "@canonical/react-components";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
 import classes from "./PageNumberInput.module.scss";
-import { Input } from "@canonical/react-components";
 
 const PageNumberInput = ({
   currentPage,

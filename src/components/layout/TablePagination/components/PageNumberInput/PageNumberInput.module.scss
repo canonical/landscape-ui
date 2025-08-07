@@ -17,6 +17,11 @@
 
 .input {
   min-width: initial !important;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    display: none;
+  }
 }
 
 .smallInput {
