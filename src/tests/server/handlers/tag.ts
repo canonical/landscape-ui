@@ -26,11 +26,16 @@ export default [
     never,
     UseGetProfileChangesParams,
     ApiPaginatedResponse<ProfileChange>
-  >(`${API_URL}tags/profile-diff`, () => {
+  >(`${API_URL}tags/profile-diff`, ({ request }) => {
+    const { searchParams } = new URL(request.url);
+
+    const offset = searchParams.get("offset");
+    const limit = searchParams.get("limit");
+
     const response = generatePaginatedResponse<ProfileChange>({
       data: profileChanges,
-      offset: 0,
-      limit: 100,
+      offset: offset ? parseInt(offset) : 0,
+      limit: limit ? parseInt(limit) : 100,
     });
 
     return HttpResponse.json(response);

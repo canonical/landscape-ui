@@ -148,8 +148,9 @@ describe("OidcAuthPage", () => {
 
       renderWithProviders(<Component />);
 
-      expect(navigate).toHaveBeenCalledWith(`/attach/success`, {
+      expect(navigate).toHaveBeenCalledWith(`/attach`, {
         replace: true,
+        state: { success: true },
       });
     });
   });

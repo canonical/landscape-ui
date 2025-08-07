@@ -4,7 +4,7 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 
-const WslFilter: FC<FilterProps> = ({ label, inline = false }) => {
+const WslFilter: FC<FilterProps> = ({ label, options, inline = false }) => {
   const { wsl, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation("wsl", ["parent", "child"]);
@@ -15,10 +15,7 @@ const WslFilter: FC<FilterProps> = ({ label, inline = false }) => {
       label={label}
       hasToggleIcon
       hasBadge
-      options={[
-        { label: "WSL parent", value: "parent" },
-        { label: "WSL child", value: "child" },
-      ]}
+      options={options}
       onItemsSelect={(items) => {
         setPageParams({ wsl: items });
       }}

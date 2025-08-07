@@ -636,7 +636,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
       <InstanceRemoveFromLandscapeModal
         close={closeRemoveFromLandscapeModal}
-        instances={[instance]}
+        instance={instance}
         isOpen={isRemoveFromLandscapeModalOpen}
         onSuccess={goBack}
       />

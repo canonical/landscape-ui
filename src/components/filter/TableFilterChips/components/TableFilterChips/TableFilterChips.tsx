@@ -20,6 +20,7 @@ interface TableFilterChipsProps {
   readonly statusOptions?: SelectOption[];
   readonly tagOptions?: SelectOption[];
   readonly typeOptions?: SelectOption[];
+  readonly wslOptions?: SelectOption[];
 }
 
 const TableFilterChips: FC<TableFilterChipsProps> = ({
@@ -31,6 +32,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   statusOptions,
   tagOptions,
   typeOptions,
+  wslOptions,
 }) => {
   const {
     setPageParams,
@@ -221,13 +223,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "WSL",
       multiple: true,
-      items: getItems(
-        [
-          { label: "Parent", value: "parent" },
-          { label: "Child", value: "child" },
-        ],
-        wsl,
-      ),
+      items: getItems(wslOptions, wsl),
       remove: (item) => {
         setPageParams({
           wsl: wsl.filter((i) => i !== item),

@@ -14,8 +14,23 @@ env:
   VITE_SELF_HOSTED_ENV: true
 
 jobs:
+  eslint-check:
+    runs-on: [self-hosted, Linux, large]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.15.1
+      - name: Install dependencies
+        run: npm install
+        env:
+          npm_config_cache: /home/ubuntu/landscape-ui/.npm
+      - name: Run ESLint with CI rules
+        run: npm run lint:ci
+
   e2e-tests:
-    runs-on: [ self-hosted, Linux, large ]
+    needs: [eslint-check]
+    runs-on: [self-hosted, Linux, large]
     container:
       image: mcr.microsoft.com/playwright:next
     steps:
@@ -51,12 +66,13 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-            name: playwright-report
-            path: ${{ github.workspace }}/playwright-report
-            retention-days: 30
+          name: playwright-report
+          path: ${{ github.workspace }}/playwright-report
+          retention-days: 30
 
   unit-tests:
-    runs-on: [ self-hosted, Linux, large ]
+    needs: [eslint-check]
+    runs-on: [self-hosted, Linux, large]
     permissions:
       contents: read
       pull-requests: write
@@ -80,4 +96,3 @@ jobs:
           name: coverage-report
           path: ${{ github.workspace }}/reports
           retention-days: 30
-

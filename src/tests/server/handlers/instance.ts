@@ -61,6 +61,14 @@ export default [
       return;
     }
 
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.path === "GetPendingComputers" &&
+      endpointStatus.status === "empty"
+    ) {
+      return HttpResponse.json([]);
+    }
+
     return HttpResponse.json(pendingInstances);
   }),
 

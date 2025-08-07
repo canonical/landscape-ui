@@ -145,7 +145,7 @@ const ARCHIVED_STATUS_OPTION: SelectOption = {
   value: "archived",
 };
 
-type FilterKey = "os" | "groupBy" | "status";
+type FilterKey = "os" | "groupBy" | "status" | "wsl";
 
 export const FILTERS: Record<FilterKey, ListFilter> = {
   os: {
@@ -185,6 +185,15 @@ export const FILTERS: Record<FilterKey, ListFilter> = {
           query,
         })),
       ARCHIVED_STATUS_OPTION,
+    ],
+  },
+  wsl: {
+    slug: "wsl",
+    label: "WSL",
+    type: "multi-select",
+    options: [
+      { label: "Parent", value: "parent", query: "wsl:parent" },
+      { label: "Child", value: "child", query: "wsl:child" },
     ],
   },
 };

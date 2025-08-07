@@ -47,4 +47,104 @@ export const profileChanges: ProfileChange[] = [
       will_exclude_instances: false,
     },
   },
+  {
+    tag: "asd",
+    profile: {
+      name: "Profile 2",
+      current_associated_instances: 1,
+      profile_type: "PackageProfile",
+      will_exceed_limit: false,
+      will_exclude_instances: false,
+    },
+  },
+  {
+    tag: "newtag",
+    profile: {
+      name: "Profile 3",
+      current_associated_instances: 2,
+      profile_type: "RebootProfile",
+      will_exceed_limit: false,
+      will_exclude_instances: false,
+    },
+  },
+  {
+    tag: "test_tag2",
+    profile: {
+      name: "Profile 4",
+      current_associated_instances: 3,
+      profile_type: "ScriptProfile",
+      will_exceed_limit: true,
+      will_exclude_instances: false,
+    },
+  },
+  {
+    tag: "test_tag3",
+    profile: {
+      name: "Profile 5",
+      current_associated_instances: 4,
+      profile_type: "UpgradeProfile",
+      will_exceed_limit: false,
+      will_exclude_instances: false,
+    },
+  },
+  {
+    tag: "test_tag4",
+    profile: {
+      name: "Profile 6",
+      current_associated_instances: 5,
+      profile_type: "UsgProfile",
+      will_exceed_limit: false,
+      will_exclude_instances: false,
+    },
+  },
+  {
+    tag: "test_tag5",
+    profile: {
+      name: "Profile 7",
+      current_associated_instances: 6,
+      profile_type: "RemovalProfile",
+      will_exceed_limit: false,
+      will_exclude_instances: false,
+    },
+  },
+  {
+    tag: "test_tag6",
+    profile: {
+      name: "Profile 8",
+      current_associated_instances: 7,
+      profile_type: "RepositoryProfile",
+      will_exceed_limit: false,
+      will_exclude_instances: false,
+    },
+  },
+  {
+    tag: "test_tag7",
+    profile: {
+      name: "Profile 9",
+      current_associated_instances: 8,
+      profile_type: "ChildInstanceProfile",
+      will_exceed_limit: true,
+      will_exclude_instances: false,
+    },
+  },
+  {
+    tag: "test_tag8",
+    profile: {
+      name: "Profile 10",
+      current_associated_instances: 9,
+      profile_type: "PackageProfile",
+      will_exceed_limit: false,
+      will_exclude_instances: false,
+    },
+  },
+  {
+    tag: "test_tag9",
+    profile: {
+      name: "Profile 11",
+      current_associated_instances: 10,
+      profile_type: "RebootProfile",
+      will_exceed_limit: false,
+      will_exclude_instances: false,
+    },
+  },
 ];
