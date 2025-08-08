@@ -1,13 +1,15 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .infoGrid {
   container-type: inline-size;
 }
 
 .grid {
   display: grid;
-  gap: 2rem;
+  gap: $sp-unit * 5;
   grid-template-columns: repeat(4, 1fr);
 
-  @container (max-width: calc(15.5rem * 4 + 2rem * 3)) {
+  @container (max-width: calc(15.5rem * 4 + $sp-unit * 5 * 3)) {
     grid-template-columns: repeat(2, 1fr);
   }
 

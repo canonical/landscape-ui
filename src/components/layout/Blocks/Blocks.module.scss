@@ -1,5 +1,7 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .blocks {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: $sp-unit * 5;
 }
