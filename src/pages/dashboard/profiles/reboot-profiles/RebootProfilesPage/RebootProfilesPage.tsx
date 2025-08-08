@@ -2,34 +2,48 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
-import {
-  RebootProfileDetails,
-  RebootProfilesContainer,
-  RebootProfilesSidePanel,
-} from "@/features/reboot-profiles";
+import { RebootProfilesContainer } from "@/features/reboot-profiles";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy } from "react";
 
-const RebootProfilesForm = lazy(async () =>
+const RebootProfileAddSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfilesForm,
+    default: module.RebootProfileAddSidePanel,
+  })),
+);
+
+const RebootProfileDetailsSidePanel = lazy(async () =>
+  import("@/features/reboot-profiles").then((module) => ({
+    default: module.RebootProfileDetails,
+  })),
+);
+
+const RebootProfileDuplicateSidePanel = lazy(async () =>
+  import("@/features/reboot-profiles").then((module) => ({
+    default: module.RebootProfileDuplicateSidePanel,
+  })),
+);
+
+const RebootProfileEditSidePanel = lazy(async () =>
+  import("@/features/reboot-profiles").then((module) => ({
+    default: module.RebootProfileEditSidePanel,
   })),
 );
 
 const RebootProfilesPage: FC = () => {
-  const { action, rebootProfile, setPageParams } = usePageParams();
+  const { action, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation("action", ["add", "duplicate", "edit", "view"]);
 
   const handleAddProfile = () => {
-    setPageParams({ action: "add", rebootProfile: null });
+    setPageParams({ action: "add", rebootProfile: -1 });
   };
 
   const close = () => {
-    setPageParams({ action: "", rebootProfile: null });
+    setPageParams({ action: "", rebootProfile: -1 });
   };
 
   return (
@@ -53,33 +67,25 @@ const RebootProfilesPage: FC = () => {
 
       {action === "add" && (
         <SidePanel close={close} key="add">
-          <SidePanel.Body title="Add reboot profile">
-            <RebootProfilesForm action="add" />
-          </SidePanel.Body>
+          <RebootProfileAddSidePanel />
         </SidePanel>
       )}
 
       {action === "duplicate" && (
         <SidePanel close={close} key="duplicate">
-          <RebootProfilesSidePanel
-            action="duplicate"
-            rebootProfileId={rebootProfile}
-          />
+          <RebootProfileDuplicateSidePanel />
         </SidePanel>
       )}
 
       {action === "edit" && (
         <SidePanel close={close} key="edit">
-          <RebootProfilesSidePanel
-            action="edit"
-            rebootProfileId={rebootProfile}
-          />
+          <RebootProfileEditSidePanel />
         </SidePanel>
       )}
 
       {action === "view" && (
         <SidePanel close={close} key="view" size="medium">
-          <RebootProfileDetails />
+          <RebootProfileDetailsSidePanel />
         </SidePanel>
       )}
     </PageMain>

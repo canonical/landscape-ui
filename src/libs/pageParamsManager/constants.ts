@@ -8,6 +8,7 @@ const DEFAULT_PAGE_SIZE_INDEX = 0;
 
 export const DEFAULT_CURRENT_PAGE = 1;
 export const DEFAULT_EMPTY_ARRAY = [];
+export const DEFAULT_NULL_NUMBER = -1;
 export const DEFAULT_EMPTY_STRING = "";
 export const DEFAULT_PAGE_SIZE =
   PAGE_SIZE_OPTIONS[DEFAULT_PAGE_SIZE_INDEX].value;
@@ -138,5 +139,10 @@ export const PARAMS_CONFIG: ParamsConfig = [
     urlParam: "packageProfile",
     shouldResetPage: false,
     defaultValue: DEFAULT_EMPTY_STRING,
+  },
+  {
+    urlParam: "rebootProfile",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_NULL_NUMBER,
   },
 ];

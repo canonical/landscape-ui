@@ -1,44 +1,63 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { SelectOption } from "@/types/SelectOption";
+import usePageParams from "@/hooks/usePageParams";
+import useRoles from "@/hooks/useRoles";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import { useRemoveRebootProfileQuery } from "../../api";
-import type { RebootProfile } from "../../types";
+import { useGetRebootProfiles, useRemoveRebootProfileQuery } from "../../api";
 import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import { formatWeeklyRebootSchedule } from "./helpers";
 
-const RebootProfilesForm = lazy(async () => import("../RebootProfilesForm"));
-
-interface RebootProfileDetailsProps {
-  readonly accessGroupOptions: SelectOption[];
-  readonly profile: RebootProfile;
-}
-
-const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
-  accessGroupOptions,
-  profile,
-}) => {
-  const {
-    value: modalOpen,
-    setFalse: handleCloseModal,
-    setTrue: handleOpenModal,
-  } = useBoolean();
-
+const RebootProfileDetails: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelContent } = useSidePanel();
+  const { rebootProfile: rebootProfileId, setPageParams } = usePageParams();
+
+  const { getAccessGroupQuery } = useRoles();
+  const {
+    data: accessGroupsData,
+    isPending: isGettingAccessGroups,
+    error: accessGroupsError,
+  } = getAccessGroupQuery();
+
+  const {
+    rebootProfiles,
+    isPending: isGettingRebootProfiles,
+    error: rebootProfilesError,
+  } = useGetRebootProfiles();
   const { removeRebootProfile, isRemovingRebootProfile } =
     useRemoveRebootProfileQuery();
+
+  const {
+    value: modalOpen,
+    setTrue: handleOpenModal,
+    setFalse: handleCloseModal,
+  } = useBoolean();
+
+  if (isGettingRebootProfiles || isGettingAccessGroups) {
+    return <SidePanel.LoadingState />;
+  }
+
+  if (rebootProfilesError) {
+    throw rebootProfilesError;
+  }
+
+  if (accessGroupsError) {
+    throw accessGroupsError;
+  }
+
+  const profile = rebootProfiles.find(({ id }) => id === rebootProfileId);
+
+  if (!profile) {
+    throw new Error("The reboot profile could not be found.");
+  }
 
   const handleRemoveRebootProfile = async () => {
     try {
@@ -46,7 +65,7 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
         id: profile.id,
       });
 
-      closeSidePanel();
+      setPageParams({ action: "", rebootProfile: -1 });
 
       notify.success({
         title: "Reboot profile removed",
@@ -58,25 +77,15 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
   };
 
   const handleEditRebootProfile = () => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <RebootProfilesForm action="edit" profile={profile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "edit" });
   };
 
   const handleDuplicateRebootProfile = () => {
-    setSidePanelContent(
-      `Duplicate "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <RebootProfilesForm action="duplicate" profile={profile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "duplicate" });
   };
 
   return (
-    <>
+    <SidePanel.Body title={profile.title}>
       <div className="p-segmented-control">
         <Button
           type="button"
@@ -118,9 +127,9 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
             <InfoGrid.Item
               label="Access group"
               value={
-                accessGroupOptions.find(
-                  ({ value }) => value === profile.access_group,
-                )?.label ?? profile.access_group
+                accessGroupsData.data.find(
+                  (accessGroup) => accessGroup.name === profile.access_group,
+                )?.title ?? profile.access_group
               }
             />
           </InfoGrid>
@@ -194,7 +203,7 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
           system.
         </p>
       </TextConfirmationModal>
-    </>
+    </SidePanel.Body>
   );
 };
 

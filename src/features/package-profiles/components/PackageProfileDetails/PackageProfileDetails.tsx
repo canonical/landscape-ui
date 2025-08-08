@@ -40,10 +40,6 @@ const PackageProfileDetails: FC = () => {
     setFalse: handleCloseModal,
   } = useBoolean();
 
-  const close = () => {
-    setPageParams({ action: "", packageProfile: "" });
-  };
-
   if (isPendingPackageProfiles) {
     return <SidePanel.LoadingState />;
   }
@@ -58,7 +54,7 @@ const PackageProfileDetails: FC = () => {
     try {
       await removePackageProfile({ name: profile.name });
 
-      close();
+      setPageParams({ action: "", packageProfile: "" });
 
       notify.success({
         message: `Package profile "${profile.name}" removed successfully.`,

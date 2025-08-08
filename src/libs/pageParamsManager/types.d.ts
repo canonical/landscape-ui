@@ -32,7 +32,7 @@ export interface PageParams {
   code: string;
   action: string;
   packageProfile: string;
-  rebootProfile: number | null;
+  rebootProfile: number;
 }
 
 /**

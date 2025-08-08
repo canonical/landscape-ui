@@ -1,16 +1,13 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
-import { lazy, Suspense, type FC } from "react";
+import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useRemoveRebootProfileQuery } from "../../api";
 import type { RebootProfile } from "../../types";
-
-const RebootProfilesForm = lazy(async () => import("../RebootProfilesForm"));
 
 interface RebootProfilesListActionsProps {
   readonly profile: RebootProfile;
@@ -22,7 +19,7 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
 
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const {
     value: isModalOpen,
@@ -49,21 +46,11 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
   };
 
   const handleRebootProfileEdit = () => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <RebootProfilesForm action="edit" profile={profile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "edit", rebootProfile: profile.id });
   };
 
   const handleRebootProfileDuplicate = () => {
-    setSidePanelContent(
-      `Duplicate "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <RebootProfilesForm action="duplicate" profile={profile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "duplicate", rebootProfile: profile.id });
   };
 
   const actions: Action[] = [

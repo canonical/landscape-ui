@@ -1,5 +1,4 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
@@ -7,29 +6,23 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RebootProfile } from "../../types";
 import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import RebootProfilesListActions from "../RebootProfilesListActions";
 import { getCellProps, getRowProps } from "./helpers";
 
-const RebootProfileDetails = lazy(
-  async () => import("../RebootProfileDetails"),
-);
-
 interface RebootProfilesListProps {
   readonly profiles: RebootProfile[];
 }
 
 const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
-  const { setSidePanelContent } = useSidePanel();
-  const { search } = usePageParams();
+  const { search, setPageParams } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
@@ -53,16 +46,7 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
   }, [profiles, search]);
 
   const handleRebootProfileDetailsOpen = (profile: RebootProfile) => {
-    setSidePanelContent(
-      profile.title,
-      <Suspense fallback={<LoadingState />}>
-        <RebootProfileDetails
-          key={profile.id}
-          accessGroupOptions={accessGroupOptions}
-          profile={profile}
-        />
-      </Suspense>,
-    );
+    setPageParams({ action: "view", rebootProfile: profile.id });
   };
 
   const columns = useMemo<Column<RebootProfile>[]>(

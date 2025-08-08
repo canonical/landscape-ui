@@ -1,17 +1,12 @@
 import SidePanel from "@/components/layout/SidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useGetRebootProfiles } from "../../api";
 import RebootProfilesForm from "../RebootProfilesForm";
 
-interface RebootProfilesSidePanelProps {
-  readonly action: "duplicate" | "edit";
-  readonly rebootProfileId: number | null;
-}
+const RebootProfileDuplicateSidePanel: FC = () => {
+  const { rebootProfile: rebootProfileId } = usePageParams();
 
-const RebootProfilesSidePanel: FC<RebootProfilesSidePanelProps> = ({
-  action,
-  rebootProfileId,
-}) => {
   const { rebootProfiles, isPending, error } = useGetRebootProfiles();
 
   if (isPending) {
@@ -28,7 +23,11 @@ const RebootProfilesSidePanel: FC<RebootProfilesSidePanelProps> = ({
     throw new Error("The reboot profile could not be found.");
   }
 
-  return <RebootProfilesForm action={action} profile={rebootProfile} />;
+  return (
+    <SidePanel.Body title={`Duplicate ${rebootProfile.title}`}>
+      <RebootProfilesForm action="duplicate" profile={rebootProfile} />;
+    </SidePanel.Body>
+  );
 };
 
-export default RebootProfilesSidePanel;
+export default RebootProfileDuplicateSidePanel;
