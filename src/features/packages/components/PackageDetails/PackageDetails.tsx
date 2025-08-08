@@ -56,7 +56,7 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
               {buttonRenderCondition[packageAction] && (
                 <Button
                   type="button"
-                  className="p-segmented-control__button has-icon"
+                  className="p-segmented-control__button has-icon u-no-margin"
                   onClick={() => {
                     handleExistingPackages(packageAction);
                   }}

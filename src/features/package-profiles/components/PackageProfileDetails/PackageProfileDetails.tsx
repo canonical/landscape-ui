@@ -89,7 +89,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         <Button
           type="button"
           hasIcon
-          className="p-segmented-control__button"
+          className="p-segmented-control__button u-no-margin"
           onClick={handlePackageProfileDuplicate}
         >
           <Icon name="canvas" />
@@ -98,14 +98,14 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         <Button
           type="button"
           hasIcon
-          className="p-segmented-control__button"
+          className="p-segmented-control__button u-no-margin"
           onClick={handlePackageProfileEdit}
         >
           <Icon name="edit" />
           <span>Edit</span>
         </Button>
         <Button
-          className="p-segmented-control__button"
+          className="p-segmented-control__button u-no-margin"
           hasIcon
           type="button"
           onClick={handleOpenModal}

@@ -101,7 +101,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
     <Form onSubmit={formik.handleSubmit} noValidate>
       <ConfirmationButton
         type="button"
-        className="has-icon"
+        className="has-icon u-no-margin"
         confirmationModalProps={{
           title: "Disable Administrator",
           children: (

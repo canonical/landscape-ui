@@ -9,7 +9,7 @@ interface AutoinstallFileInfoProps {
 }
 
 const AutoinstallFileInfo: FC<AutoinstallFileInfoProps> = ({ file }) => (
-  <InfoGrid spaced>
+  <InfoGrid>
     <InfoGrid.Item label="Name" value={file.filename} />
 
     <InfoGrid.Item label="Version" value={file.version} />

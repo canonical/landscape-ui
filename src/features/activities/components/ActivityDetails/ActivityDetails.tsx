@@ -143,7 +143,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         <div className="p-segmented-control__list">
           {activity.actions?.approvable && (
             <ConfirmationButton
-              className="p-segmented-control__button"
+              className="p-segmented-control__button u-no-margin"
               type="button"
               disabled={approveActivitiesLoading}
               confirmationModalProps={{
@@ -166,7 +166,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           )}
           {activity.actions?.cancelable && (
             <ConfirmationButton
-              className="p-segmented-control__button"
+              className="p-segmented-control__button u-no-margin"
               type="button"
               disabled={cancelActivitiesLoading}
               confirmationModalProps={{
@@ -192,7 +192,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           )}
           {activity.actions?.revertable && (
             <ConfirmationButton
-              className="p-segmented-control__button"
+              className="p-segmented-control__button u-no-margin"
               type="button"
               disabled={undoActivitiesLoading}
               confirmationModalProps={{
@@ -214,7 +214,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           )}
           {activity.actions?.reappliable && (
             <ConfirmationButton
-              className="p-segmented-control__button"
+              className="p-segmented-control__button u-no-margin"
               type="button"
               disabled={redoActivitiesLoading}
               confirmationModalProps={{

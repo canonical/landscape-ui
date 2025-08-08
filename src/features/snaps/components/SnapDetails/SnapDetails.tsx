@@ -23,7 +23,7 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
         <InfoGrid.Item label="Channel" value={installedSnap.tracking_channel} />
         <InfoGrid.Item label="Version" value={installedSnap.version} />
 
-        <InfoGrid.Item label="Conf inement" value={installedSnap.confinement} />
+        <InfoGrid.Item label="Confinement" value={installedSnap.confinement} />
         <InfoGrid.Item
           label="Held until"
           value={
