@@ -14,7 +14,7 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
     <>
       <EmployeeDetailsHeader employee={employee} />
 
-      <InfoGrid>
+      <InfoGrid spaced>
         <InfoGrid.Item label="Name" value={employee.name} />
 
         <InfoGrid.Item label="Email" value={employee.email} />

@@ -116,7 +116,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         </Button>
       </div>
 
-      <InfoGrid>
+      <InfoGrid spaced>
         <InfoGrid.Item label="Title" value={profile.title} />
 
         <InfoGrid.Item label="Name" value={profile.name} />

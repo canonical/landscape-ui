@@ -69,7 +69,7 @@ const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
           ))}
       </div>
 
-      <InfoGrid>
+      <InfoGrid spaced>
         <InfoGrid.Item label="Name" large value={singlePackage.name} />
 
         <InfoGrid.Item label="Summary" large value={singlePackage.summary} />

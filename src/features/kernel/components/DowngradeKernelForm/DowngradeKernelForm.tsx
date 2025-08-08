@@ -136,7 +136,7 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
       <Notification severity="caution" title="Security warning">
         <span>{SECURITY_WARNING}</span>
       </Notification>
-      <InfoGrid>
+      <InfoGrid spaced>
         <InfoGrid.Item label="Current version" value={currentKernelVersion} />
         <InfoGrid.Item
           label="Kernel version"

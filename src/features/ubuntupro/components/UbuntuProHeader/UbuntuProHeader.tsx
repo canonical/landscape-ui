@@ -28,7 +28,7 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => (
         </a>
       </span>
     </div>
-    <InfoGrid>
+    <InfoGrid spaced>
       <InfoGrid.Item
         label="Account"
         value={ubuntuProData.account?.name || null}

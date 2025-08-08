@@ -8,7 +8,7 @@ export interface ItemProps {
 }
 
 const Item: FC<ItemProps> = ({ children, title }: ItemProps) => (
-  <section className={title ? classes.dividedItem : classes.item}>
+  <section className={classes.item}>
     {title && (
       <h4 className={classNames(classes.heading, "p-heading--5")}>{title}</h4>
     )}

@@ -121,7 +121,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
         <span>Remove</span>
       </ConfirmationButton>
 
-      <InfoGrid>
+      <InfoGrid spaced>
         <InfoGrid.Item label="Name" value={currentAdministrator.name} />
         <InfoGrid.Item label="Email" value={currentAdministrator.email} />
 

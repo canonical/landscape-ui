@@ -5,7 +5,6 @@ import type { User } from "@/types/User";
 import type { FC } from "react";
 import { useParams } from "react-router";
 import UserPanelActionButtons from "../UserPanelActionButtons";
-import classes from "./UserDetails.module.scss";
 
 interface UserDetailsProps {
   readonly user: User;
@@ -34,7 +33,7 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
   return (
     <>
       <UserPanelActionButtons selectedUsers={[user]} sidePanel />
-      <InfoGrid className={classes.infoGrid}>
+      <InfoGrid spaced>
         <InfoGrid.Item label="Username" large value={user.username} />
 
         <InfoGrid.Item label="Name" large value={user.name || null} />

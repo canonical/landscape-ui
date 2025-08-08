@@ -22,7 +22,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
 
   return (
     <>
-      <InfoGrid>
+      <InfoGrid spaced>
         <InfoGrid.Item label="Name" value={script.title} />
 
         <InfoGrid.Item label="Version" value={script.version_number} />

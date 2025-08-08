@@ -237,7 +237,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         </div>
       </div>
 
-      <InfoGrid>
+      <InfoGrid spaced>
         <InfoGrid.Item label="Description" large value={activity.summary} />
 
         {instance && (

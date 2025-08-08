@@ -4,12 +4,19 @@
   container-type: inline-size;
 }
 
-.grid {
-  display: grid;
-  gap: $sp-unit * 5;
-  grid-template-columns: repeat(4, 1fr);
+.spacedInfoGrid {
+  margin: $sp-unit * 5 0;
+}
 
-  @container (max-width: calc(15.5rem * 4 + $sp-unit * 5 * 3)) {
+.grid {
+  $count: 4;
+  $gap: $sp-unit * 5;
+
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat($count, 1fr);
+
+  @container (max-width: #{15.5rem * $count + $gap * ($count - 1)}) {
     grid-template-columns: repeat(2, 1fr);
   }
 
