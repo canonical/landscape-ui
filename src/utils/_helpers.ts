@@ -82,8 +82,3 @@ export const pluralize = (
 ) => {
   return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
 };
-
-export const filter = <T>(...items: (T | null | false | undefined)[]) =>
-  items.filter(
-    (item): item is T => item !== null && item !== false && item !== undefined,
-  );

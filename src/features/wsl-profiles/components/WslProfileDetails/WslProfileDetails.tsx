@@ -41,8 +41,6 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
     );
   };
 
-  const canBeAssociated = profile.all_computers || !!profile.tags.length;
-
   return (
     <>
       <div className="p-segmented-control">
@@ -115,45 +113,42 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
         </Blocks.Item>
 
         <Blocks.Item title="Association">
-          <>
-            {profile.all_computers && (
-              <p>This profile has been associated with all instances.</p>
-            )}
+          {profile.all_computers && (
+            <p>This profile has been associated with all instances.</p>
+          )}
 
+          {!profile.all_computers && !profile.tags.length && (
+            <p>This profile has not yet been associated with any instances.</p>
+          )}
+
+          {(profile.all_computers || !!profile.tags.length) && (
             <InfoGrid>
               {!profile.all_computers && (
                 <InfoGrid.Item
                   label="Tags"
                   large
                   value={profile.tags.join(", ") || null}
+                  type="truncated"
                 />
               )}
 
-              {canBeAssociated && (
-                <>
-                  <InfoGrid.Item
-                    label="Associated parents"
-                    large
-                    value={
-                      <WslProfileAssociatedParentsLink wslProfile={profile} />
-                    }
-                  />
-                  <InfoGrid.Item
-                    label="Not compliant"
-                    value={
-                      <WslProfileNonCompliantParentsLink wslProfile={profile} />
-                    }
-                  />
-                  <InfoGrid.Item
-                    label="Compliant"
-                    value={
-                      <WslProfileCompliantParentsLink wslProfile={profile} />
-                    }
-                  />
-                </>
-              )}
+              <InfoGrid.Item
+                label="Associated parents"
+                large
+                value={<WslProfileAssociatedParentsLink wslProfile={profile} />}
+              />
+              <InfoGrid.Item
+                label="Not compliant"
+                value={
+                  <WslProfileNonCompliantParentsLink wslProfile={profile} />
+                }
+              />
+              <InfoGrid.Item
+                label="Compliant"
+                value={<WslProfileCompliantParentsLink wslProfile={profile} />}
+              />
             </InfoGrid>
-          </>
+          )}
         </Blocks.Item>
       </Blocks>
 

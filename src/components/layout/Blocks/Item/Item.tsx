@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import classes from "./Item.module.scss";
 
@@ -8,7 +9,9 @@ export interface ItemProps {
 
 const Item: FC<ItemProps> = ({ children, title }: ItemProps) => (
   <section className={title ? classes.dividedItem : classes.item}>
-    {title && <h5 className={classes.heading}>{title}</h5>}
+    {title && (
+      <h4 className={classNames(classes.heading, "p-heading--5")}>{title}</h4>
+    )}
     {children}
   </section>
 );

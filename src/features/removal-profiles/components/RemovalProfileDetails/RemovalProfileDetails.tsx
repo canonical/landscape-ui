@@ -1,7 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -121,14 +120,23 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
         </Blocks.Item>
 
         <Blocks.Item title="Association">
-          {profile.all_computers ? (
+          {profile.all_computers && (
             <p>This profile has been associated with all instances.</p>
-          ) : (
-            <InfoItem
-              label="Tags"
-              value={profile.tags.join(", ") || null}
-              type="truncated"
-            />
+          )}
+
+          {!profile.all_computers && !profile.tags.length && (
+            <p>This profile has not yet been associated with any instances.</p>
+          )}
+
+          {!profile.all_computers && !!profile.tags.length && (
+            <InfoGrid>
+              <InfoGrid.Item
+                label="Tags"
+                large
+                value={profile.tags.join(", ") || null}
+                type="truncated"
+              />
+            </InfoGrid>
           )}
         </Blocks.Item>
       </Blocks>

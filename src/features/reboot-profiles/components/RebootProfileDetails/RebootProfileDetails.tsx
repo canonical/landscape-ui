@@ -147,17 +147,21 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
             <p>This profile has been associated with all instances.</p>
           )}
 
-          <InfoGrid>
-            {!profile.all_computers && (
-              <InfoGrid.Item
-                label="Tags"
-                large
-                value={profile.tags.join(", ") || null}
-                type="truncated"
-              />
-            )}
+          {!profile.all_computers && !profile.tags.length && (
+            <p>This profile has not yet been associated with any instances.</p>
+          )}
 
-            {(profile.all_computers || !!profile.tags.length) && (
+          {(profile.all_computers || !!profile.tags.length) && (
+            <InfoGrid>
+              {!profile.all_computers && (
+                <InfoGrid.Item
+                  label="Tags"
+                  large
+                  value={profile.tags.join(", ") || null}
+                  type="truncated"
+                />
+              )}
+
               <InfoGrid.Item
                 label="Associated instances"
                 large
@@ -167,8 +171,8 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
                   />
                 }
               />
-            )}
-          </InfoGrid>
+            </InfoGrid>
+          )}
         </Blocks.Item>
       </Blocks>
 
