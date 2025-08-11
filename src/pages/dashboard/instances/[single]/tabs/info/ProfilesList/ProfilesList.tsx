@@ -1,10 +1,12 @@
 import { SidePanelTableFilterChips, TableFilter } from "@/components/filter";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
 import {
   DEFAULT_CURRENT_PAGE,
   DEFAULT_PAGE_SIZE,
 } from "@/libs/pageParamsManager/constants";
+import type { InstanceWithoutRelation } from "@/types/Instance";
 import type { ProfileType } from "@/types/Profile";
 import { type Profile } from "@/types/Profile";
 import { ModularTable, SearchBox } from "@canonical/react-components";
@@ -12,14 +14,15 @@ import classNames from "classnames";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import ProfileLink from "../ProfileLink/ProfileLink";
+import { FILTER_OPTIONS } from "./constants";
 import { getProfileType } from "./helpers";
 import classes from "./ProfilesList.module.scss";
 
 interface ProfilesListProps {
-  readonly profiles: Profile[];
+  readonly instance: InstanceWithoutRelation;
 }
 
-const ProfilesList: FC<ProfilesListProps> = ({ profiles }) => {
+const ProfilesList: FC<ProfilesListProps> = ({ instance }) => {
   const { isFeatureEnabled } = useAuth();
 
   const [inputValue, setInputValue] = useState("");
@@ -53,22 +56,24 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles }) => {
     setCurrentPage(DEFAULT_CURRENT_PAGE);
   };
 
-  const filteredProfiles = [
-    ...profiles.filter(
-      (profile) => profile.title.toLowerCase() === search.toLowerCase(),
-    ),
-    ...profiles.filter(
-      (profile) =>
-        profile.title.toLowerCase() !== search &&
-        profile.title.toLowerCase().startsWith(search.toLowerCase()),
-    ),
-    ...profiles.filter(
-      (profile) =>
-        profile.title.toLowerCase() !== search.toLowerCase() &&
-        !profile.title.toLowerCase().startsWith(search.toLowerCase()) &&
-        profile.title.toLowerCase().includes(search.toLowerCase()),
-    ),
-  ].filter((profile) => !types.length || types.includes(profile.type));
+  const filteredProfiles = instance.profiles
+    ? [
+        ...instance.profiles.filter(
+          (profile) => profile.title.toLowerCase() === search.toLowerCase(),
+        ),
+        ...instance.profiles.filter(
+          (profile) =>
+            profile.title.toLowerCase() !== search &&
+            profile.title.toLowerCase().startsWith(search.toLowerCase()),
+        ),
+        ...instance.profiles.filter(
+          (profile) =>
+            profile.title.toLowerCase() !== search.toLowerCase() &&
+            !profile.title.toLowerCase().startsWith(search.toLowerCase()) &&
+            profile.title.toLowerCase().includes(search.toLowerCase()),
+        ),
+      ].filter((profile) => !types.length || types.includes(profile.type))
+    : [];
 
   const currentProfiles = filteredProfiles.slice(
     (currentPage - 1) * pageSize,
@@ -98,25 +103,29 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles }) => {
             setTypes(value);
             setCurrentPage(DEFAULT_CURRENT_PAGE);
           }}
+          position="right"
           options={[
-            { label: "Package", value: "package" },
-            { label: "Reboot", value: "reboot" },
-            { label: "Removal", value: "removal" },
-            { label: "Repository", value: "repository" },
-            isFeatureEnabled("script-profiles") && {
-              label: "Script",
-              value: "script",
-            },
-            isFeatureEnabled("usg-profiles") && {
-              label: "Security",
-              value: "security",
-            },
-            { label: "Upgrade", value: "upgrade" },
-            isFeatureEnabled("wsl-child-instance-profiles") && {
-              label: "WSL",
-              value: "wsl",
-            },
+            getFeatures(instance).packages && FILTER_OPTIONS.package,
+            getFeatures(instance).power && FILTER_OPTIONS.reboot,
+            FILTER_OPTIONS.removal,
+            getFeatures(instance).packages && FILTER_OPTIONS.repository,
+            getFeatures(instance).scripts &&
+              isFeatureEnabled("script-profiles") &&
+              FILTER_OPTIONS.script,
+            getFeatures(instance).usg &&
+              isFeatureEnabled("usg-profiles") &&
+              FILTER_OPTIONS.security,
+            getFeatures(instance).packages && FILTER_OPTIONS.upgrade,
+            getFeatures(instance).wsl &&
+              isFeatureEnabled("wsl-child-instance-profiles") &&
+              FILTER_OPTIONS.wsl,
           ].filter((typeOption) => !!typeOption)}
+          disabledOptions={Object.entries(FILTER_OPTIONS)
+            .filter(
+              ([type]) =>
+                !instance.profiles?.some((profile) => profile.type === type),
+            )
+            .map(([, option]) => option)}
           selectedItems={types}
         />
       </div>

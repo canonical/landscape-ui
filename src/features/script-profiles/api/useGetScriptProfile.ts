@@ -18,10 +18,11 @@ export const useGetScriptProfile = (
 ) => {
   const authFetch = useFetch();
 
-  const { data: response, isPending } = useQuery<
-    AxiosResponse<ScriptProfile>,
-    AxiosError<ApiError>
-  >({
+  const {
+    data: response,
+    isPending,
+    error,
+  } = useQuery<AxiosResponse<ScriptProfile>, AxiosError<ApiError>>({
     queryKey: ["scriptProfiles", "single", params],
     queryFn: async () => authFetch.get(`script-profiles/${params.id}`),
     ...config,
@@ -29,6 +30,7 @@ export const useGetScriptProfile = (
 
   return {
     scriptProfile: response?.data,
+    scriptProfileError: error,
     isGettingScriptProfile: isPending,
   };
 };

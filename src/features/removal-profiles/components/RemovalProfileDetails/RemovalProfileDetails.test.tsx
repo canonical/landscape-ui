@@ -16,12 +16,7 @@ describe("RemovalProfileDetails", () => {
   const user = userEvent.setup();
 
   it("renders all info items correctly", () => {
-    const { container } = renderWithProviders(
-      <RemovalProfileDetails
-        profile={profile}
-        accessGroupOptions={accessGroupOptions}
-      />,
-    );
+    const { container } = renderWithProviders(<RemovalProfileDetails />);
 
     const accessGroup =
       accessGroupOptions.find((option) => option.value === profile.access_group)
@@ -42,12 +37,7 @@ describe("RemovalProfileDetails", () => {
   });
 
   it("renders Edit and Remove buttons with correct aria-labels", () => {
-    renderWithProviders(
-      <RemovalProfileDetails
-        profile={profile}
-        accessGroupOptions={accessGroupOptions}
-      />,
-    );
+    renderWithProviders(<RemovalProfileDetails />);
 
     const editButton = screen.getByRole("button", {
       name: `Edit ${profile.title}`,
@@ -61,12 +51,7 @@ describe("RemovalProfileDetails", () => {
   });
 
   it("opens modal and enables remove button after confirmation text", async () => {
-    renderWithProviders(
-      <RemovalProfileDetails
-        profile={profile}
-        accessGroupOptions={accessGroupOptions}
-      />,
-    );
+    renderWithProviders(<RemovalProfileDetails />);
 
     await user.click(
       screen.getByRole("button", { name: `Remove ${profile.title}` }),

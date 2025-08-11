@@ -1,12 +1,19 @@
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
+import {
+  useGetSecurityProfiles,
+  useIsSecurityProfilesLimitReached,
+} from "../../api";
 import {
   SECURITY_PROFILE_BENCHMARK_LABELS,
   SECURITY_PROFILE_MODE_LABELS,
@@ -17,29 +24,44 @@ import {
   getTags,
   getTailoringFile,
 } from "../../helpers";
-import type { SecurityProfile } from "../../types";
-import type { SecurityProfileActions } from "../../types/SecurityProfileActions";
+import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
 import SecurityProfileAssociatedInstancesLink from "../SecurityProfileAssociatedInstancesLink";
 
-interface SecurityProfileDetailsProps {
-  readonly actions: SecurityProfileActions;
-  readonly profile: SecurityProfile;
-  readonly profileLimitReached?: boolean;
-}
+const SecurityProfileDetails: FC = () => {
+  const { securityProfile: securityProfileId, setPageParams } = usePageParams();
 
-const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
-  actions,
-  profile,
-  profileLimitReached,
-}) => {
+  const profileLimitReached = useIsSecurityProfilesLimitReached();
+  const { isSecurityProfilesLoading, securityProfiles, securityProfilesError } =
+    useGetSecurityProfiles();
   const { getAccessGroupQuery } = useRoles();
   const {
     data: getAccessGroupQueryResponse,
     isLoading: isAccessGroupsLoading,
+    error: accessGroupsError,
   } = getAccessGroupQuery();
 
-  if (isAccessGroupsLoading) {
+  const {
+    value: archiveModalOpened,
+    setTrue: openArchiveModal,
+    setFalse: closeArchiveModal,
+  } = useBoolean();
+
+  if (securityProfilesError) {
+    throw securityProfilesError;
+  }
+
+  if (accessGroupsError) {
+    throw accessGroupsError;
+  }
+
+  if (isSecurityProfilesLoading || isAccessGroupsLoading) {
     return <LoadingState />;
+  }
+
+  const profile = securityProfiles.find(({ id }) => id === securityProfileId);
+
+  if (!profile) {
+    throw new Error("The security profile could not be found.");
   }
 
   const accessGroup = getAccessGroupQueryResponse?.data.find(
@@ -47,18 +69,20 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
   );
 
   if (!accessGroup) {
-    return;
+    throw new Error("The access group could not be found.");
   }
 
   return (
-    <>
+    <SidePanel.Body title={profile.title}>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
           <Button
             className="p-segmented-control__button"
             type="button"
             hasIcon
-            onClick={actions.downloadAudit}
+            onClick={() => {
+              setPageParams({ action: "download" });
+            }}
           >
             <Icon name="file-blank" />
             <span>Download audit</span>
@@ -69,7 +93,9 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
               className="p-segmented-control__button"
               type="button"
               hasIcon
-              onClick={actions.edit}
+              onClick={() => {
+                setPageParams({ action: "edit" });
+              }}
             >
               <Icon name="edit" />
               <span>Edit</span>
@@ -81,7 +107,9 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
               className="p-segmented-control__button"
               type="button"
               hasIcon
-              onClick={actions.run}
+              onClick={() => {
+                setPageParams({ action: "run" });
+              }}
               disabled={!profile.associated_instances}
             >
               <Icon name="play" />
@@ -93,7 +121,9 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
             className="p-segmented-control__button"
             type="button"
             hasIcon
-            onClick={actions.duplicate}
+            onClick={() => {
+              setPageParams({ action: "duplicate" });
+            }}
             disabled={profileLimitReached}
           >
             <Icon name="canvas" />
@@ -105,7 +135,7 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
               className="p-segmented-control__button"
               type="button"
               hasIcon
-              onClick={actions.archive}
+              onClick={openArchiveModal}
             >
               <Icon name="archive" />
               <span>Archive</span>
@@ -206,7 +236,13 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
           </InfoGrid>
         </Blocks.Item>
       </Blocks>
-    </>
+
+      <SecurityProfileArchiveModal
+        close={closeArchiveModal}
+        opened={archiveModalOpened}
+        profile={profile}
+      />
+    </SidePanel.Body>
   );
 };
 

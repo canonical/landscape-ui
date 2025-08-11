@@ -1,23 +1,8 @@
-import type { ComponentProps, FC } from "react";
-import { lazy, Suspense } from "react";
-import LoadingState from "@/components/layout/LoadingState";
-
-const SingleRemovalProfileFormComponent = lazy(
-  () => import("./components/SingleRemovalProfileForm"),
-);
-
-export const SingleRemovalProfileForm: FC<
-  ComponentProps<typeof SingleRemovalProfileFormComponent>
-> = (props) => {
-  return (
-    <Suspense fallback={<LoadingState />}>
-      <SingleRemovalProfileFormComponent {...props} />
-    </Suspense>
-  );
-};
-
+export { default as RemovalProfileAddSidePanel } from "./components/RemovalProfileAddSidePanel";
+export { default as RemovalProfileDetailsSidePanel } from "./components/RemovalProfileDetails";
+export { default as RemovalProfileEditSidePanel } from "./components/RemovalProfileEditSidePanel";
 export { default as RemovalProfileList } from "./components/RemovalProfileList";
 export { default as RemovalProfilesEmptyState } from "./components/RemovalProfilesEmptyState";
 export { default as RemovalProfilesHeader } from "./components/RemovalProfilesHeader";
-export type { RemovalProfile } from "./types";
 export { useRemovalProfiles } from "./hooks";
+export type { RemovalProfile } from "./types";

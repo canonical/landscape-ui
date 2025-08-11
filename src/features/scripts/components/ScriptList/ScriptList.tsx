@@ -1,9 +1,12 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import StaticLink from "@/components/layout/StaticLink";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useAuth from "@/hooks/useAuth";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
@@ -11,7 +14,6 @@ import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactElement } from "react";
 import { lazy, Suspense, useMemo } from "react";
-import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { formatTitleCase } from "../../helpers";
 import { useOpenScriptDetails } from "../../hooks";
@@ -19,8 +21,6 @@ import type { Script } from "../../types";
 import ScriptListActions from "../ScriptListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
-import { useExpandableRow } from "@/hooks/useExpandableRow";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
@@ -109,14 +109,13 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
           script_profiles.length > 0 ? (
             <TruncatedCell
               content={script_profiles.map(({ id, title }) => (
-                <Link
-                  to="/scripts?tab=profiles"
-                  state={{ scriptProfileId: id }}
+                <StaticLink
+                  to={`/scripts?tab=profiles&action=view&scriptProfile=${id}`}
                   key={id}
                   className="truncatedItem"
                 >
                   {title}
-                </Link>
+                </StaticLink>
               ))}
               isExpanded={index == expandedRowIndex}
               onExpand={() => {

@@ -9,9 +9,8 @@ import { lazy, Suspense } from "react";
 import { TABS } from "./constants";
 
 const ScriptsPanel = lazy(async () => import("../ScriptsContainer"));
-const ScriptProfilesPanel = lazy(
-  async () =>
-    import("@/features/script-profiles/components/ScriptProfilesPanel"),
+const ScriptProfilesTab = lazy(
+  async () => import("@/features/script-profiles/components/ScriptProfilesTab"),
 );
 
 const ScriptsTabs: FC = () => {
@@ -47,7 +46,7 @@ const ScriptsTabs: FC = () => {
           )}
           {"tab-link-profiles" === currentTab && (
             <Suspense fallback={<LoadingState />}>
-              <ScriptProfilesPanel />
+              <ScriptProfilesTab />
             </Suspense>
           )}
         </AppErrorBoundary>

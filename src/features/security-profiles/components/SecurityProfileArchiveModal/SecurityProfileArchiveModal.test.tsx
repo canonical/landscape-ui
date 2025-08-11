@@ -10,7 +10,7 @@ describe("SecurityProfileArchiveModal", () => {
     const [profile] = securityProfiles;
 
     renderWithProviders(
-      <SecurityProfileArchiveModal profile={profile} close={vi.fn()} />,
+      <SecurityProfileArchiveModal profile={profile} opened close={vi.fn()} />,
     );
 
     expect(

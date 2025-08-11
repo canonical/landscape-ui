@@ -19,12 +19,7 @@ describe("RebootProfileDetails", () => {
   const user = userEvent.setup();
 
   it("renders all info items correctly", () => {
-    const { container } = renderWithProviders(
-      <RebootProfileDetails
-        profile={profile}
-        accessGroupOptions={accessGroupOptions}
-      />,
-    );
+    const { container } = renderWithProviders(<RebootProfileDetails />);
     const accessGroup = accessGroupOptions.find(
       (opt) => opt.value === profile.access_group,
     )?.label;
@@ -59,12 +54,7 @@ describe("RebootProfileDetails", () => {
   });
 
   it("opens a modal on remove button click and allows profile removal", async () => {
-    renderWithProviders(
-      <RebootProfileDetails
-        profile={profile}
-        accessGroupOptions={accessGroupOptions}
-      />,
-    );
+    renderWithProviders(<RebootProfileDetails />);
 
     await user.click(
       screen.getByRole("button", {

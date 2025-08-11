@@ -7,11 +7,13 @@ import type { SecurityProfile } from "../../types";
 
 interface SecurityProfileArchiveModalProps {
   readonly profile: SecurityProfile;
+  readonly opened: boolean;
   readonly close: () => void;
 }
 
 const SecurityProfileArchiveModal: FC<SecurityProfileArchiveModalProps> = ({
   close,
+  opened,
   profile,
 }) => {
   const { notify } = useNotify();
@@ -40,7 +42,7 @@ const SecurityProfileArchiveModal: FC<SecurityProfileArchiveModalProps> = ({
 
   return (
     <TextConfirmationModal
-      isOpen
+      isOpen={opened}
       title={`Archive "${profile.title}" profile`}
       close={close}
       confirmButtonLabel="Archive"

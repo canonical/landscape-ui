@@ -1,11 +1,12 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import SidePanel from "@/components/layout/SidePanel";
 import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAddSecurityProfile } from "../../api";
 import { notifyCreation } from "../../helpers";
 import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
@@ -20,7 +21,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   onSuccess,
 }) => {
   const { notify } = useNotify();
-  const { setSidePanelTitle } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
@@ -69,17 +70,6 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
     },
   });
 
-  useEffect(() => {
-    setSidePanelTitle(
-      <>
-        Add security profile
-        <small className={classNames(classes.step, "u-text--muted")}>
-          Step {step + 1} of {steps.length}
-        </small>
-      </>,
-    );
-  }, [step]);
-
   const goBack = () => {
     setStep(step - 1);
   };
@@ -93,7 +83,16 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   };
 
   return (
-    <>
+    <SidePanel.Body
+      title={
+        <>
+          Add security profile
+          <small className={classNames(classes.step, "u-text--muted")}>
+            Step {step + 1} of {steps.length}
+          </small>
+        </>
+      }
+    >
       <p>{steps[step].description}</p>
 
       {steps[step].content}
@@ -109,8 +108,11 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
         }
         submitButtonLoading={steps[step].isLoading || isSecurityProfileAdding}
         submitButtonText={steps[step].submitButtonText}
+        onCancel={() => {
+          setPageParams({ action: "" });
+        }}
       />
-    </>
+    </SidePanel.Body>
   );
 };
 

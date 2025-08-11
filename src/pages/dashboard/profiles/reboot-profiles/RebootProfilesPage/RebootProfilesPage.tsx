@@ -84,7 +84,7 @@ const RebootProfilesPage: FC = () => {
       )}
 
       {action === "view" && (
-        <SidePanel close={close} key="view" size="medium">
+        <SidePanel close={close} key="view">
           <RebootProfileDetailsSidePanel />
         </SidePanel>
       )}

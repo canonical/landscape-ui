@@ -145,4 +145,34 @@ export const PARAMS_CONFIG: ParamsConfig = [
     shouldResetPage: false,
     defaultValue: DEFAULT_NULL_NUMBER,
   },
+  {
+    urlParam: "removalProfile",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_NULL_NUMBER,
+  },
+  {
+    urlParam: "repositoryProfile",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_EMPTY_STRING,
+  },
+  {
+    urlParam: "scriptProfile",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_NULL_NUMBER,
+  },
+  {
+    urlParam: "securityProfile",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_NULL_NUMBER,
+  },
+  {
+    urlParam: "upgradeProfile",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_NULL_NUMBER,
+  },
+  {
+    urlParam: "wslProfile",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_EMPTY_STRING,
+  },
 ];

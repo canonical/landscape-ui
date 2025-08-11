@@ -3,8 +3,8 @@ import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Form,
@@ -32,9 +32,9 @@ import classes from "./RebootProfilesForm.module.scss";
 import type { FormProps, RebootProfilesFormProps } from "./types";
 
 const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
+  const { setPageParams } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -47,6 +47,10 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
       label: title,
       value: name,
     })) ?? [];
+
+  const close = () => {
+    setPageParams({ action: "", rebootProfile: -1 });
+  };
 
   const formik = useFormik<FormProps>({
     initialValues: getInitialValues(props),
@@ -86,7 +90,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
           });
         }
 
-        closeSidePanel();
+        close();
 
         notify.success({
           message: `Reboot profile "${values.title}" has been ${NOTIFICATION_ACTIONS[props.action]} `,
@@ -283,6 +287,13 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             isCreatingRebootProfile ||
             isEditingRebootProfile
           }
+          onCancel={close}
+          hasBackButton={
+            props.action === "edit" || props.action === "duplicate"
+          }
+          onBackButtonPress={() => {
+            setPageParams({ action: "view" });
+          }}
         />
       </Form>
     </FormikProvider>

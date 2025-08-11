@@ -244,14 +244,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   };
 
   const openProfilesList = () => {
-    if (!instance.profiles) {
-      return;
-    }
-
     setSidePanelContent(
       `Profiles associated with ${instance.title}`,
       <Suspense fallback={<LoadingState />}>
-        <ProfilesList profiles={instance.profiles} />
+        <ProfilesList instance={instance} />
       </Suspense>,
       "medium",
     );

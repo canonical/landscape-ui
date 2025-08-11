@@ -4,11 +4,11 @@ import LoadingState from "@/components/layout/LoadingState";
 import { INPUT_DATE_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Button, Input, Notification } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
-import type { ComponentProps } from "react";
 import { useEffect, useState, type FC } from "react";
 import * as Yup from "yup";
 import { useGetSecurityProfileReport } from "../../api";
@@ -22,11 +22,7 @@ interface SecurityProfileDownloadAuditFormValues {
   end_date?: string;
 }
 
-interface SecurityProfileDownloadAuditFormProps
-  extends Pick<
-    ComponentProps<typeof SidePanelFormButtons>,
-    "hasBackButton" | "onBackButtonPress"
-  > {
+interface SecurityProfileDownloadAuditFormProps {
   readonly profileId: number;
 }
 
@@ -38,8 +34,9 @@ type Status =
 
 const SecurityProfileDownloadAuditForm: FC<
   SecurityProfileDownloadAuditFormProps
-> = ({ profileId: id, hasBackButton, onBackButtonPress }) => {
+> = ({ profileId: id }) => {
   const debug = useDebug();
+  const { setPageParams } = usePageParams();
 
   const { getSingleActivityQuery } = useActivities();
   const { getSecurityProfileReport, isSecurityProfileReportLoading } =
@@ -306,8 +303,13 @@ const SecurityProfileDownloadAuditForm: FC<
         submitButtonDisabled={!formik.isValid || isSecurityProfileReportLoading}
         submitButtonLoading={isSecurityProfileReportLoading}
         submitButtonText="Generate CSV"
-        hasBackButton={hasBackButton}
-        onBackButtonPress={onBackButtonPress}
+        hasBackButton
+        onBackButtonPress={() => {
+          setPageParams({ action: "view" });
+        }}
+        onCancel={() => {
+          setPageParams({ action: "", securityProfile: -1 });
+        }}
       />
     </>
   );

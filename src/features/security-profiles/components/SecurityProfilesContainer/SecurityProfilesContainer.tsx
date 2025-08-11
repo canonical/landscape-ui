@@ -3,24 +3,19 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { useGetActivities } from "@/features/activities";
 import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security-profiles";
-import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {
   useGetOverLimitSecurityProfiles,
   useGetSecurityProfiles,
   useIsSecurityProfilesLimitReached,
-  useUpdateSecurityProfile,
 } from "../../api";
 import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
-import SecurityProfileForm from "../SecurityProfileForm";
 import SecurityProfilesHeader from "../SecurityProfilesHeader";
 import SecurityProfilesList from "../SecurityProfilesList";
-import { getInitialValues } from "../SecurityProfilesList/helpers";
 
 interface SecurityProfilesContainerProps {
   readonly hideRetentionNotification: () => void;
@@ -45,10 +40,9 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { notify } = useNotify();
   const { currentPage, pageSize, search, status, passRateFrom, passRateTo } =
     usePageParams();
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const profileLimitReached = useIsSecurityProfilesLimitReached();
 
   const { securityProfiles, securityProfilesCount, isSecurityProfilesLoading } =
@@ -84,8 +78,6 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
     { enabled: !!pendingReports.length },
   );
 
-  const { updateSecurityProfile } = useUpdateSecurityProfile();
-
   const downloadAudit = useSecurityProfileDownloadAudit();
 
   const [
@@ -100,37 +92,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
   const handleEditProfile = () => {
     const [profile] = overLimitSecurityProfiles;
 
-    setSidePanelContent(
-      `Edit ${profile.title}`,
-      <Suspense fallback={<LoadingState />}>
-        <SecurityProfileForm
-          benchmarkStepDisabled
-          confirmationStepDescription="To save your changes, you need to run the profile."
-          getConfirmationStepDisabled={(values) => values.mode == "audit"}
-          initialValues={getInitialValues(profile)}
-          mutate={async (values) => {
-            updateSecurityProfile({
-              id: profile.id,
-              access_group: values.access_group,
-              all_computers: values.all_computers,
-              restart_deliver_delay: values.restart_deliver_delay,
-              restart_deliver_delay_window: values.restart_deliver_delay_window,
-              schedule: values.schedule,
-              tags: values.tags,
-              title: values.title,
-            });
-          }}
-          onSuccess={(values) => {
-            notify.success({
-              title: `You have successfully saved changes for ${values.title} security profile.`,
-              message: "Your changes have been saved successfully.",
-            });
-          }}
-          submitButtonText="Save changes"
-          submitting={false}
-        />
-      </Suspense>,
-    );
+    setPageParams({ action: "edit", securityProfile: profile.id });
   };
 
   return (

@@ -7,7 +7,7 @@ import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useGetInstances } from "@/features/instances";
 import { ScriptDropdown, type Script } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Col,
@@ -76,7 +76,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   submitting = false,
 }) => {
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
 
@@ -185,7 +185,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         return;
       }
 
-      closeSidePanel();
+      setPageParams({ action: "", scriptProfile: -1 });
 
       onSuccess(values);
     },
@@ -404,6 +404,9 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         }
         submitButtonLoading={submitting}
         submitButtonText={submitButtonText}
+        onCancel={() => {
+          setPageParams({ action: "", scriptProfile: -1 });
+        }}
       />
     </Form>
   );

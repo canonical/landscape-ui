@@ -1,6 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import Flow from "@/components/layout/Flow";
 import InfoGrid from "@/components/layout/InfoGrid";
+import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import { Form } from "@canonical/react-components";
 import type { ComponentProps, FC, SyntheticEvent } from "react";
@@ -18,7 +19,11 @@ interface SecurityProfileRunFixFormProps
 const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
   profile,
   onSubmit,
+  hasBackButton,
+  onBackButtonPress,
 }) => {
+  const { setPageParams } = usePageParams();
+
   const handleSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
     await onSubmit();
@@ -95,6 +100,11 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
       <SidePanelFormButtons
         submitButtonDisabled={false}
         submitButtonText="Run"
+        onCancel={() => {
+          setPageParams({ action: "", securityProfile: -1 });
+        }}
+        hasBackButton={hasBackButton}
+        onBackButtonPress={onBackButtonPress}
       />
     </Form>
   );

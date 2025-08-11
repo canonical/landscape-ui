@@ -1,7 +1,7 @@
 import { DAY_OPTIONS } from "@/components/form/ScheduleBlock/components/ScheduleBlockBase/constants";
 import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { useFormik } from "formik";
 import moment from "moment";
 import type { ReactNode } from "react";
@@ -38,7 +38,7 @@ const useSecurityProfileForm = ({
   onSuccess = () => undefined,
 }: UseSecurityProfileFormProps) => {
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const formik = useFormik<SecurityProfileFormValues>({
     initialValues,
@@ -190,7 +190,7 @@ const useSecurityProfileForm = ({
         return;
       }
 
-      closeSidePanel();
+      setPageParams({ action: "", securityProfile: -1 });
 
       onSuccess(values);
     },

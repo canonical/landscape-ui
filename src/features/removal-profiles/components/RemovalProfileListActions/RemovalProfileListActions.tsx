@@ -1,19 +1,13 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useRemovalProfiles } from "../../hooks";
 import type { RemovalProfile } from "../../types";
-
-const SingleRemovalProfileForm = lazy(
-  async () => import("../SingleRemovalProfileForm"),
-);
 
 interface RemovalProfileListActionsProps {
   readonly profile: RemovalProfile;
@@ -24,7 +18,7 @@ const RemovalProfileListActions: FC<RemovalProfileListActionsProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const { removeRemovalProfileQuery } = useRemovalProfiles();
 
@@ -53,12 +47,7 @@ const RemovalProfileListActions: FC<RemovalProfileListActionsProps> = ({
   };
 
   const handleRemovalProfileEdit = (removalProfile: RemovalProfile) => {
-    setSidePanelContent(
-      `Edit ${profile.title} profile`,
-      <Suspense fallback={<LoadingState />}>
-        <SingleRemovalProfileForm action="edit" profile={removalProfile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "edit", removalProfile: removalProfile.id });
   };
 
   const actions: Action[] = [

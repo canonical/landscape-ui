@@ -1,9 +1,9 @@
-import { renderWithProviders } from "@/tests/render";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
-import { describe, it } from "vitest";
-import ScriptProfileArchiveModal from "./ScriptProfileArchiveModal";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, it } from "vitest";
+import ScriptProfileArchiveModal from "./ScriptProfileArchiveModal";
 
 const [profile] = scriptProfiles;
 
@@ -12,7 +12,7 @@ describe("ScriptProfileArchiveModal", () => {
 
   it("correctly renders modal", async () => {
     renderWithProviders(
-      <ScriptProfileArchiveModal profile={profile} removeProfile={vi.fn()} />,
+      <ScriptProfileArchiveModal opened onClose={vi.fn()} profile={profile} />,
     );
 
     const modalTitle = screen.getByText(`Archive ${profile.title}`);
@@ -26,7 +26,7 @@ describe("ScriptProfileArchiveModal", () => {
 
   it("shows toast confirmation on successful archiving", async () => {
     renderWithProviders(
-      <ScriptProfileArchiveModal profile={profile} removeProfile={vi.fn()} />,
+      <ScriptProfileArchiveModal opened onClose={vi.fn()} profile={profile} />,
     );
 
     const confirmButton = screen.getByRole("button", {

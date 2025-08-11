@@ -41,16 +41,16 @@ const RebootProfileDetails: FC = () => {
     setFalse: handleCloseModal,
   } = useBoolean();
 
-  if (isGettingRebootProfiles || isGettingAccessGroups) {
-    return <SidePanel.LoadingState />;
-  }
-
   if (rebootProfilesError) {
     throw rebootProfilesError;
   }
 
   if (accessGroupsError) {
     throw accessGroupsError;
+  }
+
+  if (isGettingRebootProfiles || isGettingAccessGroups) {
+    return <SidePanel.LoadingState />;
   }
 
   const profile = rebootProfiles.find(({ id }) => id === rebootProfileId);

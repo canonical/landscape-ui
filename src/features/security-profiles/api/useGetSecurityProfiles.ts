@@ -26,7 +26,11 @@ export const useGetSecurityProfiles = (
 ) => {
   const authFetch = useFetch();
 
-  const { data: response, isLoading } = useQuery<
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useQuery<
     AxiosResponse<ApiPaginatedResponse<SecurityProfile>>,
     AxiosError<ApiError>
   >({
@@ -38,6 +42,7 @@ export const useGetSecurityProfiles = (
   return {
     securityProfiles: response?.data.results ?? [],
     securityProfilesCount: response?.data.count,
+    securityProfilesError: error,
     isSecurityProfilesLoading: isLoading,
   };
 };

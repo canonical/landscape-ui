@@ -1,82 +1,94 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { SelectOption } from "@/types/SelectOption";
+import usePageParams from "@/hooks/usePageParams";
+import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
+import { useBoolean } from "usehooks-ts";
 import { useRemovalProfiles } from "../../hooks";
-import type { RemovalProfile } from "../../types";
 
-const SingleRemovalProfileForm = lazy(
-  async () => import("../SingleRemovalProfileForm"),
-);
-
-interface RemovalProfileDetailsProps {
-  readonly accessGroupOptions: SelectOption[];
-  readonly profile: RemovalProfile;
-}
-
-const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
-  accessGroupOptions,
-  profile,
-}) => {
-  const [modalOpen, setModalOpen] = useState(false);
-
+const RemovalProfileDetails: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelContent } = useSidePanel();
-  const { removeRemovalProfileQuery } = useRemovalProfiles();
+  const { removalProfile: removalProfileId, setPageParams } = usePageParams();
 
+  const { getRemovalProfilesQuery, removeRemovalProfileQuery } =
+    useRemovalProfiles();
+  const {
+    data: getRemovalProfilesQueryResponse,
+    isPending: isGettingRemovalProfiles,
+    error: removalProfilesError,
+  } = getRemovalProfilesQuery();
   const { mutateAsync: removeRemovalProfile, isPending: isRemoving } =
     removeRemovalProfileQuery;
 
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
+  const { getAccessGroupQuery } = useRoles();
+  const {
+    data: accessGroupsData,
+    isPending: isGettingAccessGroups,
+    error: accessGroupsError,
+  } = getAccessGroupQuery();
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
+  const {
+    value: modalOpen,
+    setTrue: handleOpenModal,
+    setFalse: handleCloseModal,
+  } = useBoolean();
+
+  if (removalProfilesError) {
+    throw removalProfilesError;
+  }
+
+  if (accessGroupsError) {
+    throw accessGroupsError;
+  }
+
+  if (isGettingRemovalProfiles || isGettingAccessGroups) {
+    return <SidePanel.LoadingState />;
+  }
+
+  const profile = getRemovalProfilesQueryResponse.data.find(
+    (removalProfile) => removalProfile.id === removalProfileId,
+  );
+
+  if (!profile) {
+    throw new Error("The removal profile could not be found.");
+  }
 
   const handleRemovalProfileRemove = async () => {
     try {
       await removeRemovalProfile({ name: profile.name });
 
-      handleCloseModal();
-      closeSidePanel();
+      setPageParams({ action: "", removalProfile: -1 });
 
       notify.success({
         title: "Removal profile removed",
         message: `Removal profile ${profile.title} has been removed`,
       });
     } catch (error) {
-      handleCloseModal();
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 
   const handleEditRemovalProfile = () => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <SingleRemovalProfileForm action="edit" profile={profile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "edit" });
   };
 
   return (
-    <>
+    <SidePanel.Body title={profile.title}>
       <div className="p-segmented-control">
         <Button
           type="button"
           hasIcon
           className="p-segmented-control__button"
+          w
           onClick={handleEditRemovalProfile}
           aria-label={`Edit ${profile.title}`}
         >
@@ -105,9 +117,9 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
             <InfoGrid.Item
               label="Access group"
               value={
-                accessGroupOptions.find(
-                  ({ value }) => value === profile.access_group,
-                )?.label ?? profile.access_group
+                accessGroupsData.data.find(
+                  (accessGroup) => accessGroup.name === profile.access_group,
+                )?.title ?? profile.access_group
               }
             />
 
@@ -157,7 +169,7 @@ const RemovalProfileDetails: FC<RemovalProfileDetailsProps> = ({
           <b>irreversible</b>.
         </p>
       </TextConfirmationModal>
-    </>
+    </SidePanel.Body>
   );
 };
 
