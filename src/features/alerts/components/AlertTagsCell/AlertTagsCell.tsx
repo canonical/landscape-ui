@@ -167,12 +167,13 @@ const AlertTagsCell: FC<AlertTagsCellProps> = ({
               Revert
             </Button>
             <Button
-              type="submit"
+              type="button"
               dense
               small
               appearance="positive"
               className="u-no-margin--bottom"
               disabled={isDisabled()}
+              onClick={() => formik.submitForm()}
             >
               Save changes
             </Button>
