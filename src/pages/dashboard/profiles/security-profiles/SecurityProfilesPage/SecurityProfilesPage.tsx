@@ -71,6 +71,10 @@ const SecurityProfilesPage: FC = () => {
     "edit",
     "run",
     "view",
+    "view/download",
+    "view/duplicate",
+    "view/edit",
+    "view/run",
   ]);
 
   const close = () => {
@@ -135,27 +139,35 @@ const SecurityProfilesPage: FC = () => {
         </SidePanel>
       )}
 
-      {action === "download" && (
+      {(action === "download" || action === "view/download") && (
         <SidePanel close={close} key="download">
-          <SecurityProfileDownloadAuditSidePanel />
+          <SecurityProfileDownloadAuditSidePanel
+            hasBackButton={action === "view/download"}
+          />
         </SidePanel>
       )}
 
-      {action === "duplicate" && (
+      {(action === "duplicate" || action === "view/duplicate") && (
         <SidePanel close={close} key="duplicate">
-          <SecurityProfileDuplicateSidePanel />
+          <SecurityProfileDuplicateSidePanel
+            hasBackButton={action === "view/duplicate"}
+          />
         </SidePanel>
       )}
 
-      {action === "edit" && (
+      {(action === "edit" || action === "view/edit") && (
         <SidePanel close={close} key="edit">
-          <SecurityProfileEditSidePanel />
+          <SecurityProfileEditSidePanel
+            hasBackButton={action === "view/edit"}
+          />
         </SidePanel>
       )}
 
-      {action === "run" && (
+      {(action === "run" || action === "view/run") && (
         <SidePanel close={close} key="run">
-          <SecurityProfileRunFixSidePanel />
+          <SecurityProfileRunFixSidePanel
+            hasBackButton={action === "view/run"}
+          />
         </SidePanel>
       )}
 

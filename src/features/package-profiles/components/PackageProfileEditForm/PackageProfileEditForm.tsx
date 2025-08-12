@@ -13,9 +13,11 @@ import { VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileEditFormProps {
   readonly profile: PackageProfile;
+  readonly hasBackButton?: boolean;
 }
 
 const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
+  hasBackButton,
   profile,
 }) => {
   const debug = useDebug();
@@ -84,7 +86,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
       <SidePanelFormButtons
         submitButtonLoading={formik.isSubmitting}
         submitButtonText="Save changes"
-        hasBackButton
+        hasBackButton={hasBackButton}
         onBackButtonPress={goBack}
         onCancel={close}
       />

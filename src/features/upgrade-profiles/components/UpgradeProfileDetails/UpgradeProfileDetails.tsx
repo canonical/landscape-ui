@@ -81,7 +81,7 @@ const UpgradeProfileDetails: FC = () => {
   };
 
   const handleEditUpgradeProfile = () => {
-    setPageParams({ action: "edit" });
+    setPageParams({ action: "view/edit" });
   };
 
   return (

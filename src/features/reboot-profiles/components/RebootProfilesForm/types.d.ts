@@ -13,9 +13,10 @@ export interface FormProps {
   randomize_delivery: boolean;
 }
 
-export type RebootProfilesFormProps =
+export type RebootProfilesFormProps = (
   | { action: "add" }
   | { action: "edit"; profile: RebootProfile }
-  | { action: "duplicate"; profile: RebootProfile };
+  | { action: "duplicate"; profile: RebootProfile }
+) & { hasBackButton?: boolean };
 
 export type RebootProfileDay = "mo" | "tu" | "we" | "th" | "fr" | "sa" | "su";

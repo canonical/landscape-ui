@@ -4,7 +4,13 @@ import type { FC } from "react";
 import { useGetRebootProfiles } from "../../api";
 import RebootProfilesForm from "../RebootProfilesForm";
 
-const RebootProfileDuplicateSidePanel: FC = () => {
+interface RebootProfileDuplicateSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const RebootProfileDuplicateSidePanel: FC<
+  RebootProfileDuplicateSidePanelProps
+> = ({ hasBackButton }) => {
   const { rebootProfile: rebootProfileId } = usePageParams();
 
   const { rebootProfiles, isPending, error } = useGetRebootProfiles();
@@ -25,7 +31,12 @@ const RebootProfileDuplicateSidePanel: FC = () => {
 
   return (
     <SidePanel.Body title={`Duplicate ${rebootProfile.title}`}>
-      <RebootProfilesForm action="duplicate" profile={rebootProfile} />;
+      <RebootProfilesForm
+        action="duplicate"
+        profile={rebootProfile}
+        hasBackButton={hasBackButton}
+      />
+      ;
     </SidePanel.Body>
   );
 };

@@ -8,7 +8,13 @@ import { useEditScriptProfile, useGetScriptProfile } from "../../api";
 import ScriptProfileForm from "../ScriptProfileForm";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 
-const ScriptProfileEditSidePanel: FC = () => {
+interface ScriptProfileEditSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const ScriptProfileEditSidePanel: FC<ScriptProfileEditSidePanelProps> = ({
+  hasBackButton,
+}) => {
   const { notify } = useNotify();
   const { scriptProfile: scriptProfileId } = usePageParams();
 
@@ -72,6 +78,7 @@ const ScriptProfileEditSidePanel: FC = () => {
         }}
         submitButtonText="Save changes"
         submitting={isEditingScriptProfile}
+        hasBackButton={hasBackButton}
       />
     </SidePanel.Body>
   );

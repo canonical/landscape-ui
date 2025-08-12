@@ -30,7 +30,7 @@ const UpgradeProfileEditSidePanel = lazy(() =>
 const UpgradeProfilesPage: FC = () => {
   const { action, setPageParams } = usePageParams();
 
-  useSetDynamicFilterValidation("action", ["add", "edit", "view"]);
+  useSetDynamicFilterValidation("action", ["add", "edit", "view", "view/edit"]);
 
   const handleAddUpgradeProfile = () => {
     setPageParams({ action: "add", upgradeProfile: -1 });
@@ -65,15 +65,15 @@ const UpgradeProfilesPage: FC = () => {
         </SidePanel>
       )}
 
-      {action === "view" && (
-        <SidePanel close={close} key="view">
-          <UpgradeProfileDetailsSidePanel />
+      {(action === "edit" || action === "view/edit") && (
+        <SidePanel close={close} key="edit">
+          <UpgradeProfileEditSidePanel hasBackButton={action === "view/edit"} />
         </SidePanel>
       )}
 
-      {action === "edit" && (
-        <SidePanel close={close} key="edit">
-          <UpgradeProfileEditSidePanel />
+      {action === "view" && (
+        <SidePanel close={close} key="view">
+          <UpgradeProfileDetailsSidePanel />
         </SidePanel>
       )}
     </PageMain>

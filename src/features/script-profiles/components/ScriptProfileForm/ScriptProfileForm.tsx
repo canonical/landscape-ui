@@ -64,12 +64,14 @@ interface ScriptProfileFormProps
     script_id?: boolean;
     trigger_type?: boolean;
   };
+  readonly hasBackButton?: boolean;
   readonly submitting?: boolean;
 }
 
 const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   onSubmit,
   onSuccess,
+  hasBackButton,
   initialValues,
   disabledFields = {},
   submitButtonText,
@@ -406,6 +408,10 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         submitButtonText={submitButtonText}
         onCancel={() => {
           setPageParams({ action: "", scriptProfile: -1 });
+        }}
+        hasBackButton={hasBackButton}
+        onBackButtonPress={() => {
+          setPageParams({ action: "view" });
         }}
       />
     </Form>

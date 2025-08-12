@@ -17,9 +17,11 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileDuplicateFormProps {
   readonly profile: PackageProfile;
+  readonly hasBackButton?: boolean;
 }
 
 const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
+  hasBackButton,
   profile,
 }) => {
   const debug = useDebug();
@@ -124,7 +126,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       <SidePanelFormButtons
         submitButtonLoading={formik.isSubmitting}
         submitButtonText="Duplicate"
-        hasBackButton
+        hasBackButton={hasBackButton}
         onBackButtonPress={goBack}
         onCancel={close}
       />

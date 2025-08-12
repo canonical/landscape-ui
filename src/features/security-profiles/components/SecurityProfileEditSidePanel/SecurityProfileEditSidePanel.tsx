@@ -6,7 +6,13 @@ import { useGetSecurityProfiles, useUpdateSecurityProfile } from "../../api";
 import { getInitialValues } from "../../helpers";
 import SecurityProfileForm from "../SecurityProfileForm";
 
-const SecurityProfileEditSidePanel: FC = () => {
+interface SecurityProfileEditSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const SecurityProfileEditSidePanel: FC<SecurityProfileEditSidePanelProps> = ({
+  hasBackButton,
+}) => {
   const { notify } = useNotify();
   const { securityProfile: securityProfileId, setPageParams } = usePageParams();
 
@@ -58,7 +64,7 @@ const SecurityProfileEditSidePanel: FC = () => {
         }}
         submitButtonText="Save changes"
         submitting={isSecurityProfileUpdating}
-        hasBackButton
+        hasBackButton={hasBackButton}
         onBackButtonPress={() => {
           setPageParams({ action: "view" });
         }}

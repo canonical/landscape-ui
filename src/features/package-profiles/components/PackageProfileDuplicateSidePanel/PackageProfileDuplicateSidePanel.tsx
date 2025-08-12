@@ -4,7 +4,13 @@ import type { FC } from "react";
 import { usePackageProfiles } from "../../hooks";
 import PackageProfileDuplicateForm from "../PackageProfileDuplicateForm";
 
-const PackageProfileDuplicateSidePanel: FC = () => {
+interface PackageProfileDuplicateSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const PackageProfileDuplicateSidePanel: FC<
+  PackageProfileDuplicateSidePanelProps
+> = ({ hasBackButton }) => {
   const { packageProfile: packageProfileName } = usePageParams();
 
   const { getPackageProfilesQuery } = usePackageProfiles();
@@ -27,7 +33,10 @@ const PackageProfileDuplicateSidePanel: FC = () => {
 
   return (
     <SidePanel.Body title={`Duplicate ${packageProfile.title}`}>
-      <PackageProfileDuplicateForm profile={packageProfile} />
+      <PackageProfileDuplicateForm
+        hasBackButton={hasBackButton}
+        profile={packageProfile}
+      />
     </SidePanel.Body>
   );
 };

@@ -24,6 +24,7 @@ interface SecurityProfileDownloadAuditFormValues {
 
 interface SecurityProfileDownloadAuditFormProps {
   readonly profileId: number;
+  readonly hasBackButton?: boolean;
 }
 
 type Status =
@@ -34,7 +35,7 @@ type Status =
 
 const SecurityProfileDownloadAuditForm: FC<
   SecurityProfileDownloadAuditFormProps
-> = ({ profileId: id }) => {
+> = ({ hasBackButton, profileId: id }) => {
   const debug = useDebug();
   const { setPageParams } = usePageParams();
 
@@ -303,7 +304,7 @@ const SecurityProfileDownloadAuditForm: FC<
         submitButtonDisabled={!formik.isValid || isSecurityProfileReportLoading}
         submitButtonLoading={isSecurityProfileReportLoading}
         submitButtonText="Generate CSV"
-        hasBackButton
+        hasBackButton={hasBackButton}
         onBackButtonPress={() => {
           setPageParams({ action: "view" });
         }}

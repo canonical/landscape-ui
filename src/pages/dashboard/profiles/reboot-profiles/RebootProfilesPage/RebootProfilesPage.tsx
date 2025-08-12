@@ -36,7 +36,14 @@ const RebootProfileEditSidePanel = lazy(async () =>
 const RebootProfilesPage: FC = () => {
   const { action, setPageParams } = usePageParams();
 
-  useSetDynamicFilterValidation("action", ["add", "duplicate", "edit", "view"]);
+  useSetDynamicFilterValidation("action", [
+    "add",
+    "duplicate",
+    "edit",
+    "view",
+    "view/duplicate",
+    "view/edit",
+  ]);
 
   const handleAddProfile = () => {
     setPageParams({ action: "add", rebootProfile: -1 });
@@ -71,15 +78,17 @@ const RebootProfilesPage: FC = () => {
         </SidePanel>
       )}
 
-      {action === "duplicate" && (
+      {(action === "duplicate" || action === "view/duplicate") && (
         <SidePanel close={close} key="duplicate">
-          <RebootProfileDuplicateSidePanel />
+          <RebootProfileDuplicateSidePanel
+            hasBackButton={action === "view/duplicate"}
+          />
         </SidePanel>
       )}
 
-      {action === "edit" && (
+      {(action === "edit" || action === "view/edit") && (
         <SidePanel close={close} key="edit">
-          <RebootProfileEditSidePanel />
+          <RebootProfileEditSidePanel hasBackButton={action === "view/edit"} />
         </SidePanel>
       )}
 

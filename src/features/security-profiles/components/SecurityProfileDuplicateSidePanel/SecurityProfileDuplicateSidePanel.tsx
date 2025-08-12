@@ -6,7 +6,13 @@ import { useAddSecurityProfile, useGetSecurityProfiles } from "../../api";
 import { getInitialValues, notifyCreation } from "../../helpers";
 import SecurityProfileForm from "../SecurityProfileForm";
 
-const SecurityProfileDuplicateSidePanel: FC = () => {
+interface SecurityProfileDuplicateSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const SecurityProfileDuplicateSidePanel: FC<
+  SecurityProfileDuplicateSidePanelProps
+> = ({ hasBackButton }) => {
   const { notify } = useNotify();
   const { securityProfile: securityProfileId, setPageParams } = usePageParams();
 
@@ -59,7 +65,7 @@ const SecurityProfileDuplicateSidePanel: FC = () => {
         }}
         submitButtonText="Duplicate"
         submitting={isSecurityProfileAdding}
-        hasBackButton
+        hasBackButton={hasBackButton}
         onBackButtonPress={() => {
           setPageParams({ action: "view" });
         }}

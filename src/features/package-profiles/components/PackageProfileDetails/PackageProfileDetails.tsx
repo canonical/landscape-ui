@@ -68,11 +68,11 @@ const PackageProfileDetails: FC = () => {
   };
 
   const handlePackageProfileEdit = () => {
-    setPageParams({ action: "edit" });
+    setPageParams({ action: "view/edit" });
   };
 
   const handlePackageProfileDuplicate = () => {
-    setPageParams({ action: "duplicate" });
+    setPageParams({ action: "view/duplicate" });
   };
 
   return (

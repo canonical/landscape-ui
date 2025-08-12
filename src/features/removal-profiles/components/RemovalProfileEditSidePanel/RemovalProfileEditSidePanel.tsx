@@ -4,7 +4,13 @@ import type { FC } from "react";
 import { useRemovalProfiles } from "../../hooks";
 import SingleRemovalProfileForm from "../SingleRemovalProfileForm";
 
-const RemovalProfileEditSidePanel: FC = () => {
+interface RemovalProfileEditSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const RemovalProfileEditSidePanel: FC<RemovalProfileEditSidePanelProps> = ({
+  hasBackButton,
+}) => {
   const { removalProfile: removalProfileId } = usePageParams();
 
   const { getRemovalProfilesQuery } = useRemovalProfiles();
@@ -32,7 +38,12 @@ const RemovalProfileEditSidePanel: FC = () => {
 
   return (
     <SidePanel.Body title={`Edit "${removalProfile.title}" profile`}>
-      <SingleRemovalProfileForm action="edit" profile={removalProfile} />;
+      <SingleRemovalProfileForm
+        action="edit"
+        profile={removalProfile}
+        hasBackButton={hasBackButton}
+      />
+      ;
     </SidePanel.Body>
   );
 };

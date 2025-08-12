@@ -47,6 +47,8 @@ const PackageProfilesPage: FC = () => {
     "duplicate",
     "edit",
     "view",
+    "view/duplicate",
+    "view/edit",
   ]);
 
   const handleAddPackageProfile = () => {
@@ -88,15 +90,17 @@ const PackageProfilesPage: FC = () => {
         </SidePanel>
       )}
 
-      {action === "duplicate" && (
+      {(action === "duplicate" || action === "view/duplicate") && (
         <SidePanel close={close} key="duplicate">
-          <PackageProfileDuplicateSidePanel />
+          <PackageProfileDuplicateSidePanel
+            hasBackButton={action === "view/duplicate"}
+          />
         </SidePanel>
       )}
 
-      {action === "edit" && (
+      {(action === "edit" || action === "view/edit") && (
         <SidePanel close={close} key="edit">
-          <PackageProfileEditSidePanel />
+          <PackageProfileEditSidePanel hasBackButton={action === "view/edit"} />
         </SidePanel>
       )}
 

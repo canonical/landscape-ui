@@ -4,7 +4,13 @@ import type { FC } from "react";
 import { usePackageProfiles } from "../../hooks";
 import PackageProfileEditForm from "../PackageProfileEditForm";
 
-const PackageProfileEditSidePanel: FC = () => {
+interface PackageProfileEditSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const PackageProfileEditSidePanel: FC<PackageProfileEditSidePanelProps> = ({
+  hasBackButton,
+}) => {
   const { packageProfile: packageProfileName } = usePageParams();
 
   const { getPackageProfilesQuery } = usePackageProfiles();
@@ -30,7 +36,10 @@ const PackageProfileEditSidePanel: FC = () => {
 
   return (
     <SidePanel.Body title={`Edit ${packageProfile.title}`}>
-      <PackageProfileEditForm profile={packageProfile} />
+      <PackageProfileEditForm
+        hasBackButton={hasBackButton}
+        profile={packageProfile}
+      />
     </SidePanel.Body>
   );
 };

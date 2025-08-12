@@ -4,7 +4,13 @@ import type { FC } from "react";
 import { useUpgradeProfiles } from "../../hooks";
 import SingleUpgradeProfileForm from "../SingleUpgradeProfileForm";
 
-const UpgradeProfileEditSidePanel: FC = () => {
+interface UpgradeProfileEditSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const UpgradeProfileEditSidePanel: FC<UpgradeProfileEditSidePanelProps> = ({
+  hasBackButton,
+}) => {
   const { upgradeProfile: upgradeProfileId } = usePageParams();
 
   const { getUpgradeProfilesQuery } = useUpgradeProfiles();
@@ -32,7 +38,12 @@ const UpgradeProfileEditSidePanel: FC = () => {
 
   return (
     <SidePanel.Body title={`Edit "${upgradeProfile.title}" profile`}>
-      <SingleUpgradeProfileForm action="edit" profile={upgradeProfile} />;
+      <SingleUpgradeProfileForm
+        action="edit"
+        profile={upgradeProfile}
+        hasBackButton={hasBackButton}
+      />
+      ;
     </SidePanel.Body>
   );
 };

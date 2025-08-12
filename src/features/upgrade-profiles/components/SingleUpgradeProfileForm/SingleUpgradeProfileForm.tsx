@@ -15,14 +15,15 @@ import UpgradeProfileScheduleBlock from "../UpgradeProfileScheduleBlock";
 import { CTA_LABELS, INITIAL_VALUES, NOTIFICATION_ACTIONS } from "./constants";
 import { getValidationSchema } from "./helpers";
 
-type SingleUpgradeProfileFormProps =
+type SingleUpgradeProfileFormProps = (
   | {
       action: "add";
     }
   | {
       action: "edit";
       profile: UpgradeProfile;
-    };
+    }
+) & { readonly hasBackButton?: boolean };
 
 const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const debug = useDebug();
@@ -191,6 +192,10 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_LABELS[props.action]}
         onCancel={closeSidePanel}
+        hasBackButton={props.hasBackButton}
+        onBackButtonPress={() => {
+          setPageParams({ action: "view" });
+        }}
       />
     </Form>
   );

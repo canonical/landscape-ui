@@ -16,14 +16,15 @@ import { getValidationSchema } from "./helpers";
 import classes from "./SingleRemovalProfileForm.module.scss";
 import type { FormProps } from "./types";
 
-type SingleRemovalProfileFormProps =
+type SingleRemovalProfileFormProps = (
   | {
       action: "add";
     }
   | {
       action: "edit";
       profile: RemovalProfile;
-    };
+    }
+) & { readonly hasBackButton?: boolean };
 
 const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   const debug = useDebug();
@@ -156,7 +157,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_LABELS[props.action]}
         onCancel={close}
-        hasBackButton={props.action === "edit"}
+        hasBackButton={props.hasBackButton}
         onBackButtonPress={() => {
           setPageParams({ action: "view" });
         }}

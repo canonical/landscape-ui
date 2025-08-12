@@ -28,9 +28,13 @@ interface FormProps {
 
 interface WslProfileEditFormProps {
   readonly profile: WslProfile;
+  readonly hasBackButton?: boolean;
 }
 
-const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
+const WslProfileEditForm: FC<WslProfileEditFormProps> = ({
+  hasBackButton,
+  profile,
+}) => {
   const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
   const { setPageParams } = usePageParams();
@@ -180,6 +184,10 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
         submitButtonText="Save changes"
         submitButtonDisabled={formik.isSubmitting}
         onCancel={closeSidePanel}
+        hasBackButton={hasBackButton}
+        onBackButtonPress={() => {
+          setPageParams({ action: "view" });
+        }}
       />
     </Form>
   );

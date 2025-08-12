@@ -4,7 +4,13 @@ import type { FC } from "react";
 import { useGetWslProfile } from "../../api";
 import WslProfileEditForm from "../WslProfileEditForm";
 
-const WslProfileEditSidePanel: FC = () => {
+interface WslProfileEditSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const WslProfileEditSidePanel: FC<WslProfileEditSidePanelProps> = ({
+  hasBackButton,
+}) => {
   const { wslProfile: wslProfileName } = usePageParams();
 
   const { wslProfile, isGettingWslProfile, wslProfileError } = useGetWslProfile(
@@ -21,7 +27,7 @@ const WslProfileEditSidePanel: FC = () => {
 
   return (
     <SidePanel.Body title={`Edit "${wslProfile.title}" profile`}>
-      <WslProfileEditForm profile={wslProfile} />
+      <WslProfileEditForm profile={wslProfile} hasBackButton={hasBackButton} />
     </SidePanel.Body>
   );
 };

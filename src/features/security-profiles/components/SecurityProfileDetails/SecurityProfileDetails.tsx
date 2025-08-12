@@ -81,7 +81,7 @@ const SecurityProfileDetails: FC = () => {
             type="button"
             hasIcon
             onClick={() => {
-              setPageParams({ action: "download" });
+              setPageParams({ action: "view/download" });
             }}
           >
             <Icon name="file-blank" />
@@ -94,7 +94,7 @@ const SecurityProfileDetails: FC = () => {
               type="button"
               hasIcon
               onClick={() => {
-                setPageParams({ action: "edit" });
+                setPageParams({ action: "view/edit" });
               }}
             >
               <Icon name="edit" />
@@ -108,7 +108,7 @@ const SecurityProfileDetails: FC = () => {
               type="button"
               hasIcon
               onClick={() => {
-                setPageParams({ action: "run" });
+                setPageParams({ action: "view/run" });
               }}
               disabled={!profile.associated_instances}
             >
@@ -122,7 +122,7 @@ const SecurityProfileDetails: FC = () => {
             type="button"
             hasIcon
             onClick={() => {
-              setPageParams({ action: "duplicate" });
+              setPageParams({ action: "view/duplicate" });
             }}
             disabled={profileLimitReached}
           >

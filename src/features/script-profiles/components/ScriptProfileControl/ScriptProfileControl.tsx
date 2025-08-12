@@ -37,7 +37,7 @@ const ScriptProfileControl: FC<ScriptProfileControlProps> = ({ profile }) => {
           type="button"
           hasIcon
           onClick={() => {
-            setPageParams({ action: "edit" });
+            setPageParams({ action: "view/edit" });
           }}
         >
           <Icon name="edit" />

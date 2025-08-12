@@ -8,7 +8,13 @@ import { useGetSecurityProfiles, useRunSecurityProfile } from "../../api";
 import { getNotificationMessage } from "../../helpers";
 import SecurityProfileRunFixForm from "../SecurityProfileRunFixForm";
 
-const SecurityProfileRunFixSidePanel: FC = () => {
+interface SecurityProfileRunFixSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const SecurityProfileRunFixSidePanel: FC<
+  SecurityProfileRunFixSidePanelProps
+> = ({ hasBackButton }) => {
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
@@ -68,7 +74,7 @@ const SecurityProfileRunFixSidePanel: FC = () => {
         onSubmit={async () => {
           await handleRunSecurityProfile();
         }}
-        hasBackButton
+        hasBackButton={hasBackButton}
         onBackButtonPress={() => {
           setPageParams({ action: "view" });
         }}

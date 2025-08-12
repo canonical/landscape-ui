@@ -29,7 +29,7 @@ const RemovalProfileEditSidePanel = lazy(async () =>
 const RemovalProfilesPage: FC = () => {
   const { action, setPageParams } = usePageParams();
 
-  useSetDynamicFilterValidation("action", ["add", "edit", "view"]);
+  useSetDynamicFilterValidation("action", ["add", "edit", "view", "view/edit"]);
 
   const handleCreate = () => {
     setPageParams({ action: "add", removalProfile: -1 });
@@ -64,9 +64,9 @@ const RemovalProfilesPage: FC = () => {
         </SidePanel>
       )}
 
-      {action === "edit" && (
+      {(action === "edit" || action === "view/edit") && (
         <SidePanel close={close} key="edit">
-          <RemovalProfileEditSidePanel />
+          <RemovalProfileEditSidePanel hasBackButton={action === "view/edit"} />
         </SidePanel>
       )}
 

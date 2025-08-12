@@ -32,9 +32,9 @@ const ScriptProfilesTab: FC = () => {
         </SidePanel>
       )}
 
-      {action === "edit" && (
+      {(action === "edit" || action === "view/edit") && (
         <SidePanel close={close} key="edit">
-          <ScriptProfileEditSidePanel />
+          <ScriptProfileEditSidePanel hasBackButton={action === "view/edit"} />
         </SidePanel>
       )}
 

@@ -47,7 +47,7 @@ const WslProfileDetails: FC = () => {
   }
 
   const handleWslProfileEdit = () => {
-    setPageParams({ action: "edit" });
+    setPageParams({ action: "view/edit" });
   };
 
   return (

@@ -288,9 +288,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             isEditingRebootProfile
           }
           onCancel={close}
-          hasBackButton={
-            props.action === "edit" || props.action === "duplicate"
-          }
+          hasBackButton={props.hasBackButton}
           onBackButtonPress={() => {
             setPageParams({ action: "view" });
           }}

@@ -78,7 +78,7 @@ const RemovalProfileDetails: FC = () => {
   };
 
   const handleEditRemovalProfile = () => {
-    setPageParams({ action: "edit" });
+    setPageParams({ action: "view/edit" });
   };
 
   return (

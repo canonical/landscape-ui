@@ -77,11 +77,11 @@ const RebootProfileDetails: FC = () => {
   };
 
   const handleEditRebootProfile = () => {
-    setPageParams({ action: "edit" });
+    setPageParams({ action: "view/edit" });
   };
 
   const handleDuplicateRebootProfile = () => {
-    setPageParams({ action: "duplicate" });
+    setPageParams({ action: "view/duplicate" });
   };
 
   return (

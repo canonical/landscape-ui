@@ -4,7 +4,13 @@ import type { FC } from "react";
 import { useGetRebootProfiles } from "../../api";
 import RebootProfilesForm from "../RebootProfilesForm";
 
-const RebootProfileEditSidePanel: FC = () => {
+interface RebootProfileEditSidePanelProps {
+  readonly hasBackButton?: boolean;
+}
+
+const RebootProfileEditSidePanel: FC<RebootProfileEditSidePanelProps> = ({
+  hasBackButton,
+}) => {
   const { rebootProfile: rebootProfileId } = usePageParams();
 
   const { rebootProfiles, isPending, error } = useGetRebootProfiles();
@@ -25,7 +31,12 @@ const RebootProfileEditSidePanel: FC = () => {
 
   return (
     <SidePanel.Body title={`Edit ${rebootProfile.title}`}>
-      <RebootProfilesForm action="edit" profile={rebootProfile} />;
+      <RebootProfilesForm
+        action="edit"
+        profile={rebootProfile}
+        hasBackButton={hasBackButton}
+      />
+      ;
     </SidePanel.Body>
   );
 };

@@ -48,6 +48,7 @@ const WslProfilesPage: FC = () => {
     "edit",
     "noncompliant",
     "view",
+    "view/edit",
   ]);
 
   const {
@@ -129,9 +130,9 @@ const WslProfilesPage: FC = () => {
         </SidePanel>
       )}
 
-      {action === "edit" && (
+      {(action === "edit" || action === "view/edit") && (
         <SidePanel close={closeSidePanel} key="edit">
-          <WslProfileEditSidePanel />
+          <WslProfileEditSidePanel hasBackButton={action === "view/edit"} />
         </SidePanel>
       )}
 
