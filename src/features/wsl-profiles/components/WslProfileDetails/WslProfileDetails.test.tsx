@@ -47,18 +47,8 @@ describe("WslProfileDetails", () => {
     },
   ];
 
-  const accessGroupOptions = accessGroups.map(({ name, title }) => ({
-    label: title,
-    value: name,
-  }));
-
   it("should render WSL profile details", () => {
-    const { container } = renderWithProviders(
-      <WslProfileDetails
-        profile={testProfile}
-        accessGroupOptions={accessGroupOptions}
-      />,
-    );
+    const { container } = renderWithProviders(<WslProfileDetails />);
 
     expect(screen.getByText("Edit")).toBeInTheDocument();
     expect(screen.getByText("Remove")).toBeInTheDocument();

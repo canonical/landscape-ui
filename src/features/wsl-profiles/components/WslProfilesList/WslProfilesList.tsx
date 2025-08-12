@@ -9,11 +9,10 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useGetWslProfiles } from "../../api";
 import type { WslProfile } from "../../types";
@@ -24,13 +23,11 @@ import WslProfilesListActions from "../WslProfilesListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
 
-const WslProfileDetails = lazy(async () => import("../WslProfileDetails"));
-
 const WslProfilesList: FC = () => {
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
     useExpandableRow();
   const { search } = usePageParams();
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
 
   const { isGettingWslProfiles, wslProfiles } = useGetWslProfiles({ search });
@@ -49,15 +46,7 @@ const WslProfilesList: FC = () => {
         ...LIST_TITLE_COLUMN_PROPS,
         Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => {
           const openWslProfileDetails = () => {
-            setSidePanelContent(
-              wslProfile.title,
-              <Suspense fallback={<LoadingState />}>
-                <WslProfileDetails
-                  profile={wslProfile}
-                  accessGroupOptions={accessGroupOptions}
-                />
-              </Suspense>,
-            );
+            setPageParams({ action: "view", wslProfile: wslProfile.name });
           };
 
           return (

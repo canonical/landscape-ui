@@ -1,14 +1,10 @@
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { WslProfile } from "../../types";
 import WslProfileRemoveModal from "../WslProfileRemoveModal";
-
-const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
 
 interface WslProfilesListActionsProps {
   readonly profile: WslProfile;
@@ -17,7 +13,7 @@ interface WslProfilesListActionsProps {
 const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
   profile,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const {
     value: isRemoveModalOpen,
@@ -26,12 +22,7 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
   } = useBoolean();
 
   const handleWslProfileEdit = () => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <WslProfileEditForm profile={profile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "edit", wslProfile: profile.name });
   };
 
   const actions: Action[] = [

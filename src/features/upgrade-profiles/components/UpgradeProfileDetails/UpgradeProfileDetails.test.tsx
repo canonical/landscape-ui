@@ -40,18 +40,8 @@ describe("UpgradeProfileDetails", () => {
     },
   ];
 
-  const accessGroupOptions = accessGroups.map(({ name, title }) => ({
-    label: title,
-    value: name,
-  }));
-
   it("should render upgrade profile details", () => {
-    const { container } = renderWithProviders(
-      <UpgradeProfileDetails
-        profile={testProfile}
-        accessGroupOptions={accessGroupOptions}
-      />,
-    );
+    const { container } = renderWithProviders(<UpgradeProfileDetails />);
 
     expect(
       screen.getByLabelText(`Edit upgrade profile ${testProfile.title}`),

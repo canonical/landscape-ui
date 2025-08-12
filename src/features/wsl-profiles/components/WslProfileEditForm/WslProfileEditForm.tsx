@@ -3,8 +3,8 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useGetWslInstanceTypes } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -33,7 +33,7 @@ interface WslProfileEditFormProps {
 const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
   const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const { notify } = useNotify();
 
   const { editWslProfile } = useEditWslProfile();
@@ -58,6 +58,10 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       label: title,
       value: name,
     })) ?? [];
+
+  const closeSidePanel = () => {
+    setPageParams({ action: "", wslProfile: "" });
+  };
 
   const handleSubmit = async (values: FormProps) => {
     try {
@@ -175,6 +179,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       <SidePanelFormButtons
         submitButtonText="Save changes"
         submitButtonDisabled={formik.isSubmitting}
+        onCancel={closeSidePanel}
       />
     </Form>
   );

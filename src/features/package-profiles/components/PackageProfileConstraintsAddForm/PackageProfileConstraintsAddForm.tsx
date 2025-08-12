@@ -1,6 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import { Form } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -21,6 +22,7 @@ const PackageProfileConstraintsAddForm: FC<
 > = ({ handleConstraintsEdit, profile }) => {
   const debug = useDebug();
   const { notify } = useNotify();
+  const { setPageParams } = usePageParams();
   const { addPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: addConstraints } = addPackageProfileConstraintsQuery;
@@ -68,6 +70,9 @@ const PackageProfileConstraintsAddForm: FC<
         cancelButtonDisabled={formik.isSubmitting}
         hasBackButton
         onBackButtonPress={handleConstraintsEdit}
+        onCancel={() => {
+          setPageParams({ action: "", packageProfile: "" });
+        }}
       />
     </Form>
   );

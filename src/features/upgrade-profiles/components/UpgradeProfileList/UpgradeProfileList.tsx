@@ -2,26 +2,20 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ListTitle, {
   LIST_TITLE_COLUMN_PROPS,
 } from "@/components/layout/ListTitle";
-import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { UpgradeProfile } from "../../types";
 import UpgradeProfileListActions from "../UpgradeProfileListActions";
 import { getCellProps, getRowProps } from "./helpers";
-
-const UpgradeProfileDetails = lazy(
-  async () => import("../UpgradeProfileDetails"),
-);
 
 interface UpgradeProfileListProps {
   readonly profiles: UpgradeProfile[];
@@ -29,7 +23,7 @@ interface UpgradeProfileListProps {
 
 const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
   const { search } = usePageParams();
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
@@ -53,15 +47,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
   }, [profiles, search]);
 
   const handleUpgradeProfileDetailsOpen = (profile: UpgradeProfile) => {
-    setSidePanelContent(
-      profile.title,
-      <Suspense fallback={<LoadingState />}>
-        <UpgradeProfileDetails
-          accessGroupOptions={accessGroupOptions}
-          profile={profile}
-        />
-      </Suspense>,
-    );
+    setPageParams({ action: "view", upgradeProfile: profile.id });
   };
 
   const columns = useMemo<Column<UpgradeProfile>[]>(

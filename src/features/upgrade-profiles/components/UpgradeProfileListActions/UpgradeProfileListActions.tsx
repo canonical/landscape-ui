@@ -1,19 +1,13 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useUpgradeProfiles } from "../../hooks";
 import type { UpgradeProfile } from "../../types";
-
-const SingleUpgradeProfileForm = lazy(
-  async () => import("../SingleUpgradeProfileForm"),
-);
 
 interface UpgradeProfileListActionsProps {
   readonly profile: UpgradeProfile;
@@ -24,7 +18,7 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const { removeUpgradeProfileQuery } = useUpgradeProfiles();
 
@@ -53,12 +47,7 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
   };
 
   const handleUpgradeProfileEdit = () => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <SingleUpgradeProfileForm action="edit" profile={profile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "edit", upgradeProfile: profile.id });
   };
 
   const actions: Action[] = [

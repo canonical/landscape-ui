@@ -2,21 +2,53 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import SidePanel from "@/components/layout/SidePanel";
 import { useGetWslLimits } from "@/features/wsl";
 import {
   useGetWslProfiles,
-  WslProfileInstallForm,
   WslProfilesEmptyState,
   WslProfilesHeader,
   WslProfilesList,
 } from "@/features/wsl-profiles";
-import useSidePanel from "@/hooks/useSidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { Button, Notification } from "@canonical/react-components";
-import type { FC } from "react";
+import { lazy, type FC } from "react";
+
+const WslProfileAddSidePanel = lazy(() =>
+  import("@/features/wsl-profiles").then((module) => ({
+    default: module.WslProfileAddSidePanel,
+  })),
+);
+
+const WslProfileDetailsSidePanel = lazy(() =>
+  import("@/features/wsl-profiles").then((module) => ({
+    default: module.WslProfileDetailsSidePanel,
+  })),
+);
+
+const WslProfileEditSidePanel = lazy(() =>
+  import("@/features/wsl-profiles").then((module) => ({
+    default: module.WslProfileEditSidePanel,
+  })),
+);
+
+const WslProfileNonCompliantInstancesSidePanel = lazy(() =>
+  import("@/features/wsl-profiles").then((module) => ({
+    default: module.WslProfileNonCompliantInstancesSidePanel,
+  })),
+);
 
 const WslProfilesPage: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { action, setPageParams } = usePageParams();
+
+  useSetDynamicFilterValidation("action", [
+    "add",
+    "edit",
+    "noncompliant",
+    "view",
+  ]);
 
   const {
     isGettingWslProfiles: isGettingUnfilteredWslProfiles,
@@ -32,11 +64,15 @@ const WslProfilesPage: FC = () => {
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
 
   const handleAddWslProfile = () => {
-    setSidePanelContent("Add WSL profile", <WslProfileInstallForm />);
+    setPageParams({ action: "add", wslProfile: "" });
   };
 
   const isWslProfileLimitReached =
     unfilteredWslProfilesCount >= wslProfileLimit;
+
+  const closeSidePanel = () => {
+    setPageParams({ action: "", wslProfile: "" });
+  };
 
   return (
     <PageMain>
@@ -85,6 +121,30 @@ const WslProfilesPage: FC = () => {
             )}
           </PageContent>
         </>
+      )}
+
+      {action === "add" && (
+        <SidePanel close={closeSidePanel} key="add">
+          <WslProfileAddSidePanel />
+        </SidePanel>
+      )}
+
+      {action === "edit" && (
+        <SidePanel close={closeSidePanel} key="edit">
+          <WslProfileEditSidePanel />
+        </SidePanel>
+      )}
+
+      {action === "noncompliant" && (
+        <SidePanel close={closeSidePanel} key="noncompliant" size="large">
+          <WslProfileNonCompliantInstancesSidePanel />
+        </SidePanel>
+      )}
+
+      {action === "view" && (
+        <SidePanel close={closeSidePanel} key="view">
+          <WslProfileDetailsSidePanel />
+        </SidePanel>
       )}
     </PageMain>
   );

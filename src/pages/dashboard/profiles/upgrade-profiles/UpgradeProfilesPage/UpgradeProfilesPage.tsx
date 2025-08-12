@@ -1,29 +1,43 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import PageMain from "@/components/layout/PageMain";
-import PageHeader from "@/components/layout/PageHeader";
 import PageContent from "@/components/layout/PageContent";
-import useSidePanel from "@/hooks/useSidePanel";
-import { Button } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
+import PageHeader from "@/components/layout/PageHeader";
+import PageMain from "@/components/layout/PageMain";
+import SidePanel from "@/components/layout/SidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
 import UpgradeProfilesContainer from "@/pages/dashboard/profiles/upgrade-profiles/UpgradeProfilesContainer";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy } from "react";
 
-const SingleUpgradeProfileForm = lazy(() =>
+const UpgradeProfileAddSidePanel = lazy(() =>
   import("@/features/upgrade-profiles").then((module) => ({
-    default: module.SingleUpgradeProfileForm,
+    default: module.UpgradeProfileAddSidePanel,
+  })),
+);
+
+const UpgradeProfileDetailsSidePanel = lazy(() =>
+  import("@/features/upgrade-profiles").then((module) => ({
+    default: module.UpgradeProfileDetailsSidePanel,
+  })),
+);
+
+const UpgradeProfileEditSidePanel = lazy(() =>
+  import("@/features/upgrade-profiles").then((module) => ({
+    default: module.UpgradeProfileEditSidePanel,
   })),
 );
 
 const UpgradeProfilesPage: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { action, setPageParams } = usePageParams();
+
+  useSetDynamicFilterValidation("action", ["add", "edit", "view"]);
 
   const handleAddUpgradeProfile = () => {
-    setSidePanelContent(
-      "Add upgrade profile",
-      <Suspense fallback={<LoadingState />}>
-        <SingleUpgradeProfileForm action="add" />
-      </Suspense>,
-    );
+    setPageParams({ action: "add", upgradeProfile: -1 });
+  };
+
+  const close = () => {
+    setPageParams({ action: "", upgradeProfile: -1 });
   };
 
   return (
@@ -44,6 +58,24 @@ const UpgradeProfilesPage: FC = () => {
       <PageContent>
         <UpgradeProfilesContainer />
       </PageContent>
+
+      {action === "add" && (
+        <SidePanel close={close} key="add">
+          <UpgradeProfileAddSidePanel />
+        </SidePanel>
+      )}
+
+      {action === "view" && (
+        <SidePanel close={close} key="view">
+          <UpgradeProfileDetailsSidePanel />
+        </SidePanel>
+      )}
+
+      {action === "edit" && (
+        <SidePanel close={close} key="edit">
+          <UpgradeProfileEditSidePanel />
+        </SidePanel>
+      )}
     </PageMain>
   );
 };

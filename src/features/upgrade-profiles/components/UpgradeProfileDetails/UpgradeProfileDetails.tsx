@@ -2,79 +2,90 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import InfoItem from "@/components/layout/InfoItem";
-import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { SelectOption } from "@/types/SelectOption";
+import usePageParams from "@/hooks/usePageParams";
+import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
+import { useBoolean } from "usehooks-ts";
 import { useUpgradeProfiles } from "../../hooks";
-import type { UpgradeProfile } from "../../types";
 import { getScheduleInfo } from "./helpers";
 
-const SingleUpgradeProfileForm = lazy(
-  async () => import("../SingleUpgradeProfileForm"),
-);
-
-interface UpgradeProfileDetailsProps {
-  readonly accessGroupOptions: SelectOption[];
-  readonly profile: UpgradeProfile;
-}
-
-const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
-  accessGroupOptions,
-  profile,
-}) => {
-  const [modalOpen, setModalOpen] = useState(false);
-
+const UpgradeProfileDetails: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelContent } = useSidePanel();
-  const { removeUpgradeProfileQuery } = useUpgradeProfiles();
+  const { upgradeProfile: upgradeProfileId, setPageParams } = usePageParams();
+  const { getUpgradeProfilesQuery, removeUpgradeProfileQuery } =
+    useUpgradeProfiles();
+  const { getAccessGroupQuery } = useRoles();
 
   const { mutateAsync: removeUpgradeProfile, isPending: isRemoving } =
     removeUpgradeProfileQuery;
+  const {
+    data: getUpgradeProfilesQueryResponse,
+    isPending: isGettingUpgradeProfiles,
+    error: upgradeProfilesError,
+  } = getUpgradeProfilesQuery();
+  const {
+    data: accessGroupsData,
+    isPending: isGettingAccessGroups,
+    error: accessGroupsError,
+  } = getAccessGroupQuery();
+
+  const {
+    value: modalOpen,
+    setTrue: handleOpenModal,
+    setFalse: handleCloseModal,
+  } = useBoolean();
+
+  if (upgradeProfilesError) {
+    throw upgradeProfilesError;
+  }
+
+  if (accessGroupsError) {
+    throw accessGroupsError;
+  }
+
+  if (isGettingUpgradeProfiles || isGettingAccessGroups) {
+    return <SidePanel.LoadingState />;
+  }
+
+  const profile = getUpgradeProfilesQueryResponse.data.find(
+    ({ id }) => id === upgradeProfileId,
+  );
+
+  if (!profile) {
+    throw new Error("The upgrade profile could not be found.");
+  }
+
   const { scheduleMessage, nextRunMessage } = getScheduleInfo(profile);
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
 
   const handleRemoveUpgradeProfile = async () => {
     try {
       await removeUpgradeProfile({ name: profile.name });
 
-      handleCloseModal();
-      closeSidePanel();
+      setPageParams({ action: "", upgradeProfile: -1 });
 
       notify.success({
         title: "Upgrade profile removed",
         message: `Upgrade profile ${profile.title} has been removed`,
       });
     } catch (error) {
-      handleCloseModal();
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 
   const handleEditUpgradeProfile = () => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <SingleUpgradeProfileForm action="edit" profile={profile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "edit" });
   };
 
   return (
-    <>
+    <SidePanel.Body title={profile.title}>
       <div className="p-segmented-control">
         <Button
           type="button"
@@ -105,9 +116,9 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
             <InfoGrid.Item
               label="Access group"
               value={
-                accessGroupOptions.find(
-                  ({ value }) => value === profile.access_group,
-                )?.label ?? profile.access_group
+                accessGroupsData.data.find(
+                  (accessGroup) => accessGroup.name === profile.access_group,
+                )?.title ?? profile.access_group
               }
             />
             <InfoGrid.Item
@@ -169,7 +180,7 @@ const UpgradeProfileDetails: FC<UpgradeProfileDetailsProps> = ({
           action is <b>irreversible</b>.
         </p>
       </TextConfirmationModal>
-    </>
+    </SidePanel.Body>
   );
 };
 

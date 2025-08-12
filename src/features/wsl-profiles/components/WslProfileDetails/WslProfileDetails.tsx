@@ -1,30 +1,32 @@
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { SelectOption } from "@/types/SelectOption";
+import SidePanel from "@/components/layout/SidePanel";
+import usePageParams from "@/hooks/usePageParams";
+import useRoles from "@/hooks/useRoles";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import type { WslProfile } from "../../types";
+import { useGetWslProfile } from "../../api";
 import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink";
 import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
 import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfileRemoveModal from "../WslProfileRemoveModal";
 
-const WslProfileEditForm = lazy(async () => import("../WslProfileEditForm"));
+const WslProfileDetails: FC = () => {
+  const { wslProfile: wslProfileName, setPageParams } = usePageParams();
 
-interface WslProfileDetailsProps {
-  readonly profile: WslProfile;
-  readonly accessGroupOptions: SelectOption[];
-}
+  const { getAccessGroupQuery } = useRoles();
 
-const WslProfileDetails: FC<WslProfileDetailsProps> = ({
-  profile,
-  accessGroupOptions,
-}) => {
-  const { setSidePanelContent } = useSidePanel();
+  const {
+    wslProfile: profile,
+    isGettingWslProfile,
+    wslProfileError,
+  } = useGetWslProfile({ profile_name: wslProfileName });
+  const {
+    data: accessGroupsData,
+    isPending: isGettingAccessGroups,
+    error: accessGroupsError,
+  } = getAccessGroupQuery();
 
   const {
     value: isRemoveModalOpen,
@@ -32,17 +34,24 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
     setFalse: closeRemoveModal,
   } = useBoolean();
 
+  if (accessGroupsError) {
+    throw accessGroupsError;
+  }
+
+  if (isGettingWslProfile || isGettingAccessGroups) {
+    return <SidePanel.LoadingState />;
+  }
+
+  if (!profile) {
+    throw wslProfileError;
+  }
+
   const handleWslProfileEdit = () => {
-    setSidePanelContent(
-      `Edit "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <WslProfileEditForm profile={profile} />
-      </Suspense>,
-    );
+    setPageParams({ action: "edit" });
   };
 
   return (
-    <>
+    <SidePanel.Body title={profile.title}>
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
           <Button
@@ -76,9 +85,9 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
             <InfoGrid.Item
               label="Access group"
               value={
-                accessGroupOptions.find(
-                  ({ value }) => value === profile.access_group,
-                )?.label ?? profile.access_group
+                accessGroupsData.data.find(
+                  (accessGroup) => accessGroup.name === profile.access_group,
+                )?.title ?? profile.access_group
               }
             />
             <InfoGrid.Item
@@ -157,7 +166,7 @@ const WslProfileDetails: FC<WslProfileDetailsProps> = ({
         close={closeRemoveModal}
         wslProfile={profile}
       />
-    </>
+    </SidePanel.Body>
   );
 };
 

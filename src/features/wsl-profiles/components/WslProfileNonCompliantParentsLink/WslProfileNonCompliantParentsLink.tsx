@@ -1,14 +1,9 @@
-import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
-import { lazy, Suspense, type FC } from "react";
+import { type FC } from "react";
 import type { WslProfile } from "../../types";
-
-const WslProfileNonCompliantInstancesList = lazy(
-  () => import("../WslProfileNonCompliantInstancesList"),
-);
 
 interface WslProfileNonCompliantParentsLinkProps {
   readonly wslProfile: WslProfile;
@@ -17,7 +12,7 @@ interface WslProfileNonCompliantParentsLinkProps {
 const WslProfileNonCompliantParentsLink: FC<
   WslProfileNonCompliantParentsLinkProps
 > = ({ wslProfile }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   if (!wslProfile.tags.length && !wslProfile.all_computers) {
     return <NoData />;
@@ -28,13 +23,7 @@ const WslProfileNonCompliantParentsLink: FC<
   }
 
   const openNonCompliantInstancesList = () => {
-    setSidePanelContent(
-      `Instances not compliant with ${wslProfile.title}`,
-      <Suspense fallback={<LoadingState />}>
-        <WslProfileNonCompliantInstancesList wslProfile={wslProfile} />
-      </Suspense>,
-      "large",
-    );
+    setPageParams({ action: "noncompliant", wslProfile: wslProfile.name });
   };
 
   return (

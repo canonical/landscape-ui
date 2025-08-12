@@ -2,25 +2,26 @@ import AssociationBlock from "@/components/form/AssociationBlock";
 import CodeEditor from "@/components/form/CodeEditor";
 import FileInput from "@/components/form/FileInput";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import SidePanel from "@/components/layout/SidePanel";
 import { useGetWslInstanceTypes } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Notification, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { type FC } from "react";
 import { useAddWslProfile } from "../../api";
 import { CLOUD_INIT_OPTIONS, FILE_INPUT_HELPER_TEXT } from "../constants";
-import { getCloudInitFile, getValidationSchema } from "./helpers";
-import classes from "./WslProfileInstallForm.module.scss";
-import type { FormProps } from "./types";
 import { INITIAL_VALUES } from "./constants";
+import { getCloudInitFile, getValidationSchema } from "./helpers";
+import type { FormProps } from "./types";
+import classes from "./WslProfileInstallForm.module.scss";
 
 const WslProfileInstallForm: FC = () => {
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
 
@@ -47,6 +48,10 @@ const WslProfileInstallForm: FC = () => {
       label: title,
       value: name,
     })) ?? [];
+
+  const closeSidePanel = () => {
+    setPageParams({ action: "" });
+  };
 
   const handleSubmit = async (values: FormProps) => {
     try {
@@ -95,128 +100,131 @@ const WslProfileInstallForm: FC = () => {
   };
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate>
-      <Input
-        type="text"
-        label="Title"
-        required
-        {...formik.getFieldProps("title")}
-        error={getFormikError(formik, "title")}
-      />
-
-      <Input
-        type="text"
-        label="Description"
-        required
-        {...formik.getFieldProps("description")}
-        error={getFormikError(formik, "description")}
-      />
-
-      <Select
-        label="Access group"
-        aria-label="Access group"
-        required
-        options={accessGroupResultOptions}
-        {...formik.getFieldProps("access_group")}
-        error={getFormikError(formik, "access_group")}
-      />
-
-      <div className={classes.block}>
-        {(formik.values.instanceType !== "" ||
-          formik.values.cloudInitType !== "") && (
-          <Notification severity="caution" title="Warning">
-            <span>
-              Once the profile is added, you cannot modify the rootfs image or
-              cloud-init file.
-            </span>
-          </Notification>
-        )}
-        <Select
-          label="Rootfs image"
-          disabled={isGettingWslInstanceTypes}
-          aria-label="Rootfs image"
-          options={ROOTFS_IMAGE_OPTIONS}
+    <SidePanel.Body title="Add WSL profile">
+      <Form onSubmit={formik.handleSubmit} noValidate>
+        <Input
+          type="text"
+          label="Title"
           required
-          {...formik.getFieldProps("instanceType")}
-          error={getFormikError(formik, "instanceType")}
+          {...formik.getFieldProps("title")}
+          error={getFormikError(formik, "title")}
         />
 
-        {formik.values.instanceType === "custom" && (
-          <>
-            <Input
-              label="Image name"
-              type="text"
-              required
-              {...formik.getFieldProps("customImageName")}
-              error={getFormikError(formik, "customImageName")}
-            />
-            <Input
-              type="text"
-              label="Rootfs image URL"
-              required
-              {...formik.getFieldProps("rootfsImage")}
-              error={getFormikError(formik, "rootfsImage")}
-              help="The file path must be reachable by the affected WSL instances."
-            />
-          </>
-        )}
+        <Input
+          type="text"
+          label="Description"
+          required
+          {...formik.getFieldProps("description")}
+          error={getFormikError(formik, "description")}
+        />
 
         <Select
-          label="Cloud-init"
-          aria-label="Cloud-init"
-          options={CLOUD_INIT_OPTIONS}
-          {...formik.getFieldProps("cloudInitType")}
-          onChange={async (value) => {
-            formik.getFieldProps("cloudInitType").onChange(value);
-            await formik.setFieldValue("cloudInit", null);
-          }}
-          error={getFormikError(formik, "cloudInitType")}
+          label="Access group"
+          aria-label="Access group"
+          required
+          options={accessGroupResultOptions}
+          {...formik.getFieldProps("access_group")}
+          error={getFormikError(formik, "access_group")}
         />
 
-        {formik.values.cloudInitType === "file" && (
-          <FileInput
-            label="Upload cloud-init"
-            labelClassName="u-off-screen"
-            accept=".yaml"
-            {...formik.getFieldProps("cloudInit")}
-            value={
-              formik.values.cloudInit instanceof File
-                ? formik.values.cloudInit
-                : null
-            }
-            onFileRemove={handleRemoveFile}
-            onFileUpload={handleFileUpload}
-            help={FILE_INPUT_HELPER_TEXT}
-            error={getFormikError(formik, "cloudInit")}
+        <div className={classes.block}>
+          {(formik.values.instanceType !== "" ||
+            formik.values.cloudInitType !== "") && (
+            <Notification severity="caution" title="Warning">
+              <span>
+                Once the profile is added, you cannot modify the rootfs image or
+                cloud-init file.
+              </span>
+            </Notification>
+          )}
+          <Select
+            label="Rootfs image"
+            disabled={isGettingWslInstanceTypes}
+            aria-label="Rootfs image"
+            options={ROOTFS_IMAGE_OPTIONS}
+            required
+            {...formik.getFieldProps("instanceType")}
+            error={getFormikError(formik, "instanceType")}
           />
-        )}
 
-        {formik.values.cloudInitType === "text" && (
-          <CodeEditor
-            label="Cloud-init configuration"
-            onChange={(value) => {
-              formik.setFieldValue("cloudInit", value ?? "");
+          {formik.values.instanceType === "custom" && (
+            <>
+              <Input
+                label="Image name"
+                type="text"
+                required
+                {...formik.getFieldProps("customImageName")}
+                error={getFormikError(formik, "customImageName")}
+              />
+              <Input
+                type="text"
+                label="Rootfs image URL"
+                required
+                {...formik.getFieldProps("rootfsImage")}
+                error={getFormikError(formik, "rootfsImage")}
+                help="The file path must be reachable by the affected WSL instances."
+              />
+            </>
+          )}
+
+          <Select
+            label="Cloud-init"
+            aria-label="Cloud-init"
+            options={CLOUD_INIT_OPTIONS}
+            {...formik.getFieldProps("cloudInitType")}
+            onChange={async (value) => {
+              formik.getFieldProps("cloudInitType").onChange(value);
+              await formik.setFieldValue("cloudInit", null);
             }}
-            value={
-              typeof formik.values.cloudInit === "string"
-                ? formik.values.cloudInit
-                : ""
-            }
-            language="yaml"
-            defaultValue="# paste cloud-init config here"
-            error={getFormikError(formik, "cloudInit")}
+            error={getFormikError(formik, "cloudInitType")}
           />
-        )}
-      </div>
 
-      <AssociationBlock formik={formik} />
+          {formik.values.cloudInitType === "file" && (
+            <FileInput
+              label="Upload cloud-init"
+              labelClassName="u-off-screen"
+              accept=".yaml"
+              {...formik.getFieldProps("cloudInit")}
+              value={
+                formik.values.cloudInit instanceof File
+                  ? formik.values.cloudInit
+                  : null
+              }
+              onFileRemove={handleRemoveFile}
+              onFileUpload={handleFileUpload}
+              help={FILE_INPUT_HELPER_TEXT}
+              error={getFormikError(formik, "cloudInit")}
+            />
+          )}
 
-      <SidePanelFormButtons
-        submitButtonText="Add WSL profile"
-        submitButtonAriaLabel="Add a new WSL profile"
-        submitButtonDisabled={formik.isSubmitting}
-      />
-    </Form>
+          {formik.values.cloudInitType === "text" && (
+            <CodeEditor
+              label="Cloud-init configuration"
+              onChange={(value) => {
+                formik.setFieldValue("cloudInit", value ?? "");
+              }}
+              value={
+                typeof formik.values.cloudInit === "string"
+                  ? formik.values.cloudInit
+                  : ""
+              }
+              language="yaml"
+              defaultValue="# paste cloud-init config here"
+              error={getFormikError(formik, "cloudInit")}
+            />
+          )}
+        </div>
+
+        <AssociationBlock formik={formik} />
+
+        <SidePanelFormButtons
+          submitButtonText="Add WSL profile"
+          submitButtonAriaLabel="Add a new WSL profile"
+          submitButtonDisabled={formik.isSubmitting}
+          onCancel={closeSidePanel}
+        />
+      </Form>
+    </SidePanel.Body>
   );
 };
 
