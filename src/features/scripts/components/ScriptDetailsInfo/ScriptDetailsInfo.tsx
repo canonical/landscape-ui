@@ -72,12 +72,12 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
           script.script_profiles.length > 0
             ? script.script_profiles.map((profile, index) => (
                 <StaticLink
-                to={`/scripts?tab=profiles&action=view&scriptProfile=${profile.id}`}
-                key={profile.id}
-              >
-                {profile.title}
-                {index < script.script_profiles.length - 1 ? ", " : ""}{" "}
-              </StaticLink>
+                  to={`/scripts?tab=profiles&action=view&scriptProfile=${profile.id}`}
+                  key={profile.id}
+                >
+                  {profile.title}
+                  {index < script.script_profiles.length - 1 ? ", " : ""}{" "}
+                </StaticLink>
               ))
             : null
         }
