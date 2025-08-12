@@ -1,6 +1,6 @@
 import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, it, vi } from "vitest";
@@ -51,7 +51,9 @@ describe("InstanceRemoveFromLandscapeModal", () => {
     const confirmButton = screen.getByRole("button", { name: /remove/i });
     await user.click(confirmButton);
 
-    expect(props.close).toHaveBeenCalled();
-    expect(onSuccess).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(props.close).toHaveBeenCalled();
+      expect(onSuccess).toHaveBeenCalled();
+    });
   });
 });
