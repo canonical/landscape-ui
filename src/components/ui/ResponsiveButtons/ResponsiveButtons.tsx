@@ -1,20 +1,20 @@
-import type { FC, ReactElement, ReactNode } from "react";
-import { isValidElement, useMemo } from "react";
-import { useMediaQuery } from "usehooks-ts";
-import classNames from "classnames";
+import {
+  decorateNode,
+  textFromNode,
+} from "@/components/ui/ResponsiveButtons/helpers";
+import { BREAKPOINT_PX } from "@/constants";
 import type {
   ConfirmationButtonProps,
   MenuLink,
   Position,
 } from "@canonical/react-components";
 import { ContextualMenu } from "@canonical/react-components";
-import { BREAKPOINT_PX } from "@/constants";
+import classNames from "classnames";
+import type { FC, ReactElement, ReactNode } from "react";
+import { isValidElement, useMemo } from "react";
+import { useMediaQuery } from "usehooks-ts";
 import classes from "./ResponsiveButtons.module.scss";
 import type { ButtonLikeProps } from "./types";
-import {
-  decorateNode,
-  textFromNode,
-} from "@/components/ui/ResponsiveButtons/helpers";
 
 export interface ResponsiveButtonGroupProps {
   readonly buttons: ReactNode[];

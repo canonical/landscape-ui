@@ -1,25 +1,27 @@
 import classNames from "classnames";
-import type { FC, ReactNode } from "react";
+import type { FC, HTMLAttributes, ReactNode } from "react";
+import NoData from "../../NoData";
 import classes from "./RegularInfoItem.module.scss";
 
-export interface RegularInfoItemProps {
+export interface RegularInfoItemProps extends HTMLAttributes<HTMLDivElement> {
   readonly label: string;
   readonly value: ReactNode;
-  readonly className?: string;
 }
 
 const RegularInfoItem: FC<RegularInfoItemProps> = ({
-  className,
   label,
   value,
+  ...props
 }) => {
   return (
-    <div className={classNames(classes.wrapper, className)}>
-      <p className="p-text--small p-text--small-caps u-text--muted u-no-margin--bottom">
+    <div {...props}>
+      <div
+        className={classNames("p-text--x-small u-text--muted", classes.label)}
+      >
         {label}
-      </p>
+      </div>
 
-      {value}
+      <div>{value ?? <NoData />}</div>
     </div>
   );
 };

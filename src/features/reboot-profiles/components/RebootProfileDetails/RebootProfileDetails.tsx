@@ -1,20 +1,21 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import InfoItem from "@/components/layout/InfoItem";
+import Blocks from "@/components/layout/Blocks";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
-import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 import { useRemoveRebootProfileQuery } from "../../api";
 import type { RebootProfile } from "../../types";
 import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import { formatWeeklyRebootSchedule } from "./helpers";
-import classes from "./RebootProfileDetails.module.scss";
 
 const RebootProfilesForm = lazy(async () => import("../RebootProfilesForm"));
 
@@ -27,7 +28,11 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
   accessGroupOptions,
   profile,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const {
+    value: modalOpen,
+    setFalse: handleCloseModal,
+    setTrue: handleOpenModal,
+  } = useBoolean();
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -70,14 +75,6 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
     );
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
   return (
     <>
       <div className="p-segmented-control">
@@ -113,62 +110,71 @@ const RebootProfileDetails: FC<RebootProfileDetailsProps> = ({
         </Button>
       </div>
 
-      <Row className="u-no-padding--left u-no-padding--right">
-        <Col size={6}>
-          <InfoItem label="Title" value={profile.title} />
-        </Col>
-        <Col size={6}>
-          <InfoItem
-            label="Access group"
-            value={
-              accessGroupOptions.find(
-                ({ value }) => value === profile.access_group,
-              )?.label ?? profile.access_group
-            }
-          />
-        </Col>
-      </Row>
+      <Blocks>
+        <Blocks.Item>
+          <InfoGrid>
+            <InfoGrid.Item label="Title" value={profile.title} />
 
-      <div className={classes.block}>
-        <p className="p-heading--5">Reboot schedule</p>
-        <div>
-          <InfoItem
-            label="schedule"
-            value={formatWeeklyRebootSchedule(profile)}
-          />
-        </div>
-        <div>
-          <InfoItem
-            label="next reboot"
-            value={moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
-          />
-        </div>
-      </div>
-
-      <div className={classes.block}>
-        <p className="p-heading--5">Association</p>
-        {profile.all_computers && (
-          <p>This profile has been associated with all instances.</p>
-        )}
-        {!profile.all_computers && !profile.tags.length && (
-          <p>This profile has not yet been associated with any instances.</p>
-        )}
-        {!profile.all_computers && profile.tags.length > 0 && (
-          <>
-            <InfoItem
-              label="Tags"
-              type="truncated"
-              value={profile.tags.join(", ")}
-            />
-            <InfoItem
-              label="associated instances"
+            <InfoGrid.Item
+              label="Access group"
               value={
-                <RebootProfileAssociatedInstancesLink rebootProfile={profile} />
+                accessGroupOptions.find(
+                  ({ value }) => value === profile.access_group,
+                )?.label ?? profile.access_group
               }
             />
-          </>
-        )}
-      </div>
+          </InfoGrid>
+        </Blocks.Item>
+
+        <Blocks.Item title="Reboot schedule">
+          <InfoGrid>
+            <InfoGrid.Item
+              label="Schedule"
+              large
+              value={formatWeeklyRebootSchedule(profile)}
+            />
+
+            <InfoGrid.Item
+              label="Next reboot"
+              large
+              value={moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
+            />
+          </InfoGrid>
+        </Blocks.Item>
+
+        <Blocks.Item title="Association">
+          {profile.all_computers && (
+            <p>This profile has been associated with all instances.</p>
+          )}
+
+          {!profile.all_computers && !profile.tags.length && (
+            <p>This profile has not yet been associated with any instances.</p>
+          )}
+
+          {(profile.all_computers || !!profile.tags.length) && (
+            <InfoGrid>
+              {!profile.all_computers && (
+                <InfoGrid.Item
+                  label="Tags"
+                  large
+                  value={profile.tags.join(", ") || null}
+                  type="truncated"
+                />
+              )}
+
+              <InfoGrid.Item
+                label="Associated instances"
+                large
+                value={
+                  <RebootProfileAssociatedInstancesLink
+                    rebootProfile={profile}
+                  />
+                }
+              />
+            </InfoGrid>
+          )}
+        </Blocks.Item>
+      </Blocks>
 
       <TextConfirmationModal
         isOpen={modalOpen}

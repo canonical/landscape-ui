@@ -1,10 +1,10 @@
-import InfoItem from "@/components/layout/InfoItem";
+import Blocks from "@/components/layout/Blocks";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
-import { Button, Col, Icon, Row } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import {
@@ -114,112 +114,98 @@ const SecurityProfileDetails: FC<SecurityProfileDetailsProps> = ({
         </div>
       </div>
 
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="Title" value={profile.title} />
-        </Col>
+      <Blocks>
+        <Blocks.Item>
+          <InfoGrid>
+            <InfoGrid.Item label="Title" value={profile.title} />
+            <InfoGrid.Item label="Name" value={profile.name} />
 
-        <Col size={6}>
-          <InfoItem label="Name" value={profile.name} />
-        </Col>
-      </Row>
+            <InfoGrid.Item label="Access group" value={accessGroup.title} />
+            <InfoGrid.Item label="Status" value={getStatus(profile).label} />
+          </InfoGrid>
+        </Blocks.Item>
 
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="Access group" value={accessGroup.title} />
-        </Col>
+        <Blocks.Item title="Security profile">
+          <InfoGrid>
+            <InfoGrid.Item
+              label="Benchmark"
+              value={SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark]}
+            />
 
-        <Col size={6}>
-          <InfoItem label="Status" value={getStatus(profile).label} />
-        </Col>
-      </Row>
+            <InfoGrid.Item
+              label="Tailoring file"
+              value={getTailoringFile(profile)}
+            />
 
-      <hr />
-      <h5>Security profile</h5>
+            <InfoGrid.Item
+              label="Mode"
+              large
+              value={SECURITY_PROFILE_MODE_LABELS[profile.mode]}
+            />
+          </InfoGrid>
+        </Blocks.Item>
 
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem
-            label="Benchmark"
-            value={SECURITY_PROFILE_BENCHMARK_LABELS[profile.benchmark]}
-          />
-        </Col>
+        <Blocks.Item title="Schedule">
+          <InfoGrid>
+            <InfoGrid.Item
+              label="Schedule"
+              large
+              value={getSchedule(profile)}
+            />
 
-        <Col size={6}>
-          <InfoItem label="Tailoring file" value={getTailoringFile(profile)} />
-        </Col>
-      </Row>
+            <InfoGrid.Item
+              label="Last run"
+              value={
+                profile.last_run_results.timestamp
+                  ? `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                  : null
+              }
+            />
 
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Mode"
-          value={SECURITY_PROFILE_MODE_LABELS[profile.mode]}
-        />
-      </Row>
+            <InfoGrid.Item
+              label="Next run"
+              value={
+                profile.next_run_time
+                  ? `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
+                  : null
+              }
+            />
 
-      <hr />
-      <h5>Schedule</h5>
+            {profile.mode === "audit-fix-restart" && (
+              <InfoGrid.Item
+                label="Restart schedule"
+                large
+                value={`${
+                  profile.restart_deliver_delay
+                    ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
+                    : "As soon as possible"
+                }${profile.restart_deliver_delay_window ? `, randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
+              />
+            )}
+          </InfoGrid>
+        </Blocks.Item>
 
-      <Row className="u-no-padding">
-        <InfoItem label="Profile schedule" value={getSchedule(profile)} />
-      </Row>
+        <Blocks.Item title="Association">
+          <InfoGrid>
+            <InfoGrid.Item
+              label="Associated instances"
+              large
+              value={
+                <SecurityProfileAssociatedInstancesLink
+                  securityProfile={profile}
+                />
+              }
+            />
 
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem
-            label="Last run"
-            value={
-              profile.last_run_results.timestamp ? (
-                `${moment(profile.last_run_results.timestamp).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-              ) : (
-                <NoData />
-              )
-            }
-          />
-        </Col>
-
-        <Col size={6}>
-          <InfoItem
-            label="Next run"
-            value={
-              profile.next_run_time ? (
-                `${moment(profile.next_run_time).format(DISPLAY_DATE_TIME_FORMAT)} GMT`
-              ) : (
-                <NoData />
-              )
-            }
-          />
-        </Col>
-      </Row>
-
-      {profile.mode == "audit-fix-restart" && (
-        <Row className="u-no-padding">
-          <InfoItem
-            label="Restart schedule"
-            value={`${
-              profile.restart_deliver_delay
-                ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
-                : "As soon as possible"
-            }${profile.restart_deliver_delay_window ? `, Randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
-          />
-        </Row>
-      )}
-
-      <hr />
-      <h5>Association</h5>
-
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Associated instances"
-          value={
-            <SecurityProfileAssociatedInstancesLink securityProfile={profile} />
-          }
-        />
-      </Row>
-
-      <Row className="u-no-padding">
-        <InfoItem label="Tags" type="truncated" value={getTags(profile)} />
-      </Row>
+            <InfoGrid.Item
+              label="Tags"
+              large
+              value={getTags(profile)}
+              type="truncated"
+            />
+          </InfoGrid>
+        </Blocks.Item>
+      </Blocks>
     </>
   );
 };

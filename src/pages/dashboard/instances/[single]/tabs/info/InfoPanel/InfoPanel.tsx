@@ -1,11 +1,15 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import Blocks from "@/components/layout/Blocks";
 import Chip from "@/components/layout/Chip";
 import HeaderActions from "@/components/layout/HeaderActions";
-import InfoItem from "@/components/layout/InfoItem";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
+import {
+  useDisassociateEmployeeFromInstance,
+  useGetEmployee,
+} from "@/features/employees";
 import {
   getFeatures,
   getStatusCellIconAndLabel,
@@ -32,13 +36,11 @@ import type {
 import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
-  Col,
   ConfirmationModal,
   Form,
   Icon,
   ICONS,
   Input,
-  Row,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
@@ -51,10 +53,6 @@ import Profiles from "./components/Profiles";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
-import {
-  useDisassociateEmployeeFromInstance,
-  useGetEmployee,
-} from "@/features/employees";
 
 const EditInstance = lazy(
   async () =>
@@ -275,103 +273,100 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   return (
     <>
-      <div className={classes.titleRow}>
-        <div className={classes.headerContainer}>
-          <h2
-            className={classNames(
-              "p-heading--4 u-no-padding--top",
-              classes.heading,
-            )}
-          >
-            {instance.title}
-          </h2>
+      <HeaderActions
+        key={instance.employee_id ?? "no-employee"}
+        title={
+          <div className={classes.headerContainer}>
+            <h2
+              className={classNames(
+                "p-heading--4 u-no-padding--top",
+                classes.heading,
+              )}
+            >
+              {instance.title}
+            </h2>
 
-          {instance.is_wsl_instance && <Chip value="WSL instance" />}
-        </div>
+            {instance.is_wsl_instance && <Chip value="WSL instance" />}
+          </div>
+        }
+        actions={{
+          nondestructive: [
+            { icon: "edit", label: "Edit", onClick: openEditForm },
+            {
+              icon: "restart",
+              label: "Restart",
+              onClick: openRestartModal,
+              excluded: !getFeatures(instance).power,
+            },
+            {
+              icon: "power-off",
+              label: "Shut down",
+              onClick: openShutDownModal,
+              excluded: !getFeatures(instance).power,
+            },
+            {
+              icon: "code",
+              label: "Run script",
+              onClick: openRunScriptForm,
+              excluded: !getFeatures(instance).scripts,
+            },
+            {
+              icon: ICONS.user,
+              label: "Associate employee",
+              onClick: openAssociateEmployeeForm,
+              collapsed: true,
+              excluded:
+                !isFeatureEnabled("employee-management") ||
+                !getFeatures(instance).employees ||
+                instance.employee_id !== null,
+            },
+            {
+              icon: ICONS.user,
+              label: "Disassociate employee",
+              onClick: openDisassociateModal,
+              collapsed: true,
+              excluded:
+                !isFeatureEnabled("employee-management") ||
+                !getFeatures(instance).employees ||
+                instance.employee_id === null,
+            },
+          ],
+          destructive: [
+            {
+              icon: "restart",
+              label: "Reinstall",
+              onClick: openReinstallModal,
+              collapsed: true,
+              excluded: !getFeatures(instance).uninstallation,
+            },
+            {
+              icon: "close",
+              label: "Uninstall",
+              onClick: openUninstallModal,
+              collapsed: true,
+              excluded: !getFeatures(instance).uninstallation,
+            },
+            {
+              icon: ICONS.delete,
+              label: "Remove from Landscape",
+              onClick: openRemoveFromLandscapeModal,
+              collapsed: true,
+            },
+            {
+              icon: "tidy",
+              label: "Sanitize",
+              onClick: openSanitizeModal,
+              collapsed: true,
+              excluded: !getFeatures(instance).sanitization,
+            },
+          ],
+        }}
+      />
 
-        <HeaderActions
-          key={instance.employee_id ?? "no-employee"}
-          actions={{
-            nondestructive: [
-              { icon: "edit", label: "Edit", onClick: openEditForm },
-              {
-                icon: "restart",
-                label: "Restart",
-                onClick: openRestartModal,
-                excluded: !getFeatures(instance).power,
-              },
-              {
-                icon: "power-off",
-                label: "Shut down",
-                onClick: openShutDownModal,
-                excluded: !getFeatures(instance).power,
-              },
-              {
-                icon: "code",
-                label: "Run script",
-                onClick: openRunScriptForm,
-                excluded: !getFeatures(instance).scripts,
-              },
-              {
-                icon: ICONS.user,
-                label: "Associate employee",
-                onClick: openAssociateEmployeeForm,
-                collapsed: true,
-                excluded:
-                  !isFeatureEnabled("employee-management") ||
-                  !getFeatures(instance).employees ||
-                  !!instance.employee_id,
-              },
-              {
-                icon: ICONS.user,
-                label: "Disassociate employee",
-                onClick: openDisassociateModal,
-                collapsed: true,
-                excluded:
-                  !isFeatureEnabled("employee-management") ||
-                  !getFeatures(instance).employees ||
-                  instance.employee_id === null,
-              },
-            ],
-            destructive: [
-              {
-                icon: "restart",
-                label: "Reinstall",
-                onClick: openReinstallModal,
-                collapsed: true,
-                excluded: !getFeatures(instance).uninstallation,
-              },
-              {
-                icon: "close",
-                label: "Uninstall",
-                onClick: openUninstallModal,
-                collapsed: true,
-                excluded: !getFeatures(instance).uninstallation,
-              },
-              {
-                icon: ICONS.delete,
-                label: "Remove from Landscape",
-                onClick: openRemoveFromLandscapeModal,
-                collapsed: true,
-              },
-              {
-                icon: "tidy",
-                label: "Sanitize",
-                onClick: openSanitizeModal,
-                collapsed: true,
-                excluded: !getFeatures(instance).sanitization,
-              },
-            ],
-          }}
-        />
-      </div>
-
-      <section>
-        <h5 className="u-no-margin--bottom">Instance status</h5>
-
-        <Row className="u-no-padding u-no-margin">
-          <Col size={3}>
-            <InfoItem
+      <Blocks>
+        <Blocks.Item title="Status">
+          <InfoGrid>
+            <InfoGrid.Item
               label="Status"
               value={
                 <div className={classes.status}>
@@ -380,25 +375,17 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 </div>
               }
             />
-          </Col>
-
-          <Col size={3}>
-            <InfoItem
+            <InfoGrid.Item
               label="Last ping time"
               value={
-                moment(instance.last_ping_time).isValid() ? (
-                  moment(instance.last_ping_time).format(
-                    DISPLAY_DATE_TIME_FORMAT,
-                  )
-                ) : (
-                  <NoData />
-                )
+                moment(instance.last_ping_time).isValid()
+                  ? moment(instance.last_ping_time).format(
+                      DISPLAY_DATE_TIME_FORMAT,
+                    )
+                  : null
               }
             />
-          </Col>
-
-          <Col size={3}>
-            <InfoItem
+            <InfoGrid.Item
               label="Access group"
               value={
                 accessGroups.find(
@@ -406,126 +393,76 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 )?.title || instance.access_group
               }
             />
-          </Col>
-        </Row>
-
-        <Row className="u-no-padding u-no-margin">
-          <Col size={3}>
-            <InfoItem
+            <InfoGrid.Item
+              label="Tags"
+              value={instance.tags.join(", ") || null}
               type="truncated"
+            />
+            <InfoGrid.Item
               label="Profiles"
               value={
                 instance.profiles?.length ? (
                   <Profiles profiles={instance.profiles} />
-                ) : (
-                  <NoData />
-                )
+                ) : null
               }
+              type="truncated"
             />
-          </Col>
-
-          {getFeatures(instance).employees &&
-            isFeatureEnabled("employee-management") && (
-              <Col size={3}>
-                <InfoItem
-                  label="Associated employee"
-                  value={employee ? employee.name : <NoData />}
-                />
-              </Col>
-            )}
-        </Row>
-      </section>
-
-      <section className={classes.block}>
-        <h5>Registration details</h5>
-
-        <Row className="u-no-padding u-no-margin">
-          <Col size={3}>
-            <InfoItem
-              label="Hostname"
-              value={instance.hostname ?? <NoData />}
-            />
-          </Col>
-
-          <Col size={3}>
-            <InfoItem label="Instance ID" value={instance.id} />
-          </Col>
-
-          {getFeatures(instance).hardware && (
-            <>
-              <Col size={3}>
-                <InfoItem
-                  label="Serial number"
-                  value={instance.grouped_hardware?.system.serial ?? <NoData />}
-                />
-              </Col>
-
-              <Col size={3}>
-                <InfoItem
-                  label="Product identifier"
-                  value={instance.grouped_hardware?.system.model ?? <NoData />}
-                />
-              </Col>
-            </>
-          )}
-        </Row>
-
-        <Row className="u-no-padding u-no-margin">
-          <Col size={3}>
-            <InfoItem
-              label="OS"
-              value={
-                instance.distribution_info ? (
-                  instance.distribution_info.description
-                ) : (
-                  <NoData />
-                )
-              }
-            />
-          </Col>
-
-          {getFeatures(instance).hardware && (
-            <Col size={3}>
-              <InfoItem
-                label="IP addresses"
-                type="truncated"
-                value={
-                  Array.isArray(instance.grouped_hardware?.network) ? (
-                    instance.grouped_hardware.network
-                      .map((network) => network.ip)
-                      .join(", ")
-                  ) : (
-                    <NoData />
-                  )
-                }
+            {getFeatures(instance).employees && (
+              <InfoGrid.Item
+                label="Associated employee"
+                value={employee?.name}
               />
-            </Col>
-          )}
-
-          <Col size={3}>
-            <InfoItem
+            )}
+          </InfoGrid>
+        </Blocks.Item>
+        <Blocks.Item title="Registration details">
+          <InfoGrid>
+            <InfoGrid.Item label="Hostname" value={instance.hostname} />
+            <InfoGrid.Item label="ID" value={instance.id} />
+            {getFeatures(instance).hardware && (
+              <InfoGrid.Item
+                label="Serial number"
+                value={instance.grouped_hardware?.system.serial}
+              />
+            )}
+            {getFeatures(instance).hardware && (
+              <InfoGrid.Item
+                label="Product identifier"
+                value={instance.grouped_hardware?.system.model}
+              />
+            )}
+            <InfoGrid.Item
+              label="OS"
+              value={instance.distribution_info?.description}
+            />
+            {getFeatures(instance).hardware && (
+              <InfoGrid.Item
+                label="IP addresses"
+                value={
+                  Array.isArray(instance.grouped_hardware?.network)
+                    ? instance.grouped_hardware.network
+                        .map((network) => network.ip)
+                        .join(", ")
+                    : null
+                }
+                type="truncated"
+              />
+            )}
+            <InfoGrid.Item
               label="Registered"
               value={moment(instance.registered_at).format(
                 DISPLAY_DATE_TIME_FORMAT,
               )}
             />
-          </Col>
-        </Row>
-      </section>
-
-      <section className={classes.block}>
-        <h5>Other</h5>
-
-        <Row className="u-no-padding u-no-margin">
-          <Col size={3}>
-            <InfoItem label="Annotations" value={<NoData />} />
-          </Col>
-
-          <Col size={3}>
-            <InfoItem label="Comment" value={instance.comment || <NoData />} />
-          </Col>
-        </Row>
-      </section>
+          </InfoGrid>
+        </Blocks.Item>
+        <Blocks.Item title="Other">
+          <InfoGrid>
+            <InfoGrid.Item label="Annotations" value={null} />
+            <InfoGrid.Item label="Comment" value={instance.comment || null} />
+          </InfoGrid>
+        </Blocks.Item>
+      </Blocks>
 
       {isRestartModalOpen && (
         <ConfirmationModal

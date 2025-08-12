@@ -1,0 +1,12 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.item:not(:first-child) {
+  border-top: 1px solid $colors--theme--border-low-contrast;
+  padding-top: $sp-unit * 5;
+}
+
+.heading {
+  margin: -$sp-unit 0 $sp-unit * 4;
+  padding: 0;
+}

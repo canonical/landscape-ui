@@ -1,12 +1,12 @@
+import NoData from "@/components/layout/NoData";
 import "@/tests/matcher";
 import { users } from "@/tests/mocks/user";
+import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
 import type { User } from "@/types/User";
+import { screen } from "@testing-library/react";
 import { describe } from "vitest";
 import UserDetails from "./UserDetails";
-import { userGroups } from "@/tests/mocks/userGroup";
-import { screen } from "@testing-library/react";
-import NoData from "@/components/layout/NoData";
 
 const unlockedUser = users.find((user) => user.enabled);
 
@@ -25,14 +25,14 @@ describe("user details", () => {
     expect(loaded).toBeInTheDocument();
     const getFieldsToCheck = (user: User) => {
       return [
-        { label: "username", value: user.username },
-        { label: "name", value: user?.name ?? <NoData /> },
-        { label: "passphrase", value: "****************" },
-        { label: "primary group", value: primaryGroup ?? <NoData /> },
-        { label: "additional groups", value: groupsData },
-        { label: "location", value: user?.location ?? <NoData /> },
-        { label: "home phone", value: user?.home_phone ?? <NoData /> },
-        { label: "work phone", value: user?.work_phone ?? <NoData /> },
+        { label: "Username", value: user.username },
+        { label: "Name", value: user?.name ?? <NoData /> },
+        { label: "Passphrase", value: "****************" },
+        { label: "Primary group", value: primaryGroup ?? <NoData /> },
+        { label: "Additional groups", value: groupsData },
+        { label: "Location", value: user?.location ?? <NoData /> },
+        { label: "Home phone", value: user?.home_phone ?? <NoData /> },
+        { label: "Work phone", value: user?.work_phone ?? <NoData /> },
       ];
     };
     const fieldsToCheck = getFieldsToCheck(user);

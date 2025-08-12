@@ -1,13 +1,12 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import InfoItem from "@/components/layout/InfoItem";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { pluralize } from "@/utils/_helpers";
-import { Button, Col, Icon, ICONS, Row } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
 import { usePackageProfiles } from "../../hooks";
@@ -90,7 +89,7 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         <Button
           type="button"
           hasIcon
-          className="p-segmented-control__button"
+          className="p-segmented-control__button u-no-margin"
           onClick={handlePackageProfileDuplicate}
         >
           <Icon name="canvas" />
@@ -99,14 +98,14 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
         <Button
           type="button"
           hasIcon
-          className="p-segmented-control__button"
+          className="p-segmented-control__button u-no-margin"
           onClick={handlePackageProfileEdit}
         >
           <Icon name="edit" />
           <span>Edit</span>
         </Button>
         <Button
-          className="p-segmented-control__button"
+          className="p-segmented-control__button u-no-margin"
           hasIcon
           type="button"
           onClick={handleOpenModal}
@@ -116,59 +115,52 @@ const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
           <span>Remove</span>
         </Button>
       </div>
-      <Row className="u-no-padding--left u-no-padding--right">
-        <Col size={3}>
-          <InfoItem label="Title" value={profile.title} />
-        </Col>
-        <Col size={3}>
-          <InfoItem label="Name" value={profile.name} />
-        </Col>
-        <Col size={9}>
-          <InfoItem label="Description" value={profile.description} />
-        </Col>
-        <Col size={3}>
-          <InfoItem
-            label="Access group"
-            value={
-              accessGroups.find((group) => group.name === profile.access_group)
-                ?.title ?? profile.access_group
-            }
-          />
-        </Col>
-        <Col size={9}>
-          <InfoItem
-            label="Tags"
-            {...(profile.tags.length > 0
-              ? {
-                  type: "truncated",
-                  value: profile.tags.join(", "),
-                }
-              : {
-                  value: <NoData />,
-                })}
-          />
-        </Col>
-        <Col size={3}>
-          <InfoItem
-            label="Associated to"
-            value={
-              <PackageProfileAssociatedInstancesLink packageProfile={profile} />
-            }
-          />
-        </Col>
-        <Col size={3}>
-          <InfoItem
-            label="Pending on"
-            value={`${profile.computers.pending?.length ?? 0} ${pluralize(profile.computers.pending.length, "instance")}`}
-          />
-        </Col>
-        <Col size={3}>
-          <InfoItem
-            label="Not compliant on"
-            value={`${profile.computers["non-compliant"].length} ${pluralize(profile.computers["non-compliant"].length, "instance")}`}
-          />
-        </Col>
-      </Row>
+
+      <InfoGrid spaced>
+        <InfoGrid.Item label="Title" value={profile.title} />
+
+        <InfoGrid.Item label="Name" value={profile.name} />
+
+        <InfoGrid.Item label="Description" value={profile.description} />
+
+        <InfoGrid.Item
+          label="Access group"
+          value={
+            accessGroups.find((group) => group.name === profile.access_group)
+              ?.title ?? profile.access_group
+          }
+        />
+
+        <InfoGrid.Item
+          label="Tags"
+          large
+          value={profile.tags.join(", ") || null}
+          type="truncated"
+        />
+
+        <InfoGrid.Item
+          label="Associated to"
+          value={
+            <PackageProfileAssociatedInstancesLink packageProfile={profile} />
+          }
+        />
+
+        <InfoGrid.Item
+          label="Pending on"
+          value={`${profile.computers.pending?.length ?? 0} ${pluralize(
+            profile.computers.pending.length,
+            "instance",
+          )}`}
+        />
+
+        <InfoGrid.Item
+          label="Not compliant on"
+          value={`${profile.computers["non-compliant"].length} ${pluralize(
+            profile.computers["non-compliant"].length,
+            "instance",
+          )}`}
+        />
+      </InfoGrid>
 
       <PackageProfileDetailsConstraints profile={profile} />
 

@@ -5,6 +5,7 @@ import type { AutoinstallFileTabId } from "../../types";
 import type { AutoinstallFile } from "../../types/AutoinstallFile";
 import AutoinstallFileInfo from "../AutoinstallFileInfo";
 import AutoinstallFileVersionHistory from "../AutoinstallFileVersionHistory";
+import classes from "./AutoinstallFIleTabs.module.scss";
 import { AUTOINSTALL_FILE_TABS } from "./constants";
 
 interface AutoinstallFileTabsProps {
@@ -31,7 +32,7 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
 
   return (
     <>
-      <Tabs links={links} />
+      <Tabs listClassName={classes.tabs} links={links} />
 
       {tabId === "info" && <AutoinstallFileInfo file={file} />}
 

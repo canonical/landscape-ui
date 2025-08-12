@@ -1,7 +1,8 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import Flow from "@/components/layout/Flow";
-import InfoItem from "@/components/layout/InfoItem";
-import { Form, Row } from "@canonical/react-components";
+import InfoGrid from "@/components/layout/InfoGrid";
+import { pluralize } from "@/utils/_helpers";
+import { Form } from "@canonical/react-components";
 import type { ComponentProps, FC, SyntheticEvent } from "react";
 import type { SecurityProfile } from "../../types";
 
@@ -50,29 +51,33 @@ const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = ({
             description: "To complete the fixes, instances must be restarted.",
             iconName: "restart",
             children: (
-              <>
-                <Row className="u-no-padding">
-                  <InfoItem
-                    label="Delivery time"
-                    value={
-                      profile.restart_deliver_delay === 0
-                        ? "As soon as possible"
-                        : "Scheduled"
-                    }
-                  />
-                </Row>
+              <InfoGrid>
+                <InfoGrid.Item
+                  label="Delivery time"
+                  large
+                  value={
+                    profile.restart_deliver_delay === 0
+                      ? "As soon as possible"
+                      : `Delayed by ${profile.restart_deliver_delay} ${pluralize(
+                          profile.restart_deliver_delay,
+                          "hour",
+                        )}`
+                  }
+                />
 
-                <Row className="u-no-padding">
-                  <InfoItem
-                    label="Randomize delivery over a time window"
-                    value={
-                      profile.restart_deliver_delay
-                        ? `${profile.restart_deliver_delay_window} minutes`
-                        : "No"
-                    }
-                  />
-                </Row>
-              </>
+                <InfoGrid.Item
+                  label="Randomize delivery over a time window"
+                  large
+                  value={
+                    profile.restart_deliver_delay_window
+                      ? `Yes, over ${profile.restart_deliver_delay_window} ${pluralize(
+                          profile.restart_deliver_delay_window,
+                          "minute",
+                        )}`
+                      : "No"
+                  }
+                />
+              </InfoGrid>
             ),
           },
           {

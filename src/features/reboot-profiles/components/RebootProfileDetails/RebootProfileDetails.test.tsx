@@ -40,11 +40,11 @@ describe("RebootProfileDetails", () => {
         value: accessGroup,
       },
       {
-        label: "schedule",
+        label: "Schedule",
         value: formatWeeklyRebootSchedule(profile),
       },
       {
-        label: "next reboot",
+        label: "Next reboot",
         value: moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT),
       },
       {

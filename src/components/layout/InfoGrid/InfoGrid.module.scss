@@ -1,0 +1,27 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.infoGrid {
+  container-type: inline-size;
+}
+
+.spacedInfoGrid {
+  margin-bottom: $sp-unit * 5;
+  margin-top: $sp-unit * 5;
+}
+
+.grid {
+  $count: 4;
+  $gap: $sp-unit * 5;
+
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat($count, 1fr);
+
+  @container (max-width: #{15.5rem * $count + $gap * ($count - 1)}) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  & > * {
+    min-width: 0;
+  }
+}

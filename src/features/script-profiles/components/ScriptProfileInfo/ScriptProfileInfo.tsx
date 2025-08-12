@@ -1,10 +1,9 @@
-import InfoItem from "@/components/layout/InfoItem";
+import Blocks from "@/components/layout/Blocks";
+import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
 import useRoles from "@/hooks/useRoles";
-import { Col, Row } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { Link } from "react-router";
@@ -36,73 +35,52 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
   const activity = profile.activities.last_activity;
 
   return (
-    <>
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="Title" value={profile.title} />
-        </Col>
+    <Blocks>
+      <Blocks.Item>
+        <InfoGrid>
+          <InfoGrid.Item label="Title" value={profile.title} />
 
-        <Col size={6}>
-          <InfoItem label="Status" value={getStatusText(profile)} />
-        </Col>
-      </Row>
+          <InfoGrid.Item label="Status" value={getStatusText(profile)} />
 
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem
+          <InfoGrid.Item
             label="Script"
             value={
               script ? (
                 <Link to="/scripts?tab=scripts" state={{ scriptId: script.id }}>
                   {script.title}
                 </Link>
-              ) : (
-                <NoData />
-              )
+              ) : null
             }
           />
-        </Col>
 
-        <Col size={6}>
-          <InfoItem label="Access group" value={accessGroup} />
-        </Col>
-      </Row>
+          <InfoGrid.Item label="Access group" value={accessGroup} />
 
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="Run as user" value={profile.username} />
-        </Col>
+          <InfoGrid.Item label="Run as user" value={profile.username} />
 
-        <Col size={6}>
-          <InfoItem label="Time limit" value={`${profile.time_limit}s`} />
-        </Col>
-      </Row>
+          <InfoGrid.Item label="Time limit" value={`${profile.time_limit}s`} />
+        </InfoGrid>
+      </Blocks.Item>
 
-      <hr />
+      <Blocks.Item>
+        <InfoGrid>
+          <InfoGrid.Item
+            label="Trigger"
+            large
+            value={getTriggerLongText(profile) || null}
+          />
 
-      <InfoItem
-        label="Trigger"
-        value={getTriggerLongText(profile) || <NoData />}
-      />
-
-      <Row className="u-no-padding">
-        {profile.trigger.trigger_type != "event" && (
-          <Col size={6}>
-            <InfoItem
+          {profile.trigger.trigger_type !== "event" && (
+            <InfoGrid.Item
               label="Next run"
               value={
-                profile.trigger.next_run ? (
-                  `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)}`
-                ) : (
-                  <NoData />
-                )
+                profile.trigger.next_run
+                  ? `${moment(profile.trigger.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT)}`
+                  : null
               }
             />
-          </Col>
-        )}
+          )}
 
-        <Col size={6}>
-          <InfoItem
+          <InfoGrid.Item
             label="Last run"
             value={
               activity ? (
@@ -111,38 +89,35 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
                     .utc()
                     .format(DISPLAY_DATE_TIME_FORMAT)}
                 </Link>
-              ) : (
-                <NoData />
-              )
+              ) : null
             }
           />
-        </Col>
-      </Row>
+        </InfoGrid>
+      </Blocks.Item>
 
-      <hr />
-      <p className="p-heading--5">Association</p>
+      <Blocks.Item title="Association">
+        <InfoGrid>
+          <InfoGrid.Item
+            label="Associated instances"
+            large
+            value={
+              <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
+            }
+          />
 
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Associated instances"
-          value={
-            <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
-          }
-        />
-      </Row>
-
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Tags"
-          type="truncated"
-          value={
-            profile.all_computers
-              ? "All instances"
-              : profile.tags.join(", ") || <NoData />
-          }
-        />
-      </Row>
-    </>
+          <InfoGrid.Item
+            label="Tags"
+            large
+            value={
+              profile.all_computers
+                ? "All instances"
+                : profile.tags.join(", ") || null
+            }
+            type="truncated"
+          />
+        </InfoGrid>
+      </Blocks.Item>
+    </Blocks>
   );
 };
 

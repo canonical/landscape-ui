@@ -1,14 +1,6 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.titleRow {
-  align-items: center;
-  display: flex;
-  gap: $sph--x-large;
-  justify-content: space-between;
-  white-space: nowrap;
-}
-
 .headerContainer {
   column-gap: $sph--small;
   display: flex;
@@ -22,12 +14,4 @@
 
 .heading {
   margin-bottom: 0;
-}
-
-.block {
-  box-shadow: inset 0 1px 0 0 $colors--theme--border-low-contrast;
-  display: flex;
-  flex-direction: column;
-  margin-top: $spv--medium;
-  padding-top: $spv--medium;
 }

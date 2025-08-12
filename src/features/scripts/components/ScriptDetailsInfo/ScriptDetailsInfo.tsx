@@ -1,13 +1,10 @@
-import InfoItem from "@/components/layout/InfoItem";
-import NoData from "@/components/layout/NoData";
+import InfoGrid from "@/components/layout/InfoGrid";
 import useRoles from "@/hooks/useRoles";
-import { Col, Row } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link } from "react-router";
 import { formatTitleCase, getAuthorInfo } from "../../helpers";
 import type { SingleScript } from "../../types";
 import AttachmentFile from "../AttachmentFile";
-import classes from "./ScriptDetailsInfo.module.scss";
 
 interface ScriptDetailsInfoProps {
   readonly script: SingleScript;
@@ -24,87 +21,69 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
     )?.title || script.access_group;
 
   return (
-    <>
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="name" value={script.title} />
-        </Col>
+    <InfoGrid>
+      <InfoGrid.Item label="Name" value={script.title} />
 
-        <Col size={6}>
-          <InfoItem label="version" value={script.version_number} />
-        </Col>
-      </Row>
-      <Row className="u-no-padding">
-        <Col size={6}>
-          <InfoItem label="status" value={formatTitleCase(script.status)} />
-        </Col>
+      <InfoGrid.Item label="Version" value={script.version_number} />
 
-        <Col size={6}>
-          <InfoItem label="access group" value={accessGroup} />
-        </Col>
-      </Row>
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Date created"
-          value={getAuthorInfo({
-            author: script.created_by.name,
-            date: script.created_at,
-          })}
-        />
-      </Row>
-      <Row className="u-no-padding">
-        <InfoItem
-          label="Last modified"
-          value={getAuthorInfo({
-            author: script.last_edited_by.name,
-            date: script.last_edited_at,
-          })}
-        />
-      </Row>
+      <InfoGrid.Item label="Status" value={formatTitleCase(script.status)} />
 
-      <Row className="u-no-padding">
-        <Col size={12}>
-          <InfoItem
-            className={classes.attachmentBlock}
-            label="attachments"
-            value={
-              script.attachments.length > 0 ? (
-                script.attachments.map((att) => (
-                  <AttachmentFile
-                    key={att.id}
-                    attachmentId={att.id}
-                    filename={att.filename}
-                    scriptId={script.id}
-                  />
-                ))
-              ) : (
-                <NoData />
-              )
-            }
-          />
-        </Col>
-      </Row>
+      <InfoGrid.Item label="Access group" value={accessGroup} />
 
-      <InfoItem
-        label="associated profiles"
+      <InfoGrid.Item
+        label="Date created"
+        large
+        value={getAuthorInfo({
+          author: script.created_by.name,
+          date: script.created_at,
+        })}
+      />
+
+      <InfoGrid.Item
+        label="Last modified"
+        large
+        value={getAuthorInfo({
+          author: script.last_edited_by.name,
+          date: script.last_edited_at,
+        })}
+      />
+
+      <InfoGrid.Item
+        label="Attachments"
+        large
         value={
-          script.script_profiles.length > 0 ? (
-            script.script_profiles.map((profile, index) => (
-              <Link
-                to="/scripts?tab=profiles"
-                state={{ scriptProfileId: profile.id }}
-                key={profile.id}
-              >
-                {profile.title}
-                {index < script.script_profiles.length - 1 ? ", " : ""}{" "}
-              </Link>
-            ))
-          ) : (
-            <NoData />
-          )
+          script.attachments.length > 0
+            ? script.attachments.map((att) => (
+                <AttachmentFile
+                  key={att.id}
+                  attachmentId={att.id}
+                  filename={att.filename}
+                  scriptId={script.id}
+                />
+              ))
+            : null
         }
       />
-    </>
+
+      <InfoGrid.Item
+        label="Associated profiles"
+        large
+        value={
+          script.script_profiles.length > 0
+            ? script.script_profiles.map((profile, index) => (
+                <Link
+                  to="/scripts?tab=profiles"
+                  state={{ scriptProfileId: profile.id }}
+                  key={profile.id}
+                >
+                  {profile.title}
+                  {index < script.script_profiles.length - 1 ? ", " : ""}
+                </Link>
+              ))
+            : null
+        }
+      />
+    </InfoGrid>
   );
 };
 

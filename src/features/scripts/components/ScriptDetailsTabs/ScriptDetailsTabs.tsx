@@ -1,10 +1,11 @@
+import LoadingState from "@/components/layout/LoadingState";
 import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useState } from "react";
+import { getCode } from "../../helpers";
 import type { ScriptTabId, SingleScript } from "../../types";
 import { SCRIPT_TABS } from "./constants";
-import LoadingState from "@/components/layout/LoadingState";
-import { getCode } from "../../helpers";
+import classes from "./ScriptDetailsTabs.module.scss";
 
 const ScriptDetailsInfo = lazy(async () => import("../ScriptDetailsInfo"));
 
@@ -37,7 +38,7 @@ const ScriptDetailsTabs: FC<ScriptDetailsTabsProps> = ({
 
   return (
     <>
-      <Tabs links={links} />
+      <Tabs listClassName={classes.tabs} links={links} />
 
       {tabId === "info" && (
         <Suspense fallback={<LoadingState />}>

@@ -38,7 +38,9 @@ const Flow: FC<FlowProps> = ({ cards }) => {
                   </small>
                 </p>
 
-                {card.children}
+                {card.children && (
+                  <div className={classes.children}>{card.children}</div>
+                )}
               </div>
             </div>
           </Card>

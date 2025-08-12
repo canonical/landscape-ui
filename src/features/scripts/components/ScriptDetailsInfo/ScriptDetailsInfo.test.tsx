@@ -1,9 +1,9 @@
 import { scriptDetails } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
 import { describe, it } from "vitest";
 import { formatTitleCase, getAuthorInfo } from "../../helpers";
 import ScriptDetailsInfo from "./ScriptDetailsInfo";
-import { screen } from "@testing-library/react";
 
 describe("ScriptDetailsInfo", () => {
   it("should display correct information for a script", async () => {
@@ -12,10 +12,10 @@ describe("ScriptDetailsInfo", () => {
     );
 
     const fieldsToCheck = [
-      { label: "name", value: scriptDetails.title },
-      { label: "version", value: scriptDetails.version_number.toString() },
-      { label: "status", value: formatTitleCase(scriptDetails.status) },
-      { label: "access group", value: scriptDetails.access_group },
+      { label: "Name", value: scriptDetails.title },
+      { label: "Version", value: scriptDetails.version_number.toString() },
+      { label: "Status", value: formatTitleCase(scriptDetails.status) },
+      { label: "Access group", value: scriptDetails.access_group },
       {
         label: "Date created",
         value: getAuthorInfo({

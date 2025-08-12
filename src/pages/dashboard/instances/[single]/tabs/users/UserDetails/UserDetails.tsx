@@ -1,12 +1,10 @@
-import type { FC } from "react";
-import InfoItem from "@/components/layout/InfoItem";
-import type { User } from "@/types/User";
-import UserPanelActionButtons from "../UserPanelActionButtons";
+import InfoGrid from "@/components/layout/InfoGrid";
 import useUsers from "@/hooks/useUsers";
-import { NOT_AVAILABLE } from "@/constants";
-import { useParams } from "react-router";
-import NoData from "@/components/layout/NoData";
 import type { UrlParams } from "@/types/UrlParams";
+import type { User } from "@/types/User";
+import type { FC } from "react";
+import { useParams } from "react-router";
+import UserPanelActionButtons from "../UserPanelActionButtons";
 
 interface UserDetailsProps {
   readonly user: User;
@@ -35,22 +33,28 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
   return (
     <>
       <UserPanelActionButtons selectedUsers={[user]} sidePanel />
-      <InfoItem label="username" value={user.username} />
-      <InfoItem
-        label="name"
-        value={user.name !== "" ? user.name : NOT_AVAILABLE}
-      />
-      <InfoItem label="passphrase" type="password" />
-      <InfoItem label="primary group" value={primaryGroup ?? <NoData />} />
-      <InfoItem
-        label="additional groups"
-        {...(userGroups
-          ? { type: "truncated", value: userGroups }
-          : { value: <NoData /> })}
-      />
-      <InfoItem label="location" value={user?.location ?? <NoData />} />
-      <InfoItem label="home phone" value={user?.home_phone ?? <NoData />} />
-      <InfoItem label="work phone" value={user?.work_phone ?? <NoData />} />
+      <InfoGrid spaced>
+        <InfoGrid.Item label="Username" large value={user.username} />
+
+        <InfoGrid.Item label="Name" large value={user.name || null} />
+
+        <InfoGrid.Item label="Passphrase" large type="password" />
+
+        <InfoGrid.Item label="Primary group" large value={primaryGroup} />
+
+        <InfoGrid.Item
+          label="Additional groups"
+          large
+          value={userGroups}
+          type="truncated"
+        />
+
+        <InfoGrid.Item label="Location" large value={user?.location} />
+
+        <InfoGrid.Item label="Home phone" large value={user?.home_phone} />
+
+        <InfoGrid.Item label="Work phone" large value={user?.work_phone} />
+      </InfoGrid>
     </>
   );
 };

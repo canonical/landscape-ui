@@ -1,6 +1,7 @@
 @import "vanilla-framework/scss/settings_spacing";
 
-.wrapper {
-  padding-bottom: $spv--small;
-  padding-top: $spv--small;
+.label {
+  margin-bottom: $spv--small;
+  padding: 0;
+  text-transform: uppercase;
 }

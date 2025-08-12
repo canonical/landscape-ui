@@ -9,20 +9,18 @@ export type InfoItemProps =
   | ({ type: "password" } & Omit<RegularInfoItemProps, "value">)
   | ({ type: "truncated" } & TruncatedInfoItemProps);
 
-const InfoItem: FC<InfoItemProps> = (props) => {
-  switch (props.type) {
+const InfoItem: FC<InfoItemProps> = ({ type, ...props }) => {
+  switch (type) {
     case "password": {
-      return (
-        <RegularInfoItem {...props} value={<span>****************</span>} />
-      );
+      return <RegularInfoItem {...props} value="****************" />;
     }
 
     case "truncated": {
-      return <TruncatedInfoItem {...props} />;
+      return <TruncatedInfoItem {...(props as TruncatedInfoItemProps)} />;
     }
 
     default: {
-      return <RegularInfoItem {...props} value={<span>{props.value}</span>} />;
+      return <RegularInfoItem {...(props as RegularInfoItemProps)} />;
     }
   }
 };

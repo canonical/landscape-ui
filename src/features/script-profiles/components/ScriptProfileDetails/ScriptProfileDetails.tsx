@@ -4,6 +4,7 @@ import type { ScriptProfile } from "../../types";
 import ScriptProfileActivityHistory from "../ScriptProfileActivityHistory";
 import ScriptProfileControl from "../ScriptProfileControl";
 import ScriptProfileInfo from "../ScriptProfileInfo";
+import classes from "./ScriptProfileDetails.module.scss";
 
 interface ScriptProfileDetailsProps {
   readonly actions: {
@@ -42,7 +43,7 @@ const ScriptProfileDetails: FC<ScriptProfileDetailsProps> = ({
   return (
     <>
       <ScriptProfileControl actions={actions} profile={profile} />
-      <Tabs listClassName="u-no-margin--bottom" links={links} />
+      <Tabs listClassName={classes.tabs} links={links} />
 
       {tabId == "info" && <ScriptProfileInfo profile={profile} />}
 

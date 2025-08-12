@@ -1,8 +1,9 @@
+import Blocks from "@/components/layout/Blocks";
 import EmptyState from "@/components/layout/EmptyState";
+import InfoGrid from "@/components/layout/InfoGrid";
 import HardwareInfoRow from "@/pages/dashboard/instances/[single]/tabs/hardware/HardwareInfoRow";
 import type { Instance } from "@/types/Instance";
 import type { FC } from "react";
-import { getHardwareInfo } from "./helpers";
 
 interface HardwarePanelProps {
   readonly instance: Instance;
@@ -27,30 +28,140 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
     );
   }
 
-  const hardwareInfo = getHardwareInfo(groupedHardware);
-
   return (
     <>
-      <HardwareInfoRow
-        infoRowLabel="System"
-        infoBlocksArray={hardwareInfo.system}
-      />
-      <HardwareInfoRow
-        infoRowLabel="Processor"
-        infoBlocksArray={hardwareInfo.processor}
-      />
-      <HardwareInfoRow
-        infoRowLabel="Memory"
-        infoBlocksArray={hardwareInfo.memory}
-      />
-      <HardwareInfoRow
-        infoRowLabel="Network"
-        infoBlocksArray={hardwareInfo.network}
-      />
-      <HardwareInfoRow
-        infoRowLabel="Multimedia"
-        infoBlocksArray={hardwareInfo.multimedia}
-      />
+      <HardwareInfoRow label="System">
+        <InfoGrid>
+          <InfoGrid.Item label="Model" value={groupedHardware.system.model} />
+
+          <InfoGrid.Item label="Vendor" value={groupedHardware.system.vendor} />
+
+          <InfoGrid.Item
+            label="BIOS vendor"
+            value={groupedHardware.system.bios_vendor}
+          />
+
+          <InfoGrid.Item
+            label="BIOS date"
+            value={groupedHardware.system.bios_date}
+          />
+
+          <InfoGrid.Item
+            label="Serial number"
+            value={groupedHardware.system.serial}
+          />
+
+          <InfoGrid.Item
+            label="Chassis"
+            value={groupedHardware.system.chassis}
+          />
+
+          <InfoGrid.Item
+            label="BIOS version"
+            value={groupedHardware.system.bios_version}
+          />
+        </InfoGrid>
+      </HardwareInfoRow>
+
+      <HardwareInfoRow label="Processor">
+        {groupedHardware.cpu.length ? (
+          <Blocks>
+            {groupedHardware.cpu.map((cpu, index) => (
+              <Blocks.Item key={index}>
+                <InfoGrid>
+                  <InfoGrid.Item label="Vendor" value={cpu.vendor || null} />
+
+                  <InfoGrid.Item
+                    label="Clock speed"
+                    value={cpu.clock_speed || null}
+                  />
+
+                  <InfoGrid.Item label="Model" value={cpu.model || null} />
+
+                  <InfoGrid.Item
+                    label="Architecture"
+                    value={cpu.architecture || null}
+                  />
+                </InfoGrid>
+              </Blocks.Item>
+            ))}
+          </Blocks>
+        ) : (
+          <InfoGrid>
+            <InfoGrid.Item label="Vendor" value={null} />
+            <InfoGrid.Item label="Clock speed" value={null} />
+            <InfoGrid.Item label="Model" value={null} />
+            <InfoGrid.Item label="Architecture" value={null} />
+          </InfoGrid>
+        )}
+      </HardwareInfoRow>
+
+      <HardwareInfoRow label="Memory">
+        <InfoGrid>
+          <InfoGrid.Item
+            label="Size"
+            value={groupedHardware.memory.size || null}
+          />
+        </InfoGrid>
+      </HardwareInfoRow>
+
+      <HardwareInfoRow label="Network">
+        {typeof groupedHardware.network === "string" ? (
+          <InfoGrid>
+            <InfoGrid.Item
+              label="Network"
+              value={groupedHardware.network || null}
+            />
+          </InfoGrid>
+        ) : (
+          <Blocks>
+            {groupedHardware.network.map((network, index) => (
+              <Blocks.Item key={index}>
+                <InfoGrid>
+                  <InfoGrid.Item
+                    label="IP address"
+                    value={network.ip || null}
+                  />
+
+                  <InfoGrid.Item
+                    label="Vendor"
+                    value={network.vendor || null}
+                  />
+
+                  <InfoGrid.Item
+                    label="Model"
+                    value={network.product || null}
+                  />
+
+                  <InfoGrid.Item
+                    label="MAC address"
+                    value={network.mac || null}
+                  />
+
+                  <InfoGrid.Item
+                    label="Description"
+                    value={network.description || null}
+                  />
+                </InfoGrid>
+              </Blocks.Item>
+            ))}
+          </Blocks>
+        )}
+      </HardwareInfoRow>
+
+      <HardwareInfoRow label="Multimedia">
+        <InfoGrid>
+          <InfoGrid.Item
+            label="Model"
+            value={groupedHardware.multimedia.model || null}
+          />
+
+          <InfoGrid.Item
+            label="Vendor"
+            value={groupedHardware.multimedia.vendor || null}
+          />
+        </InfoGrid>
+      </HardwareInfoRow>
     </>
   );
 };

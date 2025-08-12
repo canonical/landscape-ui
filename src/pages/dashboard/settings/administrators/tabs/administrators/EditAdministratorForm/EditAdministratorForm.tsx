@@ -1,7 +1,6 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import InfoItem from "@/components/layout/InfoItem";
-import NoData from "@/components/layout/NoData";
+import InfoGrid from "@/components/layout/InfoGrid";
 import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -10,12 +9,10 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { Administrator } from "@/types/Administrator";
 import type { SelectOption } from "@/types/SelectOption";
 import {
-  Col,
   ConfirmationButton,
   Form,
   Icon,
   ICONS,
-  Row,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -104,7 +101,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
     <Form onSubmit={formik.handleSubmit} noValidate>
       <ConfirmationButton
         type="button"
-        className="has-icon"
+        className="has-icon u-no-margin"
         confirmationModalProps={{
           title: "Disable Administrator",
           children: (
@@ -124,20 +121,14 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
         <span>Remove</span>
       </ConfirmationButton>
 
-      <Row className="u-no-padding--left u-no-padding--right">
-        <Col size={6}>
-          <InfoItem label="Name" value={currentAdministrator.name} />
-        </Col>
-        <Col size={6}>
-          <InfoItem label="Email" value={currentAdministrator.email} />
-        </Col>
-        <Col size={12}>
-          <InfoItem label="Timezone" value={<NoData />} />
-        </Col>
-        <Col size={12}>
-          <InfoItem label="Identity URL" value={<NoData />} />
-        </Col>
-      </Row>
+      <InfoGrid spaced>
+        <InfoGrid.Item label="Name" value={currentAdministrator.name} />
+        <InfoGrid.Item label="Email" value={currentAdministrator.email} />
+
+        <InfoGrid.Item label="Timezone" large value={null} />
+
+        <InfoGrid.Item label="Identity URL" large value={null} />
+      </InfoGrid>
 
       <MultiSelectField
         variant="condensed"

@@ -2,7 +2,7 @@ import ActionsMenu from "@/components/layout/ActionsMenu";
 import type { Action } from "@/types/Action";
 import { Button, Icon } from "@canonical/react-components";
 import classNames from "classnames";
-import type { Ref } from "react";
+import type { ReactNode, Ref } from "react";
 import { useState, type FC } from "react";
 import classes from "./HeaderActions.module.scss";
 
@@ -11,6 +11,7 @@ export interface HeaderActionsProps {
     destructive?: Action[];
     nondestructive?: Action[];
   };
+  readonly title?: ReactNode;
 }
 
 const HeaderActions: FC<HeaderActionsProps> = ({
@@ -18,6 +19,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
     destructive: destructiveActions = [],
     nondestructive: nondestructiveActions = [],
   },
+  title,
 }) => {
   destructiveActions = destructiveActions.filter((action) => !action.excluded);
 
@@ -135,48 +137,58 @@ const HeaderActions: FC<HeaderActionsProps> = ({
   };
 
   return (
-    <div className={classes.container}>
+    <div
+      className={classNames(classes.titleRow, {
+        [classes.wrapped]: !visibleActions.length,
+      })}
+    >
+      {title}
       <div
-        className={classNames(classes.innerContainer, "p-segmented-control")}
+        className={classNames(classes.container, {
+          [classes.wrapped]: !visibleActions.length,
+        })}
       >
-        <div ref={initialVisibleCheck} className="p-segmented-control__list">
-          {visibleActions.map(
-            ({
-              collapsed: _collapsed,
-              excluded: _excluded,
-              icon,
-              label,
-              ...action
-            }) => (
-              <Button
-                className={classNames(
-                  classes.button,
-                  "u-no-margin--bottom p-segmented-control__button",
-                )}
-                key={label}
-                {...action}
-              >
-                <Icon name={icon} />
-                <span>{label}</span>
-              </Button>
-            ),
-          )}
+        <div
+          className={classNames(classes.innerContainer, "p-segmented-control")}
+        >
+          <div ref={initialVisibleCheck} className="p-segmented-control__list">
+            {visibleActions.map(
+              ({
+                collapsed: _collapsed,
+                excluded: _excluded,
+                icon,
+                label,
+                ...action
+              }) => (
+                <Button
+                  className={classNames(
+                    classes.button,
+                    "u-no-margin--bottom p-segmented-control__button",
+                  )}
+                  key={label}
+                  {...action}
+                >
+                  <Icon name={icon} />
+                  <span>{label}</span>
+                </Button>
+              ),
+            )}
+          </div>
         </div>
+        {isCollapsedButtonVisible && (
+          <ActionsMenu
+            hasToggleIcon
+            toggleLabel={visibleActions.length ? "More actions" : "Actions"}
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={[
+              ...destructiveActions,
+              ...nondestructiveActions,
+            ].every((action) => action.disabled)}
+            actions={collapsedActions.nondestructive}
+            destructiveActions={collapsedActions.destructive}
+          />
+        )}
       </div>
-
-      {isCollapsedButtonVisible && (
-        <ActionsMenu
-          hasToggleIcon
-          toggleLabel={visibleActions.length ? "More actions" : "Actions"}
-          toggleClassName="u-no-margin--bottom"
-          toggleDisabled={[
-            ...destructiveActions,
-            ...nondestructiveActions,
-          ].every((action) => action.disabled)}
-          actions={collapsedActions.nondestructive}
-          destructiveActions={collapsedActions.destructive}
-        />
-      )}
     </div>
   );
 };

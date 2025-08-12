@@ -6,6 +6,11 @@
   gap: $sph--large;
   justify-content: end;
   min-width: 0;
+
+  &.wrapped {
+    gap: 0;
+    justify-content: start;
+  }
 }
 
 .innerContainer {
@@ -14,4 +19,17 @@
 
 .button {
   min-width: max-content;
+}
+
+.titleRow {
+  align-items: center;
+  display: flex;
+  gap: $sph--x-large;
+  justify-content: space-between;
+  margin-bottom: $spv--x-large;
+  white-space: nowrap;
+
+  &.wrapped {
+    flex-wrap: wrap;
+  }
 }
