@@ -14,6 +14,7 @@ import type { CellProps, Column } from "react-table";
 import { useCounter } from "usehooks-ts";
 import TagsAddPagination from "./components/TagsAddPagination";
 import { PAGE_SIZE } from "./constants";
+import { getRowProps } from "./helpers";
 
 interface TagsAddConfirmationModalProps
   extends Omit<
@@ -146,6 +147,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
           className="u-no-margin--bottom"
           columns={modalColumns}
           data={profileChanges}
+          getRowProps={getRowProps}
         />
       )}
 

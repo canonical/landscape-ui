@@ -71,7 +71,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
 
     return { visibleButtons: visible, collapsedLinks: collapsed };
   }, [buttons, alwaysVisible, isLargeScreen]);
-  console.log(visibleButtons, collapsedLinks);
+
   const groupedMarkup =
     grouped && visibleButtons.length > 1 ? (
       <div className="p-segmented-control">

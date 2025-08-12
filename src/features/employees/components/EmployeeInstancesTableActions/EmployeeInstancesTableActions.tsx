@@ -97,7 +97,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
 
       <InstanceRemoveFromLandscapeModal
         close={handleCloseModal}
-        instances={[instance]}
+        instance={instance}
         isOpen={selectedAction === "remove"}
       />
 

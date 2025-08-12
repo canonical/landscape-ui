@@ -8,7 +8,14 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["dist", "dist-ssr"],
+    ignores: [
+      "dist",
+      "dist-ssr",
+      "node_modules",
+      "playwright-report",
+      "playwright",
+      "public",
+    ],
   },
 
   eslint.configs.recommended,

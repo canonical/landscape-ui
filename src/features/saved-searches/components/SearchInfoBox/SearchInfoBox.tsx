@@ -14,6 +14,7 @@ const SearchInfoBox: FC<SearchInfoBoxProps> = ({ onHelpButtonClick }) => {
           type="button"
           appearance="base"
           hasIcon
+          aria-label="Search help"
           className={classes.helpButton}
           onClick={(event) => {
             event.stopPropagation();

@@ -64,6 +64,8 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
   const statusOptions =
     FILTERS.status.type === "select" ? FILTERS.status.options : [];
   const osOptions = FILTERS.os.type === "select" ? FILTERS.os.options : [];
+  const wslOptions =
+    FILTERS.wsl.type === "multi-select" ? FILTERS.wsl.options : [];
 
   return (
     <>
@@ -95,7 +97,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
               options={accessGroupOptions}
             />,
             <TagFilter key="tag" label="Tags" options={tagOptions} />,
-            <WslFilter key="wsl" label="WSL" options={[]} />,
+            <WslFilter key="wsl" label="WSL" options={wslOptions} />,
             <span key="divider-2" className={classes.divider} />,
             <ColumnFilter
               key="column"
@@ -121,6 +123,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
         osOptions={osOptions}
         statusOptions={statusOptions}
         tagOptions={tagOptions}
+        wslOptions={wslOptions}
       />
 
       <SearchHelpPopup
