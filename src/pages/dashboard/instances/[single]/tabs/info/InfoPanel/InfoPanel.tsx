@@ -273,96 +273,95 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   return (
     <>
-      <div className={classes.titleRow}>
-        <div className={classes.headerContainer}>
-          <h2
-            className={classNames(
-              "p-heading--4 u-no-padding--top",
-              classes.heading,
-            )}
-          >
-            {instance.title}
-          </h2>
+      <HeaderActions
+        key={instance.employee_id ?? "no-employee"}
+        title={
+          <div className={classes.headerContainer}>
+            <h2
+              className={classNames(
+                "p-heading--4 u-no-padding--top",
+                classes.heading,
+              )}
+            >
+              {instance.title}
+            </h2>
 
-          {instance.is_wsl_instance && <Chip value="WSL instance" />}
-        </div>
-
-        <HeaderActions
-          key={instance.employee_id ?? "no-employee"}
-          actions={{
-            nondestructive: [
-              { icon: "edit", label: "Edit", onClick: openEditForm },
-              {
-                icon: "restart",
-                label: "Restart",
-                onClick: openRestartModal,
-                excluded: !getFeatures(instance).power,
-              },
-              {
-                icon: "power-off",
-                label: "Shut down",
-                onClick: openShutDownModal,
-                excluded: !getFeatures(instance).power,
-              },
-              {
-                icon: "code",
-                label: "Run script",
-                onClick: openRunScriptForm,
-                excluded: !getFeatures(instance).scripts,
-              },
-              {
-                icon: ICONS.user,
-                label: "Associate employee",
-                onClick: openAssociateEmployeeForm,
-                collapsed: true,
-                excluded:
-                  !isFeatureEnabled("employee-management") ||
-                  !getFeatures(instance).employees ||
-                  instance.employee_id !== null,
-              },
-              {
-                icon: ICONS.user,
-                label: "Disassociate employee",
-                onClick: openDisassociateModal,
-                collapsed: true,
-                excluded:
-                  !isFeatureEnabled("employee-management") ||
-                  !getFeatures(instance).employees ||
-                  instance.employee_id === null,
-              },
-            ],
-            destructive: [
-              {
-                icon: "restart",
-                label: "Reinstall",
-                onClick: openReinstallModal,
-                collapsed: true,
-                excluded: !getFeatures(instance).uninstallation,
-              },
-              {
-                icon: "close",
-                label: "Uninstall",
-                onClick: openUninstallModal,
-                collapsed: true,
-                excluded: !getFeatures(instance).uninstallation,
-              },
-              {
-                icon: ICONS.delete,
-                label: "Remove from Landscape",
-                onClick: openRemoveFromLandscapeModal,
-                collapsed: true,
-              },
-              {
-                icon: "tidy",
-                label: "Sanitize",
-                onClick: openSanitizeModal,
-                collapsed: true,
-                excluded: !getFeatures(instance).sanitization,
-              },
-            ],
-          }}
-        />
-      </div>
+            {instance.is_wsl_instance && <Chip value="WSL instance" />}
+          </div>
+        }
+        actions={{
+          nondestructive: [
+            { icon: "edit", label: "Edit", onClick: openEditForm },
+            {
+              icon: "restart",
+              label: "Restart",
+              onClick: openRestartModal,
+              excluded: !getFeatures(instance).power,
+            },
+            {
+              icon: "power-off",
+              label: "Shut down",
+              onClick: openShutDownModal,
+              excluded: !getFeatures(instance).power,
+            },
+            {
+              icon: "code",
+              label: "Run script",
+              onClick: openRunScriptForm,
+              excluded: !getFeatures(instance).scripts,
+            },
+            {
+              icon: ICONS.user,
+              label: "Associate employee",
+              onClick: openAssociateEmployeeForm,
+              collapsed: true,
+              excluded:
+                !isFeatureEnabled("employee-management") ||
+                !getFeatures(instance).employees ||
+                instance.employee_id !== null,
+            },
+            {
+              icon: ICONS.user,
+              label: "Disassociate employee",
+              onClick: openDisassociateModal,
+              collapsed: true,
+              excluded:
+                !isFeatureEnabled("employee-management") ||
+                !getFeatures(instance).employees ||
+                instance.employee_id === null,
+            },
+          ],
+          destructive: [
+            {
+              icon: "restart",
+              label: "Reinstall",
+              onClick: openReinstallModal,
+              collapsed: true,
+              excluded: !getFeatures(instance).uninstallation,
+            },
+            {
+              icon: "close",
+              label: "Uninstall",
+              onClick: openUninstallModal,
+              collapsed: true,
+              excluded: !getFeatures(instance).uninstallation,
+            },
+            {
+              icon: ICONS.delete,
+              label: "Remove from Landscape",
+              onClick: openRemoveFromLandscapeModal,
+              collapsed: true,
+            },
+            {
+              icon: "tidy",
+              label: "Sanitize",
+              onClick: openSanitizeModal,
+              collapsed: true,
+              excluded: !getFeatures(instance).sanitization,
+            },
+          ],
+        }}
+      />
 
       <Blocks>
         <Blocks.Item title="Status">

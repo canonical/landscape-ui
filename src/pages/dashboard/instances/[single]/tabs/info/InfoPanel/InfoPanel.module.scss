@@ -1,15 +1,6 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.titleRow {
-  align-items: center;
-  display: flex;
-  gap: $sph--x-large;
-  justify-content: space-between;
-  margin-bottom: $spv--x-large;
-  white-space: nowrap;
-}
-
 .headerContainer {
   column-gap: $sph--small;
   display: flex;
