@@ -2,6 +2,7 @@ import savedSearches from "@/tests/server/handlers/savedSearches";
 import script from "@/tests/server/handlers/script";
 import accessGroup from "./accessGroup";
 import activity from "./activity";
+import administrators from "./administrators";
 import alerts from "./alerts";
 import aptSource from "./aptSource";
 import auth from "./auth";
@@ -13,6 +14,7 @@ import eventsLog from "./eventsLog";
 import features from "./features";
 import gpgKey from "./gpgKey";
 import instance from "./instance";
+import invitations from "./invitations";
 import oidcIssuers from "./oidcIssuers";
 import organisationPreferences from "./organisationPreferences";
 import packageProfile from "./packageProfile";
@@ -23,6 +25,7 @@ import rebootProfiles from "./rebootProfiles";
 import removalProfiles from "./removalProfiles";
 import repo from "./repo";
 import repositoryProfiles from "./repositoryProfiles";
+import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
 import securityProfiles from "./securityProfiles";
 import snap from "./snap";
@@ -36,6 +39,7 @@ import wslProfiles from "./wslProfiles";
 
 export default [
   ...accessGroup,
+  ...administrators,
   ...autoinstallFiles,
   ...activity,
   ...alerts,
@@ -48,6 +52,7 @@ export default [
   ...eventsLog,
   ...gpgKey,
   ...instance,
+  ...invitations,
   ...organisationPreferences,
   ...packageProfile,
   ...packages,
@@ -57,6 +62,7 @@ export default [
   ...removalProfiles,
   ...repo,
   ...repositoryProfiles,
+  ...roles,
   ...savedSearches,
   ...securityProfiles,
   ...script,

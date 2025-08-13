@@ -9,12 +9,10 @@ import type {
 } from "@/features/auth";
 import {
   identityProviders,
-  invitations,
   locationToRedirectTo,
   singleIdentityProviders,
   supportedProviders,
 } from "@/tests/mocks/identityProviders";
-import type { InvitationSummary } from "@/types/Invitation";
 import {
   allLoginMethods,
   employeeLoginMethods,
@@ -83,15 +81,6 @@ export default [
     `${API_URL}auth/supported-providers`,
     () => {
       return HttpResponse.json({ results: supportedProviders });
-    },
-  ),
-
-  http.get<{ id: string }, never, InvitationSummary>(
-    `${API_URL}invitations/:id/summary`,
-    ({ params }) => {
-      return HttpResponse.json(
-        invitations.find(({ secure_id }) => secure_id === params.id),
-      );
     },
   ),
 

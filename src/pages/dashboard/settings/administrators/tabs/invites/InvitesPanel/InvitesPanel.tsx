@@ -1,3 +1,4 @@
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useInvitations from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
@@ -5,10 +6,11 @@ import useNotify from "@/hooks/useNotify";
 import type { Invitation } from "@/types/Invitation";
 import { ConfirmationButton } from "@canonical/react-components";
 import moment from "moment";
-import type { FC, HTMLProps } from "react";
+import type { FC } from "react";
 import { useMemo } from "react";
-import type { Cell, CellProps, Column, TableCellProps } from "react-table";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import type { CellProps, Column } from "react-table";
+import { handleCellProps } from "./helpers";
+import LoadingState from "@/components/layout/LoadingState";
 
 const InvitesPanel: FC = () => {
   const debug = useDebug();
@@ -16,7 +18,10 @@ const InvitesPanel: FC = () => {
   const { getInvitationsQuery, revokeInvitationQuery, resendInvitationQuery } =
     useInvitations();
 
-  const { data: getInvitationsQueryResult } = getInvitationsQuery();
+  const {
+    data: getInvitationsQueryResult,
+    isPending: isPendingInvitationsQueryResult,
+  } = getInvitationsQuery();
 
   const invitations = useMemo(
     () =>
@@ -139,36 +144,23 @@ const InvitesPanel: FC = () => {
     [invitations],
   );
 
-  const handleCellProps = (cell: Cell<Invitation>) => {
-    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
-      {};
-
-    if (cell.column.id === "name") {
-      cellProps.role = "rowheader";
-    } else if (cell.column.id === "email") {
-      cellProps["aria-label"] = "Email";
-    } else if (cell.column.id === "creation_time") {
-      cellProps["aria-label"] = "Invited";
-    } else if (cell.column.id === "expiration_time") {
-      cellProps["aria-label"] = "Expires";
-    } else if (cell.column.id === "actions") {
-      cellProps["aria-label"] = "Actions";
-    }
-
-    return cellProps;
-  };
-
   return (
     <>
-      <p className="u-text--muted p-text--small">
-        Unclaimed invitations expire after 14 days.
-      </p>
-      <ResponsiveTable
-        columns={columns}
-        data={invitations}
-        getCellProps={handleCellProps}
-        emptyMsg="You have no unclaimed invitations."
-      />
+      {isPendingInvitationsQueryResult ? (
+        <LoadingState />
+      ) : (
+        <>
+          <p className="u-text--muted p-text--small">
+            Unclaimed invitations expire after 14 days.
+          </p>
+          <ResponsiveTable
+            columns={columns}
+            data={invitations}
+            getCellProps={handleCellProps}
+            emptyMsg="You have no unclaimed invitations."
+          />
+        </>
+      )}
     </>
   );
 };

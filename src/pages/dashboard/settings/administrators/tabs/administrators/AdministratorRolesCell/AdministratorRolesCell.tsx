@@ -10,6 +10,7 @@ import type { SelectOption } from "@/types/SelectOption";
 import classes from "./AdministratorRolesCell.module.scss";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface AdministratorRolesCellProps {
   readonly administrator: Administrator;
@@ -63,17 +64,13 @@ const AdministratorRolesCell: FC<AdministratorRolesCellProps> = ({
         selectedItems={roleOptions.filter(({ value }) =>
           formik.values.roles.includes(value),
         )}
-        onItemsUpdate={(items) =>
-          formik.setValues({
+        onItemsUpdate={async (items) =>
+          await formik.setValues({
             roles: items.map(({ value }) => value as string),
           })
         }
         placeholder="Select roles"
-        error={
-          formik.touched.roles && typeof formik.errors.roles === "string"
-            ? formik.errors.roles
-            : undefined
-        }
+        error={getFormikError(formik, "roles")}
         dropdownFooter={
           <div className={classes.footer}>
             <Button
