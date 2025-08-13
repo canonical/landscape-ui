@@ -92,7 +92,7 @@ const AdministratorRolesCell: FC<AdministratorRolesCellProps> = ({
               Revert
             </Button>
             <Button
-              type="submit"
+              type="button"
               dense
               small
               appearance="positive"
@@ -103,6 +103,7 @@ const AdministratorRolesCell: FC<AdministratorRolesCellProps> = ({
                   formik.values.roles.includes(role),
                 )
               }
+              onClick={() => formik.submitForm()}
             >
               Save changes
             </Button>
