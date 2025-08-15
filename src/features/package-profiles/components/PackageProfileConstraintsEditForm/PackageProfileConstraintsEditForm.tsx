@@ -1,5 +1,6 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -9,23 +10,17 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import { useState } from "react";
 import { usePackageProfiles } from "../../hooks";
-import type {
-  Constraint,
-  PackageProfile,
-  PackageProfileConstraintType,
-} from "../../types";
+import type { Constraint, PackageProfileConstraintType } from "../../types";
 import PackageProfileConstraintsEditFormActions from "../PackageProfileConstraintsEditFormActions";
 import PackageProfileConstraintsEditFormTable from "../PackageProfileConstraintsEditFormTable";
+import type { PackageProfileSidePanelComponentProps } from "../PackageProfileSidePanel";
+import PackageProfileSidePanel from "../PackageProfileSidePanel";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./PackageProfileConstraintsEditForm.module.scss";
 
-interface PackageProfileConstraintsEditFormProps {
-  readonly profile: PackageProfile;
-}
-
-const PackageProfileConstraintsEditForm: FC<
-  PackageProfileConstraintsEditFormProps
-> = ({ profile }) => {
+const Component: FC<PackageProfileSidePanelComponentProps> = ({
+  packageProfile: profile,
+}) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -98,71 +93,81 @@ const PackageProfileConstraintsEditForm: FC<
 
   return (
     <>
-      {!search &&
-        !constraintType &&
-        currentPage === 1 &&
-        pageSize === 20 &&
-        getPackageProfileConstraintsQueryLoading && <LoadingState />}
+      <SidePanel.Header>
+        Change &quot;{profile.title}&quot; profile&apos;s constraints
+      </SidePanel.Header>
+      <SidePanel.Content>
+        {!search &&
+          !constraintType &&
+          currentPage === 1 &&
+          pageSize === 20 &&
+          getPackageProfileConstraintsQueryLoading && <LoadingState />}
 
-      {(search ||
-        constraintType ||
-        currentPage !== 1 ||
-        pageSize !== 20 ||
-        (!getPackageProfileConstraintsQueryLoading &&
-          getPackageProfileConstraintsQueryResult &&
-          getPackageProfileConstraintsQueryResult.data.results.length > 0)) && (
-        <>
-          <HeaderWithSearch
-            actions={
-              <PackageProfileConstraintsEditFormActions
-                filter={constraintType}
-                formik={formik}
-                onFilterChange={(value) => {
-                  setConstraintType(value);
-                }}
-                profile={profile}
-                selectedIds={selectedIds}
-                setSelectedIds={(value) => {
-                  setSelectedIds(value);
-                }}
-                onOpenAddConstraintsForm={() => {
-                  setPageParams({ action: "constraints/add" });
-                }}
-              />
-            }
-            onSearch={(searchText) => {
-              setSearch(searchText);
-            }}
-            disabled={formik.values.id !== 0}
-          />
+        {(search ||
+          constraintType ||
+          currentPage !== 1 ||
+          pageSize !== 20 ||
+          (!getPackageProfileConstraintsQueryLoading &&
+            getPackageProfileConstraintsQueryResult &&
+            getPackageProfileConstraintsQueryResult.data.results.length >
+              0)) && (
+          <>
+            <HeaderWithSearch
+              actions={
+                <PackageProfileConstraintsEditFormActions
+                  filter={constraintType}
+                  formik={formik}
+                  onFilterChange={(value) => {
+                    setConstraintType(value);
+                  }}
+                  profile={profile}
+                  selectedIds={selectedIds}
+                  setSelectedIds={(value) => {
+                    setSelectedIds(value);
+                  }}
+                  onOpenAddConstraintsForm={() => {
+                    setPageParams({ action: "constraints/add" });
+                  }}
+                />
+              }
+              onSearch={(searchText) => {
+                setSearch(searchText);
+              }}
+              disabled={formik.values.id !== 0}
+            />
 
-          <PackageProfileConstraintsEditFormTable
-            filter={constraintType}
-            formik={formik}
-            isConstraintsLoading={getPackageProfileConstraintsQueryLoading}
-            onSelectedIdsChange={(value) => {
-              setSelectedIds(value);
-            }}
-            pageSize={pageSize}
-            profileConstraints={
-              getPackageProfileConstraintsQueryResult?.data.results
-            }
-            search={search}
-            selectedIds={selectedIds}
-          />
+            <PackageProfileConstraintsEditFormTable
+              filter={constraintType}
+              formik={formik}
+              isConstraintsLoading={getPackageProfileConstraintsQueryLoading}
+              onSelectedIdsChange={(value) => {
+                setSelectedIds(value);
+              }}
+              pageSize={pageSize}
+              profileConstraints={
+                getPackageProfileConstraintsQueryResult?.data.results
+              }
+              search={search}
+              selectedIds={selectedIds}
+            />
 
-          <SidePanelTablePagination
-            currentPage={currentPage}
-            pageSize={pageSize}
-            paginate={handlePageChange}
-            setPageSize={handlePageSizeChange}
-            totalItems={getPackageProfileConstraintsQueryResult?.data.count}
-            className={classes.pagination}
-          />
-        </>
-      )}
+            <SidePanelTablePagination
+              currentPage={currentPage}
+              pageSize={pageSize}
+              paginate={handlePageChange}
+              setPageSize={handlePageSizeChange}
+              totalItems={getPackageProfileConstraintsQueryResult?.data.count}
+              className={classes.pagination}
+            />
+          </>
+        )}
+      </SidePanel.Content>
     </>
   );
 };
+
+const PackageProfileConstraintsEditForm: FC = () => (
+  <PackageProfileSidePanel Component={Component} />
+);
 
 export default PackageProfileConstraintsEditForm;

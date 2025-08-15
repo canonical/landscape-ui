@@ -14,33 +14,33 @@ const PackageProfileAddSidePanel = lazy(async () =>
   })),
 );
 
-const PackageProfileConstraintsAddSidePanel = lazy(async () =>
+const PackageProfileConstraintsAddForm = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileConstraintsAddSidePanel,
+    default: module.PackageProfileConstraintsAddForm,
   })),
 );
 
-const PackageProfileConstraintsEditSidePanel = lazy(async () =>
+const PackageProfileConstraintsEditForm = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileConstraintsEditSidePanel,
+    default: module.PackageProfileConstraintsEditForm,
   })),
 );
 
-const PackageProfileDetailsSidePanel = lazy(async () =>
+const PackageProfileDetails = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileDetailsSidePanel,
+    default: module.PackageProfileDetails,
   })),
 );
 
-const PackageProfileDuplicateSidePanel = lazy(async () =>
+const PackageProfileDuplicateForm = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileDuplicateSidePanel,
+    default: module.PackageProfileDuplicateForm,
   })),
 );
 
-const PackageProfileEditSidePanel = lazy(async () =>
+const PackageProfileEditForm = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileEditSidePanel,
+    default: module.PackageProfileEditForm,
   })),
 );
 
@@ -102,19 +102,19 @@ const PackageProfilesPage: FC = () => {
 
         {action === "constraints" && (
           <SidePanel.Suspense key="constraints">
-            <PackageProfileConstraintsEditSidePanel />
+            <PackageProfileConstraintsEditForm />
           </SidePanel.Suspense>
         )}
 
         {action === "constraints/add" && (
           <SidePanel.Suspense key="constraints/add">
-            <PackageProfileConstraintsAddSidePanel />
+            <PackageProfileConstraintsAddForm />
           </SidePanel.Suspense>
         )}
 
         {(action === "duplicate" || action === "view/duplicate") && (
           <SidePanel.Suspense key="duplicate">
-            <PackageProfileDuplicateSidePanel
+            <PackageProfileDuplicateForm
               hasBackButton={action === "view/duplicate"}
             />
           </SidePanel.Suspense>
@@ -122,15 +122,13 @@ const PackageProfilesPage: FC = () => {
 
         {(action === "edit" || action === "view/edit") && (
           <SidePanel.Suspense key="edit">
-            <PackageProfileEditSidePanel
-              hasBackButton={action === "view/edit"}
-            />
+            <PackageProfileEditForm hasBackButton={action === "view/edit"} />
           </SidePanel.Suspense>
         )}
 
         {action === "view" && (
           <SidePanel.Suspense key="view">
-            <PackageProfileDetailsSidePanel />
+            <PackageProfileDetails />
           </SidePanel.Suspense>
         )}
       </SidePanel>

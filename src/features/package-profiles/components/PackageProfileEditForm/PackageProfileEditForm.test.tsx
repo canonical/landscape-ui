@@ -34,9 +34,7 @@ describe("PackageProfileEditForm", () => {
       > & { mutateAsync: Mock },
     });
 
-    renderWithProviders(
-      <PackageProfileEditForm profile={packageProfiles[0]} />,
-    );
+    renderWithProviders(<PackageProfileEditForm />);
   });
 
   it("should render all form's fields", async () => {

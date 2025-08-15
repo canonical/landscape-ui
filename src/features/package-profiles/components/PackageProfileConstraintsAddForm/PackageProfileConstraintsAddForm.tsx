@@ -1,4 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -8,17 +9,15 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import { EMPTY_CONSTRAINT } from "../../constants";
 import { usePackageProfiles } from "../../hooks";
-import type { ConstraintsFormProps, PackageProfile } from "../../types";
+import type { ConstraintsFormProps } from "../../types";
 import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
+import type { PackageProfileSidePanelComponentProps } from "../PackageProfileSidePanel";
+import PackageProfileSidePanel from "../PackageProfileSidePanel";
 import { VALIDATION_SCHEMA } from "./constants";
 
-interface PackageProfileConstraintsAddFormProps {
-  readonly profile: PackageProfile;
-}
-
-const PackageProfileConstraintsAddForm: FC<
-  PackageProfileConstraintsAddFormProps
-> = ({ profile }) => {
+const Component: FC<PackageProfileSidePanelComponentProps> = ({
+  packageProfile: profile,
+}) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { setPageParams } = usePageParams();
@@ -64,21 +63,32 @@ const PackageProfileConstraintsAddForm: FC<
   });
 
   return (
-    <Form onSubmit={formik.handleSubmit} noValidate>
-      <PackageProfileConstraintsBlock formik={formik} />
-      <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
-        submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
-        submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
-        cancelButtonDisabled={formik.isSubmitting}
-        hasBackButton
-        onBackButtonPress={goBack}
-        onCancel={() => {
-          setPageParams({ action: "", packageProfile: "" });
-        }}
-      />
-    </Form>
+    <>
+      <SidePanel.Header>
+        Add package constraints to &quot;${profile.title}&quot; profile
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <Form onSubmit={formik.handleSubmit} noValidate>
+          <PackageProfileConstraintsBlock formik={formik} />
+          <SidePanelFormButtons
+            submitButtonDisabled={formik.isSubmitting}
+            submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
+            submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
+            cancelButtonDisabled={formik.isSubmitting}
+            hasBackButton
+            onBackButtonPress={goBack}
+            onCancel={() => {
+              setPageParams({ action: "", packageProfile: "" });
+            }}
+          />
+        </Form>
+      </SidePanel.Content>
+    </>
   );
 };
+
+const PackageProfileConstraintsAddForm: FC = () => (
+  <PackageProfileSidePanel Component={Component} />
+);
 
 export default PackageProfileConstraintsAddForm;

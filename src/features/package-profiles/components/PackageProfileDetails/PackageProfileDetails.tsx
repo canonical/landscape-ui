@@ -12,43 +12,28 @@ import { useBoolean } from "usehooks-ts";
 import { usePackageProfiles } from "../../hooks";
 import PackageProfileAssociatedInstancesLink from "../PackageProfileAssociatedInstancesLink";
 import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraints";
+import type { PackageProfileSidePanelComponentProps } from "../PackageProfileSidePanel";
+import PackageProfileSidePanel from "../PackageProfileSidePanel";
 
-const PackageProfileDetailsSidePanel: FC = () => {
+const Component: FC<PackageProfileSidePanelComponentProps> = ({
+  packageProfile: profile,
+}) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { packageProfile: packageProfileName, setPageParams } = usePageParams();
-  const { getPackageProfilesQuery, removePackageProfileQuery } =
-    usePackageProfiles();
+  const { setPageParams } = usePageParams();
+  const { removePackageProfileQuery } = usePackageProfiles();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsData } = getAccessGroupQuery();
   const accessGroups = accessGroupsData?.data ?? [];
 
   const { mutateAsync: removePackageProfile, isPending: isRemoving } =
     removePackageProfileQuery;
-  const {
-    data: getPackageProfilesQueryResponse,
-    isPending: isPendingPackageProfiles,
-    error: packageProfilesError,
-  } = getPackageProfilesQuery(
-    { names: [packageProfileName as string] },
-    { enabled: !!packageProfileName && !isRemoving },
-  );
 
   const {
     value: modalOpen,
     setTrue: handleOpenModal,
     setFalse: handleCloseModal,
   } = useBoolean();
-
-  if (isPendingPackageProfiles) {
-    return <SidePanel.LoadingState />;
-  }
-
-  if (packageProfilesError) {
-    throw packageProfilesError;
-  }
-
-  const [profile] = getPackageProfilesQueryResponse.data.result;
 
   const handleRemovePackageProfile = async () => {
     try {
@@ -178,4 +163,8 @@ const PackageProfileDetailsSidePanel: FC = () => {
   );
 };
 
-export default PackageProfileDetailsSidePanel;
+const PackageProfileDetails: FC = () => (
+  <PackageProfileSidePanel Component={Component} />
+);
+
+export default PackageProfileDetails;
