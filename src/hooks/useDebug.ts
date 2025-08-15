@@ -19,6 +19,8 @@ export default function useDebug() {
     } else if (error instanceof Error) {
       const { message } = error;
       errorMessage = message;
+    } else if (typeof error === "string") {
+      errorMessage = error;
     } else {
       errorMessage = "Unknown error";
     }
