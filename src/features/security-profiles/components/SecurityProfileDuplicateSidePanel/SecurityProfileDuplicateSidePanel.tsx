@@ -38,40 +38,43 @@ const SecurityProfileDuplicateSidePanel: FC<
   }
 
   return (
-    <SidePanel.Body title={`Duplicate ${securityProfile.title}`}>
-      <SecurityProfileForm
-        confirmationStepDescription="To duplicate the profile, you need to run it."
-        initialValues={{
-          ...getInitialValues(securityProfile),
-          title: `${securityProfile.title} copy`,
-        }}
-        mutate={async (values) => {
-          addSecurityProfile({
-            access_group: values.access_group,
-            all_computers: values.all_computers,
-            benchmark: values.benchmark,
-            mode: values.mode,
-            restart_deliver_delay: values.restart_deliver_delay,
-            restart_deliver_delay_window: values.restart_deliver_delay_window,
-            schedule: values.schedule,
-            start_date: values.start_date,
-            tags: values.tags,
-            tailoring_file: values.tailoring_file,
-            title: values.title,
-          });
-        }}
-        onSuccess={(values) => {
-          notifyCreation(values, notify);
-        }}
-        submitButtonText="Duplicate"
-        submitting={isSecurityProfileAdding}
-        hasBackButton={hasBackButton}
-        onBackButtonPress={() => {
-          setPageParams({ action: "view" });
-        }}
-      />
-      ;
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>Duplicate {securityProfile.title}</SidePanel.Header>
+      <SidePanel.Content>
+        <SecurityProfileForm
+          confirmationStepDescription="To duplicate the profile, you need to run it."
+          initialValues={{
+            ...getInitialValues(securityProfile),
+            title: `${securityProfile.title} copy`,
+          }}
+          mutate={async (values) => {
+            addSecurityProfile({
+              access_group: values.access_group,
+              all_computers: values.all_computers,
+              benchmark: values.benchmark,
+              mode: values.mode,
+              restart_deliver_delay: values.restart_deliver_delay,
+              restart_deliver_delay_window: values.restart_deliver_delay_window,
+              schedule: values.schedule,
+              start_date: values.start_date,
+              tags: values.tags,
+              tailoring_file: values.tailoring_file,
+              title: values.title,
+            });
+          }}
+          onSuccess={(values) => {
+            notifyCreation(values, notify);
+          }}
+          submitButtonText="Duplicate"
+          submitting={isSecurityProfileAdding}
+          hasBackButton={hasBackButton}
+          onBackButtonPress={() => {
+            setPageParams({ action: "view" });
+          }}
+        />
+        ;
+      </SidePanel.Content>
+    </>
   );
 };
 

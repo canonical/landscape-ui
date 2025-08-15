@@ -82,94 +82,100 @@ const RemovalProfileDetails: FC = () => {
   };
 
   return (
-    <SidePanel.Body title={profile.title}>
-      <div className="p-segmented-control">
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          w
-          onClick={handleEditRemovalProfile}
-          aria-label={`Edit ${profile.title}`}
-        >
-          <Icon name="edit" />
-          <span>Edit</span>
-        </Button>
-        <Button
-          className="p-segmented-control__button"
-          hasIcon
-          type="button"
-          onClick={handleOpenModal}
-          aria-label={`Remove ${profile.title}`}
-        >
-          <Icon name={ICONS.delete} />
-          <span>Remove</span>
-        </Button>
-      </div>
+    <>
+      <SidePanel.Header>{profile.title}</SidePanel.Header>
 
-      <Blocks>
-        <Blocks.Item>
-          <InfoGrid>
-            <InfoGrid.Item label="Title" value={profile.title} />
+      <SidePanel.Content>
+        <div className="p-segmented-control">
+          <Button
+            type="button"
+            hasIcon
+            className="p-segmented-control__button"
+            w
+            onClick={handleEditRemovalProfile}
+            aria-label={`Edit ${profile.title}`}
+          >
+            <Icon name="edit" />
+            <span>Edit</span>
+          </Button>
+          <Button
+            className="p-segmented-control__button"
+            hasIcon
+            type="button"
+            onClick={handleOpenModal}
+            aria-label={`Remove ${profile.title}`}
+          >
+            <Icon name={ICONS.delete} />
+            <span>Remove</span>
+          </Button>
+        </div>
 
-            <InfoGrid.Item label="Name" value={profile.name} />
-
-            <InfoGrid.Item
-              label="Access group"
-              value={
-                accessGroupsData.data.find(
-                  (accessGroup) => accessGroup.name === profile.access_group,
-                )?.title ?? profile.access_group
-              }
-            />
-
-            <InfoGrid.Item
-              label="Removal timeframe"
-              large
-              value={`${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`}
-            />
-          </InfoGrid>
-        </Blocks.Item>
-
-        <Blocks.Item title="Association">
-          {profile.all_computers && (
-            <p>This profile has been associated with all instances.</p>
-          )}
-
-          {!profile.all_computers && !profile.tags.length && (
-            <p>This profile has not yet been associated with any instances.</p>
-          )}
-
-          {!profile.all_computers && !!profile.tags.length && (
+        <Blocks>
+          <Blocks.Item>
             <InfoGrid>
+              <InfoGrid.Item label="Title" value={profile.title} />
+
+              <InfoGrid.Item label="Name" value={profile.name} />
+
               <InfoGrid.Item
-                label="Tags"
+                label="Access group"
+                value={
+                  accessGroupsData.data.find(
+                    (accessGroup) => accessGroup.name === profile.access_group,
+                  )?.title ?? profile.access_group
+                }
+              />
+
+              <InfoGrid.Item
+                label="Removal timeframe"
                 large
-                value={profile.tags.join(", ") || null}
-                type="truncated"
+                value={`${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`}
               />
             </InfoGrid>
-          )}
-        </Blocks.Item>
-      </Blocks>
+          </Blocks.Item>
 
-      <TextConfirmationModal
-        isOpen={modalOpen}
-        title="Remove package profile"
-        confirmationText={`remove ${profile.title}`}
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        onConfirm={handleRemovalProfileRemove}
-        close={handleCloseModal}
-      >
-        <p>
-          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
-          <b>irreversible</b>.
-        </p>
-      </TextConfirmationModal>
-    </SidePanel.Body>
+          <Blocks.Item title="Association">
+            {profile.all_computers && (
+              <p>This profile has been associated with all instances.</p>
+            )}
+
+            {!profile.all_computers && !profile.tags.length && (
+              <p>
+                This profile has not yet been associated with any instances.
+              </p>
+            )}
+
+            {!profile.all_computers && !!profile.tags.length && (
+              <InfoGrid>
+                <InfoGrid.Item
+                  label="Tags"
+                  large
+                  value={profile.tags.join(", ") || null}
+                  type="truncated"
+                />
+              </InfoGrid>
+            )}
+          </Blocks.Item>
+        </Blocks>
+
+        <TextConfirmationModal
+          isOpen={modalOpen}
+          title="Remove package profile"
+          confirmationText={`remove ${profile.title}`}
+          confirmButtonLabel="Remove"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={isRemoving}
+          confirmButtonLoading={isRemoving}
+          onConfirm={handleRemovalProfileRemove}
+          close={handleCloseModal}
+        >
+          <p>
+            This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+            <b>irreversible</b>.
+          </p>
+        </TextConfirmationModal>
+      </SidePanel.Content>
+    </>
   );
 };
 

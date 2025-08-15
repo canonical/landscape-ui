@@ -46,41 +46,45 @@ const ScriptProfileEditSidePanel: FC<ScriptProfileEditSidePanelProps> = ({
   };
 
   return (
-    <SidePanel.Body title={`Edit ${profile.title}`}>
-      <ScriptProfileForm
-        disabledFields={{
-          script_id: true,
-          trigger_type: true,
-        }}
-        initialValues={{
-          ...profile,
-          interval: "",
-          ...profile.trigger,
-          start_after:
-            profile.trigger.trigger_type == "recurring"
-              ? moment(profile.trigger.start_after)
-                  .utc()
-                  .format(INPUT_DATE_TIME_FORMAT)
-              : "",
-          timestamp:
-            profile.trigger.trigger_type == "one_time"
-              ? moment(profile.trigger.timestamp)
-                  .utc()
-                  .format(INPUT_DATE_TIME_FORMAT)
-              : "",
-        }}
-        onSubmit={handleSubmit}
-        onSuccess={(values) => {
-          notify.success({
-            title: `You have successfully saved changes for ${values.title}`,
-            message: "The changes will be applied to this profile.",
-          });
-        }}
-        submitButtonText="Save changes"
-        submitting={isEditingScriptProfile}
-        hasBackButton={hasBackButton}
-      />
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>Edit {profile.title}</SidePanel.Header>
+
+      <SidePanel.Content>
+        <ScriptProfileForm
+          disabledFields={{
+            script_id: true,
+            trigger_type: true,
+          }}
+          initialValues={{
+            ...profile,
+            interval: "",
+            ...profile.trigger,
+            start_after:
+              profile.trigger.trigger_type == "recurring"
+                ? moment(profile.trigger.start_after)
+                    .utc()
+                    .format(INPUT_DATE_TIME_FORMAT)
+                : "",
+            timestamp:
+              profile.trigger.trigger_type == "one_time"
+                ? moment(profile.trigger.timestamp)
+                    .utc()
+                    .format(INPUT_DATE_TIME_FORMAT)
+                : "",
+          }}
+          onSubmit={handleSubmit}
+          onSuccess={(values) => {
+            notify.success({
+              title: `You have successfully saved changes for ${values.title}`,
+              message: "The changes will be applied to this profile.",
+            });
+          }}
+          submitButtonText="Save changes"
+          submitting={isEditingScriptProfile}
+          hasBackButton={hasBackButton}
+        />
+      </SidePanel.Content>
+    </>
   );
 };
 

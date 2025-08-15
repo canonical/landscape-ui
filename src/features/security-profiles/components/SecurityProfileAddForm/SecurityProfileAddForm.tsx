@@ -83,36 +83,33 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   };
 
   return (
-    <SidePanel.Body
-      title={
-        <>
-          Add security profile
-          <small className={classNames(classes.step, "u-text--muted")}>
-            Step {step + 1} of {steps.length}
-          </small>
-        </>
-      }
-    >
-      <p>{steps[step].description}</p>
-
-      {steps[step].content}
-
-      <SidePanelFormButtons
-        hasBackButton={step > 0}
-        onBackButtonPress={step > 0 ? goBack : undefined}
-        onSubmit={submit}
-        submitButtonDisabled={
-          steps[step].isLoading ||
-          !steps[step].isValid ||
-          isSecurityProfileAdding
-        }
-        submitButtonLoading={steps[step].isLoading || isSecurityProfileAdding}
-        submitButtonText={steps[step].submitButtonText}
-        onCancel={() => {
-          setPageParams({ action: "" });
-        }}
-      />
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>
+        Add security profile
+        <small className={classNames(classes.step, "u-text--muted")}>
+          Step {step + 1} of {steps.length}
+        </small>
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <p>{steps[step].description}</p>
+        {steps[step].content}
+        <SidePanelFormButtons
+          hasBackButton={step > 0}
+          onBackButtonPress={step > 0 ? goBack : undefined}
+          onSubmit={submit}
+          submitButtonDisabled={
+            steps[step].isLoading ||
+            !steps[step].isValid ||
+            isSecurityProfileAdding
+          }
+          submitButtonLoading={steps[step].isLoading || isSecurityProfileAdding}
+          submitButtonText={steps[step].submitButtonText}
+          onCancel={() => {
+            setPageParams({ action: "" });
+          }}
+        />
+      </SidePanel.Content>
+    </>
   );
 };
 

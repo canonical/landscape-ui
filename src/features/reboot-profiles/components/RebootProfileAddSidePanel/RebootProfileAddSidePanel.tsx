@@ -3,9 +3,13 @@ import type { FC } from "react";
 import RebootProfilesForm from "../RebootProfilesForm";
 
 const RebootProfileAddSidePanel: FC = () => (
-  <SidePanel.Body title="Add reboot profile">
-    <RebootProfilesForm action="add" />
-  </SidePanel.Body>
+  <>
+    <SidePanel.Header>Add reboot profile</SidePanel.Header>
+
+    <SidePanel.Content>
+      <RebootProfilesForm action="add" />
+    </SidePanel.Content>
+  </>
 );
 
 export default RebootProfileAddSidePanel;

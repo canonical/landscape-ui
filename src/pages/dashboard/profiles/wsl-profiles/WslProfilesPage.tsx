@@ -125,7 +125,7 @@ const WslProfilesPage: FC = () => {
       )}
 
       <SidePanel
-        close={closeSidePanel}
+        onClose={closeSidePanel}
         isOpen={!!action}
         size={action === "noncompliant" ? "large" : undefined}
       >

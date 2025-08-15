@@ -37,14 +37,20 @@ const RemovalProfileEditSidePanel: FC<RemovalProfileEditSidePanelProps> = ({
   }
 
   return (
-    <SidePanel.Body title={`Edit "${removalProfile.title}" profile`}>
-      <SingleRemovalProfileForm
-        action="edit"
-        profile={removalProfile}
-        hasBackButton={hasBackButton}
-      />
-      ;
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>
+        Edit &quot;{removalProfile.title}&quot; profile
+      </SidePanel.Header>
+
+      <SidePanel.Content>
+        <SingleRemovalProfileForm
+          action="edit"
+          profile={removalProfile}
+          hasBackButton={hasBackButton}
+        />
+        ;
+      </SidePanel.Content>
+    </>
   );
 };
 

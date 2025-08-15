@@ -20,9 +20,14 @@ const WslProfileNonCompliantInstancesSidePanel: FC = () => {
   }
 
   return (
-    <SidePanel.Body title={`Instances not compliant with ${wslProfile.title}`}>
-      <WslProfileNonCompliantInstancesList wslProfile={wslProfile} />
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>
+        Instances not compliant with {wslProfile.title}
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <WslProfileNonCompliantInstancesList wslProfile={wslProfile} />
+      </SidePanel.Content>
+    </>
   );
 };
 

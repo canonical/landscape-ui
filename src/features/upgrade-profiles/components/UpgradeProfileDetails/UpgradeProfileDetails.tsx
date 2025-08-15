@@ -85,85 +85,90 @@ const UpgradeProfileDetails: FC = () => {
   };
 
   return (
-    <SidePanel.Body title={profile.title}>
-      <div className="p-segmented-control">
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          onClick={handleEditUpgradeProfile}
-          aria-label={`Edit upgrade profile ${profile.title}`}
-        >
-          <Icon name="edit" />
-          <span>Edit</span>
-        </Button>
-        <Button
-          className="has-icon p-segmented-control__button"
-          aria-label={`Remove upgrade profile ${profile.title}`}
-          type="button"
-          onClick={handleOpenModal}
-        >
-          <Icon name={ICONS.delete} />
-          <span>Remove</span>
-        </Button>
-      </div>
+    <>
+      <SidePanel.Header>{profile.title}</SidePanel.Header>
+      <SidePanel.Content>
+        <div className="p-segmented-control">
+          <Button
+            type="button"
+            hasIcon
+            className="p-segmented-control__button"
+            onClick={handleEditUpgradeProfile}
+            aria-label={`Edit upgrade profile ${profile.title}`}
+          >
+            <Icon name="edit" />
+            <span>Edit</span>
+          </Button>
+          <Button
+            className="has-icon p-segmented-control__button"
+            aria-label={`Remove upgrade profile ${profile.title}`}
+            type="button"
+            onClick={handleOpenModal}
+          >
+            <Icon name={ICONS.delete} />
+            <span>Remove</span>
+          </Button>
+        </div>
 
-      <Blocks>
-        <Blocks.Item>
-          <InfoGrid>
-            <InfoGrid.Item label="Title" value={profile.title} />
-            <InfoGrid.Item label="Name" value={profile.name} />
-            <InfoGrid.Item
-              label="Access group"
-              value={
-                accessGroupsData.data.find(
-                  (accessGroup) => accessGroup.name === profile.access_group,
-                )?.title ?? profile.access_group
-              }
-            />
-            <InfoGrid.Item
-              label="Upgrade type"
-              value={profile.upgrade_type === "all" ? "All" : "Security"}
-            />
-            <InfoGrid.Item
-              label="Auto remove packages"
-              value={profile.autoremove ? "On" : "Off"}
-            />
-          </InfoGrid>
-        </Blocks.Item>
+        <Blocks>
+          <Blocks.Item>
+            <InfoGrid>
+              <InfoGrid.Item label="Title" value={profile.title} />
+              <InfoGrid.Item label="Name" value={profile.name} />
+              <InfoGrid.Item
+                label="Access group"
+                value={
+                  accessGroupsData.data.find(
+                    (accessGroup) => accessGroup.name === profile.access_group,
+                  )?.title ?? profile.access_group
+                }
+              />
+              <InfoGrid.Item
+                label="Upgrade type"
+                value={profile.upgrade_type === "all" ? "All" : "Security"}
+              />
+              <InfoGrid.Item
+                label="Auto remove packages"
+                value={profile.autoremove ? "On" : "Off"}
+              />
+            </InfoGrid>
+          </Blocks.Item>
 
-        <Blocks.Item title="Schedule">
-          <InfoGrid>
-            <InfoGrid.Item label="Schedule" large value={scheduleMessage} />
-            <InfoGrid.Item label="Next run" large value={nextRunMessage} />
-            <InfoGrid.Item
-              label="Delivery delay window"
-              large
-              value={`${profile.deliver_delay_window} ${pluralize(
-                Number(profile.deliver_delay_window),
-                "minute",
-              )}`}
-            />
-          </InfoGrid>
-        </Blocks.Item>
+          <Blocks.Item title="Schedule">
+            <InfoGrid>
+              <InfoGrid.Item label="Schedule" large value={scheduleMessage} />
+              <InfoGrid.Item label="Next run" large value={nextRunMessage} />
+              <InfoGrid.Item
+                label="Delivery delay window"
+                large
+                value={`${profile.deliver_delay_window} ${pluralize(
+                  Number(profile.deliver_delay_window),
+                  "minute",
+                )}`}
+              />
+            </InfoGrid>
+          </Blocks.Item>
 
-        <Blocks.Item title="Association">
-          <>
-            {profile.all_computers && (
-              <p>This profile has been associated with all instances.</p>
-            )}
-            {!profile.all_computers && !profile.tags.length && (
-              <p>
-                This profile has not yet been associated with any instances.
-              </p>
-            )}
-            {!profile.all_computers && profile.tags.length > 0 && (
-              <InfoItem label="Tags" value={profile.tags.join(", ") || null} />
-            )}
-          </>
-        </Blocks.Item>
-      </Blocks>
-
+          <Blocks.Item title="Association">
+            <>
+              {profile.all_computers && (
+                <p>This profile has been associated with all instances.</p>
+              )}
+              {!profile.all_computers && !profile.tags.length && (
+                <p>
+                  This profile has not yet been associated with any instances.
+                </p>
+              )}
+              {!profile.all_computers && profile.tags.length > 0 && (
+                <InfoItem
+                  label="Tags"
+                  value={profile.tags.join(", ") || null}
+                />
+              )}
+            </>
+          </Blocks.Item>
+        </Blocks>
+      </SidePanel.Content>
       <TextConfirmationModal
         isOpen={modalOpen}
         title="Remove upgrade profile"
@@ -180,7 +185,7 @@ const UpgradeProfileDetails: FC = () => {
           action is <b>irreversible</b>.
         </p>
       </TextConfirmationModal>
-    </SidePanel.Body>
+    </>
   );
 };
 

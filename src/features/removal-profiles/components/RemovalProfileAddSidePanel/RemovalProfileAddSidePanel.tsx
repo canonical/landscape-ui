@@ -3,9 +3,13 @@ import type { FC } from "react";
 import SingleRemovalProfileForm from "../SingleRemovalProfileForm";
 
 const RemovalProfileAddSidePanel: FC = () => (
-  <SidePanel.Body title="Add removal profile">
-    <SingleRemovalProfileForm action="add" />
-  </SidePanel.Body>
+  <>
+    <SidePanel.Header>Add removal profile</SidePanel.Header>
+
+    <SidePanel.Content>
+      <SingleRemovalProfileForm action="add" />
+    </SidePanel.Content>
+  </>
 );
 
 export default RemovalProfileAddSidePanel;

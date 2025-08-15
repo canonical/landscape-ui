@@ -1,20 +1,11 @@
-import {
-  Suspense as SuspenseBase,
-  type FC,
-  type Key,
-  type ReactNode,
-} from "react";
+import type { Attributes, SuspenseProps as SuspenseBaseProps } from "react";
+import { Suspense as SuspenseBase, type FC } from "react";
 import LoadingState from "./LoadingState";
 
-export interface SuspenseProps {
-  readonly children: ReactNode;
-  readonly key: Key;
-}
+export type SuspenseProps = SuspenseBaseProps & Attributes;
 
-const Suspense: FC<SuspenseProps> = ({ children, key }) => (
-  <SuspenseBase fallback={<LoadingState />} key={key}>
-    {children}
-  </SuspenseBase>
+const Suspense: FC<SuspenseProps> = ({ ...props }) => (
+  <SuspenseBase fallback={<LoadingState />} {...props} />
 );
 
 export default Suspense;

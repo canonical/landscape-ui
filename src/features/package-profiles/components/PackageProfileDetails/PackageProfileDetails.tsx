@@ -76,103 +76,107 @@ const PackageProfileDetails: FC = () => {
   };
 
   return (
-    <SidePanel.Body title={profile.title}>
-      <div className="p-segmented-control">
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button u-no-margin"
-          onClick={handlePackageProfileDuplicate}
+    <>
+      <SidePanel.Header>{profile.title}</SidePanel.Header>
+
+      <SidePanel.Content>
+        <div className="p-segmented-control">
+          <Button
+            type="button"
+            hasIcon
+            className="p-segmented-control__button u-no-margin"
+            onClick={handlePackageProfileDuplicate}
+          >
+            <Icon name="canvas" />
+            <span>Duplicate profile</span>
+          </Button>
+          <Button
+            type="button"
+            hasIcon
+            className="p-segmented-control__button u-no-margin"
+            onClick={handlePackageProfileEdit}
+          >
+            <Icon name="edit" />
+            <span>Edit</span>
+          </Button>
+          <Button
+            className="p-segmented-control__button u-no-margin"
+            hasIcon
+            type="button"
+            onClick={handleOpenModal}
+            aria-label={`Remove ${profile.title} package profile`}
+          >
+            <Icon name={ICONS.delete} />
+            <span>Remove</span>
+          </Button>
+        </div>
+
+        <InfoGrid spaced>
+          <InfoGrid.Item label="Title" value={profile.title} />
+
+          <InfoGrid.Item label="Name" value={profile.name} />
+
+          <InfoGrid.Item label="Description" value={profile.description} />
+
+          <InfoGrid.Item
+            label="Access group"
+            value={
+              accessGroups.find((group) => group.name === profile.access_group)
+                ?.title ?? profile.access_group
+            }
+          />
+
+          <InfoGrid.Item
+            label="Tags"
+            large
+            value={profile.tags.join(", ") || null}
+            type="truncated"
+          />
+
+          <InfoGrid.Item
+            label="Associated to"
+            value={
+              <PackageProfileAssociatedInstancesLink packageProfile={profile} />
+            }
+          />
+
+          <InfoGrid.Item
+            label="Pending on"
+            value={`${profile.computers.pending?.length ?? 0} ${pluralize(
+              profile.computers.pending.length,
+              "instance",
+            )}`}
+          />
+
+          <InfoGrid.Item
+            label="Not compliant on"
+            value={`${profile.computers["non-compliant"].length} ${pluralize(
+              profile.computers["non-compliant"].length,
+              "instance",
+            )}`}
+          />
+        </InfoGrid>
+
+        <PackageProfileDetailsConstraints profile={profile} />
+
+        <TextConfirmationModal
+          isOpen={modalOpen}
+          title="Remove package profile"
+          confirmButtonLabel="Remove"
+          confirmButtonAppearance="negative"
+          confirmButtonLoading={isRemoving}
+          confirmButtonDisabled={isRemoving}
+          close={handleCloseModal}
+          confirmationText={`remove ${profile.title}`}
+          onConfirm={handleRemovePackageProfile}
         >
-          <Icon name="canvas" />
-          <span>Duplicate profile</span>
-        </Button>
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button u-no-margin"
-          onClick={handlePackageProfileEdit}
-        >
-          <Icon name="edit" />
-          <span>Edit</span>
-        </Button>
-        <Button
-          className="p-segmented-control__button u-no-margin"
-          hasIcon
-          type="button"
-          onClick={handleOpenModal}
-          aria-label={`Remove ${profile.title} package profile`}
-        >
-          <Icon name={ICONS.delete} />
-          <span>Remove</span>
-        </Button>
-      </div>
-
-      <InfoGrid spaced>
-        <InfoGrid.Item label="Title" value={profile.title} />
-
-        <InfoGrid.Item label="Name" value={profile.name} />
-
-        <InfoGrid.Item label="Description" value={profile.description} />
-
-        <InfoGrid.Item
-          label="Access group"
-          value={
-            accessGroups.find((group) => group.name === profile.access_group)
-              ?.title ?? profile.access_group
-          }
-        />
-
-        <InfoGrid.Item
-          label="Tags"
-          large
-          value={profile.tags.join(", ") || null}
-          type="truncated"
-        />
-
-        <InfoGrid.Item
-          label="Associated to"
-          value={
-            <PackageProfileAssociatedInstancesLink packageProfile={profile} />
-          }
-        />
-
-        <InfoGrid.Item
-          label="Pending on"
-          value={`${profile.computers.pending?.length ?? 0} ${pluralize(
-            profile.computers.pending.length,
-            "instance",
-          )}`}
-        />
-
-        <InfoGrid.Item
-          label="Not compliant on"
-          value={`${profile.computers["non-compliant"].length} ${pluralize(
-            profile.computers["non-compliant"].length,
-            "instance",
-          )}`}
-        />
-      </InfoGrid>
-
-      <PackageProfileDetailsConstraints profile={profile} />
-
-      <TextConfirmationModal
-        isOpen={modalOpen}
-        title="Remove package profile"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonLoading={isRemoving}
-        confirmButtonDisabled={isRemoving}
-        close={handleCloseModal}
-        confirmationText={`remove ${profile.title}`}
-        onConfirm={handleRemovePackageProfile}
-      >
-        <p>
-          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
-          <b>irreversible</b>.
-        </p>
-      </TextConfirmationModal>
-    </SidePanel.Body>
+          <p>
+            This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+            <b>irreversible</b>.
+          </p>
+        </TextConfirmationModal>
+      </SidePanel.Content>
+    </>
   );
 };
 

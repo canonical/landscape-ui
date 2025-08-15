@@ -32,12 +32,16 @@ const PackageProfileDuplicateSidePanel: FC<
   const [packageProfile] = getPackageProfilesQueryResponse.data.result;
 
   return (
-    <SidePanel.Body title={`Duplicate ${packageProfile.title}`}>
-      <PackageProfileDuplicateForm
-        hasBackButton={hasBackButton}
-        profile={packageProfile}
-      />
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>Duplicate {packageProfile.title}</SidePanel.Header>
+
+      <SidePanel.Content>
+        <PackageProfileDuplicateForm
+          hasBackButton={hasBackButton}
+          profile={packageProfile}
+        />
+      </SidePanel.Content>
+    </>
   );
 };
 

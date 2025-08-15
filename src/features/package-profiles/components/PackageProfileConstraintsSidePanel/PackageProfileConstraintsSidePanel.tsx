@@ -34,30 +34,39 @@ const PackageProfileConstraintsSidePanel: FC = () => {
   switch (action) {
     case "edit":
       return (
-        <SidePanel.Body
-          title={`Change "${packageProfile.title}" profile's constraints`}
-        >
-          <PackageProfileConstraintsEditForm
-            profile={packageProfile}
-            openAddForm={() => {
-              setAction("add");
-            }}
-          />
-        </SidePanel.Body>
+        <>
+          <SidePanel.Header>
+            Change &quot;{packageProfile.title}&quot; profile&apos;s constraints
+          </SidePanel.Header>
+
+          <SidePanel.Content>
+            <PackageProfileConstraintsEditForm
+              profile={packageProfile}
+              openAddForm={() => {
+                setAction("add");
+              }}
+            />
+          </SidePanel.Content>
+        </>
       );
 
     case "add":
       return (
-        <SidePanel.Body
-          title={`Add package constraints to "${packageProfile.title}" profile`}
-        >
-          <PackageProfileConstraintsAddForm
-            profile={packageProfile}
-            handleConstraintsEdit={() => {
-              setAction("edit");
-            }}
-          />
-        </SidePanel.Body>
+        <>
+          <SidePanel.Header>
+            Add package constraints to &quot;${packageProfile.title}&quot;
+            profile
+          </SidePanel.Header>
+
+          <SidePanel.Content>
+            <PackageProfileConstraintsAddForm
+              profile={packageProfile}
+              handleConstraintsEdit={() => {
+                setAction("edit");
+              }}
+            />
+          </SidePanel.Content>
+        </>
       );
   }
 };

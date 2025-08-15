@@ -30,14 +30,18 @@ const RebootProfileDuplicateSidePanel: FC<
   }
 
   return (
-    <SidePanel.Body title={`Duplicate ${rebootProfile.title}`}>
-      <RebootProfilesForm
-        action="duplicate"
-        profile={rebootProfile}
-        hasBackButton={hasBackButton}
-      />
-      ;
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>Duplicate {rebootProfile.title}</SidePanel.Header>
+
+      <SidePanel.Content>
+        <RebootProfilesForm
+          action="duplicate"
+          profile={rebootProfile}
+          hasBackButton={hasBackButton}
+        />
+        ;
+      </SidePanel.Content>
+    </>
   );
 };
 

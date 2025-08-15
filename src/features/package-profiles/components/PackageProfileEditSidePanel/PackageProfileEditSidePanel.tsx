@@ -35,12 +35,16 @@ const PackageProfileEditSidePanel: FC<PackageProfileEditSidePanelProps> = ({
   const [packageProfile] = getPackageProfilesQueryResponse.data.result;
 
   return (
-    <SidePanel.Body title={`Edit ${packageProfile.title}`}>
-      <PackageProfileEditForm
-        hasBackButton={hasBackButton}
-        profile={packageProfile}
-      />
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>Edit {packageProfile.title}</SidePanel.Header>
+
+      <SidePanel.Content>
+        <PackageProfileEditForm
+          hasBackButton={hasBackButton}
+          profile={packageProfile}
+        />
+      </SidePanel.Content>
+    </>
   );
 };
 

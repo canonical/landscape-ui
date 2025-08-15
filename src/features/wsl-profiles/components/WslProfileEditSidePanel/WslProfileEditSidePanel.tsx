@@ -26,9 +26,17 @@ const WslProfileEditSidePanel: FC<WslProfileEditSidePanelProps> = ({
   }
 
   return (
-    <SidePanel.Body title={`Edit "${wslProfile.title}" profile`}>
-      <WslProfileEditForm profile={wslProfile} hasBackButton={hasBackButton} />
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>
+        Edit &quot;{wslProfile.title}&quot; profile
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <WslProfileEditForm
+          profile={wslProfile}
+          hasBackButton={hasBackButton}
+        />
+      </SidePanel.Content>
+    </>
   );
 };
 

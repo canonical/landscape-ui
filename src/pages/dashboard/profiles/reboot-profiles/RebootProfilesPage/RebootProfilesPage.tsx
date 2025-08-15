@@ -72,7 +72,7 @@ const RebootProfilesPage: FC = () => {
         <RebootProfilesContainer />
       </PageContent>
 
-      <SidePanel close={close} key="add" isOpen={!!action}>
+      <SidePanel onClose={close} key="add" isOpen={!!action}>
         {action === "add" && (
           <SidePanel.Suspense key="add">
             <RebootProfileAddSidePanel />

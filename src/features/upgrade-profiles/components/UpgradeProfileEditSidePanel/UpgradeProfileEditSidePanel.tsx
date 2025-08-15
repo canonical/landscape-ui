@@ -37,14 +37,19 @@ const UpgradeProfileEditSidePanel: FC<UpgradeProfileEditSidePanelProps> = ({
   }
 
   return (
-    <SidePanel.Body title={`Edit "${upgradeProfile.title}" profile`}>
-      <SingleUpgradeProfileForm
-        action="edit"
-        profile={upgradeProfile}
-        hasBackButton={hasBackButton}
-      />
-      ;
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>
+        Edit &quot;{upgradeProfile.title}&quot; profile
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <SingleUpgradeProfileForm
+          action="edit"
+          profile={upgradeProfile}
+          hasBackButton={hasBackButton}
+        />
+        ;
+      </SidePanel.Content>
+    </>
   );
 };
 

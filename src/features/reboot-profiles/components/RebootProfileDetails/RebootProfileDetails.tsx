@@ -85,105 +85,113 @@ const RebootProfileDetails: FC = () => {
   };
 
   return (
-    <SidePanel.Body title={profile.title}>
-      <div className="p-segmented-control">
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          onClick={handleEditRebootProfile}
-          aria-label={`Edit reboot profile ${profile.title}`}
-        >
-          <Icon name="edit" />
-          <span>Edit</span>
-        </Button>
-        <Button
-          type="button"
-          hasIcon
-          className="p-segmented-control__button"
-          onClick={handleDuplicateRebootProfile}
-          aria-label={`Edit reboot profile ${profile.title}`}
-        >
-          <Icon name="canvas" />
-          <span>Duplicate</span>
-        </Button>
-        <Button
-          className="p-segmented-control__button has-icon"
-          type="button"
-          hasIcon
-          onClick={handleOpenModal}
-          aria-label={`Remove reboot profile ${profile.title}`}
-        >
-          <Icon name={ICONS.delete} />
-          <span>Remove</span>
-        </Button>
-      </div>
+    <>
+      <SidePanel.Header>{profile.title}</SidePanel.Header>
 
-      <Blocks>
-        <Blocks.Item>
-          <InfoGrid>
-            <InfoGrid.Item label="Title" value={profile.title} />
+      <SidePanel.Content>
+        <div className="p-segmented-control">
+          <Button
+            type="button"
+            hasIcon
+            className="p-segmented-control__button"
+            onClick={handleEditRebootProfile}
+            aria-label={`Edit reboot profile ${profile.title}`}
+          >
+            <Icon name="edit" />
+            <span>Edit</span>
+          </Button>
+          <Button
+            type="button"
+            hasIcon
+            className="p-segmented-control__button"
+            onClick={handleDuplicateRebootProfile}
+            aria-label={`Edit reboot profile ${profile.title}`}
+          >
+            <Icon name="canvas" />
+            <span>Duplicate</span>
+          </Button>
+          <Button
+            className="p-segmented-control__button has-icon"
+            type="button"
+            hasIcon
+            onClick={handleOpenModal}
+            aria-label={`Remove reboot profile ${profile.title}`}
+          >
+            <Icon name={ICONS.delete} />
+            <span>Remove</span>
+          </Button>
+        </div>
 
-            <InfoGrid.Item
-              label="Access group"
-              value={
-                accessGroupsData.data.find(
-                  (accessGroup) => accessGroup.name === profile.access_group,
-                )?.title ?? profile.access_group
-              }
-            />
-          </InfoGrid>
-        </Blocks.Item>
-
-        <Blocks.Item title="Reboot schedule">
-          <InfoGrid>
-            <InfoGrid.Item
-              label="Schedule"
-              large
-              value={formatWeeklyRebootSchedule(profile)}
-            />
-
-            <InfoGrid.Item
-              label="Next reboot"
-              large
-              value={moment(profile.next_run).format(DISPLAY_DATE_TIME_FORMAT)}
-            />
-          </InfoGrid>
-        </Blocks.Item>
-
-        <Blocks.Item title="Association">
-          {profile.all_computers && (
-            <p>This profile has been associated with all instances.</p>
-          )}
-
-          {!profile.all_computers && !profile.tags.length && (
-            <p>This profile has not yet been associated with any instances.</p>
-          )}
-
-          {(profile.all_computers || !!profile.tags.length) && (
+        <Blocks>
+          <Blocks.Item>
             <InfoGrid>
-              {!profile.all_computers && (
-                <InfoGrid.Item
-                  label="Tags"
-                  large
-                  value={profile.tags.join(", ") || null}
-                  type="truncated"
-                />
-              )}
+              <InfoGrid.Item label="Title" value={profile.title} />
 
               <InfoGrid.Item
-                label="Associated instances"
-                large
+                label="Access group"
                 value={
-                  <RebootProfileAssociatedInstancesLink
-                    rebootProfile={profile}
-                  />
+                  accessGroupsData.data.find(
+                    (accessGroup) => accessGroup.name === profile.access_group,
+                  )?.title ?? profile.access_group
                 }
               />
             </InfoGrid>
-          )}
-        </Blocks.Item>
-      </Blocks>
+          </Blocks.Item>
+
+          <Blocks.Item title="Reboot schedule">
+            <InfoGrid>
+              <InfoGrid.Item
+                label="Schedule"
+                large
+                value={formatWeeklyRebootSchedule(profile)}
+              />
+
+              <InfoGrid.Item
+                label="Next reboot"
+                large
+                value={moment(profile.next_run).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
+              />
+            </InfoGrid>
+          </Blocks.Item>
+
+          <Blocks.Item title="Association">
+            {profile.all_computers && (
+              <p>This profile has been associated with all instances.</p>
+            )}
+
+            {!profile.all_computers && !profile.tags.length && (
+              <p>
+                This profile has not yet been associated with any instances.
+              </p>
+            )}
+
+            {(profile.all_computers || !!profile.tags.length) && (
+              <InfoGrid>
+                {!profile.all_computers && (
+                  <InfoGrid.Item
+                    label="Tags"
+                    large
+                    value={profile.tags.join(", ") || null}
+                    type="truncated"
+                  />
+                )}
+
+                <InfoGrid.Item
+                  label="Associated instances"
+                  large
+                  value={
+                    <RebootProfileAssociatedInstancesLink
+                      rebootProfile={profile}
+                    />
+                  }
+                />
+              </InfoGrid>
+            )}
+          </Blocks.Item>
+        </Blocks>
+      </SidePanel.Content>
 
       <TextConfirmationModal
         isOpen={modalOpen}
@@ -203,7 +211,7 @@ const RebootProfileDetails: FC = () => {
           system.
         </p>
       </TextConfirmationModal>
-    </SidePanel.Body>
+    </>
   );
 };
 

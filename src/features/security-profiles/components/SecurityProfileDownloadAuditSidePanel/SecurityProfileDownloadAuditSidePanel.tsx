@@ -33,15 +33,18 @@ const SecurityProfileDownloadAuditSidePanel: FC<
   }
 
   return (
-    <SidePanel.Body
-      title={`Download audit for ${securityProfile.title} security profile`}
-    >
-      <SecurityProfileDownloadAuditForm
-        profileId={securityProfile.id}
-        hasBackButton={hasBackButton}
-      />
-      ;
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>
+        Download audit for {securityProfile.title} security profile
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <SecurityProfileDownloadAuditForm
+          profileId={securityProfile.id}
+          hasBackButton={hasBackButton}
+        />
+        ;
+      </SidePanel.Content>
+    </>
   );
 };
 

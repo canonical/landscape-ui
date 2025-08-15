@@ -68,19 +68,24 @@ const SecurityProfileRunFixSidePanel: FC<
   };
 
   return (
-    <SidePanel.Body title={`Run "${securityProfile.title}" profile`}>
-      <SecurityProfileRunFixForm
-        profile={securityProfile}
-        onSubmit={async () => {
-          await handleRunSecurityProfile();
-        }}
-        hasBackButton={hasBackButton}
-        onBackButtonPress={() => {
-          setPageParams({ action: "view" });
-        }}
-      />
-      ;
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>
+        Run &quot;{securityProfile.title}&quot; profile
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <SecurityProfileRunFixForm
+          profile={securityProfile}
+          onSubmit={async () => {
+            await handleRunSecurityProfile();
+          }}
+          hasBackButton={hasBackButton}
+          onBackButtonPress={() => {
+            setPageParams({ action: "view" });
+          }}
+        />
+        ;
+      </SidePanel.Content>
+    </>
   );
 };
 

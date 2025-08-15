@@ -79,7 +79,7 @@ const PackageProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        close={close}
+        onClose={close}
         isOpen={!!action}
         size={
           action === "add" || action === "constraints" || action === "view"

@@ -26,7 +26,7 @@ const ScriptProfilesTab: FC = () => {
     <>
       <ScriptProfilesPanel />
 
-      <SidePanel close={close} isOpen={!!action}>
+      <SidePanel onClose={close} isOpen={!!action}>
         {action === "add" && (
           <SidePanel.Suspense key="add">
             <ScriptProfileAddSidePanel />

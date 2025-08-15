@@ -134,7 +134,7 @@ const SecurityProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        close={close}
+        onClose={close}
         isOpen={!!action}
         size={action === "view" ? "medium" : undefined}
       >

@@ -86,43 +86,47 @@ const PackageProfileCreateForm: FC = () => {
   });
 
   return (
-    <SidePanel.Body title="Add package profile">
-      <Form onSubmit={formik.handleSubmit} noValidate>
-        <Input
-          type="text"
-          label="Title"
-          required
-          {...formik.getFieldProps("title")}
-          error={getFormikError(formik, "title")}
-        />
+    <>
+      <SidePanel.Header>Add package profile</SidePanel.Header>
 
-        <Input
-          type="text"
-          label="Description"
-          required
-          autoComplete="off"
-          {...formik.getFieldProps("description")}
-          error={getFormikError(formik, "description")}
-        />
+      <SidePanel.Content>
+        <Form onSubmit={formik.handleSubmit} noValidate>
+          <Input
+            type="text"
+            label="Title"
+            required
+            {...formik.getFieldProps("title")}
+            error={getFormikError(formik, "title")}
+          />
 
-        <Select
-          label="Access group"
-          {...formik.getFieldProps("access_group")}
-          options={accessGroupOptions}
-          error={getFormikError(formik, "access_group")}
-        />
+          <Input
+            type="text"
+            label="Description"
+            required
+            autoComplete="off"
+            {...formik.getFieldProps("description")}
+            error={getFormikError(formik, "description")}
+          />
 
-        <AssociationBlock formik={formik} />
+          <Select
+            label="Access group"
+            {...formik.getFieldProps("access_group")}
+            options={accessGroupOptions}
+            error={getFormikError(formik, "access_group")}
+          />
 
-        <PackageProfileConstraintsTypeBlock formik={formik} />
+          <AssociationBlock formik={formik} />
 
-        <SidePanelFormButtons
-          submitButtonDisabled={formik.isSubmitting}
-          submitButtonText="Add package profile"
-          onCancel={close}
-        />
-      </Form>
-    </SidePanel.Body>
+          <PackageProfileConstraintsTypeBlock formik={formik} />
+
+          <SidePanelFormButtons
+            submitButtonDisabled={formik.isSubmitting}
+            submitButtonText="Add package profile"
+            onCancel={close}
+          />
+        </Form>
+      </SidePanel.Content>
+    </>
   );
 };
 

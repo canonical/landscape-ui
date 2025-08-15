@@ -30,14 +30,18 @@ const RebootProfileEditSidePanel: FC<RebootProfileEditSidePanelProps> = ({
   }
 
   return (
-    <SidePanel.Body title={`Edit ${rebootProfile.title}`}>
-      <RebootProfilesForm
-        action="edit"
-        profile={rebootProfile}
-        hasBackButton={hasBackButton}
-      />
-      ;
-    </SidePanel.Body>
+    <>
+      <SidePanel.Header>Edit {rebootProfile.title}</SidePanel.Header>
+
+      <SidePanel.Content>
+        <RebootProfilesForm
+          action="edit"
+          profile={rebootProfile}
+          hasBackButton={hasBackButton}
+        />
+        ;
+      </SidePanel.Content>
+    </>
   );
 };
 

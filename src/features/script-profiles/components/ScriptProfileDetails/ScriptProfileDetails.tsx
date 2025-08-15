@@ -49,16 +49,20 @@ const ScriptProfileDetails: FC = () => {
   }));
 
   return (
-    <SidePanel.Body title={profile.title}>
-      <ScriptProfileControl profile={profile} />
-      <Tabs listClassName={classes.tabs} links={links} />
+    <>
+      <SidePanel.Header>{profile.title}</SidePanel.Header>
 
-      {tabId == "info" && <ScriptProfileInfo profile={profile} />}
+      <SidePanel.Content>
+        <ScriptProfileControl profile={profile} />
+        <Tabs listClassName={classes.tabs} links={links} />
 
-      {tabId == "activity-history" && (
-        <ScriptProfileActivityHistory profile={profile} />
-      )}
-    </SidePanel.Body>
+        {tabId == "info" && <ScriptProfileInfo profile={profile} />}
+
+        {tabId == "activity-history" && (
+          <ScriptProfileActivityHistory profile={profile} />
+        )}
+      </SidePanel.Content>
+    </>
   );
 };
 

@@ -58,7 +58,7 @@ const RemovalProfilesPage: FC = () => {
         <RemovalProfileContainer />
       </PageContent>
 
-      <SidePanel isOpen={!!action} close={close}>
+      <SidePanel isOpen={!!action} onClose={close}>
         {action === "add" && (
           <SidePanel.Suspense key="add">
             <RemovalProfileAddSidePanel />

@@ -3,9 +3,12 @@ import type { FC } from "react";
 import SingleUpgradeProfileForm from "../SingleUpgradeProfileForm";
 
 const UpgradeProfileAddSidePanel: FC = () => (
-  <SidePanel.Body title="Add upgrade profile">
-    <SingleUpgradeProfileForm action="add" />
-  </SidePanel.Body>
+  <>
+    <SidePanel.Header>Add upgrade profile</SidePanel.Header>
+    <SidePanel.Content>
+      <SingleUpgradeProfileForm action="add" />
+    </SidePanel.Content>
+  </>
 );
 
 export default UpgradeProfileAddSidePanel;
