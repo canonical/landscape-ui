@@ -46,11 +46,6 @@ const AdministratorsPanelContent: FC<AdministratorsPanelContentProps> = ({
       <AdministratorsPanelHeader />
       <AdministratorList
         administrators={filteredAdministrators}
-        emptyMessage={
-          searchText.trim()
-            ? `No administrators found with the search: "${searchText.trim()}"`
-            : "You have no administrators on your Landscape organization"
-        }
         roles={getRolesQueryResult?.data ?? []}
       />
       {filteredAdministrators.length > 0 && (

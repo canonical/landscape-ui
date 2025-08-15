@@ -10,6 +10,7 @@ import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { getValidationSchema } from "./helpers";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface FormProps {
   email: string;
@@ -77,11 +78,7 @@ const InviteAdministratorForm: FC = () => {
         autoComplete="off"
         required
         {...formik.getFieldProps("name")}
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFormikError(formik, "name")}
       />
 
       <Input
@@ -90,11 +87,7 @@ const InviteAdministratorForm: FC = () => {
         autoComplete="off"
         required
         {...formik.getFieldProps("email")}
-        error={
-          formik.touched.email && formik.errors.email
-            ? formik.errors.email
-            : undefined
-        }
+        error={getFormikError(formik, "email")}
       />
 
       <MultiSelectField

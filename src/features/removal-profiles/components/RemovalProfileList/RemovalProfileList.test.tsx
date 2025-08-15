@@ -18,10 +18,10 @@ describe("RemovalProfileList", () => {
     ]);
   });
 
-  it("renders rows with profile data", () => {
+  it("renders rows with profile data", async () => {
     renderWithProviders(<RemovalProfileList profiles={removalProfiles} />);
 
-    removalProfiles.forEach(async (profile) => {
+    for (const profile of removalProfiles) {
       const row = screen.getByRole("row", {
         name: (name) =>
           name.toLowerCase().includes(profile.title.toLowerCase()),
@@ -44,7 +44,7 @@ describe("RemovalProfileList", () => {
           within(row).getByRole("cell", { name: /tags/i }),
         ).toHaveTextContent(NO_DATA_TEXT);
       }
-    });
+    }
   });
 
   it("filters rows based on search query", () => {

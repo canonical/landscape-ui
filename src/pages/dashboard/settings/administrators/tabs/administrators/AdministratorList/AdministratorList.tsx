@@ -6,25 +6,29 @@ import type { Administrator } from "@/types/Administrator";
 import type { Role } from "@/types/Role";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
-import type { FC, HTMLProps } from "react";
+import type { FC } from "react";
 import { useMemo } from "react";
-import type { Cell, CellProps, Column, TableCellProps } from "react-table";
+import type { CellProps, Column } from "react-table";
 import AdministratorListActions from "../AdministratorListActions";
 import classes from "./AdministratorList.module.scss";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { handleCellProps } from "./helpers";
+import usePageParams from "@/hooks/usePageParams";
 
 interface AdministratorListProps {
   readonly administrators: Administrator[];
-  readonly emptyMessage: string;
   readonly roles: Role[];
 }
 
 const AdministratorList: FC<AdministratorListProps> = ({
   administrators,
-  emptyMessage,
   roles,
 }) => {
   const { setSidePanelContent } = useSidePanel();
+  const { search } = usePageParams();
+  const emptyMessage = search.trim()
+    ? `No administrators found with the search: "${search.trim()}".`
+    : "You have no administrators on your Landscape organization.";
 
   const administratorsData = useMemo(() => administrators, [administrators]);
 
@@ -86,23 +90,6 @@ const AdministratorList: FC<AdministratorListProps> = ({
     ],
     [administratorsData, roleOptions],
   );
-
-  const handleCellProps = (cell: Cell<Administrator>) => {
-    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
-      {};
-
-    if (cell.column.id === "name") {
-      cellProps.role = "rowheader";
-    } else if (cell.column.id === "email") {
-      cellProps["aria-label"] = "Email";
-    } else if (cell.column.id === "roles") {
-      cellProps["aria-label"] = "Roles";
-    } else if (cell.column.id === "actions") {
-      cellProps["aria-label"] = "Actions";
-    }
-
-    return cellProps;
-  };
 
   return (
     <ResponsiveTable

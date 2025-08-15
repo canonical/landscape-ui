@@ -128,7 +128,7 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [expandedRowIndex],
+    [expandedRowIndex, accessGroupOptions.length],
   );
 
   return (

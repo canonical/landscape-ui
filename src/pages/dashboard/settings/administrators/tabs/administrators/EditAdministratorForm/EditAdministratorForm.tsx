@@ -8,6 +8,7 @@ import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Administrator } from "@/types/Administrator";
 import type { SelectOption } from "@/types/SelectOption";
+import { getFormikError } from "@/utils/formikErrors";
 import {
   ConfirmationButton,
   Form,
@@ -144,11 +145,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
             items.map(({ value }) => value as string),
           )
         }
-        error={
-          formik.touched.roles && typeof formik.errors.roles === "string"
-            ? formik.errors.roles
-            : undefined
-        }
+        error={getFormikError(formik, "roles")}
       />
 
       <SidePanelFormButtons

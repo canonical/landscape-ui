@@ -3,7 +3,6 @@ import type {
   SingleIdentityProvider,
   SupportedIdentityProvider,
 } from "@/features/auth";
-import type { InvitationSummary } from "@/types/Invitation";
 
 export const identityProviders: IdentityProvider[] = [
   {
@@ -58,21 +57,6 @@ export const supportedProviders: SupportedIdentityProvider[] = [
     provider_label: "Ubuntu One",
     redirect_uri: "http://onward.landscape.yuriy.works/handle-auth/ubuntu-one",
     supported_features: [],
-  },
-];
-
-export const invitations: InvitationSummary[] = [
-  {
-    account_title: "Onward, Inc.",
-    secure_id: "1",
-  },
-  {
-    account_title: "Onward, Inc.",
-    secure_id: "2",
-  },
-  {
-    account_title: "Onward, Inc.",
-    secure_id: "3",
   },
 ];
 
