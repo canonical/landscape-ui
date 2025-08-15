@@ -9,27 +9,27 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy } from "react";
 
-const RebootProfileAddSidePanel = lazy(async () =>
+const RebootProfileAddForm = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileAddSidePanel,
+    default: module.RebootProfileAddForm,
   })),
 );
 
-const RebootProfileDetailsSidePanel = lazy(async () =>
+const RebootProfileDetails = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileDetailsSidePanel,
+    default: module.RebootProfileDetails,
   })),
 );
 
-const RebootProfileDuplicateSidePanel = lazy(async () =>
+const RebootProfileDuplicateForm = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileDuplicateSidePanel,
+    default: module.RebootProfileDuplicateForm,
   })),
 );
 
-const RebootProfileEditSidePanel = lazy(async () =>
+const RebootProfileEditForm = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileEditSidePanel,
+    default: module.RebootProfileEditForm,
   })),
 );
 
@@ -47,10 +47,6 @@ const RebootProfilesPage: FC = () => {
 
   const handleAddProfile = () => {
     setPageParams({ action: "add", rebootProfile: -1 });
-  };
-
-  const closeSidePanel = () => {
-    setPageParams({ action: "", rebootProfile: -1 });
   };
 
   return (
@@ -72,16 +68,22 @@ const RebootProfilesPage: FC = () => {
         <RebootProfilesContainer />
       </PageContent>
 
-      <SidePanel onClose={closeSidePanel} key="add" isOpen={!!action}>
+      <SidePanel
+        onClose={() => {
+          setPageParams({ action: "", rebootProfile: -1 });
+        }}
+        key="add"
+        isOpen={!!action}
+      >
         {action === "add" && (
           <SidePanel.Suspense key="add">
-            <RebootProfileAddSidePanel />
+            <RebootProfileAddForm />
           </SidePanel.Suspense>
         )}
 
         {(action === "duplicate" || action === "view/duplicate") && (
           <SidePanel.Suspense key="duplicate">
-            <RebootProfileDuplicateSidePanel
+            <RebootProfileDuplicateForm
               hasBackButton={action === "view/duplicate"}
             />
           </SidePanel.Suspense>
@@ -89,15 +91,13 @@ const RebootProfilesPage: FC = () => {
 
         {(action === "edit" || action === "view/edit") && (
           <SidePanel.Suspense key="edit">
-            <RebootProfileEditSidePanel
-              hasBackButton={action === "view/edit"}
-            />
+            <RebootProfileEditForm hasBackButton={action === "view/edit"} />
           </SidePanel.Suspense>
         )}
 
         {action === "view" && (
           <SidePanel.Suspense key="view">
-            <RebootProfileDetailsSidePanel />
+            <RebootProfileDetails />
           </SidePanel.Suspense>
         )}
       </SidePanel>

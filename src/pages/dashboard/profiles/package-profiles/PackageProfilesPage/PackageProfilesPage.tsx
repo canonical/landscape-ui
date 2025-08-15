@@ -62,10 +62,6 @@ const PackageProfilesPage: FC = () => {
     setPageParams({ action: "add", packageProfile: "" });
   };
 
-  const closeSidePanel = () => {
-    setPageParams({ action: "", packageProfile: "" });
-  };
-
   return (
     <PageMain>
       <PageHeader
@@ -86,7 +82,9 @@ const PackageProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={closeSidePanel}
+        onClose={() => {
+          setPageParams({ action: "", packageProfile: "" });
+        }}
         isOpen={!!action}
         size={
           action === "add" || action === "constraints" || action === "view"

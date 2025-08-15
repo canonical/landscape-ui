@@ -25,7 +25,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
 
   const { mutateAsync: addConstraints } = addPackageProfileConstraintsQuery;
 
-  const goBack = () => {
+  const handleConstraintsEdit = () => {
     setPageParams({ action: "constraints" });
   };
 
@@ -43,7 +43,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
         ),
       });
 
-      goBack();
+      handleConstraintsEdit();
 
       notify.success({
         message: `${constraints.length} package profile ${pluralize(constraints.length, "constraint")}  added successfully`,
@@ -76,7 +76,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
             submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
             cancelButtonDisabled={formik.isSubmitting}
             hasBackButton
-            onBackButtonPress={goBack}
+            onBackButtonPress={handleConstraintsEdit}
             onCancel={() => {
               setPageParams({ action: "", packageProfile: "" });
             }}

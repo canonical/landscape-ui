@@ -3,17 +3,11 @@ import usePageParams from "@/hooks/usePageParams";
 import { lazy, type FC } from "react";
 import ScriptProfilesPanel from "../ScriptProfilesPanel";
 
-const ScriptProfileAddSidePanel = lazy(
-  () => import("../ScriptProfileAddSidePanel"),
-);
+const ScriptProfileAddForm = lazy(() => import("../ScriptProfileAddForm"));
 
-const ScriptProfileEditSidePanel = lazy(
-  () => import("../ScriptProfileEditSidePanel"),
-);
+const ScriptProfileEditForm = lazy(() => import("../ScriptProfileEditForm"));
 
-const ScriptProfileDetailsSidePanel = lazy(
-  () => import("../ScriptProfileDetailsSidePanel"),
-);
+const ScriptProfileDetails = lazy(() => import("../ScriptProfileDetails"));
 
 const ScriptProfilesTab: FC = () => {
   const { action, setPageParams } = usePageParams();
@@ -29,21 +23,19 @@ const ScriptProfilesTab: FC = () => {
       <SidePanel onClose={close} isOpen={!!action}>
         {action === "add" && (
           <SidePanel.Suspense key="add">
-            <ScriptProfileAddSidePanel />
+            <ScriptProfileAddForm />
           </SidePanel.Suspense>
         )}
 
         {(action === "edit" || action === "view/edit") && (
           <SidePanel.Suspense key="edit">
-            <ScriptProfileEditSidePanel
-              hasBackButton={action === "view/edit"}
-            />
+            <ScriptProfileEditForm hasBackButton={action === "view/edit"} />
           </SidePanel.Suspense>
         )}
 
         {action === "view" && (
           <SidePanel.Suspense key="view">
-            <ScriptProfileDetailsSidePanel />
+            <ScriptProfileDetails />
           </SidePanel.Suspense>
         )}
       </SidePanel>

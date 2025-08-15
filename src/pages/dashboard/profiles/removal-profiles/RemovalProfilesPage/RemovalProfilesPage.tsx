@@ -8,21 +8,21 @@ import RemovalProfileContainer from "@/pages/dashboard/profiles/removal-profiles
 import { Button } from "@canonical/react-components";
 import { lazy, type FC } from "react";
 
-const RemovalProfileAddSidePanel = lazy(async () =>
+const RemovalProfileAddForm = lazy(async () =>
   import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileAddSidePanel,
+    default: module.RemovalProfileAddForm,
   })),
 );
 
-const RemovalProfileDetailsSidePanel = lazy(async () =>
+const RemovalProfileDetails = lazy(async () =>
   import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileDetailsSidePanel,
+    default: module.RemovalProfileDetails,
   })),
 );
 
-const RemovalProfileEditSidePanel = lazy(async () =>
+const RemovalProfileEditForm = lazy(async () =>
   import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileEditSidePanel,
+    default: module.RemovalProfileEditForm,
   })),
 );
 
@@ -61,21 +61,19 @@ const RemovalProfilesPage: FC = () => {
       <SidePanel isOpen={!!action} onClose={closeSidePanel}>
         {action === "add" && (
           <SidePanel.Suspense key="add">
-            <RemovalProfileAddSidePanel />
+            <RemovalProfileAddForm />
           </SidePanel.Suspense>
         )}
 
         {(action === "edit" || action === "view/edit") && (
           <SidePanel.Suspense key="edit">
-            <RemovalProfileEditSidePanel
-              hasBackButton={action === "view/edit"}
-            />
+            <RemovalProfileEditForm hasBackButton={action === "view/edit"} />
           </SidePanel.Suspense>
         )}
 
         {action === "view" && (
           <SidePanel.Suspense key="view">
-            <RemovalProfileDetailsSidePanel />
+            <RemovalProfileDetails />
           </SidePanel.Suspense>
         )}
       </SidePanel>

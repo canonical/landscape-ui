@@ -1,6 +1,7 @@
 import RadioGroup from "@/components/form/RadioGroup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import { INPUT_DATE_FORMAT } from "@/constants";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
@@ -13,6 +14,8 @@ import { useEffect, useState, type FC } from "react";
 import * as Yup from "yup";
 import { useGetSecurityProfileReport } from "../../api";
 import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
+import type { SecurityProfileSidePanelComponentProps } from "../SecurityProfileSidePanel";
+import SecurityProfileSidePanel from "../SecurityProfileSidePanel";
 import classes from "./SecurityProfileDownloadAuditForm.module.scss";
 
 interface SecurityProfileDownloadAuditFormValues {
@@ -23,7 +26,6 @@ interface SecurityProfileDownloadAuditFormValues {
 }
 
 interface SecurityProfileDownloadAuditFormProps {
-  readonly profileId: number;
   readonly hasBackButton?: boolean;
 }
 
@@ -33,9 +35,9 @@ type Status =
   | { type: "ready"; report_uri: string }
   | { type: "error" };
 
-const SecurityProfileDownloadAuditForm: FC<
-  SecurityProfileDownloadAuditFormProps
-> = ({ hasBackButton, profileId: id }) => {
+const Component: FC<
+  SecurityProfileDownloadAuditFormProps & SecurityProfileSidePanelComponentProps
+> = ({ hasBackButton, securityProfile }) => {
   const debug = useDebug();
   const { setPageParams } = usePageParams();
 
@@ -50,6 +52,8 @@ const SecurityProfileDownloadAuditForm: FC<
   const pendingReports = JSON.parse(
     localStorage.getItem("_landscape_pendingSecurityProfileReports") ?? "[]",
   ) as { activityId: number; profileId: number }[];
+
+  const { id } = securityProfile;
 
   const pendingReport = pendingReports.find((report) => report.profileId == id);
 
@@ -175,145 +179,161 @@ const SecurityProfileDownloadAuditForm: FC<
 
   return (
     <>
-      {status.type == "pending" && (
-        <Notification inline title="Your audit is being generated:">
-          Depending on the size and complexity of the audit, this may take up to
-          5 minutes.
-        </Notification>
-      )}
+      <SidePanel.Header>
+        Download audit for {securityProfile.title} security profile
+      </SidePanel.Header>
+      <SidePanel.Content>
+        {status.type == "pending" && (
+          <Notification inline title="Your audit is being generated:">
+            Depending on the size and complexity of the audit, this may take up
+            to 5 minutes.
+          </Notification>
+        )}
 
-      {status.type == "ready" && (
-        <Notification
-          inline
-          title="Your requested audit is ready:"
-          onDismiss={() => {
-            const index = pendingReports.findIndex(
-              (report) => report.profileId == id,
-            );
-
-            setStatus({ type: "okay" });
-
-            if (index == -1) {
-              return;
-            }
-
-            pendingReports.splice(index, 1);
-
-            if (pendingReports.length) {
-              localStorage.setItem(
-                "_landscape_pendingSecurityProfileReports",
-                JSON.stringify(pendingReports),
+        {status.type == "ready" && (
+          <Notification
+            inline
+            title="Your requested audit is ready:"
+            onDismiss={() => {
+              const index = pendingReports.findIndex(
+                (report) => report.profileId == id,
               );
-            } else {
-              localStorage.removeItem(
-                "_landscape_pendingSecurityProfileReports",
-              );
-            }
-          }}
-        >
-          It has been successfully generated and is now available for download.{" "}
-          <Button
-            appearance="link"
-            type="button"
-            className="u-no-margin--bottom u-no-padding--top"
-            onClick={() => {
-              downloadAudit(status.report_uri);
+
+              setStatus({ type: "okay" });
+
+              if (index == -1) {
+                return;
+              }
+
+              pendingReports.splice(index, 1);
+
+              if (pendingReports.length) {
+                localStorage.setItem(
+                  "_landscape_pendingSecurityProfileReports",
+                  JSON.stringify(pendingReports),
+                );
+              } else {
+                localStorage.removeItem(
+                  "_landscape_pendingSecurityProfileReports",
+                );
+              }
             }}
           >
-            Download audit
-          </Button>
-        </Notification>
-      )}
+            It has been successfully generated and is now available for
+            download.{" "}
+            <Button
+              appearance="link"
+              type="button"
+              className="u-no-margin--bottom u-no-padding--top"
+              onClick={() => {
+                downloadAudit(status.report_uri);
+              }}
+            >
+              Download audit
+            </Button>
+          </Notification>
+        )}
 
-      <p>Customize the audit by selecting the scope and the timeframe.</p>
+        <p>Customize the audit by selecting the scope and the timeframe.</p>
 
-      <RadioGroup
-        label="Audit timeframe"
-        field="audit_timeframe"
-        formik={formik}
-        inputs={[
-          {
-            key: "specific-date",
-            label: "Specific date",
-            expansion: (
-              <Input
-                type="date"
-                {...formik.getFieldProps("start_date")}
-                error={getFormikError(formik, "start_date")}
-                max={moment().utc().format(INPUT_DATE_FORMAT)}
-              />
-            ),
-          },
-          {
-            key: "date-range",
-            label: "Date range",
-            expansion: (
-              <div className={classes.dateRange}>
-                <div className={classes.date}>
-                  <Input
-                    type="date"
-                    {...formik.getFieldProps("start_date")}
-                    error={getFormikError(formik, "start_date")}
-                    max={moment(formik.values.end_date)
-                      .utc()
-                      .format(INPUT_DATE_FORMAT)}
-                  />
+        <RadioGroup
+          label="Audit timeframe"
+          field="audit_timeframe"
+          formik={formik}
+          inputs={[
+            {
+              key: "specific-date",
+              label: "Specific date",
+              expansion: (
+                <Input
+                  type="date"
+                  {...formik.getFieldProps("start_date")}
+                  error={getFormikError(formik, "start_date")}
+                  max={moment().utc().format(INPUT_DATE_FORMAT)}
+                />
+              ),
+            },
+            {
+              key: "date-range",
+              label: "Date range",
+              expansion: (
+                <div className={classes.dateRange}>
+                  <div className={classes.date}>
+                    <Input
+                      type="date"
+                      {...formik.getFieldProps("start_date")}
+                      error={getFormikError(formik, "start_date")}
+                      max={moment(formik.values.end_date)
+                        .utc()
+                        .format(INPUT_DATE_FORMAT)}
+                    />
+                  </div>
+
+                  <span className={classes.separator}>-</span>
+
+                  <div className={classes.date}>
+                    <Input
+                      type="date"
+                      {...formik.getFieldProps("end_date")}
+                      error={getFormikError(formik, "end_date")}
+                      max={moment().utc().format(INPUT_DATE_FORMAT)}
+                      min={moment(formik.values.start_date).format(
+                        INPUT_DATE_FORMAT,
+                      )}
+                    />
+                  </div>
                 </div>
+              ),
+            },
+          ]}
+        />
 
-                <span className={classes.separator}>-</span>
+        <RadioGroup
+          label="Level of detail"
+          field="level_of_detail"
+          formik={formik}
+          inputs={[
+            {
+              key: "summary-only",
+              label: "Summary only",
+              help: "High-level overview of audit results",
+            },
+            {
+              key: "detailed-view",
+              label: "Detailed view",
+              help: "Includes rules ID, severity, identifiers and references, description, rationale",
+            },
+          ]}
+        />
 
-                <div className={classes.date}>
-                  <Input
-                    type="date"
-                    {...formik.getFieldProps("end_date")}
-                    error={getFormikError(formik, "end_date")}
-                    max={moment().utc().format(INPUT_DATE_FORMAT)}
-                    min={moment(formik.values.start_date).format(
-                      INPUT_DATE_FORMAT,
-                    )}
-                  />
-                </div>
-              </div>
-            ),
-          },
-        ]}
-      />
-
-      <RadioGroup
-        label="Level of detail"
-        field="level_of_detail"
-        formik={formik}
-        inputs={[
-          {
-            key: "summary-only",
-            label: "Summary only",
-            help: "High-level overview of audit results",
-          },
-          {
-            key: "detailed-view",
-            label: "Detailed view",
-            help: "Includes rules ID, severity, identifiers and references, description, rationale",
-          },
-        ]}
-      />
-
-      <SidePanelFormButtons
-        onSubmit={() => {
-          formik.handleSubmit();
-        }}
-        submitButtonDisabled={!formik.isValid || isSecurityProfileReportLoading}
-        submitButtonLoading={isSecurityProfileReportLoading}
-        submitButtonText="Generate CSV"
-        hasBackButton={hasBackButton}
-        onBackButtonPress={() => {
-          setPageParams({ action: "view" });
-        }}
-        onCancel={() => {
-          setPageParams({ action: "", securityProfile: -1 });
-        }}
-      />
+        <SidePanelFormButtons
+          onSubmit={() => {
+            formik.handleSubmit();
+          }}
+          submitButtonDisabled={
+            !formik.isValid || isSecurityProfileReportLoading
+          }
+          submitButtonLoading={isSecurityProfileReportLoading}
+          submitButtonText="Generate CSV"
+          hasBackButton={hasBackButton}
+          onBackButtonPress={() => {
+            setPageParams({ action: "view" });
+          }}
+          onCancel={() => {
+            setPageParams({ action: "", securityProfile: -1 });
+          }}
+        />
+      </SidePanel.Content>
     </>
   );
 };
+
+const SecurityProfileDownloadAuditForm: FC<
+  SecurityProfileDownloadAuditFormProps
+> = (props) => (
+  <SecurityProfileSidePanel
+    Component={(componentProps) => <Component {...props} {...componentProps} />}
+  />
+);
 
 export default SecurityProfileDownloadAuditForm;

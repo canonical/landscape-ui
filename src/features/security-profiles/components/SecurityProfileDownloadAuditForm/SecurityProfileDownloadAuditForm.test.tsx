@@ -1,4 +1,3 @@
-import { securityProfiles } from "@/tests/mocks/securityProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -7,9 +6,7 @@ import SecurityProfileDownloadAuditForm from "./SecurityProfileDownloadAuditForm
 
 describe("SecurityProfileDownloadAuditForm", () => {
   it("should start an activity", async () => {
-    renderWithProviders(
-      <SecurityProfileDownloadAuditForm profileId={securityProfiles[0].id} />,
-    );
+    renderWithProviders(<SecurityProfileDownloadAuditForm />);
 
     await userEvent.click(
       await screen.findByRole("button", { name: "Generate CSV" }),
