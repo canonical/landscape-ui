@@ -210,7 +210,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
                     formik.setFieldTouched("tags", true, false);
                   }}
                   error={getFormikError(formik, "tags")}
-                  scrollOverflow
                 />
               )}
 
@@ -235,7 +234,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
                     formik.setFieldTouched("instanceIds", true, false);
                   }}
                   error={getFormikError(formik, "instanceIds")}
-                  scrollOverflow
                 />
               )}
             </div>

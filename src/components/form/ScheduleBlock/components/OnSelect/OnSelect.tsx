@@ -29,7 +29,6 @@ const OnSelect = <T extends ScheduleBlockFormProps>({
               items.map(({ value }) => value),
             )
           }
-          scrollOverflow={true}
           isSortedAlphabetically={false}
           hasSelectedItemsFirst={false}
           required
@@ -67,7 +66,6 @@ const OnSelect = <T extends ScheduleBlockFormProps>({
           }
           isSortedAlphabetically={false}
           hasSelectedItemsFirst={false}
-          scrollOverflow={true}
           required
         />
       );
