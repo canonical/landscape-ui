@@ -58,23 +58,27 @@ const RemovalProfilesPage: FC = () => {
         <RemovalProfileContainer />
       </PageContent>
 
-      {action === "add" && (
-        <SidePanel close={close} key="add">
-          <RemovalProfileAddSidePanel />
-        </SidePanel>
-      )}
+      <SidePanel isOpen={!!action} close={close}>
+        {action === "add" && (
+          <SidePanel.Suspense key="add">
+            <RemovalProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "edit" || action === "view/edit") && (
-        <SidePanel close={close} key="edit">
-          <RemovalProfileEditSidePanel hasBackButton={action === "view/edit"} />
-        </SidePanel>
-      )}
+        {(action === "edit" || action === "view/edit") && (
+          <SidePanel.Suspense key="edit">
+            <RemovalProfileEditSidePanel
+              hasBackButton={action === "view/edit"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {action === "view" && (
-        <SidePanel close={close} key="view">
-          <RemovalProfileDetailsSidePanel />
-        </SidePanel>
-      )}
+        {action === "view" && (
+          <SidePanel.Suspense key="view">
+            <RemovalProfileDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

@@ -26,23 +26,27 @@ const ScriptProfilesTab: FC = () => {
     <>
       <ScriptProfilesPanel />
 
-      {action === "add" && (
-        <SidePanel close={close} key="add">
-          <ScriptProfileAddSidePanel />
-        </SidePanel>
-      )}
+      <SidePanel close={close} isOpen={!!action}>
+        {action === "add" && (
+          <SidePanel.Suspense key="add">
+            <ScriptProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "edit" || action === "view/edit") && (
-        <SidePanel close={close} key="edit">
-          <ScriptProfileEditSidePanel hasBackButton={action === "view/edit"} />
-        </SidePanel>
-      )}
+        {(action === "edit" || action === "view/edit") && (
+          <SidePanel.Suspense key="edit">
+            <ScriptProfileEditSidePanel
+              hasBackButton={action === "view/edit"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {action === "view" && (
-        <SidePanel close={close} key="view">
-          <ScriptProfileDetailsSidePanel />
-        </SidePanel>
-      )}
+        {action === "view" && (
+          <SidePanel.Suspense key="view">
+            <ScriptProfileDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </>
   );
 };

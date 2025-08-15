@@ -59,23 +59,27 @@ const UpgradeProfilesPage: FC = () => {
         <UpgradeProfilesContainer />
       </PageContent>
 
-      {action === "add" && (
-        <SidePanel close={close} key="add">
-          <UpgradeProfileAddSidePanel />
-        </SidePanel>
-      )}
+      <SidePanel close={close} isOpen={!!action}>
+        {action === "add" && (
+          <SidePanel.Suspense key="add">
+            <UpgradeProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "edit" || action === "view/edit") && (
-        <SidePanel close={close} key="edit">
-          <UpgradeProfileEditSidePanel hasBackButton={action === "view/edit"} />
-        </SidePanel>
-      )}
+        {(action === "edit" || action === "view/edit") && (
+          <SidePanel.Suspense key="edit">
+            <UpgradeProfileEditSidePanel
+              hasBackButton={action === "view/edit"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {action === "view" && (
-        <SidePanel close={close} key="view">
-          <UpgradeProfileDetailsSidePanel />
-        </SidePanel>
-      )}
+        {action === "view" && (
+          <SidePanel.Suspense key="view">
+            <UpgradeProfileDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

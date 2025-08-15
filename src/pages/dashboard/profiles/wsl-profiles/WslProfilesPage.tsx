@@ -124,29 +124,35 @@ const WslProfilesPage: FC = () => {
         </>
       )}
 
-      {action === "add" && (
-        <SidePanel close={closeSidePanel} key="add">
-          <WslProfileAddSidePanel />
-        </SidePanel>
-      )}
+      <SidePanel
+        close={closeSidePanel}
+        isOpen={!!action}
+        size={action === "noncompliant" ? "large" : undefined}
+      >
+        {action === "add" && (
+          <SidePanel.Suspense key="add">
+            <WslProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "edit" || action === "view/edit") && (
-        <SidePanel close={closeSidePanel} key="edit">
-          <WslProfileEditSidePanel hasBackButton={action === "view/edit"} />
-        </SidePanel>
-      )}
+        {(action === "edit" || action === "view/edit") && (
+          <SidePanel.Suspense key="edit">
+            <WslProfileEditSidePanel hasBackButton={action === "view/edit"} />
+          </SidePanel.Suspense>
+        )}
 
-      {action === "noncompliant" && (
-        <SidePanel close={closeSidePanel} key="noncompliant" size="large">
-          <WslProfileNonCompliantInstancesSidePanel />
-        </SidePanel>
-      )}
+        {action === "noncompliant" && (
+          <SidePanel.Suspense key="noncompliant">
+            <WslProfileNonCompliantInstancesSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-      {action === "view" && (
-        <SidePanel close={closeSidePanel} key="view">
-          <WslProfileDetailsSidePanel />
-        </SidePanel>
-      )}
+        {action === "view" && (
+          <SidePanel.Suspense key="view">
+            <WslProfileDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

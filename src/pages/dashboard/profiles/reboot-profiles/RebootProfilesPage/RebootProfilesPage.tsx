@@ -72,31 +72,35 @@ const RebootProfilesPage: FC = () => {
         <RebootProfilesContainer />
       </PageContent>
 
-      {action === "add" && (
-        <SidePanel close={close} key="add">
-          <RebootProfileAddSidePanel />
-        </SidePanel>
-      )}
+      <SidePanel close={close} key="add" isOpen={!!action}>
+        {action === "add" && (
+          <SidePanel.Suspense key="add">
+            <RebootProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "duplicate" || action === "view/duplicate") && (
-        <SidePanel close={close} key="duplicate">
-          <RebootProfileDuplicateSidePanel
-            hasBackButton={action === "view/duplicate"}
-          />
-        </SidePanel>
-      )}
+        {(action === "duplicate" || action === "view/duplicate") && (
+          <SidePanel.Suspense key="duplicate">
+            <RebootProfileDuplicateSidePanel
+              hasBackButton={action === "view/duplicate"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "edit" || action === "view/edit") && (
-        <SidePanel close={close} key="edit">
-          <RebootProfileEditSidePanel hasBackButton={action === "view/edit"} />
-        </SidePanel>
-      )}
+        {(action === "edit" || action === "view/edit") && (
+          <SidePanel.Suspense key="edit">
+            <RebootProfileEditSidePanel
+              hasBackButton={action === "view/edit"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {action === "view" && (
-        <SidePanel close={close} key="view">
-          <RebootProfileDetailsSidePanel />
-        </SidePanel>
-      )}
+        {action === "view" && (
+          <SidePanel.Suspense key="view">
+            <RebootProfileDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

@@ -133,49 +133,55 @@ const SecurityProfilesPage: FC = () => {
           )}
       </PageContent>
 
-      {action === "add" && (
-        <SidePanel close={close} key="add">
-          <SecurityProfileAddSidePanel onSuccess={onAddProfile} />
-        </SidePanel>
-      )}
+      <SidePanel
+        close={close}
+        isOpen={!!action}
+        size={action === "view" ? "medium" : undefined}
+      >
+        {action === "add" && (
+          <SidePanel.Suspense key="add">
+            <SecurityProfileAddSidePanel onSuccess={onAddProfile} />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "download" || action === "view/download") && (
-        <SidePanel close={close} key="download">
-          <SecurityProfileDownloadAuditSidePanel
-            hasBackButton={action === "view/download"}
-          />
-        </SidePanel>
-      )}
+        {(action === "download" || action === "view/download") && (
+          <SidePanel.Suspense key="download">
+            <SecurityProfileDownloadAuditSidePanel
+              hasBackButton={action === "view/download"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "duplicate" || action === "view/duplicate") && (
-        <SidePanel close={close} key="duplicate">
-          <SecurityProfileDuplicateSidePanel
-            hasBackButton={action === "view/duplicate"}
-          />
-        </SidePanel>
-      )}
+        {(action === "duplicate" || action === "view/duplicate") && (
+          <SidePanel.Suspense key="duplicate">
+            <SecurityProfileDuplicateSidePanel
+              hasBackButton={action === "view/duplicate"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "edit" || action === "view/edit") && (
-        <SidePanel close={close} key="edit">
-          <SecurityProfileEditSidePanel
-            hasBackButton={action === "view/edit"}
-          />
-        </SidePanel>
-      )}
+        {(action === "edit" || action === "view/edit") && (
+          <SidePanel.Suspense key="edit">
+            <SecurityProfileEditSidePanel
+              hasBackButton={action === "view/edit"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "run" || action === "view/run") && (
-        <SidePanel close={close} key="run">
-          <SecurityProfileRunFixSidePanel
-            hasBackButton={action === "view/run"}
-          />
-        </SidePanel>
-      )}
+        {(action === "run" || action === "view/run") && (
+          <SidePanel.Suspense key="run">
+            <SecurityProfileRunFixSidePanel
+              hasBackButton={action === "view/run"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {action === "view" && (
-        <SidePanel close={close} key="view" size="medium">
-          <SecurityProfileDetailsSidePanel />
-        </SidePanel>
-      )}
+        {action === "view" && (
+          <SidePanel.Suspense key="view">
+            <SecurityProfileDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

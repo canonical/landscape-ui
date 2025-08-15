@@ -14,7 +14,9 @@ const Body: FC<BodyProps> = ({ children, title }) => {
   return (
     <>
       <SidePanel.Header>
-        <SidePanel.HeaderTitle>{title}</SidePanel.HeaderTitle>
+        {title !== undefined && (
+          <SidePanel.HeaderTitle>{title}</SidePanel.HeaderTitle>
+        )}
 
         <SidePanel.HeaderControls>
           <Button appearance="base" hasIcon onClick={close}>

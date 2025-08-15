@@ -78,37 +78,49 @@ const PackageProfilesPage: FC = () => {
         <PackageProfilesContainer />
       </PageContent>
 
-      {action === "add" && (
-        <SidePanel close={close} key="add" size="medium">
-          <PackageProfileAddSidePanel />
-        </SidePanel>
-      )}
+      <SidePanel
+        close={close}
+        isOpen={!!action}
+        size={
+          action === "add" || action === "constraints" || action === "view"
+            ? "medium"
+            : undefined
+        }
+      >
+        {action === "add" && (
+          <SidePanel.Suspense key="add">
+            <PackageProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-      {action === "constraints" && (
-        <SidePanel close={close} key="constraints" size="medium">
-          <PackageProfileConstraintsSidePanel />
-        </SidePanel>
-      )}
+        {action === "constraints" && (
+          <SidePanel.Suspense key="constraints">
+            <PackageProfileConstraintsSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "duplicate" || action === "view/duplicate") && (
-        <SidePanel close={close} key="duplicate">
-          <PackageProfileDuplicateSidePanel
-            hasBackButton={action === "view/duplicate"}
-          />
-        </SidePanel>
-      )}
+        {(action === "duplicate" || action === "view/duplicate") && (
+          <SidePanel.Suspense key="duplicate">
+            <PackageProfileDuplicateSidePanel
+              hasBackButton={action === "view/duplicate"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {(action === "edit" || action === "view/edit") && (
-        <SidePanel close={close} key="edit">
-          <PackageProfileEditSidePanel hasBackButton={action === "view/edit"} />
-        </SidePanel>
-      )}
+        {(action === "edit" || action === "view/edit") && (
+          <SidePanel.Suspense key="edit">
+            <PackageProfileEditSidePanel
+              hasBackButton={action === "view/edit"}
+            />
+          </SidePanel.Suspense>
+        )}
 
-      {action === "view" && (
-        <SidePanel close={close} key="view" size="medium">
-          <PackageProfileDetailsSidePanel />
-        </SidePanel>
-      )}
+        {action === "view" && (
+          <SidePanel.Suspense key="view">
+            <PackageProfileDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };
