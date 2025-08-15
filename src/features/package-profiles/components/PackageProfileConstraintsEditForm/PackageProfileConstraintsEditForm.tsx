@@ -3,6 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import type { FormikHelpers } from "formik";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -19,13 +20,12 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./PackageProfileConstraintsEditForm.module.scss";
 
 interface PackageProfileConstraintsEditFormProps {
-  readonly onOpenAddConstraintsForm: () => void;
   readonly profile: PackageProfile;
 }
 
 const PackageProfileConstraintsEditForm: FC<
   PackageProfileConstraintsEditFormProps
-> = ({ onOpenAddConstraintsForm: openAddConstraintsForm, profile }) => {
+> = ({ profile }) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -46,6 +46,7 @@ const PackageProfileConstraintsEditForm: FC<
 
   const debug = useDebug();
   const { notify } = useNotify();
+  const { setPageParams } = usePageParams();
   const {
     editPackageProfileConstraintQuery,
     getPackageProfileConstraintsQuery,
@@ -124,7 +125,9 @@ const PackageProfileConstraintsEditForm: FC<
                 setSelectedIds={(value) => {
                   setSelectedIds(value);
                 }}
-                onOpenAddConstraintsForm={openAddConstraintsForm}
+                onOpenAddConstraintsForm={() => {
+                  setPageParams({ action: "constraints/add" });
+                }}
               />
             }
             onSearch={(searchText) => {

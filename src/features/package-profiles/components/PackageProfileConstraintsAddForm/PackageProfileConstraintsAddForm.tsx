@@ -13,19 +13,22 @@ import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
 import { VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileConstraintsAddFormProps {
-  readonly onGoBack: () => void;
   readonly profile: PackageProfile;
 }
 
 const PackageProfileConstraintsAddForm: FC<
   PackageProfileConstraintsAddFormProps
-> = ({ onGoBack: goBack, profile }) => {
+> = ({ profile }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { setPageParams } = usePageParams();
   const { addPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: addConstraints } = addPackageProfileConstraintsQuery;
+
+  const goBack = () => {
+    setPageParams({ action: "constraints" });
+  };
 
   const handleSubmit = async ({ constraints }: ConstraintsFormProps) => {
     try {

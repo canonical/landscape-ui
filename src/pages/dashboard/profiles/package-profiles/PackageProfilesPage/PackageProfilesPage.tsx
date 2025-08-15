@@ -8,15 +8,21 @@ import PackageProfilesContainer from "@/pages/dashboard/profiles/package-profile
 import { Button } from "@canonical/react-components";
 import { lazy, type FC } from "react";
 
-const PackageProfileConstraintsSidePanel = lazy(async () =>
-  import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileConstraintsSidePanel,
-  })),
-);
-
 const PackageProfileAddSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
     default: module.PackageProfileCreateForm,
+  })),
+);
+
+const PackageProfileConstraintsAddSidePanel = lazy(async () =>
+  import("@/features/package-profiles").then((module) => ({
+    default: module.PackageProfileConstraintsAddSidePanel,
+  })),
+);
+
+const PackageProfileConstraintsEditSidePanel = lazy(async () =>
+  import("@/features/package-profiles").then((module) => ({
+    default: module.PackageProfileConstraintsEditSidePanel,
   })),
 );
 
@@ -44,6 +50,7 @@ const PackageProfilesPage: FC = () => {
   useSetDynamicFilterValidation("action", [
     "add",
     "constraints",
+    "constraints/add",
     "duplicate",
     "edit",
     "view",
@@ -95,7 +102,13 @@ const PackageProfilesPage: FC = () => {
 
         {action === "constraints" && (
           <SidePanel.Suspense key="constraints">
-            <PackageProfileConstraintsSidePanel />
+            <PackageProfileConstraintsEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {action === "constraints/add" && (
+          <SidePanel.Suspense key="constraints/add">
+            <PackageProfileConstraintsAddSidePanel />
           </SidePanel.Suspense>
         )}
 

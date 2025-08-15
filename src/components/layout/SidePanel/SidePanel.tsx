@@ -6,10 +6,10 @@ import type { ReactNode } from "react";
 import { useContext, type FC } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { FallbackComponent } from "../AppErrorBoundary/FallbackComponent";
+import CloseContext from "./CloseContext";
 import type { HeaderProps } from "./Header";
 import Header from "./Header";
 import LoadingState from "./LoadingState";
-import OnCloseContext from "./OnCloseContext";
 import classes from "./SidePanel.module.scss";
 import type { SuspenseProps } from "./Suspense";
 import Suspense from "./Suspense";
@@ -35,7 +35,7 @@ const SidePanel: FC<SidePanelProps> & {
       isAnimated
       {...props}
     >
-      <OnCloseContext value={onClose}>
+      <CloseContext value={onClose}>
         <ErrorBoundary
           FallbackComponent={(fallbackProps) => (
             <>
@@ -48,7 +48,7 @@ const SidePanel: FC<SidePanelProps> & {
         >
           {children}
         </ErrorBoundary>
-      </OnCloseContext>
+      </CloseContext>
     </SidePanelBase>
   );
 };
