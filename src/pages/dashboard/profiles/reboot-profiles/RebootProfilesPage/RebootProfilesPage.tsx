@@ -17,7 +17,7 @@ const RebootProfileAddSidePanel = lazy(async () =>
 
 const RebootProfileDetailsSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileDetails,
+    default: module.RebootProfileDetailsSidePanel,
   })),
 );
 
@@ -49,7 +49,7 @@ const RebootProfilesPage: FC = () => {
     setPageParams({ action: "add", rebootProfile: -1 });
   };
 
-  const close = () => {
+  const closeSidePanel = () => {
     setPageParams({ action: "", rebootProfile: -1 });
   };
 
@@ -72,7 +72,7 @@ const RebootProfilesPage: FC = () => {
         <RebootProfilesContainer />
       </PageContent>
 
-      <SidePanel onClose={close} key="add" isOpen={!!action}>
+      <SidePanel onClose={closeSidePanel} key="add" isOpen={!!action}>
         {action === "add" && (
           <SidePanel.Suspense key="add">
             <RebootProfileAddSidePanel />

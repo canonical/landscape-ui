@@ -45,7 +45,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   const { mutateAsync: createRemovalProfile } = createRemovalProfileQuery;
   const { mutateAsync: editRemovalProfile } = editRemovalProfileQuery;
 
-  const close = () => {
+  const closeSidePanel = () => {
     setPageParams({ action: "", removalProfile: -1 });
   };
 
@@ -74,7 +74,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
         await createRemovalProfile(valuesToSubmit);
       }
 
-      close();
+      closeSidePanel();
 
       notify.success({
         message: `Removal profile ${NOTIFICATION_ACTIONS[props.action]}`,
@@ -156,7 +156,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_LABELS[props.action]}
-        onCancel={close}
+        onCancel={closeSidePanel}
         hasBackButton={props.hasBackButton}
         onBackButtonPress={() => {
           setPageParams({ action: "view" });

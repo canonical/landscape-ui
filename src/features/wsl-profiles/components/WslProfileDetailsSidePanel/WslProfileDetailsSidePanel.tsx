@@ -12,7 +12,7 @@ import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
 import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfileRemoveModal from "../WslProfileRemoveModal";
 
-const WslProfileDetails: FC = () => {
+const WslProfileDetailsSidePanel: FC = () => {
   const { wslProfile: wslProfileName, setPageParams } = usePageParams();
 
   const { getAccessGroupQuery } = useRoles();
@@ -169,7 +169,6 @@ const WslProfileDetails: FC = () => {
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>
-
       <WslProfileRemoveModal
         isOpen={isRemoveModalOpen}
         close={closeRemoveModal}
@@ -179,4 +178,4 @@ const WslProfileDetails: FC = () => {
   );
 };
 
-export default WslProfileDetails;
+export default WslProfileDetailsSidePanel;

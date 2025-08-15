@@ -7,11 +7,11 @@ import type { ScriptProfile } from "../../types";
 import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 
 interface ScriptProfilesListActionsProps {
-  readonly profile: ScriptProfile;
+  readonly scriptProfile: ScriptProfile;
 }
 
 const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
-  profile,
+  scriptProfile,
 }) => {
   const { setPageParams } = usePageParams();
 
@@ -26,22 +26,22 @@ const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
       icon: "show",
       label: "View details",
       onClick: () => {
-        setPageParams({ action: "view", scriptProfile: profile.id });
+        setPageParams({ action: "view", scriptProfile: scriptProfile.id });
       },
     },
   ];
 
-  if (!profile.archived) {
+  if (!scriptProfile.archived) {
     nondestructiveActions.push({
       icon: "edit",
       label: "Edit",
       onClick: () => {
-        setPageParams({ action: "edit", scriptProfile: profile.id });
+        setPageParams({ action: "edit", scriptProfile: scriptProfile.id });
       },
     });
   }
 
-  const destructiveActions: Action[] | undefined = !profile.archived
+  const destructiveActions: Action[] | undefined = !scriptProfile.archived
     ? [
         {
           icon: "archive",
@@ -54,15 +54,14 @@ const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${profile.title} script profile actions`}
+        toggleAriaLabel={`${scriptProfile.title} script profile actions`}
         actions={nondestructiveActions}
         destructiveActions={destructiveActions}
       />
-
       <ScriptProfileArchiveModal
         onClose={closeArchiveModal}
         opened={archiveModalOpened}
-        profile={profile}
+        profile={scriptProfile}
       />
     </>
   );

@@ -8,13 +8,13 @@ export interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ children }) => {
-  const close = useContext(OnCloseContext);
+  const onClose = useContext(OnCloseContext);
 
   return (
     <SidePanel.Header>
       <SidePanel.HeaderTitle>{children}</SidePanel.HeaderTitle>
       <SidePanel.HeaderControls>
-        <Button appearance="base" hasIcon onClick={close}>
+        <Button appearance="base" hasIcon onClick={onClose}>
           <Icon name="close" />
         </Button>
       </SidePanel.HeaderControls>

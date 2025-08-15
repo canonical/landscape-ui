@@ -13,13 +13,13 @@ import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
 import { VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileConstraintsAddFormProps {
-  readonly handleConstraintsEdit: () => void;
+  readonly onGoBack: () => void;
   readonly profile: PackageProfile;
 }
 
 const PackageProfileConstraintsAddForm: FC<
   PackageProfileConstraintsAddFormProps
-> = ({ handleConstraintsEdit, profile }) => {
+> = ({ onGoBack: goBack, profile }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { setPageParams } = usePageParams();
@@ -41,7 +41,7 @@ const PackageProfileConstraintsAddForm: FC<
         ),
       });
 
-      handleConstraintsEdit();
+      goBack();
 
       notify.success({
         message: `${constraints.length} package profile ${pluralize(constraints.length, "constraint")}  added successfully`,
@@ -69,7 +69,7 @@ const PackageProfileConstraintsAddForm: FC<
         submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
         cancelButtonDisabled={formik.isSubmitting}
         hasBackButton
-        onBackButtonPress={handleConstraintsEdit}
+        onBackButtonPress={goBack}
         onCancel={() => {
           setPageParams({ action: "", packageProfile: "" });
         }}

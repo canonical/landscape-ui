@@ -32,9 +32,9 @@ import classes from "./RebootProfilesForm.module.scss";
 import type { FormProps, RebootProfilesFormProps } from "./types";
 
 const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
-  const { setPageParams } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
+  const { setPageParams } = usePageParams();
   const { notify } = useNotify();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -48,7 +48,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
       value: name,
     })) ?? [];
 
-  const close = () => {
+  const closeSidePanel = () => {
     setPageParams({ action: "", rebootProfile: -1 });
   };
 
@@ -90,7 +90,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
           });
         }
 
-        close();
+        closeSidePanel();
 
         notify.success({
           message: `Reboot profile "${values.title}" has been ${NOTIFICATION_ACTIONS[props.action]} `,
@@ -287,7 +287,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             isCreatingRebootProfile ||
             isEditingRebootProfile
           }
-          onCancel={close}
+          onCancel={closeSidePanel}
           hasBackButton={props.hasBackButton}
           onBackButtonPress={() => {
             setPageParams({ action: "view" });

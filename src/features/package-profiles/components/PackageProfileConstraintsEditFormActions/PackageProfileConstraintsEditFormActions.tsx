@@ -22,7 +22,7 @@ import classes from "./PackageProfileConstraintsEditFormActions.module.scss";
 interface PackageProfileConstraintsEditFormActionsProps {
   readonly filter: PackageProfileConstraintType | "";
   readonly formik: FormikContextType<Constraint>;
-  readonly handleConstraintsAdd: () => void;
+  readonly onOpenAddConstraintsForm: () => void;
   readonly onFilterChange: (value: PackageProfileConstraintType | "") => void;
   readonly profile: PackageProfile;
   readonly selectedIds: number[];
@@ -34,7 +34,7 @@ const PackageProfileConstraintsEditFormActions: FC<
 > = ({
   filter,
   formik,
-  handleConstraintsAdd,
+  onOpenAddConstraintsForm: handleConstraintsAdd,
   onFilterChange,
   profile,
   selectedIds,

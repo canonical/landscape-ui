@@ -36,7 +36,7 @@ const UpgradeProfilesPage: FC = () => {
     setPageParams({ action: "add", upgradeProfile: -1 });
   };
 
-  const close = () => {
+  const closeSidePanel = () => {
     setPageParams({ action: "", upgradeProfile: -1 });
   };
 
@@ -59,7 +59,7 @@ const UpgradeProfilesPage: FC = () => {
         <UpgradeProfilesContainer />
       </PageContent>
 
-      <SidePanel onClose={close} isOpen={!!action}>
+      <SidePanel onClose={closeSidePanel} isOpen={!!action}>
         {action === "add" && (
           <SidePanel.Suspense key="add">
             <UpgradeProfileAddSidePanel />

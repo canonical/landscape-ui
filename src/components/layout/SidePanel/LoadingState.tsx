@@ -3,9 +3,12 @@ import LoadingStateBase from "../LoadingState";
 import SidePanel from "./SidePanel";
 
 const LoadingState: FC = () => (
-  <SidePanel.Content>
-    <LoadingStateBase />
-  </SidePanel.Content>
+  <>
+    <SidePanel.Header />
+    <SidePanel.Content>
+      <LoadingStateBase />
+    </SidePanel.Content>
+  </>
 );
 
 export default LoadingState;

@@ -33,7 +33,7 @@ const PackageProfileCreateForm: FC = () => {
 
   const { mutateAsync: createPackageProfile } = createPackageProfileQuery;
 
-  const close = () => {
+  const closeSidePanel = () => {
     setPageParams({ action: "", packageProfile: "" });
   };
 
@@ -68,7 +68,7 @@ const PackageProfileCreateForm: FC = () => {
     try {
       await createPackageProfile(valuesToProfileCreation);
 
-      close();
+      closeSidePanel();
 
       notify.success({
         message: `Profile "${values.title}" added successfully`,
@@ -88,7 +88,6 @@ const PackageProfileCreateForm: FC = () => {
   return (
     <>
       <SidePanel.Header>Add package profile</SidePanel.Header>
-
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
           <Input
@@ -122,7 +121,7 @@ const PackageProfileCreateForm: FC = () => {
           <SidePanelFormButtons
             submitButtonDisabled={formik.isSubmitting}
             submitButtonText="Add package profile"
-            onCancel={close}
+            onCancel={closeSidePanel}
           />
         </Form>
       </SidePanel.Content>

@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import moment from "moment";
 import { describe, expect, it } from "vitest";
 import { formatWeeklyRebootSchedule } from "./helpers";
-import RebootProfileDetails from "./RebootProfileDetails";
+import RebootProfileDetailsSidePanel from "./RebootProfileDetailsSidePanel";
 
 const [profile] = rebootProfiles;
 const accessGroupOptions = accessGroups.map((group) => ({
@@ -19,7 +19,9 @@ describe("RebootProfileDetails", () => {
   const user = userEvent.setup();
 
   it("renders all info items correctly", () => {
-    const { container } = renderWithProviders(<RebootProfileDetails />);
+    const { container } = renderWithProviders(
+      <RebootProfileDetailsSidePanel />,
+    );
     const accessGroup = accessGroupOptions.find(
       (opt) => opt.value === profile.access_group,
     )?.label;
@@ -54,7 +56,7 @@ describe("RebootProfileDetails", () => {
   });
 
   it("opens a modal on remove button click and allows profile removal", async () => {
-    renderWithProviders(<RebootProfileDetails />);
+    renderWithProviders(<RebootProfileDetailsSidePanel />);
 
     await user.click(
       screen.getByRole("button", {

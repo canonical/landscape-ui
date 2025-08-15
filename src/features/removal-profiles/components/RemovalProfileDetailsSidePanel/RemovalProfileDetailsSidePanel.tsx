@@ -12,13 +12,13 @@ import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useRemovalProfiles } from "../../hooks";
 
-const RemovalProfileDetails: FC = () => {
+const RemovalProfileDetailsSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { removalProfile: removalProfileId, setPageParams } = usePageParams();
-
   const { getRemovalProfilesQuery, removeRemovalProfileQuery } =
     useRemovalProfiles();
+
   const {
     data: getRemovalProfilesQueryResponse,
     isPending: isGettingRemovalProfiles,
@@ -157,26 +157,25 @@ const RemovalProfileDetails: FC = () => {
             )}
           </Blocks.Item>
         </Blocks>
-
-        <TextConfirmationModal
-          isOpen={modalOpen}
-          title="Remove package profile"
-          confirmationText={`remove ${profile.title}`}
-          confirmButtonLabel="Remove"
-          confirmButtonAppearance="negative"
-          confirmButtonDisabled={isRemoving}
-          confirmButtonLoading={isRemoving}
-          onConfirm={handleRemovalProfileRemove}
-          close={handleCloseModal}
-        >
-          <p>
-            This will remove &quot;{profile.title}&quot; profile. This action is{" "}
-            <b>irreversible</b>.
-          </p>
-        </TextConfirmationModal>
       </SidePanel.Content>
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        title="Remove package profile"
+        confirmationText={`remove ${profile.title}`}
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        onConfirm={handleRemovalProfileRemove}
+        close={handleCloseModal}
+      >
+        <p>
+          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+          <b>irreversible</b>.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };
 
-export default RemovalProfileDetails;
+export default RemovalProfileDetailsSidePanel;

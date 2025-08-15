@@ -6,9 +6,9 @@ import { useGetScriptProfile } from "../../api";
 import ScriptProfileActivityHistory from "../ScriptProfileActivityHistory";
 import ScriptProfileControl from "../ScriptProfileControl";
 import ScriptProfileInfo from "../ScriptProfileInfo";
-import classes from "./ScriptProfileDetails.module.scss";
+import classes from "./ScriptProfileDetailsSidePanel.module.scss";
 
-const ScriptProfileDetails: FC = () => {
+const ScriptProfileDetailsSidePanel: FC = () => {
   const { scriptProfile: scriptProfileId } = usePageParams();
 
   const {
@@ -51,7 +51,6 @@ const ScriptProfileDetails: FC = () => {
   return (
     <>
       <SidePanel.Header>{profile.title}</SidePanel.Header>
-
       <SidePanel.Content>
         <ScriptProfileControl profile={profile} />
         <Tabs listClassName={classes.tabs} links={links} />
@@ -66,4 +65,4 @@ const ScriptProfileDetails: FC = () => {
   );
 };
 
-export default ScriptProfileDetails;
+export default ScriptProfileDetailsSidePanel;

@@ -11,13 +11,13 @@ import { useAddSecurityProfile } from "../../api";
 import { notifyCreation } from "../../helpers";
 import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
 import type { SecurityProfileFormValues } from "../../types/SecurityProfileAddFormValues";
-import classes from "./SecurityProfileAddForm.module.scss";
+import classes from "./SecurityProfileAddSidePanel.module.scss";
 
 interface SecurityProfileAddFormProps {
   readonly onSuccess: (values: SecurityProfileFormValues) => void;
 }
 
-const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
+const SecurityProfileAddSidePanel: FC<SecurityProfileAddFormProps> = ({
   onSuccess,
 }) => {
   const { notify } = useNotify();
@@ -113,4 +113,4 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
   );
 };
 
-export default SecurityProfileAddForm;
+export default SecurityProfileAddSidePanel;

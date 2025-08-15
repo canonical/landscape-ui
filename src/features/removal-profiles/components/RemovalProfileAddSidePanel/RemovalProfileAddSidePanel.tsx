@@ -5,7 +5,6 @@ import SingleRemovalProfileForm from "../SingleRemovalProfileForm";
 const RemovalProfileAddSidePanel: FC = () => (
   <>
     <SidePanel.Header>Add removal profile</SidePanel.Header>
-
     <SidePanel.Content>
       <SingleRemovalProfileForm action="add" />
     </SidePanel.Content>

@@ -168,11 +168,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
       },
     ],
-    [
-      accessGroupOptions.length,
-      expandedRowIndex,
-      handlePackageProfileDetailsOpen,
-    ],
+    [accessGroupOptions.length, expandedRowIndex],
   );
 
   return (

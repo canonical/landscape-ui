@@ -15,31 +15,29 @@ import { useGetRebootProfiles, useRemoveRebootProfileQuery } from "../../api";
 import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import { formatWeeklyRebootSchedule } from "./helpers";
 
-const RebootProfileDetails: FC = () => {
+const RebootProfileDetailsSidePanel: FC = () => {
+  const {
+    value: modalOpen,
+    setFalse: handleCloseModal,
+    setTrue: handleOpenModal,
+  } = useBoolean();
+
   const debug = useDebug();
   const { notify } = useNotify();
   const { rebootProfile: rebootProfileId, setPageParams } = usePageParams();
-
+  const { removeRebootProfile, isRemovingRebootProfile } =
+    useRemoveRebootProfileQuery();
+  const {
+    rebootProfiles,
+    isPending: isGettingRebootProfiles,
+    rebootProfilesError: rebootProfilesError,
+  } = useGetRebootProfiles();
   const { getAccessGroupQuery } = useRoles();
   const {
     data: accessGroupsData,
     isPending: isGettingAccessGroups,
     error: accessGroupsError,
   } = getAccessGroupQuery();
-
-  const {
-    rebootProfiles,
-    isPending: isGettingRebootProfiles,
-    error: rebootProfilesError,
-  } = useGetRebootProfiles();
-  const { removeRebootProfile, isRemovingRebootProfile } =
-    useRemoveRebootProfileQuery();
-
-  const {
-    value: modalOpen,
-    setTrue: handleOpenModal,
-    setFalse: handleCloseModal,
-  } = useBoolean();
 
   if (rebootProfilesError) {
     throw rebootProfilesError;
@@ -87,7 +85,6 @@ const RebootProfileDetails: FC = () => {
   return (
     <>
       <SidePanel.Header>{profile.title}</SidePanel.Header>
-
       <SidePanel.Content>
         <div className="p-segmented-control">
           <Button
@@ -192,7 +189,6 @@ const RebootProfileDetails: FC = () => {
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>
-
       <TextConfirmationModal
         isOpen={modalOpen}
         title="Remove reboot profile"
@@ -215,4 +211,4 @@ const RebootProfileDetails: FC = () => {
   );
 };
 
-export default RebootProfileDetails;
+export default RebootProfileDetailsSidePanel;

@@ -40,7 +40,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       value: name,
     })) ?? [];
 
-  const close = () => {
+  const closeSidePanel = () => {
     setPageParams({ action: "", packageProfile: "" });
   };
 
@@ -60,7 +60,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
     try {
       await copyPackageProfile(valuesToSubmit);
 
-      close();
+      closeSidePanel();
 
       notify.success({
         message: `Profile "${profile.title}" duplicated successfully`,
@@ -128,7 +128,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
         submitButtonText="Duplicate"
         hasBackButton={hasBackButton}
         onBackButtonPress={goBack}
-        onCancel={close}
+        onCancel={closeSidePanel}
       />
     </Form>
   );

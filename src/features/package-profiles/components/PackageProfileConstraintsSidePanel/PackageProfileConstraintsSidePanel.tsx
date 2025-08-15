@@ -38,11 +38,10 @@ const PackageProfileConstraintsSidePanel: FC = () => {
           <SidePanel.Header>
             Change &quot;{packageProfile.title}&quot; profile&apos;s constraints
           </SidePanel.Header>
-
           <SidePanel.Content>
             <PackageProfileConstraintsEditForm
               profile={packageProfile}
-              openAddForm={() => {
+              onOpenAddConstraintsForm={() => {
                 setAction("add");
               }}
             />
@@ -57,11 +56,10 @@ const PackageProfileConstraintsSidePanel: FC = () => {
             Add package constraints to &quot;${packageProfile.title}&quot;
             profile
           </SidePanel.Header>
-
           <SidePanel.Content>
             <PackageProfileConstraintsAddForm
               profile={packageProfile}
-              handleConstraintsEdit={() => {
+              onGoBack={() => {
                 setAction("edit");
               }}
             />

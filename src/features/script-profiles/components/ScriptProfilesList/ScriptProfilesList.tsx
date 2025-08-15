@@ -132,7 +132,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original: profile } }: CellProps<ScriptProfile>) => (
-          <ScriptProfilesListActions profile={profile} />
+          <ScriptProfilesListActions scriptProfile={profile} />
         ),
       },
     ],

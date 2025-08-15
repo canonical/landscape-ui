@@ -13,7 +13,7 @@ interface ScriptProfileArchiveModalProps {
 const ScriptProfileArchiveModal: FC<ScriptProfileArchiveModalProps> = ({
   profile,
   opened,
-  onClose,
+  onClose: closeArchivingModal,
 }) => {
   const { notify } = useNotify();
 
@@ -23,7 +23,7 @@ const ScriptProfileArchiveModal: FC<ScriptProfileArchiveModalProps> = ({
   const confirmArchiving = async () => {
     await archiveScriptProfile({ ...profile });
 
-    onClose();
+    closeArchivingModal();
 
     notify.success({
       title: `You have successfully archived "${profile.title}"`,
@@ -39,7 +39,7 @@ const ScriptProfileArchiveModal: FC<ScriptProfileArchiveModalProps> = ({
       confirmButtonDisabled={isArchivingScriptProfile}
       confirmButtonLoading={isArchivingScriptProfile}
       onConfirm={confirmArchiving}
-      close={onClose}
+      close={closeArchivingModal}
       confirmationText={`archive ${profile.title}`}
     >
       <p>

@@ -1,6 +1,7 @@
 import ApplicationIdContext from "@/context/applicationId";
 import type { SidePanelProps as SidePanelBaseProps } from "@canonical/react-components";
 import { SidePanel as SidePanelBase } from "@canonical/react-components";
+import Content from "@canonical/react-components/dist/components/SidePanel/common/Content";
 import type { ReactNode } from "react";
 import { useContext, type FC } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -37,9 +38,12 @@ const SidePanel: FC<SidePanelProps> & {
       <OnCloseContext value={onClose}>
         <ErrorBoundary
           FallbackComponent={(fallbackProps) => (
-            <Header>
-              <FallbackComponent {...fallbackProps} />
-            </Header>
+            <>
+              <Header />
+              <Content>
+                <FallbackComponent {...fallbackProps} />
+              </Content>
+            </>
           )}
         >
           {children}
@@ -49,7 +53,7 @@ const SidePanel: FC<SidePanelProps> & {
   );
 };
 
-SidePanel.Content = SidePanelBase.Content;
+SidePanel.Content = Content;
 SidePanel.Header = Header;
 SidePanel.LoadingState = LoadingState;
 SidePanel.Suspense = Suspense;

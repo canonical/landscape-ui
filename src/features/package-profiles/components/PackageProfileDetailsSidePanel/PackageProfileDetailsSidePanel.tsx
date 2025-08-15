@@ -13,7 +13,7 @@ import { usePackageProfiles } from "../../hooks";
 import PackageProfileAssociatedInstancesLink from "../PackageProfileAssociatedInstancesLink";
 import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraints";
 
-const PackageProfileDetails: FC = () => {
+const PackageProfileDetailsSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { packageProfile: packageProfileName, setPageParams } = usePageParams();
@@ -78,7 +78,6 @@ const PackageProfileDetails: FC = () => {
   return (
     <>
       <SidePanel.Header>{profile.title}</SidePanel.Header>
-
       <SidePanel.Content>
         <div className="p-segmented-control">
           <Button
@@ -158,26 +157,25 @@ const PackageProfileDetails: FC = () => {
         </InfoGrid>
 
         <PackageProfileDetailsConstraints profile={profile} />
-
-        <TextConfirmationModal
-          isOpen={modalOpen}
-          title="Remove package profile"
-          confirmButtonLabel="Remove"
-          confirmButtonAppearance="negative"
-          confirmButtonLoading={isRemoving}
-          confirmButtonDisabled={isRemoving}
-          close={handleCloseModal}
-          confirmationText={`remove ${profile.title}`}
-          onConfirm={handleRemovePackageProfile}
-        >
-          <p>
-            This will remove &quot;{profile.title}&quot; profile. This action is{" "}
-            <b>irreversible</b>.
-          </p>
-        </TextConfirmationModal>
       </SidePanel.Content>
+      <TextConfirmationModal
+        isOpen={modalOpen}
+        title="Remove package profile"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonLoading={isRemoving}
+        confirmButtonDisabled={isRemoving}
+        close={handleCloseModal}
+        confirmationText={`remove ${profile.title}`}
+        onConfirm={handleRemovePackageProfile}
+      >
+        <p>
+          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+          <b>irreversible</b>.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };
 
-export default PackageProfileDetails;
+export default PackageProfileDetailsSidePanel;

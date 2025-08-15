@@ -14,7 +14,6 @@ const ScriptProfileAddSidePanel: FC = () => {
   return (
     <>
       <SidePanel.Header>Add script profile</SidePanel.Header>
-
       <SidePanel.Content>
         <ScriptProfileForm
           initialValues={{

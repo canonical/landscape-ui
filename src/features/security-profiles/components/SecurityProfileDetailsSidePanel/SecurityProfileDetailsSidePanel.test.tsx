@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import SecurityProfileDetails from "./SecurityProfileDetails";
+import SecurityProfileDetails from "./SecurityProfileDetailsSidePanel";
 
 describe("SecurityProfileDetails", () => {
   it("should render without data", async () => {

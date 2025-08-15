@@ -35,7 +35,7 @@ const RemovalProfilesPage: FC = () => {
     setPageParams({ action: "add", removalProfile: -1 });
   };
 
-  const close = () => {
+  const closeSidePanel = () => {
     setPageParams({ action: "", rebootProfile: -1 });
   };
 
@@ -58,7 +58,7 @@ const RemovalProfilesPage: FC = () => {
         <RemovalProfileContainer />
       </PageContent>
 
-      <SidePanel isOpen={!!action} onClose={close}>
+      <SidePanel isOpen={!!action} onClose={closeSidePanel}>
         {action === "add" && (
           <SidePanel.Suspense key="add">
             <RemovalProfileAddSidePanel />

@@ -22,7 +22,7 @@ const PackageProfileAddSidePanel = lazy(async () =>
 
 const PackageProfileDetailsSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileDetails,
+    default: module.PackageProfileDetailsSidePanel,
   })),
 );
 
@@ -55,7 +55,7 @@ const PackageProfilesPage: FC = () => {
     setPageParams({ action: "add", packageProfile: "" });
   };
 
-  const close = () => {
+  const closeSidePanel = () => {
     setPageParams({ action: "", packageProfile: "" });
   };
 
@@ -79,7 +79,7 @@ const PackageProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={close}
+        onClose={closeSidePanel}
         isOpen={!!action}
         size={
           action === "add" || action === "constraints" || action === "view"

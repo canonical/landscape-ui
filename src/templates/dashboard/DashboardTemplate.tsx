@@ -17,13 +17,13 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
   const { pathname } = useLocation();
   const hasSecondaryNav = matchPath("/account/*", pathname);
   const isLargeScreen = useMediaQuery("(min-width: 620px)");
-  const sidePanelId = useId();
+  const applicationId = useId();
 
   return (
-    <div id={sidePanelId} className="l-application" role="presentation">
+    <div id={applicationId} className="l-application" role="presentation">
       <SidePanelProvider>
         <Sidebar />
-        <ApplicationIdContext value={sidePanelId}>
+        <ApplicationIdContext value={applicationId}>
           <main className={classNames("l-main", classes.wrapper)}>
             {hasSecondaryNav && isLargeScreen && (
               <div

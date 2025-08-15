@@ -1,6 +1,6 @@
 export { default as PackageProfileConstraintsSidePanel } from "./components/PackageProfileConstraintsSidePanel";
 export { default as PackageProfileCreateForm } from "./components/PackageProfileCreateForm";
-export { default as PackageProfileDetails } from "./components/PackageProfileDetails";
+export { default as PackageProfileDetailsSidePanel } from "./components/PackageProfileDetailsSidePanel";
 export { default as PackageProfileDuplicateSidePanel } from "./components/PackageProfileDuplicateSidePanel";
 export { default as PackageProfileEditSidePanel } from "./components/PackageProfileEditSidePanel";
 export { default as PackageProfileHeader } from "./components/PackageProfileHeader";

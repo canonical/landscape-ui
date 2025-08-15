@@ -4,7 +4,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import RemovalProfileDetails from "./RemovalProfileDetails";
+import RemovalProfileDetailsSidePanel from "./RemovalProfileDetailsSidePanel";
 
 const [profile] = removalProfiles;
 const accessGroupOptions = accessGroups.map((group) => ({
@@ -16,7 +16,9 @@ describe("RemovalProfileDetails", () => {
   const user = userEvent.setup();
 
   it("renders all info items correctly", () => {
-    const { container } = renderWithProviders(<RemovalProfileDetails />);
+    const { container } = renderWithProviders(
+      <RemovalProfileDetailsSidePanel />,
+    );
 
     const accessGroup =
       accessGroupOptions.find((option) => option.value === profile.access_group)
@@ -37,7 +39,7 @@ describe("RemovalProfileDetails", () => {
   });
 
   it("renders Edit and Remove buttons with correct aria-labels", () => {
-    renderWithProviders(<RemovalProfileDetails />);
+    renderWithProviders(<RemovalProfileDetailsSidePanel />);
 
     const editButton = screen.getByRole("button", {
       name: `Edit ${profile.title}`,
@@ -51,7 +53,7 @@ describe("RemovalProfileDetails", () => {
   });
 
   it("opens modal and enables remove button after confirmation text", async () => {
-    renderWithProviders(<RemovalProfileDetails />);
+    renderWithProviders(<RemovalProfileDetailsSidePanel />);
 
     await user.click(
       screen.getByRole("button", { name: `Remove ${profile.title}` }),

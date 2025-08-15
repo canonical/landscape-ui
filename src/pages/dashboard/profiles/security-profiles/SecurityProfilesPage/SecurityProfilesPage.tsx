@@ -16,7 +16,7 @@ import { Fragment, lazy, useState } from "react";
 
 const SecurityProfileAddSidePanel = lazy(() =>
   import("@/features/security-profiles").then((module) => ({
-    default: module.SecurityProfileAddForm,
+    default: module.SecurityProfileAddSidePanel,
   })),
 );
 
@@ -46,7 +46,7 @@ const SecurityProfileRunFixSidePanel = lazy(() =>
 
 const SecurityProfileDetailsSidePanel = lazy(() =>
   import("@/features/security-profiles").then((module) => ({
-    default: module.SecurityProfileDetails,
+    default: module.SecurityProfileDetailsSidePanel,
   })),
 );
 
@@ -77,7 +77,7 @@ const SecurityProfilesPage: FC = () => {
     "view/run",
   ]);
 
-  const close = () => {
+  const closeSidePanel = () => {
     setPageParams({ action: "", securityProfile: -1 });
   };
 
@@ -134,7 +134,7 @@ const SecurityProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={close}
+        onClose={closeSidePanel}
         isOpen={!!action}
         size={action === "view" ? "medium" : undefined}
       >

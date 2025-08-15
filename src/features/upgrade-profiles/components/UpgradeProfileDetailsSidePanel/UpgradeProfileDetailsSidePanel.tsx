@@ -14,7 +14,7 @@ import { useBoolean } from "usehooks-ts";
 import { useUpgradeProfiles } from "../../hooks";
 import { getScheduleInfo } from "./helpers";
 
-const UpgradeProfileDetails: FC = () => {
+const UpgradeProfileDetailsSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { upgradeProfile: upgradeProfileId, setPageParams } = usePageParams();
@@ -189,4 +189,4 @@ const UpgradeProfileDetails: FC = () => {
   );
 };
 
-export default UpgradeProfileDetails;
+export default UpgradeProfileDetailsSidePanel;

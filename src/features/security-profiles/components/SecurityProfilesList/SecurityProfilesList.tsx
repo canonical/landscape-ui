@@ -285,14 +285,12 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   );
 
   return (
-    <>
-      <ResponsiveTable
-        emptyMsg="No security profiles found according to your search parameters."
-        columns={columns}
-        data={securityProfiles}
-        minWidth={1200}
-      />
-    </>
+    <ResponsiveTable
+      emptyMsg="No security profiles found according to your search parameters."
+      columns={columns}
+      data={securityProfiles}
+      minWidth={1200}
+    />
   );
 };
 

@@ -29,11 +29,15 @@ export default function useGetRebootProfiles() {
       ...config,
     });
 
-  const { data, isPending, error } = getRebootProfilesQuery();
+  const {
+    data,
+    isPending,
+    error: rebootProfilesError,
+  } = getRebootProfilesQuery();
 
   return {
     rebootProfiles: data?.data.results || [],
     isPending,
-    error,
+    rebootProfilesError,
   };
 }

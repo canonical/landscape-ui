@@ -6,6 +6,10 @@ import type { FC } from "react";
 const PackageProfilesEmptyState: FC = () => {
   const { setPageParams } = usePageParams();
 
+  const handleCreatePackageProfile = () => {
+    setPageParams({ action: "add" });
+  };
+
   return (
     <EmptyState
       body={
@@ -25,9 +29,7 @@ const PackageProfilesEmptyState: FC = () => {
           type="button"
           key="add"
           appearance="positive"
-          onClick={() => {
-            setPageParams({ action: "add" });
-          }}
+          onClick={handleCreatePackageProfile}
         >
           Add package profile
         </Button>,

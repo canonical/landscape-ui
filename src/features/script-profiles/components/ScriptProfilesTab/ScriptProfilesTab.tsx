@@ -12,7 +12,7 @@ const ScriptProfileEditSidePanel = lazy(
 );
 
 const ScriptProfileDetailsSidePanel = lazy(
-  () => import("../ScriptProfileDetails"),
+  () => import("../ScriptProfileDetailsSidePanel"),
 );
 
 const ScriptProfilesTab: FC = () => {

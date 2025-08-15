@@ -1,5 +1,5 @@
 export { default as RebootProfileAddSidePanel } from "./components/RebootProfileAddSidePanel";
-export { default as RebootProfileDetails } from "./components/RebootProfileDetails";
+export { default as RebootProfileDetailsSidePanel } from "./components/RebootProfileDetailsSidePanel";
 export { default as RebootProfileDuplicateSidePanel } from "./components/RebootProfileDuplicateSidePanel";
 export { default as RebootProfileEditSidePanel } from "./components/RebootProfileEditSidePanel";
 export { default as RebootProfilesContainer } from "./components/RebootProfilesContainer";

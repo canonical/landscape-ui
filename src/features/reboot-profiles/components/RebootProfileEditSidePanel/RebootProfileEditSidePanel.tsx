@@ -13,14 +13,15 @@ const RebootProfileEditSidePanel: FC<RebootProfileEditSidePanelProps> = ({
 }) => {
   const { rebootProfile: rebootProfileId } = usePageParams();
 
-  const { rebootProfiles, isPending, error } = useGetRebootProfiles();
+  const { rebootProfiles, isPending, rebootProfilesError } =
+    useGetRebootProfiles();
 
   if (isPending) {
     return <SidePanel.LoadingState />;
   }
 
-  if (error) {
-    throw error;
+  if (rebootProfilesError) {
+    throw rebootProfilesError;
   }
 
   const rebootProfile = rebootProfiles.find(({ id }) => id === rebootProfileId);

@@ -2,11 +2,13 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import SecurityProfileAddForm from "./SecurityProfileAddForm";
+import SecurityProfileAddSidePanel from "./SecurityProfileAddSidePanel";
 
 describe("SecurityProfileAddForm", () => {
   it("should have a back button after the first page", async () => {
-    renderWithProviders(<SecurityProfileAddForm onSuccess={() => undefined} />);
+    renderWithProviders(
+      <SecurityProfileAddSidePanel onSuccess={() => undefined} />,
+    );
 
     await userEvent.type(
       screen.getByRole("textbox", { name: "Title" }),
