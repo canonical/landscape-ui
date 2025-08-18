@@ -1,5 +1,6 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import {
   Button,
@@ -22,7 +23,6 @@ import classes from "./PackageProfileConstraintsEditFormActions.module.scss";
 interface PackageProfileConstraintsEditFormActionsProps {
   readonly filter: PackageProfileConstraintType | "";
   readonly formik: FormikContextType<Constraint>;
-  readonly onOpenAddConstraintsForm: () => void;
   readonly onFilterChange: (value: PackageProfileConstraintType | "") => void;
   readonly profile: PackageProfile;
   readonly selectedIds: number[];
@@ -34,7 +34,6 @@ const PackageProfileConstraintsEditFormActions: FC<
 > = ({
   filter,
   formik,
-  onOpenAddConstraintsForm: handleConstraintsAdd,
   onFilterChange,
   profile,
   selectedIds,
@@ -42,6 +41,7 @@ const PackageProfileConstraintsEditFormActions: FC<
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
+  const { pushSidePath } = usePageParams();
   const { removePackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: removeConstraints, isPending: isRemoving } =
@@ -63,6 +63,10 @@ const PackageProfileConstraintsEditFormActions: FC<
     } catch (error) {
       debug(error);
     }
+  };
+
+  const handleConstraintsAdd = () => {
+    pushSidePath("add-constraints");
   };
 
   return (

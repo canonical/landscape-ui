@@ -85,9 +85,9 @@ const PackageProfilesPage: FC = () => {
         }}
         isOpen={!!sidePath.length}
         size={
-          peekSidePath() === "add" ||
-          peekSidePath() === "edit-constraints" ||
-          peekSidePath() === "view"
+          ["add", "add-constraints", "edit-constraints", "view"].includes(
+            peekSidePath(),
+          )
             ? "medium"
             : undefined
         }

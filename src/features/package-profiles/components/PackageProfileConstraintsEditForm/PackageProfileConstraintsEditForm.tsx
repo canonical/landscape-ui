@@ -4,7 +4,6 @@ import SidePanel from "@/components/layout/SidePanel";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import type { FormikHelpers } from "formik";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -41,7 +40,6 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { pushSidePath } = usePageParams();
   const {
     editPackageProfileConstraintQuery,
     getPackageProfileConstraintsQuery,
@@ -124,9 +122,6 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
                   selectedIds={selectedIds}
                   setSelectedIds={(value) => {
                     setSelectedIds(value);
-                  }}
-                  onOpenAddConstraintsForm={() => {
-                    pushSidePath("add-constraints");
                   }}
                 />
               }

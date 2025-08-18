@@ -18,6 +18,8 @@ import { getScheduleInfo } from "./helpers";
 
 const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
   upgradeProfile: profile,
+  disableQuery,
+  enableQuery,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -50,6 +52,8 @@ const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
   const { scheduleMessage, nextRunMessage } = getScheduleInfo(profile);
 
   const handleRemoveUpgradeProfile = async () => {
+    disableQuery();
+
     try {
       await removeUpgradeProfile({ name: profile.name });
 
@@ -61,6 +65,7 @@ const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
       });
     } catch (error) {
       debug(error);
+      enableQuery();
     } finally {
       handleCloseModal();
     }

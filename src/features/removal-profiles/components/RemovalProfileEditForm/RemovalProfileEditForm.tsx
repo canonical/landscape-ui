@@ -11,7 +11,6 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
     <SidePanel.Header>
       Edit &quot;{removalProfile.title}&quot; profile
     </SidePanel.Header>
-
     <SidePanel.Content>
       <SingleRemovalProfileForm action="edit" profile={removalProfile} />;
     </SidePanel.Content>

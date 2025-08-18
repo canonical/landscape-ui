@@ -76,7 +76,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
                   key={profile.id}
                 >
                   {profile.title}
-                  {index < script.script_profiles.length - 1 ? ", " : ""}{" "}
+                  {index < script.script_profiles.length - 1 ? ", " : ""}
                 </StaticLink>
               ))
             : null

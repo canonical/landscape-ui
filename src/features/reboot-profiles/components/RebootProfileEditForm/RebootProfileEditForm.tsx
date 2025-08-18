@@ -9,7 +9,6 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
 }) => (
   <>
     <SidePanel.Header>Edit {rebootProfile.title}</SidePanel.Header>
-
     <SidePanel.Content>
       <RebootProfilesForm action="edit" profile={rebootProfile} />;
     </SidePanel.Content>

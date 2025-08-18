@@ -1,11 +1,14 @@
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import { useGetWslProfile } from "../../api";
 import type { WslProfile } from "../../types";
 
 export interface WslProfileSidePanelComponentProps {
   wslProfile: WslProfile;
+  disableQuery: () => void;
+  enableQuery: () => void;
 }
 
 interface WslProfileSidePanelProps {
@@ -15,8 +18,15 @@ interface WslProfileSidePanelProps {
 const WslProfileSidePanel: FC<WslProfileSidePanelProps> = ({ Component }) => {
   const { wslProfile: wslProfileName } = usePageParams();
 
+  const {
+    value: queryEnabled,
+    setTrue: enableQuery,
+    setFalse: disableQuery,
+  } = useBoolean(true);
+
   const { wslProfile, isGettingWslProfile, wslProfileError } = useGetWslProfile(
     { profile_name: wslProfileName },
+    { enabled: queryEnabled },
   );
 
   if (isGettingWslProfile) {
@@ -27,7 +37,13 @@ const WslProfileSidePanel: FC<WslProfileSidePanelProps> = ({ Component }) => {
     throw wslProfileError;
   }
 
-  return <Component wslProfile={wslProfile} />;
+  return (
+    <Component
+      wslProfile={wslProfile}
+      disableQuery={disableQuery}
+      enableQuery={enableQuery}
+    />
+  );
 };
 
 export default WslProfileSidePanel;

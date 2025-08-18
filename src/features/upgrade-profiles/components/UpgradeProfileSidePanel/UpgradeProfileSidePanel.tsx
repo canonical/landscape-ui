@@ -1,11 +1,14 @@
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import { useUpgradeProfiles } from "../../hooks";
 import type { UpgradeProfile } from "../../types";
 
 export interface UpgradeProfileSidePanelComponentProps {
   upgradeProfile: UpgradeProfile;
+  disableQuery: () => void;
+  enableQuery: () => void;
 }
 
 interface UpgradeProfileSidePanelProps {
@@ -17,12 +20,18 @@ const UpgradeProfileSidePanel: FC<UpgradeProfileSidePanelProps> = ({
 }) => {
   const { upgradeProfile: upgradeProfileId } = usePageParams();
 
+  const {
+    value: queryEnabled,
+    setTrue: enableQuery,
+    setFalse: disableQuery,
+  } = useBoolean(true);
+
   const { getUpgradeProfilesQuery } = useUpgradeProfiles();
   const {
     data: getUpgradeProfilesQueryResponse,
     isPending: isGettingUpgradeProfiles,
     error: upgradeProfilesError,
-  } = getUpgradeProfilesQuery();
+  } = getUpgradeProfilesQuery(undefined, { enabled: queryEnabled });
 
   if (upgradeProfilesError) {
     throw upgradeProfilesError;
@@ -40,7 +49,13 @@ const UpgradeProfileSidePanel: FC<UpgradeProfileSidePanelProps> = ({
     throw new Error("The upgrade profile could not be found.");
   }
 
-  return <Component upgradeProfile={upgradeProfile} />;
+  return (
+    <Component
+      upgradeProfile={upgradeProfile}
+      disableQuery={disableQuery}
+      enableQuery={enableQuery}
+    />
+  );
 };
 
 export default UpgradeProfileSidePanel;

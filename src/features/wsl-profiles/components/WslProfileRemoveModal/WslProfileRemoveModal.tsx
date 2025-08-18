@@ -12,10 +12,14 @@ interface WslProfileRemoveModalProps
     "children" | "confirmationText" | "confirmButtonLabel" | "onConfirm"
   > {
   readonly wslProfile: WslProfile;
+  readonly enableQuery?: () => void;
+  readonly disableQuery?: () => void;
 }
 
 const WslProfileRemoveModal: FC<WslProfileRemoveModalProps> = ({
   wslProfile,
+  enableQuery,
+  disableQuery,
   ...props
 }) => {
   const debug = useDebug();
@@ -25,6 +29,8 @@ const WslProfileRemoveModal: FC<WslProfileRemoveModalProps> = ({
   const { deleteWslProfile, isDeletingWslProfile } = useDeleteWslProfile();
 
   const handleRemoveWslProfile = async () => {
+    disableQuery?.();
+
     try {
       await deleteWslProfile({ name: wslProfile.name });
 
@@ -36,6 +42,7 @@ const WslProfileRemoveModal: FC<WslProfileRemoveModalProps> = ({
       });
     } catch (error) {
       debug(error);
+      enableQuery?.();
     } finally {
       props.close();
     }

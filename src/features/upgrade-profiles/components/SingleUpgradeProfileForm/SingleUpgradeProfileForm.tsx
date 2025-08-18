@@ -27,7 +27,7 @@ type SingleUpgradeProfileFormProps =
 const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { popSidePath, sidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { createUpgradeProfileQuery, editUpgradeProfileQuery } =
     useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
