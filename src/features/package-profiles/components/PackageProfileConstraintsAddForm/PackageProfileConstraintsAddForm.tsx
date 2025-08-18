@@ -20,14 +20,10 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { addPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: addConstraints } = addPackageProfileConstraintsQuery;
-
-  const handleConstraintsEdit = () => {
-    setPageParams({ action: "constraints" });
-  };
 
   const handleSubmit = async ({ constraints }: ConstraintsFormProps) => {
     try {
@@ -43,7 +39,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
         ),
       });
 
-      handleConstraintsEdit();
+      popSidePath();
 
       notify.success({
         message: `${constraints.length} package profile ${pluralize(constraints.length, "constraint")}  added successfully`,
@@ -75,10 +71,10 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
             submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
             submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
             cancelButtonDisabled={formik.isSubmitting}
-            hasBackButton
-            onBackButtonPress={handleConstraintsEdit}
+            hasBackButton={sidePath.length > 1}
+            onBackButtonPress={popSidePath}
             onCancel={() => {
-              setPageParams({ action: "", packageProfile: "" });
+              setPageParams({ sidePath: [], packageProfile: "" });
             }}
           />
         </Form>

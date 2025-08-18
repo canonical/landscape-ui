@@ -51,7 +51,7 @@ const SecurityProfileDetails = lazy(() =>
 );
 
 const SecurityProfilesPage: FC = () => {
-  const { action, setPageParams } = usePageParams();
+  const { sidePath, peekSidePath, setPageParams } = usePageParams();
 
   const [isRetentionNotificationVisible, setIsRetentionNotificationVisible] =
     useState(false);
@@ -64,22 +64,14 @@ const SecurityProfilesPage: FC = () => {
     limit: 0,
   });
 
-  useSetDynamicFilterValidation("action", [
+  useSetDynamicFilterValidation("sidePath", [
     "add",
     "download",
     "duplicate",
     "edit",
     "run",
     "view",
-    "view/download",
-    "view/duplicate",
-    "view/edit",
-    "view/run",
   ]);
-
-  const closeSidePanel = () => {
-    setPageParams({ action: "", securityProfile: -1 });
-  };
 
   const onAddProfile = () => {
     setIsRetentionNotificationVisible(true);
@@ -134,45 +126,43 @@ const SecurityProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={closeSidePanel}
-        isOpen={!!action}
-        size={action === "view" ? "medium" : undefined}
+        onClose={() => {
+          setPageParams({ sidePath: [], securityProfile: -1 });
+        }}
+        isOpen={!!sidePath.length}
+        size={peekSidePath() === "view" ? "medium" : undefined}
       >
-        {action === "add" && (
+        {peekSidePath() === "add" && (
           <SidePanel.Suspense key="add">
             <SecurityProfileAddForm onSuccess={onAddProfile} />
           </SidePanel.Suspense>
         )}
 
-        {(action === "download" || action === "view/download") && (
+        {peekSidePath() === "download" && (
           <SidePanel.Suspense key="download">
-            <SecurityProfileDownloadAuditForm
-              hasBackButton={action === "view/download"}
-            />
+            <SecurityProfileDownloadAuditForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "duplicate" || action === "view/duplicate") && (
+        {peekSidePath() === "duplicate" && (
           <SidePanel.Suspense key="duplicate">
-            <SecurityProfileDuplicateForm
-              hasBackButton={action === "view/duplicate"}
-            />
+            <SecurityProfileDuplicateForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "edit" || action === "view/edit") && (
+        {peekSidePath() === "edit" && (
           <SidePanel.Suspense key="edit">
-            <SecurityProfileEditForm hasBackButton={action === "view/edit"} />
+            <SecurityProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "run" || action === "view/run") && (
+        {peekSidePath() === "run" && (
           <SidePanel.Suspense key="run">
-            <SecurityProfileRunFixForm hasBackButton={action === "view/run"} />
+            <SecurityProfileRunFixForm />
           </SidePanel.Suspense>
         )}
 
-        {action === "view" && (
+        {peekSidePath() === "view" && (
           <SidePanel.Suspense key="view">
             <SecurityProfileDetails />
           </SidePanel.Suspense>

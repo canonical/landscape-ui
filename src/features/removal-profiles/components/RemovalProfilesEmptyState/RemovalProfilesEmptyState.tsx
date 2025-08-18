@@ -7,7 +7,7 @@ const RemovalProfilesEmptyState: FC = () => {
   const { setPageParams } = usePageParams();
 
   const handleCreateRemovalProfile = () => {
-    setPageParams({ action: "add", removalProfile: -1 });
+    setPageParams({ sidePath: ["add"], removalProfile: -1 });
   };
 
   return (

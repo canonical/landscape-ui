@@ -21,7 +21,7 @@ const PackageProfileDetailsConstraints: FC<
   const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState("");
 
-  const { setPageParams } = usePageParams();
+  const { pushSidePath } = usePageParams();
   const { getPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const {
@@ -35,7 +35,7 @@ const PackageProfileDetailsConstraints: FC<
   });
 
   const handlePackageConstraintsChange = () => {
-    setPageParams({ action: "constraints" });
+    pushSidePath("edit-constraints");
   };
 
   return (

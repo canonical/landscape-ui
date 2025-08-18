@@ -42,7 +42,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
     })) ?? [];
 
   const handlePackageProfileDetailsOpen = (profile: PackageProfile) => {
-    setPageParams({ action: "view", packageProfile: profile.name });
+    setPageParams({ sidePath: ["view"], packageProfile: profile.name });
   };
 
   const profiles = useMemo(() => {

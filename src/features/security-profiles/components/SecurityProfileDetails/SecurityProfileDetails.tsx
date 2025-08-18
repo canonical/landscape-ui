@@ -29,7 +29,7 @@ import SecurityProfileSidePanel from "../SecurityProfileSidePanel";
 const Component: FC<SecurityProfileSidePanelComponentProps> = ({
   securityProfile: profile,
 }) => {
-  const { setPageParams } = usePageParams();
+  const { pushSidePath } = usePageParams();
 
   const profileLimitReached = useIsSecurityProfilesLimitReached();
   const { getAccessGroupQuery } = useRoles();
@@ -72,7 +72,7 @@ const Component: FC<SecurityProfileSidePanelComponentProps> = ({
               type="button"
               hasIcon
               onClick={() => {
-                setPageParams({ action: "view/download" });
+                pushSidePath("download");
               }}
             >
               <Icon name="file-blank" />
@@ -85,7 +85,7 @@ const Component: FC<SecurityProfileSidePanelComponentProps> = ({
                 type="button"
                 hasIcon
                 onClick={() => {
-                  setPageParams({ action: "view/edit" });
+                  pushSidePath("edit");
                 }}
               >
                 <Icon name="edit" />
@@ -99,7 +99,7 @@ const Component: FC<SecurityProfileSidePanelComponentProps> = ({
                 type="button"
                 hasIcon
                 onClick={() => {
-                  setPageParams({ action: "view/run" });
+                  pushSidePath("run");
                 }}
                 disabled={!profile.associated_instances}
               >
@@ -113,7 +113,7 @@ const Component: FC<SecurityProfileSidePanelComponentProps> = ({
               type="button"
               hasIcon
               onClick={() => {
-                setPageParams({ action: "view/duplicate" });
+                pushSidePath("duplicate");
               }}
               disabled={profileLimitReached}
             >

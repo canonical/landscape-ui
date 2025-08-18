@@ -37,7 +37,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
     try {
       const { data: activity } = await runSecurityProfile({ id: profile.id });
 
-      setPageParams({ action: "", securityProfile: -1 });
+      setPageParams({ sidePath: [], securityProfile: -1 });
 
       const message = getNotificationMessage(profile.mode);
 
@@ -64,7 +64,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
       label: "View details",
       "aria-label": `View "${profile.title}" security profile details`,
       onClick: () => {
-        setPageParams({ action: "view", securityProfile: profile.id });
+        setPageParams({ sidePath: ["view"], securityProfile: profile.id });
       },
     },
     {
@@ -72,7 +72,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
       label: "Download audit",
       "aria-label": `Download "${profile.title}" security profile audit`,
       onClick: () => {
-        setPageParams({ action: "download", securityProfile: profile.id });
+        setPageParams({ sidePath: ["download"], securityProfile: profile.id });
       },
     },
   ];
@@ -84,7 +84,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
         label: "Edit",
         "aria-label": `Edit "${profile.title}" security profile`,
         onClick: () => {
-          setPageParams({ action: "edit", securityProfile: profile.id });
+          setPageParams({ sidePath: ["edit"], securityProfile: profile.id });
         },
       },
       {
@@ -97,7 +97,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
             return;
           }
 
-          setPageParams({ action: "run", securityProfile: profile.id });
+          setPageParams({ sidePath: ["run"], securityProfile: profile.id });
         },
         disabled: !profile.associated_instances,
       },
@@ -109,7 +109,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
     label: "Duplicate profile",
     "aria-label": `Duplicate "${profile.title}" security profile`,
     onClick: () => {
-      setPageParams({ action: "duplicate", securityProfile: profile.id });
+      setPageParams({ sidePath: ["duplicate"], securityProfile: profile.id });
     },
     disabled: profileLimitReached,
   });

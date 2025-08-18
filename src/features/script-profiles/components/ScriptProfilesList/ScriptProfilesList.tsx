@@ -37,7 +37,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             appearance="link"
             className="u-no-margin u-no-padding--top u-align-text--left"
             onClick={() => {
-              setPageParams({ action: "view", scriptProfile: profile.id });
+              setPageParams({ sidePath: ["view"], scriptProfile: profile.id });
             }}
           >
             {profile.title}

@@ -41,14 +41,13 @@ const WslProfileNonCompliantInstancesList = lazy(() =>
 );
 
 const WslProfilesPage: FC = () => {
-  const { action, setPageParams } = usePageParams();
+  const { sidePath, peekSidePath, setPageParams } = usePageParams();
 
-  useSetDynamicFilterValidation("action", [
+  useSetDynamicFilterValidation("sidePath", [
     "add",
     "edit",
     "noncompliant",
     "view",
-    "view/edit",
   ]);
 
   const {
@@ -65,15 +64,11 @@ const WslProfilesPage: FC = () => {
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
 
   const handleAddWslProfile = () => {
-    setPageParams({ action: "add", wslProfile: "" });
+    setPageParams({ sidePath: ["add"], wslProfile: "" });
   };
 
   const isWslProfileLimitReached =
     unfilteredWslProfilesCount >= wslProfileLimit;
-
-  const closeSidePanel = () => {
-    setPageParams({ action: "", wslProfile: "" });
-  };
 
   return (
     <PageMain>
@@ -125,29 +120,31 @@ const WslProfilesPage: FC = () => {
       )}
 
       <SidePanel
-        onClose={closeSidePanel}
-        isOpen={!!action}
-        size={action === "noncompliant" ? "large" : undefined}
+        onClose={() => {
+          setPageParams({ sidePath: [], wslProfile: "" });
+        }}
+        isOpen={!!sidePath.length}
+        size={peekSidePath() === "noncompliant" ? "large" : undefined}
       >
-        {action === "add" && (
+        {peekSidePath() === "add" && (
           <SidePanel.Suspense key="add">
             <WslProfileInstallForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "edit" || action === "view/edit") && (
+        {peekSidePath() === "edit" && (
           <SidePanel.Suspense key="edit">
-            <WslProfileEditForm hasBackButton={action === "view/edit"} />
+            <WslProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {action === "noncompliant" && (
+        {peekSidePath() === "noncompliant" && (
           <SidePanel.Suspense key="noncompliant">
             <WslProfileNonCompliantInstancesList />
           </SidePanel.Suspense>
         )}
 
-        {action === "view" && (
+        {peekSidePath() === "view" && (
           <SidePanel.Suspense key="view">
             <WslProfileDetails />
           </SidePanel.Suspense>

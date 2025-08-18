@@ -28,16 +28,12 @@ interface FormProps {
   tags: string[];
 }
 
-interface WslProfileEditFormProps {
-  readonly hasBackButton?: boolean;
-}
-
-const Component: FC<
-  WslProfileEditFormProps & WslProfileSidePanelComponentProps
-> = ({ hasBackButton, wslProfile: profile }) => {
+const Component: FC<WslProfileSidePanelComponentProps> = ({
+  wslProfile: profile,
+}) => {
   const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { notify } = useNotify();
 
   const { editWslProfile } = useEditWslProfile();
@@ -64,7 +60,7 @@ const Component: FC<
     })) ?? [];
 
   const closeSidePanel = () => {
-    setPageParams({ action: "", wslProfile: "" });
+    setPageParams({ sidePath: [], wslProfile: "" });
   };
 
   const handleSubmit = async (values: FormProps) => {
@@ -189,10 +185,8 @@ const Component: FC<
             submitButtonText="Save changes"
             submitButtonDisabled={formik.isSubmitting}
             onCancel={closeSidePanel}
-            hasBackButton={hasBackButton}
-            onBackButtonPress={() => {
-              setPageParams({ action: "view" });
-            }}
+            hasBackButton={sidePath.length > 1}
+            onBackButtonPress={popSidePath}
           />
         </Form>
       </SidePanel.Content>
@@ -200,10 +194,8 @@ const Component: FC<
   );
 };
 
-const WslProfileEditForm: FC<WslProfileEditFormProps> = (props) => (
-  <WslProfileSidePanel
-    Component={(componentProps) => <Component {...props} {...componentProps} />}
-  />
+const WslProfileEditForm: FC = () => (
+  <WslProfileSidePanel Component={Component} />
 );
 
 export default WslProfileEditForm;

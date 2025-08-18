@@ -34,7 +34,7 @@ import type { FormProps, RebootProfilesFormProps } from "./types";
 const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
   const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { notify } = useNotify();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -49,7 +49,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
     })) ?? [];
 
   const closeSidePanel = () => {
-    setPageParams({ action: "", rebootProfile: -1 });
+    setPageParams({ sidePath: [], rebootProfile: -1 });
   };
 
   const formik = useFormik<FormProps>({
@@ -288,10 +288,8 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             isEditingRebootProfile
           }
           onCancel={closeSidePanel}
-          hasBackButton={props.hasBackButton}
-          onBackButtonPress={() => {
-            setPageParams({ action: "view" });
-          }}
+          hasBackButton={sidePath.length > 1}
+          onBackButtonPress={popSidePath}
         />
       </Form>
     </FormikProvider>

@@ -50,7 +50,7 @@ const WslProfileInstallForm: FC = () => {
     })) ?? [];
 
   const closeSidePanel = () => {
-    setPageParams({ action: "" });
+    setPageParams({ sidePath: [] });
   };
 
   const handleSubmit = async (values: FormProps) => {

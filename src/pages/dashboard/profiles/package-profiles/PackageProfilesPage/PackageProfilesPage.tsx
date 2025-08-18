@@ -45,21 +45,19 @@ const PackageProfileEditForm = lazy(async () =>
 );
 
 const PackageProfilesPage: FC = () => {
-  const { action, setPageParams } = usePageParams();
+  const { sidePath, peekSidePath, setPageParams } = usePageParams();
 
-  useSetDynamicFilterValidation("action", [
+  useSetDynamicFilterValidation("sidePath", [
     "add",
-    "constraints",
-    "constraints/add",
+    "add-constraints",
     "duplicate",
     "edit",
+    "edit-constraints",
     "view",
-    "view/duplicate",
-    "view/edit",
   ]);
 
   const handleAddPackageProfile = () => {
-    setPageParams({ action: "add", packageProfile: "" });
+    setPageParams({ sidePath: ["add"], packageProfile: "" });
   };
 
   return (
@@ -83,48 +81,48 @@ const PackageProfilesPage: FC = () => {
 
       <SidePanel
         onClose={() => {
-          setPageParams({ action: "", packageProfile: "" });
+          setPageParams({ sidePath: [], packageProfile: "" });
         }}
-        isOpen={!!action}
+        isOpen={!!sidePath.length}
         size={
-          action === "add" || action === "constraints" || action === "view"
+          peekSidePath() === "add" ||
+          peekSidePath() === "edit-constraints" ||
+          peekSidePath() === "view"
             ? "medium"
             : undefined
         }
       >
-        {action === "add" && (
+        {peekSidePath() === "add" && (
           <SidePanel.Suspense key="add">
             <PackageProfileAddSidePanel />
           </SidePanel.Suspense>
         )}
 
-        {action === "constraints" && (
-          <SidePanel.Suspense key="constraints">
-            <PackageProfileConstraintsEditForm />
-          </SidePanel.Suspense>
-        )}
-
-        {action === "constraints/add" && (
-          <SidePanel.Suspense key="constraints/add">
+        {peekSidePath() === "add-constraints" && (
+          <SidePanel.Suspense key="add-constraints">
             <PackageProfileConstraintsAddForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "duplicate" || action === "view/duplicate") && (
+        {peekSidePath() === "duplicate" && (
           <SidePanel.Suspense key="duplicate">
-            <PackageProfileDuplicateForm
-              hasBackButton={action === "view/duplicate"}
-            />
+            <PackageProfileDuplicateForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "edit" || action === "view/edit") && (
+        {peekSidePath() === "edit" && (
           <SidePanel.Suspense key="edit">
-            <PackageProfileEditForm hasBackButton={action === "view/edit"} />
+            <PackageProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {action === "view" && (
+        {peekSidePath() === "edit-constraints" && (
+          <SidePanel.Suspense key="edit-constraints">
+            <PackageProfileConstraintsEditForm />
+          </SidePanel.Suspense>
+        )}
+
+        {peekSidePath() === "view" && (
           <SidePanel.Suspense key="view">
             <PackageProfileDetails />
           </SidePanel.Suspense>

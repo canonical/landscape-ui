@@ -34,19 +34,17 @@ const RebootProfileEditForm = lazy(async () =>
 );
 
 const RebootProfilesPage: FC = () => {
-  const { action, setPageParams } = usePageParams();
+  const { sidePath, peekSidePath, setPageParams } = usePageParams();
 
-  useSetDynamicFilterValidation("action", [
+  useSetDynamicFilterValidation("sidePath", [
     "add",
     "duplicate",
     "edit",
     "view",
-    "view/duplicate",
-    "view/edit",
   ]);
 
   const handleAddProfile = () => {
-    setPageParams({ action: "add", rebootProfile: -1 });
+    setPageParams({ sidePath: ["add"], rebootProfile: -1 });
   };
 
   return (
@@ -70,32 +68,30 @@ const RebootProfilesPage: FC = () => {
 
       <SidePanel
         onClose={() => {
-          setPageParams({ action: "", rebootProfile: -1 });
+          setPageParams({ sidePath: [], rebootProfile: -1 });
         }}
         key="add"
-        isOpen={!!action}
+        isOpen={!!sidePath.length}
       >
-        {action === "add" && (
+        {peekSidePath() === "add" && (
           <SidePanel.Suspense key="add">
             <RebootProfileAddForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "duplicate" || action === "view/duplicate") && (
+        {peekSidePath() === "duplicate" && (
           <SidePanel.Suspense key="duplicate">
-            <RebootProfileDuplicateForm
-              hasBackButton={action === "view/duplicate"}
-            />
+            <RebootProfileDuplicateForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "edit" || action === "view/edit") && (
+        {peekSidePath() === "edit" && (
           <SidePanel.Suspense key="edit">
-            <RebootProfileEditForm hasBackButton={action === "view/edit"} />
+            <RebootProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {action === "view" && (
+        {peekSidePath() === "view" && (
           <SidePanel.Suspense key="view">
             <RebootProfileDetails />
           </SidePanel.Suspense>

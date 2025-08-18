@@ -47,7 +47,7 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
   };
 
   const handleUpgradeProfileEdit = () => {
-    setPageParams({ action: "edit", upgradeProfile: profile.id });
+    setPageParams({ sidePath: ["edit"], upgradeProfile: profile.id });
   };
 
   const actions: Action[] = [

@@ -14,17 +14,13 @@ import { getNotificationMessage } from "../../helpers";
 import type { SecurityProfileSidePanelComponentProps } from "../SecurityProfileSidePanel";
 import SecurityProfileSidePanel from "../SecurityProfileSidePanel";
 
-interface SecurityProfileRunFixFormProps {
-  readonly hasBackButton?: boolean;
-}
-
-const Component: FC<
-  SecurityProfileRunFixFormProps & SecurityProfileSidePanelComponentProps
-> = ({ hasBackButton, securityProfile: profile }) => {
+const Component: FC<SecurityProfileSidePanelComponentProps> = ({
+  securityProfile: profile,
+}) => {
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
 
   const { runSecurityProfile } = useRunSecurityProfile();
 
@@ -35,7 +31,7 @@ const Component: FC<
         id: profile.id,
       });
 
-      setPageParams({ action: "", securityProfile: -1 });
+      setPageParams({ sidePath: [], securityProfile: -1 });
 
       const message = getNotificationMessage(profile.mode);
 
@@ -134,12 +130,10 @@ const Component: FC<
             submitButtonDisabled={false}
             submitButtonText="Run"
             onCancel={() => {
-              setPageParams({ action: "", securityProfile: -1 });
+              setPageParams({ sidePath: [], securityProfile: -1 });
             }}
-            hasBackButton={hasBackButton}
-            onBackButtonPress={() => {
-              setPageParams({ action: "view" });
-            }}
+            hasBackButton={sidePath.length > 1}
+            onBackButtonPress={popSidePath}
           />
         </Form>
       </SidePanel.Content>
@@ -147,12 +141,8 @@ const Component: FC<
   );
 };
 
-const SecurityProfileRunFixForm: FC<SecurityProfileRunFixFormProps> = (
-  props,
-) => (
-  <SecurityProfileSidePanel
-    Component={(componentProps) => <Component {...props} {...componentProps} />}
-  />
+const SecurityProfileRunFixForm: FC = () => (
+  <SecurityProfileSidePanel Component={Component} />
 );
 
 export default SecurityProfileRunFixForm;

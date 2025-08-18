@@ -46,11 +46,11 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
   };
 
   const handleRebootProfileEdit = () => {
-    setPageParams({ action: "edit", rebootProfile: profile.id });
+    setPageParams({ sidePath: ["edit"], rebootProfile: profile.id });
   };
 
   const handleRebootProfileDuplicate = () => {
-    setPageParams({ action: "duplicate", rebootProfile: profile.id });
+    setPageParams({ sidePath: ["duplicate"], rebootProfile: profile.id });
   };
 
   const actions: Action[] = [

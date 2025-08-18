@@ -21,11 +21,13 @@ const WslProfileSidePanel: FC<WslProfileSidePanelProps> = ({ Component }) => {
 
   if (isGettingWslProfile) {
     return <SidePanel.LoadingState />;
-  } else if (!wslProfile) {
-    throw wslProfileError;
-  } else {
-    return <Component wslProfile={wslProfile} />;
   }
+
+  if (!wslProfile) {
+    throw wslProfileError;
+  }
+
+  return <Component wslProfile={wslProfile} />;
 };
 
 export default WslProfileSidePanel;

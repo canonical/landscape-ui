@@ -47,7 +47,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
   }, [profiles, search]);
 
   const handleUpgradeProfileDetailsOpen = (profile: UpgradeProfile) => {
-    setPageParams({ action: "view", upgradeProfile: profile.id });
+    setPageParams({ sidePath: ["view"], upgradeProfile: profile.id });
   };
 
   const columns = useMemo<Column<UpgradeProfile>[]>(

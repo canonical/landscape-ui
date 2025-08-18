@@ -8,15 +8,11 @@ import SecurityProfileForm from "../SecurityProfileForm";
 import type { SecurityProfileSidePanelComponentProps } from "../SecurityProfileSidePanel";
 import SecurityProfileSidePanel from "../SecurityProfileSidePanel";
 
-interface SecurityProfileEditFormProps {
-  readonly hasBackButton?: boolean;
-}
-
-const Component: FC<
-  SecurityProfileEditFormProps & SecurityProfileSidePanelComponentProps
-> = ({ hasBackButton, securityProfile }) => {
+const Component: FC<SecurityProfileSidePanelComponentProps> = ({
+  securityProfile,
+}) => {
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath } = usePageParams();
 
   const { updateSecurityProfile, isSecurityProfileUpdating } =
     useUpdateSecurityProfile();
@@ -50,10 +46,8 @@ const Component: FC<
           }}
           submitButtonText="Save changes"
           submitting={isSecurityProfileUpdating}
-          hasBackButton={hasBackButton}
-          onBackButtonPress={() => {
-            setPageParams({ action: "view" });
-          }}
+          hasBackButton={sidePath.length > 1}
+          onBackButtonPress={popSidePath}
         />
         ;
       </SidePanel.Content>
@@ -61,10 +55,8 @@ const Component: FC<
   );
 };
 
-const SecurityProfileEditForm: FC<SecurityProfileEditFormProps> = (props) => (
-  <SecurityProfileSidePanel
-    Component={(componentProps) => <Component {...props} {...componentProps} />}
-  />
+const SecurityProfileEditForm: FC = () => (
+  <SecurityProfileSidePanel Component={Component} />
 );
 
 export default SecurityProfileEditForm;

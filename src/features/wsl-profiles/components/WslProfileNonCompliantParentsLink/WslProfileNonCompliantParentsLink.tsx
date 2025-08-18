@@ -1,5 +1,4 @@
 import NoData from "@/components/layout/NoData";
-import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import { type FC } from "react";
@@ -7,13 +6,12 @@ import type { WslProfile } from "../../types";
 
 interface WslProfileNonCompliantParentsLinkProps {
   readonly wslProfile: WslProfile;
+  readonly onClick: () => void;
 }
 
 const WslProfileNonCompliantParentsLink: FC<
   WslProfileNonCompliantParentsLinkProps
-> = ({ wslProfile }) => {
-  const { setPageParams } = usePageParams();
-
+> = ({ wslProfile, onClick: openNonCompliantInstancesList }) => {
   if (!wslProfile.tags.length && !wslProfile.all_computers) {
     return <NoData />;
   }
@@ -21,10 +19,6 @@ const WslProfileNonCompliantParentsLink: FC<
   if (!wslProfile.computers["non-compliant"].length) {
     return "0 instances";
   }
-
-  const openNonCompliantInstancesList = () => {
-    setPageParams({ action: "noncompliant", wslProfile: wslProfile.name });
-  };
 
   return (
     <Button

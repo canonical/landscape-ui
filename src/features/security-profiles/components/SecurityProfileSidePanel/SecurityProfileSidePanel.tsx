@@ -34,9 +34,9 @@ const SecurityProfileSidePanel: FC<SecurityProfileSidePanelProps> = ({
 
   if (!securityProfile) {
     throw new Error("The security profile could not be found.");
-  } else {
-    return <Component securityProfile={securityProfile} />;
   }
+
+  return <Component securityProfile={securityProfile} />;
 };
 
 export default SecurityProfileSidePanel;

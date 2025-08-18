@@ -7,7 +7,7 @@ const WslProfilesEmptyState: FC = () => {
   const { setPageParams } = usePageParams();
 
   const handleCreateWslProfile = () => {
-    setPageParams({ action: "add" });
+    setPageParams({ sidePath: ["add"] });
   };
 
   return (

@@ -26,7 +26,9 @@ const UpgradeProfileSidePanel: FC<UpgradeProfileSidePanelProps> = ({
 
   if (upgradeProfilesError) {
     throw upgradeProfilesError;
-  } else if (isGettingUpgradeProfiles) {
+  }
+
+  if (isGettingUpgradeProfiles) {
     return <SidePanel.LoadingState />;
   }
 
@@ -36,9 +38,9 @@ const UpgradeProfileSidePanel: FC<UpgradeProfileSidePanelProps> = ({
 
   if (!upgradeProfile) {
     throw new Error("The upgrade profile could not be found.");
-  } else {
-    return <Component upgradeProfile={upgradeProfile} />;
   }
+
+  return <Component upgradeProfile={upgradeProfile} />;
 };
 
 export default UpgradeProfileSidePanel;

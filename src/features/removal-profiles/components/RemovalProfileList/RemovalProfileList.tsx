@@ -45,7 +45,7 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
   }, [profiles, search]);
 
   const handleRemovalProfileDetailsOpen = (profile: RemovalProfile) => {
-    setPageParams({ action: "view", removalProfile: profile.id });
+    setPageParams({ sidePath: ["view"], removalProfile: profile.id });
   };
 
   const columns = useMemo<Column<RemovalProfile>[]>(

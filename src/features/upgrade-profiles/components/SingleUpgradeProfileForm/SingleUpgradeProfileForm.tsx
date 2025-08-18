@@ -15,20 +15,19 @@ import UpgradeProfileScheduleBlock from "../UpgradeProfileScheduleBlock";
 import { CTA_LABELS, INITIAL_VALUES, NOTIFICATION_ACTIONS } from "./constants";
 import { getValidationSchema } from "./helpers";
 
-type SingleUpgradeProfileFormProps = (
+type SingleUpgradeProfileFormProps =
   | {
       action: "add";
     }
   | {
       action: "edit";
       profile: UpgradeProfile;
-    }
-) & { readonly hasBackButton?: boolean };
+    };
 
 const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { popSidePath, sidePath, setPageParams } = usePageParams();
   const { createUpgradeProfileQuery, editUpgradeProfileQuery } =
     useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
@@ -48,7 +47,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const { mutateAsync: editUpgradeProfile } = editUpgradeProfileQuery;
 
   const closeSidePanel = () => {
-    setPageParams({ action: "", upgradeProfile: -1 });
+    setPageParams({ sidePath: [], upgradeProfile: -1 });
   };
 
   const handleSubmit = async (values: FormProps) => {
@@ -192,10 +191,8 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_LABELS[props.action]}
         onCancel={closeSidePanel}
-        hasBackButton={props.hasBackButton}
-        onBackButtonPress={() => {
-          setPageParams({ action: "view" });
-        }}
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
       />
     </Form>
   );

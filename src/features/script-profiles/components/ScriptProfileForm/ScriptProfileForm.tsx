@@ -64,21 +64,19 @@ interface ScriptProfileFormProps
     script_id?: boolean;
     trigger_type?: boolean;
   };
-  readonly hasBackButton?: boolean;
   readonly submitting?: boolean;
 }
 
 const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   onSubmit,
   onSuccess,
-  hasBackButton,
   initialValues,
   disabledFields = {},
   submitButtonText,
   submitting = false,
 }) => {
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
 
@@ -187,7 +185,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         return;
       }
 
-      setPageParams({ action: "", scriptProfile: -1 });
+      setPageParams({ sidePath: [], scriptProfile: -1 });
 
       onSuccess(values);
     },
@@ -407,12 +405,10 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         submitButtonLoading={submitting}
         submitButtonText={submitButtonText}
         onCancel={() => {
-          setPageParams({ action: "", scriptProfile: -1 });
+          setPageParams({ sidePath: [], scriptProfile: -1 });
         }}
-        hasBackButton={hasBackButton}
-        onBackButtonPress={() => {
-          setPageParams({ action: "view" });
-        }}
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
       />
     </Form>
   );

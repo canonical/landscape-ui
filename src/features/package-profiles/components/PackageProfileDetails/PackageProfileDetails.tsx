@@ -20,7 +20,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { pushSidePath, setPageParams } = usePageParams();
   const { removePackageProfileQuery } = usePackageProfiles();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsData } = getAccessGroupQuery();
@@ -39,7 +39,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
     try {
       await removePackageProfile({ name: profile.name });
 
-      setPageParams({ action: "", packageProfile: "" });
+      setPageParams({ sidePath: [], packageProfile: "" });
 
       notify.success({
         message: `Package profile "${profile.name}" removed successfully.`,
@@ -53,11 +53,11 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
   };
 
   const handlePackageProfileEdit = () => {
-    setPageParams({ action: "view/edit" });
+    pushSidePath("edit");
   };
 
   const handlePackageProfileDuplicate = () => {
-    setPageParams({ action: "view/duplicate" });
+    pushSidePath("duplicate");
   };
 
   return (

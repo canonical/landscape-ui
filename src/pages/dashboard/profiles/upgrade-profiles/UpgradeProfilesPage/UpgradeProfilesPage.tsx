@@ -28,16 +28,12 @@ const UpgradeProfileEditForm = lazy(() =>
 );
 
 const UpgradeProfilesPage: FC = () => {
-  const { action, setPageParams } = usePageParams();
+  const { sidePath, peekSidePath, setPageParams } = usePageParams();
 
-  useSetDynamicFilterValidation("action", ["add", "edit", "view", "view/edit"]);
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   const handleAddUpgradeProfile = () => {
-    setPageParams({ action: "add", upgradeProfile: -1 });
-  };
-
-  const closeSidePanel = () => {
-    setPageParams({ action: "", upgradeProfile: -1 });
+    setPageParams({ sidePath: ["add"], upgradeProfile: -1 });
   };
 
   return (
@@ -59,20 +55,25 @@ const UpgradeProfilesPage: FC = () => {
         <UpgradeProfilesContainer />
       </PageContent>
 
-      <SidePanel onClose={closeSidePanel} isOpen={!!action}>
-        {action === "add" && (
+      <SidePanel
+        onClose={() => {
+          setPageParams({ sidePath: [], upgradeProfile: -1 });
+        }}
+        isOpen={!!sidePath.length}
+      >
+        {peekSidePath() === "add" && (
           <SidePanel.Suspense key="add">
             <UpgradeProfileAddForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "edit" || action === "view/edit") && (
+        {peekSidePath() === "edit" && (
           <SidePanel.Suspense key="edit">
-            <UpgradeProfileEditForm hasBackButton={action === "view/edit"} />
+            <UpgradeProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {action === "view" && (
+        {peekSidePath() === "view" && (
           <SidePanel.Suspense key="view">
             <UpgradeProfileDetails />
           </SidePanel.Suspense>

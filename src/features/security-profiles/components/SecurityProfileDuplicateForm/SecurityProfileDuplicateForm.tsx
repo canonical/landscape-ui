@@ -8,15 +8,11 @@ import SecurityProfileForm from "../SecurityProfileForm";
 import type { SecurityProfileSidePanelComponentProps } from "../SecurityProfileSidePanel";
 import SecurityProfileSidePanel from "../SecurityProfileSidePanel";
 
-interface SecurityProfileDuplicateFormProps {
-  readonly hasBackButton?: boolean;
-}
-
-const Component: FC<
-  SecurityProfileDuplicateFormProps & SecurityProfileSidePanelComponentProps
-> = ({ hasBackButton, securityProfile }) => {
+const Component: FC<SecurityProfileSidePanelComponentProps> = ({
+  securityProfile,
+}) => {
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath } = usePageParams();
 
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
@@ -51,10 +47,8 @@ const Component: FC<
           }}
           submitButtonText="Duplicate"
           submitting={isSecurityProfileAdding}
-          hasBackButton={hasBackButton}
-          onBackButtonPress={() => {
-            setPageParams({ action: "view" });
-          }}
+          hasBackButton={sidePath.length > 1}
+          onBackButtonPress={popSidePath}
         />
         ;
       </SidePanel.Content>
@@ -62,12 +56,8 @@ const Component: FC<
   );
 };
 
-const SecurityProfileDuplicateForm: FC<SecurityProfileDuplicateFormProps> = (
-  props,
-) => (
-  <SecurityProfileSidePanel
-    Component={(componentProps) => <Component {...props} {...componentProps} />}
-  />
+const SecurityProfileDuplicateForm: FC = () => (
+  <SecurityProfileSidePanel Component={Component} />
 );
 
 export default SecurityProfileDuplicateForm;

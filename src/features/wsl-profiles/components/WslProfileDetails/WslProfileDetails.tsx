@@ -16,7 +16,7 @@ import WslProfileSidePanel from "../WslProfileSidePanel";
 const Component: FC<WslProfileSidePanelComponentProps> = ({
   wslProfile: profile,
 }) => {
-  const { setPageParams } = usePageParams();
+  const { pushSidePath } = usePageParams();
 
   const { getAccessGroupQuery } = useRoles();
 
@@ -41,7 +41,7 @@ const Component: FC<WslProfileSidePanelComponentProps> = ({
   }
 
   const handleWslProfileEdit = () => {
-    setPageParams({ action: "view/edit" });
+    pushSidePath("edit");
   };
 
   return (
@@ -149,7 +149,12 @@ const Component: FC<WslProfileSidePanelComponentProps> = ({
                 <InfoGrid.Item
                   label="Not compliant"
                   value={
-                    <WslProfileNonCompliantParentsLink wslProfile={profile} />
+                    <WslProfileNonCompliantParentsLink
+                      wslProfile={profile}
+                      onClick={() => {
+                        pushSidePath("noncompliant");
+                      }}
+                    />
                   }
                 />
                 <InfoGrid.Item

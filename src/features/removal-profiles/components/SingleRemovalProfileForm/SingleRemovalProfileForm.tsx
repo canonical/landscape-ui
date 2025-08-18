@@ -16,20 +16,19 @@ import { getValidationSchema } from "./helpers";
 import classes from "./SingleRemovalProfileForm.module.scss";
 import type { FormProps } from "./types";
 
-type SingleRemovalProfileFormProps = (
+type SingleRemovalProfileFormProps =
   | {
       action: "add";
     }
   | {
       action: "edit";
       profile: RemovalProfile;
-    }
-) & { readonly hasBackButton?: boolean };
+    };
 
 const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { createRemovalProfileQuery, editRemovalProfileQuery } =
     useRemovalProfiles();
   const { getAccessGroupQuery } = useRoles();
@@ -46,7 +45,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   const { mutateAsync: editRemovalProfile } = editRemovalProfileQuery;
 
   const closeSidePanel = () => {
-    setPageParams({ action: "", removalProfile: -1 });
+    setPageParams({ sidePath: [], removalProfile: -1 });
   };
 
   const handleSubmit = async (values: FormProps) => {
@@ -157,10 +156,8 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_LABELS[props.action]}
         onCancel={closeSidePanel}
-        hasBackButton={props.hasBackButton}
-        onBackButtonPress={() => {
-          setPageParams({ action: "view" });
-        }}
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
       />
     </Form>
   );

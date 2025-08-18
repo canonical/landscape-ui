@@ -34,7 +34,7 @@ const PackageProfileCreateForm: FC = () => {
   const { mutateAsync: createPackageProfile } = createPackageProfileQuery;
 
   const closeSidePanel = () => {
-    setPageParams({ action: "", packageProfile: "" });
+    setPageParams({ sidePath: [], packageProfile: "" });
   };
 
   const handleSubmit = async (values: AddFormProps) => {

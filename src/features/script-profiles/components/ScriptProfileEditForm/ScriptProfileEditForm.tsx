@@ -9,13 +9,9 @@ import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptP
 import type { ScriptProfileSidePanelComponentProps } from "../ScriptProfileSidePanel";
 import ScriptProfileSidePanel from "../ScriptProfileSidePanel";
 
-interface ScriptProfileEditFormProps {
-  readonly hasBackButton?: boolean;
-}
-
-const Component: FC<
-  ScriptProfileEditFormProps & ScriptProfileSidePanelComponentProps
-> = ({ hasBackButton, scriptProfile: profile }) => {
+const Component: FC<ScriptProfileSidePanelComponentProps> = ({
+  scriptProfile: profile,
+}) => {
   const { notify } = useNotify();
 
   const { editScriptProfile, isEditingScriptProfile } = useEditScriptProfile();
@@ -35,7 +31,6 @@ const Component: FC<
   return (
     <>
       <SidePanel.Header>Edit {profile.title}</SidePanel.Header>
-
       <SidePanel.Content>
         <ScriptProfileForm
           disabledFields={{
@@ -68,17 +63,14 @@ const Component: FC<
           }}
           submitButtonText="Save changes"
           submitting={isEditingScriptProfile}
-          hasBackButton={hasBackButton}
         />
       </SidePanel.Content>
     </>
   );
 };
 
-const ScriptProfileEditForm: FC<ScriptProfileEditFormProps> = (props) => (
-  <ScriptProfileSidePanel
-    Component={(componentProps) => <Component {...props} {...componentProps} />}
-  />
+const ScriptProfileEditForm: FC = () => (
+  <ScriptProfileSidePanel Component={Component} />
 );
 
 export default ScriptProfileEditForm;

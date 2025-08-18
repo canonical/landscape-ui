@@ -12,7 +12,7 @@ interface ScriptProfileControlProps {
 }
 
 const ScriptProfileControl: FC<ScriptProfileControlProps> = ({ profile }) => {
-  const { setPageParams } = usePageParams();
+  const { pushSidePath } = usePageParams();
 
   const {
     value: archiveModalOpened,
@@ -37,7 +37,7 @@ const ScriptProfileControl: FC<ScriptProfileControlProps> = ({ profile }) => {
           type="button"
           hasIcon
           onClick={() => {
-            setPageParams({ action: "view/edit" });
+            pushSidePath("edit");
           }}
         >
           <Icon name="edit" />

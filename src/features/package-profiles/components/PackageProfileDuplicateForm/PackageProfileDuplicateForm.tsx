@@ -18,15 +18,11 @@ import type { PackageProfileSidePanelComponentProps } from "../PackageProfileSid
 import PackageProfileSidePanel from "../PackageProfileSidePanel";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 
-interface PackageProfileDuplicateFormProps {
-  readonly hasBackButton?: boolean;
-}
-
-const Component: FC<
-  PackageProfileSidePanelComponentProps & PackageProfileDuplicateFormProps
-> = ({ packageProfile: profile, hasBackButton }) => {
+const Component: FC<PackageProfileSidePanelComponentProps> = ({
+  packageProfile: profile,
+}) => {
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
   const { copyPackageProfileQuery } = usePackageProfiles();
@@ -42,7 +38,7 @@ const Component: FC<
     })) ?? [];
 
   const closeSidePanel = () => {
-    setPageParams({ action: "", packageProfile: "" });
+    setPageParams({ sidePath: [], packageProfile: "" });
   };
 
   const handleSubmit = async (values: DuplicateFormProps) => {
@@ -92,10 +88,6 @@ const Component: FC<
     });
   }, [profile]);
 
-  const goBack = () => {
-    setPageParams({ action: "view" });
-  };
-
   return (
     <>
       <SidePanel.Header>Duplicate {profile.title}</SidePanel.Header>
@@ -130,8 +122,8 @@ const Component: FC<
           <SidePanelFormButtons
             submitButtonLoading={formik.isSubmitting}
             submitButtonText="Duplicate"
-            hasBackButton={hasBackButton}
-            onBackButtonPress={goBack}
+            hasBackButton={sidePath.length > 1}
+            onBackButtonPress={popSidePath}
             onCancel={closeSidePanel}
           />
         </Form>
@@ -140,12 +132,8 @@ const Component: FC<
   );
 };
 
-const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = (
-  props,
-) => (
-  <PackageProfileSidePanel
-    Component={(componentProps) => <Component {...componentProps} {...props} />}
-  />
+const PackageProfileDuplicateForm: FC = () => (
+  <PackageProfileSidePanel Component={Component} />
 );
 
 export default PackageProfileDuplicateForm;

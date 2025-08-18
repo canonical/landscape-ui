@@ -131,9 +131,9 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_STRING,
   },
   {
-    urlParam: "action",
+    urlParam: "sidePath",
     shouldResetPage: false,
-    defaultValue: DEFAULT_EMPTY_STRING,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
   },
   {
     urlParam: "packageProfile",

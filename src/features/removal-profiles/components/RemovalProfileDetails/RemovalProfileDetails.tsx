@@ -19,7 +19,7 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { pushSidePath, setPageParams } = usePageParams();
   const { removeRemovalProfileQuery } = useRemovalProfiles();
 
   const { mutateAsync: removeRemovalProfile, isPending: isRemoving } =
@@ -40,7 +40,9 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
 
   if (accessGroupsError) {
     throw accessGroupsError;
-  } else if (isGettingAccessGroups) {
+  }
+
+  if (isGettingAccessGroups) {
     return <SidePanel.LoadingState />;
   }
 
@@ -48,7 +50,7 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
     try {
       await removeRemovalProfile({ name: profile.name });
 
-      setPageParams({ action: "", removalProfile: -1 });
+      setPageParams({ sidePath: [], removalProfile: -1 });
 
       notify.success({
         title: "Removal profile removed",
@@ -62,7 +64,7 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
   };
 
   const handleEditRemovalProfile = () => {
-    setPageParams({ action: "view/edit" });
+    pushSidePath("edit");
   };
 
   return (
@@ -75,7 +77,6 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
             type="button"
             hasIcon
             className="p-segmented-control__button"
-            w
             onClick={handleEditRemovalProfile}
             aria-label={`Edit ${profile.title}`}
           >

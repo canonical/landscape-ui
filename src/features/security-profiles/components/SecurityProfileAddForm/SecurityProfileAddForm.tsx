@@ -105,7 +105,7 @@ const SecurityProfileAddForm: FC<SecurityProfileAddFormProps> = ({
           submitButtonLoading={steps[step].isLoading || isSecurityProfileAdding}
           submitButtonText={steps[step].submitButtonText}
           onCancel={() => {
-            setPageParams({ action: "" });
+            setPageParams({ sidePath: [] });
           }}
         />
       </SidePanel.Content>

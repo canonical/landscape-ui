@@ -26,7 +26,9 @@ const RemovalProfileSidePanel: FC<RemovalProfileSidePanelProps> = ({
 
   if (removalProfilesError) {
     throw removalProfilesError;
-  } else if (isGettingRemovalProfiles) {
+  }
+
+  if (isGettingRemovalProfiles) {
     return <SidePanel.LoadingState />;
   }
 
@@ -36,9 +38,9 @@ const RemovalProfileSidePanel: FC<RemovalProfileSidePanelProps> = ({
 
   if (!removalProfile) {
     throw new Error("The removal profile could not be found.");
-  } else {
-    return <Component removalProfile={removalProfile} />;
   }
+
+  return <Component removalProfile={removalProfile} />;
 };
 
 export default RemovalProfileSidePanel;

@@ -1,4 +1,5 @@
 import SidePanel from "@/components/layout/SidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import { lazy, type FC } from "react";
 import ScriptProfilesPanel from "../ScriptProfilesPanel";
@@ -10,30 +11,32 @@ const ScriptProfileEditForm = lazy(() => import("../ScriptProfileEditForm"));
 const ScriptProfileDetails = lazy(() => import("../ScriptProfileDetails"));
 
 const ScriptProfilesTab: FC = () => {
-  const { action, setPageParams } = usePageParams();
+  const { sidePath, peekSidePath, setPageParams } = usePageParams();
 
   const close = () => {
-    setPageParams({ action: "", scriptProfile: -1 });
+    setPageParams({ sidePath: [], scriptProfile: -1 });
   };
+
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   return (
     <>
       <ScriptProfilesPanel />
 
-      <SidePanel onClose={close} isOpen={!!action}>
-        {action === "add" && (
+      <SidePanel onClose={close} isOpen={!!sidePath.length}>
+        {peekSidePath() === "add" && (
           <SidePanel.Suspense key="add">
             <ScriptProfileAddForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "edit" || action === "view/edit") && (
+        {peekSidePath() === "edit" && (
           <SidePanel.Suspense key="edit">
-            <ScriptProfileEditForm hasBackButton={action === "view/edit"} />
+            <ScriptProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {action === "view" && (
+        {peekSidePath() === "view" && (
           <SidePanel.Suspense key="view">
             <ScriptProfileDetails />
           </SidePanel.Suspense>

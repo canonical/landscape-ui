@@ -41,7 +41,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { pushSidePath } = usePageParams();
   const {
     editPackageProfileConstraintQuery,
     getPackageProfileConstraintsQuery,
@@ -126,7 +126,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
                     setSelectedIds(value);
                   }}
                   onOpenAddConstraintsForm={() => {
-                    setPageParams({ action: "constraints/add" });
+                    pushSidePath("add-constraints");
                   }}
                 />
               }

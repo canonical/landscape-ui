@@ -22,7 +22,9 @@ const RebootProfileSidePanel: FC<RebootProfileSidePanelProps> = ({
 
   if (isPending) {
     return <SidePanel.LoadingState />;
-  } else if (rebootProfilesError) {
+  }
+
+  if (rebootProfilesError) {
     throw rebootProfilesError;
   }
 
@@ -30,9 +32,9 @@ const RebootProfileSidePanel: FC<RebootProfileSidePanelProps> = ({
 
   if (!rebootProfile) {
     throw new Error("The reboot profile could not be found.");
-  } else {
-    return <Component rebootProfile={rebootProfile} />;
   }
+
+  return <Component rebootProfile={rebootProfile} />;
 };
 
 export default RebootProfileSidePanel;

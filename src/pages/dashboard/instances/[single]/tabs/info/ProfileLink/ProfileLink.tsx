@@ -15,13 +15,13 @@ const ProfileLink: FC<ProfileLinkProps> = ({ profile }) => {
     <StaticLink
       to={
         {
-          package: `/profiles/package?action=view&packageProfile=${profile.name}`,
-          reboot: `/profiles/reboot?action=view&rebootProfile=${profile.id}`,
-          removal: `/profiles/removal?action=view&removalProfile=${profile.id}`,
-          script: `/scripts?tab=profiles&action=view&scriptProfile=${profile.id}`,
-          security: `/profiles/security?action=view&securityProfile=${profile.id}`,
-          upgrade: `/profiles/upgrade?action=view&upgradeProfile=${profile.id}`,
-          wsl: `/profiles/wsl?action=view&wslProfile=${profile.name}`,
+          package: `/profiles/package?sidePath=view&packageProfile=${profile.name}`,
+          reboot: `/profiles/reboot?sidePath=view&rebootProfile=${profile.id}`,
+          removal: `/profiles/removal?sidePath=view&removalProfile=${profile.id}`,
+          script: `/scripts?tab=profiles&sidePath=view&scriptProfile=${profile.id}`,
+          security: `/profiles/security?sidePath=view&securityProfile=${profile.id}`,
+          upgrade: `/profiles/upgrade?sidePath=view&upgradeProfile=${profile.id}`,
+          wsl: `/profiles/wsl?sidePath=view&wslProfile=${profile.name}`,
         }[profile.type]
       }
     >

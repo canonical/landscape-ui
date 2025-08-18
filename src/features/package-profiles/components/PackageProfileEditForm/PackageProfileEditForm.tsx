@@ -14,22 +14,18 @@ import type { PackageProfileSidePanelComponentProps } from "../PackageProfileSid
 import PackageProfileSidePanel from "../PackageProfileSidePanel";
 import { VALIDATION_SCHEMA } from "./constants";
 
-interface PackageProfileEditFormProps {
-  readonly hasBackButton?: boolean;
-}
-
-const Component: FC<
-  PackageProfileSidePanelComponentProps & PackageProfileEditFormProps
-> = ({ packageProfile: profile, hasBackButton }) => {
+const Component: FC<PackageProfileSidePanelComponentProps> = ({
+  packageProfile: profile,
+}) => {
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { notify } = useNotify();
   const { editPackageProfileQuery } = usePackageProfiles();
 
   const { mutateAsync: editPackageProfile } = editPackageProfileQuery;
 
   const closeSidePanel = () => {
-    setPageParams({ action: "", packageProfile: "" });
+    setPageParams({ sidePath: [], packageProfile: "" });
   };
 
   const handleSubmit = async (values: EditFormProps) => {
@@ -63,10 +59,6 @@ const Component: FC<
     validationSchema: VALIDATION_SCHEMA,
   });
 
-  const goBack = () => {
-    setPageParams({ action: "view" });
-  };
-
   return (
     <>
       <SidePanel.Header>Edit {profile.title}</SidePanel.Header>
@@ -90,8 +82,8 @@ const Component: FC<
           <SidePanelFormButtons
             submitButtonLoading={formik.isSubmitting}
             submitButtonText="Save changes"
-            hasBackButton={hasBackButton}
-            onBackButtonPress={goBack}
+            hasBackButton={sidePath.length > 1}
+            onBackButtonPress={popSidePath}
             onCancel={closeSidePanel}
           />
         </Form>
@@ -100,10 +92,8 @@ const Component: FC<
   );
 };
 
-const PackageProfileEditForm: FC<PackageProfileEditFormProps> = (props) => (
-  <PackageProfileSidePanel
-    Component={(componentProps) => <Component {...componentProps} {...props} />}
-  />
+const PackageProfileEditForm: FC = () => (
+  <PackageProfileSidePanel Component={Component} />
 );
 
 export default PackageProfileEditForm;

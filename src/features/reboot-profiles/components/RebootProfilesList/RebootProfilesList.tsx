@@ -46,7 +46,7 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
   }, [profiles, search]);
 
   const handleRebootProfileDetailsOpen = (profile: RebootProfile) => {
-    setPageParams({ action: "view", rebootProfile: profile.id });
+    setPageParams({ sidePath: ["view"], rebootProfile: profile.id });
   };
 
   const columns = useMemo<Column<RebootProfile>[]>(

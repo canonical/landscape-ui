@@ -6,7 +6,7 @@ import ScriptProfileControl from "../ScriptProfileControl";
 import ScriptProfileInfo from "../ScriptProfileInfo";
 import type { ScriptProfileSidePanelComponentProps } from "../ScriptProfileSidePanel";
 import ScriptProfileSidePanel from "../ScriptProfileSidePanel";
-import classes from "./ScriptProfileDetailsSidePanel.module.scss";
+import classes from "./ScriptProfileDetails.module.scss";
 
 const Component: FC<ScriptProfileSidePanelComponentProps> = ({
   scriptProfile: profile,

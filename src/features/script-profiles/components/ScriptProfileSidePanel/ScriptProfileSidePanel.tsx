@@ -26,9 +26,9 @@ const ScriptProfileSidePanel: FC<ScriptProfileSidePanelProps> = ({
 
   if (!scriptProfile) {
     throw scriptProfileError;
-  } else {
-    return <Component scriptProfile={scriptProfile} />;
   }
+
+  return <Component scriptProfile={scriptProfile} />;
 };
 
 export default ScriptProfileSidePanel;

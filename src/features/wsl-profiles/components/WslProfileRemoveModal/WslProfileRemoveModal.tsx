@@ -28,7 +28,7 @@ const WslProfileRemoveModal: FC<WslProfileRemoveModalProps> = ({
     try {
       await deleteWslProfile({ name: wslProfile.name });
 
-      setPageParams({ action: "", wslProfile: "" });
+      setPageParams({ sidePath: [], wslProfile: "" });
 
       notify.success({
         message: "Instances created by this profile won't be affected.",

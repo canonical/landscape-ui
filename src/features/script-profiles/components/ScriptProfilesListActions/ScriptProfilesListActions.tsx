@@ -26,7 +26,7 @@ const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
       icon: "show",
       label: "View details",
       onClick: () => {
-        setPageParams({ action: "view", scriptProfile: scriptProfile.id });
+        setPageParams({ sidePath: ["view"], scriptProfile: scriptProfile.id });
       },
     },
   ];
@@ -36,7 +36,7 @@ const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
       icon: "edit",
       label: "Edit",
       onClick: () => {
-        setPageParams({ action: "edit", scriptProfile: scriptProfile.id });
+        setPageParams({ sidePath: ["edit"], scriptProfile: scriptProfile.id });
       },
     });
   }

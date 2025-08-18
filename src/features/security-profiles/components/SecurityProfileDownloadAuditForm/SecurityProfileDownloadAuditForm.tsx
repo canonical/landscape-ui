@@ -25,21 +25,17 @@ interface SecurityProfileDownloadAuditFormValues {
   end_date?: string;
 }
 
-interface SecurityProfileDownloadAuditFormProps {
-  readonly hasBackButton?: boolean;
-}
-
 type Status =
   | { type: "okay" }
   | { type: "pending" }
   | { type: "ready"; report_uri: string }
   | { type: "error" };
 
-const Component: FC<
-  SecurityProfileDownloadAuditFormProps & SecurityProfileSidePanelComponentProps
-> = ({ hasBackButton, securityProfile }) => {
+const Component: FC<SecurityProfileSidePanelComponentProps> = ({
+  securityProfile,
+}) => {
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
 
   const { getSingleActivityQuery } = useActivities();
   const { getSecurityProfileReport, isSecurityProfileReportLoading } =
@@ -315,12 +311,10 @@ const Component: FC<
           }
           submitButtonLoading={isSecurityProfileReportLoading}
           submitButtonText="Generate CSV"
-          hasBackButton={hasBackButton}
-          onBackButtonPress={() => {
-            setPageParams({ action: "view" });
-          }}
+          hasBackButton={sidePath.length > 1}
+          onBackButtonPress={popSidePath}
           onCancel={() => {
-            setPageParams({ action: "", securityProfile: -1 });
+            setPageParams({ sidePath: [], securityProfile: -1 });
           }}
         />
       </SidePanel.Content>
@@ -328,12 +322,8 @@ const Component: FC<
   );
 };
 
-const SecurityProfileDownloadAuditForm: FC<
-  SecurityProfileDownloadAuditFormProps
-> = (props) => (
-  <SecurityProfileSidePanel
-    Component={(componentProps) => <Component {...props} {...componentProps} />}
-  />
+const SecurityProfileDownloadAuditForm: FC = () => (
+  <SecurityProfileSidePanel Component={Component} />
 );
 
 export default SecurityProfileDownloadAuditForm;

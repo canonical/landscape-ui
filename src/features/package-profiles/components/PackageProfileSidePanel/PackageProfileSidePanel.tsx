@@ -27,13 +27,13 @@ const PackageProfileSidePanel: FC<PackageProfileSidePanelProps> = ({
 
   if (isPendingPackageProfiles) {
     return <SidePanel.LoadingState />;
-  } else if (packageProfilesError) {
-    throw packageProfilesError;
-  } else {
-    return (
-      <Component packageProfile={packageProfilesResponse.data.result[0]} />
-    );
   }
+
+  if (packageProfilesError) {
+    throw packageProfilesError;
+  }
+
+  return <Component packageProfile={packageProfilesResponse.data.result[0]} />;
 };
 
 export default PackageProfileSidePanel;

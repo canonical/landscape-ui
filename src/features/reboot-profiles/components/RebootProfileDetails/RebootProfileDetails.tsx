@@ -28,7 +28,7 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { pushSidePath, setPageParams } = usePageParams();
   const { removeRebootProfile, isRemovingRebootProfile } =
     useRemoveRebootProfileQuery();
   const { getAccessGroupQuery } = useRoles();
@@ -40,7 +40,9 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
 
   if (accessGroupsError) {
     throw accessGroupsError;
-  } else if (isGettingAccessGroups) {
+  }
+
+  if (isGettingAccessGroups) {
     return <SidePanel.LoadingState />;
   }
 
@@ -50,7 +52,7 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
         id: profile.id,
       });
 
-      setPageParams({ action: "", rebootProfile: -1 });
+      setPageParams({ sidePath: [], rebootProfile: -1 });
 
       notify.success({
         title: "Reboot profile removed",
@@ -62,11 +64,11 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
   };
 
   const handleEditRebootProfile = () => {
-    setPageParams({ action: "view/edit" });
+    pushSidePath("edit");
   };
 
   const handleDuplicateRebootProfile = () => {
-    setPageParams({ action: "view/duplicate" });
+    pushSidePath("duplicate");
   };
 
   return (

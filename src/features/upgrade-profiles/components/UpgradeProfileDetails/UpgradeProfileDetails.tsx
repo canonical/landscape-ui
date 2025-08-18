@@ -21,7 +21,7 @@ const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { pushSidePath, setPageParams } = usePageParams();
   const { removeUpgradeProfileQuery } = useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
 
@@ -53,7 +53,7 @@ const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
     try {
       await removeUpgradeProfile({ name: profile.name });
 
-      setPageParams({ action: "", upgradeProfile: -1 });
+      setPageParams({ sidePath: [], upgradeProfile: -1 });
 
       notify.success({
         title: "Upgrade profile removed",
@@ -67,7 +67,7 @@ const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
   };
 
   const handleEditUpgradeProfile = () => {
-    setPageParams({ action: "view/edit" });
+    pushSidePath("edit");
   };
 
   return (

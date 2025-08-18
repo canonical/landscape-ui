@@ -4,31 +4,20 @@ import RebootProfilesForm from "../RebootProfilesForm";
 import type { RebootProfileSidePanelComponentProps } from "../RebootProfileSidePanel";
 import RebootProfileSidePanel from "../RebootProfileSidePanel";
 
-interface RebootProfileEditFormProps {
-  readonly hasBackButton?: boolean;
-}
-
-const Component: FC<
-  RebootProfileEditFormProps & RebootProfileSidePanelComponentProps
-> = ({ hasBackButton, rebootProfile }) => (
+const Component: FC<RebootProfileSidePanelComponentProps> = ({
+  rebootProfile,
+}) => (
   <>
     <SidePanel.Header>Edit {rebootProfile.title}</SidePanel.Header>
 
     <SidePanel.Content>
-      <RebootProfilesForm
-        action="edit"
-        profile={rebootProfile}
-        hasBackButton={hasBackButton}
-      />
-      ;
+      <RebootProfilesForm action="edit" profile={rebootProfile} />;
     </SidePanel.Content>
   </>
 );
 
-const RebootProfileEditForm: FC<RebootProfileEditFormProps> = (props) => (
-  <RebootProfileSidePanel
-    Component={(componentProps) => <Component {...props} {...componentProps} />}
-  />
+const RebootProfileEditForm: FC = () => (
+  <RebootProfileSidePanel Component={Component} />
 );
 
 export default RebootProfileEditForm;

@@ -22,7 +22,7 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
   } = useBoolean();
 
   const handleWslProfileEdit = () => {
-    setPageParams({ action: "edit", wslProfile: profile.name });
+    setPageParams({ sidePath: ["edit"], wslProfile: profile.name });
   };
 
   const actions: Action[] = [

@@ -92,7 +92,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
   const handleEditProfile = () => {
     const [profile] = overLimitSecurityProfiles;
 
-    setPageParams({ action: "edit", securityProfile: profile.id });
+    setPageParams({ sidePath: ["edit"], securityProfile: profile.id });
   };
 
   return (

@@ -7,7 +7,7 @@ const UpgradeProfilesEmptyState: FC = () => {
   const { setPageParams } = usePageParams();
 
   const handleCreateUpgradeProfile = () => {
-    setPageParams({ action: "add" });
+    setPageParams({ sidePath: ["add"] });
   };
 
   return (

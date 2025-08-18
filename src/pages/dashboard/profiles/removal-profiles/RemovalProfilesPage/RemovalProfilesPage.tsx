@@ -27,16 +27,12 @@ const RemovalProfileEditForm = lazy(async () =>
 );
 
 const RemovalProfilesPage: FC = () => {
-  const { action, setPageParams } = usePageParams();
+  const { sidePath, peekSidePath, setPageParams } = usePageParams();
 
-  useSetDynamicFilterValidation("action", ["add", "edit", "view", "view/edit"]);
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   const handleCreate = () => {
-    setPageParams({ action: "add", removalProfile: -1 });
-  };
-
-  const closeSidePanel = () => {
-    setPageParams({ action: "", rebootProfile: -1 });
+    setPageParams({ sidePath: ["add"], removalProfile: -1 });
   };
 
   return (
@@ -58,20 +54,25 @@ const RemovalProfilesPage: FC = () => {
         <RemovalProfileContainer />
       </PageContent>
 
-      <SidePanel isOpen={!!action} onClose={closeSidePanel}>
-        {action === "add" && (
+      <SidePanel
+        isOpen={!!sidePath.length}
+        onClose={() => {
+          setPageParams({ sidePath: [], rebootProfile: -1 });
+        }}
+      >
+        {peekSidePath() === "add" && (
           <SidePanel.Suspense key="add">
             <RemovalProfileAddForm />
           </SidePanel.Suspense>
         )}
 
-        {(action === "edit" || action === "view/edit") && (
+        {peekSidePath() === "edit" && (
           <SidePanel.Suspense key="edit">
-            <RemovalProfileEditForm hasBackButton={action === "view/edit"} />
+            <RemovalProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {action === "view" && (
+        {peekSidePath() === "view" && (
           <SidePanel.Suspense key="view">
             <RemovalProfileDetails />
           </SidePanel.Suspense>

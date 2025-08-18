@@ -9,7 +9,10 @@ import WslProfileNonCompliantParentsLink from "./WslProfileNonCompliantParentsLi
 describe("WslProfileNonCompliantParentsLink", () => {
   it("should open a list of noncompliant parents", async () => {
     renderWithProviders(
-      <WslProfileNonCompliantParentsLink wslProfile={wslProfiles[0]} />,
+      <WslProfileNonCompliantParentsLink
+        wslProfile={wslProfiles[0]}
+        onClick={() => undefined}
+      />,
     );
 
     await userEvent.click(screen.getByRole("button"));

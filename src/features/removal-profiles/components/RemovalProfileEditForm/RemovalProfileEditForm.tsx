@@ -4,33 +4,22 @@ import RemovalProfileSidePanel from "../RemovalProfileSidePanel";
 import type { RemovalProfileSidePanelComponentProps } from "../RemovalProfileSidePanel/RemovalProfileSidePanel";
 import SingleRemovalProfileForm from "../SingleRemovalProfileForm";
 
-interface RemovalProfileEditFormProps {
-  readonly hasBackButton?: boolean;
-}
-
-const Component: FC<
-  RemovalProfileEditFormProps & RemovalProfileSidePanelComponentProps
-> = ({ hasBackButton, removalProfile }) => (
+const Component: FC<RemovalProfileSidePanelComponentProps> = ({
+  removalProfile,
+}) => (
   <>
     <SidePanel.Header>
       Edit &quot;{removalProfile.title}&quot; profile
     </SidePanel.Header>
 
     <SidePanel.Content>
-      <SingleRemovalProfileForm
-        action="edit"
-        profile={removalProfile}
-        hasBackButton={hasBackButton}
-      />
-      ;
+      <SingleRemovalProfileForm action="edit" profile={removalProfile} />;
     </SidePanel.Content>
   </>
 );
 
-const RemovalProfileEditForm: FC<RemovalProfileEditFormProps> = (props) => (
-  <RemovalProfileSidePanel
-    Component={(componentProps) => <Component {...props} {...componentProps} />}
-  />
+const RemovalProfileEditForm: FC = () => (
+  <RemovalProfileSidePanel Component={Component} />
 );
 
 export default RemovalProfileEditForm;
