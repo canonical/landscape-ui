@@ -12,23 +12,21 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useUpgradeProfiles } from "../../hooks";
+import type { UpgradeProfileSidePanelComponentProps } from "../UpgradeProfileSidePanel";
+import UpgradeProfileSidePanel from "../UpgradeProfileSidePanel";
 import { getScheduleInfo } from "./helpers";
 
-const UpgradeProfileDetailsSidePanel: FC = () => {
+const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
+  upgradeProfile: profile,
+}) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { upgradeProfile: upgradeProfileId, setPageParams } = usePageParams();
-  const { getUpgradeProfilesQuery, removeUpgradeProfileQuery } =
-    useUpgradeProfiles();
+  const { setPageParams } = usePageParams();
+  const { removeUpgradeProfileQuery } = useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
 
   const { mutateAsync: removeUpgradeProfile, isPending: isRemoving } =
     removeUpgradeProfileQuery;
-  const {
-    data: getUpgradeProfilesQueryResponse,
-    isPending: isGettingUpgradeProfiles,
-    error: upgradeProfilesError,
-  } = getUpgradeProfilesQuery();
   const {
     data: accessGroupsData,
     isPending: isGettingAccessGroups,
@@ -41,24 +39,12 @@ const UpgradeProfileDetailsSidePanel: FC = () => {
     setFalse: handleCloseModal,
   } = useBoolean();
 
-  if (upgradeProfilesError) {
-    throw upgradeProfilesError;
-  }
-
   if (accessGroupsError) {
     throw accessGroupsError;
   }
 
-  if (isGettingUpgradeProfiles || isGettingAccessGroups) {
+  if (isGettingAccessGroups) {
     return <SidePanel.LoadingState />;
-  }
-
-  const profile = getUpgradeProfilesQueryResponse.data.find(
-    ({ id }) => id === upgradeProfileId,
-  );
-
-  if (!profile) {
-    throw new Error("The upgrade profile could not be found.");
   }
 
   const { scheduleMessage, nextRunMessage } = getScheduleInfo(profile);
@@ -189,4 +175,8 @@ const UpgradeProfileDetailsSidePanel: FC = () => {
   );
 };
 
-export default UpgradeProfileDetailsSidePanel;
+const UpgradeProfileDetails: FC = () => (
+  <UpgradeProfileSidePanel Component={Component} />
+);
+
+export default UpgradeProfileDetails;

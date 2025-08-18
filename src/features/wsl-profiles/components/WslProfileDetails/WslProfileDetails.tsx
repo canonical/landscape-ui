@@ -6,22 +6,20 @@ import useRoles from "@/hooks/useRoles";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import { useGetWslProfile } from "../../api";
 import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink";
 import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
 import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfileRemoveModal from "../WslProfileRemoveModal";
+import type { WslProfileSidePanelComponentProps } from "../WslProfileSidePanel";
+import WslProfileSidePanel from "../WslProfileSidePanel";
 
-const WslProfileDetailsSidePanel: FC = () => {
-  const { wslProfile: wslProfileName, setPageParams } = usePageParams();
+const Component: FC<WslProfileSidePanelComponentProps> = ({
+  wslProfile: profile,
+}) => {
+  const { setPageParams } = usePageParams();
 
   const { getAccessGroupQuery } = useRoles();
 
-  const {
-    wslProfile: profile,
-    isGettingWslProfile,
-    wslProfileError,
-  } = useGetWslProfile({ profile_name: wslProfileName });
   const {
     data: accessGroupsData,
     isPending: isGettingAccessGroups,
@@ -38,12 +36,8 @@ const WslProfileDetailsSidePanel: FC = () => {
     throw accessGroupsError;
   }
 
-  if (isGettingWslProfile || isGettingAccessGroups) {
+  if (isGettingAccessGroups) {
     return <SidePanel.LoadingState />;
-  }
-
-  if (!profile) {
-    throw wslProfileError;
   }
 
   const handleWslProfileEdit = () => {
@@ -178,4 +172,8 @@ const WslProfileDetailsSidePanel: FC = () => {
   );
 };
 
-export default WslProfileDetailsSidePanel;
+const WslProfileDetails: FC = () => (
+  <WslProfileSidePanel Component={Component} />
+);
+
+export default WslProfileDetails;

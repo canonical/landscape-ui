@@ -2,14 +2,18 @@ import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useUpgradeProfiles } from "../../hooks";
-import SingleUpgradeProfileForm from "../SingleUpgradeProfileForm";
+import type { UpgradeProfile } from "../../types";
 
-interface UpgradeProfileEditSidePanelProps {
-  readonly hasBackButton?: boolean;
+export interface UpgradeProfileSidePanelComponentProps {
+  upgradeProfile: UpgradeProfile;
 }
 
-const UpgradeProfileEditSidePanel: FC<UpgradeProfileEditSidePanelProps> = ({
-  hasBackButton,
+interface UpgradeProfileSidePanelProps {
+  readonly Component: FC<UpgradeProfileSidePanelComponentProps>;
+}
+
+const UpgradeProfileSidePanel: FC<UpgradeProfileSidePanelProps> = ({
+  Component,
 }) => {
   const { upgradeProfile: upgradeProfileId } = usePageParams();
 
@@ -22,9 +26,7 @@ const UpgradeProfileEditSidePanel: FC<UpgradeProfileEditSidePanelProps> = ({
 
   if (upgradeProfilesError) {
     throw upgradeProfilesError;
-  }
-
-  if (isGettingUpgradeProfiles) {
+  } else if (isGettingUpgradeProfiles) {
     return <SidePanel.LoadingState />;
   }
 
@@ -34,23 +36,9 @@ const UpgradeProfileEditSidePanel: FC<UpgradeProfileEditSidePanelProps> = ({
 
   if (!upgradeProfile) {
     throw new Error("The upgrade profile could not be found.");
+  } else {
+    return <Component upgradeProfile={upgradeProfile} />;
   }
-
-  return (
-    <>
-      <SidePanel.Header>
-        Edit &quot;{upgradeProfile.title}&quot; profile
-      </SidePanel.Header>
-      <SidePanel.Content>
-        <SingleUpgradeProfileForm
-          action="edit"
-          profile={upgradeProfile}
-          hasBackButton={hasBackButton}
-        />
-        ;
-      </SidePanel.Content>
-    </>
-  );
 };
 
-export default UpgradeProfileEditSidePanel;
+export default UpgradeProfileSidePanel;

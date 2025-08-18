@@ -3,6 +3,7 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import SidePanel from "@/components/layout/SidePanel";
 import StaticLink from "@/components/layout/StaticLink";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
@@ -26,18 +27,13 @@ import moment from "moment";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
-import type { WslProfile } from "../../types";
+import type { WslProfileSidePanelComponentProps } from "../WslProfileSidePanel";
+import WslProfileSidePanel from "../WslProfileSidePanel";
 import classes from "./WslProfileNonCompliantInstancesList.module.scss";
 import WindowsInstanceActions from "./components/WindowsInstanceActions";
 import { getCellProps, getRowProps } from "./helpers";
 
-interface WslProfileNonCompliantInstancesListProps {
-  readonly wslProfile: WslProfile;
-}
-
-const WslProfileNonCompliantInstancesList: FC<
-  WslProfileNonCompliantInstancesListProps
-> = ({ wslProfile }) => {
+const Component: FC<WslProfileSidePanelComponentProps> = ({ wslProfile }) => {
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
     useExpandableRow();
   const [inputValue, setInputValue] = useState("");
@@ -168,60 +164,69 @@ const WslProfileNonCompliantInstancesList: FC<
 
   return (
     <>
-      <div className={classes.header}>
-        <SearchBox
-          className={classNames("u-no-margin--bottom", classes.search)}
-          externallyControlled
-          value={inputValue}
-          onChange={setInputValue}
-          onClear={clear}
-          onSearch={setSearch}
-          autoComplete="off"
+      <SidePanel.Header>
+        Instances not compliant with {wslProfile.title}
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <div className={classes.header}>
+          <SearchBox
+            className={classNames("u-no-margin--bottom", classes.search)}
+            externallyControlled
+            value={inputValue}
+            onChange={setInputValue}
+            onClear={clear}
+            onSearch={setSearch}
+            autoComplete="off"
+          />
+
+          <Button
+            type="button"
+            className="u-no-margin"
+            hasIcon
+            onClick={openMakeCompliantModal}
+            disabled={!selectedInstances.length}
+          >
+            <Icon name="security-tick" />
+            <span>Make compliant</span>
+          </Button>
+        </div>
+
+        <SidePanelTableFilterChips
+          filters={[
+            {
+              label: "Search",
+              item: search || undefined,
+              clear,
+            },
+          ]}
         />
 
-        <Button
-          type="button"
-          className="u-no-margin"
-          hasIcon
-          onClick={openMakeCompliantModal}
-          disabled={!selectedInstances.length}
-        >
-          <Icon name="security-tick" />
-          <span>Make compliant</span>
-        </Button>
-      </div>
+        {isGettingInstances ? (
+          <LoadingState />
+        ) : (
+          <div ref={getTableRowsRef}>
+            <ResponsiveTable
+              columns={columns}
+              data={instances as WindowsInstance[]}
+              emptyMsg="No Windows instances found according to your search parameters."
+              getCellProps={getCellProps(expandedRowIndex)}
+              getRowProps={getRowProps(expandedRowIndex)}
+            />
+          </div>
+        )}
 
-      <SidePanelTableFilterChips
-        filters={[
-          {
-            label: "Search",
-            item: search || undefined,
-            clear,
-          },
-        ]}
-      />
-
-      {isGettingInstances ? (
-        <LoadingState />
-      ) : (
-        <div ref={getTableRowsRef}>
-          <ResponsiveTable
-            columns={columns}
-            data={instances as WindowsInstance[]}
-            emptyMsg="No Windows instances found according to your search parameters."
-            getCellProps={getCellProps(expandedRowIndex)}
-            getRowProps={getRowProps(expandedRowIndex)}
-          />
-        </div>
-      )}
-
-      <WindowsInstanceMakeCompliantModal
-        close={closeMakeCompliantModal}
-        instances={selectedInstances as WindowsInstance[]}
-        isOpen={isMakeCompliantModalOpen}
-      />
+        <WindowsInstanceMakeCompliantModal
+          close={closeMakeCompliantModal}
+          instances={selectedInstances as WindowsInstance[]}
+          isOpen={isMakeCompliantModalOpen}
+        />
+      </SidePanel.Content>
     </>
   );
 };
+
+const WslProfileNonCompliantInstancesList: FC = () => (
+  <WslProfileSidePanel Component={Component} />
+);
 
 export default WslProfileNonCompliantInstancesList;

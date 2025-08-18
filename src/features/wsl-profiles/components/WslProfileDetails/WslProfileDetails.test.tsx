@@ -4,7 +4,7 @@ import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { pluralize } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
-import WslProfileDetailsSidePanel from "./WslProfileDetailsSidePanel";
+import WslProfileDetails from "./WslProfileDetails";
 
 describe("WslProfileDetails", () => {
   const testProfile =
@@ -48,7 +48,7 @@ describe("WslProfileDetails", () => {
   ];
 
   it("should render WSL profile details", () => {
-    const { container } = renderWithProviders(<WslProfileDetailsSidePanel />);
+    const { container } = renderWithProviders(<WslProfileDetails />);
 
     expect(screen.getByText("Edit")).toBeInTheDocument();
     expect(screen.getByText("Remove")).toBeInTheDocument();

@@ -2,7 +2,7 @@ import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
 import SingleUpgradeProfileForm from "../SingleUpgradeProfileForm";
 
-const UpgradeProfileAddSidePanel: FC = () => (
+const UpgradeProfileAddForm: FC = () => (
   <>
     <SidePanel.Header>Add upgrade profile</SidePanel.Header>
     <SidePanel.Content>
@@ -11,4 +11,4 @@ const UpgradeProfileAddSidePanel: FC = () => (
   </>
 );
 
-export default UpgradeProfileAddSidePanel;
+export default UpgradeProfileAddForm;

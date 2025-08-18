@@ -16,27 +16,27 @@ import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { Button, Notification } from "@canonical/react-components";
 import { lazy, type FC } from "react";
 
-const WslProfileAddSidePanel = lazy(() =>
+const WslProfileInstallForm = lazy(() =>
   import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileAddSidePanel,
+    default: module.WslProfileInstallForm,
   })),
 );
 
-const WslProfileDetailsSidePanel = lazy(() =>
+const WslProfileDetails = lazy(() =>
   import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileDetailsSidePanel,
+    default: module.WslProfileDetails,
   })),
 );
 
-const WslProfileEditSidePanel = lazy(() =>
+const WslProfileEditForm = lazy(() =>
   import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileEditSidePanel,
+    default: module.WslProfileEditForm,
   })),
 );
 
-const WslProfileNonCompliantInstancesSidePanel = lazy(() =>
+const WslProfileNonCompliantInstancesList = lazy(() =>
   import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileNonCompliantInstancesSidePanel,
+    default: module.WslProfileNonCompliantInstancesList,
   })),
 );
 
@@ -131,25 +131,25 @@ const WslProfilesPage: FC = () => {
       >
         {action === "add" && (
           <SidePanel.Suspense key="add">
-            <WslProfileAddSidePanel />
+            <WslProfileInstallForm />
           </SidePanel.Suspense>
         )}
 
         {(action === "edit" || action === "view/edit") && (
           <SidePanel.Suspense key="edit">
-            <WslProfileEditSidePanel hasBackButton={action === "view/edit"} />
+            <WslProfileEditForm hasBackButton={action === "view/edit"} />
           </SidePanel.Suspense>
         )}
 
         {action === "noncompliant" && (
           <SidePanel.Suspense key="noncompliant">
-            <WslProfileNonCompliantInstancesSidePanel />
+            <WslProfileNonCompliantInstancesList />
           </SidePanel.Suspense>
         )}
 
         {action === "view" && (
           <SidePanel.Suspense key="view">
-            <WslProfileDetailsSidePanel />
+            <WslProfileDetails />
           </SidePanel.Suspense>
         )}
       </SidePanel>

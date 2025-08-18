@@ -4,7 +4,7 @@ import { renderWithProviders } from "@/tests/render";
 import { pluralize } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import { getScheduleInfo } from "./helpers";
-import UpgradeProfileDetailsSidePanel from "./UpgradeProfileDetailsSidePanel";
+import UpgradeProfileDetails from "./UpgradeProfileDetails";
 
 describe("UpgradeProfileDetails", () => {
   const [testProfile] = upgradeProfiles;
@@ -41,9 +41,7 @@ describe("UpgradeProfileDetails", () => {
   ];
 
   it("should render upgrade profile details", () => {
-    const { container } = renderWithProviders(
-      <UpgradeProfileDetailsSidePanel />,
-    );
+    const { container } = renderWithProviders(<UpgradeProfileDetails />);
 
     expect(
       screen.getByLabelText(`Edit upgrade profile ${testProfile.title}`),

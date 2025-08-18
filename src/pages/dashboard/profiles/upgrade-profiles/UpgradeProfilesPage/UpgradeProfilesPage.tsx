@@ -9,21 +9,21 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy } from "react";
 
-const UpgradeProfileAddSidePanel = lazy(() =>
+const UpgradeProfileAddForm = lazy(() =>
   import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileAddSidePanel,
+    default: module.UpgradeProfileAddForm,
   })),
 );
 
-const UpgradeProfileDetailsSidePanel = lazy(() =>
+const UpgradeProfileDetails = lazy(() =>
   import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileDetailsSidePanel,
+    default: module.UpgradeProfileDetails,
   })),
 );
 
-const UpgradeProfileEditSidePanel = lazy(() =>
+const UpgradeProfileEditForm = lazy(() =>
   import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileEditSidePanel,
+    default: module.UpgradeProfileEditForm,
   })),
 );
 
@@ -62,21 +62,19 @@ const UpgradeProfilesPage: FC = () => {
       <SidePanel onClose={closeSidePanel} isOpen={!!action}>
         {action === "add" && (
           <SidePanel.Suspense key="add">
-            <UpgradeProfileAddSidePanel />
+            <UpgradeProfileAddForm />
           </SidePanel.Suspense>
         )}
 
         {(action === "edit" || action === "view/edit") && (
           <SidePanel.Suspense key="edit">
-            <UpgradeProfileEditSidePanel
-              hasBackButton={action === "view/edit"}
-            />
+            <UpgradeProfileEditForm hasBackButton={action === "view/edit"} />
           </SidePanel.Suspense>
         )}
 
         {action === "view" && (
           <SidePanel.Suspense key="view">
-            <UpgradeProfileDetailsSidePanel />
+            <UpgradeProfileDetails />
           </SidePanel.Suspense>
         )}
       </SidePanel>
