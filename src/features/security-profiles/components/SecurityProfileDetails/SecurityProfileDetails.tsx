@@ -1,10 +1,8 @@
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import LoadingState from "@/components/layout/LoadingState";
 import SidePanel from "@/components/layout/SidePanel";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
-import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import moment from "moment";
@@ -28,16 +26,11 @@ import SecurityProfileSidePanel from "../SecurityProfileSidePanel";
 
 const Component: FC<SecurityProfileSidePanelComponentProps> = ({
   securityProfile: profile,
+  accessGroups,
 }) => {
   const { pushSidePath } = usePageParams();
 
   const profileLimitReached = useIsSecurityProfilesLimitReached();
-  const { getAccessGroupQuery } = useRoles();
-  const {
-    data: getAccessGroupQueryResponse,
-    isLoading: isAccessGroupsLoading,
-    error: accessGroupsError,
-  } = getAccessGroupQuery();
 
   const {
     value: archiveModalOpened,
@@ -45,15 +38,7 @@ const Component: FC<SecurityProfileSidePanelComponentProps> = ({
     setFalse: closeArchiveModal,
   } = useBoolean();
 
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
-  if (isAccessGroupsLoading) {
-    return <LoadingState />;
-  }
-
-  const accessGroup = getAccessGroupQueryResponse?.data.find(
+  const accessGroup = accessGroups?.find(
     (group) => group.name == profile.access_group,
   );
 
@@ -238,7 +223,7 @@ const Component: FC<SecurityProfileSidePanelComponentProps> = ({
 };
 
 const SecurityProfileDetails: FC = () => (
-  <SecurityProfileSidePanel Component={Component} />
+  <SecurityProfileSidePanel Component={Component} accessGroupsQueryEnabled />
 );
 
 export default SecurityProfileDetails;

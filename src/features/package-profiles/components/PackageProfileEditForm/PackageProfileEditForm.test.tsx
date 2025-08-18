@@ -2,6 +2,7 @@ import { getTestErrorParams } from "@/tests/mocks/error";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
 import type { ApiError } from "@/types/api/ApiError";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { UseMutationResult } from "@tanstack/react-query";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -9,6 +10,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { Mock } from "vitest";
 import type { EditPackageProfileParams } from "../../hooks";
 import { usePackageProfiles } from "../../hooks";
+import type { GetPackageProfilesParams } from "../../hooks/usePackageProfiles";
 import type { PackageProfile } from "../../types";
 import PackageProfileEditForm from "./PackageProfileEditForm";
 
@@ -32,9 +34,25 @@ describe("PackageProfileEditForm", () => {
         AxiosError<ApiError>,
         EditPackageProfileParams
       > & { mutateAsync: Mock },
+      getPackageProfilesQuery: ((params) => ({
+        data: {
+          data: {
+            result: packageProfiles.filter((packageProfile) =>
+              params?.names ? params.names.includes(packageProfile.name) : true,
+            ),
+          },
+        },
+      })) as QueryFnType<
+        AxiosResponse<{ result: PackageProfile[] }>,
+        GetPackageProfilesParams
+      >,
     });
 
-    renderWithProviders(<PackageProfileEditForm />);
+    renderWithProviders(
+      <PackageProfileEditForm />,
+      undefined,
+      `/?packageProfile=${packageProfiles[0].name}`,
+    );
   });
 
   it("should render all form's fields", async () => {

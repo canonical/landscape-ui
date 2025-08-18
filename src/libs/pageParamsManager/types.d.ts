@@ -34,7 +34,6 @@ export interface PageParams {
   packageProfile: string;
   rebootProfile: number;
   removalProfile: number;
-  repositoryProfile: string;
   scriptProfile: number;
   securityProfile: number;
   upgradeProfile: number;

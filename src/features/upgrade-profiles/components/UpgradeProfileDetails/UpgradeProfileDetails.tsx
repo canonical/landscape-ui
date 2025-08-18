@@ -6,7 +6,6 @@ import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
@@ -18,6 +17,7 @@ import { getScheduleInfo } from "./helpers";
 
 const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
   upgradeProfile: profile,
+  accessGroups,
   disableQuery,
   enableQuery,
 }) => {
@@ -25,29 +25,15 @@ const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
   const { notify } = useNotify();
   const { pushSidePath, setPageParams } = usePageParams();
   const { removeUpgradeProfileQuery } = useUpgradeProfiles();
-  const { getAccessGroupQuery } = useRoles();
 
   const { mutateAsync: removeUpgradeProfile, isPending: isRemoving } =
     removeUpgradeProfileQuery;
-  const {
-    data: accessGroupsData,
-    isPending: isGettingAccessGroups,
-    error: accessGroupsError,
-  } = getAccessGroupQuery();
 
   const {
     value: modalOpen,
     setTrue: handleOpenModal,
     setFalse: handleCloseModal,
   } = useBoolean();
-
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
-  if (isGettingAccessGroups) {
-    return <SidePanel.LoadingState />;
-  }
 
   const { scheduleMessage, nextRunMessage } = getScheduleInfo(profile);
 
@@ -109,7 +95,7 @@ const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
               <InfoGrid.Item
                 label="Access group"
                 value={
-                  accessGroupsData.data.find(
+                  accessGroups?.find(
                     (accessGroup) => accessGroup.name === profile.access_group,
                   )?.title ?? profile.access_group
                 }
@@ -181,7 +167,7 @@ const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
 };
 
 const UpgradeProfileDetails: FC = () => (
-  <UpgradeProfileSidePanel Component={Component} />
+  <UpgradeProfileSidePanel Component={Component} accessGroupsQueryEnabled />
 );
 
 export default UpgradeProfileDetails;

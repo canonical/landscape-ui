@@ -151,11 +151,6 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_NULL_NUMBER,
   },
   {
-    urlParam: "repositoryProfile",
-    shouldResetPage: false,
-    defaultValue: DEFAULT_EMPTY_STRING,
-  },
-  {
     urlParam: "scriptProfile",
     shouldResetPage: false,
     defaultValue: DEFAULT_NULL_NUMBER,

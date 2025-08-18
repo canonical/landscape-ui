@@ -13,7 +13,7 @@ import type {
   PackageProfileConstraintType,
 } from "../types";
 
-interface GetPackageProfilesParams {
+export interface GetPackageProfilesParams {
   names?: string[];
 }
 

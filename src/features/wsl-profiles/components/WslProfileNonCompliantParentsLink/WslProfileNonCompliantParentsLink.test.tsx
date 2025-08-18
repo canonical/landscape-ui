@@ -1,4 +1,3 @@
-import { expectLoadingState } from "@/tests/helpers";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -8,19 +7,17 @@ import WslProfileNonCompliantParentsLink from "./WslProfileNonCompliantParentsLi
 
 describe("WslProfileNonCompliantParentsLink", () => {
   it("should open a list of noncompliant parents", async () => {
+    const handleClick = vi.fn();
+
     renderWithProviders(
       <WslProfileNonCompliantParentsLink
         wslProfile={wslProfiles[0]}
-        onClick={() => undefined}
+        onClick={handleClick}
       />,
     );
 
     await userEvent.click(screen.getByRole("button"));
 
-    await expectLoadingState();
-
-    expect(
-      screen.getByText(`Instances not compliant with ${wslProfiles[0].title}`),
-    ).toBeInTheDocument();
+    expect(handleClick).toHaveBeenCalledTimes(1);
   });
 });

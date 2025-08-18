@@ -1,4 +1,5 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { expectLoadingState } from "@/tests/helpers";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
 import { renderWithProviders } from "@/tests/render";
@@ -18,8 +19,15 @@ const accessGroupOptions = accessGroups.map((group) => ({
 describe("RebootProfileDetails", () => {
   const user = userEvent.setup();
 
-  it("renders all info items correctly", () => {
-    const { container } = renderWithProviders(<RebootProfileDetails />);
+  it("renders all info items correctly", async () => {
+    const { container } = renderWithProviders(
+      <RebootProfileDetails />,
+      undefined,
+      `/?rebootProfile=${profile.id}`,
+    );
+
+    await expectLoadingState();
+
     const accessGroup = accessGroupOptions.find(
       (opt) => opt.value === profile.access_group,
     )?.label;
@@ -54,7 +62,13 @@ describe("RebootProfileDetails", () => {
   });
 
   it("opens a modal on remove button click and allows profile removal", async () => {
-    renderWithProviders(<RebootProfileDetails />);
+    renderWithProviders(
+      <RebootProfileDetails />,
+      undefined,
+      `/?rebootProfile=${profile.id}`,
+    );
+
+    await expectLoadingState();
 
     await user.click(
       screen.getByRole("button", {

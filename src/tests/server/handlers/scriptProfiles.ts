@@ -1,9 +1,9 @@
 import { API_URL } from "@/constants";
 import type { Activity } from "@/features/activities";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse } from "./_helpers";
-import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
   http.get(`${API_URL}script-profiles`, ({ request }) => {
@@ -47,6 +47,36 @@ export default [
         limit,
         offset,
       }),
+    );
+  }),
+
+  http.get(`${API_URL}script-profiles/:profileId`, ({ params }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      !endpointStatus.path ||
+      (endpointStatus.path &&
+        endpointStatus.path.includes("script-profiles/:profileId"))
+    ) {
+      if (endpointStatus.status === "error") {
+        throw new HttpResponse(null, { status: 500 });
+      }
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json(undefined);
+      }
+    }
+
+    return HttpResponse.json(
+      scriptProfiles.find(
+        (scriptProfile) =>
+          scriptProfile.id ===
+          parseInt(
+            typeof params.profileId === "string"
+              ? params.profileId
+              : params.profileId[0],
+          ),
+      ),
     );
   }),
 

@@ -6,7 +6,6 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import useRoles from "@/hooks/useRoles";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -18,6 +17,7 @@ import RebootProfileSidePanel from "../RebootProfileSidePanel";
 import { formatWeeklyRebootSchedule } from "./helpers";
 
 const Component: FC<RebootProfileSidePanelComponentProps> = ({
+  accessGroups,
   rebootProfile: profile,
 }) => {
   const {
@@ -31,20 +31,6 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
   const { pushSidePath, setPageParams } = usePageParams();
   const { removeRebootProfile, isRemovingRebootProfile } =
     useRemoveRebootProfileQuery();
-  const { getAccessGroupQuery } = useRoles();
-  const {
-    data: accessGroupsData,
-    isPending: isGettingAccessGroups,
-    error: accessGroupsError,
-  } = getAccessGroupQuery();
-
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
-  if (isGettingAccessGroups) {
-    return <SidePanel.LoadingState />;
-  }
 
   const handleRemoveRebootProfile = async () => {
     try {
@@ -116,7 +102,7 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
               <InfoGrid.Item
                 label="Access group"
                 value={
-                  accessGroupsData.data.find(
+                  accessGroups?.find(
                     (accessGroup) => accessGroup.name === profile.access_group,
                   )?.title ?? profile.access_group
                 }
@@ -201,7 +187,7 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
 };
 
 const RebootProfileDetails: FC = () => (
-  <RebootProfileSidePanel Component={Component} />
+  <RebootProfileSidePanel Component={Component} accessGroupsQueryEnabled />
 );
 
 export default RebootProfileDetails;

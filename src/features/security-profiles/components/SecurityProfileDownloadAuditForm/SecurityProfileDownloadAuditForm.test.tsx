@@ -6,7 +6,11 @@ import SecurityProfileDownloadAuditForm from "./SecurityProfileDownloadAuditForm
 
 describe("SecurityProfileDownloadAuditForm", () => {
   it("should start an activity", async () => {
-    renderWithProviders(<SecurityProfileDownloadAuditForm />);
+    renderWithProviders(
+      <SecurityProfileDownloadAuditForm />,
+      undefined,
+      "/?securityProfile=0",
+    );
 
     await userEvent.click(
       await screen.findByRole("button", { name: "Generate CSV" }),

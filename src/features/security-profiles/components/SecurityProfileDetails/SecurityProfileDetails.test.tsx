@@ -5,14 +5,22 @@ import SecurityProfileDetails from "./SecurityProfileDetails";
 
 describe("SecurityProfileDetails", () => {
   it("should render without data", async () => {
-    renderWithProviders(<SecurityProfileDetails />);
+    renderWithProviders(
+      <SecurityProfileDetails />,
+      undefined,
+      "/?securityProfile=7",
+    );
 
     expect((await screen.findAllByText("---"))[0]).toBeInTheDocument();
     expect(screen.getByText("As soon as possible")).toBeInTheDocument();
   });
 
   it("should render with data", async () => {
-    renderWithProviders(<SecurityProfileDetails />);
+    renderWithProviders(
+      <SecurityProfileDetails />,
+      undefined,
+      "/?securityProfile=8",
+    );
 
     expect(
       await screen.findByText(

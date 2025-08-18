@@ -7,7 +7,14 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { RebootProfile } from "../types";
 
-export default function useGetRebootProfiles() {
+export default function useGetRebootProfiles(
+  config: Omit<
+    UseQueryOptions<
+      AxiosResponse<ApiPaginatedResponse<RebootProfile>, AxiosError<ApiError>>
+    >,
+    "queryKey" | "queryFn"
+  > = {},
+) {
   const authFetch = useFetch();
 
   const getRebootProfilesQuery: QueryFnType<
@@ -19,7 +26,7 @@ export default function useGetRebootProfiles() {
       >,
       "queryKey" | "queryFn"
     >
-  > = (config = {}) =>
+  > = () =>
     useQuery<
       AxiosResponse<ApiPaginatedResponse<RebootProfile>>,
       AxiosError<ApiError>

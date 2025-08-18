@@ -1,3 +1,4 @@
+import { expectLoadingState } from "@/tests/helpers";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { removalProfiles } from "@/tests/mocks/removalProfiles";
 import { renderWithProviders } from "@/tests/render";
@@ -15,8 +16,14 @@ const accessGroupOptions = accessGroups.map((group) => ({
 describe("RemovalProfileDetails", () => {
   const user = userEvent.setup();
 
-  it("renders all info items correctly", () => {
-    const { container } = renderWithProviders(<RemovalProfileDetailsForm />);
+  it("renders all info items correctly", async () => {
+    const { container } = renderWithProviders(
+      <RemovalProfileDetailsForm />,
+      undefined,
+      `/?removalProfile=${profile.id}`,
+    );
+
+    await expectLoadingState();
 
     const accessGroup =
       accessGroupOptions.find((option) => option.value === profile.access_group)
@@ -36,8 +43,14 @@ describe("RemovalProfileDetails", () => {
     });
   });
 
-  it("renders Edit and Remove buttons with correct aria-labels", () => {
-    renderWithProviders(<RemovalProfileDetailsForm />);
+  it("renders Edit and Remove buttons with correct aria-labels", async () => {
+    renderWithProviders(
+      <RemovalProfileDetailsForm />,
+      undefined,
+      `/?removalProfile=${profile.id}`,
+    );
+
+    await expectLoadingState();
 
     const editButton = screen.getByRole("button", {
       name: `Edit ${profile.title}`,
@@ -51,7 +64,13 @@ describe("RemovalProfileDetails", () => {
   });
 
   it("opens modal and enables remove button after confirmation text", async () => {
-    renderWithProviders(<RemovalProfileDetailsForm />);
+    renderWithProviders(
+      <RemovalProfileDetailsForm />,
+      undefined,
+      `/?removalProfile=${profile.id}`,
+    );
+
+    await expectLoadingState();
 
     await user.click(
       screen.getByRole("button", { name: `Remove ${profile.title}` }),

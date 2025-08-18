@@ -1,3 +1,4 @@
+import { expectLoadingState } from "@/tests/helpers";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
@@ -40,8 +41,14 @@ describe("UpgradeProfileDetails", () => {
     },
   ];
 
-  it("should render upgrade profile details", () => {
-    const { container } = renderWithProviders(<UpgradeProfileDetails />);
+  it("should render upgrade profile details", async () => {
+    const { container } = renderWithProviders(
+      <UpgradeProfileDetails />,
+      undefined,
+      `/?upgradeProfile=${testProfile.id}`,
+    );
+
+    await expectLoadingState();
 
     expect(
       screen.getByLabelText(`Edit upgrade profile ${testProfile.title}`),

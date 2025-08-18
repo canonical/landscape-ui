@@ -2,7 +2,6 @@ import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
-import useRoles from "@/hooks/useRoles";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -15,32 +14,17 @@ import WslProfileSidePanel from "../WslProfileSidePanel";
 
 const Component: FC<WslProfileSidePanelComponentProps> = ({
   wslProfile: profile,
+  accessGroups,
   enableQuery,
   disableQuery,
 }) => {
   const { pushSidePath } = usePageParams();
-
-  const { getAccessGroupQuery } = useRoles();
-
-  const {
-    data: accessGroupsData,
-    isPending: isGettingAccessGroups,
-    error: accessGroupsError,
-  } = getAccessGroupQuery();
 
   const {
     value: isRemoveModalOpen,
     setTrue: openRemoveModal,
     setFalse: closeRemoveModal,
   } = useBoolean();
-
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
-  if (isGettingAccessGroups) {
-    return <SidePanel.LoadingState />;
-  }
 
   const handleWslProfileEdit = () => {
     pushSidePath("edit");
@@ -83,7 +67,7 @@ const Component: FC<WslProfileSidePanelComponentProps> = ({
               <InfoGrid.Item
                 label="Access group"
                 value={
-                  accessGroupsData.data.find(
+                  accessGroups?.find(
                     (accessGroup) => accessGroup.name === profile.access_group,
                   )?.title ?? profile.access_group
                 }
@@ -182,7 +166,7 @@ const Component: FC<WslProfileSidePanelComponentProps> = ({
 };
 
 const WslProfileDetails: FC = () => (
-  <WslProfileSidePanel Component={Component} />
+  <WslProfileSidePanel Component={Component} accessGroupsQueryEnabled />
 );
 
 export default WslProfileDetails;

@@ -1,4 +1,5 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { expectLoadingState } from "@/tests/helpers";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 import { renderWithProviders } from "@/tests/render";
@@ -47,8 +48,14 @@ describe("WslProfileDetails", () => {
     },
   ];
 
-  it("should render WSL profile details", () => {
-    const { container } = renderWithProviders(<WslProfileDetails />);
+  it("should render WSL profile details", async () => {
+    const { container } = renderWithProviders(
+      <WslProfileDetails />,
+      undefined,
+      `/?wslProfile=${testProfile.name}`,
+    );
+
+    await expectLoadingState();
 
     expect(screen.getByText("Edit")).toBeInTheDocument();
     expect(screen.getByText("Remove")).toBeInTheDocument();

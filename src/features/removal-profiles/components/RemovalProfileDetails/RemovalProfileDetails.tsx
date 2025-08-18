@@ -5,7 +5,6 @@ import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
@@ -16,6 +15,7 @@ import type { RemovalProfileSidePanelComponentProps } from "../RemovalProfileSid
 
 const Component: FC<RemovalProfileSidePanelComponentProps> = ({
   removalProfile: profile,
+  accessGroups,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -25,26 +25,11 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
   const { mutateAsync: removeRemovalProfile, isPending: isRemoving } =
     removeRemovalProfileQuery;
 
-  const { getAccessGroupQuery } = useRoles();
-  const {
-    data: accessGroupsData,
-    isPending: isGettingAccessGroups,
-    error: accessGroupsError,
-  } = getAccessGroupQuery();
-
   const {
     value: modalOpen,
     setTrue: handleOpenModal,
     setFalse: handleCloseModal,
   } = useBoolean();
-
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
-  if (isGettingAccessGroups) {
-    return <SidePanel.LoadingState />;
-  }
 
   const handleRemovalProfileRemove = async () => {
     try {
@@ -105,7 +90,7 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
               <InfoGrid.Item
                 label="Access group"
                 value={
-                  accessGroupsData.data.find(
+                  accessGroups?.find(
                     (accessGroup) => accessGroup.name === profile.access_group,
                   )?.title ?? profile.access_group
                 }
@@ -164,7 +149,7 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
 };
 
 const RemovalProfileDetailsForm: FC = () => (
-  <RemovalProfileSidePanel Component={Component} />
+  <RemovalProfileSidePanel Component={Component} accessGroupsQueryEnabled />
 );
 
 export default RemovalProfileDetailsForm;
