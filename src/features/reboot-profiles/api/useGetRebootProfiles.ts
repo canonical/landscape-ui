@@ -32,7 +32,8 @@ export default function useGetRebootProfiles(
       AxiosError<ApiError>
     >({
       queryKey: ["rebootprofiles"],
-      queryFn: async () => authFetch.get("rebootprofiles"),
+      queryFn: async ({ signal }) =>
+        authFetch.get("rebootprofiles", { signal }),
       ...config,
     });
 

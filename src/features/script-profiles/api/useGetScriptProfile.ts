@@ -24,7 +24,8 @@ export const useGetScriptProfile = (
     error,
   } = useQuery<AxiosResponse<ScriptProfile>, AxiosError<ApiError>>({
     queryKey: ["scriptProfiles", "single", params],
-    queryFn: async () => authFetch.get(`script-profiles/${params.id}`),
+    queryFn: async ({ signal }) =>
+      authFetch.get(`script-profiles/${params.id}`, { signal }),
     ...config,
   });
 

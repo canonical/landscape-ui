@@ -24,8 +24,8 @@ export const useGetWslProfile = (
     error,
   } = useQuery<AxiosResponse<WslProfile>, AxiosError<ApiError>>({
     queryKey: ["wslProfiles", profile_name],
-    queryFn: async () =>
-      authFetch.get(`child-instance-profiles/${profile_name}`),
+    queryFn: async ({ signal }) =>
+      authFetch.get(`child-instance-profiles/${profile_name}`, { signal }),
     ...config,
   });
 

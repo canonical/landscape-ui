@@ -1,13 +1,13 @@
-import type { QueryFnType } from "@/types/api/QueryFnType";
-import type { AxiosError, AxiosResponse } from "axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ApiError } from "@/types/api/ApiError";
-import useFetchOld from "./useFetchOld";
 import type { AccessGroup } from "@/features/access-groups";
-import type { Role } from "@/types/Role";
-import type { Permission } from "@/types/Permission";
 import type { Activity } from "@/features/activities";
+import type { ApiError } from "@/types/api/ApiError";
+import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { Instance } from "@/types/Instance";
+import type { Permission } from "@/types/Permission";
+import type { Role } from "@/types/Role";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import useFetchOld from "./useFetchOld";
 
 export interface CreateAccessGroupParams {
   parent: string;
@@ -67,8 +67,8 @@ export default function useRoles() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<AccessGroup[]>, AxiosError<ApiError>>({
       queryKey: ["accessGroups"],
-      queryFn: async () =>
-        authFetch.get("GetAccessGroups", { params: queryParams }),
+      queryFn: async ({ signal }) =>
+        authFetch.get("GetAccessGroups", { params: queryParams, signal }),
       ...config,
     });
 

@@ -86,7 +86,8 @@ export default function useUpgradeProfiles() {
   > = (params = {}, config = {}) =>
     useQuery<AxiosResponse<UpgradeProfile[]>, AxiosError<ApiError>>({
       queryKey: ["upgradeProfiles", params],
-      queryFn: async () => authFetchOld.get("GetUpgradeProfiles", { params }),
+      queryFn: async ({ signal }) =>
+        authFetchOld.get("GetUpgradeProfiles", { params, signal }),
       ...config,
     });
 

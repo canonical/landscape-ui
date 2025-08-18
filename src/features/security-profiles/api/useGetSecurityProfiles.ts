@@ -35,7 +35,8 @@ export const useGetSecurityProfiles = (
     AxiosError<ApiError>
   >({
     queryKey: ["securityProfiles", params],
-    queryFn: async () => authFetch.get("security-profiles", { params }),
+    queryFn: async ({ signal }) =>
+      authFetch.get("security-profiles", { params, signal }),
     ...options,
   });
 
