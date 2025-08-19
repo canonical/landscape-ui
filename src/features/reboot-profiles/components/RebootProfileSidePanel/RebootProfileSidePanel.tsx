@@ -35,10 +35,6 @@ const RebootProfileSidePanel: FC<RebootProfileSidePanelProps> = ({
     error: accessGroupsError,
   } = getAccessGroupQuery(undefined, { enabled: accessGroupsQueryEnabled });
 
-  if (rebootProfileId === -1) {
-    return;
-  }
-
   if (rebootProfilesError) {
     throw rebootProfilesError;
   }
