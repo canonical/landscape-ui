@@ -1,28 +1,31 @@
-import type { FC } from "react";
 import { TableFilter } from "@/components/filter";
-import usePageParams from "@/hooks/usePageParams";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import type { FilterProps } from "@/components/filter/types";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+import type { FC } from "react";
 
 const OsFilter: FC<FilterProps> = ({ options, label, inline = false }) => {
   const { os, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation(
     "os",
-    options.map((opt) => opt.value),
+    options.flatMap((opt) => [
+      opt.value,
+      ...(opt.options?.map((nestedOpt) => nestedOpt.value) ?? []),
+    ]),
   );
 
   return (
     <TableFilter
-      type="single"
+      type="multiple"
       hasBadge
       label={label}
       hasToggleIcon
       options={options}
-      onItemSelect={(item) => {
-        setPageParams({ os: item });
+      onItemsSelect={(items) => {
+        setPageParams({ os: items });
       }}
-      selectedItem={os}
+      selectedItems={os}
       inline={inline}
     />
   );

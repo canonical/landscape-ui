@@ -55,7 +55,7 @@ export const PARAMS_CONFIG: ParamsConfig = [
   {
     urlParam: "os",
     shouldResetPage: true,
-    defaultValue: DEFAULT_EMPTY_STRING,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
   },
   {
     urlParam: "pageSize",

@@ -151,11 +151,14 @@ export const FILTERS: Record<FilterKey, ListFilter> = {
   os: {
     slug: "os",
     label: "OS",
-    type: "select",
+    type: "multi-select",
     options: [
-      { label: "All", value: "", query: "" },
-      { label: "Ubuntu", value: "ubuntu", query: "NOT distribution:windows" },
-      { label: "Windows", value: "windows", query: "distribution:windows" },
+      {
+        label: "Ubuntu",
+        value: "ubuntu",
+        options: [{ label: "WSL", value: "wsl" }],
+      },
+      { label: "Windows", value: "windows" },
     ],
   },
   groupBy: {

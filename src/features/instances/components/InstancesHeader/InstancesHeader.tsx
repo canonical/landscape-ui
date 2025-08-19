@@ -16,7 +16,6 @@ import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
 import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
-import WslFilter from "../WslFilter";
 import classes from "./InstancesHeader.module.scss";
 import useInstanceSearchHelpTerms from "./hooks/useInstanceSearchHelpTerms";
 
@@ -63,7 +62,8 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
 
   const statusOptions =
     FILTERS.status.type === "select" ? FILTERS.status.options : [];
-  const osOptions = FILTERS.os.type === "select" ? FILTERS.os.options : [];
+  const osOptions =
+    FILTERS.os.type === "multi-select" ? FILTERS.os.options : [];
   const wslOptions =
     FILTERS.wsl.type === "multi-select" ? FILTERS.wsl.options : [];
 
@@ -97,7 +97,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
               options={accessGroupOptions}
             />,
             <TagFilter key="tag" label="Tags" options={tagOptions} />,
-            <WslFilter key="wsl" label="WSL" options={wslOptions} />,
             <span key="divider-2" className={classes.divider} />,
             <ColumnFilter
               key="column"

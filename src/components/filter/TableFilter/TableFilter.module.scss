@@ -48,6 +48,12 @@
   }
 }
 
+.nestedListItem {
+  @extend .listItem;
+
+  padding-left: 2rem;
+}
+
 .separated {
   border-bottom: 1px solid $colors--theme--border-low-contrast;
   margin-bottom: calc($spv-nudge / 2);

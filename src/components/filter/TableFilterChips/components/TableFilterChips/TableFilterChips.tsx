@@ -88,9 +88,15 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   if (filtersToDisplay.includes("os")) {
     filters.push({
       label: "OS",
-      item: getItem(osOptions, os),
+      multiple: true,
+      items: getItems(osOptions, os),
+      remove: (operatingSystem) => {
+        setPageParams({
+          os: os.filter((s) => s !== operatingSystem),
+        });
+      },
       clear: () => {
-        setPageParams({ os: "" });
+        setPageParams({ os: [] });
       },
     });
   }
@@ -221,7 +227,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           accessGroups: [],
           availabilityZones: [],
           fromDate: "",
-          os: "",
+          os: [],
           status: "",
           tags: [],
           toDate: "",

@@ -11,7 +11,7 @@ export const getOptionQuery = (filter: ListFilter, optionValue: string) => {
 interface GetQueryProps {
   accessGroups: string[];
   availabilityZones: string[];
-  os: string;
+  os: string[];
   query: string;
   status: string;
   tags: string[];
@@ -28,7 +28,17 @@ export const getQuery = ({
   const queryParts: string[] = [];
 
   if (os) {
-    queryParts.push(getOptionQuery(FILTERS.os, os));
+    if (os.includes("ubuntu") && !os.includes("windows")) {
+      queryParts.push("NOT distribution:windows");
+    }
+
+    if (
+      os.includes("windows") &&
+      !os.includes("ubuntu") &&
+      !os.includes("wsl")
+    ) {
+      queryParts.push("distribution:windows");
+    }
   }
 
   if (status) {
