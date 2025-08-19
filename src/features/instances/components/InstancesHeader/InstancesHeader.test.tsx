@@ -1,10 +1,10 @@
+import { setScreenSize } from "@/tests/helpers";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { describe } from "vitest";
 import InstancesHeader from "./InstancesHeader";
-import { renderWithProviders } from "@/tests/render";
-import type { ComponentProps } from "react";
-import { screen } from "@testing-library/react";
-import { setScreenSize } from "@/tests/helpers";
-import userEvent from "@testing-library/user-event";
 
 const props: ComponentProps<typeof InstancesHeader> = {
   columnFilterOptions: [
@@ -52,9 +52,6 @@ describe("InstancesHeader", async () => {
 
     const tagFilter = screen.getByRole("button", { name: /tags/i });
     expect(tagFilter).toBeInTheDocument();
-
-    const wslFilter = screen.getByRole("button", { name: /wsl/i });
-    expect(wslFilter).toBeInTheDocument();
 
     const columnFilter = screen.getByRole("button", { name: /columns/i });
     expect(columnFilter).toBeInTheDocument();

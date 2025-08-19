@@ -10,7 +10,7 @@ import type {
 import SearchBoxWithForm from "@/components/form/SearchBoxWithForm";
 import { Button, Input } from "@canonical/react-components";
 import classNames from "classnames";
-import type { ChangeEvent } from "react";
+import { Fragment, type ChangeEvent } from "react";
 
 export function renderSingleBody(
   props: SingleFilterProps & { handleCloseMenu?: () => void },
@@ -82,9 +82,8 @@ export function renderMultipleBody(props: MultipleFilterProps) {
         {onSearch && <SearchBoxWithForm onSearch={onSearch} />}
         <ul className={commonClasses.list}>
           {options.map((option, i) => (
-            <>
+            <Fragment key={option.value}>
               <li
-                key={option.value}
                 className={classNames(commonClasses.listItem, {
                   [commonClasses.separated]:
                     option.group &&
@@ -149,7 +148,7 @@ export function renderMultipleBody(props: MultipleFilterProps) {
                   />
                 </li>
               ))}
-            </>
+            </Fragment>
           ))}
         </ul>
       </span>
