@@ -18,6 +18,8 @@ describe("ScriptProfileDetails", () => {
 
     await userEvent.click(screen.getByText("Activity history"));
 
-    expect(screen.getByText("Run")).toBeInTheDocument();
+    await expectLoadingState();
+
+    expect(await screen.findByText("Run")).toBeInTheDocument();
   });
 });

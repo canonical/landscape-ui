@@ -1,4 +1,5 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import usePageParams from "@/hooks/usePageParams";
 import { expectLoadingState } from "@/tests/helpers";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
@@ -6,6 +7,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
+import type { FC } from "react";
 import { describe, expect, it } from "vitest";
 import { formatWeeklyRebootSchedule } from "./helpers";
 import RebootProfileDetails from "./RebootProfileDetails";
@@ -15,6 +17,16 @@ const accessGroupOptions = accessGroups.map((group) => ({
   label: group.title,
   value: group.name,
 }));
+
+const RebootProfileDetailsTestWrapper: FC = () => {
+  const { lastSidePathSegment } = usePageParams();
+
+  if (lastSidePathSegment === "view") {
+    return <RebootProfileDetails />;
+  }
+
+  return null;
+};
 
 describe("RebootProfileDetails", () => {
   const user = userEvent.setup();
@@ -63,9 +75,9 @@ describe("RebootProfileDetails", () => {
 
   it("opens a modal on remove button click and allows profile removal", async () => {
     renderWithProviders(
-      <RebootProfileDetails />,
+      <RebootProfileDetailsTestWrapper />,
       undefined,
-      `/?rebootProfile=${profile.id}`,
+      `/?sidePath=view&rebootProfile=${profile.id}`,
     );
 
     await expectLoadingState();
