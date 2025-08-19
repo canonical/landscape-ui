@@ -1,10 +1,9 @@
 import SidePanel from "@/components/layout/SidePanel";
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
-import moment from "moment";
 import type { FC } from "react";
 import { useAddScriptProfile } from "../../api";
 import ScriptProfileForm from "../ScriptProfileForm";
+import { SCRIPT_PROFILE_ADD_FORM_INITIAL_VALUES } from "./constants";
 
 const ScriptProfileAddForm: FC = () => {
   const { notify } = useNotify();
@@ -16,18 +15,7 @@ const ScriptProfileAddForm: FC = () => {
       <SidePanel.Header>Add script profile</SidePanel.Header>
       <SidePanel.Content>
         <ScriptProfileForm
-          initialValues={{
-            all_computers: false,
-            interval: "",
-            start_after: moment().utc().format(INPUT_DATE_TIME_FORMAT),
-            tags: [],
-            time_limit: 300,
-            timestamp: moment().utc().format(INPUT_DATE_TIME_FORMAT),
-            title: "",
-            trigger_type: "",
-            username: "root",
-            script: null,
-          }}
+          initialValues={SCRIPT_PROFILE_ADD_FORM_INITIAL_VALUES}
           onSubmit={async (values) => {
             await addScriptProfile({
               all_computers: values.all_computers,

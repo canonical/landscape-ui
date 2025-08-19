@@ -45,7 +45,7 @@ const PackageProfileEditForm = lazy(async () =>
 );
 
 const PackageProfilesPage: FC = () => {
-  const { sidePath, peekSidePath, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
@@ -86,43 +86,43 @@ const PackageProfilesPage: FC = () => {
         isOpen={!!sidePath.length}
         size={
           ["add", "add-constraints", "edit-constraints", "view"].includes(
-            peekSidePath(),
+            lastSidePathSegment,
           )
             ? "medium"
             : undefined
         }
       >
-        {peekSidePath() === "add" && (
+        {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <PackageProfileAddSidePanel />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "add-constraints" && (
+        {lastSidePathSegment === "add-constraints" && (
           <SidePanel.Suspense key="add-constraints">
             <PackageProfileConstraintsAddForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "duplicate" && (
+        {lastSidePathSegment === "duplicate" && (
           <SidePanel.Suspense key="duplicate">
             <PackageProfileDuplicateForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "edit" && (
+        {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <PackageProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "edit-constraints" && (
+        {lastSidePathSegment === "edit-constraints" && (
           <SidePanel.Suspense key="edit-constraints">
             <PackageProfileConstraintsEditForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "view" && (
+        {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <PackageProfileDetails />
           </SidePanel.Suspense>

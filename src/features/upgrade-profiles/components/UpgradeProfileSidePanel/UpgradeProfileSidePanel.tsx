@@ -49,13 +49,9 @@ const UpgradeProfileSidePanel: FC<UpgradeProfileSidePanelProps> = ({
     throw upgradeProfilesError;
   }
 
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
   if (
     isGettingUpgradeProfiles ||
-    (isGettingAccessGroups && accessGroupsQueryEnabled)
+    (accessGroupsQueryEnabled && isGettingAccessGroups && !accessGroupsError)
   ) {
     return <SidePanel.LoadingState />;
   }

@@ -51,7 +51,7 @@ const SecurityProfileDetails = lazy(() =>
 );
 
 const SecurityProfilesPage: FC = () => {
-  const { sidePath, peekSidePath, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
 
   const [isRetentionNotificationVisible, setIsRetentionNotificationVisible] =
     useState(false);
@@ -130,39 +130,39 @@ const SecurityProfilesPage: FC = () => {
           setPageParams({ sidePath: [], securityProfile: -1 });
         }}
         isOpen={!!sidePath.length}
-        size={peekSidePath() === "view" ? "medium" : undefined}
+        size={lastSidePathSegment === "view" ? "medium" : undefined}
       >
-        {peekSidePath() === "add" && (
+        {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <SecurityProfileAddForm onSuccess={onAddProfile} />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "download" && (
+        {lastSidePathSegment === "download" && (
           <SidePanel.Suspense key="download">
             <SecurityProfileDownloadAuditForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "duplicate" && (
+        {lastSidePathSegment === "duplicate" && (
           <SidePanel.Suspense key="duplicate">
             <SecurityProfileDuplicateForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "edit" && (
+        {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <SecurityProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "run" && (
+        {lastSidePathSegment === "run" && (
           <SidePanel.Suspense key="run">
             <SecurityProfileRunFixForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "view" && (
+        {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <SecurityProfileDetails />
           </SidePanel.Suspense>

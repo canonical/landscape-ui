@@ -28,7 +28,7 @@ const UpgradeProfileEditForm = lazy(() =>
 );
 
 const UpgradeProfilesPage: FC = () => {
-  const { sidePath, peekSidePath, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
@@ -61,19 +61,19 @@ const UpgradeProfilesPage: FC = () => {
         }}
         isOpen={!!sidePath.length}
       >
-        {peekSidePath() === "add" && (
+        {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <UpgradeProfileAddForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "edit" && (
+        {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <UpgradeProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "view" && (
+        {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <UpgradeProfileDetails />
           </SidePanel.Suspense>

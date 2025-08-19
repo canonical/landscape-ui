@@ -1,6 +1,7 @@
 import StaticLink from "@/components/layout/StaticLink";
 import type { Profile } from "@/types/Profile";
 import type { FC } from "react";
+import { getTo } from "./helpers";
 
 interface ProfileLinkProps {
   readonly profile: Profile;
@@ -11,23 +12,7 @@ const ProfileLink: FC<ProfileLinkProps> = ({ profile }) => {
     return profile.title;
   }
 
-  return (
-    <StaticLink
-      to={
-        {
-          package: `/profiles/package?sidePath=view&packageProfile=${profile.name}`,
-          reboot: `/profiles/reboot?sidePath=view&rebootProfile=${profile.id}`,
-          removal: `/profiles/removal?sidePath=view&removalProfile=${profile.id}`,
-          script: `/scripts?tab=profiles&sidePath=view&scriptProfile=${profile.id}`,
-          security: `/profiles/security?sidePath=view&securityProfile=${profile.id}`,
-          upgrade: `/profiles/upgrade?sidePath=view&upgradeProfile=${profile.id}`,
-          wsl: `/profiles/wsl?sidePath=view&wslProfile=${profile.name}`,
-        }[profile.type]
-      }
-    >
-      {profile.title}
-    </StaticLink>
-  );
+  return <StaticLink to={getTo(profile)}>{profile.title}</StaticLink>;
 };
 
 export default ProfileLink;

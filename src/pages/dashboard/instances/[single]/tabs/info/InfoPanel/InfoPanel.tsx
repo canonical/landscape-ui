@@ -50,7 +50,7 @@ import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useNavigate } from "react-router";
 import { useBoolean } from "usehooks-ts";
-import ProfileLink from "../ProfileLink/ProfileLink";
+import ProfileLink from "../ProfileLink";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";

@@ -32,13 +32,9 @@ const SecurityProfileSidePanel: FC<SecurityProfileSidePanelProps> = ({
     error: accessGroupsError,
   } = getAccessGroupQuery(undefined, { enabled: accessGroupsQueryEnabled });
 
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
   if (
     isSecurityProfilesLoading ||
-    (isGettingAccessGroups && accessGroupsQueryEnabled)
+    (accessGroupsQueryEnabled && isGettingAccessGroups && !accessGroupsError)
   ) {
     return <SidePanel.LoadingState />;
   }

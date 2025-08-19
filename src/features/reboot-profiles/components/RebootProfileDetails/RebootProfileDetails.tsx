@@ -46,6 +46,8 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
       });
     } catch (error) {
       debug(error);
+    } finally {
+      handleCloseModal();
     }
   };
 

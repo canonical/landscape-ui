@@ -43,13 +43,9 @@ const RebootProfileSidePanel: FC<RebootProfileSidePanelProps> = ({
     throw rebootProfilesError;
   }
 
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
   if (
     isGettingRebootProfiles ||
-    (isGettingAccessGroups && accessGroupsQueryEnabled)
+    (accessGroupsQueryEnabled && isGettingAccessGroups && !accessGroupsError)
   ) {
     return <SidePanel.LoadingState />;
   }

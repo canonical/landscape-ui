@@ -44,10 +44,4 @@ describe("PackageProfileDetailsConstraints", () => {
         ).not.toBeInTheDocument();
       });
   });
-
-  it("should open profile constraints form", async () => {
-    const button = await screen.findByText("Change package constraints");
-
-    await userEvent.click(button);
-  });
 });

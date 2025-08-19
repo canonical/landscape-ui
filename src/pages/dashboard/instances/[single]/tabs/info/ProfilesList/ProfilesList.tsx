@@ -13,7 +13,7 @@ import { ModularTable, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
-import ProfileLink from "../ProfileLink/ProfileLink";
+import ProfileLink from "../ProfileLink";
 import { FILTER_OPTIONS } from "./constants";
 import { getProfileType } from "./helpers";
 import classes from "./ProfilesList.module.scss";

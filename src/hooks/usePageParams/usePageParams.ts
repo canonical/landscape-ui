@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router";
 
 interface UsePageParamsReturnType extends PageParams {
   setPageParams: (newParams: Partial<PageParams>) => void;
-  peekSidePath: () => string;
+  lastSidePathSegment: string;
   pushSidePath: (value: string) => void;
   popSidePath: () => void;
 }
@@ -48,7 +48,7 @@ const usePageParams = (): UsePageParamsReturnType => {
     );
   };
 
-  const peekSidePath = () =>
+  const lastSidePathSegment =
     parsedSearchParams.sidePath[parsedSearchParams.sidePath.length - 1];
 
   const pushSidePath = (value: string) => {
@@ -62,7 +62,7 @@ const usePageParams = (): UsePageParamsReturnType => {
   return {
     ...parsedSearchParams,
     setPageParams,
-    peekSidePath,
+    lastSidePathSegment,
     pushSidePath,
     popSidePath,
   };

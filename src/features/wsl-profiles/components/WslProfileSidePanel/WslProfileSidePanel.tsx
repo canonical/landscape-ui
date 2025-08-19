@@ -43,13 +43,9 @@ const WslProfileSidePanel: FC<WslProfileSidePanelProps> = ({
     error: accessGroupsError,
   } = getAccessGroupQuery(undefined, { enabled: accessGroupsQueryEnabled });
 
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
   if (
     isGettingWslProfile ||
-    (isGettingAccessGroups && accessGroupsQueryEnabled)
+    (accessGroupsQueryEnabled && isGettingAccessGroups && !accessGroupsError)
   ) {
     return <SidePanel.LoadingState />;
   }

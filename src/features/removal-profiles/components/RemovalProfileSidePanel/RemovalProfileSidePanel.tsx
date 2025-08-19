@@ -40,13 +40,9 @@ const RemovalProfileSidePanel: FC<RemovalProfileSidePanelProps> = ({
     throw removalProfilesError;
   }
 
-  if (accessGroupsError) {
-    throw accessGroupsError;
-  }
-
   if (
     isGettingRemovalProfiles ||
-    (isGettingAccessGroups && accessGroupsQueryEnabled)
+    (accessGroupsQueryEnabled && isGettingAccessGroups && !accessGroupsError)
   ) {
     return <SidePanel.LoadingState />;
   }

@@ -1,12 +1,25 @@
-import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
+import { http, HttpResponse } from "msw";
 
 export default [
+  http.get(`${API_URL}packageprofiles`, ({ request }) => {
+    const { searchParams } = new URL(request.url);
+
+    const profileNames = searchParams.get("names")?.split(",");
+
+    return HttpResponse.json({
+      result: packageProfiles.filter((packageProfile) =>
+        profileNames ? profileNames.includes(packageProfile.name) : true,
+      ),
+    });
+  }),
+
   http.get(
     `${API_URL}packageprofiles/:profileName/constraints`,
     ({ params, request }) => {
-      const searchParams = new URL(request.url).searchParams;
+      const { searchParams } = new URL(request.url);
 
       const search = searchParams.get("search");
       const limit = parseInt(searchParams.get("limit") || "20");
@@ -25,4 +38,20 @@ export default [
       });
     },
   ),
+
+  http.put(`${API_URL}packageprofiles/:profileName`, () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      !endpointStatus.path ||
+      (endpointStatus.path &&
+        endpointStatus.path.includes("packageprofiles/:profileName"))
+    ) {
+      if (endpointStatus.status === "error") {
+        throw new HttpResponse(null, { status: 500 });
+      }
+    }
+
+    return HttpResponse.error();
+  }),
 ];

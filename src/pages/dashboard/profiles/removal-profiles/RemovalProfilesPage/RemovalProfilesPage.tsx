@@ -27,7 +27,7 @@ const RemovalProfileEditForm = lazy(async () =>
 );
 
 const RemovalProfilesPage: FC = () => {
-  const { sidePath, peekSidePath, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
@@ -60,19 +60,19 @@ const RemovalProfilesPage: FC = () => {
           setPageParams({ sidePath: [], rebootProfile: -1 });
         }}
       >
-        {peekSidePath() === "add" && (
+        {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <RemovalProfileAddForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "edit" && (
+        {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <RemovalProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "view" && (
+        {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <RemovalProfileDetails />
           </SidePanel.Suspense>

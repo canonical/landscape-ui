@@ -34,7 +34,7 @@ const RebootProfileEditForm = lazy(async () =>
 );
 
 const RebootProfilesPage: FC = () => {
-  const { sidePath, peekSidePath, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
@@ -73,25 +73,25 @@ const RebootProfilesPage: FC = () => {
         key="add"
         isOpen={!!sidePath.length}
       >
-        {peekSidePath() === "add" && (
+        {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <RebootProfileAddForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "duplicate" && (
+        {lastSidePathSegment === "duplicate" && (
           <SidePanel.Suspense key="duplicate">
             <RebootProfileDuplicateForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "edit" && (
+        {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <RebootProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "view" && (
+        {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <RebootProfileDetails />
           </SidePanel.Suspense>

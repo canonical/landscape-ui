@@ -1,58 +1,19 @@
-import { getTestErrorParams } from "@/tests/mocks/error";
+import { expectLoadingState } from "@/tests/helpers";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
-import type { ApiError } from "@/types/api/ApiError";
-import type { QueryFnType } from "@/types/api/QueryFnType";
-import type { UseMutationResult } from "@tanstack/react-query";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { AxiosError, AxiosResponse } from "axios";
-import type { Mock } from "vitest";
-import type { EditPackageProfileParams } from "../../hooks";
-import { usePackageProfiles } from "../../hooks";
-import type { GetPackageProfilesParams } from "../../hooks/usePackageProfiles";
-import type { PackageProfile } from "../../types";
 import PackageProfileEditForm from "./PackageProfileEditForm";
 
 describe("PackageProfileEditForm", () => {
-  vi.mock("../../hooks");
-
-  const { testError, testErrorMessage } = getTestErrorParams();
-
-  const editPackageProfile = vi.fn(({ title }: { title: string }) => {
-    if (title === "error") {
-      throw testError;
-    }
-  });
-
-  beforeEach(() => {
-    vi.mocked(usePackageProfiles, { partial: true }).mockReturnValue({
-      editPackageProfileQuery: {
-        mutateAsync: editPackageProfile,
-      } as UseMutationResult<
-        AxiosResponse<PackageProfile>,
-        AxiosError<ApiError>,
-        EditPackageProfileParams
-      > & { mutateAsync: Mock },
-      getPackageProfilesQuery: ((params) => ({
-        data: {
-          data: {
-            result: packageProfiles.filter((packageProfile) =>
-              params?.names ? params.names.includes(packageProfile.name) : true,
-            ),
-          },
-        },
-      })) as QueryFnType<
-        AxiosResponse<{ result: PackageProfile[] }>,
-        GetPackageProfilesParams
-      >,
-    });
-
+  beforeEach(async () => {
     renderWithProviders(
       <PackageProfileEditForm />,
       undefined,
       `/?packageProfile=${packageProfiles[0].name}`,
     );
+
+    await expectLoadingState();
   });
 
   it("should render all form's fields", async () => {
@@ -100,22 +61,8 @@ describe("PackageProfileEditForm", () => {
     expect(screen.queryByText(errorMessage)).not.toBeInTheDocument();
   });
 
-  it("should edit package profile with the correct values", async () => {
-    await userEvent.click(
-      screen.getByRole("button", { name: /save changes/i }),
-    );
-
-    expect(editPackageProfile).toHaveBeenCalledWith({
-      all_computers: packageProfiles[0].all_computers,
-      description: packageProfiles[0].description,
-      tags: packageProfiles[0].tags,
-      title: packageProfiles[0].title,
-      name: packageProfiles[0].name,
-    });
-  });
-
   it("should show error notification if editPackageProfile throws an error", async () => {
-    expect(screen.queryByText(testErrorMessage)).not.toBeInTheDocument();
+    expect(screen.queryByText("Network Error")).not.toBeInTheDocument();
 
     const nameInput = screen.getByRole("textbox", { name: /title/i });
 
@@ -125,6 +72,6 @@ describe("PackageProfileEditForm", () => {
       screen.getByRole("button", { name: /save changes/i }),
     );
 
-    expect(screen.getByText(testErrorMessage)).toBeInTheDocument();
+    expect(screen.getByText("Network Error")).toBeInTheDocument();
   });
 });

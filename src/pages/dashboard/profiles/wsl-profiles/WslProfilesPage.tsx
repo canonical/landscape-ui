@@ -41,7 +41,7 @@ const WslProfileNonCompliantInstancesList = lazy(() =>
 );
 
 const WslProfilesPage: FC = () => {
-  const { sidePath, peekSidePath, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
@@ -124,27 +124,27 @@ const WslProfilesPage: FC = () => {
           setPageParams({ sidePath: [], wslProfile: "" });
         }}
         isOpen={!!sidePath.length}
-        size={peekSidePath() === "noncompliant" ? "large" : undefined}
+        size={lastSidePathSegment === "noncompliant" ? "large" : undefined}
       >
-        {peekSidePath() === "add" && (
+        {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <WslProfileInstallForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "edit" && (
+        {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <WslProfileEditForm />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "noncompliant" && (
+        {lastSidePathSegment === "noncompliant" && (
           <SidePanel.Suspense key="noncompliant">
             <WslProfileNonCompliantInstancesList />
           </SidePanel.Suspense>
         )}
 
-        {peekSidePath() === "view" && (
+        {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <WslProfileDetails />
           </SidePanel.Suspense>

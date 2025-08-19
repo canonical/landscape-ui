@@ -1,13 +1,12 @@
 import SidePanel from "@/components/layout/SidePanel";
-import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useNotify from "@/hooks/useNotify";
-import moment from "moment";
 import type { FC } from "react";
 import { useEditScriptProfile } from "../../api";
 import ScriptProfileForm from "../ScriptProfileForm";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm/ScriptProfileForm";
 import type { ScriptProfileSidePanelComponentProps } from "../ScriptProfileSidePanel";
 import ScriptProfileSidePanel from "../ScriptProfileSidePanel";
+import { getScriptProfileEditFormInitialValues } from "./helpers";
 
 const Component: FC<ScriptProfileSidePanelComponentProps> = ({
   scriptProfile: profile,
@@ -37,23 +36,7 @@ const Component: FC<ScriptProfileSidePanelComponentProps> = ({
             script_id: true,
             trigger_type: true,
           }}
-          initialValues={{
-            ...profile,
-            interval: "",
-            ...profile.trigger,
-            start_after:
-              profile.trigger.trigger_type == "recurring"
-                ? moment(profile.trigger.start_after)
-                    .utc()
-                    .format(INPUT_DATE_TIME_FORMAT)
-                : "",
-            timestamp:
-              profile.trigger.trigger_type == "one_time"
-                ? moment(profile.trigger.timestamp)
-                    .utc()
-                    .format(INPUT_DATE_TIME_FORMAT)
-                : "",
-          }}
+          initialValues={getScriptProfileEditFormInitialValues(profile)}
           onSubmit={handleSubmit}
           onSuccess={(values) => {
             notify.success({
