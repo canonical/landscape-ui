@@ -15,8 +15,6 @@ import WslProfileSidePanel from "../WslProfileSidePanel";
 const Component: FC<WslProfileSidePanelComponentProps> = ({
   wslProfile: profile,
   accessGroups,
-  enableQuery,
-  disableQuery,
 }) => {
   const { pushSidePath } = usePageParams();
 
@@ -155,8 +153,6 @@ const Component: FC<WslProfileSidePanelComponentProps> = ({
         </Blocks>
       </SidePanel.Content>
       <WslProfileRemoveModal
-        enableQuery={enableQuery}
-        disableQuery={disableQuery}
         isOpen={isRemoveModalOpen}
         close={closeRemoveModal}
         wslProfile={profile}

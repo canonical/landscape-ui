@@ -23,7 +23,7 @@ export const useGetScriptProfile = (
     isPending,
     error,
   } = useQuery<AxiosResponse<ScriptProfile>, AxiosError<ApiError>>({
-    queryKey: ["scriptProfiles", "single", params],
+    queryKey: ["scriptProfile", params.id],
     queryFn: async ({ signal }) =>
       authFetch.get(`script-profiles/${params.id}`, { signal }),
     ...config,

@@ -3,7 +3,7 @@ import type { AccessGroup } from "@/features/access-groups";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
-import { useRemovalProfiles } from "../../hooks";
+import { useGetRemovalProfile } from "../../api";
 import type { RemovalProfile } from "../../types";
 
 export interface RemovalProfileSidePanelComponentProps {
@@ -22,12 +22,8 @@ const RemovalProfileSidePanel: FC<RemovalProfileSidePanelProps> = ({
 }) => {
   const { removalProfile: removalProfileId } = usePageParams();
 
-  const { getRemovalProfilesQuery } = useRemovalProfiles();
-  const {
-    data: getRemovalProfilesQueryResponse,
-    isPending: isGettingRemovalProfiles,
-    error: removalProfilesError,
-  } = getRemovalProfilesQuery();
+  const { isGettingRemovalProfile, removalProfile, removalProfileError } =
+    useGetRemovalProfile(removalProfileId);
 
   const { getAccessGroupQuery } = useRoles();
   const {
@@ -36,23 +32,15 @@ const RemovalProfileSidePanel: FC<RemovalProfileSidePanelProps> = ({
     error: accessGroupsError,
   } = getAccessGroupQuery(undefined, { enabled: accessGroupsQueryEnabled });
 
-  if (removalProfilesError) {
-    throw removalProfilesError;
-  }
-
   if (
-    isGettingRemovalProfiles ||
+    isGettingRemovalProfile ||
     (accessGroupsQueryEnabled && isGettingAccessGroups && !accessGroupsError)
   ) {
     return <SidePanel.LoadingState />;
   }
 
-  const removalProfile = getRemovalProfilesQueryResponse.data.find(
-    ({ id }) => id === removalProfileId,
-  );
-
   if (!removalProfile) {
-    throw new Error("The removal profile could not be found.");
+    throw removalProfileError;
   }
 
   return (

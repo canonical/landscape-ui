@@ -3,15 +3,12 @@ import type { AccessGroup } from "@/features/access-groups";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
-import { useBoolean } from "usehooks-ts";
 import { useGetWslProfile } from "../../api";
 import type { WslProfile } from "../../types";
 
 export interface WslProfileSidePanelComponentProps {
   wslProfile: WslProfile;
   accessGroups: AccessGroup[] | undefined;
-  disableQuery: () => void;
-  enableQuery: () => void;
 }
 
 interface WslProfileSidePanelProps {
@@ -25,15 +22,8 @@ const WslProfileSidePanel: FC<WslProfileSidePanelProps> = ({
 }) => {
   const { wslProfile: wslProfileName } = usePageParams();
 
-  const {
-    value: queryEnabled,
-    setTrue: enableQuery,
-    setFalse: disableQuery,
-  } = useBoolean(true);
-
   const { wslProfile, isGettingWslProfile, wslProfileError } = useGetWslProfile(
     { profile_name: wslProfileName },
-    { enabled: queryEnabled },
   );
 
   const { getAccessGroupQuery } = useRoles();
@@ -55,12 +45,7 @@ const WslProfileSidePanel: FC<WslProfileSidePanelProps> = ({
   }
 
   return (
-    <Component
-      wslProfile={wslProfile}
-      accessGroups={accessGroupsData?.data}
-      disableQuery={disableQuery}
-      enableQuery={enableQuery}
-    />
+    <Component wslProfile={wslProfile} accessGroups={accessGroupsData?.data} />
   );
 };
 

@@ -3,7 +3,7 @@ import type { AccessGroup } from "@/features/access-groups";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
-import { useGetRebootProfiles } from "../../api";
+import useGetRebootProfile from "../../api/useGetRebootProfile";
 import type { RebootProfile } from "../../types";
 
 export interface RebootProfileSidePanelComponentProps {
@@ -22,11 +22,8 @@ const RebootProfileSidePanel: FC<RebootProfileSidePanelProps> = ({
 }) => {
   const { rebootProfile: rebootProfileId } = usePageParams();
 
-  const {
-    rebootProfiles,
-    isPending: isGettingRebootProfiles,
-    rebootProfilesError,
-  } = useGetRebootProfiles();
+  const { isGettingRebootProfile, rebootProfile, rebootProfileError } =
+    useGetRebootProfile({ id: rebootProfileId });
 
   const { getAccessGroupQuery } = useRoles();
   const {
@@ -35,21 +32,15 @@ const RebootProfileSidePanel: FC<RebootProfileSidePanelProps> = ({
     error: accessGroupsError,
   } = getAccessGroupQuery(undefined, { enabled: accessGroupsQueryEnabled });
 
-  if (rebootProfilesError) {
-    throw rebootProfilesError;
-  }
-
   if (
-    isGettingRebootProfiles ||
+    isGettingRebootProfile ||
     (accessGroupsQueryEnabled && isGettingAccessGroups && !accessGroupsError)
   ) {
     return <SidePanel.LoadingState />;
   }
 
-  const rebootProfile = rebootProfiles.find(({ id }) => id === rebootProfileId);
-
   if (!rebootProfile) {
-    throw new Error("The reboot profile could not be found.");
+    throw rebootProfileError;
   }
 
   return (

@@ -17,8 +17,6 @@ import PackageProfileSidePanel from "../PackageProfileSidePanel";
 
 const Component: FC<PackageProfileSidePanelComponentProps> = ({
   packageProfile: profile,
-  disableQuery,
-  enableQuery,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -38,8 +36,6 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
   } = useBoolean();
 
   const handleRemovePackageProfile = async () => {
-    disableQuery();
-
     try {
       await removePackageProfile({ name: profile.name });
 
@@ -51,7 +47,6 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
       });
     } catch (error) {
       debug(error);
-      enableQuery();
     } finally {
       handleCloseModal();
     }

@@ -1,14 +1,11 @@
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import { type FC } from "react";
-import { useBoolean } from "usehooks-ts";
-import { usePackageProfiles } from "../../hooks";
+import { useGetPackageProfile } from "../../api";
 import type { PackageProfile } from "../../types";
 
 export interface PackageProfileSidePanelComponentProps {
   packageProfile: PackageProfile;
-  disableQuery: () => void;
-  enableQuery: () => void;
 }
 
 interface PackageProfileSidePanelProps {
@@ -20,38 +17,18 @@ const PackageProfileSidePanel: FC<PackageProfileSidePanelProps> = ({
 }) => {
   const { packageProfile: packageProfileName } = usePageParams();
 
-  const { getPackageProfilesQuery } = usePackageProfiles();
+  const { packageProfile, isGettingPackageProfile, packageProfileError } =
+    useGetPackageProfile(packageProfileName);
 
-  const {
-    value: queryEnabled,
-    setTrue: enableQuery,
-    setFalse: disableQuery,
-  } = useBoolean(true);
-
-  const {
-    data: packageProfilesResponse,
-    isPending: isPendingPackageProfiles,
-    error: packageProfilesError,
-  } = getPackageProfilesQuery(
-    { names: [packageProfileName] },
-    { enabled: queryEnabled },
-  );
-
-  if (isPendingPackageProfiles) {
+  if (isGettingPackageProfile) {
     return <SidePanel.LoadingState />;
   }
 
-  if (packageProfilesError) {
-    throw packageProfilesError;
+  if (!packageProfile) {
+    throw packageProfileError;
   }
 
-  return (
-    <Component
-      packageProfile={packageProfilesResponse.data.result[0]}
-      disableQuery={disableQuery}
-      enableQuery={enableQuery}
-    />
-  );
+  return <Component packageProfile={packageProfile} />;
 };
 
 export default PackageProfileSidePanel;

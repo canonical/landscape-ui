@@ -23,7 +23,7 @@ export const useGetWslProfile = (
     isPending,
     error,
   } = useQuery<AxiosResponse<WslProfile>, AxiosError<ApiError>>({
-    queryKey: ["wslProfiles", profile_name],
+    queryKey: ["wslProfile", profile_name],
     queryFn: async ({ signal }) =>
       authFetch.get(`child-instance-profiles/${profile_name}`, { signal }),
     ...config,

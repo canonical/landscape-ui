@@ -3,7 +3,7 @@ import type { AccessGroup } from "@/features/access-groups";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
-import { useGetSecurityProfiles } from "../../api";
+import { useGetSecurityProfile } from "../../api";
 import type { SecurityProfile } from "../../types";
 
 export interface SecurityProfileSidePanelComponentProps {
@@ -22,8 +22,8 @@ const SecurityProfileSidePanel: FC<SecurityProfileSidePanelProps> = ({
 }) => {
   const { securityProfile: securityProfileId } = usePageParams();
 
-  const { isSecurityProfilesLoading, securityProfiles, securityProfilesError } =
-    useGetSecurityProfiles();
+  const { isGettingSecurityProfile, securityProfile, securityProfileError } =
+    useGetSecurityProfile(securityProfileId);
 
   const { getAccessGroupQuery } = useRoles();
   const {
@@ -33,22 +33,14 @@ const SecurityProfileSidePanel: FC<SecurityProfileSidePanelProps> = ({
   } = getAccessGroupQuery(undefined, { enabled: accessGroupsQueryEnabled });
 
   if (
-    isSecurityProfilesLoading ||
+    isGettingSecurityProfile ||
     (accessGroupsQueryEnabled && isGettingAccessGroups && !accessGroupsError)
   ) {
     return <SidePanel.LoadingState />;
   }
 
-  if (!securityProfiles) {
-    throw securityProfilesError;
-  }
-
-  const securityProfile = securityProfiles.find(
-    ({ id }) => id === securityProfileId,
-  );
-
   if (!securityProfile) {
-    throw new Error("The security profile could not be found.");
+    throw securityProfileError;
   }
 
   return (
