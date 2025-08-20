@@ -20,10 +20,10 @@ const RemovalProfileSidePanel: FC<RemovalProfileSidePanelProps> = ({
   Component,
   accessGroupsQueryEnabled,
 }) => {
-  const { removalProfile: removalProfileId } = usePageParams();
+  const { profile: removalProfileId } = usePageParams();
 
   const { isGettingRemovalProfile, removalProfile, removalProfileError } =
-    useGetRemovalProfile(removalProfileId);
+    useGetRemovalProfile(parseInt(removalProfileId));
 
   const { getAccessGroupQuery } = useRoles();
   const {

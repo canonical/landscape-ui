@@ -314,7 +314,7 @@ const Component: FC<SecurityProfileSidePanelComponentProps> = ({
           hasBackButton={sidePath.length > 1}
           onBackButtonPress={popSidePath}
           onCancel={() => {
-            setPageParams({ sidePath: [], securityProfile: -1 });
+            setPageParams({ sidePath: [], profile: "" });
           }}
         />
       </SidePanel.Content>

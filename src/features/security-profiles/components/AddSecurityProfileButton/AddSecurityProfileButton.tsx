@@ -8,7 +8,7 @@ const AddSecurityProfileButton: FC = () => {
   const profileLimitReached = useIsSecurityProfilesLimitReached();
 
   const addSecurityProfile = () => {
-    setPageParams({ sidePath: ["add"], securityProfile: -1 });
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   return (

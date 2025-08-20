@@ -60,7 +60,7 @@ const Component: FC<WslProfileSidePanelComponentProps> = ({
     })) ?? [];
 
   const closeSidePanel = () => {
-    setPageParams({ sidePath: [], wslProfile: "" });
+    setPageParams({ sidePath: [], profile: "" });
   };
 
   const handleSubmit = async (values: FormProps) => {

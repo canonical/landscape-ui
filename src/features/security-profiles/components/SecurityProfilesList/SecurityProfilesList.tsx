@@ -56,7 +56,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 onClick={() => {
                   setPageParams({
                     sidePath: ["view"],
-                    securityProfile: profile.id,
+                    profile: profile.id.toString(),
                   });
                 }}
               >

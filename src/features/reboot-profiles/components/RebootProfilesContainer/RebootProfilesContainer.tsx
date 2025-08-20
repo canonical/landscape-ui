@@ -12,7 +12,7 @@ const RebootProfilesContainer: FC = () => {
   const { search, setPageParams } = usePageParams();
 
   const handleAddProfile = () => {
-    setPageParams({ sidePath: ["add"], rebootProfile: -1 });
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   return (

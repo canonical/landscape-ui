@@ -39,7 +39,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
     try {
       await removePackageProfile({ name: profile.name });
 
-      setPageParams({ sidePath: [], packageProfile: "" });
+      setPageParams({ sidePath: [], profile: "" });
 
       notify.success({
         message: `Package profile "${profile.name}" removed successfully.`,

@@ -32,7 +32,7 @@ const RemovalProfilesPage: FC = () => {
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   const handleCreate = () => {
-    setPageParams({ sidePath: ["add"], removalProfile: -1 });
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   return (
@@ -57,7 +57,7 @@ const RemovalProfilesPage: FC = () => {
       <SidePanel
         isOpen={!!sidePath.length}
         onClose={() => {
-          setPageParams({ sidePath: [], rebootProfile: -1 });
+          setPageParams({ sidePath: [], profile: "" });
         }}
       >
         {lastSidePathSegment === "add" && (

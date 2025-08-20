@@ -74,7 +74,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
             hasBackButton={sidePath.length > 1}
             onBackButtonPress={popSidePath}
             onCancel={() => {
-              setPageParams({ sidePath: [], packageProfile: "" });
+              setPageParams({ sidePath: [], profile: "" });
             }}
           />
         </Form>

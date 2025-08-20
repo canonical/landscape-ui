@@ -20,10 +20,10 @@ const SecurityProfileSidePanel: FC<SecurityProfileSidePanelProps> = ({
   Component,
   accessGroupsQueryEnabled,
 }) => {
-  const { securityProfile: securityProfileId } = usePageParams();
+  const { profile: securityProfileId } = usePageParams();
 
   const { isGettingSecurityProfile, securityProfile, securityProfileError } =
-    useGetSecurityProfile(securityProfileId);
+    useGetSecurityProfile(parseInt(securityProfileId));
 
   const { getAccessGroupQuery } = useRoles();
   const {

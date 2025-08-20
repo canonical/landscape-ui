@@ -20,7 +20,7 @@ const WslProfileSidePanel: FC<WslProfileSidePanelProps> = ({
   Component,
   accessGroupsQueryEnabled,
 }) => {
-  const { wslProfile: wslProfileName } = usePageParams();
+  const { profile: wslProfileName } = usePageParams();
 
   const { wslProfile, isGettingWslProfile, wslProfileError } = useGetWslProfile(
     { profile_name: wslProfileName },

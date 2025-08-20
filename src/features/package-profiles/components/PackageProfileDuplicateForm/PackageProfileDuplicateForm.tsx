@@ -38,7 +38,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
     })) ?? [];
 
   const closeSidePanel = () => {
-    setPageParams({ sidePath: [], packageProfile: "" });
+    setPageParams({ sidePath: [], profile: "" });
   };
 
   const handleSubmit = async (values: DuplicateFormProps) => {

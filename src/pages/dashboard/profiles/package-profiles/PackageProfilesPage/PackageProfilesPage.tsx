@@ -57,7 +57,7 @@ const PackageProfilesPage: FC = () => {
   ]);
 
   const handleAddPackageProfile = () => {
-    setPageParams({ sidePath: ["add"], packageProfile: "" });
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   return (
@@ -81,7 +81,7 @@ const PackageProfilesPage: FC = () => {
 
       <SidePanel
         onClose={() => {
-          setPageParams({ sidePath: [], packageProfile: "" });
+          setPageParams({ sidePath: [], profile: "" });
         }}
         isOpen={!!sidePath.length}
         size={

@@ -64,7 +64,7 @@ const WslProfilesPage: FC = () => {
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
 
   const handleAddWslProfile = () => {
-    setPageParams({ sidePath: ["add"], wslProfile: "" });
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   const isWslProfileLimitReached =
@@ -121,7 +121,7 @@ const WslProfilesPage: FC = () => {
 
       <SidePanel
         onClose={() => {
-          setPageParams({ sidePath: [], wslProfile: "" });
+          setPageParams({ sidePath: [], profile: "" });
         }}
         isOpen={!!sidePath.length}
         size={lastSidePathSegment === "noncompliant" ? "large" : undefined}

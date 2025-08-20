@@ -35,7 +35,7 @@ const Component: FC<RemovalProfileSidePanelComponentProps> = ({
     try {
       await removeRemovalProfile({ name: profile.name });
 
-      setPageParams({ sidePath: [], removalProfile: -1 });
+      setPageParams({ sidePath: [], profile: "" });
 
       notify.success({
         title: "Removal profile removed",

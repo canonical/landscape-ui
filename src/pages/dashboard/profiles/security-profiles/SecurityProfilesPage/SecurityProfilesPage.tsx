@@ -127,7 +127,7 @@ const SecurityProfilesPage: FC = () => {
 
       <SidePanel
         onClose={() => {
-          setPageParams({ sidePath: [], securityProfile: -1 });
+          setPageParams({ sidePath: [], profile: "" });
         }}
         isOpen={!!sidePath.length}
         size={lastSidePathSegment === "view" ? "medium" : undefined}

@@ -47,7 +47,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const { mutateAsync: editUpgradeProfile } = editUpgradeProfileQuery;
 
   const closeSidePanel = () => {
-    setPageParams({ sidePath: [], upgradeProfile: -1 });
+    setPageParams({ sidePath: [], profile: "" });
   };
 
   const handleSubmit = async (values: FormProps) => {

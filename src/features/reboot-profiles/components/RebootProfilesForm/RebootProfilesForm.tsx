@@ -49,7 +49,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
     })) ?? [];
 
   const closeSidePanel = () => {
-    setPageParams({ sidePath: [], rebootProfile: -1 });
+    setPageParams({ sidePath: [], profile: "" });
   };
 
   const formik = useFormik<FormProps>({

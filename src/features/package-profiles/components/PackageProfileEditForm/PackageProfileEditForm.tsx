@@ -25,7 +25,7 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
   const { mutateAsync: editPackageProfile } = editPackageProfileQuery;
 
   const closeSidePanel = () => {
-    setPageParams({ sidePath: [], packageProfile: "" });
+    setPageParams({ sidePath: [], profile: "" });
   };
 
   const handleSubmit = async (values: EditFormProps) => {

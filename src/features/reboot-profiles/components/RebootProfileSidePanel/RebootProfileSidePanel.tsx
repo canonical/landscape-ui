@@ -20,10 +20,10 @@ const RebootProfileSidePanel: FC<RebootProfileSidePanelProps> = ({
   Component,
   accessGroupsQueryEnabled,
 }) => {
-  const { rebootProfile: rebootProfileId } = usePageParams();
+  const { profile: rebootProfileId } = usePageParams();
 
   const { isGettingRebootProfile, rebootProfile, rebootProfileError } =
-    useGetRebootProfile({ id: rebootProfileId });
+    useGetRebootProfile({ id: parseInt(rebootProfileId) });
 
   const { getAccessGroupQuery } = useRoles();
   const {

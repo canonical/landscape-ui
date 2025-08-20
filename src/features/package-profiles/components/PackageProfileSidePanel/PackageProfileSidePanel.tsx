@@ -15,7 +15,7 @@ interface PackageProfileSidePanelProps {
 const PackageProfileSidePanel: FC<PackageProfileSidePanelProps> = ({
   Component,
 }) => {
-  const { packageProfile: packageProfileName } = usePageParams();
+  const { profile: packageProfileName } = usePageParams();
 
   const { packageProfile, isGettingPackageProfile, packageProfileError } =
     useGetPackageProfile(packageProfileName);

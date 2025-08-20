@@ -14,7 +14,7 @@ const ScriptProfilesTab: FC = () => {
   const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
 
   const close = () => {
-    setPageParams({ sidePath: [], scriptProfile: -1 });
+    setPageParams({ sidePath: [], profile: "" });
   };
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);

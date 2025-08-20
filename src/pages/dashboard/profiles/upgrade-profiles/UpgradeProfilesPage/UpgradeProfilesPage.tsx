@@ -33,7 +33,7 @@ const UpgradeProfilesPage: FC = () => {
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   const handleAddUpgradeProfile = () => {
-    setPageParams({ sidePath: ["add"], upgradeProfile: -1 });
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   return (
@@ -57,7 +57,7 @@ const UpgradeProfilesPage: FC = () => {
 
       <SidePanel
         onClose={() => {
-          setPageParams({ sidePath: [], upgradeProfile: -1 });
+          setPageParams({ sidePath: [], profile: "" });
         }}
         isOpen={!!sidePath.length}
       >

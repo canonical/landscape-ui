@@ -39,7 +39,7 @@ const Component: FC<UpgradeProfileSidePanelComponentProps> = ({
     try {
       await removeUpgradeProfile({ name: profile.name });
 
-      setPageParams({ sidePath: [], upgradeProfile: -1 });
+      setPageParams({ sidePath: [], profile: "" });
 
       notify.success({
         title: "Upgrade profile removed",

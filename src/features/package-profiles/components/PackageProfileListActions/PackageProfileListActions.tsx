@@ -34,16 +34,16 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
   const handleConstraintsChange = () => {
     setPageParams({
       sidePath: ["edit-constraints"],
-      packageProfile: profile.name,
+      profile: profile.name,
     });
   };
 
   const handlePackageProfileEdit = () => {
-    setPageParams({ sidePath: ["edit"], packageProfile: profile.name });
+    setPageParams({ sidePath: ["edit"], profile: profile.name });
   };
 
   const handlePackageProfileDuplicate = () => {
-    setPageParams({ sidePath: ["duplicate"], packageProfile: profile.name });
+    setPageParams({ sidePath: ["duplicate"], profile: profile.name });
   };
 
   const handleRemovePackageProfile = async () => {

@@ -38,7 +38,7 @@ const Component: FC<RebootProfileSidePanelComponentProps> = ({
         id: profile.id,
       });
 
-      setPageParams({ sidePath: [], rebootProfile: -1 });
+      setPageParams({ sidePath: [], profile: "" });
 
       notify.success({
         title: "Reboot profile removed",

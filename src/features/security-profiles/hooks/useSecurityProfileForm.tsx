@@ -190,7 +190,7 @@ const useSecurityProfileForm = ({
         return;
       }
 
-      setPageParams({ sidePath: [], securityProfile: -1 });
+      setPageParams({ sidePath: [], profile: "" });
 
       onSuccess(values);
     },

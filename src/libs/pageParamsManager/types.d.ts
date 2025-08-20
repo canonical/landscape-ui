@@ -31,13 +31,7 @@ export interface PageParams {
   wsl: string[];
   code: string;
   sidePath: string[];
-  packageProfile: string;
-  rebootProfile: number;
-  removalProfile: number;
-  scriptProfile: number;
-  securityProfile: number;
-  upgradeProfile: number;
-  wslProfile: string;
+  profile: string;
 }
 
 /**

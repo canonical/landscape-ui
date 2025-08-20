@@ -20,10 +20,10 @@ const UpgradeProfileSidePanel: FC<UpgradeProfileSidePanelProps> = ({
   Component,
   accessGroupsQueryEnabled,
 }) => {
-  const { upgradeProfile: upgradeProfileId } = usePageParams();
+  const { profile: upgradeProfileId } = usePageParams();
 
   const { isGettingUpgradeProfile, upgradeProfile, upgradeProfileError } =
-    useGetUpgradeProfile(upgradeProfileId);
+    useGetUpgradeProfile(parseInt(upgradeProfileId));
 
   const { getAccessGroupQuery } = useRoles();
   const {

@@ -31,7 +31,7 @@ const Component: FC<SecurityProfileSidePanelComponentProps> = ({
         id: profile.id,
       });
 
-      setPageParams({ sidePath: [], securityProfile: -1 });
+      setPageParams({ sidePath: [], profile: "" });
 
       const message = getNotificationMessage(profile.mode);
 
@@ -130,7 +130,7 @@ const Component: FC<SecurityProfileSidePanelComponentProps> = ({
             submitButtonDisabled={false}
             submitButtonText="Run"
             onCancel={() => {
-              setPageParams({ sidePath: [], securityProfile: -1 });
+              setPageParams({ sidePath: [], profile: "" });
             }}
             hasBackButton={sidePath.length > 1}
             onBackButtonPress={popSidePath}

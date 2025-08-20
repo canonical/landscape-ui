@@ -173,7 +173,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         return;
       }
 
-      setPageParams({ sidePath: [], scriptProfile: -1 });
+      setPageParams({ sidePath: [], profile: "" });
 
       onSuccess(values);
     },
@@ -393,7 +393,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         submitButtonLoading={submitting}
         submitButtonText={submitButtonText}
         onCancel={() => {
-          setPageParams({ sidePath: [], scriptProfile: -1 });
+          setPageParams({ sidePath: [], profile: "" });
         }}
         hasBackButton={sidePath.length > 1}
         onBackButtonPress={popSidePath}

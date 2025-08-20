@@ -15,10 +15,10 @@ interface ScriptProfileSidePanelProps {
 const ScriptProfileSidePanel: FC<ScriptProfileSidePanelProps> = ({
   Component,
 }) => {
-  const { scriptProfile: scriptProfileId } = usePageParams();
+  const { profile: scriptProfileId } = usePageParams();
 
   const { isGettingScriptProfile, scriptProfile, scriptProfileError } =
-    useGetScriptProfile({ id: scriptProfileId });
+    useGetScriptProfile({ id: parseInt(scriptProfileId) });
 
   if (isGettingScriptProfile) {
     return <SidePanel.LoadingState />;
