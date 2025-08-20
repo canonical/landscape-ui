@@ -3,12 +3,12 @@ import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import PackageProfileEditForm from "./PackageProfileEditForm";
+import PackageProfileEditSidePanel from "./PackageProfileEditSidePanel";
 
-describe("PackageProfileEditForm", () => {
+describe("PackageProfileEditSidePanel", () => {
   beforeEach(async () => {
     renderWithProviders(
-      <PackageProfileEditForm />,
+      <PackageProfileEditSidePanel />,
       undefined,
       `/?packageProfile=${packageProfiles[0].name}`,
     );

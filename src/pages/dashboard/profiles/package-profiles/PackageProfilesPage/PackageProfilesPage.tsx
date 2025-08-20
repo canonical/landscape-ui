@@ -10,37 +10,37 @@ import { lazy, type FC } from "react";
 
 const PackageProfileAddSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileCreateForm,
+    default: module.PackageProfileCreateSidePanel,
   })),
 );
 
 const PackageProfileConstraintsAddForm = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileConstraintsAddForm,
+    default: module.PackageProfileConstraintsAddSidePanel,
   })),
 );
 
 const PackageProfileConstraintsEditForm = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileConstraintsEditForm,
+    default: module.PackageProfileConstraintsEditSidePanel,
   })),
 );
 
 const PackageProfileDetails = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileDetails,
+    default: module.PackageProfileDetailsSidePanel,
   })),
 );
 
 const PackageProfileDuplicateForm = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileDuplicateForm,
+    default: module.PackageProfileDuplicateSidePanel,
   })),
 );
 
 const PackageProfileEditForm = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileEditForm,
+    default: module.PackageProfileEditSidePanel,
   })),
 );
 

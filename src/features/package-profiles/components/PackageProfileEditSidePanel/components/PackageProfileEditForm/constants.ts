@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import type { EditFormProps } from "../../types";
+import type { EditFormProps } from "../../../../types";
 
 export const INITIAL_VALUES: EditFormProps = {
   all_computers: false,

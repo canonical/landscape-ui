@@ -16,7 +16,7 @@ import type { AddFormProps, PackageProfileConstraintType } from "../../types";
 import PackageProfileConstraintsTypeBlock from "../PackageProfileConstraintsTypeBlock";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 
-const PackageProfileCreateForm: FC = () => {
+const PackageProfileCreateSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { setPageParams } = usePageParams();
@@ -129,4 +129,4 @@ const PackageProfileCreateForm: FC = () => {
   );
 };
 
-export default PackageProfileCreateForm;
+export default PackageProfileCreateSidePanel;

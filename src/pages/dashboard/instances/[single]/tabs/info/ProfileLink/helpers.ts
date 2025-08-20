@@ -3,20 +3,20 @@ import type { Profile } from "@/types/Profile";
 export const getTo = (profile: Profile) => {
   switch (profile.type) {
     case "package":
-      return `/profiles/package?sidePath=view&packageProfile=${profile.name}`;
+      return `/profiles/package?sidePath=view&profile=${profile.name}`;
     case "reboot":
-      return `/profiles/reboot?sidePath=view&rebootProfile=${profile.id}`;
+      return `/profiles/reboot?sidePath=view&profile=${profile.id}`;
     case "removal":
-      return `/profiles/removal?sidePath=view&removalProfile=${profile.id}`;
+      return `/profiles/removal?sidePath=view&profile=${profile.id}`;
     case "repository":
-      return `/profiles/repository?sidePath=view&repositoryProfile=${profile.id}`;
+      return `/profiles/repository?sidePath=view&profile=${profile.id}`;
     case "script":
-      return `/scripts?tab=profiles&sidePath=view&scriptProfile=${profile.id}`;
+      return `/scripts?tab=profiles&sidePath=view&profile=${profile.id}`;
     case "security":
-      return `/profiles/security?sidePath=view&securityProfile=${profile.id}`;
+      return `/profiles/security?sidePath=view&profile=${profile.id}`;
     case "upgrade":
-      return `/profiles/upgrade?sidePath=view&upgradeProfile=${profile.id}`;
+      return `/profiles/upgrade?sidePath=view&profile=${profile.id}`;
     case "wsl":
-      return `/profiles/wsl?sidePath=view&wslProfile=${profile.name}`;
+      return `/profiles/wsl?sidePath=view&profile=${profile.name}`;
   }
 };

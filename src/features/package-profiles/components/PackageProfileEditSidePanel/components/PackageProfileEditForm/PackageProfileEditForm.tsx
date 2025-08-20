@@ -1,6 +1,5 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -8,13 +7,15 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { usePackageProfiles } from "../../hooks";
-import type { EditFormProps } from "../../types";
-import type { PackageProfileSidePanelComponentProps } from "../PackageProfileSidePanel";
-import PackageProfileSidePanel from "../PackageProfileSidePanel";
+import { usePackageProfiles } from "../../../../hooks";
+import type { EditFormProps, PackageProfile } from "../../../../types";
 import { VALIDATION_SCHEMA } from "./constants";
 
-const Component: FC<PackageProfileSidePanelComponentProps> = ({
+interface PackageProfileEditFormProps {
+  readonly packageProfile: PackageProfile;
+}
+
+const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
   packageProfile: profile,
 }) => {
   const debug = useDebug();
@@ -60,40 +61,31 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
   });
 
   return (
-    <>
-      <SidePanel.Header>Edit {profile.title}</SidePanel.Header>
-      <SidePanel.Content>
-        <Form onSubmit={formik.handleSubmit} noValidate>
-          <Input
-            type="text"
-            label="Title"
-            {...formik.getFieldProps("title")}
-            error={getFormikError(formik, "title")}
-          />
+    <Form onSubmit={formik.handleSubmit} noValidate>
+      <Input
+        type="text"
+        label="Title"
+        {...formik.getFieldProps("title")}
+        error={getFormikError(formik, "title")}
+      />
 
-          <Input
-            type="text"
-            label="Description"
-            {...formik.getFieldProps("description")}
-          />
+      <Input
+        type="text"
+        label="Description"
+        {...formik.getFieldProps("description")}
+      />
 
-          <AssociationBlock formik={formik} />
+      <AssociationBlock formik={formik} />
 
-          <SidePanelFormButtons
-            submitButtonLoading={formik.isSubmitting}
-            submitButtonText="Save changes"
-            hasBackButton={sidePath.length > 1}
-            onBackButtonPress={popSidePath}
-            onCancel={closeSidePanel}
-          />
-        </Form>
-      </SidePanel.Content>
-    </>
+      <SidePanelFormButtons
+        submitButtonLoading={formik.isSubmitting}
+        submitButtonText="Save changes"
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
+        onCancel={closeSidePanel}
+      />
+    </Form>
   );
 };
-
-const PackageProfileEditForm: FC = () => (
-  <PackageProfileSidePanel Component={Component} />
-);
 
 export default PackageProfileEditForm;

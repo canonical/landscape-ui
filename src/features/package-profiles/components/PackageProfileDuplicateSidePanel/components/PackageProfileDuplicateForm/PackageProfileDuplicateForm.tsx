@@ -1,6 +1,5 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -11,14 +10,18 @@ import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useEffect } from "react";
-import type { CopyPackageProfileParams } from "../../hooks";
-import { usePackageProfiles } from "../../hooks";
-import type { DuplicateFormProps } from "../../types";
-import type { PackageProfileSidePanelComponentProps } from "../PackageProfileSidePanel";
-import PackageProfileSidePanel from "../PackageProfileSidePanel";
+import {
+  usePackageProfiles,
+  type CopyPackageProfileParams,
+} from "../../../../hooks";
+import type { DuplicateFormProps, PackageProfile } from "../../../../types";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 
-const Component: FC<PackageProfileSidePanelComponentProps> = ({
+interface PackageProfileDuplicateFormProps {
+  readonly packageProfile: PackageProfile;
+}
+
+const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
   packageProfile: profile,
 }) => {
   const debug = useDebug();
@@ -89,51 +92,42 @@ const Component: FC<PackageProfileSidePanelComponentProps> = ({
   }, [profile]);
 
   return (
-    <>
-      <SidePanel.Header>Duplicate {profile.title}</SidePanel.Header>
-      <SidePanel.Content>
-        <Form onSubmit={formik.handleSubmit} noValidate>
-          <Input
-            type="text"
-            label="Title"
-            required
-            {...formik.getFieldProps("title")}
-            error={getFormikError(formik, "title")}
-          />
+    <Form onSubmit={formik.handleSubmit} noValidate>
+      <Input
+        type="text"
+        label="Title"
+        required
+        {...formik.getFieldProps("title")}
+        error={getFormikError(formik, "title")}
+      />
 
-          <Input
-            type="text"
-            label="Description"
-            required
-            autoComplete="off"
-            {...formik.getFieldProps("description")}
-            error={getFormikError(formik, "description")}
-          />
+      <Input
+        type="text"
+        label="Description"
+        required
+        autoComplete="off"
+        {...formik.getFieldProps("description")}
+        error={getFormikError(formik, "description")}
+      />
 
-          <Select
-            label="Access group"
-            {...formik.getFieldProps("access_group")}
-            options={accessGroupOptions}
-            error={getFormikError(formik, "access_group")}
-          />
+      <Select
+        label="Access group"
+        {...formik.getFieldProps("access_group")}
+        options={accessGroupOptions}
+        error={getFormikError(formik, "access_group")}
+      />
 
-          <AssociationBlock formik={formik} />
+      <AssociationBlock formik={formik} />
 
-          <SidePanelFormButtons
-            submitButtonLoading={formik.isSubmitting}
-            submitButtonText="Duplicate"
-            hasBackButton={sidePath.length > 1}
-            onBackButtonPress={popSidePath}
-            onCancel={closeSidePanel}
-          />
-        </Form>
-      </SidePanel.Content>
-    </>
+      <SidePanelFormButtons
+        submitButtonLoading={formik.isSubmitting}
+        submitButtonText="Duplicate"
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
+        onCancel={closeSidePanel}
+      />
+    </Form>
   );
 };
-
-const PackageProfileDuplicateForm: FC = () => (
-  <PackageProfileSidePanel Component={Component} />
-);
 
 export default PackageProfileDuplicateForm;
