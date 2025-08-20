@@ -12,11 +12,11 @@ import type { EditFormProps, PackageProfile } from "../../../../types";
 import { VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileEditFormProps {
-  readonly packageProfile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
-  packageProfile: profile,
+  profile,
 }) => {
   const debug = useDebug();
   const { sidePath, popSidePath, setPageParams } = usePageParams();

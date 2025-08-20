@@ -13,12 +13,12 @@ import PackageProfileConstraintsBlock from "../../../PackageProfileConstraintsBl
 import { VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileConstraintsAddFormProps {
-  readonly packageProfile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileConstraintsAddForm: FC<
   PackageProfileConstraintsAddFormProps
-> = ({ packageProfile: profile }) => {
+> = ({ profile }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { sidePath, popSidePath, setPageParams } = usePageParams();
@@ -63,7 +63,7 @@ const PackageProfileConstraintsAddForm: FC<
     <Form onSubmit={formik.handleSubmit} noValidate>
       <PackageProfileConstraintsBlock formik={formik} />
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
         submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
         cancelButtonDisabled={formik.isSubmitting}

@@ -14,12 +14,10 @@ import PackageProfileAssociatedInstancesLink from "../../../PackageProfileAssoci
 import PackageProfileDetailsConstraints from "../../../PackageProfileDetailsConstraints";
 
 interface PackageProfileDetailsProps {
-  readonly packageProfile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
-const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({
-  packageProfile: profile,
-}) => {
+const PackageProfileDetails: FC<PackageProfileDetailsProps> = ({ profile }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { pushSidePath, setPageParams } = usePageParams();

@@ -18,11 +18,11 @@ import type { DuplicateFormProps, PackageProfile } from "../../../../types";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileDuplicateFormProps {
-  readonly packageProfile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
-  packageProfile: profile,
+  profile,
 }) => {
   const debug = useDebug();
   const { sidePath, popSidePath, setPageParams } = usePageParams();

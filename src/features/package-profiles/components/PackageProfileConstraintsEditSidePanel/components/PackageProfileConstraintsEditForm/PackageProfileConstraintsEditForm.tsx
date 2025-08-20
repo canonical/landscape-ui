@@ -19,12 +19,12 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./PackageProfileConstraintsEditForm.module.scss";
 
 interface PackageProfileConstraintsEditFormProps {
-  readonly packageProfile: PackageProfile;
+  readonly profile: PackageProfile;
 }
 
 const PackageProfileConstraintsEditForm: FC<
   PackageProfileConstraintsEditFormProps
-> = ({ packageProfile: profile }) => {
+> = ({ profile }) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -38,9 +38,9 @@ const PackageProfileConstraintsEditForm: FC<
     setCurrentPage(page);
   };
 
-  const handlePageSizeChange = (newPageSize: number) => {
+  const handlePageSizeChange = (value: number) => {
     setSelectedIds([]);
-    setPageSize(newPageSize);
+    setPageSize(value);
   };
 
   const debug = useDebug();

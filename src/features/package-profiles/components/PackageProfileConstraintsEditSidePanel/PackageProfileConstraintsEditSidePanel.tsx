@@ -16,7 +16,7 @@ const PackageProfileConstraintsEditSidePanel: FC = () => {
         Change &quot;{packageProfile.title}&quot; profile&apos;s constraints
       </SidePanel.Header>
       <SidePanel.Content>
-        <PackageProfileConstraintsEditForm packageProfile={packageProfile} />
+        <PackageProfileConstraintsEditForm profile={packageProfile} />
       </SidePanel.Content>
     </>
   );

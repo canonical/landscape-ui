@@ -14,7 +14,7 @@ const PackageProfileEditSidePanel: FC = () => {
     <>
       <SidePanel.Header>Edit {packageProfile.title}</SidePanel.Header>
       <SidePanel.Content>
-        <PackageProfileEditForm packageProfile={packageProfile} />
+        <PackageProfileEditForm profile={packageProfile} />
       </SidePanel.Content>
     </>
   );

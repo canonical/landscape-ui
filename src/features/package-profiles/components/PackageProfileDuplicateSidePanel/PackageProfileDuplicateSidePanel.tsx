@@ -14,7 +14,7 @@ const PackageProfileDuplicateSidePanel: FC = () => {
     <>
       <SidePanel.Header>Duplicate {packageProfile.title}</SidePanel.Header>
       <SidePanel.Content>
-        <PackageProfileDuplicateForm packageProfile={packageProfile} />
+        <PackageProfileDuplicateForm profile={packageProfile} />
       </SidePanel.Content>
     </>
   );

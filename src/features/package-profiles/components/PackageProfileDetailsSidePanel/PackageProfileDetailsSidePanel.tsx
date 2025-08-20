@@ -14,7 +14,7 @@ const PackageProfileDetailsSidePanel: FC = () => {
     <>
       <SidePanel.Header>{packageProfile.title}</SidePanel.Header>
       <SidePanel.Content>
-        <PackageProfileDetails packageProfile={packageProfile} />
+        <PackageProfileDetails profile={packageProfile} />
       </SidePanel.Content>
     </>
   );
