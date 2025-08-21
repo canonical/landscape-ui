@@ -1,4 +1,5 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
+import ListTitle from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
@@ -97,15 +98,18 @@ const InstanceList = memo(function InstanceList({
                 }}
               />
 
-              <StaticLink
-                to={
-                  row.original.parent
-                    ? `/instances/${row.original.parent.id}/${row.original.id}`
-                    : `/instances/${row.original.id}`
-                }
-              >
-                {row.original.title}
-              </StaticLink>
+              <ListTitle>
+                <StaticLink
+                  to={
+                    row.original.parent
+                      ? `/instances/${row.original.parent.id}/${row.original.id}`
+                      : `/instances/${row.original.id}`
+                  }
+                >
+                  {row.original.title}
+                </StaticLink>
+                <span className="u-text--muted">{row.original.hostname}</span>
+              </ListTitle>
             </div>
           );
         },
