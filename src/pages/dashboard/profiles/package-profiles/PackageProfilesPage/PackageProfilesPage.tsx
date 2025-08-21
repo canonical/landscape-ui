@@ -10,35 +10,35 @@ import { lazy, type FC } from "react";
 
 const PackageProfileAddSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileCreateSidePanel,
+    default: module.PackageProfileAddSidePanel,
   })),
 );
 
-const PackageProfileConstraintsAddForm = lazy(async () =>
+const PackageProfileConstraintsAddSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
     default: module.PackageProfileConstraintsAddSidePanel,
   })),
 );
 
-const PackageProfileConstraintsEditForm = lazy(async () =>
+const PackageProfileConstraintsEditSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
     default: module.PackageProfileConstraintsEditSidePanel,
   })),
 );
 
-const PackageProfileDetails = lazy(async () =>
+const PackageProfileDetailsSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
     default: module.PackageProfileDetailsSidePanel,
   })),
 );
 
-const PackageProfileDuplicateForm = lazy(async () =>
+const PackageProfileDuplicateSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
     default: module.PackageProfileDuplicateSidePanel,
   })),
 );
 
-const PackageProfileEditForm = lazy(async () =>
+const PackageProfileEditSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
     default: module.PackageProfileEditSidePanel,
   })),
@@ -100,31 +100,31 @@ const PackageProfilesPage: FC = () => {
 
         {lastSidePathSegment === "add-constraints" && (
           <SidePanel.Suspense key="add-constraints">
-            <PackageProfileConstraintsAddForm />
+            <PackageProfileConstraintsAddSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "duplicate" && (
           <SidePanel.Suspense key="duplicate">
-            <PackageProfileDuplicateForm />
+            <PackageProfileDuplicateSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
-            <PackageProfileEditForm />
+            <PackageProfileEditSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "edit-constraints" && (
           <SidePanel.Suspense key="edit-constraints">
-            <PackageProfileConstraintsEditForm />
+            <PackageProfileConstraintsEditSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
-            <PackageProfileDetails />
+            <PackageProfileDetailsSidePanel />
           </SidePanel.Suspense>
         )}
       </SidePanel>

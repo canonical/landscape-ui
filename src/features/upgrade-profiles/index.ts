@@ -1,7 +1,7 @@
 export { default as SingleUpgradeProfileForm } from "./components/SingleUpgradeProfileForm";
-export { default as UpgradeProfileAddForm } from "./components/UpgradeProfileAddSidePanel";
-export { default as UpgradeProfileDetails } from "./components/UpgradeProfileDetails";
-export { default as UpgradeProfileEditForm } from "./components/UpgradeProfileEditForm";
+export { default as UpgradeProfileAddSidePanel } from "./components/UpgradeProfileAddSidePanel";
+export { default as UpgradeProfileDetailsSidePanel } from "./components/UpgradeProfileDetailsSidePanel";
+export { default as UpgradeProfileEditSidePanel } from "./components/UpgradeProfileEditForm";
 export { default as UpgradeProfileList } from "./components/UpgradeProfileList";
 export { default as UpgradeProfilesEmptyState } from "./components/UpgradeProfilesEmptyState";
 export { default as UpgradeProfilesHeader } from "./components/UpgradeProfilesHeader";

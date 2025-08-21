@@ -110,7 +110,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
             <TruncatedCell
               content={script_profiles.map(({ id, title }) => (
                 <StaticLink
-                  to={`/scripts?tab=profiles&sidePath=view&scriptProfile=${id}`}
+                  to={`/scripts?tab=profiles&sidePath=view&profile=${id}`}
                   key={id}
                   className="truncatedItem"
                 >

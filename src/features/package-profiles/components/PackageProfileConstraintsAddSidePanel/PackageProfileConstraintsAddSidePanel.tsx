@@ -1,12 +1,13 @@
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
-import usePackageProfileSidePanel from "../../hooks/usePackageProfileSidePanel";
+import useGetPagePackageProfile from "../../api/useGetPagePackageProfile";
 import PackageProfileConstraintsAddForm from "./components/PackageProfileConstraintsAddForm";
 
 const PackageProfileConstraintsAddSidePanel: FC = () => {
-  const { packageProfile } = usePackageProfileSidePanel();
+  const { packageProfile, isGettingPackageProfile } =
+    useGetPagePackageProfile();
 
-  if (!packageProfile) {
+  if (isGettingPackageProfile) {
     return <SidePanel.LoadingState />;
   }
 

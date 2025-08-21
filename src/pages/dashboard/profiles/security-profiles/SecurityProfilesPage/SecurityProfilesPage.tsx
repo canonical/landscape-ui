@@ -14,39 +14,39 @@ import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { Fragment, lazy, useState } from "react";
 
-const SecurityProfileAddForm = lazy(() =>
+const SecurityProfileAddSidePanel = lazy(() =>
   import("@/features/security-profiles").then((module) => ({
-    default: module.SecurityProfileAddForm,
+    default: module.SecurityProfileAddSidePanel,
   })),
 );
 
-const SecurityProfileDownloadAuditForm = lazy(() =>
+const SecurityProfileDownloadAuditSidePanel = lazy(() =>
   import("@/features/security-profiles").then((module) => ({
-    default: module.SecurityProfileDownloadAuditForm,
+    default: module.SecurityProfileDownloadAuditSidePanel,
   })),
 );
 
-const SecurityProfileDuplicateForm = lazy(() =>
+const SecurityProfileDuplicateSidePanel = lazy(() =>
   import("@/features/security-profiles").then((module) => ({
-    default: module.SecurityProfileDuplicateForm,
+    default: module.SecurityProfileDuplicateSidePanel,
   })),
 );
 
-const SecurityProfileEditForm = lazy(() =>
+const SecurityProfileEditSidePanel = lazy(() =>
   import("@/features/security-profiles").then((module) => ({
-    default: module.SecurityProfileEditForm,
+    default: module.SecurityProfileEditSidePanel,
   })),
 );
 
-const SecurityProfileRunFixForm = lazy(() =>
+const SecurityProfileRunFixSidePanel = lazy(() =>
   import("@/features/security-profiles").then((module) => ({
-    default: module.SecurityProfileRunFixForm,
+    default: module.SecurityProfileRunFixSidePanel,
   })),
 );
 
-const SecurityProfileDetails = lazy(() =>
+const SecurityProfileDetailsSidePanel = lazy(() =>
   import("@/features/security-profiles").then((module) => ({
-    default: module.SecurityProfileDetails,
+    default: module.SecurityProfileDetailsSidePanel,
   })),
 );
 
@@ -134,37 +134,37 @@ const SecurityProfilesPage: FC = () => {
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
-            <SecurityProfileAddForm onSuccess={onAddProfile} />
+            <SecurityProfileAddSidePanel onSuccess={onAddProfile} />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "download" && (
           <SidePanel.Suspense key="download">
-            <SecurityProfileDownloadAuditForm />
+            <SecurityProfileDownloadAuditSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "duplicate" && (
           <SidePanel.Suspense key="duplicate">
-            <SecurityProfileDuplicateForm />
+            <SecurityProfileDuplicateSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
-            <SecurityProfileEditForm />
+            <SecurityProfileEditSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "run" && (
           <SidePanel.Suspense key="run">
-            <SecurityProfileRunFixForm />
+            <SecurityProfileRunFixSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
-            <SecurityProfileDetails />
+            <SecurityProfileDetailsSidePanel />
           </SidePanel.Suspense>
         )}
       </SidePanel>

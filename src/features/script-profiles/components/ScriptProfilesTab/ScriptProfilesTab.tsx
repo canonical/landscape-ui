@@ -4,11 +4,17 @@ import usePageParams from "@/hooks/usePageParams";
 import { lazy, type FC } from "react";
 import ScriptProfilesPanel from "../ScriptProfilesPanel";
 
-const ScriptProfileAddForm = lazy(() => import("../ScriptProfileAddForm"));
+const ScriptProfileAddSidePanel = lazy(
+  () => import("../ScriptProfileAddSidePanel"),
+);
 
-const ScriptProfileEditForm = lazy(() => import("../ScriptProfileEditForm"));
+const ScriptProfileEditSidePanel = lazy(
+  () => import("../ScriptProfileEditSidePanel"),
+);
 
-const ScriptProfileDetails = lazy(() => import("../ScriptProfileDetails"));
+const ScriptProfileDetails = lazy(
+  () => import("../ScriptProfileDetailsSidePanel"),
+);
 
 const ScriptProfilesTab: FC = () => {
   const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
@@ -26,13 +32,13 @@ const ScriptProfilesTab: FC = () => {
       <SidePanel onClose={close} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
-            <ScriptProfileAddForm />
+            <ScriptProfileAddSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
-            <ScriptProfileEditForm />
+            <ScriptProfileEditSidePanel />
           </SidePanel.Suspense>
         )}
 

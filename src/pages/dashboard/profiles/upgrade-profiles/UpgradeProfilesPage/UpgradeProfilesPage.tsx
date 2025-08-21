@@ -9,21 +9,21 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy } from "react";
 
-const UpgradeProfileAddForm = lazy(() =>
+const UpgradeProfileAddSidePanel = lazy(() =>
   import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileAddForm,
+    default: module.UpgradeProfileAddSidePanel,
   })),
 );
 
-const UpgradeProfileDetails = lazy(() =>
+const UpgradeProfileDetailsSidePanel = lazy(() =>
   import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileDetails,
+    default: module.UpgradeProfileDetailsSidePanel,
   })),
 );
 
-const UpgradeProfileEditForm = lazy(() =>
+const UpgradeProfileEditSidePanel = lazy(() =>
   import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileEditForm,
+    default: module.UpgradeProfileEditSidePanel,
   })),
 );
 
@@ -63,19 +63,19 @@ const UpgradeProfilesPage: FC = () => {
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
-            <UpgradeProfileAddForm />
+            <UpgradeProfileAddSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
-            <UpgradeProfileEditForm />
+            <UpgradeProfileEditSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
-            <UpgradeProfileDetails />
+            <UpgradeProfileDetailsSidePanel />
           </SidePanel.Suspense>
         )}
       </SidePanel>

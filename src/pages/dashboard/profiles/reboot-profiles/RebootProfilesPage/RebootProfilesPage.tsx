@@ -9,27 +9,27 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy } from "react";
 
-const RebootProfileAddForm = lazy(async () =>
+const RebootProfileAddSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileAddForm,
+    default: module.RebootProfileAddSidePanel,
   })),
 );
 
-const RebootProfileDetails = lazy(async () =>
+const RebootProfileDetailsSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileDetails,
+    default: module.RebootProfileDetailsSidePanel,
   })),
 );
 
-const RebootProfileDuplicateForm = lazy(async () =>
+const RebootProfileDuplicateSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileDuplicateForm,
+    default: module.RebootProfileDuplicateSidePanel,
   })),
 );
 
-const RebootProfileEditForm = lazy(async () =>
+const RebootProfileEditSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileEditForm,
+    default: module.RebootProfileEditSidePanel,
   })),
 );
 
@@ -75,25 +75,25 @@ const RebootProfilesPage: FC = () => {
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
-            <RebootProfileAddForm />
+            <RebootProfileAddSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "duplicate" && (
           <SidePanel.Suspense key="duplicate">
-            <RebootProfileDuplicateForm />
+            <RebootProfileDuplicateSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
-            <RebootProfileEditForm />
+            <RebootProfileEditSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
-            <RebootProfileDetails />
+            <RebootProfileDetailsSidePanel />
           </SidePanel.Suspense>
         )}
       </SidePanel>
