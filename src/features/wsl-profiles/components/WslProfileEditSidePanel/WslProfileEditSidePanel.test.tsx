@@ -11,7 +11,7 @@ describe("WslProfileEditSidePanel", () => {
     const { container } = renderWithProviders(
       <WslProfileEditSidePanel />,
       undefined,
-      `/?wslProfile=${testProfile.name}`,
+      `/?profile=${testProfile.name}`,
     );
 
     await expectLoadingState();
