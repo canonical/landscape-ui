@@ -4,6 +4,9 @@ import packageJson from "./package.json";
 
 export default defineConfig({
   test: {
+    typecheck: {
+      tsconfig: resolve(__dirname, "tsconfig.vitest.json"),
+    },
     exclude: [
       "**/tests/**",
       "**/node_modules/**",
