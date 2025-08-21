@@ -12,7 +12,7 @@ const ScriptProfileActivityHistory = lazy(
 
 const ScriptProfileInfo = lazy(() => import("../ScriptProfileInfo"));
 
-const ScriptProfileDetails: FC = () => {
+const ScriptProfileDetailsSidePanel: FC = () => {
   const [tabId, setTabId] = useState<"info" | "activity-history">("info");
 
   const { scriptProfile: profile, isGettingScriptProfile } =
@@ -64,4 +64,4 @@ const ScriptProfileDetails: FC = () => {
   );
 };
 
-export default ScriptProfileDetails;
+export default ScriptProfileDetailsSidePanel;

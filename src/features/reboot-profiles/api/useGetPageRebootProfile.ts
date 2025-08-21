@@ -2,7 +2,7 @@ import usePageParams from "@/hooks/usePageParams";
 import type { RebootProfile } from "../types";
 import useGetRebootProfile from "./useGetRebootProfile";
 
-const useRebootProfileSidePanel = ():
+const useGetPageRebootProfile = ():
   | {
       rebootProfile: RebootProfile;
       isGettingRebootProfile: false;
@@ -30,4 +30,4 @@ const useRebootProfileSidePanel = ():
   };
 };
 
-export default useRebootProfileSidePanel;
+export default useGetPageRebootProfile;

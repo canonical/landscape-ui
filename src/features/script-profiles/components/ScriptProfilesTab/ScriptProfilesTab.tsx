@@ -12,7 +12,7 @@ const ScriptProfileEditSidePanel = lazy(
   () => import("../ScriptProfileEditSidePanel"),
 );
 
-const ScriptProfileDetails = lazy(
+const ScriptProfileDetailsSidePanel = lazy(
   () => import("../ScriptProfileDetailsSidePanel"),
 );
 
@@ -44,7 +44,7 @@ const ScriptProfilesTab: FC = () => {
 
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
-            <ScriptProfileDetails />
+            <ScriptProfileDetailsSidePanel />
           </SidePanel.Suspense>
         )}
       </SidePanel>

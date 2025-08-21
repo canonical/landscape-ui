@@ -13,7 +13,7 @@ import { useRunSecurityProfile } from "../../api";
 import useGetPageSecurityProfile from "../../api/useGetPageSecurityProfile";
 import { getNotificationMessage } from "../../helpers";
 
-const SecurityProfileRunFixForm: FC = () => {
+const SecurityProfileRunFixSidePanel: FC = () => {
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
@@ -144,4 +144,4 @@ const SecurityProfileRunFixForm: FC = () => {
   );
 };
 
-export default SecurityProfileRunFixForm;
+export default SecurityProfileRunFixSidePanel;

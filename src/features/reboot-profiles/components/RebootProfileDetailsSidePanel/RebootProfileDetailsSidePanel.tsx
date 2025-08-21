@@ -12,7 +12,7 @@ import moment from "moment";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useRemoveRebootProfileQuery } from "../../api";
-import useRebootProfileSidePanel from "../../api/useGetPageRebootProfile";
+import useGetPageRebootProfile from "../../api/useGetPageRebootProfile";
 import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import { formatWeeklyRebootSchedule } from "./helpers";
 
@@ -30,7 +30,7 @@ const RebootProfileDetailsSidePanel: FC = () => {
     useRemoveRebootProfileQuery();
 
   const { rebootProfile: profile, isGettingRebootProfile } =
-    useRebootProfileSidePanel();
+    useGetPageRebootProfile();
 
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsData, isPending: isGettingAccessGroups } =

@@ -1,10 +1,10 @@
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
-import useRebootProfileSidePanel from "../../api/useGetPageRebootProfile";
+import useGetPageRebootProfile from "../../api/useGetPageRebootProfile";
 import RebootProfilesForm from "../RebootProfilesForm";
 
 const RebootProfileEditSidePanel: FC = () => {
-  const { rebootProfile, isGettingRebootProfile } = useRebootProfileSidePanel();
+  const { rebootProfile, isGettingRebootProfile } = useGetPageRebootProfile();
 
   if (isGettingRebootProfile) {
     return <SidePanel.LoadingState />;
