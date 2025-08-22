@@ -16,18 +16,26 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
+          cache: 'pnpm'
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests with coverage
+        run: pnpm exec vitest run --coverage
         env:
-          npm_config_cache: /home/ubuntu/landscape-ui/.npm
-      - name: Check memory usage
-        run: free -m
-      - name: Run tests
-        run: npx --max_old_space_size=4096 vitest run --coverage
+          NODE_OPTIONS: '--max_old_space_size=4096'
+
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -40,21 +48,29 @@ jobs:
     runs-on: [self-hosted, linux, amd64, tiobe, jammy]
     needs: unit-tests
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
+          cache: 'pnpm'
+
       - name: Install dependencies
-        run: npm ci
-        env:
-          npm_config_cache: /home/ubuntu/landscape-ui/.npm
+        run: pnpm install --frozen-lockfile
+
       - name: Download coverage report artifact
         uses: actions/download-artifact@v4
         with:
           name: vitest-report
           path: ${{ github.workspace }}/reports
+
       - name: TICS report
         uses: tiobe/tics-github-action@v3
         with:

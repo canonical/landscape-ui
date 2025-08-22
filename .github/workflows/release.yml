@@ -5,19 +5,31 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write # semantic-release needs to push tags, releases, and changelogs
+  issues: write # semantic-release needs to create/comment on issues
+  pull-requests: write # semantic-release needs to comment on pull requests
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
 
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: pnpm semantic-release

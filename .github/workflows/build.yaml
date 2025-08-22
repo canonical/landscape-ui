@@ -1,4 +1,5 @@
 name: PPA build commit
+
 on:
   push:
     branches: [ dev ]
@@ -6,48 +7,65 @@ on:
     workflows: ['Release']
     types:
       - completed
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_run' && 'main' || 'dev' }}
-      - uses: actions/setup-node@v4
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
+          cache: 'pnpm'
+
       - name: Install dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
+
       - name: Create PPA Build
-        run: npm run build
+        run: pnpm run build
         env:
           VITE_API_URL: /api/v2/
           VITE_API_URL_OLD: /api/
           VITE_ROOT_PATH: /new_dashboard/
+
       - name: Archive dist for PPA
         uses: actions/upload-artifact@v4
         with:
           name: dist-for-ppa
           path: dist
+
   commit:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout destination branch
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_run' && 'ppa-build' || 'ppa-build-dev' }}
+          persist-credentials: false
+          fetch-depth: 0
+
       - name: Download dist for PPA
         uses: actions/download-artifact@v4
         with:
           name: dist-for-ppa
           path: dist
+
       - name: Commit and Push
-        run: |
-          git config --global user.name 'Mitch Burton'
-          git config --global user.email 'mitch.burton@canonical.com'
-          mv ./dist ../
-          rm -rf ./*
-          mv ../dist/* ./
-          git add .
-          git commit -am 'automated build'
-          git push origin
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          repository: .
+          branch: ${{ github.event_name == 'workflow_run' && 'ppa-build' || 'ppa-build-dev' }}
+          commit_message: 'Automated build: ${{ github.sha }}'
+          file_pattern: dist/**/*
+          commit_user_name: 'Mitch Burton'
+          commit_user_email: 'mitch.burton@canonical.com'
+          commit_author: 'Mitch Burton <mitch.burton@canonical.com>'
