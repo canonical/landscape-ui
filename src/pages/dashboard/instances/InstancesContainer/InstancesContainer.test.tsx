@@ -34,6 +34,11 @@ const columns = [
     canBeHidden: true,
   },
   {
+    label: "Tags",
+    checkboxLabel: "Tags",
+    canBeHidden: true,
+  },
+  {
     label: "Availability zone",
     checkboxLabel: "Availability zone",
     canBeHidden: true,
