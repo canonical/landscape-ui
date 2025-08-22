@@ -6,7 +6,14 @@ import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { HTMLProps, ReactNode } from "react";
-import type { HeaderGroup, TableHeaderProps } from "react-table";
+import type {
+  Cell,
+  HeaderGroup,
+  Row,
+  TableCellProps,
+  TableHeaderProps,
+  TableRowProps,
+} from "react-table";
 import {
   getFeatures,
   hasRegularUpgrades,
@@ -196,4 +203,70 @@ export const handleHeaderProps = ({ id }: HeaderGroup<Instance>) => {
   }
 
   return headerProps;
+};
+
+export const getCellProps = (expandedRowIndex: number | null) => {
+  return ({
+    column,
+    row: { index },
+  }: Cell<Instance>): Partial<
+    TableCellProps & HTMLProps<HTMLTableCellElement>
+  > => {
+    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
+      {};
+
+    switch (column.id) {
+      case "title":
+        cellProps.role = "rowheader";
+        break;
+      case "status":
+        cellProps["aria-label"] = "Status";
+        break;
+      case "upgrades":
+        cellProps["aria-label"] = "Upgrades";
+        break;
+      case "os":
+        cellProps["aria-label"] = "Operating system";
+        break;
+      case "tags":
+        cellProps["aria-label"] = "Tags";
+        if (expandedRowIndex === index) {
+          cellProps.className = "expandedCell";
+        }
+        break;
+      case "availability_zone":
+        cellProps["aria-label"] = "Availability zone";
+        break;
+      case "ubuntu_pro":
+        cellProps["aria-label"] = "Ubuntu Pro expiration date";
+        break;
+      case "last_ping":
+        cellProps["aria-label"] = "Last ping";
+        break;
+      case "actions":
+        cellProps["aria-label"] = "Actions";
+        break;
+    }
+
+    return cellProps;
+  };
+};
+
+export const getRowProps = (expandedRowIndex: number | null) => {
+  return ({
+    index,
+    original,
+  }: Row<Instance>): Partial<
+    TableRowProps & HTMLProps<HTMLTableRowElement>
+  > => {
+    const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
+      {};
+
+    if (expandedRowIndex === index) {
+      rowProps.className = "expandedRow";
+    }
+    rowProps["aria-label"] = `${original.title} instance row`;
+
+    return rowProps;
+  };
 };

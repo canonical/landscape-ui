@@ -3,7 +3,9 @@ import ListTitle from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
+import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
 import { CheckboxInput } from "@canonical/react-components";
@@ -11,8 +13,10 @@ import moment from "moment";
 import { memo, useEffect, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import {
+  getCellProps,
   getCheckboxState,
   getColumnFilterOptions,
+  getRowProps,
   getStatusCellIconAndLabel,
   getUpgradesCellIconAndLabel,
   handleCheckboxChange,
@@ -35,6 +39,9 @@ const InstanceList = memo(function InstanceList({
   setSelectedInstances,
 }: InstanceListProps) {
   const { disabledColumns, ...filters } = usePageParams();
+
+  const { expandedRowIndex, getTableRowsRef, handleExpand } =
+    useExpandableRow();
 
   const isFilteringInstances = Object.values(filters).some((filter) => {
     if (typeof filter === "string") {
@@ -108,7 +115,9 @@ const InstanceList = memo(function InstanceList({
                 >
                   {row.original.title}
                 </StaticLink>
-                <span className="u-text--muted">{row.original.hostname}</span>
+                <span className="u-text--muted">
+                  {row.original.hostname || <NoData />}
+                </span>
               </ListTitle>
             </div>
           );
@@ -150,6 +159,34 @@ const InstanceList = memo(function InstanceList({
         Cell: ({ row: { original } }: CellProps<Instance>) => (
           <>{original.distribution_info?.description ?? <NoData />}</>
         ),
+      },
+      {
+        accessor: "tags",
+        canBeHidden: true,
+        optionLabel: "Tags",
+        Header: "Tags",
+        Cell: ({ row: { original, index } }: CellProps<Instance>) => {
+          if (!original.tags.length) {
+            return <NoData />;
+          }
+
+          const onExpand = () => {
+            handleExpand(index);
+          };
+
+          return (
+            <TruncatedCell
+              content={original.tags.map((tag) => (
+                <span className="truncatedItem" key={tag}>
+                  {tag}
+                </span>
+              ))}
+              isExpanded={index === expandedRowIndex}
+              onExpand={onExpand}
+              showCount
+            />
+          );
+        },
       },
       {
         accessor: "availability_zone",
@@ -204,7 +241,7 @@ const InstanceList = memo(function InstanceList({
         ),
       },
     ],
-    [selectedInstances.length, instances],
+    [selectedInstances.length, instances, expandedRowIndex],
   );
 
   useEffect(() => {
@@ -221,17 +258,21 @@ const InstanceList = memo(function InstanceList({
   );
 
   return (
-    <ResponsiveTable
-      emptyMsg={
-        isFilteringInstances
-          ? "No instances found according to your search parameters."
-          : "No instances found"
-      }
-      columns={filteredColumns}
-      data={instances}
-      getHeaderProps={handleHeaderProps}
-      minWidth={1400}
-    />
+    <div ref={getTableRowsRef}>
+      <ResponsiveTable
+        emptyMsg={
+          isFilteringInstances
+            ? "No instances found according to your search parameters."
+            : "No instances found"
+        }
+        columns={filteredColumns}
+        data={instances}
+        getHeaderProps={handleHeaderProps}
+        getRowProps={getRowProps(expandedRowIndex)}
+        getCellProps={getCellProps(expandedRowIndex)}
+        minWidth={1400}
+      />
+    </div>
   );
 });
 
