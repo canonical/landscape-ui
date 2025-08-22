@@ -70,6 +70,10 @@ const OnSelect = <T extends ScheduleBlockFormProps>({
         />
       );
     }
+
+    default: {
+      return null;
+    }
   }
 };
 
