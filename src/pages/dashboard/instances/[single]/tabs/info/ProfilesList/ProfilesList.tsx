@@ -1,7 +1,5 @@
 import { SidePanelTableFilterChips, TableFilter } from "@/components/filter";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import { getFeatures } from "@/features/instances";
-import useAuth from "@/hooks/useAuth";
 import {
   DEFAULT_CURRENT_PAGE,
   DEFAULT_PAGE_SIZE,
@@ -23,8 +21,6 @@ interface ProfilesListProps {
 }
 
 const ProfilesList: FC<ProfilesListProps> = ({ instance }) => {
-  const { isFeatureEnabled } = useAuth();
-
   const [inputValue, setInputValue] = useState("");
   const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
@@ -104,26 +100,9 @@ const ProfilesList: FC<ProfilesListProps> = ({ instance }) => {
             setCurrentPage(DEFAULT_CURRENT_PAGE);
           }}
           position="right"
-          options={[
-            getFeatures(instance).packages && FILTER_OPTIONS.package,
-            getFeatures(instance).power && FILTER_OPTIONS.reboot,
-            FILTER_OPTIONS.removal,
-            getFeatures(instance).packages && FILTER_OPTIONS.repository,
-            getFeatures(instance).scripts &&
-              isFeatureEnabled("script-profiles") &&
-              FILTER_OPTIONS.script,
-            getFeatures(instance).usg &&
-              isFeatureEnabled("usg-profiles") &&
-              FILTER_OPTIONS.security,
-            getFeatures(instance).packages && FILTER_OPTIONS.upgrade,
-            getFeatures(instance).wsl &&
-              isFeatureEnabled("wsl-child-instance-profiles") &&
-              FILTER_OPTIONS.wsl,
-          ].filter((typeOption) => !!typeOption)}
-          disabledOptions={Object.entries(FILTER_OPTIONS)
-            .filter(
-              ([type]) =>
-                !instance.profiles?.some((profile) => profile.type === type),
+          options={Object.entries(FILTER_OPTIONS)
+            .filter(([type]) =>
+              instance.profiles?.some((profile) => profile.type === type),
             )
             .map(([, option]) => option)}
           selectedItems={types}

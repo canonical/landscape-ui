@@ -9,7 +9,7 @@ export const getTo = (profile: Profile) => {
     case "removal":
       return `/profiles/removal?sidePath=view&profile=${profile.id}`;
     case "repository":
-      return `/profiles/repository?sidePath=view&profile=${profile.id}`;
+      return `/profiles/repository?search=${profile.title}`;
     case "script":
       return `/scripts?tab=profiles&sidePath=view&profile=${profile.id}`;
     case "security":
