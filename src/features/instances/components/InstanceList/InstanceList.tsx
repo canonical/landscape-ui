@@ -41,6 +41,8 @@ const InstanceList = memo(function InstanceList({
     } else if (Array.isArray(filter)) {
       return filter.length > 0;
     }
+
+    return false;
   });
 
   const toggleAll = () => {

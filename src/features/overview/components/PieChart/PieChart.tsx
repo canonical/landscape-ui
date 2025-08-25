@@ -2,7 +2,7 @@ import type { ActiveElement, ChartData } from "chart.js";
 import { Chart, registerables } from "chart.js";
 import classNames from "classnames";
 import type { FC } from "react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import Legend from "../Legend";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
@@ -56,7 +56,7 @@ const PieChart: FC<PieChartProps> = ({ data }) => {
                 },
               },
               cutout: "40%",
-              onHover: function (_, elements: ActiveElement[], chart: Chart) {
+              onHover: (_, elements: ActiveElement[], chart: Chart) => {
                 if (elements.length > 0) {
                   handleChartMouseOver(
                     chart,

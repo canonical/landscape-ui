@@ -1,5 +1,5 @@
 import type { FC, ReactNode } from "react";
-import React, { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import useNotificationHelper from "@/hooks/useNotificationHelper";
 import type { NotificationHelper } from "@/types/Notification";

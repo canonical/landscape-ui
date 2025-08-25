@@ -1,5 +1,4 @@
 import type { FC } from "react";
-import React from "react";
 import classNames from "classnames";
 import classes from "./PageContent.module.scss";
 import type { PageContentProps } from "./types";

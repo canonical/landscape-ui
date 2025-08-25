@@ -2,7 +2,6 @@ import AssociationBlock from "@/components/form/AssociationBlock";
 import CodeEditor from "@/components/form/CodeEditor";
 import FileInput from "@/components/form/FileInput";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import { useGetWslInstanceTypes } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -16,19 +15,8 @@ import { useAddWslProfile } from "../../api";
 import { CLOUD_INIT_OPTIONS, FILE_INPUT_HELPER_TEXT } from "../constants";
 import { getCloudInitFile, getValidationSchema } from "./helpers";
 import classes from "./WslProfileInstallForm.module.scss";
-
-interface FormProps {
-  title: string;
-  access_group: string;
-  instanceType: string;
-  customImageName: string;
-  description: string;
-  rootfsImage: string;
-  cloudInitType: string;
-  cloudInit: File | string | null;
-  all_computers: boolean;
-  tags: string[];
-}
+import type { FormProps } from "./types";
+import { INITIAL_VALUES } from "./constants";
 
 const WslProfileInstallForm: FC = () => {
   const debug = useDebug();
@@ -92,19 +80,8 @@ const WslProfileInstallForm: FC = () => {
     }
   };
 
-  const formik = useFormik({
-    initialValues: {
-      title: "",
-      access_group: DEFAULT_ACCESS_GROUP_NAME,
-      description: "",
-      instanceType: "",
-      customImageName: "",
-      rootfsImage: "",
-      cloudInitType: "",
-      cloudInit: null,
-      all_computers: false,
-      tags: [],
-    },
+  const formik = useFormik<FormProps>({
+    initialValues: INITIAL_VALUES,
     onSubmit: handleSubmit,
     validationSchema: getValidationSchema(),
   });
@@ -189,6 +166,10 @@ const WslProfileInstallForm: FC = () => {
           aria-label="Cloud-init"
           options={CLOUD_INIT_OPTIONS}
           {...formik.getFieldProps("cloudInitType")}
+          onChange={async (value) => {
+            formik.getFieldProps("cloudInitType").onChange(value);
+            await formik.setFieldValue("cloudInit", null);
+          }}
           error={getFormikError(formik, "cloudInitType")}
         />
 
@@ -198,6 +179,11 @@ const WslProfileInstallForm: FC = () => {
             labelClassName="u-off-screen"
             accept=".yaml"
             {...formik.getFieldProps("cloudInit")}
+            value={
+              formik.values.cloudInit instanceof File
+                ? formik.values.cloudInit
+                : null
+            }
             onFileRemove={handleRemoveFile}
             onFileUpload={handleFileUpload}
             help={FILE_INPUT_HELPER_TEXT}
@@ -211,7 +197,11 @@ const WslProfileInstallForm: FC = () => {
             onChange={(value) => {
               formik.setFieldValue("cloudInit", value ?? "");
             }}
-            value={formik.values.cloudInit ?? ""}
+            value={
+              typeof formik.values.cloudInit === "string"
+                ? formik.values.cloudInit
+                : ""
+            }
             language="yaml"
             defaultValue="# paste cloud-init config here"
             error={getFormikError(formik, "cloudInit")}

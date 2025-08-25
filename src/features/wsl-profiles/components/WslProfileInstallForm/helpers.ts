@@ -1,6 +1,11 @@
 import * as Yup from "yup";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "../constants";
 
+const convertStringtoFile = (inputString: string) => {
+  const blob = new Blob([inputString], { type: "application/x-yaml" });
+  return new File([blob], "myFile.yaml", { type: "application/x-yaml" });
+};
+
 export const getValidationSchema = () => {
   return Yup.object().shape({
     title: Yup.string().required("This field is required"),
@@ -58,11 +63,6 @@ export const getValidationSchema = () => {
     all_computers: Yup.boolean(),
     tags: Yup.array().of(Yup.string()),
   });
-};
-
-const convertStringtoFile = (inputString: string) => {
-  const blob = new Blob([inputString], { type: "application/x-yaml" });
-  return new File([blob], "myFile.yaml", { type: "application/x-yaml" });
 };
 
 const fileToBase64 = (file: File | null): Promise<string> | undefined => {

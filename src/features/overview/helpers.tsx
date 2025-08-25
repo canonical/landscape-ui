@@ -2,24 +2,17 @@ import type { Chart } from "chart.js";
 import type { Color } from "./types";
 import { colorMap } from "./constants";
 
-export const chartLabelToColorLabel = (label: string): Color => {
-  let colorLabel: Color;
+const chartLabelToColorLabel = (label: string): Color => {
   switch (label) {
     case "Security":
-      colorLabel = "red";
-      break;
+      return "red";
     case "Regular":
-      colorLabel = "orange";
-      break;
+      return "orange";
     case "Up to date":
-      colorLabel = "green";
-      break;
+      return "green";
     default:
-      colorLabel = "red";
-      break;
+      return "red";
   }
-
-  return colorLabel;
 };
 
 export const handleChartMouseOver = (
@@ -30,31 +23,31 @@ export const handleChartMouseOver = (
 ) => {
   setSelectedArc(index);
   const clickedDatasetIndex = index;
+
   chartInstance.data.datasets.forEach((dataset, datasetIndex) => {
-    dataset.backgroundColor = dataset.data.map((_, i) => {
-      if (i === 1) {
-        return;
+    const bg = dataset.data.map<string | undefined>((_, i) => {
+      const isMainArc = i === 0;
+      const isRemainderArc = i === 1;
+
+      if (isRemainderArc) {
+        return undefined;
       }
-      if (chartInstance.data.labels) {
-        if (i === 0 && datasetIndex === clickedDatasetIndex) {
-          const colorLabel = chartLabelToColorLabel(
-            chartInstance.data.labels[datasetIndex] as string,
-          );
 
-          return colorMap[colorLabel][isDarkMode ? "dark" : "light"].default;
-        }
-
-        if (i === 1) {
-          return "#fbfbfb";
-        }
-
-        return colorMap[
-          chartLabelToColorLabel(
-            chartInstance.data.labels[datasetIndex] as string,
-          )
-        ][isDarkMode ? "dark" : "light"].disabled;
+      const { labels } = chartInstance.data;
+      if (!labels) {
+        return undefined;
       }
+
+      const colorLabel = chartLabelToColorLabel(labels[datasetIndex] as string);
+
+      if (isMainArc && datasetIndex === clickedDatasetIndex) {
+        return colorMap[colorLabel][isDarkMode ? "dark" : "light"].default;
+      }
+
+      return colorMap[colorLabel][isDarkMode ? "dark" : "light"].disabled;
     });
+
+    dataset.backgroundColor = bg;
   });
 };
 
@@ -64,17 +57,26 @@ export const handleChartMouseLeave = (
   isDarkMode: boolean,
 ) => {
   chartInstance.data.datasets.forEach((dataset, datasetIndex) => {
-    dataset.backgroundColor = dataset.data.map((_, i) => {
-      if (chartInstance.data.labels) {
-        if (i === 0) {
-          return colorMap[
-            chartLabelToColorLabel(
-              chartInstance.data.labels[datasetIndex] as string,
-            )
-          ][isDarkMode ? "dark" : "light"].default;
-        }
+    const bg = dataset.data.map<string | undefined>((_, i) => {
+      const isMainArc = i === 0;
+
+      const { labels } = chartInstance.data;
+      if (!labels) {
+        return undefined;
       }
+
+      if (isMainArc) {
+        const colorLabel = chartLabelToColorLabel(
+          labels[datasetIndex] as string,
+        );
+        return colorMap[colorLabel][isDarkMode ? "dark" : "light"].default;
+      }
+
+      return undefined;
     });
+
+    dataset.backgroundColor = bg;
   });
+
   setSelectedArc(null);
 };
