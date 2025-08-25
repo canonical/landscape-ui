@@ -14,7 +14,7 @@ const PackageProfileConstraintsAddSidePanel: FC = () => {
   return (
     <>
       <SidePanel.Header>
-        Add package constraints to &quot;${packageProfile.title}&quot; profile
+        Add package constraints to &quot;{packageProfile.title}&quot; profile
       </SidePanel.Header>
       <SidePanel.Content>
         <PackageProfileConstraintsAddForm profile={packageProfile} />
