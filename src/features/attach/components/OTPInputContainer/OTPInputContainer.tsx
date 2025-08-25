@@ -44,7 +44,7 @@ const OTPInputContainer: FC = () => {
         });
 
         if (!data.valid) {
-          debug("Invalid OTP code");
+          debug("The code you entered has expired and is no longer valid.");
           formik.resetForm({
             values: { code: Array(OTP_LENGTH).fill("") },
           });
