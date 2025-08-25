@@ -7,7 +7,6 @@ import type { AutoinstallFile, WithMetadata } from "../types";
 export interface GetAutoinstallFileParams {
   id: number;
   version?: number;
-  with_groups?: boolean;
   with_metadata?: boolean;
 }
 
