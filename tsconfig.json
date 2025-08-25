@@ -1,4 +1,5 @@
 {
+  "extends": "./tsconfig.vitest.json",
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
