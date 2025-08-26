@@ -81,75 +81,95 @@ export function renderMultipleBody(props: MultipleFilterProps) {
       <span className={multipleClasses.container}>
         {onSearch && <SearchBoxWithForm onSearch={onSearch} />}
         <ul className={commonClasses.list}>
-          {options.map((option, i) => (
-            <Fragment key={option.value}>
-              <li
-                className={classNames(commonClasses.listItem, {
-                  [commonClasses.separated]:
-                    option.group &&
-                    options[i + 1] !== undefined &&
-                    options[i + 1].group !== option.group,
-                })}
-              >
-                <Input
-                  type="checkbox"
-                  label={option.label}
-                  labelClassName="u-no-padding--top u-no-margin--bottom"
-                  value={option.value}
-                  checked={selectedItems.includes(option.value)}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    const next = e.target.checked
-                      ? [
-                          ...selectedItems.filter(
-                            (selectedItem) =>
-                              !option.options?.some(
-                                ({ value }) => selectedItem === value,
-                              ),
-                          ),
-                          option.value,
-                        ]
-                      : selectedItems.filter((val) => val !== option.value);
-                    onItemsSelect(next);
-                  }}
-                  disabled={disabledOptions?.some(
-                    (disabledOption) => disabledOption.value === option.value,
-                  )}
-                />
-              </li>
-              {option.options?.map((nestedOption) => (
+          {options.map((option, i) => {
+            const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+              if (e.target.checked) {
+                onItemsSelect([
+                  ...selectedItems.filter(
+                    (selectedItem) =>
+                      !option.options?.some(
+                        ({ value }) => selectedItem === value,
+                      ),
+                  ),
+                  option.value,
+                ]);
+              } else {
+                onItemsSelect(
+                  selectedItems.filter((val) => val !== option.value),
+                );
+              }
+            };
+
+            const disabled = disabledOptions?.some(
+              (disabledOption) => disabledOption.value === option.value,
+            );
+
+            return (
+              <Fragment key={option.value}>
                 <li
-                  key={nestedOption.value}
-                  className={classNames(commonClasses.nestedListItem)}
+                  className={classNames(commonClasses.listItem, {
+                    [commonClasses.separated]:
+                      option.group &&
+                      options[i + 1] !== undefined &&
+                      options[i + 1].group !== option.group,
+                  })}
                 >
                   <Input
                     type="checkbox"
-                    label={nestedOption.label}
+                    label={option.label}
                     labelClassName="u-no-padding--top u-no-margin--bottom"
-                    value={nestedOption.value}
-                    checked={
-                      selectedItems.includes(nestedOption.value) ||
-                      selectedItems.includes(option.value)
-                    }
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      const next = e.target.checked
-                        ? [...selectedItems, nestedOption.value]
-                        : selectedItems.filter(
-                            (value) =>
-                              value !== nestedOption.value &&
-                              value !== option.value,
-                          );
-                      onItemsSelect(next);
-                    }}
-                    disabled={disabledOptions?.some(
-                      (disabledOption) =>
-                        disabledOption.value === nestedOption.value ||
-                        disabledOption.value === option.value,
-                    )}
+                    value={option.value}
+                    checked={selectedItems.includes(option.value)}
+                    onChange={handleChange}
+                    disabled={disabled}
                   />
                 </li>
-              ))}
-            </Fragment>
-          ))}
+                {option.options?.map((nestedOption) => {
+                  const handleNestedChange = (
+                    e: ChangeEvent<HTMLInputElement>,
+                  ) => {
+                    if (e.target.checked) {
+                      onItemsSelect([...selectedItems, nestedOption.value]);
+                    } else {
+                      onItemsSelect(
+                        selectedItems.filter(
+                          (value) =>
+                            value !== nestedOption.value &&
+                            value !== option.value,
+                        ),
+                      );
+                    }
+                  };
+
+                  const nestedDisabled = disabledOptions?.some(
+                    (disabledOption) =>
+                      disabledOption.value === nestedOption.value ||
+                      disabledOption.value === option.value,
+                  );
+
+                  return (
+                    <li
+                      key={nestedOption.value}
+                      className={classNames(commonClasses.nestedListItem)}
+                    >
+                      <Input
+                        type="checkbox"
+                        label={nestedOption.label}
+                        labelClassName="u-no-padding--top u-no-margin--bottom"
+                        value={nestedOption.value}
+                        checked={
+                          selectedItems.includes(nestedOption.value) ||
+                          selectedItems.includes(option.value)
+                        }
+                        onChange={handleNestedChange}
+                        disabled={nestedDisabled}
+                      />
+                    </li>
+                  );
+                })}
+              </Fragment>
+            );
+          })}
         </ul>
       </span>
       <span

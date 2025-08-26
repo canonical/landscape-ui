@@ -60,7 +60,10 @@ export const getItems = (
   options
     ? values.filter(Boolean).map(
         (value) =>
-          options?.find((option) => option.value === value) ?? {
+          [
+            ...options,
+            ...options.flatMap((option) => option.options ?? []),
+          ].find((option) => option.value === value) ?? {
             label: value,
             value,
           },

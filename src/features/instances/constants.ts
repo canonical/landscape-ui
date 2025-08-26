@@ -190,13 +190,4 @@ export const FILTERS: Record<FilterKey, ListFilter> = {
       ARCHIVED_STATUS_OPTION,
     ],
   },
-  wsl: {
-    slug: "wsl",
-    label: "WSL",
-    type: "multi-select",
-    options: [
-      { label: "Parent", value: "parent", query: "wsl:parent" },
-      { label: "Child", value: "child", query: "wsl:child" },
-    ],
-  },
 };

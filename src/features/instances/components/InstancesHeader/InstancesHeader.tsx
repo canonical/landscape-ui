@@ -64,8 +64,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
     FILTERS.status.type === "select" ? FILTERS.status.options : [];
   const osOptions =
     FILTERS.os.type === "multi-select" ? FILTERS.os.options : [];
-  const wslOptions =
-    FILTERS.wsl.type === "multi-select" ? FILTERS.wsl.options : [];
 
   return (
     <>
@@ -122,7 +120,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
         osOptions={osOptions}
         statusOptions={statusOptions}
         tagOptions={tagOptions}
-        wslOptions={wslOptions}
       />
 
       <SearchHelpPopup
