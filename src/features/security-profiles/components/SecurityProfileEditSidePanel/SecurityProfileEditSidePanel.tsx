@@ -52,7 +52,6 @@ const SecurityProfileEditSidePanel: FC = () => {
           hasBackButton={sidePath.length > 1}
           onBackButtonPress={popSidePath}
         />
-        ;
       </SidePanel.Content>
     </>
   );
