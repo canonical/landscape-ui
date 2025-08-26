@@ -30,13 +30,8 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
   const debug = useDebug();
   const { employees, isFetching } = useGetEmployees(
     { listenToUrlParams: false },
-    {
-      search: search,
-      with_groups: true,
-    },
-    {
-      enabled: search.length > 2,
-    },
+    { search: search },
+    { enabled: search.length > 2 },
   );
 
   const getAvailableEmployeeSuggestions = (item: Employee): boolean => {

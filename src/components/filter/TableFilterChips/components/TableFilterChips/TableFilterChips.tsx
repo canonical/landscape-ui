@@ -13,7 +13,6 @@ import TableFilterChipsBase from "../TableFilterChipsBase";
 
 interface TableFilterChipsProps {
   readonly accessGroupOptions?: SelectOption[];
-  readonly autoinstallFileOptions?: SelectOption[];
   readonly availabilityZonesOptions?: SelectOption[];
   readonly filtersToDisplay?: FilterKey[];
   readonly osOptions?: SelectOption[];
@@ -26,7 +25,6 @@ interface TableFilterChipsProps {
 const TableFilterChips: FC<TableFilterChipsProps> = ({
   accessGroupOptions,
   availabilityZonesOptions,
-  autoinstallFileOptions,
   filtersToDisplay = defaultFiltersToDisplay,
   osOptions,
   statusOptions,
@@ -37,7 +35,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   const {
     setPageParams,
     accessGroups,
-    autoinstallFiles,
     availabilityZones,
     fromDate,
     os,
@@ -135,24 +132,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     });
   }
 
-  if (filtersToDisplay.includes("autoinstallFiles")) {
-    filters.push({
-      label: "Autoinstall file",
-      multiple: true,
-      items: getItems(autoinstallFileOptions, autoinstallFiles),
-      remove: (autoinstallFile) => {
-        setPageParams({
-          autoinstallFiles: autoinstallFiles.filter(
-            (f) => f !== autoinstallFile,
-          ),
-        });
-      },
-      clear: () => {
-        setPageParams({ autoinstallFiles: [] });
-      },
-    });
-  }
-
   if (filtersToDisplay.includes("tags")) {
     filters.push({
       label: "Tag",
@@ -240,7 +219,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       clearAll={() => {
         setPageParams({
           accessGroups: [],
-          autoinstallFiles: [],
           availabilityZones: [],
           fromDate: "",
           os: "",

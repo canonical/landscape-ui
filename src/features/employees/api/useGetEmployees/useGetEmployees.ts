@@ -34,8 +34,7 @@ const useGetEmployees = (
   > = {},
 ) => {
   const authFetch = useFetch();
-  const { autoinstallFiles, currentPage, pageSize, search, status } =
-    usePageParams();
+  const { currentPage, pageSize, search, status } = usePageParams();
 
   config = {
     ...DEFAULT_CONFIG,
@@ -45,11 +44,8 @@ const useGetEmployees = (
   const paramsWithPagination = {
     ...(config.listenToUrlParams
       ? {
-          with_autoinstall_file: true,
           with_computers: true,
           is_active: getStatus(status),
-          autoinstall_file_ids:
-            autoinstallFiles.length > 0 ? autoinstallFiles : undefined,
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
           search: search ?? undefined,

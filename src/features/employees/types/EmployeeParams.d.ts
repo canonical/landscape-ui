@@ -3,11 +3,8 @@ interface EmployeeActionParams {
 }
 
 interface CommonEmployeeParams {
-  with_groups?: boolean;
-  with_autoinstall_file?: boolean;
   with_computers?: boolean;
   search?: string;
-  autoinstall_file_ids?: string[];
   is_active?: boolean;
   limit?: number;
   offset?: number;

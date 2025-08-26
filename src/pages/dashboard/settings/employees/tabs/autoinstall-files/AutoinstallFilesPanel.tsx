@@ -28,7 +28,6 @@ const AutoinstallFilesPanel: FC = () => {
     useGetAutoinstallFiles({
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
-      with_groups: true,
       search,
     });
 

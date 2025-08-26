@@ -11,7 +11,6 @@ export interface GetAutoinstallFilesParams {
   limit?: number;
   offset?: number;
   search?: string;
-  with_groups?: boolean;
 }
 
 export interface GetAutoinstallFilesResult {
