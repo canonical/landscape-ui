@@ -16,8 +16,9 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
+    "paths": { "@/*": ["src/*"] },
+    "types": ["vitest/globals", "vitest/jsdom"]
   },
-  "include": ["src", "playwright.config.ts"],
+  "include": ["src", "playwright.config.ts", "vitest.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

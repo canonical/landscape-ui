@@ -1,12 +1,9 @@
-import { defineConfig } from "vitest/config";
 import { resolve } from "path";
+import { defineConfig } from "vitest/config";
 import packageJson from "./package.json";
 
 export default defineConfig({
   test: {
-    typecheck: {
-      tsconfig: resolve(__dirname, "tsconfig.vitest.json"),
-    },
     exclude: [
       "**/tests/**",
       "**/node_modules/**",
