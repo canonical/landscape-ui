@@ -17,6 +17,7 @@ interface SidePanelFormButtonsProps {
   readonly hasActionButtons?: boolean;
   readonly hasBackButton?: boolean;
   readonly onBackButtonPress?: () => void;
+  readonly onCancel?: () => void;
   readonly onSubmit?: (event: SyntheticEvent) => Promise<void> | void;
 }
 
@@ -30,6 +31,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   secondaryActionButtonTitle,
   secondaryActionButtonSubmit,
   onBackButtonPress,
+  onCancel,
   onSubmit,
   submitButtonAppearance = "positive",
   cancelButtonDisabled = false,
@@ -55,7 +57,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
             className="u-no-margin--bottom"
             type="button"
             appearance="base"
-            onClick={closeSidePanel}
+            onClick={onCancel ?? closeSidePanel}
             disabled={cancelButtonDisabled}
           >
             Cancel

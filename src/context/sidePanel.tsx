@@ -1,6 +1,7 @@
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import AppNotification from "@/components/layout/AppNotification";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
@@ -45,6 +46,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
 
   const { pathname } = useLocation();
   const { notify, sidePanel } = useNotify();
+  const { tab } = usePageParams();
 
   const handleClose = () => {
     setOpen(false);
@@ -57,7 +59,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
 
   useEffect(() => {
     return handleClose;
-  }, [pathname]);
+  }, [pathname, tab]);
 
   const handleSidePanelClose = () => {
     handleClose();

@@ -1,4 +1,5 @@
 import type { AccessGroup } from "@/features/access-groups";
+import type { Profile } from "./Profile";
 
 interface CloudInstanceMetadata {
   "ami-id"?: string;
@@ -194,21 +195,6 @@ interface DistributionInfo {
   description: string;
   distributor: string;
   release: string;
-}
-
-export interface Profile {
-  id: number;
-  name: string | null;
-  title: string;
-  type:
-    | "package"
-    | "reboot"
-    | "removal"
-    | "repository"
-    | "security"
-    | "script"
-    | "upgrade"
-    | "wsl";
 }
 
 export interface InstanceWithoutRelation extends Record<string, unknown> {

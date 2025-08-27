@@ -1,24 +1,13 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-
-const SingleRemovalProfileForm = lazy(
-  () => import("../SingleRemovalProfileForm"),
-);
+import usePageParams from "@/hooks/usePageParams";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
 
 const RemovalProfilesEmptyState: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const handleCreateRemovalProfile = () => {
-    setSidePanelContent(
-      "Add removal profile",
-      <Suspense fallback={<LoadingState />}>
-        <SingleRemovalProfileForm action="add" />
-      </Suspense>,
-    );
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   return (

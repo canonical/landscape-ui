@@ -65,8 +65,8 @@ export default function useRemovalProfiles() {
   > = (queryParams = {}, config = {}) =>
     useQuery<AxiosResponse<RemovalProfile[]>, AxiosError<ApiError>>({
       queryKey: ["removalProfiles"],
-      queryFn: async () =>
-        authFetchOld.get("GetRemovalProfiles", { params: queryParams }),
+      queryFn: async ({ signal }) =>
+        authFetchOld.get("GetRemovalProfiles", { params: queryParams, signal }),
       ...config,
     });
 

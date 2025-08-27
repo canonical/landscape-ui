@@ -1,20 +1,38 @@
-import type { FC } from "react";
-import { Button } from "@canonical/react-components";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { SingleRemovalProfileForm } from "@/features/removal-profiles";
-import useSidePanel from "@/hooks/useSidePanel";
+import SidePanel from "@/components/layout/SidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
 import RemovalProfileContainer from "@/pages/dashboard/profiles/removal-profiles/RemovalProfileContainer";
+import { Button } from "@canonical/react-components";
+import { lazy, type FC } from "react";
+
+const RemovalProfileAddSidePanel = lazy(async () =>
+  import("@/features/removal-profiles").then((module) => ({
+    default: module.RemovalProfileAddSidePanel,
+  })),
+);
+
+const RemovalProfileDetailsSidePanel = lazy(async () =>
+  import("@/features/removal-profiles").then((module) => ({
+    default: module.RemovalProfileDetailsSidePanel,
+  })),
+);
+
+const RemovalProfileEditSidePanel = lazy(async () =>
+  import("@/features/removal-profiles").then((module) => ({
+    default: module.RemovalProfileEditSidePanel,
+  })),
+);
 
 const RemovalProfilesPage: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
+
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   const handleCreate = () => {
-    setSidePanelContent(
-      "Add removal profile",
-      <SingleRemovalProfileForm action="add" />,
-    );
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   return (
@@ -35,6 +53,31 @@ const RemovalProfilesPage: FC = () => {
       <PageContent>
         <RemovalProfileContainer />
       </PageContent>
+
+      <SidePanel
+        isOpen={!!sidePath.length}
+        onClose={() => {
+          setPageParams({ sidePath: [], profile: "" });
+        }}
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <RemovalProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <RemovalProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <RemovalProfileDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

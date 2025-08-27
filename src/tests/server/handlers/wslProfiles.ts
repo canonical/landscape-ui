@@ -44,4 +44,26 @@ export default [
       }),
     );
   }),
+
+  http.get(`${API_URL}child-instance-profiles/:name`, ({ params }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      !endpointStatus.path ||
+      (endpointStatus.path &&
+        endpointStatus.path.includes("child-instance-profiles/:name"))
+    ) {
+      if (endpointStatus.status === "error") {
+        throw new HttpResponse(null, { status: 500 });
+      }
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json(undefined);
+      }
+    }
+
+    return HttpResponse.json(
+      wslProfiles.find((wslProfile) => wslProfile.name === params.name),
+    );
+  }),
 ];

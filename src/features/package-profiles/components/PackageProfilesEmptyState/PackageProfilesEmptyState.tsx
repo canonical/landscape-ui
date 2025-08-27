@@ -1,23 +1,13 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import EmptyState from "@/components/layout/EmptyState";
+import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-
-const PackageProfileAddForm = lazy(() => import("../PackageProfileCreateForm"));
+import type { FC } from "react";
 
 const PackageProfilesEmptyState: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const handleCreatePackageProfile = () => {
-    setSidePanelContent(
-      "Add package profile",
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileAddForm />
-      </Suspense>,
-      "medium",
-    );
+    setPageParams({ sidePath: ["add"] });
   };
 
   return (

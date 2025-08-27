@@ -6,9 +6,7 @@ import AddSecurityProfileButton from "./AddSecurityProfileButton";
 
 describe("AddSecurityProfileButton", () => {
   it("should open a form", async () => {
-    renderWithProviders(
-      <AddSecurityProfileButton onAddProfile={() => undefined} />,
-    );
+    renderWithProviders(<AddSecurityProfileButton />);
 
     await userEvent.click(
       screen.getByRole("button", { name: "Add security profile" }),

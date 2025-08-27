@@ -2,47 +2,22 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ListTitle, {
   LIST_TITLE_COLUMN_PROPS,
 } from "@/components/layout/ListTitle";
-import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { useUpdateSecurityProfile } from "@/features/security-profiles";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { lazy, Suspense, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useMemo } from "react";
+import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
-import {
-  useAddSecurityProfile,
-  useIsSecurityProfilesLimitReached,
-  useRunSecurityProfile,
-} from "../../api";
 import { SECURITY_PROFILE_MODE_LABELS } from "../../constants";
-import { getSchedule, getStatus, getTags, notifyCreation } from "../../helpers";
-import type { SecurityProfile, SecurityProfileActions } from "../../types";
-import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
+import { getSchedule, getStatus, getTags } from "../../helpers";
+import type { SecurityProfile } from "../../types";
 import SecurityProfileAssociatedInstancesLink from "../SecurityProfileAssociatedInstancesLink";
 import SecurityProfileListActions from "../SecurityProfileListActions";
-import { getInitialValues, getNotificationMessage } from "./helpers";
 import classes from "./SecurityProfilesList.module.scss";
-
-const SecurityProfileRunFixForm = lazy(
-  async () => import("../SecurityProfileRunFixForm"),
-);
-
-const SecurityProfileDetails = lazy(
-  async () => import("../SecurityProfileDetails"),
-);
-
-const SecurityProfileDownloadAuditForm = lazy(
-  async () => import("../SecurityProfileDownloadAuditForm"),
-);
-
-const SecurityProfileForm = lazy(async () => import("../SecurityProfileForm"));
 
 const ASSOCIATED_INSTANCES_HEADER = (
   <div className={classes.header}>
@@ -65,185 +40,7 @@ interface SecurityProfilesListProps {
 const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   securityProfiles,
 }) => {
-  const navigate = useNavigate();
-  const { notify } = useNotify();
-  const debug = useDebug();
-  const { setSidePanelContent, closeSidePanel } = useSidePanel();
-  const profileLimitReached = useIsSecurityProfilesLimitReached();
-
-  const { addSecurityProfile, isSecurityProfileAdding } =
-    useAddSecurityProfile();
-  const { updateSecurityProfile, isSecurityProfileUpdating } =
-    useUpdateSecurityProfile();
-  const { runSecurityProfile } = useRunSecurityProfile();
-
-  const [modalProfile, setModalProfile] = useState<SecurityProfile | null>(
-    null,
-  );
-
-  const handleRunSecurityProfile = async (profile: SecurityProfile) => {
-    try {
-      const { data: activity } = await runSecurityProfile({ id: profile.id });
-
-      if (profile.mode.includes("fix")) {
-        closeSidePanel();
-      }
-
-      const message = getNotificationMessage(profile.mode);
-
-      notify.success({
-        title: `You have successfully initiated run of the ${profile.title} security profile`,
-        message,
-        actions: [
-          {
-            label: "View details",
-            onClick: () => {
-              navigate(`/activities?query=parent-id%3A${activity.id}`);
-            },
-          },
-        ],
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const actions = (
-    profile: SecurityProfile,
-    hasBackButton?: boolean,
-  ): SecurityProfileActions => ({
-    archive: () => {
-      setModalProfile(profile);
-    },
-
-    downloadAudit: () => {
-      setSidePanelContent(
-        `Download audit for ${profile.title} security profile`,
-        <Suspense fallback={<LoadingState />}>
-          <SecurityProfileDownloadAuditForm
-            profileId={profile.id}
-            hasBackButton={hasBackButton}
-            onBackButtonPress={actions(profile).viewDetails}
-          />
-        </Suspense>,
-      );
-    },
-
-    duplicate: () => {
-      setSidePanelContent(
-        `Duplicate ${profile.title}`,
-        <Suspense fallback={<LoadingState />}>
-          <SecurityProfileForm
-            confirmationStepDescription="To duplicate the profile, you need to run it."
-            initialValues={{
-              ...getInitialValues(profile),
-              title: `${profile.title} copy`,
-            }}
-            mutate={async (values) => {
-              addSecurityProfile({
-                access_group: values.access_group,
-                all_computers: values.all_computers,
-                benchmark: values.benchmark,
-                mode: values.mode,
-                restart_deliver_delay: values.restart_deliver_delay,
-                restart_deliver_delay_window:
-                  values.restart_deliver_delay_window,
-                schedule: values.schedule,
-                start_date: values.start_date,
-                tags: values.tags,
-                tailoring_file: values.tailoring_file,
-                title: values.title,
-              });
-            }}
-            onSuccess={(values) => {
-              notifyCreation(values, notify);
-            }}
-            submitButtonText="Duplicate"
-            submitting={isSecurityProfileAdding}
-            hasBackButton={hasBackButton}
-            onBackButtonPress={actions(profile).viewDetails}
-          />
-        </Suspense>,
-      );
-    },
-
-    edit: () => {
-      setSidePanelContent(
-        `Edit ${profile.title}`,
-        <Suspense fallback={<LoadingState />}>
-          <SecurityProfileForm
-            benchmarkStepDisabled
-            confirmationStepDescription="To save your changes, you need to run the profile."
-            getConfirmationStepDisabled={(values) => values.mode == "audit"}
-            initialValues={getInitialValues(profile)}
-            mutate={async (values) => {
-              updateSecurityProfile({
-                id: profile.id,
-                access_group: values.access_group,
-                all_computers: values.all_computers,
-                restart_deliver_delay: values.restart_deliver_delay,
-                restart_deliver_delay_window:
-                  values.restart_deliver_delay_window,
-                schedule: values.schedule,
-                tags: values.tags,
-                title: values.title,
-              });
-            }}
-            onSuccess={(values) => {
-              notify.success({
-                title: `You have successfully saved changes for ${values.title} security profile.`,
-                message:
-                  values.mode == "audit"
-                    ? "The changes applied will affect instances associated with this profile."
-                    : values.mode == "audit-fix"
-                      ? "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances and generate an audit."
-                      : "The changes made will be applied after running the profile, which has been successfully initiated. It will apply remediation fixes on associated instances, restart them, and generate an audit.",
-              });
-            }}
-            submitButtonText="Save changes"
-            submitting={isSecurityProfileUpdating}
-            hasBackButton={hasBackButton}
-            onBackButtonPress={actions(profile).viewDetails}
-          />
-        </Suspense>,
-      );
-    },
-
-    run: async () => {
-      if (!profile.mode.includes("fix")) {
-        await handleRunSecurityProfile(profile);
-        return;
-      }
-
-      setSidePanelContent(
-        `Run "${profile.title}" profile`,
-        <Suspense fallback={<LoadingState />}>
-          <SecurityProfileRunFixForm
-            profile={profile}
-            onSubmit={async () => {
-              await handleRunSecurityProfile(profile);
-            }}
-            hasBackButton={hasBackButton}
-            onBackButtonPress={actions(profile).viewDetails}
-          />
-        </Suspense>,
-      );
-    },
-
-    viewDetails: () => {
-      setSidePanelContent(
-        profile.title,
-        <Suspense fallback={<LoadingState />}>
-          <SecurityProfileDetails
-            actions={actions(profile, true)}
-            profile={profile}
-            profileLimitReached={profileLimitReached}
-          />
-        </Suspense>,
-        "medium",
-      );
-    },
-  });
+  const { setPageParams } = usePageParams();
 
   const columns = useMemo<Column<SecurityProfile>[]>(
     () => [
@@ -256,7 +53,12 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 appearance="link"
                 type="button"
                 className="u-no-margin--bottom u-no-padding--top u-align--left"
-                onClick={actions(profile).viewDetails}
+                onClick={() => {
+                  setPageParams({
+                    sidePath: ["view"],
+                    profile: profile.id.toString(),
+                  });
+                }}
               >
                 {profile.title}
               </Button>
@@ -475,36 +277,20 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
-          <SecurityProfileListActions
-            actions={actions(profile)}
-            profile={profile}
-          />
+          <SecurityProfileListActions profile={profile} />
         ),
       },
     ],
     [],
   );
 
-  const closeModal = () => {
-    setModalProfile(null);
-  };
-
   return (
-    <>
-      <ResponsiveTable
-        emptyMsg="No security profiles found according to your search parameters."
-        columns={columns}
-        data={securityProfiles}
-        minWidth={1200}
-      />
-
-      {modalProfile && (
-        <SecurityProfileArchiveModal
-          close={closeModal}
-          profile={modalProfile}
-        />
-      )}
-    </>
+    <ResponsiveTable
+      emptyMsg="No security profiles found according to your search parameters."
+      columns={columns}
+      data={securityProfiles}
+      minWidth={1200}
+    />
   );
 };
 

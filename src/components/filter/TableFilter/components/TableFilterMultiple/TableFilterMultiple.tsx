@@ -1,10 +1,10 @@
+import { renderMultipleBody } from "@/components/filter/TableFilter/components/helpers";
 import { Badge, ContextualMenu } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
+import { getCommonContextualMenuProps } from "../../helpers";
 import commonClasses from "../../TableFilter.module.scss";
 import type { MultipleFilterProps } from "../../types";
-import { getCommonContextualMenuProps } from "../../helpers";
-import { renderMultipleBody } from "@/components/filter/TableFilter/components/helpers";
 
 const TableFilterMultiple: FC<MultipleFilterProps> = (props) => {
   const {
@@ -14,6 +14,7 @@ const TableFilterMultiple: FC<MultipleFilterProps> = (props) => {
     onSearch,
     selectedItems,
     inline = false,
+    position,
   } = props;
 
   const toggleLabel = (
@@ -43,6 +44,7 @@ const TableFilterMultiple: FC<MultipleFilterProps> = (props) => {
   return (
     <ContextualMenu
       {...getCommonContextualMenuProps(onSearch)}
+      position={position}
       toggleLabel={toggleLabel}
     >
       {renderMultipleBody(props)}

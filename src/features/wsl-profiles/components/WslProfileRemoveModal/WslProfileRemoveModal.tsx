@@ -1,7 +1,7 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { ComponentProps, FC } from "react";
 import { useDeleteWslProfile } from "../../api";
 import type { WslProfile } from "../../types";
@@ -20,13 +20,15 @@ const WslProfileRemoveModal: FC<WslProfileRemoveModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const { deleteWslProfile, isDeletingWslProfile } = useDeleteWslProfile();
 
   const handleRemoveWslProfile = async () => {
     try {
       await deleteWslProfile({ name: wslProfile.name });
+
+      setPageParams({ sidePath: [], profile: "" });
 
       notify.success({
         message: "Instances created by this profile won't be affected.",
@@ -36,7 +38,6 @@ const WslProfileRemoveModal: FC<WslProfileRemoveModalProps> = ({
       debug(error);
     } finally {
       props.close();
-      closeSidePanel();
     }
   };
 

@@ -1,29 +1,50 @@
-import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import SidePanel from "@/components/layout/SidePanel";
 import { RebootProfilesContainer } from "@/features/reboot-profiles";
-import useSidePanel from "@/hooks/useSidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
-const RebootProfilesForm = lazy(async () =>
+const RebootProfileAddSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfilesForm,
+    default: module.RebootProfileAddSidePanel,
+  })),
+);
+
+const RebootProfileDetailsSidePanel = lazy(async () =>
+  import("@/features/reboot-profiles").then((module) => ({
+    default: module.RebootProfileDetailsSidePanel,
+  })),
+);
+
+const RebootProfileDuplicateSidePanel = lazy(async () =>
+  import("@/features/reboot-profiles").then((module) => ({
+    default: module.RebootProfileDuplicateSidePanel,
+  })),
+);
+
+const RebootProfileEditSidePanel = lazy(async () =>
+  import("@/features/reboot-profiles").then((module) => ({
+    default: module.RebootProfileEditSidePanel,
   })),
 );
 
 const RebootProfilesPage: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
+
+  useSetDynamicFilterValidation("sidePath", [
+    "add",
+    "duplicate",
+    "edit",
+    "view",
+  ]);
 
   const handleAddProfile = () => {
-    setSidePanelContent(
-      "Add reboot profile",
-      <Suspense fallback={<LoadingState />}>
-        <RebootProfilesForm action="add" />,
-      </Suspense>,
-    );
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   return (
@@ -44,6 +65,38 @@ const RebootProfilesPage: FC = () => {
       <PageContent>
         <RebootProfilesContainer />
       </PageContent>
+
+      <SidePanel
+        onClose={() => {
+          setPageParams({ sidePath: [], profile: "" });
+        }}
+        key="add"
+        isOpen={!!sidePath.length}
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <RebootProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "duplicate" && (
+          <SidePanel.Suspense key="duplicate">
+            <RebootProfileDuplicateSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <RebootProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <RebootProfileDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

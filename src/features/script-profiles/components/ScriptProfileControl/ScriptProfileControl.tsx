@@ -1,21 +1,25 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, Notification } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import type { ScriptProfile } from "../../types";
+import ScriptProfileArchiveModal from "../ScriptProfileArchiveModal";
 
 interface ScriptProfileControlProps {
-  readonly actions: {
-    archive: () => void;
-    edit: () => void;
-  };
   readonly profile: ScriptProfile;
 }
 
-const ScriptProfileControl: FC<ScriptProfileControlProps> = ({
-  actions,
-  profile,
-}) => {
+const ScriptProfileControl: FC<ScriptProfileControlProps> = ({ profile }) => {
+  const { pushSidePath } = usePageParams();
+
+  const {
+    value: archiveModalOpened,
+    setTrue: openArchiveModal,
+    setFalse: closeArchiveModal,
+  } = useBoolean();
+
   if (profile.archived) {
     return (
       <Notification inline title="Profile archived:" severity="caution">
@@ -32,7 +36,9 @@ const ScriptProfileControl: FC<ScriptProfileControlProps> = ({
           className="p-segmented-control__button"
           type="button"
           hasIcon
-          onClick={actions.edit}
+          onClick={() => {
+            pushSidePath("edit");
+          }}
         >
           <Icon name="edit" />
           <span>Edit</span>
@@ -42,12 +48,18 @@ const ScriptProfileControl: FC<ScriptProfileControlProps> = ({
           className="p-segmented-control__button"
           type="button"
           hasIcon
-          onClick={actions.archive}
+          onClick={openArchiveModal}
         >
           <Icon name="archive" />
           <span>Archive</span>
         </Button>
       </div>
+
+      <ScriptProfileArchiveModal
+        opened={archiveModalOpened}
+        onClose={closeArchiveModal}
+        profile={profile}
+      />
     </div>
   );
 };

@@ -1,27 +1,18 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-import { Button } from "@canonical/react-components";
-import { lazy, Suspense, type FC } from "react";
-import { useGetRebootProfiles } from "../../api";
-import RebootProfilesList from "../RebootProfilesList";
 import usePageParams from "@/hooks/usePageParams";
+import { Button } from "@canonical/react-components";
+import { type FC } from "react";
+import { useGetRebootProfiles } from "../../api";
 import RebootProfilesHeader from "../RebootProfilesHeader";
-
-const RebootProfilesForm = lazy(async () => import("../RebootProfilesForm"));
+import RebootProfilesList from "../RebootProfilesList";
 
 const RebootProfilesContainer: FC = () => {
   const { rebootProfiles, isPending: isLoading } = useGetRebootProfiles();
-  const { setSidePanelContent } = useSidePanel();
-  const { search } = usePageParams();
+  const { search, setPageParams } = usePageParams();
 
   const handleAddProfile = () => {
-    setSidePanelContent(
-      "Add reboot profile",
-      <Suspense fallback={<LoadingState />}>
-        <RebootProfilesForm action="add" />,
-      </Suspense>,
-    );
+    setPageParams({ sidePath: ["add"], profile: "" });
   };
 
   return (

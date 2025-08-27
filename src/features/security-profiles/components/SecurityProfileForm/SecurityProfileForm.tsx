@@ -1,4 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import usePageParams from "@/hooks/usePageParams";
 import type { ComponentProps, ReactNode } from "react";
 import { useState, type FC } from "react";
 import { phrase } from "../../helpers";
@@ -30,6 +31,8 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
   onBackButtonPress,
   ...props
 }) => {
+  const { setPageParams } = usePageParams();
+
   const { formik, steps } = useSecurityProfileForm(props);
 
   const [isReadyToSubmit, setIsReadyToSubmit] = useState(false);
@@ -79,6 +82,9 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
           submitButtonDisabled={!!step.isLoading || submitting}
           submitButtonLoading={step.isLoading || submitting}
           submitButtonText={submitButtonText}
+          onCancel={() => {
+            setPageParams({ sidePath: [], profile: "" });
+          }}
         />
       </>
     );
@@ -103,6 +109,9 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
         submitButtonText={submitButtonText}
         hasBackButton={hasBackButton}
         onBackButtonPress={onBackButtonPress}
+        onCancel={() => {
+          setPageParams({ sidePath: [], profile: "" });
+        }}
       />
     </>
   );

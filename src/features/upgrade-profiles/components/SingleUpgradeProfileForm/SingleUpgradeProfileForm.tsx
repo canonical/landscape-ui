@@ -2,8 +2,8 @@ import AssociationBlock from "@/components/form/AssociationBlock";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -27,7 +27,7 @@ type SingleUpgradeProfileFormProps =
 const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { createUpgradeProfileQuery, editUpgradeProfileQuery } =
     useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
@@ -45,6 +45,10 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
 
   const { mutateAsync: createUpgradeProfile } = createUpgradeProfileQuery;
   const { mutateAsync: editUpgradeProfile } = editUpgradeProfileQuery;
+
+  const closeSidePanel = () => {
+    setPageParams({ sidePath: [], profile: "" });
+  };
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit: CreateUpgradeProfileParams = {
@@ -186,6 +190,9 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_LABELS[props.action]}
+        onCancel={closeSidePanel}
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
       />
     </Form>
   );

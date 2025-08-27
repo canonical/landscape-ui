@@ -8,10 +8,6 @@ import ScriptProfileControl from "./ScriptProfileControl";
 
 describe("ScriptProfileControl", () => {
   const props: ComponentProps<typeof ScriptProfileControl> = {
-    actions: {
-      archive: vi.fn(),
-      edit: vi.fn(),
-    },
     profile: scriptProfiles[0],
   };
 
@@ -19,10 +15,8 @@ describe("ScriptProfileControl", () => {
     renderWithProviders(<ScriptProfileControl {...props} />);
 
     await userEvent.click(screen.getByRole("button", { name: "Edit" }));
-    expect(props.actions.edit).toHaveBeenCalledOnce();
 
     await userEvent.click(screen.getByRole("button", { name: "Archive" }));
-    expect(props.actions.archive).toHaveBeenCalledOnce();
   });
 
   it("should show a warning for an archived profile", () => {

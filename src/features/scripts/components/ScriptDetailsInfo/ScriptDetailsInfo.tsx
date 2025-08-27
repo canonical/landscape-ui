@@ -1,7 +1,7 @@
 import InfoGrid from "@/components/layout/InfoGrid";
+import StaticLink from "@/components/layout/StaticLink";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
-import { Link } from "react-router";
 import { formatTitleCase, getAuthorInfo } from "../../helpers";
 import type { SingleScript } from "../../types";
 import AttachmentFile from "../AttachmentFile";
@@ -71,14 +71,13 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
         value={
           script.script_profiles.length > 0
             ? script.script_profiles.map((profile, index) => (
-                <Link
-                  to="/scripts?tab=profiles"
-                  state={{ scriptProfileId: profile.id }}
+                <StaticLink
+                  to={`/scripts?tab=profiles&sidePath=view&profile=${profile.id}`}
                   key={profile.id}
                 >
                   {profile.title}
                   {index < script.script_profiles.length - 1 ? ", " : ""}
-                </Link>
+                </StaticLink>
               ))
             : null
         }

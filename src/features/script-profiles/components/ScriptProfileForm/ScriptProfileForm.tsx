@@ -5,9 +5,9 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useGetInstances } from "@/features/instances";
-import { ScriptDropdown, type Script } from "@/features/scripts";
+import { ScriptDropdown } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Col,
@@ -25,19 +25,7 @@ import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
 import classes from "./ScriptProfileForm.module.scss";
-
-export interface ScriptProfileFormValues
-  extends Pick<
-      ScriptProfile,
-      "all_computers" | "title" | "tags" | "time_limit" | "username"
-    >,
-    Partial<Pick<ScriptProfile, "script_id">> {
-  interval: string;
-  start_after: string;
-  timestamp: string;
-  trigger_type: ScriptProfile["trigger"]["trigger_type"] | "";
-  script?: Script | null;
-}
+import type { ScriptProfileFormValues } from "./types";
 
 export type ScriptProfileFormSubmitValues = Pick<
   ScriptProfile,
@@ -76,7 +64,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   submitting = false,
 }) => {
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
 
@@ -185,7 +173,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         return;
       }
 
-      closeSidePanel();
+      setPageParams({ sidePath: [], profile: "" });
 
       onSuccess(values);
     },
@@ -404,6 +392,11 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         }
         submitButtonLoading={submitting}
         submitButtonText={submitButtonText}
+        onCancel={() => {
+          setPageParams({ sidePath: [], profile: "" });
+        }}
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
       />
     </Form>
   );

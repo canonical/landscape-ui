@@ -35,6 +35,7 @@ import type {
 } from "@/types/Instance";
 import { getFormikError } from "@/utils/formikErrors";
 import {
+  Button,
   CheckboxInput,
   ConfirmationModal,
   Form,
@@ -49,7 +50,7 @@ import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useNavigate } from "react-router";
 import { useBoolean } from "usehooks-ts";
-import Profiles from "./components/Profiles";
+import ProfileLink from "../ProfileLink";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
@@ -67,6 +68,8 @@ const RunInstanceScriptForm = lazy(async () =>
 const AssignEmployeeToInstanceForm = lazy(
   async () => import("../AssignEmployeeToInstanceForm"),
 );
+
+const ProfilesList = lazy(async () => import("../ProfilesList"));
 
 interface InfoPanelProps {
   readonly instance: Instance;
@@ -240,6 +243,16 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     );
   };
 
+  const openProfilesList = () => {
+    setSidePanelContent(
+      `Active profiles associated with ${instance.title}`,
+      <Suspense fallback={<LoadingState />}>
+        <ProfilesList instance={instance} />
+      </Suspense>,
+      "medium",
+    );
+  };
+
   const handleDisassociateEmployee = async () => {
     try {
       await disassociateEmployeeFromInstance({
@@ -401,9 +414,19 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             <InfoGrid.Item
               label="Profiles"
               value={
-                instance.profiles?.length ? (
-                  <Profiles profiles={instance.profiles} />
-                ) : null
+                !instance.profiles?.length ? null : instance.profiles.length ===
+                  1 ? (
+                  <ProfileLink profile={instance.profiles[0]} />
+                ) : (
+                  <Button
+                    type="button"
+                    className="u-no-margin"
+                    appearance="link"
+                    onClick={openProfilesList}
+                  >
+                    {instance.profiles.length} profiles
+                  </Button>
+                )
               }
               type="truncated"
             />

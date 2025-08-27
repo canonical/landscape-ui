@@ -6,21 +6,19 @@ import type { ScriptProfile } from "../../types";
 
 interface ScriptProfileArchiveModalProps {
   readonly profile: ScriptProfile;
-  readonly removeProfile: () => void;
+  readonly opened: boolean;
+  readonly onClose: () => void;
 }
 
 const ScriptProfileArchiveModal: FC<ScriptProfileArchiveModalProps> = ({
   profile,
-  removeProfile,
+  opened,
+  onClose: closeArchivingModal,
 }) => {
   const { notify } = useNotify();
 
   const { archiveScriptProfile, isArchivingScriptProfile } =
     useArchiveScriptProfile();
-
-  const closeArchivingModal = () => {
-    removeProfile();
-  };
 
   const confirmArchiving = async () => {
     await archiveScriptProfile({ ...profile });
@@ -35,7 +33,7 @@ const ScriptProfileArchiveModal: FC<ScriptProfileArchiveModalProps> = ({
 
   return (
     <TextConfirmationModal
-      isOpen
+      isOpen={opened}
       title={`Archive ${profile.title}`}
       confirmButtonLabel="Archive"
       confirmButtonDisabled={isArchivingScriptProfile}

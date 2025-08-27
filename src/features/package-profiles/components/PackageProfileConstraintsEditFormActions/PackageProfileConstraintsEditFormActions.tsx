@@ -1,6 +1,7 @@
-import type { FormikContextType } from "formik";
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationButton,
@@ -8,23 +9,16 @@ import {
   ICONS,
   Select,
 } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
 import { usePackageProfiles } from "../../hooks";
 import type {
   Constraint,
   PackageProfile,
   PackageProfileConstraintType,
 } from "../../types";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
 import { CONSTRAINT_TYPE_OPTIONS } from "./constants";
 import classes from "./PackageProfileConstraintsEditFormActions.module.scss";
-import { pluralize } from "@/utils/_helpers";
-
-const PackageProfileConstraintsAddForm = lazy(
-  async () => import("../PackageProfileConstraintsAddForm"),
-);
 
 interface PackageProfileConstraintsEditFormActionsProps {
   readonly filter: PackageProfileConstraintType | "";
@@ -47,7 +41,7 @@ const PackageProfileConstraintsEditFormActions: FC<
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const { pushSidePath } = usePageParams();
   const { removePackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: removeConstraints, isPending: isRemoving } =
@@ -72,13 +66,7 @@ const PackageProfileConstraintsEditFormActions: FC<
   };
 
   const handleConstraintsAdd = () => {
-    setSidePanelContent(
-      `Add package constraints to "${profile.title}" profile`,
-      <Suspense fallback={<LoadingState />}>
-        <PackageProfileConstraintsAddForm profile={profile} />
-      </Suspense>,
-      "medium",
-    );
+    pushSidePath("add-constraints");
   };
 
   return (

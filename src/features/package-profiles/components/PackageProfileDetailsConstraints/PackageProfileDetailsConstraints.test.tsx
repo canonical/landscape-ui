@@ -1,8 +1,8 @@
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import PackageProfileDetailsConstraints from "./PackageProfileDetailsConstraints";
 
 describe("PackageProfileDetailsConstraints", () => {
@@ -43,17 +43,5 @@ describe("PackageProfileDetailsConstraints", () => {
           screen.queryByRole("rowheader", { name: constraint.package }),
         ).not.toBeInTheDocument();
       });
-  });
-
-  it("should open profile constraints form", async () => {
-    const button = await screen.findByText("Change package constraints");
-
-    await userEvent.click(button);
-
-    expect(
-      screen.queryByRole("heading", {
-        name: `Change "${packageProfiles[0].title}" profile's constraints`,
-      }),
-    ).toBeInTheDocument();
   });
 });

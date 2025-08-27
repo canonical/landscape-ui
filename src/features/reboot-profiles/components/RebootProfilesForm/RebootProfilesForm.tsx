@@ -3,8 +3,8 @@ import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Form,
@@ -34,7 +34,7 @@ import type { FormProps, RebootProfilesFormProps } from "./types";
 const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
   const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { sidePath, popSidePath, setPageParams } = usePageParams();
   const { notify } = useNotify();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -47,6 +47,10 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
       label: title,
       value: name,
     })) ?? [];
+
+  const closeSidePanel = () => {
+    setPageParams({ sidePath: [], profile: "" });
+  };
 
   const formik = useFormik<FormProps>({
     initialValues: getInitialValues(props),
@@ -283,6 +287,9 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             isCreatingRebootProfile ||
             isEditingRebootProfile
           }
+          onCancel={closeSidePanel}
+          hasBackButton={sidePath.length > 1}
+          onBackButtonPress={popSidePath}
         />
       </Form>
     </FormikProvider>
