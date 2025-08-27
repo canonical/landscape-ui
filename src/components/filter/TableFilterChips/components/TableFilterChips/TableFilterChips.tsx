@@ -217,7 +217,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           query: "",
           passRateFrom: 0,
           passRateTo: 100,
-          wsl: [],
         });
       }}
       filters={filters}

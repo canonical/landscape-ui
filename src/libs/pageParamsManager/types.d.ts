@@ -28,7 +28,6 @@ export interface PageParams {
   passRateFrom: number;
   type: string;
   query: string;
-  wsl: string[];
   code: string;
   sidePath: string[];
   profile: string;

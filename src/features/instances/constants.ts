@@ -145,7 +145,7 @@ const ARCHIVED_STATUS_OPTION: SelectOption = {
   value: "archived",
 };
 
-type FilterKey = "os" | "groupBy" | "status" | "wsl";
+type FilterKey = "os" | "groupBy" | "status";
 
 export const FILTERS: Record<FilterKey, ListFilter> = {
   os: {

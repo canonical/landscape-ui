@@ -113,7 +113,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           "status",
           "tags",
           "query",
-          "wsl",
         ]}
         accessGroupOptions={accessGroupOptions}
         availabilityZonesOptions={availabilityZoneOptions}

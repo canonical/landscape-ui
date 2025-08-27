@@ -120,11 +120,6 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_RATE_TO,
   },
   {
-    urlParam: "wsl",
-    shouldResetPage: true,
-    defaultValue: DEFAULT_EMPTY_ARRAY,
-  },
-  {
     urlParam: "code",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,

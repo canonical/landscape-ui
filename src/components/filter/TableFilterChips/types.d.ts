@@ -15,7 +15,6 @@ export type FilterType = Pick<
   | "query"
   | "passRateFrom"
   | "passRateTo"
-  | "wsl"
 >;
 
 export type FilterKey = keyof FilterType;
