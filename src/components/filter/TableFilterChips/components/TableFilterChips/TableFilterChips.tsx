@@ -1,3 +1,4 @@
+import { FILTERS } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
 import type { ComponentProps, FC } from "react";
@@ -87,9 +88,19 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       label: "OS",
       multiple: true,
       items: getItems(osOptions, os),
-      remove: (operatingSystem) => {
+      remove: (value) => {
         setPageParams({
-          os: os.filter((s) => s !== operatingSystem),
+          os: os.filter(
+            (operatingSystem) =>
+              operatingSystem !== value &&
+              (FILTERS.os.type !== "multi-select" ||
+                operatingSystem !==
+                  FILTERS.os.options.find((option) =>
+                    option.options?.some(
+                      (nestedOption) => value === nestedOption.value,
+                    ),
+                  )?.value),
+          ),
         });
       },
       clear: () => {

@@ -21,7 +21,8 @@ const InstancesPage: FC = () => {
       with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
       limit: pageSize,
       offset: (currentPage - 1) * pageSize,
-      wsl_children: filters.os.includes("wsl"),
+      wsl_children:
+        filters.os.includes("wsl") && !filters.os.includes("ubuntu"),
       wsl_parents:
         filters.os.includes("windows") &&
         filters.os.includes("wsl") &&

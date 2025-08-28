@@ -85,13 +85,11 @@ export function renderMultipleBody(props: MultipleFilterProps) {
             const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
               if (e.target.checked) {
                 onItemsSelect([
-                  ...selectedItems.filter(
-                    (selectedItem) =>
-                      !option.options?.some(
-                        ({ value }) => selectedItem === value,
-                      ),
-                  ),
+                  ...selectedItems,
                   option.value,
+                  ...(option.options
+                    ?.map(({ value }) => value)
+                    .filter((value) => !selectedItems.includes(value)) ?? []),
                 ]);
               } else {
                 onItemsSelect(
@@ -157,10 +155,7 @@ export function renderMultipleBody(props: MultipleFilterProps) {
                         label={nestedOption.label}
                         labelClassName="u-no-padding--top u-no-margin--bottom"
                         value={nestedOption.value}
-                        checked={
-                          selectedItems.includes(nestedOption.value) ||
-                          selectedItems.includes(option.value)
-                        }
+                        checked={selectedItems.includes(nestedOption.value)}
                         onChange={handleNestedChange}
                         disabled={nestedDisabled}
                       />
