@@ -31,27 +31,18 @@ const AutoinstallFileEditForm: FC<AutoinstallFileEditFormProps> = ({
     <>
       {autoinstallFileWithMetadata.metadata.max_versions <=
         autoinstallFileWithMetadata.version && (
-        <Notification
-          inline
-          title="Edit history limit reached:"
-          severity="caution"
-        >
-          <p>
-            You&apos;ve reached the limit of{" "}
-            {autoinstallFileWithMetadata.metadata.max_versions} saved{" "}
-            {pluralize(
-              autoinstallFileWithMetadata.metadata.max_versions,
-              "edit",
-            )}
-            . To save your new change, the oldest version will be automatically
-            removed, keeping the most recent{" "}
-            {autoinstallFileWithMetadata.metadata.max_versions}{" "}
-            {pluralize(
-              autoinstallFileWithMetadata.metadata.max_versions,
-              "version",
-            )}{" "}
-            in history.
-          </p>
+        <Notification title="Edit history limit reached:" severity="caution">
+          You&apos;ve reached the limit of{" "}
+          {autoinstallFileWithMetadata.metadata.max_versions} saved{" "}
+          {pluralize(autoinstallFileWithMetadata.metadata.max_versions, "edit")}
+          . To save your new change, the oldest version will be automatically
+          removed, keeping the most recent{" "}
+          {autoinstallFileWithMetadata.metadata.max_versions}{" "}
+          {pluralize(
+            autoinstallFileWithMetadata.metadata.max_versions,
+            "version",
+          )}{" "}
+          in history.
         </Notification>
       )}
 
@@ -60,11 +51,12 @@ const AutoinstallFileEditForm: FC<AutoinstallFileEditFormProps> = ({
         description={`The duplicated ${autoinstallFileWithMetadata.filename} will be assigned to the same user groups in the identity provider as the original file.`}
         initialFile={autoinstallFileWithMetadata}
         notification={EDIT_AUTOINSTALL_FILE_NOTIFICATION}
-        onSubmit={async ({ contents, is_default }) => {
+        onSubmit={async ({ contents, is_default, accept_warning }) => {
           await updateAutoinstallFile({
             id: autoinstallFileWithMetadata.id,
             contents,
             is_default,
+            accept_warning,
           });
         }}
       />

@@ -3,3 +3,4 @@ export * from "./useDeleteAutoinstallFile";
 export * from "./useGetAutoinstallFile";
 export * from "./useGetAutoinstallFiles";
 export * from "./useUpdateAutoinstallFile";
+export * from "./useValidateAutoinstallFile";
