@@ -1,3 +1,17 @@
+# [1.18.0](https://github.com/canonical/landscape-ui/compare/v1.17.0...v1.18.0) (2025-08-29)
+
+
+### Bug Fixes
+
+* disable root_only for instances ([#319](https://github.com/canonical/landscape-ui/issues/319)) ([1d4109e](https://github.com/canonical/landscape-ui/commit/1d4109e12c8c40388ebc5ef8b77ddb2f544619ab))
+* submit button in multi select dropdown footer not working ([#327](https://github.com/canonical/landscape-ui/issues/327)) ([364f914](https://github.com/canonical/landscape-ui/commit/364f914f3832f0074b07c50bc207f5b75fe52012))
+
+
+### Features
+
+* add hostname and tags to instances list ([#333](https://github.com/canonical/landscape-ui/issues/333)) ([3d99f1b](https://github.com/canonical/landscape-ui/commit/3d99f1bafbd5c618481fd17fee27af546e861e3d))
+* add profile links [LNDENG-2865] ([#309](https://github.com/canonical/landscape-ui/issues/309)) ([8238e8f](https://github.com/canonical/landscape-ui/commit/8238e8ff293963c36b9198be23bed050933ba8ce))
+
 # [1.17.0](https://github.com/canonical/landscape-ui/compare/v1.16.0...v1.17.0) (2025-08-05)
 
 
