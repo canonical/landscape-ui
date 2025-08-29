@@ -8,6 +8,7 @@ export interface AddAutoinstallFileParams {
   contents: string;
   filename: string;
   is_default: boolean;
+  accept_warning: boolean;
 }
 
 export const useAddAutoinstallFile = (): {

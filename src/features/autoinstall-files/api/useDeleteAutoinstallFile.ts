@@ -9,7 +9,7 @@ export interface DeleteAutoinstallFileParams {
 
 export const useDeleteAutoinstallFile = (): {
   deleteAutoinstallFile: (params: DeleteAutoinstallFileParams) => Promise<null>;
-  isAutoinstallFileUpdating: boolean;
+  isAutoinstallFileDeleting: boolean;
 } => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
@@ -26,6 +26,6 @@ export const useDeleteAutoinstallFile = (): {
 
   return {
     deleteAutoinstallFile: mutateAsync,
-    isAutoinstallFileUpdating: isPending,
+    isAutoinstallFileDeleting: isPending,
   };
 };

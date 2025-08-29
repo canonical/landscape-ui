@@ -8,6 +8,7 @@ export interface UpdateAutoinstallFileParams {
   id: number;
   contents?: string;
   is_default?: boolean;
+  accept_warning?: boolean;
 }
 
 export const useUpdateAutoinstallFile = (): {

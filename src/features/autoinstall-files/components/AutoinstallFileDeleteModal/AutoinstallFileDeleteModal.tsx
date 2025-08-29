@@ -17,7 +17,8 @@ const AutoinstallFileDeleteModal: FC<AutoinstallFileDeleteModalProps> = ({
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
 
-  const { deleteAutoinstallFile } = useDeleteAutoinstallFile();
+  const { deleteAutoinstallFile, isAutoinstallFileDeleting } =
+    useDeleteAutoinstallFile();
 
   const handleConfirm = async () => {
     await deleteAutoinstallFile({ id: autoinstallFile.id });
@@ -37,6 +38,7 @@ const AutoinstallFileDeleteModal: FC<AutoinstallFileDeleteModalProps> = ({
       confirmButtonAppearance="negative"
       confirmButtonLabel="Remove"
       onConfirm={handleConfirm}
+      confirmButtonLoading={isAutoinstallFileDeleting}
       title={`Remove ${autoinstallFile.filename}, autoinstall file`}
     >
       <p>

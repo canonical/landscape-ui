@@ -41,7 +41,6 @@ const AutoinstallFilesPanel: FC = () => {
           notification={ADD_AUTOINSTALL_FILE_NOTIFICATION}
           onSubmit={addAutoinstallFile}
         />
-        ,
       </Suspense>,
     );
   };

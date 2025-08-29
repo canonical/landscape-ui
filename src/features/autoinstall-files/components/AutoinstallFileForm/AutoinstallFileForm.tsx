@@ -5,10 +5,16 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { NotificationMethodArgs } from "@/types/Notification";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Form, Icon, Input } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationModal,
+  Form,
+  Icon,
+  Input,
+} from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   AUTOINSTALL_FILE_EXTENSION,
   AUTOINSTALL_FILE_LANGUAGE,
@@ -18,8 +24,16 @@ import { removeAutoinstallFileExtension } from "../../helpers";
 import classes from "./AutoinstallFileForm.module.scss";
 import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
 import type { FormikProps } from "./types";
-import type { AddAutoinstallFileParams } from "../../api";
-import { areTextsIdentical } from "./helpers";
+import {
+  useValidateAutoinstallFile,
+  type AddAutoinstallFileParams,
+} from "../../api";
+import {
+  areTextsIdentical,
+  isAutoinstallOverrideWarning,
+  parseFields,
+} from "./helpers";
+import { useBoolean } from "usehooks-ts";
 
 interface AutoinstallFileFormProps {
   readonly buttonText: "Add" | "Save changes";
@@ -37,11 +51,41 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   onSubmit,
 }) => {
   const IS_CREATING = buttonText === "Add";
+
   const inputRef = useRef<HTMLInputElement>(null);
+  const [overrideDetails, setOverrideDetails] = useState<string[]>([]);
+  const {
+    setTrue: showOverrideWarningModal,
+    setFalse: hideOverrideWarningModal,
+    value: isOverrideWarningModalVisible,
+  } = useBoolean();
 
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
+  const { validateAutoinstallFile, isAutoinstallFileValidating } =
+    useValidateAutoinstallFile();
+
+  const executeSubmit = async (file: FormikProps, accept_warning = false) => {
+    const filename = `${file.filename}${AUTOINSTALL_FILE_EXTENSION}`;
+
+    try {
+      await onSubmit({
+        contents: file.contents,
+        is_default: file.is_default,
+        filename,
+        accept_warning,
+      });
+
+      closeSidePanel();
+      notify.success({
+        message: `The autoinstall file ${filename} ${notification.message}`,
+        title: `${notification.title} ${filename}`,
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
 
   const formik = useFormik<FormikProps>({
     initialValues: {
@@ -51,26 +95,29 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     },
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (file) => {
-      const filename = `${file.filename}${AUTOINSTALL_FILE_EXTENSION}`;
-
       try {
-        await onSubmit({
+        await validateAutoinstallFile({
           contents: file.contents,
-          is_default: file.is_default,
-          filename,
         });
 
-        closeSidePanel();
-
-        notify.success({
-          message: `The autoinstall file ${filename} ${notification.message}`,
-          title: `${notification.title} ${filename}`,
-        });
+        await executeSubmit(file, false);
       } catch (error) {
-        debug(error);
+        if (isAutoinstallOverrideWarning(error)) {
+          const parsedFields = parseFields(error);
+          setOverrideDetails(parsedFields);
+          showOverrideWarningModal();
+        } else {
+          debug(error);
+        }
       }
     },
   });
+
+  const handleConfirmOverride = async (): Promise<void> => {
+    formik.setSubmitting(true);
+    await executeSubmit(formik.values, true);
+    hideOverrideWarningModal();
+  };
 
   const handleInputChange = async ({
     target: { files },
@@ -78,9 +125,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     if (!files) {
       return;
     }
-
     const [file] = files;
-
     const contentsPromise = formik.setFieldValue("contents", await file.text());
 
     if (formik.values.filename) {
@@ -168,10 +213,37 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
       <SidePanelFormButtons
         submitButtonDisabled={
           areTextsIdentical(formik.values.contents, initialFile.contents) ||
-          formik.isSubmitting
+          formik.isSubmitting ||
+          isAutoinstallFileValidating
         }
+        submitButtonLoading={isAutoinstallFileValidating || formik.isSubmitting}
         submitButtonText={buttonText}
       />
+
+      {isOverrideWarningModalVisible && (
+        <ConfirmationModal
+          title="Override autoinstall file"
+          confirmButtonLabel="Override and add file"
+          confirmButtonAppearance="negative"
+          confirmButtonLoading={formik.isSubmitting}
+          onConfirm={handleConfirmOverride}
+          close={hideOverrideWarningModal}
+          confirmButtonProps={{ type: "button" }}
+        >
+          <p>
+            The autoinstall file you submitted overrides the following fields:
+          </p>
+          <ul>
+            {overrideDetails.map((field) => (
+              <li key={field}>{field}</li>
+            ))}
+          </ul>
+          <p>
+            Overriding these fields could cause client registration to fail if
+            not formatted correctly.
+          </p>
+        </ConfirmationModal>
+      )}
     </Form>
   );
 };
