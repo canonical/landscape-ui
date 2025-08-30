@@ -4,10 +4,12 @@ import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import classNames from "classnames";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { useState } from "react";
 import { useParams } from "react-router";
 import { useActivities } from "../../hooks";
+import type { ActivityCommon } from "../../types";
+import ActivitiesActions from "../ActivitiesActions";
 import ActivitiesDateFilter from "../ActivitiesDateFilter";
 import ActivityTypeFilter from "../ActivityTypeFilter";
 import classes from "./ActivitiesHeader.module.scss";
@@ -15,8 +17,6 @@ import {
   ACTIVITY_SEARCH_HELP_TERMS,
   ACTIVITY_STATUS_OPTIONS,
 } from "./constants";
-import ActivitiesActions from "../ActivitiesActions";
-import type { ActivityCommon } from "../../types";
 
 interface ActivitiesHeaderProps {
   readonly selected: ActivityCommon[];
@@ -26,7 +26,7 @@ interface ActivitiesHeaderProps {
 const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   resetSelectedIds,
   selected,
-}) => {
+}: ActivitiesHeaderProps): ReactNode => {
   const [searchText, setSearchText] = useState<string>("");
   const [showSearchHelp, setShowSearchHelp] = useState(false);
 
