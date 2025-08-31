@@ -1,1 +1,0 @@
-import{c,e as o,f as u}from"./index-Cl3Ng_mk.js";const i=()=>{const e=c(),s=o(),{isPending:n,mutateAsync:t}=u({mutationFn:async a=>e.get("RemoveComputers",{params:a}),onSuccess:async()=>s.invalidateQueries({queryKey:["instances"]})});return{removeInstancesFromLandscape:t,isRemovingInstancesFromLandscape:n}};export{i as u};

@@ -1,1 +1,0 @@
-import{b as n,g as u}from"./index-Cl3Ng_mk.js";const r=(t,e={})=>{const a=n(),{data:s,isLoading:i,isFetching:l}=u({queryKey:["autoinstallFiles",t],queryFn:async()=>a.get("autoinstall",{params:t}),...e});return{autoinstallFiles:s?.data.results??[],autoinstallFilesCount:s?.data.count,isAutoinstallFilesLoading:i,isFetching:l}};export{r as u};
