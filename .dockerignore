@@ -1,0 +1,19 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+build
+
+# Git
+.git
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# IDE and environment files
+.vscode
+.env

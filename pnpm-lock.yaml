@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@canonical/react-components':
-        specifier: 2.9.0
-        version: 2.9.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(formik@2.4.6(@types/react@19.1.8)(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(vanilla-framework@4.26.1(sass@1.89.2))
+        specifier: 2.16.0
+        version: 2.16.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(formik@2.4.6(@types/react@19.1.8)(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(vanilla-framework@4.26.1(sass@1.89.2))
       '@monaco-editor/react':
         specifier: 4.7.0
         version: 4.7.0(monaco-editor@0.52.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -293,8 +293,8 @@ packages:
   '@bundled-es-modules/tough-cookie@0.1.6':
     resolution: {integrity: sha512-dvMHbL464C0zI+Yqxbz6kZ5TOEp7GLW+pry/RWndAR8MJQAXZ2rPmIs8tziTZjeIyhSNZgZbCePtfSbdWqStJw==}
 
-  '@canonical/react-components@2.9.0':
-    resolution: {integrity: sha512-ymPmngJr2hnlBjb7JCa7xZYjgoLeoOcB/W+x0FgYAKsvt0uDlPktffbwu7EiqPanR8Dj516rA2KQ7rWnxDzFbg==}
+  '@canonical/react-components@2.16.0':
+    resolution: {integrity: sha512-htx1cmOJ94HTmTHHWm1VCfwllNUhXaNAKE3ew2DrxeRNd7IFzz6Az89/oiyZfvBKQLJHa01gjpAHYh5wfGosyQ==}
     peerDependencies:
       '@types/react': ^18.0.0 || ^19.0.0
       '@types/react-dom': ^18.0.0 || ^19.0.0
@@ -4570,7 +4570,7 @@ snapshots:
       '@types/tough-cookie': 4.0.5
       tough-cookie: 4.1.4
 
-  '@canonical/react-components@2.9.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(formik@2.4.6(@types/react@19.1.8)(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(vanilla-framework@4.26.1(sass@1.89.2))':
+  '@canonical/react-components@2.16.0(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(formik@2.4.6(@types/react@19.1.8)(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(vanilla-framework@4.26.1(sass@1.89.2))':
     dependencies:
       '@types/jest': 29.5.14
       '@types/node': 20.17.19
@@ -4806,7 +4806,7 @@ snapshots:
     dependencies:
       '@jest/fake-timers': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 20.17.19
+      '@types/node': 22.17.2
       jest-mock: 29.7.0
 
   '@jest/expect-utils@29.7.0':
@@ -4817,7 +4817,7 @@ snapshots:
     dependencies:
       '@jest/types': 29.6.3
       '@sinonjs/fake-timers': 10.3.0
-      '@types/node': 20.17.19
+      '@types/node': 22.17.2
       jest-message-util: 29.7.0
       jest-mock: 29.7.0
       jest-util: 29.7.0
@@ -4831,7 +4831,7 @@ snapshots:
       '@jest/schemas': 29.6.3
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
-      '@types/node': 20.17.19
+      '@types/node': 22.17.2
       '@types/yargs': 17.0.33
       chalk: 4.1.2
 
@@ -5358,7 +5358,7 @@ snapshots:
 
   '@types/jsdom@20.0.1':
     dependencies:
-      '@types/node': 20.17.19
+      '@types/node': 22.17.2
       '@types/tough-cookie': 4.0.5
       parse5: 7.3.0
 
@@ -7057,7 +7057,7 @@ snapshots:
       '@jest/fake-timers': 29.7.0
       '@jest/types': 29.6.3
       '@types/jsdom': 20.0.1
-      '@types/node': 20.17.19
+      '@types/node': 22.17.2
       jest-mock: 29.7.0
       jest-util: 29.7.0
       jsdom: 20.0.3
@@ -7090,13 +7090,13 @@ snapshots:
   jest-mock@29.7.0:
     dependencies:
       '@jest/types': 29.6.3
-      '@types/node': 20.17.19
+      '@types/node': 22.17.2
       jest-util: 29.7.0
 
   jest-util@29.7.0:
     dependencies:
       '@jest/types': 29.6.3
-      '@types/node': 20.17.19
+      '@types/node': 22.17.2
       chalk: 4.1.2
       ci-info: 3.9.0
       graceful-fs: 4.2.11
