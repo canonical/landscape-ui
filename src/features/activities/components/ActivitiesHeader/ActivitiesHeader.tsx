@@ -27,7 +27,10 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   resetSelectedIds,
   selected,
 }) => {
-  const [searchText, setSearchText] = useState<string>("");
+  const [searchText, setSearchText]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>,
+  ] = useState<string>("");
   const [showSearchHelp, setShowSearchHelp] = useState(false);
 
   const { query, setPageParams } = usePageParams();
