@@ -23,7 +23,8 @@ const PackageProfileAddSidePanel: FC = () => {
   const { getAccessGroupQuery } = useRoles();
   const { createPackageProfileQuery } = usePackageProfiles();
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
+  const { data: getAccessGroupQueryResult, isPending: isPendingAccessGroups } =
+    getAccessGroupQuery();
 
   const accessGroupOptions: SelectOption[] =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({
@@ -83,7 +84,12 @@ const PackageProfileAddSidePanel: FC = () => {
     initialValues: INITIAL_VALUES,
     onSubmit: handleSubmit,
     validationSchema: VALIDATION_SCHEMA,
+    validateOnMount: true,
   });
+
+  if (isPendingAccessGroups) {
+    return <SidePanel.LoadingState />;
+  }
 
   return (
     <>
@@ -119,7 +125,8 @@ const PackageProfileAddSidePanel: FC = () => {
           <PackageProfileConstraintsTypeBlock formik={formik} />
 
           <SidePanelFormButtons
-            submitButtonDisabled={formik.isSubmitting}
+            submitButtonDisabled={!formik.isValid}
+            submitButtonLoading={formik.isSubmitting}
             submitButtonText="Add package profile"
             onCancel={closeSidePanel}
           />

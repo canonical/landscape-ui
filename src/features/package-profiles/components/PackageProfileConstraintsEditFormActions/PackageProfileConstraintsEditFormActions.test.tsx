@@ -1,0 +1,92 @@
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { packageProfiles } from "@/tests/mocks/package-profiles";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { useFormik } from "formik";
+import type { ComponentProps, FC } from "react";
+import { describe, expect } from "vitest";
+import type { Constraint } from "../../types";
+import PackageProfileConstraintsEditFormActions from "./PackageProfileConstraintsEditFormActions";
+
+type TestComponentProps = Omit<
+  ComponentProps<typeof PackageProfileConstraintsEditFormActions>,
+  "formik"
+>;
+
+const props: TestComponentProps = {
+  filter: "",
+  onFilterChange: vi.fn(),
+  profile: packageProfiles[0],
+  selectedIds: [packageProfiles[0].constraints[0].id],
+  setSelectedIds: vi.fn(),
+};
+
+const TestComponent: FC<TestComponentProps> = (props) => {
+  const formik = useFormik<Constraint>({
+    initialValues: {
+      constraint: "",
+      id: 0,
+      notAnyVersion: false,
+      package: "",
+      rule: "",
+      version: "",
+    },
+    onSubmit: () => undefined,
+  });
+
+  return (
+    <PackageProfileConstraintsEditFormActions formik={formik} {...props} />
+  );
+};
+
+describe("PackageProfileConstraintsEditFormActions", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("removes constraints", async () => {
+    renderWithProviders(<TestComponent {...props} />);
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: "Remove selected constraint",
+      }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Remove constraint" }),
+    ).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Remove" }));
+    expect(props.setSelectedIds).toHaveBeenCalledExactlyOnceWith([]);
+  });
+
+  it("catches errors while removing constraints", async () => {
+    renderWithProviders(<TestComponent {...props} />);
+
+    setEndpointStatus("error");
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: "Remove selected constraint",
+      }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Remove constraint" }),
+    ).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Remove" }));
+    expect(props.setSelectedIds).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText("Request failed with status code 500"),
+    ).toBeInTheDocument();
+  });
+
+  it("changes the filter", async () => {
+    renderWithProviders(<TestComponent {...props} />);
+
+    await userEvent.selectOptions(
+      screen.getByRole("combobox", { name: "Constraint type" }),
+      "conflicts",
+    );
+    expect(props.onFilterChange).toHaveBeenCalledExactlyOnceWith("conflicts");
+  });
+});
