@@ -15,7 +15,7 @@ env:
 
 jobs:
   e2e-tests:
-    runs-on: [ self-hosted, Linux, large ]
+    runs-on: [self-hosted, Linux, large]
     container:
       image: mcr.microsoft.com/playwright:next
     steps:
@@ -51,12 +51,12 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-            name: playwright-report
-            path: playwright-report
-            retention-days: 30
+          name: playwright-report
+          path: playwright-report
+          retention-days: 30
 
   unit-tests:
-    runs-on: [ self-hosted, Linux, large ]
+    runs-on: [self-hosted, Linux, large]
     permissions:
       contents: read
       pull-requests: write
@@ -93,6 +93,12 @@ jobs:
         with:
           name: vitest-report
           path: ${{ github.workspace }}/reports
+
+      - name: Workaround ESLint cache / missing tsconfig
+        run: |
+          rm -f .eslintcache
+          echo '{ "extends": "./tsconfig.json" }' > tsconfig.vitest.json
+
       - name: TICS report
         uses: tiobe/tics-github-action@v3
         with:
@@ -100,4 +106,3 @@ jobs:
           viewerUrl: https://canonical.tiobe.com/tiobeweb/TICS/api/cfg?name=default
           ticsAuthToken: ${{ secrets.TICSAUTHTOKEN }}
           installTics: true
-
