@@ -1,4 +1,3 @@
-import type { AutoinstallFile } from "@/features/autoinstall-files";
 import type { Instance } from "@/types/Instance";
 
 export interface Employee extends Record<string, unknown> {
@@ -8,7 +7,6 @@ export interface Employee extends Record<string, unknown> {
   issuer: string;
   subject: string;
   is_active: boolean;
-  autoinstall_file: AutoinstallFile | null;
   computers: Instance[] | null;
 }
 

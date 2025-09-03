@@ -16,7 +16,6 @@ describe("EmployeeList", () => {
     expect(table).toHaveTexts([
       "name",
       "email",
-      "assigned autoinstall file",
       "status",
       "associated instances",
     ]);
@@ -49,12 +48,6 @@ describe("EmployeeList", () => {
           name: /status/i,
         }),
       ).toHaveTextContent(employee.is_active ? "Active" : "Inactive");
-
-      expect(
-        within(row).getByRole("cell", {
-          name: /assigned autoinstall file/i,
-        }),
-      ).toHaveTextContent(employee.autoinstall_file?.filename || NO_DATA_TEXT);
 
       expect(
         within(row).getByRole("cell", {

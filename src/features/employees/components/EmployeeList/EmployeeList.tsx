@@ -4,7 +4,7 @@ import NoData from "@/components/layout/NoData";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { ExpandedCell } from "@/types/ExpandedCell";
-import { Button, Icon, Tooltip } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
@@ -13,7 +13,6 @@ import { useOnClickOutside } from "usehooks-ts";
 import { getStatusText } from "../../helpers";
 import type { Employee } from "../../types";
 import EmployeeListActions from "../EmployeeListActions";
-import classes from "./EmployeeList.module.scss";
 import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
@@ -93,25 +92,6 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
       {
         accessor: "email",
         Header: "email",
-      },
-      {
-        accessor: "autoinstall_file",
-        Header: () => (
-          <>
-            <span className={classes.autoinstallFileHeaderTitle}>
-              assigned autoinstall file
-            </span>
-            <Tooltip message="This configuration file is assigned based on the highest-priority group the user belongs to.">
-              <Icon name="help" />
-            </Tooltip>
-          </>
-        ),
-        Cell: ({ row: { original } }: CellProps<Employee>) =>
-          original.autoinstall_file?.filename ? (
-            <span>{original.autoinstall_file?.filename}</span>
-          ) : (
-            <NoData />
-          ),
       },
       {
         accessor: "status",
