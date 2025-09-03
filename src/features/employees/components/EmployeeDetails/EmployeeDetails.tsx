@@ -20,16 +20,6 @@ const EmployeeDetails: FC<EmployeeDetailsProps> = ({ employee }) => {
         <InfoGrid.Item label="Email" value={employee.email} />
 
         <InfoGrid.Item label="Status" value={getStatusText(employee)} />
-
-        <InfoGrid.Item
-          label="Autoinstall file"
-          large
-          value={
-            employee.autoinstall_file
-              ? `${employee.autoinstall_file.filename}, v${employee.autoinstall_file.version}`
-              : null
-          }
-        />
       </InfoGrid>
 
       <EmployeeInstancesTable instances={employee.computers} />

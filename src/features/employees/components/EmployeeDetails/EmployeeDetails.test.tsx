@@ -1,4 +1,3 @@
-import NoData from "@/components/layout/NoData";
 import { employees } from "@/tests/mocks/employees";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -34,14 +33,6 @@ describe("EmployeeDetails", () => {
       {
         label: "Status",
         value: employeeWithoutInstances.is_active ? "Active" : "Inactive",
-      },
-      {
-        label: "Autoinstall file",
-        value: employeeWithoutInstances.autoinstall_file ? (
-          `${employeeWithoutInstances.autoinstall_file?.filename}, v${employeeWithoutInstances.autoinstall_file?.version}`
-        ) : (
-          <NoData />
-        ),
       },
     ];
 

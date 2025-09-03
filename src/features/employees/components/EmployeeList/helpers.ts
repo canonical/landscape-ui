@@ -32,8 +32,6 @@ export const handleCellProps =
       cellProps["aria-label"] = "Email";
     } else if (column.id === "status") {
       cellProps["aria-label"] = "Status";
-    } else if (column.id === "autoinstall_file") {
-      cellProps["aria-label"] = "Assigned autoinstall file";
     } else if (column.id === "actions") {
       cellProps["aria-label"] = "Actions";
     }
