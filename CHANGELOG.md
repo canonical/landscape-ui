@@ -1,3 +1,10 @@
+## [1.18.1](https://github.com/canonical/landscape-ui/compare/v1.18.0...v1.18.1) (2025-09-03)
+
+
+### Bug Fixes
+
+* remove autoinstall file field from employees ([#344](https://github.com/canonical/landscape-ui/issues/344)) ([27d6ef5](https://github.com/canonical/landscape-ui/commit/27d6ef56018a32c54230036b016d43a2b55cb507))
+
 # [1.18.0](https://github.com/canonical/landscape-ui/compare/v1.17.0...v1.18.0) (2025-08-29)
 
 
