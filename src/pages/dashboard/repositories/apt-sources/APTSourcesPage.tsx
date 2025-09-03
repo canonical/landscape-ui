@@ -3,7 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { APTSourcesList, useAPTSources } from "@/features/apt-sources";
+import { APTSourcesList, useGetAPTSources } from "@/features/apt-sources";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
@@ -17,11 +17,8 @@ const NewAPTSourceForm = lazy(async () =>
 
 const APTSourcesPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
-  const { getAPTSourcesQuery } = useAPTSources();
-
-  const { data, isLoading } = getAPTSourcesQuery();
-
-  const items = data?.data ?? [];
+  const { aptSources: items, isGettingAPTSources: isLoading } =
+    useGetAPTSources();
 
   const handleOpen = () => {
     setSidePanelContent(

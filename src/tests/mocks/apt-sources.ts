@@ -7,6 +7,7 @@ export const aptSources: APTSource[] = [
     gpg_key: "key1",
     line: "deb http://example.com/ubuntu focal main",
     name: "source1",
+    profiles: ["repo-profile-1"],
   },
   {
     id: 2,
@@ -14,6 +15,7 @@ export const aptSources: APTSource[] = [
     gpg_key: "key2",
     line: "deb http://example.com/ubuntu focal main",
     name: "source2",
+    profiles: ["repo-profile-1"],
   },
   {
     id: 3,
@@ -21,6 +23,7 @@ export const aptSources: APTSource[] = [
     gpg_key: "key3",
     line: "deb http://example.com/ubuntu focal main",
     name: "source3",
+    profiles: [],
   },
   {
     id: 4,
@@ -28,6 +31,7 @@ export const aptSources: APTSource[] = [
     gpg_key: "key4",
     line: "deb http://example.com/ubuntu focal main",
     name: "source4",
+    profiles: [],
   },
   {
     id: 5,
@@ -35,5 +39,6 @@ export const aptSources: APTSource[] = [
     gpg_key: "key5",
     line: "deb http://example.com/ubuntu focal main",
     name: "source5",
+    profiles: [],
   },
 ];

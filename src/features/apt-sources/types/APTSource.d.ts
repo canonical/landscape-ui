@@ -7,4 +7,5 @@ export interface APTSource extends Record<string, unknown> {
   id: number;
   line: string;
   name: string;
+  profiles: string[];
 }

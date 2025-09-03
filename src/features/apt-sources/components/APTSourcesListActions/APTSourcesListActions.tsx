@@ -1,11 +1,9 @@
 import ListActions from "@/components/layout/ListActions";
-import useDebug from "@/hooks/useDebug";
-import { ConfirmationModal, ICONS } from "@canonical/react-components";
+import { ICONS } from "@canonical/react-components";
 import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import { useAPTSources } from "../../hooks";
 import type { APTSource } from "../../types";
-import useNotify from "@/hooks/useNotify";
+import APTSourceDeleteModal from "./components/APTSourceDeleteModal";
 
 interface APTSourcesListActionsProps {
   readonly aptSource: APTSource;
@@ -14,31 +12,11 @@ interface APTSourcesListActionsProps {
 const APTSourcesListActions: FC<APTSourcesListActionsProps> = ({
   aptSource,
 }) => {
-  const { removeAPTSourceQuery } = useAPTSources();
-  const debug = useDebug();
-  const { notify } = useNotify();
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
-
-  const { mutateAsync: remove, isPending: isRemoving } = removeAPTSourceQuery;
-
-  const tryRemove = async () => {
-    try {
-      await remove({ name: aptSource.name });
-
-      notify.success({
-        title: "Successfully deleted APT source",
-        message: `You have successfully deleted the ${aptSource.name} APT source`,
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      closeModal();
-    }
-  };
 
   return (
     <>
@@ -54,19 +32,11 @@ const APTSourcesListActions: FC<APTSourcesListActionsProps> = ({
         ]}
       />
 
-      {isModalOpen && (
-        <ConfirmationModal
-          close={closeModal}
-          title={`Deleting ${aptSource.name} APT source`}
-          confirmButtonLabel="Delete"
-          confirmButtonAppearance="negative"
-          confirmButtonLoading={isRemoving}
-          confirmButtonDisabled={isRemoving}
-          onConfirm={tryRemove}
-        >
-          <p>Are you sure? This action is permanent and cannot be undone.</p>
-        </ConfirmationModal>
-      )}
+      <APTSourceDeleteModal
+        aptSource={aptSource}
+        close={closeModal}
+        opened={isModalOpen}
+      />
     </>
   );
 };
