@@ -1,20 +1,24 @@
-import type { FC } from "react";
 import { Button, Icon } from "@canonical/react-components";
-import classes from "./TagsAddPagination.module.scss";
+import type { FC } from "react";
+import classes from "./ModalTablePagination.module.scss";
 
-export interface TagsAddPaginationProps {
+export interface ModalTablePaginationProps {
   readonly onPrev: () => void;
   readonly onNext: () => void;
   readonly current: number;
   readonly max: number;
 }
 
-const TagsAddPagination: FC<TagsAddPaginationProps> = ({
+const ModalTablePagination: FC<ModalTablePaginationProps> = ({
   onPrev,
   onNext,
   max,
   current,
 }) => {
+  if (max <= 1) {
+    return;
+  }
+
   return (
     <div className={classes.pagination}>
       <div className={classes.inner}>
@@ -46,4 +50,4 @@ const TagsAddPagination: FC<TagsAddPaginationProps> = ({
   );
 };
 
-export default TagsAddPagination;
+export default ModalTablePagination;

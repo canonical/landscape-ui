@@ -7,16 +7,20 @@ export default [
   http.get(`${API_URL}repositoryprofiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
 
-    const search = searchParams.get("search")?.toLowerCase() ?? "";
+    const names =
+      searchParams.get("search")?.toLowerCase().split(",") ?? undefined;
     const limit = parseInt(searchParams.get("limit") ?? "20");
     const offset = parseInt(searchParams.get("offset") ?? "0");
 
     return HttpResponse.json(
       generatePaginatedResponse({
-        data: repositoryProfiles,
+        data: names
+          ? repositoryProfiles.filter((repositoryProfile) =>
+              names.includes(repositoryProfile.name),
+            )
+          : repositoryProfiles,
         limit,
         offset,
-        search,
       }),
     );
   }),

@@ -32,4 +32,8 @@ export default [
 
     return HttpResponse.json();
   }),
+
+  http.get(`${API_URL}repository/apt-source`, () => {
+    return HttpResponse.json({ results: aptSources });
+  }),
 ];

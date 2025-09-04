@@ -1,9 +1,14 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { ModalTablePagination } from "@/components/layout/TablePagination";
+import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
+import type { RepositoryProfile } from "@/features/repository-profiles";
 import { useRepositoryProfiles } from "@/features/repository-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { ConfirmationModal } from "@canonical/react-components";
-import type { FC } from "react";
+import { ConfirmationModal, ModularTable } from "@canonical/react-components";
+import { useMemo, type FC } from "react";
+import type { Column } from "react-table";
+import { useCounter } from "usehooks-ts";
 import { useRemoveAPTSource } from "../../../../api";
 import type { APTSource } from "../../../../types";
 
@@ -24,15 +29,40 @@ const APTSourceDeleteModal: FC<APTSourceDeleteModalProps> = ({
   const { notify } = useNotify();
 
   const {
+    count: pageNumber,
+    decrement: goToPreviousPage,
+    increment: goToNextPage,
+  } = useCounter(1);
+
+  const {
     data: getRepositoryProfilesResponse,
     isPending: isGettingRepositoryProfiles,
+    error: repositoryProfilesError,
   } = getRepositoryProfilesQuery(
-    { search: aptSource.profiles },
+    {
+      limit: DEFAULT_MODAL_PAGE_SIZE,
+      offset: (pageNumber - 1) * DEFAULT_MODAL_PAGE_SIZE,
+      search: aptSource.profiles,
+    },
     { enabled: !!aptSource.profiles.length && opened },
+  );
+
+  const columns = useMemo<Column<RepositoryProfile>[]>(
+    () => [
+      {
+        Header: "Repository profile",
+        accessor: "title",
+      },
+    ],
+    [],
   );
 
   if (!opened) {
     return;
+  }
+
+  if (repositoryProfilesError) {
+    throw repositoryProfilesError;
   }
 
   const confirm = async () => {
@@ -52,6 +82,35 @@ const APTSourceDeleteModal: FC<APTSourceDeleteModalProps> = ({
     }
   };
 
+  const children = !aptSource.profiles.length ? (
+    <p>
+      If this APT source is deleted, it will no longer be available to include
+      in repository profiles. <strong>This action is irreversible.</strong>
+    </p>
+  ) : isGettingRepositoryProfiles ? (
+    <LoadingState />
+  ) : (
+    <>
+      <p>This APT source belongs to the following repository profiles.</p>
+      <p>
+        If this source is deleted, it will no longer be included in its
+        profiles. <strong>This action is irreversible.</strong>
+      </p>
+      <ModularTable
+        columns={columns}
+        data={getRepositoryProfilesResponse.data.results}
+      />
+      <ModalTablePagination
+        current={pageNumber}
+        max={Math.ceil(
+          getRepositoryProfilesResponse.data.count / DEFAULT_MODAL_PAGE_SIZE,
+        )}
+        onNext={goToNextPage}
+        onPrev={goToPreviousPage}
+      />
+    </>
+  );
+
   return (
     <ConfirmationModal
       close={close}
@@ -60,35 +119,11 @@ const APTSourceDeleteModal: FC<APTSourceDeleteModalProps> = ({
       confirmButtonAppearance="negative"
       confirmButtonLoading={isRemovingAPTSource}
       confirmButtonDisabled={
-        isRemovingAPTSource ||
-        (!!aptSource.profiles.length && isGettingRepositoryProfiles)
+        !!aptSource.profiles.length && isGettingRepositoryProfiles
       }
       onConfirm={confirm}
     >
-      {!aptSource.profiles.length ? (
-        <p>
-          If this APT source is deleted, it will no longer be available to
-          include in repository profiles.{" "}
-          <strong>This action is irreversible.</strong>
-        </p>
-      ) : isGettingRepositoryProfiles ? (
-        <LoadingState />
-      ) : (
-        <>
-          <p>This APT source belongs to the following repository profiles:</p>
-          <ul>
-            {getRepositoryProfilesResponse?.data.results.map(
-              (repositoryProfile) => (
-                <li key={repositoryProfile.id}>{repositoryProfile.title}</li>
-              ),
-            )}
-          </ul>
-          <p>
-            If this source is deleted, it will no longer be included in its
-            profiles. <strong>This action is irreversible.</strong>
-          </p>
-        </>
-      )}
+      {children}
     </ConfirmationModal>
   );
 };

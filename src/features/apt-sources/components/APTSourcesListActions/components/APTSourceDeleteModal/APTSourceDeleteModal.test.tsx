@@ -1,3 +1,4 @@
+import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import { expectLoadingState } from "@/tests/helpers";
 import { aptSources } from "@/tests/mocks/apt-sources";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
@@ -17,57 +18,24 @@ describe("APTSourceDeleteModal", () => {
     );
   });
 
-  it("shows a regular message for an apt source without profiles", () => {
+  it("shows a regular message for an apt source without profiles", async () => {
+    const aptSource = aptSources.find(({ profiles }) => !profiles.length);
+    assert(aptSource);
+
     renderWithProviders(
       <APTSourceDeleteModal
-        aptSource={aptSources[2]}
+        aptSource={aptSource}
         close={() => undefined}
         opened
       />,
     );
-
-    assert(!aptSources[2].profiles.length);
 
     expect(
       screen.getByText(
         "If this APT source is deleted, it will no longer be available to include in repository profiles.",
       ),
     ).toBeInTheDocument();
-  });
-
-  it("shows a list for an apt source with profiles", async () => {
-    renderWithProviders(
-      <APTSourceDeleteModal
-        aptSource={aptSources[0]}
-        close={() => undefined}
-        opened
-      />,
-    );
-
-    assert(aptSources[0].profiles.length);
-
-    await expectLoadingState();
-
-    for (const { title } of repositoryProfiles.filter(({ name }) =>
-      aptSources[0].profiles.includes(name),
-    )) {
-      expect(screen.getByText(title)).toBeInTheDocument();
-    }
-  });
-
-  it("submits without profiles", async () => {
-    renderWithProviders(
-      <APTSourceDeleteModal
-        aptSource={aptSources[2]}
-        close={() => undefined}
-        opened
-      />,
-    );
-
-    assert(!aptSources[2].profiles.length);
-
     await userEvent.click(screen.getByRole("button", { name: "Delete" }));
-
     expect(
       await screen.findByText(
         "It will no longer be available to include in repository profiles.",
@@ -75,19 +43,27 @@ describe("APTSourceDeleteModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("submits with profiles", async () => {
+  it("shows a list for an apt source with profiles", async () => {
+    const aptSource = aptSources.find(({ profiles }) => profiles.length);
+    assert(aptSource);
+
     renderWithProviders(
       <APTSourceDeleteModal
-        aptSource={aptSources[0]}
+        aptSource={aptSource}
         close={() => undefined}
         opened
       />,
     );
 
-    assert(aptSources[0].profiles.length);
+    await expectLoadingState();
+
+    for (const { title } of repositoryProfiles
+      .slice(0, DEFAULT_MODAL_PAGE_SIZE)
+      .filter(({ name }) => aptSource.profiles.includes(name))) {
+      expect(screen.getByText(title)).toBeInTheDocument();
+    }
 
     await userEvent.click(screen.getByRole("button", { name: "Delete" }));
-
     expect(
       await screen.findByText(
         "It will no longer be available and it has been removed from its associated profiles.",
