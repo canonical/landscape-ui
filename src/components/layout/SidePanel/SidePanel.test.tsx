@@ -18,6 +18,8 @@ const SlowComponent: FC<{ readonly promise: Promise<ReactNode> }> = ({
 };
 
 describe("SidePanel", () => {
+  const user = userEvent.setup();
+
   it("renders", async () => {
     const children = "Content";
     const close = vi.fn();
@@ -30,7 +32,7 @@ describe("SidePanel", () => {
     );
 
     expect(screen.getByText(children)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button"));
+    await user.click(screen.getByRole("button"));
     expect(close).toHaveBeenCalledOnce();
   });
 
@@ -70,7 +72,7 @@ describe("SidePanel", () => {
     );
 
     expect(screen.queryByText(children)).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button"));
+    await user.click(screen.getByRole("button"));
     expect(close).toHaveBeenCalledOnce();
   });
 });

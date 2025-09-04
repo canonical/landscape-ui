@@ -8,6 +8,8 @@ import { afterEach, describe, expect } from "vitest";
 import PackageProfileAddSidePanel from "./PackageProfileAddSidePanel";
 
 describe("PackageProfileAddSidePanel", () => {
+  const user = userEvent.setup();
+
   beforeEach(async () => {
     renderWithProviders(<PackageProfileAddSidePanel />);
 
@@ -17,19 +19,19 @@ describe("PackageProfileAddSidePanel", () => {
         name: "Add package profile",
       }),
     ).toBeDisabled();
-    await userEvent.type(
+    await user.type(
       screen.getByRole("textbox", { name: "Title" }),
       "Package profile",
     );
-    await userEvent.type(
+    await user.type(
       screen.getByRole("textbox", { name: "Description" }),
       "---",
     );
-    await userEvent.selectOptions(
+    await user.selectOptions(
       screen.getByRole("combobox", { name: "Package constraints" }),
       "instance",
     );
-    await userEvent.selectOptions(
+    await user.selectOptions(
       screen.getByRole("combobox", { name: "Instance" }),
       instances[0].id.toString(),
     );
@@ -41,38 +43,38 @@ describe("PackageProfileAddSidePanel", () => {
         name: "Add package profile",
       });
       expect(submitButton).toBeEnabled();
-      await userEvent.click(submitButton);
+      await user.click(submitButton);
     });
 
     it("submits with all computers", async () => {
-      await userEvent.click(
+      await user.click(
         screen.getByRole("checkbox", { name: "Associate to all instances" }),
       );
     });
 
     it("submits with tags", async () => {
-      await userEvent.click(screen.getByLabelText("Search and add tags"));
-      await userEvent.click(screen.getByRole("checkbox", { name: tags[0] }));
+      await user.click(screen.getByLabelText("Search and add tags"));
+      await user.click(screen.getByRole("checkbox", { name: tags[0] }));
     });
 
     it("submits with manual constraints", async () => {
-      await userEvent.selectOptions(
+      await user.selectOptions(
         screen.getByRole("combobox", { name: "Package constraints" }),
         "manual",
       );
-      await userEvent.selectOptions(
+      await user.selectOptions(
         screen.getByRole("combobox", {
           name: "Constraint",
         }),
         "conflicts",
       );
-      await userEvent.type(
+      await user.type(
         screen.getByRole("textbox", {
           name: "Package name",
         }),
         "package",
       );
-      await userEvent.tab();
+      await user.tab();
     });
   });
 
@@ -82,7 +84,7 @@ describe("PackageProfileAddSidePanel", () => {
       name: "Add package profile",
     });
     expect(submitButton).toBeEnabled();
-    await userEvent.click(submitButton);
+    await user.click(submitButton);
     expect(
       await screen.findByText("Request failed with status code 500"),
     ).toBeInTheDocument();

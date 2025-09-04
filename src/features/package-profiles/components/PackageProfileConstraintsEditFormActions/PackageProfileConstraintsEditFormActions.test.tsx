@@ -41,6 +41,8 @@ const TestComponent: FC<TestComponentProps> = (props) => {
 };
 
 describe("PackageProfileConstraintsEditFormActions", () => {
+  const user = userEvent.setup();
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -48,7 +50,7 @@ describe("PackageProfileConstraintsEditFormActions", () => {
   it("removes constraints", async () => {
     renderWithProviders(<TestComponent {...props} />);
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole("button", {
         name: "Remove selected constraint",
       }),
@@ -56,7 +58,7 @@ describe("PackageProfileConstraintsEditFormActions", () => {
     expect(
       screen.getByRole("heading", { name: "Remove constraint" }),
     ).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Remove" }));
+    await user.click(screen.getByRole("button", { name: "Remove" }));
     expect(props.setSelectedIds).toHaveBeenCalledExactlyOnceWith([]);
   });
 
@@ -65,7 +67,7 @@ describe("PackageProfileConstraintsEditFormActions", () => {
 
     setEndpointStatus("error");
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole("button", {
         name: "Remove selected constraint",
       }),
@@ -73,7 +75,7 @@ describe("PackageProfileConstraintsEditFormActions", () => {
     expect(
       screen.getByRole("heading", { name: "Remove constraint" }),
     ).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Remove" }));
+    await user.click(screen.getByRole("button", { name: "Remove" }));
     expect(props.setSelectedIds).not.toHaveBeenCalled();
     expect(
       await screen.findByText("Request failed with status code 500"),
@@ -83,7 +85,7 @@ describe("PackageProfileConstraintsEditFormActions", () => {
   it("changes the filter", async () => {
     renderWithProviders(<TestComponent {...props} />);
 
-    await userEvent.selectOptions(
+    await user.selectOptions(
       screen.getByRole("combobox", { name: "Constraint type" }),
       "conflicts",
     );

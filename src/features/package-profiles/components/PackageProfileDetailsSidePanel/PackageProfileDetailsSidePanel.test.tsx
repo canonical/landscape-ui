@@ -6,6 +6,8 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect } from "vitest";
 import PackageProfileDetailsSidePanel from "./PackageProfileDetailsSidePanel";
 
+const user = userEvent.setup();
+
 const renderAndRemove = async () => {
   renderWithProviders(
     <PackageProfileDetailsSidePanel />,
@@ -16,7 +18,7 @@ const renderAndRemove = async () => {
   expect(
     await screen.findByRole("heading", { name: packageProfiles[0].title }),
   ).toBeInTheDocument();
-  await userEvent.click(
+  await user.click(
     screen.getByRole("button", {
       name: `Remove ${packageProfiles[0].title} package profile`,
     }),
@@ -24,12 +26,12 @@ const renderAndRemove = async () => {
   const modal = screen.getByRole("dialog");
   const button = within(modal).getByRole("button", { name: "Remove" });
   expect(button).toBeDisabled();
-  await userEvent.type(
+  await user.type(
     within(modal).getByRole("textbox"),
     `remove ${packageProfiles[0].title}`,
   );
   expect(button).toBeEnabled();
-  await userEvent.click(button);
+  await user.click(button);
 };
 
 describe("PackageProfileDetailsSidePanel", () => {

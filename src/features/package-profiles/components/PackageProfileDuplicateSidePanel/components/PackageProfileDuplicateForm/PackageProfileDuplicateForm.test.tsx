@@ -7,12 +7,14 @@ import { describe, expect } from "vitest";
 import PackageProfileDuplicateForm from "./PackageProfileDuplicateForm";
 
 describe("PackageProfileDuplicateForm", () => {
+  const user = userEvent.setup();
+
   it("submits", async () => {
     renderWithProviders(
       <PackageProfileDuplicateForm profile={packageProfiles[0]} />,
     );
 
-    await userEvent.click(screen.getByRole("button", { name: "Duplicate" }));
+    await user.click(screen.getByRole("button", { name: "Duplicate" }));
     expect(screen.getByText("Profile duplicated")).toBeInTheDocument();
   });
 
@@ -22,7 +24,7 @@ describe("PackageProfileDuplicateForm", () => {
     );
 
     setEndpointStatus("error");
-    await userEvent.click(screen.getByRole("button", { name: "Duplicate" }));
+    await user.click(screen.getByRole("button", { name: "Duplicate" }));
     expect(screen.queryByText("Profile duplicated")).not.toBeInTheDocument();
     expect(
       screen.getByText("Request failed with status code 500"),

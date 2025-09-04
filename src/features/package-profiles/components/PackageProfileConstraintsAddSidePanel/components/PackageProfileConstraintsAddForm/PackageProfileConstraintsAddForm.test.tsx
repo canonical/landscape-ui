@@ -6,6 +6,8 @@ import userEvent from "@testing-library/user-event";
 import PackageProfileConstraintsAddForm from "./PackageProfileConstraintsAddForm";
 
 describe("PackageProfileConstraintsAddForm", () => {
+  const user = userEvent.setup();
+
   it("submits", async () => {
     renderWithProviders(
       <PackageProfileConstraintsAddForm profile={packageProfiles[0]} />,
@@ -15,22 +17,22 @@ describe("PackageProfileConstraintsAddForm", () => {
       name: `Add constraint to "${packageProfiles[0].title}" profile`,
     });
     expect(submitButton).toBeDisabled();
-    await userEvent.tab();
-    await userEvent.selectOptions(
+    await user.tab();
+    await user.selectOptions(
       screen.getByRole("combobox", {
         name: "Constraint",
       }),
       "conflicts",
     );
-    await userEvent.type(
+    await user.type(
       screen.getByRole("textbox", {
         name: "Package name",
       }),
       "package",
     );
-    await userEvent.tab();
+    await user.tab();
     expect(submitButton).toBeEnabled();
-    await userEvent.click(submitButton);
+    await user.click(submitButton);
   });
 
   it("shows errors", async () => {
@@ -44,22 +46,22 @@ describe("PackageProfileConstraintsAddForm", () => {
       name: `Add constraint to "${packageProfiles[0].title}" profile`,
     });
     expect(submitButton).toBeDisabled();
-    await userEvent.tab();
-    await userEvent.selectOptions(
+    await user.tab();
+    await user.selectOptions(
       screen.getByRole("combobox", {
         name: "Constraint",
       }),
       "conflicts",
     );
-    await userEvent.type(
+    await user.type(
       screen.getByRole("textbox", {
         name: "Package name",
       }),
       "package",
     );
-    await userEvent.tab();
+    await user.tab();
     expect(submitButton).toBeEnabled();
-    await userEvent.click(submitButton);
+    await user.click(submitButton);
     expect(
       await screen.findByText("Request failed with status code 500"),
     ).toBeInTheDocument();

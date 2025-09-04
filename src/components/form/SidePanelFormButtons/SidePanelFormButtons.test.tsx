@@ -5,6 +5,8 @@ import { describe, expect } from "vitest";
 import SidePanelFormButtons from "./SidePanelFormButtons";
 
 describe("SidePanelFormButtons", () => {
+  const user = userEvent.setup();
+
   it("has a back button", () => {
     renderWithProviders(<SidePanelFormButtons hasBackButton />);
     expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
@@ -21,7 +23,7 @@ describe("SidePanelFormButtons", () => {
       />,
     );
 
-    await userEvent.click(screen.getByRole("button", { name: title }));
+    await user.click(screen.getByRole("button", { name: title }));
     expect(submit).toHaveBeenCalledOnce();
   });
 
@@ -46,7 +48,7 @@ describe("SidePanelFormButtons", () => {
 
     const submitButton = screen.getByRole("button", { name: text });
     expect(submitButton).toHaveAttribute("type", "button");
-    await userEvent.click(submitButton);
+    await user.click(submitButton);
     expect(submit).toHaveBeenCalledOnce();
   });
 });

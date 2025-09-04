@@ -10,14 +10,16 @@ describe("PackageProfilesPage", () => {
   it("has a button to add a package profile", async () => {
     renderWithProviders(<PackageProfilesPage />);
 
-    await userEvent.click(
+    const user = userEvent.setup();
+
+    await user.click(
       screen.getByRole("button", { name: "Add package profile" }),
     );
     await expectLoadingState();
     expect(
       screen.getByRole("heading", { name: "Add package profile" }),
     ).toBeInTheDocument();
-    await userEvent.click(screen.getByLabelText("Close"));
+    await user.click(screen.getByLabelText("Close"));
     expect(
       screen.queryByRole("heading", { name: "Add package profile" }),
     ).not.toBeInTheDocument();
