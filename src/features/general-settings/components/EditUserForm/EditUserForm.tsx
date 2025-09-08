@@ -1,3 +1,4 @@
+import buttonClasses from "@/components/form/SidePanelFormButtons/SidePanelFormButtons.module.scss";
 import LoadingState from "@/components/layout/LoadingState";
 import useAuth from "@/hooks/useAuth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
@@ -13,7 +14,6 @@ import { lazy, Suspense } from "react";
 import { useUserGeneralSettings } from "../../hooks";
 import type { UserDetails } from "../../types";
 import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
-import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
 import classes from "./EditUserForm.module.scss";
 import { getAccountOptions } from "./helpers";
 import type { EditUserFormValues } from "./types";

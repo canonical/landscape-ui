@@ -1,6 +1,6 @@
+import useSidePanel from "@/hooks/useSidePanel";
 import { ActionButton, Button, Icon } from "@canonical/react-components";
 import type { FC, ReactElement, ReactNode, SyntheticEvent } from "react";
-import useSidePanel from "../../hooks/useSidePanel";
 import classes from "./SidePanelFormButtons.module.scss";
 
 interface SidePanelFormButtonsProps {
@@ -76,7 +76,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
             type={onSubmit ? "button" : "submit"}
             onClick={onSubmit}
             appearance={submitButtonAppearance}
-            disabled={submitButtonDisabled}
+            disabled={submitButtonDisabled || submitButtonLoading}
             aria-label={submitButtonAriaLabel}
             loading={submitButtonLoading}
           >

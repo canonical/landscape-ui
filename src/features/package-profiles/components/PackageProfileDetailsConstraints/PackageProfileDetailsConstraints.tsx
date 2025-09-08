@@ -54,9 +54,7 @@ const PackageProfileDetailsConstraints: FC<
         <>
           <HeaderWithSearch
             className={classes.actions}
-            onSearch={(searchText) => {
-              setSearch(searchText);
-            }}
+            onSearch={setSearch}
             actions={
               <Button
                 className="u-no-margin--bottom"
@@ -79,12 +77,8 @@ const PackageProfileDetailsConstraints: FC<
           <SidePanelTablePagination
             currentPage={currentPage}
             pageSize={pageSize}
-            paginate={(page) => {
-              setCurrentPage(page);
-            }}
-            setPageSize={(itemsNumber) => {
-              setPageSize(itemsNumber);
-            }}
+            paginate={setCurrentPage}
+            setPageSize={setPageSize}
             totalItems={getPackageProfileConstraintsQueryResult?.data.count}
           />
         </>

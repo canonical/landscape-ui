@@ -1,4 +1,4 @@
-import buttonClasses from "@/components/form/SidePanelFormButtons.module.scss";
+import buttonClasses from "@/components/form/SidePanelFormButtons/SidePanelFormButtons.module.scss";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";

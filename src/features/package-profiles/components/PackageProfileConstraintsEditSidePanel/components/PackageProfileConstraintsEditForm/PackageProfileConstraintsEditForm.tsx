@@ -115,19 +115,13 @@ const PackageProfileConstraintsEditForm: FC<
               <PackageProfileConstraintsEditFormActions
                 filter={constraintType}
                 formik={formik}
-                onFilterChange={(value) => {
-                  setConstraintType(value);
-                }}
+                onFilterChange={setConstraintType}
                 profile={profile}
                 selectedIds={selectedIds}
-                setSelectedIds={(value) => {
-                  setSelectedIds(value);
-                }}
+                setSelectedIds={setSelectedIds}
               />
             }
-            onSearch={(searchText) => {
-              setSearch(searchText);
-            }}
+            onSearch={setSearch}
             disabled={formik.values.id !== 0}
           />
 
@@ -135,9 +129,7 @@ const PackageProfileConstraintsEditForm: FC<
             filter={constraintType}
             formik={formik}
             isConstraintsLoading={getPackageProfileConstraintsQueryLoading}
-            onSelectedIdsChange={(value) => {
-              setSelectedIds(value);
-            }}
+            onSelectedIdsChange={setSelectedIds}
             pageSize={pageSize}
             profileConstraints={
               getPackageProfileConstraintsQueryResult?.data.results
