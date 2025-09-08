@@ -24,7 +24,7 @@ import { getCellProps, getRowProps } from "./helpers";
 import classes from "./WslProfilesList.module.scss";
 
 const WslProfilesList: FC = () => {
-  const { expandedRowIndex, getTableRowsRef, handleExpand } =
+  const { expandedRowIndex, expandedColumnId, getTableRowsRef, handleExpand } =
     useExpandableRow();
   const { search } = usePageParams();
   const { setPageParams } = usePageParams();
@@ -73,13 +73,15 @@ const WslProfilesList: FC = () => {
           row: { original: wslProfile, index },
         }: CellProps<WslProfile>) => {
           const onExpand = () => {
-            handleExpand(index);
+            handleExpand(index, "description");
           };
 
           return (
             <TruncatedCell
               content={wslProfile.description}
-              isExpanded={index === expandedRowIndex}
+              isExpanded={
+                index === expandedRowIndex && expandedColumnId === "description"
+              }
               onExpand={onExpand}
             />
           );
@@ -111,7 +113,7 @@ const WslProfilesList: FC = () => {
           }
 
           const onExpand = () => {
-            handleExpand(index);
+            handleExpand(index, "tags");
           };
 
           return (
@@ -121,7 +123,9 @@ const WslProfilesList: FC = () => {
                   {tag}
                 </span>
               ))}
-              isExpanded={index === expandedRowIndex}
+              isExpanded={
+                index === expandedRowIndex && expandedColumnId === "tags"
+              }
               onExpand={onExpand}
               showCount
             />
@@ -184,7 +188,7 @@ const WslProfilesList: FC = () => {
         ),
       },
     ],
-    [accessGroupOptions.length, expandedRowIndex],
+    [accessGroupOptions.length, expandedRowIndex, expandedColumnId],
   );
 
   if (isGettingWslProfiles) {
@@ -197,7 +201,7 @@ const WslProfilesList: FC = () => {
         columns={columns}
         data={wslProfiles}
         emptyMsg={`No WSL profiles found according to your search parameters.`}
-        getCellProps={getCellProps(expandedRowIndex)}
+        getCellProps={getCellProps(expandedRowIndex, expandedColumnId)}
         getRowProps={getRowProps(expandedRowIndex)}
         minWidth={1200}
       />
