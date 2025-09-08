@@ -1,1 +1,0 @@
-import{h as o,l as u,j as m,m as g}from"./index-Cl3Ng_mk.js";const n=({options:a,label:s,inline:t=!1})=>{const{groupBy:r,setPageParams:l}=o();return u("groupBy",a.map(e=>e.value)),m.jsx(g,{type:"single",label:s,hasToggleIcon:!0,hasBadge:!0,options:a,onItemSelect:e=>{l({groupBy:e})},selectedItem:r,inline:t})};export{n as G};
